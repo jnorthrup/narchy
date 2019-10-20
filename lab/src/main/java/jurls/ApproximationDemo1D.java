@@ -38,8 +38,8 @@ public class ApproximationDemo1D extends javax.swing.JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            for (var i = 0; i < numIterationsPerLoop; ++i) {
-                var x = Math.random();
+            for (int i = 0; i < numIterationsPerLoop; ++i) {
+                double x = Math.random();
                 
                 renderParameterizedFunction.learn(x, f.compute(x));
                 numIterations++;
@@ -81,12 +81,12 @@ public class ApproximationDemo1D extends javax.swing.JFrame {
         iterationsMenu.addActionListener(e -> numIterationsPerLoop = (int) iterationsMenu.getObject());
         iterationsMenu.notifyListeners();
 
-        var ys = new double[10];
-        var count = 0;
-        var bound = components;
-        for (var i = 0; i < bound; i++) {
+        double[] ys = new double[10];
+        int count = 0;
+        int bound = components;
+        for (int i = 0; i < bound; i++) {
             if (ys.length == count) ys = Arrays.copyOf(ys, count * 2);
-            var v = 2f * (Math.random() - 0.5);
+            double v = 2f * (Math.random() - 0.5);
             ys[count++] = v;
         }
         ys = Arrays.copyOfRange(ys, 0, count);
@@ -106,23 +106,23 @@ public class ApproximationDemo1D extends javax.swing.JFrame {
     
     private void initComponents() {
 
-        var functionButtonGroup = new ButtonGroup();
-        var hiddenButtonGroup = new ButtonGroup();
-        var outputButtonGroup = new ButtonGroup();
-        var jTabbedPane1 = new JTabbedPane();
-        var jPanel1 = new JPanel();
+        ButtonGroup functionButtonGroup = new ButtonGroup();
+        ButtonGroup hiddenButtonGroup = new ButtonGroup();
+        ButtonGroup outputButtonGroup = new ButtonGroup();
+        JTabbedPane jTabbedPane1 = new JTabbedPane();
+        JPanel jPanel1 = new JPanel();
         functionRenderer1 = new jurls.examples.approximation.FunctionRenderer1D();
-        var jPanel2 = new JPanel();
-        var jScrollPane1 = new JScrollPane();
+        JPanel jPanel2 = new JPanel();
+        JScrollPane jScrollPane1 = new JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
-        var jPanel4 = new JPanel();
-        var jPanel5 = new JPanel();
-        var jPanel6 = new JPanel();
+        JPanel jPanel4 = new JPanel();
+        JPanel jPanel5 = new JPanel();
+        JPanel jPanel6 = new JPanel();
         alphaComboBox = new javax.swing.JComboBox();
         momentumComboBox = new javax.swing.JComboBox();
-        var jPanel7 = new JPanel();
-        var jLabel3 = new JLabel();
-        var jLabel4 = new JLabel();
+        JPanel jPanel7 = new JPanel();
+        JLabel jLabel3 = new JLabel();
+        JLabel jLabel4 = new JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -130,7 +130,7 @@ public class ApproximationDemo1D extends javax.swing.JFrame {
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
-        var functionRenderer1Layout = new javax.swing.GroupLayout(functionRenderer1);
+        GroupLayout functionRenderer1Layout = new javax.swing.GroupLayout(functionRenderer1);
         functionRenderer1.setLayout(functionRenderer1Layout);
         functionRenderer1Layout.setHorizontalGroup(
             functionRenderer1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

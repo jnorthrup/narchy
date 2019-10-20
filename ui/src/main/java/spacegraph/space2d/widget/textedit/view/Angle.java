@@ -48,15 +48,15 @@ public class Angle {
   }
 
   public void updateRotate(GL2 gl) {
-    var _x = x.value();
+      double _x = x.value();
     if (_x != 0) {
       gl.glRotated(_x, 1, 0, 0);
     }
-    var _y = y.value();
+      double _y = y.value();
     if (_y != 0) {
       gl.glRotated(_y, 0, 1, 0);
     }
-    var _z = z.value();
+      double _z = z.value();
     if (_z != 0) {
       gl.glRotated(_z, 0, 0, 1);
     }

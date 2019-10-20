@@ -53,7 +53,7 @@ public class Use {
 
 		@Override
 		public void close() {
-			var end = System.nanoTime();
+			long end = System.nanoTime();
 			timeNS(end-start);
 		}
 	}
@@ -66,14 +66,14 @@ public class Use {
 
 	@Override
 	public String toString() {
-		var timeCopy = timeNS.copy(); //TODO dont need to copy to AtomicHistogram, non-atomic is ok
+		AtomicHistogram timeCopy = timeNS.copy(); //TODO dont need to copy to AtomicHistogram, non-atomic is ok
 		timeNS.reset(); //HACK
 
 		//https://www.mathsisfun.com/data/confidence-interval.html
-		var mean = timeCopy.getMean();
-		var Z = 0.9; //90%
-		var N = timeCopy.getTotalCount();
-		var confInterval = Z * timeCopy.getStdDeviation()/Math.sqrt(N) / mean;
+		double mean = timeCopy.getMean();
+		double Z = 0.9; //90%
+		long N = timeCopy.getTotalCount();
+		double confInterval = Z * timeCopy.getStdDeviation()/Math.sqrt(N) / mean;
 
 		return
 			Texts.timeStr(mean * N) + //total time, estimate

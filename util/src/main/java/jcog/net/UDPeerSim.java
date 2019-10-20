@@ -26,15 +26,15 @@ public class UDPeerSim {
     public UDPeerSim(int population) throws IOException {
 
         peer = new MyUDPeer[population];
-        var port = 10000;
-        for (var i = 0; i < population; i++)
+        int port = 10000;
+        for (int i = 0; i < population; i++)
             peer[i] = new MyUDPeer(port, i);
 
     }
 
 
     public void tellSome(int from, int payloadLength, int ttl) {
-        var msg = new byte[payloadLength];
+        byte[] msg = new byte[payloadLength];
         random.nextBytes(msg);
         peer[from].tellSome(msg , (byte)ttl );
     }
@@ -53,19 +53,19 @@ public class UDPeerSim {
     }
 
     public void pingRing(int depth) {
-        var p = peer.length;
-        for (var i = 0; i < p; i++) {
-            for (var d = 0; d < Math.min(p-1, depth); d++) {
+        int p = peer.length;
+        for (int i = 0; i < p; i++) {
+            for (int d = 0; d < Math.min(p-1, depth); d++) {
                 peer[i].ping(peer[(i + 1 + d) % p].port());
             }
         }
     }
     public void pingRandom(int num) {
-        var p = peer.length;
+        int p = peer.length;
 
-            for (var d = 0; d < num; d++) {
-                var i = random.nextInt(p);
-                var j = random.nextInt(p);
+            for (int d = 0; d < num; d++) {
+                int i = random.nextInt(p);
+                int j = random.nextInt(p);
                 if (i!=j)
                     peer[i].ping(peer[j].port());
             }
@@ -108,7 +108,7 @@ public class UDPeerSim {
             if (random.nextFloat() < packetLossRate.floatValue())
                 return;
 
-            var d = delay(addr, to, o.length());
+            long d = delay(addr, to, o.length());
             if (d > delayThreshold) {
                 sim.schedule(new TimerTask() {
                     @Override

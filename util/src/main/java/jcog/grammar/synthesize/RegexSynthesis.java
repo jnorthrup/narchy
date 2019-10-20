@@ -70,12 +70,12 @@ public class RegexSynthesis {
     }
 
     private static Maybe<AlternationPartialNode> getAlternationPartialNode(NodeData cur, Predicate<String> oracle) {
-        for (var i = 1; i <= cur.example.length() - 1; i++) {
-            var first = cur.example.substring(0, i);
-            var second = cur.example.substring(i);
+        for (int i = 1; i <= cur.example.length() - 1; i++) {
+            String first = cur.example.substring(0, i);
+            String second = cur.example.substring(i);
             if (GrammarSynthesis.getCheck(oracle, cur.context, getAlternationChecks(first, second))) {
-                var firstData = new NodeData(first, new Context(cur.context, "", second, "", ""));
-                var secondData = new NodeData(second, new Context(cur.context, first, "", "", ""));
+                NodeData firstData = new NodeData(first, new Context(cur.context, "", second, "", ""));
+                NodeData secondData = new NodeData(second, new Context(cur.context, first, "", "", ""));
                 Log.info("FOUND ALT: " + first + " ## " + second);
                 return new Maybe<>(new AlternationPartialNode(firstData, secondData));
             }
@@ -84,18 +84,18 @@ public class RegexSynthesis {
     }
 
     private static Maybe<RepetitionPartialNode> getRepetitionPartialNode(NodeData cur, Predicate<String> oracle, boolean isWholeStringRepeatable) {
-        for (var init = 0; init <= cur.example.length() - 1; init++) {
-            for (var len = cur.example.length() - init; len >= 1; len--) {
+        for (int init = 0; init <= cur.example.length() - 1; init++) {
+            for (int len = cur.example.length() - init; len >= 1; len--) {
                 if (len == cur.example.length() && !isWholeStringRepeatable) {
                     continue;
                 }
-                var start = cur.example.substring(0, init);
-                var rep = cur.example.substring(init, init + len);
-                var end = cur.example.substring(init + len);
+                String start = cur.example.substring(0, init);
+                String rep = cur.example.substring(init, init + len);
+                String end = cur.example.substring(init + len);
                 if (GrammarSynthesis.getCheck(oracle, cur.context, getRepetitionChecks(start, rep, end))) {
-                    var startData = new NodeData(start, new Context(cur.context, "", rep + end, "", end));
-                    var repData = new NodeData(rep, new Context(cur.context, start, end, start, end));
-                    var endData = new NodeData(end, new Context(cur.context, start + rep, "", start, ""));
+                    NodeData startData = new NodeData(start, new Context(cur.context, "", rep + end, "", end));
+                    NodeData repData = new NodeData(rep, new Context(cur.context, start, end, start, end));
+                    NodeData endData = new NodeData(end, new Context(cur.context, start + rep, "", start, ""));
                     Log.info("FOUND REP: " + rep + " ## " + start + " ## " + end);
                     return new Maybe<>(new RepetitionPartialNode(startData, repData, endData));
                 }
@@ -109,26 +109,26 @@ public class RegexSynthesis {
     }
 
     private static Maybe<Node> getAlternationNode(NodeData cur, Predicate<String> oracle) {
-        var maybe = getAlternationPartialNode(cur, oracle);
+        Maybe<AlternationPartialNode> maybe = getAlternationPartialNode(cur, oracle);
         if (!maybe.hasT()) {
             return new Maybe<>();
         }
-        var first = getNode(maybe.getT().first, oracle, new NodeType[]{NodeType.REPETITION}, true);
-        var second = getNode(maybe.getT().second, oracle, new NodeType[]{NodeType.ALTERNATION, NodeType.REPETITION}, true);
+        Node first = getNode(maybe.getT().first, oracle, new NodeType[]{NodeType.REPETITION}, true);
+        Node second = getNode(maybe.getT().second, oracle, new NodeType[]{NodeType.ALTERNATION, NodeType.REPETITION}, true);
         return new Maybe<>(new AlternationNode(cur, first, second));
     }
 
     static final NodeType[] emptyNodeTypes = {};
 
     private static Maybe<Node> getRepetitionNode(NodeData cur, Predicate<String> oracle, boolean isWholeStringRepeatable) {
-        var maybe = getRepetitionPartialNode(cur, oracle, isWholeStringRepeatable);
+        Maybe<RepetitionPartialNode> maybe = getRepetitionPartialNode(cur, oracle, isWholeStringRepeatable);
         if (!maybe.hasT()) {
             return new Maybe<>();
         }
 
-        var start = getNode(maybe.getT().start, oracle, emptyNodeTypes, true);
-        var rep = getNode(maybe.getT().rep, oracle, new NodeType[]{NodeType.ALTERNATION, NodeType.REPETITION}, false);
-        var end = getNode(maybe.getT().end, oracle, new NodeType[]{NodeType.REPETITION}, true);
+        Node start = getNode(maybe.getT().start, oracle, emptyNodeTypes, true);
+        Node rep = getNode(maybe.getT().rep, oracle, new NodeType[]{NodeType.ALTERNATION, NodeType.REPETITION}, false);
+        Node end = getNode(maybe.getT().end, oracle, new NodeType[]{NodeType.REPETITION}, true);
         return new Maybe<>(new RepetitionNode(cur, start, rep, end));
     }
 
@@ -137,16 +137,16 @@ public class RegexSynthesis {
     }
 
     private static Node getNode(NodeData cur, Predicate<String> oracle, NodeType[] types, boolean isWholeStringRepeatable) {
-        for (var type : types) {
+        for (NodeType type : types) {
             switch (type) {
                 case REPETITION:
-                    var nodeRep = getRepetitionNode(cur, oracle, isWholeStringRepeatable);
+                    Maybe<Node> nodeRep = getRepetitionNode(cur, oracle, isWholeStringRepeatable);
                     if (nodeRep.hasT()) {
                         return nodeRep.getT();
                     }
                     break;
                 case ALTERNATION:
-                    var nodeAlt = getAlternationNode(cur, oracle);
+                    Maybe<Node> nodeAlt = getAlternationNode(cur, oracle);
                     if (nodeAlt.hasT()) {
                         return nodeAlt.getT();
                     }

@@ -11,8 +11,8 @@ import java.util.function.Function;
 public final class StatePath extends FasterList<Context> {
 
     public static StatePath toRoot(Context here) {
-        var p = new StatePath(8);
-        var at = here;
+        StatePath p = new StatePath(8);
+        Context at = here;
         do {
             p.add(at);
         } while ((at = at.parent())!=null);
@@ -33,10 +33,10 @@ public final class StatePath extends FasterList<Context> {
     }
 
     private MatchPath match(Function<Context, String> pattern, boolean innerGlob) {
-        var s = this.size();
-        var m = new MatchPath(innerGlob ? s + (s-1) : s);
-        for (var i = 0; i < s; i++) {
-            var x = this.get(i);
+        int s = this.size();
+        MatchPath m = new MatchPath(innerGlob ? s + (s-1) : s);
+        for (int i = 0; i < s; i++) {
+            Context x = this.get(i);
             m.add(pattern.apply(x));
             if (innerGlob && i < s-1) m.add(MatchPath.STAR);
         }

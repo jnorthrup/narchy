@@ -126,14 +126,14 @@ public abstract class PrologLib implements Serializable {
     protected Term evalExpression(Term term) throws Throwable {
         if (term == null)
             return null;
-        var val = term.term();
+        Term val = term.term();
         if (val instanceof Struct) {
-            var t = (Struct) val;
-            var primitive = t.isPrimitive();
+            Struct t = (Struct) val;
+            boolean primitive = t.isPrimitive();
             if (!primitive && term != t) {
                 prolog.prims.identify(t, FUNCTOR);
             } else if (primitive) {
-                var bt = t.getPrimitive();
+                PrologPrim bt = t.getPrimitive();
                 if ((bt.type == FUNCTOR)) 
                     return bt.evalAsFunctor(t);
             }
@@ -170,19 +170,19 @@ public abstract class PrologLib implements Serializable {
      */
     public Map<Integer,List<PrologPrim>> primitives() {
         try {
-            var mlist = this.getClass().getMethods();
+            Method[] mlist = this.getClass().getMethods();
             Map<Integer,List<PrologPrim>> mapPrimitives = new HashMap<>();
             mapPrimitives.put(PrologPrim.DIRECTIVE, new FasterList<>());
             mapPrimitives.put(FUNCTOR, new FasterList<>());
             mapPrimitives.put(PrologPrim.PREDICATE, new FasterList<>());
 
 
-            for (var aMlist : mlist) {
-                var name = aMlist.getName();
+            for (Method aMlist : mlist) {
+                String name = aMlist.getName();
 
-                var clist = aMlist.getParameterTypes();
-                var rclass = aMlist.getReturnType();
-                var returnTypeName = rclass.getName();
+                Class<?>[] clist = aMlist.getParameterTypes();
+                Class<?> rclass = aMlist.getReturnType();
+                String returnTypeName = rclass.getName();
 
                 int type;
                 switch (returnTypeName) {
@@ -199,23 +199,29 @@ public abstract class PrologLib implements Serializable {
                         continue;
                 }
 
-                var index = name.lastIndexOf('_');
+                int index = name.lastIndexOf('_');
                 if (index != -1) {
                     try {
-                        var arity = Integer.parseInt(name.substring(index + 1));
+                        int arity = Integer.parseInt(name.substring(index + 1));
 
                         if (clist.length == arity) {
-                            var valid = IntStream.range(0, arity).allMatch(j -> Term.class.isAssignableFrom(clist[j]));
+                            boolean valid = true;
+                            for (int j = 0; j < arity; j++) {
+                                if (!Term.class.isAssignableFrom(clist[j])) {
+                                    valid = false;
+                                    break;
+                                }
+                            }
                             if (valid) {
-                                var rawName = name.substring(0, index);
-                                var key = rawName + '/' + arity;
-                                var prim = new PrologPrim(type, key, this, aMlist, arity);
+                                String rawName = name.substring(0, index);
+                                String key = rawName + '/' + arity;
+                                PrologPrim prim = new PrologPrim(type, key, this, aMlist, arity);
                                 mapPrimitives.get(type).add(prim);
 
 
                                 if (synonyms != null) {
                                     String[] stringFormat = {"directive", "predicate", "functor"};
-                                    for (var map : synonyms) {
+                                    for (String[] map : synonyms) {
                                         if (map[1].equals(rawName) && map[2].equals(stringFormat[type])) {
                                             key = map[0] + '/' + arity;
                                             prim = new PrologPrim(type, key, this, aMlist, arity);

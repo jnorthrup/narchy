@@ -75,7 +75,7 @@ public final class JOALSoundImpl implements Sound {
 		s_volume = Cvar.Get("s_volume", "0.7", Defines.CVAR_ARCHIVE);
 
 		al.alGenBuffers(buffers.length, buffers, 0);
-		var count = Channel.init(al, buffers);
+        int count = Channel.init(al, buffers);
 		Com.Printf("... using " + count + " channels\n");
 		al.alDistanceModel(ALConstants.AL_INVERSE_DISTANCE_CLAMPED);
 		Cmd.AddCommand("play", new xcommand_t() {
@@ -137,7 +137,7 @@ public final class JOALSoundImpl implements Sound {
      * @see jake2.sound.SoundImpl#RegisterSound(jake2.sound.sfx_t)
      */
     private void initBuffer(byte[] samples, int bufferId, int freq) {
-		var data = sfxDataBuffer.slice();
+        ByteBuffer data = sfxDataBuffer.slice();
         data.put(samples).flip();
         al.alBufferData(buffers[bufferId], ALConstants.AL_FORMAT_MONO16,
                 data, data.limit(), freq);
@@ -149,7 +149,7 @@ public final class JOALSoundImpl implements Sound {
 	
 	private static String alErrorString(){
 		int error;
-		var message = "";
+        String message = "";
 		if ((error = al.alGetError()) != ALConstants.AL_NO_ERROR) {
 			switch(error) {
 				case ALConstants.AL_INVALID_OPERATION: message = "invalid operation"; break;
@@ -177,7 +177,7 @@ public final class JOALSoundImpl implements Sound {
 		Cmd.RemoveCommand("soundinfo");
 
 		
-		for (var i = 0; i < num_sfx; i++) {
+		for (int i = 0; i < num_sfx; i++) {
 			if (known_sfx[i].name == null)
 				continue;
 			known_sfx[i].clear();
@@ -229,7 +229,7 @@ public final class JOALSoundImpl implements Sound {
 		
 		if (eax != null) {
 
-			var changeEnv = true;
+            boolean changeEnv = true;
 			if (currentEnv == -1) {
 				eaxEnv.put(0, EAXConstants.EAX_ENVIRONMENT_UNDERWATER);
 				eax.EAXSet(EAX.LISTENER, EAXConstants.DSPROPERTY_EAXLISTENER_ENVIRONMENT | EAXConstants.DSPROPERTY_EAXLISTENER_DEFERRED, 0, eaxEnv, 4);
@@ -291,7 +291,7 @@ public final class JOALSoundImpl implements Sound {
 	 */
 	@Override
     public sfx_t RegisterSound(String name) {
-		var sfx = FindName(name, true);
+        sfx_t sfx = FindName(name, true);
 		sfx.registration_sequence = s_registration_sequence;
 
 		if (!s_registering)
@@ -334,9 +334,9 @@ public final class JOALSoundImpl implements Sound {
 
 
         String model = null;
-		var n = Defines.CS_PLAYERSKINS + ent.number - 1;
+        int n = Defines.CS_PLAYERSKINS + ent.number - 1;
 		if (Globals.cl.configstrings[n] != null) {
-			var p = Globals.cl.configstrings[n].indexOf('\\');
+            int p = Globals.cl.configstrings[n].indexOf('\\');
 			if (p >= 0) {
 				p++;
 				model = Globals.cl.configstrings[n].substring(p);
@@ -351,9 +351,9 @@ public final class JOALSoundImpl implements Sound {
 			model = "male";
 
 
-		var sexedFilename = "#players/" + model + '/' + base.substring(1);
+        String sexedFilename = "#players/" + model + '/' + base.substring(1);
 
-		var sfx = FindName(sexedFilename, false);
+        sfx_t sfx = FindName(sexedFilename, false);
 
 		if (sfx != null) return sfx;
 		
@@ -367,18 +367,18 @@ public final class JOALSoundImpl implements Sound {
 		}
 	    
 		if ("female".equalsIgnoreCase(model)) {
-			var femaleFilename = "player/female/" + base.substring(1);
+            String femaleFilename = "player/female/" + base.substring(1);
 			if (FS.FileLength("sound/" + femaleFilename) > 0)
 			    return AliasName(sexedFilename, femaleFilename);
 		}
 
-		var maleFilename = "player/male/" + base.substring(1);
+        String maleFilename = "player/male/" + base.substring(1);
 		return AliasName(sexedFilename, maleFilename);
 	}
 
 	static final sfx_t[] known_sfx = new sfx_t[MAX_SFX];
 	static {
-		for (var i = 0; i< known_sfx.length; i++)
+		for (int i = 0; i< known_sfx.length; i++)
 			known_sfx[i] = new sfx_t();
 	}
 	static int num_sfx;
@@ -415,7 +415,7 @@ public final class JOALSoundImpl implements Sound {
 			num_sfx++;
 		}
 
-		var sfx = known_sfx[i];
+        sfx_t sfx = known_sfx[i];
 		sfx.clear();
 		sfx.name = name;
 		sfx.registration_sequence = s_registration_sequence;
@@ -446,11 +446,11 @@ public final class JOALSoundImpl implements Sound {
 			num_sfx++;
 		}
 
-		var sfx = known_sfx[i];
+        sfx_t sfx = known_sfx[i];
 		sfx.clear();
 		sfx.name = aliasname;
 		sfx.registration_sequence = s_registration_sequence;
-		var s = truename;
+        String s = truename;
         sfx.truename = s;
 		
 		sfx.bufferId = i;
@@ -465,7 +465,7 @@ public final class JOALSoundImpl implements Sound {
 	*/
 	public sfxcache_t LoadSound(sfx_t s) {
 	    if (s.isCached) return s.cache;
-		var sc = WaveLoader.LoadSound(s);
+        sfxcache_t sc = WaveLoader.LoadSound(s);
 		if (sc != null) {
 			initBuffer(sc.data, s.bufferId, sc.speed);
 		    s.isCached = true;
@@ -480,7 +480,7 @@ public final class JOALSoundImpl implements Sound {
 	 */
 	@Override
     public void StartLocalSound(String sound) {
-		var sfx = RegisterSound(sound);
+        sfx_t sfx = RegisterSound(sound);
 		if (sfx == null) {
 			Com.Printf("S_StartLocalSound: can't cache " + sound + '\n');
 			return;
@@ -506,9 +506,9 @@ public final class JOALSoundImpl implements Sound {
         
         
         if (format == ALConstants.AL_FORMAT_MONO8) {
-			var sampleData = streamBuffer;
-            for (var i = 0; i < samples; i++) {
-				var value = (data.get(i) & 0xFF) - 128;
+            ShortBuffer sampleData = streamBuffer;
+            for (int i = 0; i < samples; i++) {
+                int value = (data.get(i) & 0xFF) - 128;
                 sampleData.put(i, (short) value);
             }
             format = ALConstants.AL_FORMAT_MONO16;
@@ -533,9 +533,9 @@ public final class JOALSoundImpl implements Sound {
 	*/
 
 	void Play() {
-		var i = 1;
+        int i = 1;
         while (i < Cmd.Argc()) {
-			var name = Cmd.Argv(i);
+            String name = Cmd.Argv(i);
             if (name.indexOf('.') == -1)
 				name += ".wav";
 
@@ -547,14 +547,14 @@ public final class JOALSoundImpl implements Sound {
 
 	static void SoundList() {
 
-		var total = 0;
-		for (var i = 0; i < num_sfx; i++) {
-			var sfx = known_sfx[i];
+        int total = 0;
+		for (int i = 0; i < num_sfx; i++) {
+            sfx_t sfx = known_sfx[i];
             if (sfx.registration_sequence == 0)
 				continue;
-			var sc = sfx.cache;
+            sfxcache_t sc = sfx.cache;
             if (sc != null) {
-				var size = sc.length * sc.width * (sc.stereo + 1);
+                int size = sc.length * sc.width * (sc.stereo + 1);
                 total += size;
 				if (sc.loopstart >= 0)
 					Com.Printf("L");

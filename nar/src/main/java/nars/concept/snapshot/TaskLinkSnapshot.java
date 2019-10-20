@@ -39,9 +39,9 @@ public final class TaskLinkSnapshot {
 
 		links.commit();
 
-		var xh = x.hashCodeShort();
-		for (var t : items) {
-			var y = t.other(x, xh, reverse);
+        int xh = x.hashCodeShort();
+		for (TaskLink t : items) {
+            Term y = t.other(x, xh, reverse);
 			if (y != null)
 				links.put(new HashedPLink<>(y, t.pri()));
 		}
@@ -49,13 +49,13 @@ public final class TaskLinkSnapshot {
 
 
 	public @Nullable Term sample(Predicate<Term> filter, byte punc, Random rng) {
-		@Nullable var ll = links.items();
-		var lls = Math.min(links.size(), ll.length);
+        @Nullable Object[] ll = links.items();
+        int lls = Math.min(links.size(), ll.length);
 		if (lls == 0)
 			return null;
 		else {
 
-			var li = Roulette.selectRouletteCached(lls, i -> {
+            int li = Roulette.selectRouletteCached(lls, i -> {
 
 				PLink<Term> x = (PLink) ll[i];
 				return x != null && filter.test(x.id) ?
@@ -68,7 +68,7 @@ public final class TaskLinkSnapshot {
 
 			}, rng::nextFloat);
 
-			var l = li >= 0 ? (PLink<Term>) ll[li] : null;
+            PLink<Term> l = li >= 0 ? (PLink<Term>) ll[li] : null;
 
 			return l != null ? l.id : null;
 		}

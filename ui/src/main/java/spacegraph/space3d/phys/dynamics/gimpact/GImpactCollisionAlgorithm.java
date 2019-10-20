@@ -89,7 +89,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 
 		if (body0.shape().getShapeType()== BroadphaseNativeType.GIMPACT_SHAPE_PROXYTYPE)
 		{
-			var gimpactshape0 = (GImpactShape) body0.shape();
+            GImpactShape gimpactshape0 = (GImpactShape) body0.shape();
 
             if( body1.shape().getShapeType()== BroadphaseNativeType.GIMPACT_SHAPE_PROXYTYPE )
 			{
@@ -113,9 +113,9 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 	
 	private void gimpact_vs_gimpact(Collidable body0, Collidable body1, GImpactShape shape0, GImpactShape shape1) {
 		if (shape0.getGImpactShapeType() == ShapeType.TRIMESH_SHAPE) {
-			var meshshape0 = (GImpactMeshShape) shape0;
+            GImpactMeshShape meshshape0 = (GImpactMeshShape) shape0;
 
-			var part0 = meshshape0.getMeshPartCount();
+            int part0 = meshshape0.getMeshPartCount();
 
 			while ((part0--) != 0) {
 				gimpact_vs_gimpact(body0, body1, meshshape0.getMeshPart(part0), shape1);
@@ -127,8 +127,8 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		}
 
 		if (shape1.getGImpactShapeType() == ShapeType.TRIMESH_SHAPE) {
-			var meshshape1 = (GImpactMeshShape) shape1;
-			var part1 = meshshape1.getMeshPartCount();
+            GImpactMeshShape meshshape1 = (GImpactMeshShape) shape1;
+            int part1 = meshshape1.getMeshPartCount();
 
 			while ((part1--) != 0) {
 				gimpact_vs_gimpact(body0, body1, shape0, meshshape1.getMeshPart(part1));
@@ -139,10 +139,10 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 			return;
 		}
 
-		var orgtrans0 = body0.getWorldTransform(new Transform());
-		var orgtrans1 = body1.getWorldTransform(new Transform());
+        Transform orgtrans0 = body0.getWorldTransform(new Transform());
+        Transform orgtrans1 = body1.getWorldTransform(new Transform());
 
-		var pairset = tmpPairset;
+        CopyOnWriteArrayList<Pair<Integer, Integer>> pairset = tmpPairset;
 		pairset.clear();
 
 		gimpact_vs_gimpact_find_pairs(orgtrans0, orgtrans1, shape0, shape1, pairset);
@@ -153,8 +153,8 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		if (shape0.getGImpactShapeType() == ShapeType.TRIMESH_SHAPE_PART &&
 		    shape1.getGImpactShapeType() == ShapeType.TRIMESH_SHAPE_PART) {
 
-			var shapepart0 = (GImpactMeshShape.GImpactMeshShapePart) shape0;
-			var shapepart1 = (GImpactMeshShape.GImpactMeshShapePart) shape1;
+            GImpactMeshShape.GImpactMeshShapePart shapepart0 = (GImpactMeshShape.GImpactMeshShapePart) shape0;
+            GImpactMeshShape.GImpactMeshShapePart shapepart1 = (GImpactMeshShape.GImpactMeshShapePart) shape1;
 
 			
 			
@@ -171,21 +171,21 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		shape0.lockChildShapes();
 		shape1.lockChildShapes();
 
-		var retriever0 = new GIM_ShapeRetriever(shape0);
-		var retriever1 = new GIM_ShapeRetriever(shape1);
+        GIM_ShapeRetriever retriever0 = new GIM_ShapeRetriever(shape0);
+        GIM_ShapeRetriever retriever1 = new GIM_ShapeRetriever(shape1);
 
-		var child_has_transform0 = shape0.childrenHasTransform();
-		var child_has_transform1 = shape1.childrenHasTransform();
+        boolean child_has_transform0 = shape0.childrenHasTransform();
+        boolean child_has_transform1 = shape1.childrenHasTransform();
 
-		var tmpTrans = new Transform();
+        Transform tmpTrans = new Transform();
 
-		var i = pairset.size();
+        int i = pairset.size();
 		while ((i--) != 0) {
-			var pair = pairset.get(i);
+            Pair<Integer, Integer> pair = pairset.get(i);
 			triface0 = pair.getFirst();
 			triface1 = pair.getSecond();
-			var colshape0 = retriever0.getChildShape(triface0);
-			var colshape1 = retriever1.getChildShape(triface1);
+            CollisionShape colshape0 = retriever0.getChildShape(triface0);
+            CollisionShape colshape1 = retriever1.getChildShape(triface1);
 
 			if (child_has_transform0) {
 				tmpTrans.mul(orgtrans0, shape0.getChildTransform(triface0));
@@ -215,10 +215,10 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 	}
 
 	public void gimpact_vs_shape(Collidable body0, Collidable body1, GImpactShape shape0, CollisionShape shape1, boolean swapped) {
-		var s = shape0.getGImpactShapeType();
+        ShapeType s = shape0.getGImpactShapeType();
 		if (s == ShapeType.TRIMESH_SHAPE) {
-			var meshshape0 = (GImpactMeshShape) shape0;
-			var part0 = meshshape0.getMeshPartCount();
+            GImpactMeshShape meshshape0 = (GImpactMeshShape) shape0;
+            int part0 = meshshape0.getMeshPartCount();
 
 			while ((part0--) != 0) {
 				gimpact_vs_shape(body0,
@@ -234,54 +234,54 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		
 		if (s == ShapeType.TRIMESH_SHAPE_PART &&
 				shape1.getShapeType() == BroadphaseNativeType.STATIC_PLANE_PROXYTYPE) {
-			var shapepart = (GImpactMeshShape.GImpactMeshShapePart) shape0;
-			var planeshape = (StaticPlaneShape) shape1;
+            GImpactMeshShape.GImpactMeshShapePart shapepart = (GImpactMeshShape.GImpactMeshShapePart) shape0;
+            StaticPlaneShape planeshape = (StaticPlaneShape) shape1;
 			gimpacttrimeshpart_vs_plane_collision(body0, body1, shapepart, planeshape, swapped);
 			return;
 		}
 		
 
 		if (shape1.isCompound()) {
-			var compoundshape = (CompoundShape) shape1;
+            CompoundShape compoundshape = (CompoundShape) shape1;
 			gimpact_vs_compoundshape(body0, body1, shape0, compoundshape, swapped);
 			return;
 		}
 		else if (shape1.isConcave()) {
-			var concaveshape = (ConcaveShape) shape1;
+            ConcaveShape concaveshape = (ConcaveShape) shape1;
 			gimpact_vs_concave(body0, body1, shape0, concaveshape, swapped);
 			return;
 		}
 
-		var orgtrans0 = body0.getWorldTransform(new Transform());
-		var orgtrans1 = body1.getWorldTransform(new Transform());
+        Transform orgtrans0 = body0.getWorldTransform(new Transform());
+        Transform orgtrans1 = body1.getWorldTransform(new Transform());
 
-		var collided_results = new IntArrayList();
+        IntArrayList collided_results = new IntArrayList();
 
 		gimpact_vs_shape_find_pairs(orgtrans0, orgtrans1, shape0, shape1, collided_results);
 
-		var cr = collided_results.size();
+        int cr = collided_results.size();
 		if (cr == 0) {
 			return;
 		}
 		shape0.lockChildShapes();
 
-		var retriever0 = new GIM_ShapeRetriever(shape0);
+        GIM_ShapeRetriever retriever0 = new GIM_ShapeRetriever(shape0);
 
-		var child_has_transform0 = shape0.childrenHasTransform();
+        boolean child_has_transform0 = shape0.childrenHasTransform();
 
-		var tmpTrans = new Transform();
+        Transform tmpTrans = new Transform();
 
-		var i = cr;
+        int i = cr;
 
 		while ((i--) != 0) {
-			var child_index = collided_results.get(i);
+            int child_index = collided_results.get(i);
 			if (swapped) {
 				triface1 = child_index;
 			}
 			else {
 				triface0 = child_index;
 			}
-			var colshape0 = retriever0.getChildShape(child_index);
+            CollisionShape colshape0 = retriever0.getChildShape(child_index);
 
 			if (child_has_transform0) {
 				tmpTrans.mul(orgtrans0, shape0.getChildTransform(child_index));
@@ -307,13 +307,13 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 	}
 	
 	private void gimpact_vs_compoundshape(Collidable body0, Collidable body1, GImpactShape shape0, CompoundShape shape1, boolean swapped) {
-		var orgtrans1 = body1.getWorldTransform(new Transform());
-		var childtrans1 = new Transform();
-		var tmpTrans = new Transform();
+        Transform orgtrans1 = body1.getWorldTransform(new Transform());
+        Transform childtrans1 = new Transform();
+        Transform tmpTrans = new Transform();
 
-		var i = shape1.size();
+        int i = shape1.size();
 		while ((i--) != 0) {
-			var colshape1 = shape1.getChildShape(i);
+            CollisionShape colshape1 = shape1.getChildShape(i);
 			childtrans1.mul(orgtrans1, shape1.getChildTransform(i, tmpTrans));
 
 			body1.transform(childtrans1);
@@ -329,7 +329,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 	
 	private void gimpact_vs_concave(Collidable body0, Collidable body1, GImpactShape shape0, ConcaveShape shape1, boolean swapped) {
 
-		var tricallback = new GImpactTriangleCallback();
+        GImpactTriangleCallback tricallback = new GImpactTriangleCallback();
 		tricallback.algorithm = this;
 		tricallback.body0 = body0;
 		tricallback.body1 = body1;
@@ -338,7 +338,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		tricallback.margin = shape1.getMargin();
 
 
-		var gimpactInConcaveSpace = body1.transform; /*new Transform();
+        Transform gimpactInConcaveSpace = body1.transform; /*new Transform();
 
 		body1.getWorldTransform(gimpactInConcaveSpace);*/
 		gimpactInConcaveSpace.invert();
@@ -403,7 +403,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
     private CollisionAlgorithm newAlgorithm(Collidable body0, Collidable body1) {
 		checkManifold(body0, body1);
 
-		var convex_algorithm = intersecter.findAlgorithm(body0, body1, manifoldPtr);
+        CollisionAlgorithm convex_algorithm = intersecter.findAlgorithm(body0, body1, manifoldPtr);
 		return convex_algorithm;
 	}
 	
@@ -427,25 +427,25 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 	*/
 	
 	private void collide_sat_triangles(Collidable body0, Collidable body1, GImpactMeshShape.GImpactMeshShapePart shape0, GImpactMeshShape.GImpactMeshShapePart shape1, CopyOnWriteArrayList<Pair<Integer, Integer>> pairs, int pair_count) {
-		var tmp = new v3();
+        v3 tmp = new v3();
 
-		var orgtrans0 = body0.transform;
-		var orgtrans1 = body1.transform;
+        Transform orgtrans0 = body0.transform;
+        Transform orgtrans1 = body1.transform;
 
-		var ptri0 = new PrimitiveTriangle();
-		var ptri1 = new PrimitiveTriangle();
-		var contact_data = new TriangleContact();
+        PrimitiveTriangle ptri0 = new PrimitiveTriangle();
+        PrimitiveTriangle ptri1 = new PrimitiveTriangle();
+        TriangleContact contact_data = new TriangleContact();
 
 		shape0.lockChildShapes();
 		shape1.lockChildShapes();
 
-		var pair_pointer = 0;
+        int pair_pointer = 0;
 
-		var breakingThresh = manifoldPtr.getContactBreakingThreshold();
+        float breakingThresh = manifoldPtr.getContactBreakingThreshold();
 		while ((pair_count--) != 0) {
 
 
-			var pair = pairs.get(pair_pointer++);
+            Pair<Integer, Integer> pair = pairs.get(pair_pointer++);
 			triface0 = pair.getFirst();
 			triface1 = pair.getSecond();
 
@@ -467,7 +467,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 			if (ptri0.overlap_test_conservative(ptri1)) {
 				if (ptri0.find_triangle_collision_clip_method(ptri1, contact_data)) {
 
-					var j = contact_data.point_count;
+                    int j = contact_data.point_count;
 					while ((j--) != 0) {
 						tmp.x = contact_data.separating_normal.x;
 						tmp.y = contact_data.separating_normal.y;
@@ -491,13 +491,13 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 	}
 
 	private void shape_vs_shape_collision(Collidable body0, Collidable body1, CollisionShape shape0, CollisionShape shape1) {
-		var tmpShape0 = body0.shape();
-		var tmpShape1 = body1.shape();
+        CollisionShape tmpShape0 = body0.shape();
+        CollisionShape tmpShape1 = body1.shape();
 
 		body0.internalSetTemporaryCollisionShape(shape0);
 		body1.internalSetTemporaryCollisionShape(shape1);
 
-		var algor = newAlgorithm(body0, body1);
+        CollisionAlgorithm algor = newAlgorithm(body0, body1);
         
 
         resultOut.setShapeIdentifiers(part0, triface0, part1, triface1);
@@ -512,8 +512,8 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 	}
 	
 	private void convex_vs_convex_collision(Collidable body0, Collidable body1, CollisionShape shape0, CollisionShape shape1) {
-		var tmpShape0 = body0.shape();
-		var tmpShape1 = body1.shape();
+        CollisionShape tmpShape0 = body0.shape();
+        CollisionShape tmpShape1 = body1.shape();
 
 		body0.internalSetTemporaryCollisionShape(shape0);
 		body1.internalSetTemporaryCollisionShape(shape1);
@@ -532,14 +532,14 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 			GImpactBvh.find_collision(shape0.getBoxSet(), trans0, shape1.getBoxSet(), trans1, pairset);
 		}
 		else {
-			var boxshape0 = new BoxCollision.AABB();
-			var boxshape1 = new BoxCollision.AABB();
-			var i = shape0.getNumChildShapes();
+            BoxCollision.AABB boxshape0 = new BoxCollision.AABB();
+            BoxCollision.AABB boxshape1 = new BoxCollision.AABB();
+            int i = shape0.getNumChildShapes();
 
 			while ((i--) != 0) {
 				shape0.getChildAabb(i, trans0, boxshape0.min, boxshape0.max);
 
-				var j = shape1.getNumChildShapes();
+                int j = shape1.getNumChildShapes();
 				while ((j--) != 0) {
 					shape1.getChildAabb(i, trans1, boxshape1.min, boxshape1.max);
 
@@ -552,10 +552,10 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 	}
 
 	private static void gimpact_vs_shape_find_pairs(Transform trans0, Transform trans1, GImpactShape shape0, CollisionShape shape1, IntArrayList collided_primitives) {
-		var boxshape = new BoxCollision.AABB();
+        BoxCollision.AABB boxshape = new BoxCollision.AABB();
 
 		if (shape0.hasBoxSet()) {
-			var trans1to0 = new Transform();
+            Transform trans1to0 = new Transform();
 			trans1to0.invert(trans0);
 			trans1to0.mul(trans1);
 
@@ -566,8 +566,8 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		else {
 			shape1.getAabb(trans1, boxshape.min, boxshape.max);
 
-			var boxshape0 = new BoxCollision.AABB();
-			var i = shape0.getNumChildShapes();
+            BoxCollision.AABB boxshape0 = new BoxCollision.AABB();
+            int i = shape0.getNumChildShapes();
 
 			while ((i--) != 0) {
 				shape0.getChildAabb(i, trans0, boxshape0.min, boxshape0.max);
@@ -580,15 +580,15 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 	}
 	
 	private void gimpacttrimeshpart_vs_plane_collision(Collidable body0, Collidable body1, GImpactMeshShape.GImpactMeshShapePart shape0, StaticPlaneShape shape1, boolean swapped) {
-		var orgtrans0 = body0.transform;
-		var orgtrans1 = body1.transform;
+        Transform orgtrans0 = body0.transform;
+        Transform orgtrans1 = body1.transform;
 
-		var planeshape = shape1;
-		var plane = new Vector4f();
+        StaticPlaneShape planeshape = shape1;
+        Vector4f plane = new Vector4f();
 		PlaneShape.get_plane_equation_transformed(planeshape, orgtrans1, plane);
 
 
-		var tribox = new BoxCollision.AABB();
+        BoxCollision.AABB tribox = new BoxCollision.AABB();
 		shape0.getAabb(orgtrans0, tribox.min, tribox.max);
 		tribox.increment_margin(planeshape.getMargin());
 
@@ -597,19 +597,19 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		}
 		shape0.lockChildShapes();
 
-		var margin = shape0.getMargin() + planeshape.getMargin();
+        float margin = shape0.getMargin() + planeshape.getMargin();
 
-		var vertex = new v3();
+        v3 vertex = new v3();
 
-		var tmp = new v3();
+        v3 tmp = new v3();
 
-		var vi = shape0.getVertexCount();
-		var breakingThresh = manifoldPtr.getContactBreakingThreshold();
+        int vi = shape0.getVertexCount();
+        float breakingThresh = manifoldPtr.getContactBreakingThreshold();
 		while ((vi--) != 0) {
 			shape0.getVertex(vi, vertex);
 			orgtrans0.transform(vertex);
 
-			var distance = VectorUtil.dot3(vertex, plane) - plane.w - margin;
+            float distance = VectorUtil.dot3(vertex, plane) - plane.w - margin;
 
 			if (distance < 0f)
 			{
@@ -678,13 +678,13 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 	 * Use this function for register the algorithm externally.
 	 */
 	public static void registerAlgorithm(DefaultIntersecter dispatcher) {
-		var createFunc = new CreateFunc();
+        CreateFunc createFunc = new CreateFunc();
 
-		for (var i = 0; i< BroadphaseNativeType.MAX_BROADPHASE_COLLISION_TYPES.ordinal(); i++) {
+		for (int i = 0; i< BroadphaseNativeType.MAX_BROADPHASE_COLLISION_TYPES.ordinal(); i++) {
 			dispatcher.registerCollisionCreateFunc(BroadphaseNativeType.GIMPACT_SHAPE_PROXYTYPE.ordinal(), i, createFunc);
 		}
 
-		for (var i = 0; i< BroadphaseNativeType.MAX_BROADPHASE_COLLISION_TYPES.ordinal(); i++) {
+		for (int i = 0; i< BroadphaseNativeType.MAX_BROADPHASE_COLLISION_TYPES.ordinal(); i++) {
 			dispatcher.registerCollisionCreateFunc(i, BroadphaseNativeType.GIMPACT_SHAPE_PROXYTYPE.ordinal(), createFunc);
 		}
 	}
@@ -693,7 +693,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 
 		@Override
 		public CollisionAlgorithm createCollisionAlgorithm(CollisionAlgorithmConstructionInfo ci, Collidable body0, Collidable body1) {
-			var algo =new GImpactCollisionAlgorithm();
+            GImpactCollisionAlgorithm algo =new GImpactCollisionAlgorithm();
 			algo.init(ci, body0, body1);
 			return algo;
 		}

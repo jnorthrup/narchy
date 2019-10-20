@@ -57,16 +57,16 @@ public class Double2D implements HyperPoint, Comparable<Double2D> {
 
     @Override
     public double distance(HyperPoint p) {
-        var p2 = (Double2D) p;
+        Double2D p2 = (Double2D) p;
 
-        var dx = p2.x - x;
-        var dy = p2.y - y;
+        double dx = p2.x - x;
+        double dy = p2.y - y;
         return Math.sqrt(dx * dx + dy * dy);
     }
 
     @Override
     public double distance(HyperPoint p, int d) {
-        var p2 = (Double2D) p;
+        Double2D p2 = (Double2D) p;
         switch (d) {
             case 0:
                 return Math.abs(p2.x - x);
@@ -87,7 +87,7 @@ public class Double2D implements HyperPoint, Comparable<Double2D> {
         if (this == o) return true;
         if (!(o instanceof Double2D)) return false;
 
-        var double2D = (Double2D) o;
+        Double2D double2D = (Double2D) o;
 
         if (Double.compare(double2D.x, x) != 0) return false;
         return Double.compare(double2D.y, y) == 0;
@@ -95,8 +95,8 @@ public class Double2D implements HyperPoint, Comparable<Double2D> {
 
     @Override
     public int hashCode() {
-        var temp = Double.doubleToLongBits(x);
-        var result = (int) (temp ^ (temp >>> 32));
+        long temp = Double.doubleToLongBits(x);
+        int result = (int) (temp ^ (temp >>> 32));
         temp = Double.doubleToLongBits(y);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
@@ -104,7 +104,7 @@ public class Double2D implements HyperPoint, Comparable<Double2D> {
 
     @Override
     public int compareTo( Double2D o) {
-        var a = Double.compare(x, o.x);
+        int a = Double.compare(x, o.x);
         if (a != 0) return a;
         return Double.compare(y, o.y);
     }

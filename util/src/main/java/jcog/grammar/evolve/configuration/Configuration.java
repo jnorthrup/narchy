@@ -100,7 +100,7 @@ public class Configuration {
       
         this.initNodeFactory();
 
-        var terminalSet = this.nodeFactory.getTerminalSet();
+        List<Leaf> terminalSet = this.nodeFactory.getTerminalSet();
 
         
         Collections.addAll(terminalSet,
@@ -435,19 +435,19 @@ public class Configuration {
     }    
     
     public final void initNodeFactory() {
-        var factory = new NodeFactory();
-        var terminals = factory.getTerminalSet();
+        NodeFactory factory = new NodeFactory();
+        List<Leaf> terminals = factory.getTerminalSet();
 
-        for (var c : constants) {
+        for (String c : constants) {
             terminals.add(new Constant(c));
         }
 
-        for (var s : ranges) {
+        for (String s : ranges) {
             terminals.add(new RegexRange(s));
         }
 
-        var functions = factory.getFunctionSet();
-        for (var o : operators) {
+        List<Node> functions = factory.getFunctionSet();
+        for (String o : operators) {
             try {
                 functions.add(buildOperatorInstance(o));
             } catch (ClassNotFoundException | IllegalAccessException | InstantiationException ex) {
@@ -459,8 +459,8 @@ public class Configuration {
     }
     
     private static Node buildOperatorInstance(String o) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-        var operatorClass = Class.forName(o).asSubclass(Node.class);
-        var operator = operatorClass.newInstance();
+        Class<? extends Node> operatorClass = Class.forName(o).asSubclass(Node.class);
+        Node operator = operatorClass.newInstance();
         return operator;
     }
     
@@ -471,8 +471,8 @@ public class Configuration {
      */
     public void updateObjective(String objectiveClass) {
         try {
-            var operatorClass = Class.forName(objectiveClass).asSubclass(Objective.class);
-            var operator = operatorClass.newInstance();
+            Class<? extends Objective> operatorClass = Class.forName(objectiveClass).asSubclass(Objective.class);
+            Objective operator = operatorClass.newInstance();
             this.objective = operator;
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
             LOG.log(Level.SEVERE, "Unable to create required objective: " + objectiveClass, ex);

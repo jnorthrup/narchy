@@ -2,6 +2,7 @@ package nars.derive.action.op;
 
 import jcog.Util;
 import jcog.pri.ScalarValue;
+import jcog.signal.meter.Use;
 import nars.$;
 import nars.NAL;
 import nars.NAR;
@@ -75,7 +76,7 @@ public class Taskify extends ProxyTerm {
             //if ((d.concPunc==QUESTION || d.concPunc==QUEST)  && !VarIndep.validIndep(y, true)) {
             if (!VarIndep.validIndep(y, true)) {
                 //convert orphaned indep vars to query/dep variables
-                var punc = d.punc;
+                byte punc = d.punc;
                 y = y.transform(
                         (punc == QUESTION || punc == QUEST) ?
                                 VariableTransform.indepToQueryVar
@@ -94,18 +95,18 @@ public class Taskify extends ProxyTerm {
     private @Nullable Task taskTemporal(Term x, Derivation d) {
 
         Pair<Term, long[]> o;
-        try (var __ = d.nar.emotion.derive_E_Run3_Taskify_1_Occurrify.time()) {
+        try (Use.SafeAutocloseable __ = d.nar.emotion.derive_E_Run3_Taskify_1_Occurrify.time()) {
             o = occurrify(x, d);
         }
         if (o == null)
             return null;
 
-        var occ = o.getTwo();
+        long[] occ = o.getTwo();
         return task(o.getOne(), occ[0], occ[1], d);
     }
 
     private @Nullable Pair<Term, long[]> occurrify(Term x, Derivation d) {
-        var timing = time.occurrence(x, d);
+        Pair<Term, long[]> timing = time.occurrence(x, d);
         if (timing == null) {
             if (NAL.test.DEBUG_OCCURRIFY)
                 throw new TermException("occurify failure:\n" + d + '\n' + d.occ, x);
@@ -116,16 +117,16 @@ public class Taskify extends ProxyTerm {
         }
 
 
-        var occ = timing.getTwo();
+        long[] occ = timing.getTwo();
         assertOccValid(d, occ);
 
-        var y = timing.getOne();
+        Term y = timing.getOne();
 
         if (NAL.derive.DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL && (d.punc == BELIEF || d.punc == GOAL)) {
             if (DerivationFailure.failure(y, d.punc)) {
 
                 //as a last resort, try forming a question from the remains
-                var qPunc = d.punc == BELIEF ? QUESTION : QUEST;
+                byte qPunc = d.punc == BELIEF ? QUESTION : QUEST;
                 d.punc = qPunc;
                 if (DerivationFailure.failure(y, d) == null) {
                     d.punc = qPunc;
@@ -174,20 +175,20 @@ public class Taskify extends ProxyTerm {
      */
     private @Nullable Task task(Term x0, long start, long end, Derivation d) {
 
-        var punc = d.punc;
+        byte punc = d.punc;
         if (punc == 0)
             throw new RuntimeException("no punctuation assigned");
 
-        var z = postFilter(x0, d);
+        Term z = postFilter(x0, d);
 
         /** un-anon */
-        var x1 = d.anon.get(z);
+        Term x1 = d.anon.get(z);
         if (x1 == null)
             throw new NullPointerException("could not un-anonymize " + z + " with " + d.anon);
 
-        var nar = d.nar;
+        NAR nar = d.nar;
 
-        var x = Task.taskTerm(x1, punc, !NAL.test.DEBUG_EXTRA);
+        Term x = Task.taskTerm(x1, punc, !NAL.test.DEBUG_EXTRA);
         if (x == null) {
             nar.emotion.deriveFailTaskify.increment();
             spam(d, NAL.derive.TTL_COST_DERIVE_TASK_FAIL);
@@ -213,7 +214,7 @@ public class Taskify extends ProxyTerm {
 //            }
 //        }
 
-        var neg = x instanceof Neg;
+        boolean neg = x instanceof Neg;
 
 
         Truth tru;
@@ -236,12 +237,12 @@ public class Taskify extends ProxyTerm {
         if (start != ETERNAL) {
             assert (start <= end) : "reversed occurrence: " + start + ".." + end;
 
-            var dither =
+            int dither =
                 d.ditherDT;
 
-            var dur =
+            int dur =
                 d.unify.dtTolerance;
-            var belowDur = dur - (end - start);
+            long belowDur = dur - (end - start);
             if (belowDur >= 2) {
                 //expand to perceptual dur since this is used in unification
                 //TODO corresponding evidence dilution
@@ -276,13 +277,13 @@ public class Taskify extends ProxyTerm {
         }
 
 
-        var t = //Task.tryTask(x, punc, tru, (C, tr) -> {
+        DerivedTask t = //Task.tryTask(x, punc, tru, (C, tr) -> {
                 //return
                 NAL.DEBUG ?
                         new DebugDerivedTask(x, punc, tru, S, E, d) :
                         new DerivedTask(x, punc, tru, d.time, S, E, d.evidence());
 
-        var priority = d.x.derivePri.pri(t, d);
+        float priority = d.x.derivePri.pri(t, d);
         if (priority != priority) {
             nar.emotion.deriveFailPrioritize.increment();
             spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
@@ -335,7 +336,7 @@ public class Taskify extends ProxyTerm {
     }
 
     public final Task task(Term x, Derivation d) {
-        var y = d.temporal || x.hasXternal() /*Occurrify.temporal(y)*/ ?
+        Task y = d.temporal || x.hasXternal() /*Occurrify.temporal(y)*/ ?
             taskTemporal(x, d) : task(x, ETERNAL, ETERNAL, d);
 
         if (y!=null)

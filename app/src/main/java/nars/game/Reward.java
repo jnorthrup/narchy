@@ -77,8 +77,8 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
 
     public void setDefault(PreciseTruth t) {
-		var n = this.nar();
-        for (var c : this) {
+        NAR n = this.nar();
+        for (Concept c : this) {
             //TODO assert that it has no eternal tables already
             EternalDefaultTable.add(c,t,n);
         }
@@ -99,7 +99,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 //	}
 
     public void reinforce(Termed x, byte punc, Truth truth, long[] stamp) {
-		var goal = x.term();
+        Term goal = x.term();
 
         //Term at = term().equals(goal) ? $.func(Inperience.want, goal) : $.func(Inperience.want, this.term(), goal);
 		if (goal instanceof Neg) {
@@ -143,9 +143,9 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
 	/** called each update to refresh reinforcement tasks */
 	protected void reinforce() {
-		var n = reinforcement.size();
+        int n = reinforcement.size();
 		if (n > 0) {
-			var pri = this.pri.pri()
+            float pri = this.pri.pri()
 				// *1f/Util.sqrt(n) //not too large or it will compete with the signal itself
 			;
 
@@ -154,7 +154,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 //			game.what().acceptAll(reinforcement);
 
 			//Supplier<Task> t = reinforcement.get(nar().random());
-			for (var t : reinforcement)
+			for (Rememorize t : reinforcement)
 				t.input(pri);
 		}
 

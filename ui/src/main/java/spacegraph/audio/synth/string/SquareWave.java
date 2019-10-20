@@ -24,20 +24,20 @@ public class SquareWave extends KarplusStrongString {
     public void pluck() {
         setDeltaVolume(pluckDelta);
         clear();
-        var capacity = buffer.capacity();
-        var half = capacity / 2;
-        for (var i = 0; i < half; i++) {
+        int capacity = buffer.capacity();
+        int half = capacity / 2;
+        for (int i = 0; i < half; i++) {
             buffer.enqueue(getInitialVolume() * -1);
         }
-        var otherHalf = capacity - half;
-        for (var i = 0; i < otherHalf; i++) {
+        int otherHalf = capacity - half;
+        for (int i = 0; i < otherHalf; i++) {
             buffer.enqueue(getInitialVolume());
         }
     }
 
     public void tic() {
         double first = buffer.dequeue();
-        var x = first * deltaVolume;
+        double x = first * deltaVolume;
 		filterOut = C * x + filterIn - C * filterOut; // allpass tuning filter
         filterIn = x;
         buffer.enqueue(checkMax(filterOut * deltaVolume));

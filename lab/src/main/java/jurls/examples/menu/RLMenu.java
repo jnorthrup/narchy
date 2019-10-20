@@ -42,7 +42,7 @@ public class RLMenu extends JMenu {
     }
 
     public void notifyListeners() {
-        for (var l : listeners) {
+        for (ActionListener l : listeners) {
             l.actionPerformed(null);
         }
     }

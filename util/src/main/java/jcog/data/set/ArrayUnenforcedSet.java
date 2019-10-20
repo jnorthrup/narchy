@@ -82,18 +82,23 @@ public class ArrayUnenforcedSet<X> extends FasterList<X> implements Set<X> {
 //        return h;
 
         //Obeying (Abstract)Set<> semantics:
-        var s = this.size;
-        var ii = this.items;
+        int s = this.size;
+        X[] ii = this.items;
 
-        return IntStream.range(0, s).map(i -> ii[i].hashCode()).sum();
+        int sum = 0;
+        for (int i = 0; i < s; i++) {
+            int hashCode = ii[i].hashCode();
+            sum += hashCode;
+        }
+        return sum;
     }
 
 
     @Override
     public boolean addAll(Collection<? extends X> source) {
-        var acc = false;
+        boolean acc = false;
         for (X x : source) {
-            var add = add(x);
+            boolean add = add(x);
             acc = acc || add;
         }
         return acc;

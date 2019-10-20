@@ -51,7 +51,7 @@ public abstract class VChannel {
      */
     public static RdpPacket_Localised init(int length) throws RdesktopException {
 
-        var s = Common.secure.init(Options.encryption ? Secure.SEC_ENCRYPT : 0,
+        RdpPacket_Localised s = Common.secure.init(Options.encryption ? Secure.SEC_ENCRYPT : 0,
                 length + 8);
         s.setHeader(RdpPacket.CHANNEL_HEADER);
         s.incrementPosition(8);
@@ -113,24 +113,24 @@ public abstract class VChannel {
             IOException, CryptoException {
         if (Common.secure == null)
             return;
-        var length = data.size();
+        int length = data.size();
 
-        var data_offset = 0;
-        var packets_sent = 0;
+        int data_offset = 0;
+        int packets_sent = 0;
 
 
 
         while (data_offset < length) {
 
-            var thisLength = Math.min(VChannels.CHANNEL_CHUNK_LENGTH, length
+            int thisLength = Math.min(VChannels.CHANNEL_CHUNK_LENGTH, length
                     - data_offset);
 
-            var s = Common.secure.init(
+            RdpPacket_Localised s = Common.secure.init(
                     (Constants.encryption) ? Secure.SEC_ENCRYPT : 0,
                     8 + thisLength);
             s.setLittleEndian32(length);
 
-            var flags = ((data_offset == 0) ? VChannels.CHANNEL_FLAG_FIRST : 0);
+            int flags = ((data_offset == 0) ? VChannels.CHANNEL_FLAG_FIRST : 0);
             if (data_offset + thisLength >= length)
                 flags |= VChannels.CHANNEL_FLAG_LAST;
 

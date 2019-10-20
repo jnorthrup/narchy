@@ -38,19 +38,19 @@ public class Generator {
 
   public static Class<?> make(ClassLoader loader, String className, CharSequence javaSource) {
 
-    var gcf = new GeneratedClassFile();
-    var dc = new DiagnosticCollector<JavaFileObject>();
+      GeneratedClassFile gcf = new GeneratedClassFile();
+      DiagnosticCollector<JavaFileObject> dc = new DiagnosticCollector<JavaFileObject>();
 
-    var result = compile(className, javaSource, gcf, dc);
+      boolean result = compile(className, javaSource, gcf, dc);
     return processResults(loader, javaSource, gcf, dc, result);
   }
 
   
   private static boolean compile( String className, CharSequence javaSource, GeneratedClassFile gcf, 
 		  							DiagnosticCollector<JavaFileObject> dc) {
-    var gjsf = new GeneratedJavaSourceFile(className, javaSource);
-    var fileManager = new GeneratingJavaFileManager(jc.getStandardFileManager(dc, null, null), gcf);
-    var task = jc.getTask(null, fileManager, dc, null, null, Collections.singletonList(gjsf));
+      GeneratedJavaSourceFile gjsf = new GeneratedJavaSourceFile(className, javaSource);
+      GeneratingJavaFileManager fileManager = new GeneratingJavaFileManager(jc.getStandardFileManager(dc, null, null), gcf);
+      JavaCompiler.CompilationTask task = jc.getTask(null, fileManager, dc, null, null, Collections.singletonList(gjsf));
     return task.call();
   }
 
@@ -73,7 +73,7 @@ public class Generator {
   
   private static Class<?> createClass(ClassLoader loader, GeneratedClassFile gcf) {
     try {
-      var data = gcf.getClassAsBytes();
+        byte[] data = gcf.getClassAsBytes();
       return (Class<?>) defineClassMethod.invoke( null, loader, null, data, 0, data.length);
     } catch (RuntimeException e) {
       throw e;

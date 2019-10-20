@@ -47,7 +47,7 @@ public class ISOIOLibrary extends PrologLib {
             throw PrologError.instantiation_error(prolog, 1);
         }
 
-        var file = new File(((Struct)source_sink).name());
+        File file = new File(((Struct)source_sink).name());
         if(!file.exists()){
             throw PrologError.existence_error(prolog, 1, "source_sink", source_sink, new Struct("File not found."));
         }
@@ -63,12 +63,12 @@ public class ISOIOLibrary extends PrologLib {
             throw PrologError.type_error(prolog, 3, "variable", stream);
         }
 
-        var properties = new Hashtable<String, Term>(10);
-        var result = inizialize_properties(properties);
+        Hashtable<String, Term> properties = new Hashtable<String, Term>(10);
+        boolean result = inizialize_properties(properties);
 
         if(result){
-            var openOptions = (Struct)options;
-            var in_out = (Struct)source_sink;
+            Struct openOptions = (Struct)options;
+            Struct in_out = (Struct)source_sink;
             if(openOptions.isList()){
                 if(!openOptions.isEmptyList()){
                     Iterator<? extends Term> i = openOptions.listIterator();
@@ -77,7 +77,7 @@ public class ISOIOLibrary extends PrologLib {
                         if(obj instanceof Var){
                             throw PrologError.instantiation_error(prolog, 4);
                         }
-                        var option = (Struct) obj;
+                        Struct option = (Struct) obj;
                         if(!properties.containsKey(option.name())){
                             throw PrologError.domain_error(prolog, 4, "stream_option", option);
                         }
@@ -85,13 +85,13 @@ public class ISOIOLibrary extends PrologLib {
                         
                         if("alias".equals(option.name())){
                         
-                            for(var currentElement : inputStreams.entrySet()){
-                                for(var currentElement2 : currentElement.getValue().entrySet()){
+                            for(Map.Entry<InputStream, Hashtable<String, Term>> currentElement : inputStreams.entrySet()){
+                                for(Map.Entry<String, Term> currentElement2 : currentElement.getValue().entrySet()){
                                     if("alias".equals(currentElement2.getKey())){
-                                        var alias = currentElement2.getValue();
-                                        for(var k = 0; k< option.subs(); k++){
+                                        Term alias = currentElement2.getValue();
+                                        for(int k = 0; k< option.subs(); k++){
                                             if(((Struct)alias).subs()>1){
-                                                for(var z = 0; z<((Struct)alias).subs(); z++){
+                                                for(int z = 0; z<((Struct)alias).subs(); z++){
                                                     if((((Struct)alias).sub(z)).equals(option.sub(k))){
                                                         throw PrologError.permission_error(prolog, "open", "source_sink", alias, new Struct("Alias is already associated with an open stream."));
                                                     }
@@ -106,13 +106,13 @@ public class ISOIOLibrary extends PrologLib {
                             }
                         
                         
-                            for(var currentElement : outputStreams.entrySet()){
-                                for(var currentElement2 : currentElement.getValue().entrySet()){
+                            for(Map.Entry<OutputStream, Hashtable<String, Term>> currentElement : outputStreams.entrySet()){
+                                for(Map.Entry<String, Term> currentElement2 : currentElement.getValue().entrySet()){
                                     if("alias".equals(currentElement2.getKey())){
-                                        var alias = currentElement2.getValue();
-                                        for(var k = 0; k< option.subs(); k++){
+                                        Term alias = currentElement2.getValue();
+                                        for(int k = 0; k< option.subs(); k++){
                                             if(((Struct)alias).subs()>1){
-                                                for(var z = 0; z<((Struct)alias).subs(); z++){
+                                                for(int z = 0; z<((Struct)alias).subs(); z++){
                                                     if((((Struct)alias).sub(z)).equals(option.sub(k))){
                                                         throw PrologError.permission_error(prolog, "open", "source_sink", alias, new Struct("Alias is already associated with an open stream."));
                                                     }
@@ -125,9 +125,14 @@ public class ISOIOLibrary extends PrologLib {
                                     }
                                 }
                             }
-                            var arity = option.subs();
+                            int arity = option.subs();
                             if(arity > 1){
-                                var arrayTerm = IntStream.range(0, arity).mapToObj(option::sub).toArray(Term[]::new);
+                                List<Term> list = new ArrayList<>();
+                                for (int i1 = 0; i1 < arity; i1++) {
+                                    Term sub = option.sub(i1);
+                                    list.add(sub);
+                                }
+                                Term[] arrayTerm = list.toArray(new Term[0]);
                                 properties.put(option.name(),new Struct(".",arrayTerm));
                             }
                             else{
@@ -135,7 +140,7 @@ public class ISOIOLibrary extends PrologLib {
                             }
                         }
                         else{
-                            var value = (Struct) option.sub(0);
+                            Struct value = (Struct) option.sub(0);
                             properties.put(option.name(),value);
                         }
                     }
@@ -147,7 +152,7 @@ public class ISOIOLibrary extends PrologLib {
                 throw PrologError.type_error(prolog, 4, "list", openOptions);
             }
 
-            var structMode = (Struct)mode;
+            Struct structMode = (Struct)mode;
             BufferedInputStream input = null;
             BufferedOutputStream output = null;
             switch (structMode.name()) {
@@ -215,7 +220,7 @@ public class ISOIOLibrary extends PrologLib {
         initLibrary();
         
         source_sink = source_sink.term();
-        var file = new File(((Struct)source_sink).name());
+        File file = new File(((Struct)source_sink).name());
         if(!file.exists()){
             throw PrologError.existence_error(prolog, 1, "source_sink", source_sink, new Struct("File not found"));
         }
@@ -236,14 +241,14 @@ public class ISOIOLibrary extends PrologLib {
         }
 
 
-        var properties = new Hashtable<String, Term>(10);
-        var result = inizialize_properties(properties);
+        Hashtable<String, Term> properties = new Hashtable<String, Term>(10);
+        boolean result = inizialize_properties(properties);
 
-        var structMode = (Struct)mode;
+        Struct structMode = (Struct)mode;
         
         if(result){
-            var in_out = (Struct)source_sink;
-            var value = new Struct(in_out.name());
+            Struct in_out = (Struct)source_sink;
+            Struct value = new Struct(in_out.name());
             properties.put("file_name", value);
             properties.put("mode", mode);
 
@@ -312,8 +317,8 @@ public class ISOIOLibrary extends PrologLib {
         initLibrary();
 
 
-        var force = false;
-        var closeOption = (Struct) closeOptions;
+        boolean force = false;
+        Struct closeOption = (Struct) closeOptions;
         
         if(closeOptions.isList()){
             if(!closeOptions.isEmptyList()){
@@ -323,9 +328,9 @@ public class ISOIOLibrary extends PrologLib {
                     if(obj instanceof Var){
                         throw PrologError.instantiation_error(prolog, 4);
                     }
-                    var option = (Struct) obj;
+                    Struct option = (Struct) obj;
                     if("force".equals(option.name())){
-                        var closeOptionValue = (Struct)option.sub(0);
+                        Struct closeOptionValue = (Struct)option.sub(0);
                         force = "true".equals(closeOptionValue.name());
                     }
                     else{
@@ -352,7 +357,7 @@ public class ISOIOLibrary extends PrologLib {
         }
         
         if(out != null){
-            var out_name = get_output_name(out);
+            String out_name = get_output_name(out);
             if("stdout".equals(out_name)){
                 return true;
             }
@@ -379,7 +384,7 @@ public class ISOIOLibrary extends PrologLib {
             }
         }
         else if(in != null){
-            var in_name = get_input_name(in);
+            String in_name = get_input_name(in);
             if("stdin".equals(in_name)){
                 return true;
             }
@@ -417,7 +422,7 @@ public class ISOIOLibrary extends PrologLib {
         }
         
         if(out != null){
-            var out_name = get_output_name(out);
+            String out_name = get_output_name(out);
             if("stdout".equals(out_name)){
                 return true;
             }
@@ -434,7 +439,7 @@ public class ISOIOLibrary extends PrologLib {
             outputStreams.remove(out);
         }
         else if(in != null){
-            var in_name = get_input_name(in);
+            String in_name = get_input_name(in);
             if("stdin".equals(in_name)){
                 return true;
             }
@@ -454,9 +459,9 @@ public class ISOIOLibrary extends PrologLib {
     
     public boolean set_input_1(Term stream_or_alias)throws PrologError{
         initLibrary();
-        var stream = find_input_stream(stream_or_alias);
-        var entry = inputStreams.get(stream);
-        var name = (Struct)entry.get("file_name");
+        InputStream stream = find_input_stream(stream_or_alias);
+        Hashtable<String, Term> entry = inputStreams.get(stream);
+        Struct name = (Struct)entry.get("file_name");
         inputStream = stream;
         inputStreamName = name.name();
         return true;
@@ -464,9 +469,9 @@ public class ISOIOLibrary extends PrologLib {
     
     public boolean set_output_1(Term stream_or_alias)throws PrologError{
         initLibrary();
-        var stream = find_output_stream(stream_or_alias);
-        var entry = outputStreams.get(stream);
-        var name = (Struct)entry.get("file_name");
+        OutputStream stream = find_output_stream(stream_or_alias);
+        Hashtable<String, Term> entry = outputStreams.get(stream);
+        Struct name = (Struct)entry.get("file_name");
         outputStream = stream;
         outputStreamName = name.name();
         return true;
@@ -485,8 +490,8 @@ public class ISOIOLibrary extends PrologLib {
         }
         
         property = property.term();
-        var prop = (Struct)property;
-        var propertyName = prop.name();
+        Struct prop = (Struct)property;
+        String propertyName = prop.name();
         Struct propertyValue = null;
         if(!"input".equals(propertyName) && !"output".equals(propertyName)){
             propertyValue = (Struct)prop.sub(0);
@@ -495,29 +500,37 @@ public class ISOIOLibrary extends PrologLib {
 
         switch (propertyName) {
             case "input": {
-                var list1 = inputStreams.keySet().stream().map(stringTermHashtable -> new Struct(stringTermHashtable.toString())).collect(Collectors.toList());
+                List<Struct> list1 = new ArrayList<>();
+                for (InputStream stringTermHashtable : inputStreams.keySet()) {
+                    Struct struct = new Struct(stringTermHashtable.toString());
+                    list1.add(struct);
+                }
                 resultList = list1;
-                var result = new Struct(resultList.toArray(new Struct[1]));
+                Struct result = new Struct(resultList.toArray(new Struct[1]));
                 return unify(list, result);
             }
             case "output":
-                var list1 = outputStreams.keySet().stream().map(stringTermHashtable -> new Struct(stringTermHashtable.toString())).collect(Collectors.toList());
+                List<Struct> list1 = new ArrayList<>();
+                for (OutputStream stringTermHashtable : outputStreams.keySet()) {
+                    Struct struct = new Struct(stringTermHashtable.toString());
+                    list1.add(struct);
+                }
                 resultList = list1;
-                var result = new Struct(resultList.toArray(new Struct[1]));
+                Struct result = new Struct(resultList.toArray(new Struct[1]));
                 return unify(list, result);
             default:
-                for (var currentElement : inputStreams.entrySet()) {
-                    for (var currentElement2 : currentElement.getValue().entrySet()) {
+                for (Map.Entry<InputStream, Hashtable<String, Term>> currentElement : inputStreams.entrySet()) {
+                    for (Map.Entry<String, Term> currentElement2 : currentElement.getValue().entrySet()) {
                         if (currentElement2.getKey().equals(propertyName)) {
                             if ("alias".equals(propertyName)) {
-                                var arity = ((Struct) currentElement2.getValue()).subs();
+                                int arity = ((Struct) currentElement2.getValue()).subs();
                                 if (arity == 0) {
                                     if (propertyValue.equals(currentElement2.getValue())) {
                                         resultList.add(new Struct(currentElement.getKey().toString()));
                                         break;
                                     }
                                 }
-                                for (var i = 0; i < arity; i++) {
+                                for (int i = 0; i < arity; i++) {
                                     if (propertyValue.equals(((Struct) currentElement2.getValue()).sub(i))) {
                                         resultList.add(new Struct(currentElement.getKey().toString()));
                                         break;
@@ -530,18 +543,18 @@ public class ISOIOLibrary extends PrologLib {
                     }
                 }
 
-                for (var currentElement : outputStreams.entrySet()) {
-                    for (var currentElement2 : currentElement.getValue().entrySet()) {
+                for (Map.Entry<OutputStream, Hashtable<String, Term>> currentElement : outputStreams.entrySet()) {
+                    for (Map.Entry<String, Term> currentElement2 : currentElement.getValue().entrySet()) {
                         if (currentElement2.getKey().equals(propertyName)) {
                             if ("alias".equals(propertyName)) {
-                                var arity = ((Struct) currentElement2.getValue()).subs();
+                                int arity = ((Struct) currentElement2.getValue()).subs();
                                 if (arity == 0) {
                                     if (propertyValue.equals(currentElement2.getValue())) {
                                         resultList.add(new Struct(currentElement.getKey().toString()));
                                         break;
                                     }
                                 }
-                                for (var i = 0; i < arity; i++) {
+                                for (int i = 0; i < arity; i++) {
                                     if (propertyValue.equals(((Struct) currentElement2.getValue()).sub(i))) {
                                         resultList.add(new Struct(currentElement.getKey().toString()));
                                         break;
@@ -555,7 +568,7 @@ public class ISOIOLibrary extends PrologLib {
                 }
                 break;
         }
-        var result = new Struct(resultList.toArray(new Struct[1]));
+        Struct result = new Struct(resultList.toArray(new Struct[1]));
         return unify(list,result);
     }
     
@@ -568,18 +581,18 @@ public class ISOIOLibrary extends PrologLib {
     
     public boolean at_end_of_stream_0() {
         initLibrary();
-        var entry = inputStreams.get(inputStream);
-        var value = entry.get("end_of_stream");
-        var eof = (Struct) value;
+        Hashtable<String, Term> entry = inputStreams.get(inputStream);
+        Term value = entry.get("end_of_stream");
+        Struct eof = (Struct) value;
         return !"not".equals(eof.name());
     }
     
     public boolean at_end_of_stream_1(Term stream_or_alias) throws PrologError{
         initLibrary();
-        var stream = find_input_stream(stream_or_alias);
-        var entry = inputStreams.get(stream);
-        var value = entry.get("end_of_stream");
-        var eof = (Struct) value;
+        InputStream stream = find_input_stream(stream_or_alias);
+        Hashtable<String, Term> entry = inputStreams.get(stream);
+        Term value = entry.get("end_of_stream");
+        Struct eof = (Struct) value;
         return !"not".equals(eof.name());
     }
     
@@ -587,7 +600,7 @@ public class ISOIOLibrary extends PrologLib {
     public boolean set_stream_position_2(Term stream_or_alias, Term position)throws PrologError{
         
         initLibrary();
-        var in = find_input_stream(stream_or_alias);
+        InputStream in = find_input_stream(stream_or_alias);
 
         if(position instanceof Var){
             throw PrologError.instantiation_error(prolog, 2);
@@ -598,10 +611,10 @@ public class ISOIOLibrary extends PrologLib {
             }
         }
 
-        var entry = inputStreams.get(in);
-        var reposition = entry.get("reposition");
+        Hashtable<String, Term> entry = inputStreams.get(in);
+        Term reposition = entry.get("reposition");
 
-        var value = (Struct)reposition;
+        Struct value = (Struct)reposition;
         if("false".equals(value.name())){
             throw PrologError.permission_error(prolog, "reposition", "stream", stream_or_alias, new Struct("Stream has property reposition(false)"));
         }
@@ -615,13 +628,13 @@ public class ISOIOLibrary extends PrologLib {
             try {                                
                 buffer.reset();
 
-                var n = (NumberTerm)position;
-                var pos = n.longValue();
+                NumberTerm n = (NumberTerm)position;
+                long pos = n.longValue();
                 if(pos < 0){
                     throw PrologError.domain_error(prolog, 2, "+long", position);
                 }
 
-                var size = in.available();
+                int size = in.available();
 
                 if(pos > size){
                     throw PrologError.system_error(new Struct("Invalid operation. Input position is greater than file size."));
@@ -631,7 +644,7 @@ public class ISOIOLibrary extends PrologLib {
                 }
                 
                 buffer.skip(pos);
-                var new_pos = (new NumberTerm.Long(pos)).intValue();
+                int new_pos = (new NumberTerm.Long(pos)).intValue();
                 entry.put("position", new NumberTerm.Int(new_pos));
                 inputStreams.put(buffer, entry);
                 
@@ -656,7 +669,7 @@ public class ISOIOLibrary extends PrologLib {
     
     public boolean flush_output_1(Term stream_or_alias) throws PrologError{
         initLibrary();
-        var stream = find_output_stream(stream_or_alias);
+        OutputStream stream = find_output_stream(stream_or_alias);
         try {
             stream.flush();
         } catch (IOException e) {
@@ -667,18 +680,18 @@ public class ISOIOLibrary extends PrologLib {
     
     public boolean get_char_2(Term stream_or_alias, Term arg) throws PrologError{
         initLibrary();
-        var stream = find_input_stream(stream_or_alias);
+        InputStream stream = find_input_stream(stream_or_alias);
 
         if (!(arg instanceof Var)){
             throw PrologError.instantiation_error(prolog, 1);
         }
 
-        var element = inputStreams.get(stream);
+        Hashtable<String, Term> element = inputStreams.get(stream);
 
-        var struct_name = (Struct) element.get("file_name");
-        var file_name = struct_name.toString();
+        Struct struct_name = (Struct) element.get("file_name");
+        String file_name = struct_name.toString();
 
-        var type =(Struct) element.get("type");
+        Struct type =(Struct) element.get("type");
         if("binary".equals(type.name())){
             throw PrologError.permission_error(prolog, "input", "binary_stream", stream_or_alias, new Struct("The target stream is associated with a binary stream."));
         }
@@ -692,13 +705,13 @@ public class ISOIOLibrary extends PrologLib {
         
         
         try{
-            var position  = (NumberTerm) (element.get("position"));
-            var eof = (Struct) element.get("end_of_stream");
+            NumberTerm position  = (NumberTerm) (element.get("position"));
+            Struct eof = (Struct) element.get("end_of_stream");
                 
                 
                 if("past".equals(eof.name())){
-                    var actionTemp = element.get("eof_action");
-                    var action = ((Struct)actionTemp).name();
+                    Term actionTemp = element.get("eof_action");
+                    String action = ((Struct)actionTemp).name();
 
                     switch (action) {
                         case "error":
@@ -714,7 +727,7 @@ public class ISOIOLibrary extends PrologLib {
                 }
 
 
-            var value = stream.read();
+            int value = stream.read();
 
             if(!Character.isDefined(value)){
                     if(value == -1){
@@ -724,18 +737,18 @@ public class ISOIOLibrary extends PrologLib {
                         throw PrologError.representation_error(prolog, 2, "character");
                     }
                 }
-            var i = (NumberTerm.Int)position;
-            var i2 = i.intValue();
+            NumberTerm.Int i = (NumberTerm.Int)position;
+            int i2 = i.intValue();
                 i2++;
                 element.put("position",new NumberTerm.Int(i2));
                 
                 if(value != -1){
 
 
-                    var nextChar = new Var();
+                    Var nextChar = new Var();
                     peek_code_2(stream_or_alias,nextChar);
-                    var nextCharTerm = nextChar.term();
-                    var nextCharValue = (NumberTerm)nextCharTerm;
+                    Term nextCharTerm = nextChar.term();
+                    NumberTerm nextCharValue = (NumberTerm)nextCharTerm;
                     if(nextCharValue.intValue() == -1){
                         element.put("end_of_stream", new Struct("at"));
                     }
@@ -746,7 +759,7 @@ public class ISOIOLibrary extends PrologLib {
                 if(value == -1){
                     return unify(arg, Term.term(-1 +""));
                 }
-            var c = (char) value;
+            char c = (char) value;
             return unify(arg,new Struct(Character.toString(c)));
         }catch(IOException ioe){
                 ioe.printStackTrace();
@@ -756,28 +769,28 @@ public class ISOIOLibrary extends PrologLib {
     
     public boolean get_code_1(Term char_code)throws PrologError{
         initLibrary();
-        var s_or_a = new Struct(inputStream.toString());
+        Struct s_or_a = new Struct(inputStream.toString());
         return get_code_2(s_or_a,char_code);
     }
     
     public boolean get_code_2(Term stream_or_alias, Term char_code) throws PrologError{
         initLibrary();
-        var stream = find_input_stream(stream_or_alias);
+        InputStream stream = find_input_stream(stream_or_alias);
 
         if (!(char_code instanceof Var)){
             throw PrologError.instantiation_error(prolog, 1);
         }
 
-        var element = inputStreams.get(stream);
-        var type =(Struct) element.get("type");
+        Hashtable<String, Term> element = inputStreams.get(stream);
+        Struct type =(Struct) element.get("type");
         if("binary".equals(type.name())){
             throw PrologError.permission_error(prolog, "input", "binary_stream", stream_or_alias, new Struct("The target stream is associated with a binary stream."));
         }
 
 
-        var struct_name = (Struct) element.get("file_name");
-        var file_name = struct_name.toString();
-        var value = 0;
+        Struct struct_name = (Struct) element.get("file_name");
+        String file_name = struct_name.toString();
+        int value = 0;
         if("stdin".equals(file_name)){
                         try {
                     value = inputStream.read();
@@ -793,11 +806,11 @@ public class ISOIOLibrary extends PrologLib {
         
         
         try{
-            var position  = (NumberTerm) (element.get("position"));
-            var eof = (Struct) element.get("end_of_stream");
+            NumberTerm position  = (NumberTerm) (element.get("position"));
+            Struct eof = (Struct) element.get("end_of_stream");
                 if(eof.equals("past")){
-                    var actionTemp = element.get("eof_action");
-                    var action = ((Struct)actionTemp).name();
+                    Term actionTemp = element.get("eof_action");
+                    String action = ((Struct)actionTemp).name();
                     switch (action) {
                         case "error":
                             throw PrologError.permission_error(prolog, "input", "past_end_of_stream", new Struct("reader"), new Struct("End of file is reached."));
@@ -821,16 +834,16 @@ public class ISOIOLibrary extends PrologLib {
                         throw PrologError.representation_error(prolog, 2, "character");
                     }
                 }
-            var i = (NumberTerm.Int)position;
-            var i2 = i.intValue();
+            NumberTerm.Int i = (NumberTerm.Int)position;
+            int i2 = i.intValue();
                 i2++;
                 element.put("position",new NumberTerm.Int(i2));
                 
                 if(value != -1){
-                    var nextChar = new Var();
+                    Var nextChar = new Var();
                     peek_code_2(stream_or_alias,nextChar);
-                    var nextCharTerm = nextChar.term();
-                    var nextCharValue = (NumberTerm)nextCharTerm;
+                    Term nextCharTerm = nextChar.term();
+                    NumberTerm nextCharValue = (NumberTerm)nextCharTerm;
                     if(nextCharValue.intValue() == -1){
                         element.put("end_of_stream", new Struct("at"));
                     }
@@ -846,10 +859,10 @@ public class ISOIOLibrary extends PrologLib {
     
     public boolean peek_char_1(Term in_char)throws PrologError{
         initLibrary();
-        var s_or_a = new Struct(inputStream.toString());
+        Struct s_or_a = new Struct(inputStream.toString());
         if("stdin".equals(inputStreamName)){
             inputStream.mark(5);
-            var var = get_char_2(s_or_a,in_char);
+            boolean var = get_char_2(s_or_a,in_char);
             try {
                 inputStream.reset();
             } catch (IOException e) {
@@ -867,9 +880,9 @@ public class ISOIOLibrary extends PrologLib {
     public boolean peek_char_2(Term stream_or_alias, Term in_char)throws PrologError{
         
         initLibrary();
-        var stream = find_input_stream(stream_or_alias);
-        var element = inputStreams.get(stream);
-        var file_name = ((Struct)element.get("file_name")).name();
+        InputStream stream = find_input_stream(stream_or_alias);
+        Hashtable<String, Term> element = inputStreams.get(stream);
+        String file_name = ((Struct)element.get("file_name")).name();
         
         if("stdin".equals(file_name)){
                 return get_char_2(stream_or_alias,in_char);
@@ -886,18 +899,18 @@ public class ISOIOLibrary extends PrologLib {
         if (!(in_char instanceof Var)){
             throw PrologError.instantiation_error(prolog, 1);
         }
-        var type =(Struct) element.get("type");
+        Struct type =(Struct) element.get("type");
         if("binary".equals(type.name())){
             throw PrologError.permission_error(prolog, "input", "binary_stream", stream_or_alias, new Struct("Target stream is associated with a binary stream."));
         }
         
         try{
-            var position  = (NumberTerm) (element.get("position"));
-            var eof = (Struct) element.get("end_of_stream");
-            var value = 0;
+            NumberTerm position  = (NumberTerm) (element.get("position"));
+            Struct eof = (Struct) element.get("end_of_stream");
+            int value = 0;
             if(eof.equals("past")){
-                var actionTemp = element.get("eof_action");
-                var action = ((Struct)actionTemp).name();
+                Term actionTemp = element.get("eof_action");
+                String action = ((Struct)actionTemp).name();
                     switch (action) {
                         case "error":
                             throw PrologError.permission_error(prolog, "input", "past_end_of_stream", new Struct("reader"), new Struct("End of file has been reached."));
@@ -911,8 +924,8 @@ public class ISOIOLibrary extends PrologLib {
                     }
                 }
                 else{
-                var i = (NumberTerm.Int)position;
-                var nBytes = i.longValue();
+                NumberTerm.Int i = (NumberTerm.Int)position;
+                long nBytes = i.longValue();
                     stream2.skip(nBytes);
                     value = stream2.read();
                     
@@ -928,7 +941,7 @@ public class ISOIOLibrary extends PrologLib {
                     return unify(in_char, Term.term(-1 +""));
                 }
 
-            var c = (char) value;
+            char c = (char) value;
             return unify(in_char,Term.term(Character.toString(c)));
         }catch(IOException ioe){
                 ioe.printStackTrace();
@@ -938,10 +951,10 @@ public class ISOIOLibrary extends PrologLib {
     
     public boolean peek_code_1(Term char_code)throws PrologError{
         initLibrary();
-        var stream = new Struct(inputStream.toString());
+        Struct stream = new Struct(inputStream.toString());
         if("stdin".equals(inputStreamName)){
             inputStream.mark(5);
-            var var = get_code_2(stream,char_code);
+            boolean var = get_code_2(stream,char_code);
             try {
                 inputStream.reset();
             } catch (IOException e) {
@@ -959,9 +972,9 @@ public class ISOIOLibrary extends PrologLib {
     public boolean peek_code_2(Term stream_or_alias, Term char_code)throws PrologError{
         initLibrary();
 
-        var stream = find_input_stream(stream_or_alias);
-        var element = inputStreams.get(stream);
-        var file_name = ((Struct)element.get("file_name")).name();
+        InputStream stream = find_input_stream(stream_or_alias);
+        Hashtable<String, Term> element = inputStreams.get(stream);
+        String file_name = ((Struct)element.get("file_name")).name();
         
         FileInputStream stream2=null;
         try {
@@ -975,18 +988,18 @@ public class ISOIOLibrary extends PrologLib {
         if (!(char_code instanceof Var)){
             throw PrologError.instantiation_error(prolog, 1);
         }
-        var type =(Struct) element.get("type");
+        Struct type =(Struct) element.get("type");
         if("binary".equals(type.name())){
             throw PrologError.permission_error(prolog, "input", "binary_stream", stream_or_alias, new Struct("Target stream is associated with a binary stream."));
         }
         
         try{
-            var position  = (NumberTerm) (element.get("position"));
-            var eof = (Struct) element.get("end_of_stream");
-            var value = 0;
+            NumberTerm position  = (NumberTerm) (element.get("position"));
+            Struct eof = (Struct) element.get("end_of_stream");
+            int value = 0;
             if(eof.equals("past")){
-                var actionTemp = element.get("eof_action");
-                var action = ((Struct)actionTemp).name();
+                Term actionTemp = element.get("eof_action");
+                String action = ((Struct)actionTemp).name();
                     switch (action) {
                         case "error":
                             throw PrologError.permission_error(prolog, "input", "past_end_of_stream", new Struct("reader"), new Struct("End of file is reached."));
@@ -1000,8 +1013,8 @@ public class ISOIOLibrary extends PrologLib {
                     }
                 }
                 else{
-                var i = (NumberTerm.Int)position;
-                var nBytes = i.longValue();
+                NumberTerm.Int i = (NumberTerm.Int)position;
+                long nBytes = i.longValue();
                     stream2.skip(nBytes);
                     value = stream2.read();
                     stream2.close();
@@ -1020,22 +1033,22 @@ public class ISOIOLibrary extends PrologLib {
     
     public boolean put_char_2(Term stream_or_alias, Term in_char)throws PrologError{
         initLibrary();
-        var stream = find_output_stream(stream_or_alias);
-        var stream_name = get_output_name(stream);
+        OutputStream stream = find_output_stream(stream_or_alias);
+        String stream_name = get_output_name(stream);
 
-        var element = outputStreams.get(stream);
-        var type =(Struct) element.get("type");
+        Hashtable<String, Term> element = outputStreams.get(stream);
+        Struct type =(Struct) element.get("type");
         if("binary".equals(type.name())){
             throw PrologError.permission_error(prolog, "input", "binary_stream", stream_or_alias, new Struct("Target stream is associated with a binary stream."));
         }
 
-        var arg0 = (Struct) in_char.term();
+        Struct arg0 = (Struct) in_char.term();
 
        if (!arg0.isAtomic()) {
             throw PrologError.type_error(prolog, 2, "character", arg0);
         } 
         else {
-           var ch = arg0.name();
+           String ch = arg0.name();
             if(!(Character.isDefined(ch.charAt(0)))){
                 throw PrologError.representation_error(prolog, 2, "character");
             }
@@ -1059,22 +1072,22 @@ public class ISOIOLibrary extends PrologLib {
     
     public boolean put_code_1(Term char_code)throws PrologError{
         initLibrary();
-        var stream = new Struct(outputStream.toString());
+        Struct stream = new Struct(outputStream.toString());
         return put_code_2(stream,char_code);
     }
     
     public boolean put_code_2(Term stream_or_alias, Term char_code) throws PrologError{
         initLibrary();
-        var stream = find_output_stream(stream_or_alias);
-        var stream_name = get_output_name(stream);
+        OutputStream stream = find_output_stream(stream_or_alias);
+        String stream_name = get_output_name(stream);
 
-        var element = outputStreams.get(stream);
-        var type =(Struct) element.get("type");
+        Hashtable<String, Term> element = outputStreams.get(stream);
+        Struct type =(Struct) element.get("type");
         if("binary".equals(type.name())){
             throw PrologError.permission_error(prolog, "input", "binary_stream", stream_or_alias, new Struct("Target stream is associated with a binary stream."));
         }
 
-        var arg0 = (NumberTerm) char_code.term();
+        NumberTerm arg0 = (NumberTerm) char_code.term();
         
 
 
@@ -1102,8 +1115,8 @@ public class ISOIOLibrary extends PrologLib {
     
     public boolean nl_1(Term stream_or_alias)throws PrologError{
         initLibrary();
-        var stream = find_output_stream(stream_or_alias);
-        var stream_name = get_output_name(stream);
+        OutputStream stream = find_output_stream(stream_or_alias);
+        String stream_name = get_output_name(stream);
         if ("stdout".equals(stream_name)) {
             prolog.output("\n");
         } else {
@@ -1122,15 +1135,15 @@ public class ISOIOLibrary extends PrologLib {
         
         
         initLibrary();
-        var stream_or_alias = new Struct(inputStream.toString());
+        Struct stream_or_alias = new Struct(inputStream.toString());
         return get_byte_2(stream_or_alias,in_byte);
     }
     
     public boolean get_byte_2(Term stream_or_alias, Term in_byte)throws PrologError{
         initLibrary();
-        var stream = find_input_stream(stream_or_alias);
-        var element = inputStreams.get(stream);
-        var type =(Struct) element.get("type");
+        InputStream stream = find_input_stream(stream_or_alias);
+        Hashtable<String, Term> element = inputStreams.get(stream);
+        Struct type =(Struct) element.get("type");
         if("text".equals(type.name())){
             throw PrologError.permission_error(prolog, "input", "text_stream", stream_or_alias, new Struct("Target stream is associated with a text stream."));
         }
@@ -1139,15 +1152,15 @@ public class ISOIOLibrary extends PrologLib {
             throw PrologError.instantiation_error(prolog, 1);
         
         try{
-            var reader = new DataInputStream(stream);
-            var position  = (NumberTerm) (element.get("position"));
-            var i = (NumberTerm.Int)position;
-            var i2 = i.intValue();
+            DataInputStream reader = new DataInputStream(stream);
+            NumberTerm position  = (NumberTerm) (element.get("position"));
+            NumberTerm.Int i = (NumberTerm.Int)position;
+            int i2 = i.intValue();
             reader.skipBytes(i2-1);
-            var eof = (Struct) element.get("end_of_stream");
+            Struct eof = (Struct) element.get("end_of_stream");
             if(eof.equals("past")){
-                var actionTemp = element.get("eof_action");
-                var action = ((Struct)actionTemp).name();
+                Term actionTemp = element.get("eof_action");
+                String action = ((Struct)actionTemp).name();
                 switch (action) {
                     case "error":
                         throw PrologError.permission_error(prolog, "input", "past_end_of_stream", new Struct("reader"), new Struct("End of file is reached."));
@@ -1162,16 +1175,16 @@ public class ISOIOLibrary extends PrologLib {
                     
             }
 
-            var b = reader.readByte();
+            byte b = reader.readByte();
 
             i2++; 
             element.put("position",new NumberTerm.Int(i2));
 
 
-            var nextByte = new Var();
+            Var nextByte = new Var();
                 peek_byte_2(stream_or_alias,nextByte);
-            var nextByteTerm = nextByte.term();
-            var nextByteValue = (NumberTerm)nextByteTerm;
+            Term nextByteTerm = nextByte.term();
+            NumberTerm nextByteValue = (NumberTerm)nextByteTerm;
                 if(nextByteValue.intValue() == -1){
                     element.put("end_of_stream", new Struct("at"));
                 }
@@ -1188,15 +1201,15 @@ public class ISOIOLibrary extends PrologLib {
     
     public boolean peek_byte_1(Term in_byte)throws PrologError{
         initLibrary();
-        var stream_or_alias = new Struct(inputStream.toString());
+        Struct stream_or_alias = new Struct(inputStream.toString());
         return peek_char_2(stream_or_alias,in_byte);
     }
     
     public boolean peek_byte_2(Term stream_or_alias, Term in_byte)throws PrologError{
         initLibrary();
-        var stream = find_input_stream(stream_or_alias);
-        var element = inputStreams.get(stream);
-        var type =(Struct) element.get("type");
+        InputStream stream = find_input_stream(stream_or_alias);
+        Hashtable<String, Term> element = inputStreams.get(stream);
+        Struct type =(Struct) element.get("type");
         if("text".equals(type.name())){
             throw PrologError.permission_error(prolog, "input", "text_stream", stream_or_alias, new Struct("Target stream is associated with a text stream."));
         }
@@ -1205,16 +1218,16 @@ public class ISOIOLibrary extends PrologLib {
             throw PrologError.instantiation_error(prolog, 1);
         
         try{
-            var reader = new DataInputStream(stream);
-            var position  = (NumberTerm) (element.get("position"));
-            var i = (NumberTerm.Int)position;
-            var i2 = i.intValue();
+            DataInputStream reader = new DataInputStream(stream);
+            NumberTerm position  = (NumberTerm) (element.get("position"));
+            NumberTerm.Int i = (NumberTerm.Int)position;
+            int i2 = i.intValue();
             reader.skipBytes(i2-2);
-            var eof = (Struct) element.get("end_of_stream");
+            Struct eof = (Struct) element.get("end_of_stream");
             Byte b = null;
             if(eof.equals("past")){
-                var actionTemp = element.get("eof_action");
-                var action = ((Struct)actionTemp).name();
+                Term actionTemp = element.get("eof_action");
+                String action = ((Struct)actionTemp).name();
                 switch (action) {
                     case "error":
                         throw PrologError.permission_error(prolog, "input", "past_end_of_stream", new Struct("reader"), new Struct("End of file is reached."));
@@ -1249,19 +1262,19 @@ public class ISOIOLibrary extends PrologLib {
 
         
         initLibrary();
-        var stream_or_alias = new Struct(outputStream.toString());
+        Struct stream_or_alias = new Struct(outputStream.toString());
         return put_byte_2(stream_or_alias, out_byte);
         
     }
     
     public boolean put_byte_2(Term stream_or_alias, Term out_byte)throws PrologError{
         initLibrary();
-        var stream = find_output_stream(stream_or_alias);
+        OutputStream stream = find_output_stream(stream_or_alias);
         out_byte = out_byte.term();
-        var b = (NumberTerm)out_byte.term();
+        NumberTerm b = (NumberTerm)out_byte.term();
 
-        var element = outputStreams.get(stream);
-        var type =(Struct) element.get("type");
+        Hashtable<String, Term> element = outputStreams.get(stream);
+        Struct type =(Struct) element.get("type");
         if("text".equals(type.name())){
             throw PrologError.permission_error(prolog, "output", "text_stream", stream_or_alias, new Struct("Target stream is associated with a text stream."));
         }
@@ -1276,10 +1289,10 @@ public class ISOIOLibrary extends PrologLib {
         } 
         else {
                try {
-                   var writer = new DataOutputStream(stream);
-                   var position  = (NumberTerm) (element.get("position"));
-                   var i = (NumberTerm.Int)position;
-                   var i2 = i.intValue();
+                   DataOutputStream writer = new DataOutputStream(stream);
+                   NumberTerm position  = (NumberTerm) (element.get("position"));
+                   NumberTerm.Int i = (NumberTerm.Int)position;
+                   int i2 = i.intValue();
                     
                     writer.writeByte(b.intValue());
                     
@@ -1296,23 +1309,23 @@ public class ISOIOLibrary extends PrologLib {
     
     public boolean read_term_2(Term in_term, Term options)throws PrologError{
         initLibrary();
-        var stream_or_alias = new Struct(inputStream.toString());
+        Struct stream_or_alias = new Struct(inputStream.toString());
         return read_term_3(stream_or_alias,in_term,options);
     }
     
     public boolean read_term_3(Term stream_or_alias, Term in_term, Term options)throws PrologError{
         initLibrary();
-        var stream = find_input_stream(stream_or_alias);
+        InputStream stream = find_input_stream(stream_or_alias);
                 
         if(options instanceof Var){
             throw PrologError.instantiation_error(prolog, 3);
         }
 
-        var element = inputStreams.get(stream);
-        var type =(Struct) element.get("type");
-        var eof = (Struct) element.get("end_of_stream");
-        var action = (Struct) element.get("eof_action");
-        var position = (NumberTerm) element.get("position");
+        Hashtable<String, Term> element = inputStreams.get(stream);
+        Struct type =(Struct) element.get("type");
+        Struct eof = (Struct) element.get("end_of_stream");
+        Struct action = (Struct) element.get("eof_action");
+        NumberTerm position = (NumberTerm) element.get("position");
         if("binary".equals(type.name())){
             throw PrologError.permission_error(prolog, "input", "binary_stream", stream_or_alias, new Struct("Target stream is associated with a binary stream."));
         }
@@ -1320,11 +1333,11 @@ public class ISOIOLibrary extends PrologLib {
             throw PrologError.permission_error(prolog, "past_end_of_stream", "stream", stream_or_alias, new Struct("Target stream has position at past_end_of_stream"));
         }
 
-        var variables_bool=false;
-        var variable_names_bool=false;
-        var singletons_bool=false;
+        boolean variables_bool=false;
+        boolean variable_names_bool=false;
+        boolean singletons_bool=false;
 
-        var readOptions = (Struct)options;
+        Struct readOptions = (Struct)options;
         if(readOptions.isList()){
             if(!readOptions.isEmptyList()){
                 Iterator<? extends Term> i = readOptions.listIterator();
@@ -1333,7 +1346,7 @@ public class ISOIOLibrary extends PrologLib {
                     if(obj instanceof Var){
                         throw PrologError.instantiation_error(prolog, 3);
                     }
-                    var option = (Struct) obj;
+                    Struct option = (Struct) obj;
                     switch (option.name()) {
                         case "variables":
                             variables_bool = true;
@@ -1358,10 +1371,10 @@ public class ISOIOLibrary extends PrologLib {
         try {
 
             in_term = in_term.term();
-            var st = "";
-            var open_apices2 = false;
-            var open_apices = false;
-            var ch = 0;
+            String st = "";
+            boolean open_apices2 = false;
+            boolean open_apices = false;
+            int ch = 0;
             label:
             do {
                 ch = stream.read();
@@ -1385,14 +1398,14 @@ public class ISOIOLibrary extends PrologLib {
                         }
                         break;
                 }
-                var can_add = true;
+                boolean can_add = true;
                 if (can_add){
                     st += Character.toString(((char) ch));
                 }
             } while (true);
 
-            var p = (NumberTerm.Int)position;
-            var p2 = p.intValue();
+            NumberTerm.Int p = (NumberTerm.Int)position;
+            int p2 = p.intValue();
             p2 += (st.getBytes()).length;
             
             if(ch == -1){
@@ -1406,24 +1419,24 @@ public class ISOIOLibrary extends PrologLib {
             if(!variables_bool && !variable_names_bool && !singletons_bool){
                 return unify(in_term, prolog.toTerm(st));
             }
-            var input_term = new Var();
+            Var input_term = new Var();
             unify(input_term,Term.term(st));
                     
             
             List<Term> variables_list = new ArrayList<>();
             analize_term(variables_list,input_term);
 
-            var associations_table = new Hashtable<Term, String>(variables_list.size());
+            Hashtable<Term, String> associations_table = new Hashtable<Term, String>(variables_list.size());
 
 
-            var association_for_replace = new Hashtable<Term, String>(variables_list.size());
+            Hashtable<Term, String> association_for_replace = new Hashtable<Term, String>(variables_list.size());
 
-            var set = new LinkedHashSet<Term>(variables_list);
+            LinkedHashSet<Term> set = new LinkedHashSet<Term>(variables_list);
             List<Var> vars = new ArrayList<>();
 
             if(variables_bool){
-                var num = 0;
-                for(var t:set){
+                int num = 0;
+                for(Term t:set){
                     num++;
                     if(variable_names_bool){
                         association_for_replace.put(t, "X"+num);
@@ -1439,12 +1452,15 @@ public class ISOIOLibrary extends PrologLib {
             List<Term> singl = new ArrayList<>();
             if(singletons_bool){
                 List<Term> temporanyList = new ArrayList<>(variables_list);
-                var flag = 0;
-                for(var t:variables_list){
+                int flag = 0;
+                for(Term t:variables_list){
                     temporanyList.remove(t);
                     flag = 0;
-                    if (temporanyList.stream().anyMatch(temp -> temp.equals(t))) {
-                        flag = 1;
+                    for (Term temp : temporanyList) {
+                        if (temp.equals(t)) {
+                            flag = 1;
+                            break;
+                        }
                     }
                     if(flag == 0){
                         if(!((t.toString()).startsWith("_"))){
@@ -1483,11 +1499,11 @@ public class ISOIOLibrary extends PrologLib {
                 }
             }
 
-            var string_term = input_term.toString();
+            String string_term = input_term.toString();
             
-            for(var entry:association_for_replace.entrySet()){
-                var regex = entry.getKey().toString();
-                var replacement = entry.getValue();
+            for(Map.Entry<Term, String> entry:association_for_replace.entrySet()){
+                String regex = entry.getKey().toString();
+                String replacement = entry.getValue();
                 string_term = string_term.replaceAll(regex, replacement);
             }
             
@@ -1505,8 +1521,8 @@ public class ISOIOLibrary extends PrologLib {
             variables.add(t);
         }
         else{
-            var term_struct = (Struct)t.term();
-            for(var i = 0; i<term_struct.subs(); i++){
+            Struct term_struct = (Struct)t.term();
+            for(int i = 0; i<term_struct.subs(); i++){
                 analize_term(variables,term_struct.sub(i));
             }
         }
@@ -1514,13 +1530,13 @@ public class ISOIOLibrary extends PrologLib {
     
     public boolean read_2(Term stream_or_alias, Term in_term)throws PrologError{
         initLibrary();
-        var options = new Struct(".", Struct.emptyList());
+        Struct options = new Struct(".", Struct.emptyList());
         return read_term_3(stream_or_alias,in_term,options);
     }
     
     public boolean write_term_2(Term out_term, Term options)throws PrologError{
         initLibrary();
-        var stream_or_alias = new Struct(outputStream.toString());
+        Struct stream_or_alias = new Struct(outputStream.toString());
         return write_term_3(stream_or_alias,out_term,options);
     }
     
@@ -1528,19 +1544,19 @@ public class ISOIOLibrary extends PrologLib {
         initLibrary();
         out_term = out_term.term();
 
-        var output = find_output_stream(stream_or_alias);
-        var output_name = get_output_name(output);
-        var writeOptionsList = (Struct)optionsTerm.term();
+        OutputStream output = find_output_stream(stream_or_alias);
+        String output_name = get_output_name(output);
+        Struct writeOptionsList = (Struct)optionsTerm.term();
 
-        var element = outputStreams.get(output);
-        var type =(Struct) element.get("type");
+        Hashtable<String, Term> element = outputStreams.get(output);
+        Struct type =(Struct) element.get("type");
         if("binary".equals(type.name())){
             throw PrologError.permission_error(prolog, "output", "binary_stream", stream_or_alias, new Struct("Target stream is associated with a binary stream."));
         }
 
-        var numbervars = false;
-        var ignore_ops = false;
-        var quoted = false;
+        boolean numbervars = false;
+        boolean ignore_ops = false;
+        boolean quoted = false;
         if(writeOptionsList.isList()){
             if(!writeOptionsList.isEmptyList()){
                 Iterator<? extends Term> i = writeOptionsList.listIterator();
@@ -1620,13 +1636,13 @@ public class ISOIOLibrary extends PrologLib {
                return true;
             }
 
-            var term = (Struct)out_term;
-            var options = new Hashtable<String, Boolean>(3);
+            Struct term = (Struct)out_term;
+            Hashtable<String, Boolean> options = new Hashtable<String, Boolean>(3);
             options.put("numbervars", numbervars);
             options.put("ignore_ops", ignore_ops);
             options.put("quoted", quoted);
 
-            var result = create_string(options, term);
+            String result = create_string(options, term);
 
             if ("stdout".equals(output_name)) {
                 prolog.output(result);
@@ -1649,14 +1665,14 @@ public class ISOIOLibrary extends PrologLib {
         boolean ignore_ops = options.get("ignore_ops");
 
         if(term.isList()){
-            var list = print_list(term, options);
+            String list = print_list(term, options);
             return !ignore_ops ? '[' + list + ']' : list;
         }
 
-        var operatorList = prolog.operators();
-        var operator = "";
-        var flagOp = 0;
-        for(var op : operatorList){
+        Iterable<PrologOp> operatorList = prolog.operators();
+        String operator = "";
+        int flagOp = 0;
+        for(PrologOp op : operatorList){
             if(op.name.equals(term.name())){
                 operator = op.name;
                 flagOp = 1;
@@ -1664,25 +1680,25 @@ public class ISOIOLibrary extends PrologLib {
             }
         }
 
-        var result = "";
+        String result = "";
         if(flagOp == 0){
             result+=term.name()+ '(';
         }
 
-        var arity = term.subs();
-        for(var i = 0; i<arity; i++){
+        int arity = term.subs();
+        for(int i = 0; i<arity; i++){
             if(i > 0 && flagOp==0)
                 result += ",";
-            var arg = term.sub(i);
+            Term arg = term.sub(i);
             if(arg instanceof NumberTerm){
                 if(term.name().contains("$VAR")){
                 
                     if(numbervars){
-                        var argNumber = (NumberTerm.Int)term.sub(i);
-                        var res = argNumber.intValue() % 26;
-                        var div = argNumber.intValue()/26;
-                        var ch = 'A';
-                        var num = (ch+res);
+                        NumberTerm.Int argNumber = (NumberTerm.Int)term.sub(i);
+                        int res = argNumber.intValue() % 26;
+                        int div = argNumber.intValue()/26;
+                        char ch = 'A';
+                        int num = (ch+res);
                         result = new String(Character.toChars(num));
                         if(div != 0){
                             result += div;
@@ -1776,11 +1792,11 @@ public class ISOIOLibrary extends PrologLib {
         
         boolean ignore_ops = options.get("ignore_ops");
 
-        var result = "";
+        String result = "";
         
         if(ignore_ops){
             result= '\'' +term.name()+ '\'' +" (";
-            for(var i = 0; i<term.subs(); i++){
+            for(int i = 0; i<term.subs(); i++){
                 if(i > 0){
                     result+=",";
                 }
@@ -1789,7 +1805,7 @@ public class ISOIOLibrary extends PrologLib {
             return result + ')';
         }
         else{
-            for(var i = 0; i<term.subs(); i++){
+            for(int i = 0; i<term.subs(); i++){
                 if(i > 0 && !(term.sub(i).isEmptyList())){
                     result+=",";
                 }
@@ -1813,7 +1829,7 @@ public class ISOIOLibrary extends PrologLib {
 
     public boolean write_2(Term stream_or_alias, Term out_term) throws PrologError{
         initLibrary();
-        var options = new Struct(".",new Struct("quoted",new Struct("false")),
+        Struct options = new Struct(".",new Struct("quoted",new Struct("false")),
                 new Struct(".",new Struct("ignore_ops",new Struct("false")),
                 new Struct(".",new Struct("numbervars",new Struct("true")), Struct.emptyList())));
         return write_term_3(stream_or_alias,out_term,options);
@@ -1825,8 +1841,8 @@ public class ISOIOLibrary extends PrologLib {
     
     public boolean write_iso_1(Term out_term) throws PrologError{
         initLibrary();
-        var stream_or_alias = new Struct(outputStream.toString());
-        var options = new Struct(".",new Struct("quoted",new Struct("false")),
+        Struct stream_or_alias = new Struct(outputStream.toString());
+        Struct options = new Struct(".",new Struct("quoted",new Struct("false")),
                 new Struct(".",new Struct("ignore_ops",new Struct("false")),
                 new Struct(".",new Struct("numbervars",new Struct("true")), Struct.emptyList())));
         return write_term_3(stream_or_alias,out_term,options);
@@ -1834,8 +1850,8 @@ public class ISOIOLibrary extends PrologLib {
     
     public boolean writeq_1(Term out_term)throws PrologError{
         initLibrary();
-        var stream_or_alias = new Struct(outputStream.toString());
-        var options = new Struct(".",new Struct("quoted",new Struct("true")),
+        Struct stream_or_alias = new Struct(outputStream.toString());
+        Struct options = new Struct(".",new Struct("quoted",new Struct("true")),
                     new Struct(".",new Struct("ignore_ops",new Struct("false")),
                     new Struct(".",new Struct("numbervars",new Struct("true")), Struct.emptyList())));
         return write_term_3(stream_or_alias,out_term,options);
@@ -1843,7 +1859,7 @@ public class ISOIOLibrary extends PrologLib {
     
     public boolean writeq_2(Term stream_or_alias, Term out_term) throws PrologError{
         initLibrary();
-        var options = new Struct(".",new Struct("quoted",new Struct("true")),
+        Struct options = new Struct(".",new Struct("quoted",new Struct("true")),
                 new Struct(".",new Struct("ignore_ops",new Struct("false")),
                 new Struct(".",new Struct("numbervars",new Struct("true")), Struct.emptyList())));
         return write_term_3(stream_or_alias,out_term,options);
@@ -1851,8 +1867,8 @@ public class ISOIOLibrary extends PrologLib {
     
     public boolean write_canonical_1(Term out_term) throws PrologError{
         initLibrary();
-        var stream_or_alias = new Struct(outputStream.toString());
-        var options = new Struct(".",new Struct("quoted",new Struct("true")),
+        Struct stream_or_alias = new Struct(outputStream.toString());
+        Struct options = new Struct(".",new Struct("quoted",new Struct("true")),
                 new Struct(".",new Struct("ignore_ops",new Struct("true")),
                 new Struct(".",new Struct("numbervars",new Struct("false")), Struct.emptyList())));
         return write_term_3(stream_or_alias,out_term,options);
@@ -1860,7 +1876,7 @@ public class ISOIOLibrary extends PrologLib {
     
     public boolean write_canonical_2(Term stream_or_alias, Term out_term)throws PrologError{
         initLibrary();
-        var options = new Struct(".",new Struct("quoted",new Struct("true")),
+        Struct options = new Struct(".",new Struct("quoted",new Struct("true")),
                 new Struct(".",new Struct("ignore_ops",new Struct("true")),
                 new Struct(".",new Struct("numbervars",new Struct("false")), Struct.emptyList())));
         return write_term_3(stream_or_alias,out_term,options);
@@ -1871,7 +1887,7 @@ public class ISOIOLibrary extends PrologLib {
         if(flag == 1)
             return;
 
-        var prologLib = prolog.library("alice.tuprolog.lib.IOLibrary");
+        PrologLib prologLib = prolog.library("alice.tuprolog.lib.IOLibrary");
         if(prologLib == null){
             try {
                 prologLib = prolog.addLibrary("alice.tuprolog.lib.IOLibrary");
@@ -1890,7 +1906,7 @@ public class ISOIOLibrary extends PrologLib {
         flag = 1;
 
 
-        var propertyInput = new Hashtable<String, Term>(10);
+        Hashtable<String, Term> propertyInput = new Hashtable<String, Term>(10);
         inizialize_properties(propertyInput);
         propertyInput.put("input", new Struct("true"));
         propertyInput.put("mode", new Struct("read"));
@@ -1899,7 +1915,7 @@ public class ISOIOLibrary extends PrologLib {
         propertyInput.put("file_name", new Struct("stdin"));
         propertyInput.put("eof_action", new Struct("reset"));
         propertyInput.put("type", new Struct("text"));
-        var propertyOutput = new Hashtable<String, Term>(10);
+        Hashtable<String, Term> propertyOutput = new Hashtable<String, Term>(10);
         inizialize_properties(propertyOutput);
         propertyOutput.put("output", new Struct("true"));
         propertyOutput.put("mode", new Struct("append"));
@@ -1914,7 +1930,7 @@ public class ISOIOLibrary extends PrologLib {
     
     
     private static boolean inizialize_properties(Hashtable<String, Term> map){
-        var s = Struct.emptyList();
+        Struct s = Struct.emptyList();
         map.put("file_name", s);
         map.put("mode", s);
         map.put("input", new Struct("false"));
@@ -1934,8 +1950,8 @@ public class ISOIOLibrary extends PrologLib {
     
     private InputStream find_input_stream(Term stream_or_alias) throws PrologError{
         stream_or_alias = stream_or_alias.term();
-        var stream = (Struct)stream_or_alias;
-        var stream_name = stream.name();
+        Struct stream = (Struct)stream_or_alias;
+        String stream_name = stream.name();
         
         if (stream_or_alias instanceof Var) { 
             throw PrologError.instantiation_error(prolog, 1);
@@ -1943,9 +1959,9 @@ public class ISOIOLibrary extends PrologLib {
         
         
         InputStream result = null;
-        var flag = 0;
-        for(var currentElement : inputStreams.entrySet()){
-            for(var currentElement2 : currentElement.getValue().entrySet()){
+        int flag = 0;
+        for(Map.Entry<InputStream, Hashtable<String, Term>> currentElement : inputStreams.entrySet()){
+            for(Map.Entry<String, Term> currentElement2 : currentElement.getValue().entrySet()){
 
                 
                 
@@ -1963,12 +1979,12 @@ public class ISOIOLibrary extends PrologLib {
                 } 
                 
                 else if("alias".equals(currentElement2.getKey())){
-                    var alias = (Struct)currentElement2.getValue();
-                    var arity = alias.subs();
+                    Struct alias = (Struct)currentElement2.getValue();
+                    int arity = alias.subs();
                     
                     
                     if(arity > 1){
-                        for(var k = 0; k< alias.subs(); k++){
+                        for(int k = 0; k< alias.subs(); k++){
                             if((alias.sub(k)).equals(stream_or_alias)){
                                 result = currentElement.getKey();
                                 flag =1;
@@ -2004,17 +2020,17 @@ public class ISOIOLibrary extends PrologLib {
     
     private OutputStream find_output_stream(Term stream_or_alias)throws PrologError{
         stream_or_alias = stream_or_alias.term();
-        var stream = (Struct)stream_or_alias;
-        var stream_name = stream.name();
+        Struct stream = (Struct)stream_or_alias;
+        String stream_name = stream.name();
         
         if (stream_or_alias instanceof Var) {
             throw PrologError.instantiation_error(prolog, 1);
         }
 
         OutputStream result = null;
-        var flag = 0;
-        for(var currentElement : outputStreams.entrySet()){
-            for(var currentElement2 : currentElement.getValue().entrySet()){
+        int flag = 0;
+        for(Map.Entry<OutputStream, Hashtable<String, Term>> currentElement : outputStreams.entrySet()){
+            for(Map.Entry<String, Term> currentElement2 : currentElement.getValue().entrySet()){
                 
                 if((currentElement.getKey().toString()).equals(stream_name)){
                     result = currentElement.getKey();
@@ -2031,12 +2047,12 @@ public class ISOIOLibrary extends PrologLib {
                 
                 
                 else if("alias".equals(currentElement2.getKey())){
-                    var alias = (Struct)currentElement2.getValue();
-                    var arity = alias.subs();
+                    Struct alias = (Struct)currentElement2.getValue();
+                    int arity = alias.subs();
                     
                     
                     if(arity > 1){
-                        for(var k = 0; k< alias.subs(); k++){
+                        for(int k = 0; k< alias.subs(); k++){
                             if((alias.sub(k)).equals(stream_or_alias)){
                                 result = currentElement.getKey();
                                 flag =1;
@@ -2070,30 +2086,37 @@ public class ISOIOLibrary extends PrologLib {
     
     
     private String get_output_name(OutputStream output){
-        var found = outputStreams.entrySet().stream().filter(element -> (element.getKey().toString()).equals(output.toString())).map(Map.Entry::getValue).findFirst();
-        var file_name = found.map(properties -> properties.get("file_name")).orElse(null);
+        Optional<Hashtable<String, Term>> found = Optional.empty();
+        for (Map.Entry<OutputStream, Hashtable<String, Term>> element : outputStreams.entrySet()) {
+            if ((element.getKey().toString()).equals(output.toString())) {
+                Hashtable<String, Term> value = element.getValue();
+                found = Optional.of(value);
+                break;
+            }
+        }
+        Term file_name = found.map(properties -> properties.get("file_name")).orElse(null);
 
 
-        var returnElement = (Struct)file_name;
+        Struct returnElement = (Struct)file_name;
         return returnElement.name();
     }
     
     private String get_input_name(InputStream input){
         Term file_name = null;
-        for(var element : inputStreams.entrySet()){
+        for(Map.Entry<InputStream, Hashtable<String, Term>> element : inputStreams.entrySet()){
             if((element.getKey().toString()).equals(input.toString())){
                 input = element.getKey();
-                var properties = element.getValue();
+                Hashtable<String, Term> properties = element.getValue();
                 file_name = properties.get("file_name");
                 break;
             }
         }
-        var returnElement = (Struct)file_name;
+        Struct returnElement = (Struct)file_name;
         return returnElement.name();
     }
     
     public boolean set_write_flag_1(Term number) throws PrologError{
-        var n = (NumberTerm)number;
+        NumberTerm n = (NumberTerm)number;
         if(n.intValue() == 1){
             write_flag = 1;
             return true;

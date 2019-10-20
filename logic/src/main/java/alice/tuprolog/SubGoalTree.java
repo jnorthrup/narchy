@@ -14,11 +14,11 @@ public final class SubGoalTree extends FasterList<SubTree> implements SubTree {
     public SubGoalTree(Term body) {
         this();
         while (body instanceof Struct) {
-            var s = (Struct) body;
+            Struct s = (Struct) body;
             if (!",".equals(s.name()))
                 break;
 
-            var t = s.sub(0);
+            Term t = s.sub(0);
             if (t instanceof Struct && ",".equals(((Struct) t).name())) {
                 addChild(t);
             } else {
@@ -34,7 +34,7 @@ public final class SubGoalTree extends FasterList<SubTree> implements SubTree {
     }
 
     public SubGoalTree addChild() {
-        var r = new SubGoalTree();
+        SubGoalTree r = new SubGoalTree();
         add(r);
         return r;
     }
@@ -44,8 +44,8 @@ public final class SubGoalTree extends FasterList<SubTree> implements SubTree {
     public final boolean isLeaf() { return false; }
 
     public String toString() {
-        var result = new StringBuilder(" [ ");
-        var i = iterator();
+        StringBuilder result = new StringBuilder(" [ ");
+        Iterator<SubTree> i = iterator();
         if (i.hasNext())
             result.append(i.next());
         while (i.hasNext()) {

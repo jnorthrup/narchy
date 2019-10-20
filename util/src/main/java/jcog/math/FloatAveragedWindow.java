@@ -68,11 +68,11 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
             @Override
             public double apply(Tensor window, float alpha) {
                 double total = 0;
-                var count = 0;
+                int count = 0;
                 //TODO Tensor reduce function
-                var vol = window.volume();
-                for (var i = 0; i < vol; i++) { //reverse
-                    var v = window.getAt(i);
+                int vol = window.volume();
+                for (int i = 0; i < vol; i++) { //reverse
+                    float v = window.getAt(i);
                     if (v != v)
                         continue;
 
@@ -85,15 +85,15 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
         Exponential {
             @Override
             public double apply(Tensor window, float a) {
-                var next = Double.NaN;
+                double next = Double.NaN;
                 //TODO Tensor reduce function
-                var vol = window.volume();
-                for (var i = 0; i < vol; i++) { //reverse
-                    var v = window.getAt(i);
+                int vol = window.volume();
+                for (int i = 0; i < vol; i++) { //reverse
+                    float v = window.getAt(i);
                     if (v != v)
                         continue;
 
-                    var prev = next;
+                    double prev = next;
                     next = (prev == prev) ?
                             ((1 - a) * prev) + (a * v)
                             :
@@ -236,9 +236,9 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
     }
 
     public double asDouble() {
-        var c = asCached();
+        double c = asCached();
         if (c != c) {
-            var calculated = calculate();
+            double calculated = calculate();
             current.set(c = calculated);
         }
         return c;

@@ -17,7 +17,7 @@ public class CauseMap<X> {
             k -> new IntHashSet(1).asSynchronized(), 4096, 4, false);
 
     public void start(X x, short... cause) {
-        var cc = this.cause.apply(causeTerm(cause));
+        MutableIntSet cc = this.cause.apply(causeTerm(cause));
         if (cc!=null)
             cc.add(System.identityHashCode(x));
     }

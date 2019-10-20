@@ -33,7 +33,7 @@ public class FloatNormalized implements FloatSupplier {
 
     @Override
     public float asFloat() {
-        var raw = in.asFloat();
+        float raw = in.asFloat();
         return raw != raw ? Float.NaN : normalizer.valueOf(raw);
     }
 

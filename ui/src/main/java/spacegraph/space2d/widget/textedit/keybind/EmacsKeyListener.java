@@ -32,9 +32,9 @@ public class EmacsKeyListener implements TextEditKeys {
     }
 
     public void setup() throws IOException {
-        var url = Resources.getResource("spacegraph/space2d/widget/textedit/emacs.setting");
-        var lines = Resources.readLines(url, Charsets.UTF_8);
-        for (var line : lines) {
+        URL url = Resources.getResource("spacegraph/space2d/widget/textedit/emacs.setting");
+        List<String> lines = Resources.readLines(url, Charsets.UTF_8);
+        for (String line : lines) {
             parseSetting(line);
         }
     }
@@ -149,23 +149,23 @@ public class EmacsKeyListener implements TextEditKeys {
         if (line.isEmpty() || line.startsWith("#")) {
             return;
         }
-        var split = line.split(" ");
-        var keys = Arrays.copyOfRange(split, 0, split.length - 1);
-        var action = split[split.length - 1];
+        String[] split = line.split(" ");
+        String[] keys = Arrays.copyOfRange(split, 0, split.length - 1);
+        String action = split[split.length - 1];
 
         List<Stroke> strokes = new FasterList<>(keys.length);
-        for (var key : keys) {
+        for (String key : keys) {
             strokes.add(getStroke(key));
         }
         keybinds.put(strokes, action);
     }
 
     private static Stroke getStroke(String key) {
-        var m = ACTION_PATTERN.matcher(key);
+        Matcher m = ACTION_PATTERN.matcher(key);
         if (!m.find()) {
             throw new RuntimeException("invalid config.");
         }
-        var actionString = m.group(1);
+        String actionString = m.group(1);
         int code = CODE_MAPPING.get(actionString);
         if (key.startsWith("C-A-S-")) {
             return new Stroke(CTRL_ALT_SHIFT, code);
@@ -200,7 +200,7 @@ public class EmacsKeyListener implements TextEditKeys {
 //        }
         if (pressedOrReleased) {
 
-            var model = editor;
+            TextEditModel model = editor;
             if (!keyPressed(SupportKey.NONE, e.getKeyCode(), e.getWhen(), model)) {
                 if (e.isPrintableKey()) {
                     model.execute(/* TODO: "insert" ? */"type", String.valueOf(e.getKeyChar()));
@@ -218,11 +218,11 @@ public class EmacsKeyListener implements TextEditKeys {
             return true;
         }
 
-        var stroke = new Stroke(supportKey, keyCode);
+        Stroke stroke = new Stroke(supportKey, keyCode);
 
         synchronized(this) {
 //            currentStrokes.addAt(stroke);
-            var actionName = getActionName(stroke);
+            String actionName = getActionName(stroke);
             if (actionName != null) {
                 model.execute(actionName);
                 //this.executed = true;
@@ -238,7 +238,7 @@ public class EmacsKeyListener implements TextEditKeys {
     /** single stroke */
     private String getActionName(Stroke s) {
         //inStroke = false;
-        var v = keybinds.get(List.of(s));
+        String v = keybinds.get(List.of(s));
         return v;
 //        if (v!=null) {
 //            //currentStrokes.clear();
@@ -259,11 +259,16 @@ public class EmacsKeyListener implements TextEditKeys {
     }
 
     private static boolean containStroke(List<Stroke> keybinding, List<Stroke> current) {
-        var cs = current.size();
+        int cs = current.size();
         if (cs > keybinding.size()) {
             return false;
         }
-        return IntStream.range(0, cs).anyMatch(i -> current.get(i).equals(keybinding.get(i)));
+        for (int i = 0; i < cs; i++) {
+            if (current.get(i).equals(keybinding.get(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 
 

@@ -29,10 +29,10 @@ public class TrieSequencerCharSequenceCaseInsensitive<S extends CharSequence> ex
    @Override
    public int matches( S sequenceA, int indexA, S sequenceB, int indexB, int count )
    {
-      for (var i = 0; i < count; i++)
+      for (int i = 0; i < count; i++)
       {
-         var a = sequenceA.charAt( indexA + i );
-         var b = sequenceB.charAt( indexB + i );
+          char a = sequenceA.charAt( indexA + i );
+          char b = sequenceB.charAt( indexB + i );
 
          if (Character.toLowerCase( a ) != Character.toLowerCase( b ))
          {

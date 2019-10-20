@@ -85,7 +85,7 @@ public class TaskConcept extends NodeConcept  {
      * Called exactly once on each task.
      */
     public void remember(Remember r) {
-        var t = r.input;
+        Task t = r.input;
 
         assert !NAL.test.DEBUG_EXTRA || (t.term().concept().equals(term));
         table(t.punc()).remember(r);
@@ -109,7 +109,7 @@ public class TaskConcept extends NodeConcept  {
 
     @Override
     public Stream<Task> tasks(boolean includeBeliefs, boolean includeQuestions, boolean includeGoals, boolean includeQuests) {
-        var c = 0;
+        int c = 0;
         if (includeBeliefs) c++;
         if (includeGoals) c++;
         if (includeQuestions) c++;

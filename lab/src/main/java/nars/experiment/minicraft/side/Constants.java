@@ -47,7 +47,7 @@ public class Constants {
         tileTypes.put(TileID.TORCH, new Tile(new TileType("sprites/tiles/torch.png", TileID.TORCH,
                 true, false, 0, Constants.LIGHT_VALUE_TORCH)));
 
-        for (var tileID : TileID.values()) {
+        for (TileID tileID : TileID.values()) {
             tileIDs.put(tileID.breaksInto, tileID);
         }
         tileIDs.compact();

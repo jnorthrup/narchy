@@ -13,12 +13,12 @@ public class RGBBufImgBitmap2D extends PlanarBitmap2D {
 
     @Override
     public float get(int... cell) {
-        var x = cell[0];
-        var y = cell[1];
+        int x = cell[0];
+        int y = cell[1];
 
-        var p = img.getRGB(x, y);
+        int p = img.getRGB(x, y);
 
-        var plane = cell[2];
+        int plane = cell[2];
         switch (plane) {
             case 0:
                 return Bitmap2D.decode8bRed(p);

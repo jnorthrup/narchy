@@ -19,9 +19,9 @@ public interface Bitmap2D extends Tensor {
 
     @Override
     default float getAt(int i) {
-        var w = width();
-        var y = i / w;
-        var x = i % w;
+        int w = width();
+        int y = i / w;
+        int x = i % w;
         return brightness(x, y);
     }
 
@@ -92,11 +92,11 @@ public interface Bitmap2D extends Tensor {
 
             @Override
             public float brightness(int x, int y) {
-                var c = Bitmap2D.this.brightness(x, y);
-                var up = y > 0 ? Bitmap2D.this.brightness(x, y-1) : c;
-                var left = x > 0 ? Bitmap2D.this.brightness(x-1, y) : c;
-                var down = y < height()-1 ? Bitmap2D.this.brightness(x, y+1) : c;
-                var right = x < width()-1 ? Bitmap2D.this.brightness(x+1, y) : c;
+                float c = Bitmap2D.this.brightness(x, y);
+                float up = y > 0 ? Bitmap2D.this.brightness(x, y-1) : c;
+                float left = x > 0 ? Bitmap2D.this.brightness(x-1, y) : c;
+                float down = y < height()-1 ? Bitmap2D.this.brightness(x, y+1) : c;
+                float right = x < width()-1 ? Bitmap2D.this.brightness(x+1, y) : c;
                 return (c*8 + up + left + down + right)/12;
             }
         };

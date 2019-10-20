@@ -49,7 +49,7 @@ public class TriangleIndexVertexArray extends StridingMeshInterface {
 	 * Just to be backwards compatible.
 	 */
 	public TriangleIndexVertexArray(int numTriangles, ByteBuffer triangleIndexBase, int triangleIndexStride, int numVertices, ByteBuffer vertexBase, int vertexStride) {
-		var mesh = new IndexedMesh();
+        IndexedMesh mesh = new IndexedMesh();
 
 		mesh.numTriangles = numTriangles;
 		mesh.triangleIndexBase = triangleIndexBase;
@@ -76,7 +76,7 @@ public class TriangleIndexVertexArray extends StridingMeshInterface {
 		assert (subpart < getNumSubParts());
 
 
-		var mesh = indexedMeshes.get(subpart);
+        IndexedMesh mesh = indexedMeshes.get(subpart);
 
 		data.vertexCount = mesh.numVertices;
 		data.vertexData = mesh.vertexBase;

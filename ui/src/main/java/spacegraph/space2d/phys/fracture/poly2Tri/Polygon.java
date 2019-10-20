@@ -130,7 +130,7 @@ class Polygon {
          * Number of contours.
          */
         _nVertices = new int[numContours];
-        var nextNumber = 1;
+        int nextNumber = 1;
         int j;
         int i;
         for (i = 0; i < numContours; ++i) {
@@ -145,7 +145,7 @@ class Polygon {
         }
         i = 0;
         j = 1;
-        var first = 1;
+        int first = 1;
 
         while (i < numContours) {
             Linebase edge;
@@ -220,9 +220,9 @@ class Polygon {
     }
 
     public boolean is_exist(double x, double y) {
-        var iter = _points.keySet().intIterator();
+        MutableIntIterator iter = _points.keySet().intIterator();
         while (iter.hasNext()) {
-            var pb = getPoint(iter.next());
+            Pointbase pb = getPoint(iter.next());
             if ((pb.x == x) && (pb.y == y)) return true;
         }
         return false;
@@ -241,7 +241,7 @@ class Polygon {
             currentLoop++;
         }
 
-        var j = 0;
+        int j = 0;
         if (i == 1 || (i == _nVertices[prevLoop] + 1)) j = _nVertices[currentLoop];
         else if (i <= _nVertices[currentLoop]) j = i - 1;
 
@@ -260,7 +260,7 @@ class Polygon {
             currentLoop++;
         }
 
-        var j = 0;
+        int j = 0;
         if (i < _nVertices[currentLoop]) j = i + 1;
         else if (i == _nVertices[currentLoop]) {
             if (currentLoop == 0) j = 1;
@@ -274,7 +274,7 @@ class Polygon {
      * rotate input polygon by angle theta, not used;
      */
     private void rotate(double theta) {
-        for (var _pointsKey : _pointsKeys) (getPoint(_pointsKey)).rotate(theta);
+        for (int _pointsKey : _pointsKeys) (getPoint(_pointsKey)).rotate(theta);
     }
 
 
@@ -301,7 +301,7 @@ class Polygon {
          * Right now I'm not sure wether number of edges can't change...
          * ... better call initializeEdgesKeys() all the time ;)
          */
-        var _edgesKeys = _edges.keySet().toSortedArray();
+        int[] _edgesKeys = _edges.keySet().toSortedArray();
     }
 
     private IntHashSet getSetFromStartAdjEdgeMap(int index) {
@@ -320,21 +320,21 @@ class Polygon {
     private void initializate() {
         initializePointsKeys();
 
-        for (var _pointsKey : _pointsKeys) {
-            var id = _pointsKey;
-            var idp = prev(id);
-            var idn = next(id);
+        for (int _pointsKey : _pointsKeys) {
+            int id = _pointsKey;
+            int idp = prev(id);
+            int idn = next(id);
 
-            var p = getPoint(id);
-            var pnext = getPoint(idn);
-            var pprev = getPoint(idp);
+            Pointbase p = getPoint(id);
+            Pointbase pnext = getPoint(idn);
+            Pointbase pprev = getPoint(idp);
 
             if ((p.compareTo(pnext) > 0) && (pprev.compareTo(p) > 0))
                 p.type = Poly2TriUtils.REGULAR_DOWN;
             else if ((p.compareTo(pprev) > 0) && (pnext.compareTo(p) > 0))
                 p.type = Poly2TriUtils.REGULAR_UP;
             else {
-                var area = Poly2TriUtils.orient2d(new double[]{pprev.x, pprev.y},
+                double area = Poly2TriUtils.orient2d(new double[]{pprev.x, pprev.y},
                         new double[]{p.x, p.y},
                         new double[]{pnext.x, pnext.y});
 
@@ -358,9 +358,9 @@ class Polygon {
      * C++ code: was all unsigned (i,j)
      */
     private void addDiagonal(int i, int j) {
-        var type = Poly2TriUtils.INSERT;
+        int type = Poly2TriUtils.INSERT;
 
-        var diag = new Linebase(getPoint(i),
+        Linebase diag = new Linebase(getPoint(i),
                 getPoint(j),
                 type);
         _edges.put(diag.id(), diag);
@@ -381,11 +381,11 @@ class Polygon {
      */
     private void handleStartVertex(int i) {
 
-        var y = ((Pointbase) _points.get(i)).y;
+        double y = ((Pointbase) _points.get(i)).y;
 
         _edgebst.inOrder(updateKey, y);
 
-        var edge = getEdge(i);
+        Linebase edge = getEdge(i);
         if (edge != null) {
             edge.setHelper(i);
             edge.setKeyValue(y);
@@ -407,14 +407,14 @@ class Polygon {
      * C++ code: param i was unsigned
      */
     private void handleEndVertex(int i) {
-        var y = getPoint(i).y;
+        double y = getPoint(i).y;
 
         _edgebst.inOrder(updateKey, y);
 
-        var previ = prev(i);
-        var edge = getEdge(previ);
+        int previ = prev(i);
+        Linebase edge = getEdge(previ);
         if (edge != null) {
-            var helper = edge.helper();
+            int helper = edge.helper();
 
             if (getPoint(helper).type == Poly2TriUtils.MERGE)
                 addDiagonal(i, helper);
@@ -433,16 +433,16 @@ class Polygon {
      * C++ code: i was unsigned, helper was unsigned
      */
     private void handleSplitVertex(int i) {
-        var point = getPoint(i);
+        Pointbase point = getPoint(i);
         double x = point.x, y = point.y;
 
         _edgebst.inOrder(updateKey, y);
 
-        var leftnode = _edgebst.findMaxSmallerThan(x);
+        BTreeNode leftnode = _edgebst.findMaxSmallerThan(x);
         if (leftnode != null) {
-            var leftedge = (Linebase) leftnode.data();
+            Linebase leftedge = (Linebase) leftnode.data();
 
-            var helper = leftedge.helper();
+            int helper = leftedge.helper();
             addDiagonal(i, helper);
 
             if (_debug) {
@@ -456,7 +456,7 @@ class Polygon {
 
             leftedge.setHelper(i);
 
-            var edge = getEdge(i);
+            Linebase edge = getEdge(i);
             edge.setHelper(i);
             edge.setKeyValue(y);
             _edgebst.insert(edge);
@@ -469,17 +469,17 @@ class Polygon {
      * C++ code: i was unsigned, previ + helper also unsigned
      */
     private void handleMergeVertex(int i) {
-        var point = getPoint(i);
+        Pointbase point = getPoint(i);
         double x = point.x, y = point.y;
 
         _edgebst.inOrder(updateKey, y);
 
-        var previ = prev(i);
-        var previEdge = getEdge(previ);
+        int previ = prev(i);
+        Linebase previEdge = getEdge(previ);
         if (previEdge != null) {
-            var helper = previEdge.helper();
+            int helper = previEdge.helper();
 
-            var helperPoint = getPoint(helper);
+            Pointbase helperPoint = getPoint(helper);
 
             if (helperPoint.type == Poly2TriUtils.MERGE)
                 addDiagonal(i, helper);
@@ -491,8 +491,8 @@ class Polygon {
                 
             }
 
-            var leftnode = _edgebst.findMaxSmallerThan(x);
-            var leftedge = (Linebase) leftnode.data();
+            BTreeNode leftnode = _edgebst.findMaxSmallerThan(x);
+            Linebase leftedge = (Linebase) leftnode.data();
 
             helper = leftedge.helper();
             helperPoint = getPoint(helper);
@@ -515,27 +515,27 @@ class Polygon {
      * C++ code: i was unsigned, previ + helper also unsigned
      */
     private void handleRegularVertexDown(int i) {
-        var point = getPoint(i);
+        Pointbase point = getPoint(i);
 
-        var y = point.y;
+        double y = point.y;
 
         _edgebst.inOrder(updateKey, y);
 
-        var previ = prev(i);
+        int previ = prev(i);
 
-        var previEdge = getEdge(previ);
+        Linebase previEdge = getEdge(previ);
         if (previEdge != null) {
 
-            var helper = previEdge.helper();
+            int helper = previEdge.helper();
 
-            var helperPoint = getPoint(helper);
+            Pointbase helperPoint = getPoint(helper);
 
             if (helperPoint.type == Poly2TriUtils.MERGE)
                 addDiagonal(i, helper);
 
             _edgebst.delete(previEdge.keyValue());
 
-            var edge = getEdge(i);
+            Linebase edge = getEdge(i);
             edge.setHelper(i);
             edge.setKeyValue(y);
             _edgebst.insert(edge);
@@ -556,19 +556,19 @@ class Polygon {
      * C++ code: i was unsigned, helper also unsigned
      */
     private void handleRegularVertexUp(int i) {
-        var point = getPoint(i);
+        Pointbase point = getPoint(i);
 
         double x = point.x, y = point.y;
 
         _edgebst.inOrder(updateKey, y);
 
-        var leftnode = _edgebst.findMaxSmallerThan(x);
+        BTreeNode leftnode = _edgebst.findMaxSmallerThan(x);
         if (leftnode != null) {
 
-            var leftedge = (Linebase) leftnode.data();
+            Linebase leftedge = (Linebase) leftnode.data();
 
-            var helper = leftedge.helper();
-            var helperPoint = getPoint(helper);
+            int helper = leftedge.helper();
+            Pointbase helperPoint = getPoint(helper);
             if (helperPoint.type == Poly2TriUtils.MERGE) addDiagonal(i, helper);
             leftedge.setHelper(i);
 
@@ -597,9 +597,9 @@ class Polygon {
         }
 
         while (!_qpoints.isEmpty()) {
-            var vertex = qpointsPop();
+            Pointbase vertex = qpointsPop();
 
-            var id = vertex.id;
+            int id = vertex.id;
 
             if (_debug) {
                 String stype;
@@ -662,21 +662,21 @@ class Polygon {
      * auxiliary function to find monotone polygon pieces
      */
     private static double angleCosb(double[] pa, double[] pb, double[] pc) {
-        var dxab = pa[0] - pb[0];
-        var dyab = pa[1] - pb[1];
+        double dxab = pa[0] - pb[0];
+        double dyab = pa[1] - pb[1];
 
-        var dxcb = pc[0] - pb[0];
-        var dycb = pc[1] - pb[1];
+        double dxcb = pc[0] - pb[0];
+        double dycb = pc[1] - pb[1];
 
-        var dxab2 = dxab * dxab;
-        var dyab2 = dyab * dyab;
-        var dxcb2 = dxcb * dxcb;
-        var dycb2 = dycb * dycb;
-        var ab = dxab2 + dyab2;
-        var cb = dxcb2 + dycb2;
+        double dxab2 = dxab * dxab;
+        double dyab2 = dyab * dyab;
+        double dxcb2 = dxcb * dxcb;
+        double dycb2 = dycb * dycb;
+        double ab = dxab2 + dyab2;
+        double cb = dxcb2 + dycb2;
 
-        var cosb = dxab * dxcb + dyab * dycb;
-        var denom = Math.sqrt(ab * cb);
+        double cosb = dxab * dxcb + dyab * dycb;
+        double denom = Math.sqrt(ab * cb);
 
         cosb /= denom;
 
@@ -691,13 +691,13 @@ class Polygon {
      * C++ code: return unsigned int, eid also unsigned, same for nexte_ccw, nexte_cw
      */
     private int selectNextEdge(Linebase edge) {
-        var eid = edge.endPoint(1).id;
-        var edges = getSetFromStartAdjEdgeMap(eid);
+        int eid = edge.endPoint(1).id;
+        IntHashSet edges = getSetFromStartAdjEdgeMap(eid);
 
-        var numEdges = edges.size();
+        int numEdges = edges.size();
         assert (numEdges != 0);
 
-        var nexte = 0;
+        int nexte = 0;
 
         if (numEdges == 1)
             nexte = (edges.intIterator().next());
@@ -709,10 +709,10 @@ class Polygon {
 
             IntIterator iter = edges.toSortedList().intIterator();
             while (iter.hasNext()) {
-                var it = iter.next();
+                int it = iter.next();
                 if (it == edge.id()) continue;
 
-                var iEdge = getEdge(it);
+                Linebase iEdge = getEdge(it);
 
                 double[] A = {0, 0};
                 A[0] = edge.endPoint(0).x;
@@ -726,8 +726,8 @@ class Polygon {
                 C[0] = iEdge.endPoint(1).x;
                 C[1] = iEdge.endPoint(1).y;
 
-                var area = Poly2TriUtils.orient2d(A, B, C);
-                var cosb = angleCosb(A, B, C);
+                double area = Poly2TriUtils.orient2d(A, B, C);
+                double cosb = angleCosb(A, B, C);
 
                 if (area > 0 && max < cosb) {
                     nexte_ccw = it;
@@ -751,7 +751,7 @@ class Polygon {
      * @return success
      */
     private boolean searchMonotones() {
-        var loop = 0;
+        int loop = 0;
 
         IntObjectHashMap<Linebase> edges = new IntObjectHashMap(_edges);
 
@@ -760,16 +760,16 @@ class Polygon {
         while (edges.size() > _diagonals.size()) {
             loop++;
 
-            var poly = new ArrayList();
+            ArrayList poly = new ArrayList();
 
-            var edgesKeys = edges.keySet().toSortedArray();
+            int[] edgesKeys = edges.keySet().toSortedArray();
 
-            var it = edgesKeys[0];
-            var itEdge = edges.get(it);
+            int it = edgesKeys[0];
+            Linebase itEdge = edges.get(it);
 
 
-            var startp = itEdge.endPoint(0);
-            var next = itEdge;
+            Pointbase startp = itEdge.endPoint(0);
+            Linebase next = itEdge;
 
             poly.add(startp.id);
 
@@ -780,7 +780,7 @@ class Polygon {
 
             for (; ; ) {
 
-                var endp = next.endPoint(1);
+                Pointbase endp = next.endPoint(1);
 
                 if (next.type() != Poly2TriUtils.INSERT) {
                     edges.remove(next.id());
@@ -790,7 +790,7 @@ class Polygon {
                 poly.add(endp.id);
 
 
-                var nexte = selectNextEdge(next);
+                int nexte = selectNextEdge(next);
 
                 if (nexte == 0) {
                     System.out.println("Please check your input polygon:\n");
@@ -816,21 +816,21 @@ class Polygon {
      * Monopoly == list<Monopoly>
      */
     private void triangulateMonotone(ArrayList mpoly) {
-        var qvertex = new PriorityQueue(30, new PointbaseComparatorCoordinatesReverse());
+        PriorityQueue qvertex = new PriorityQueue(30, new PointbaseComparatorCoordinatesReverse());
 
 
-        for (var it = 0; it < mpoly.size(); it++) {
-            var itnext = it + 1;
+        for (int it = 0; it < mpoly.size(); it++) {
+            int itnext = it + 1;
             if (itnext == mpoly.size()) itnext = 0;
-            var point = new Pointbase(getPoint((Integer) mpoly.get(it)));
-            var pointnext = new Pointbase(getPoint((Integer) mpoly.get(itnext)));
+            Pointbase point = new Pointbase(getPoint((Integer) mpoly.get(it)));
+            Pointbase pointnext = new Pointbase(getPoint((Integer) mpoly.get(itnext)));
             point.left = point.compareTo(pointnext) > 0;
             qvertex.add(point);
         }
 
-        var spoint = new Stack();
+        Stack spoint = new Stack();
 
-        for (var i = 0; i < 2; i++) spoint.push(qvertex.poll());
+        for (int i = 0; i < 2; i++) spoint.push(qvertex.poll());
 
         double[] pa = {0, 0}, pb = {0, 0}, pc = {0, 0};
         int[] v;
@@ -841,16 +841,16 @@ class Polygon {
         
         while (qvertex.size() > 1) {
 
-            var topQueuePoint = (Pointbase) qvertex.peek();
-            var topStackPoint = (Pointbase) spoint.peek();
+            Pointbase topQueuePoint = (Pointbase) qvertex.peek();
+            Pointbase topStackPoint = (Pointbase) spoint.peek();
 
             if (topQueuePoint.left != topStackPoint.left) {
 
                 while (spoint.size() > 1) {
 
-                    var p1 = (Pointbase) spoint.peek();
+                    Pointbase p1 = (Pointbase) spoint.peek();
                     spoint.pop();
-                    var p2 = (Pointbase) spoint.peek();
+                    Pointbase p2 = (Pointbase) spoint.peek();
 
 
                     v = new int[]{
@@ -869,9 +869,9 @@ class Polygon {
 
                 while (spoint.size() > 1) {
 
-                    var stack1Point = (Pointbase) spoint.peek();
+                    Pointbase stack1Point = (Pointbase) spoint.peek();
                     spoint.pop();
-                    var stack2Point = (Pointbase) spoint.peek();
+                    Pointbase stack2Point = (Pointbase) spoint.peek();
                     spoint.push(stack1Point);
 
                     pa[0] = topQueuePoint.x;
@@ -882,8 +882,8 @@ class Polygon {
                     pc[1] = stack1Point.y;
 
 
-                    var area = Poly2TriUtils.orient2d(pa, pb, pc);
-                    var left = stack1Point.left;
+                    double area = Poly2TriUtils.orient2d(pa, pb, pc);
+                    boolean left = stack1Point.left;
 
                     if ((area > 0 && left) || (area < 0 && !left)) {
                         v = new int[]{
@@ -901,11 +901,11 @@ class Polygon {
             qvertex.poll();
         }
 
-        var lastQueuePoint = (Pointbase) qvertex.peek();
+        Pointbase lastQueuePoint = (Pointbase) qvertex.peek();
         while (spoint.size() != 1) {
-            var topPoint = (Pointbase) spoint.peek();
+            Pointbase topPoint = (Pointbase) spoint.peek();
             spoint.pop();
-            var top2Point = (Pointbase) spoint.peek();
+            Pointbase top2Point = (Pointbase) spoint.peek();
 
             _triangles.add(v = new int[]{lastQueuePoint.id - 1, topPoint.id - 1, top2Point.id - 1});
 
@@ -923,7 +923,7 @@ class Polygon {
         if (!partition2Monotone()) return false;
         if (!searchMonotones()) return false;
 
-        for (var _mpoly : _mpolys) {
+        for (Object _mpoly : _mpolys) {
             triangulateMonotone((ArrayList) _mpoly);
         }
 

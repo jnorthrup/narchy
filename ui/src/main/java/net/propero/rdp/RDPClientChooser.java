@@ -59,7 +59,7 @@ class RDPClientChooser {
     public static boolean RunNativeRDPClient(String[] args) {
         logger.info("RDPClientChooser.RunNativeRDPClient");
 
-        var os = System.getProperty("os.name");
+        String os = System.getProperty("os.name");
 
         
 
@@ -89,8 +89,8 @@ class RDPClientChooser {
         Options.windowTitle = "Remote Desktop Connection";
 
 
-        var alo = new LongOpt[4];
-        var g = new Getopt("properJavaRDP", args,
+        LongOpt[] alo = new LongOpt[4];
+        Getopt g = new Getopt("properJavaRDP", args,
                 "bc:d:f::g:k:l:n:p:s:t:T:u:", alo);
 
         int c;
@@ -138,7 +138,7 @@ class RDPClientChooser {
         String server = null;
 
         if (g.getOptind() < args.length) {
-            var colonat = args[args.length - 1].indexOf(':');
+            int colonat = args[args.length - 1].indexOf(':');
             if (colonat == -1) {
                 server = args[args.length - 1];
             } else {
@@ -152,7 +152,7 @@ class RDPClientChooser {
         }
 
 
-        var rdproot = "/var/tmp/RDP-" + Options.hostname + '-'
+        String rdproot = "/var/tmp/RDP-" + Options.hostname + '-'
                 + Options.port;
 
         try {
@@ -166,7 +166,7 @@ class RDPClientChooser {
 
         logger.info("Creating RDP Config in {}", rdproot);
 
-        var rdpConfigFile = new FileWriter(rdproot + "/Default.rdp");
+        FileWriter rdpConfigFile = new FileWriter(rdproot + "/Default.rdp");
 
         rdpConfigFile.write("screen mode id:i:0\n");
         rdpConfigFile.write("startdisplay:i:0\n");
@@ -220,7 +220,7 @@ class RDPClientChooser {
 
         if (new File(System.getProperty("user.home")
                 + "/Library/Preferences/Microsoft/RDC Client").exists()) {
-            var recentServersFile = new FileWriter(
+            FileWriter recentServersFile = new FileWriter(
                     System.getProperty("user.home")
                             + "/Library/Preferences/Microsoft/RDC Client/Recent Servers");
             recentServersFile.write(server + "\r1\r");
@@ -248,7 +248,7 @@ class RDPClientChooser {
         }
 
         try {
-            var p = Runtime.getRuntime().exec(appcopycmd);
+            Process p = Runtime.getRuntime().exec(appcopycmd);
             logger.warn("RDP Client copied to {}", rdproot);
             try {
                 p.waitFor(); 
@@ -272,7 +272,7 @@ class RDPClientChooser {
                         + "' >/dev/null 2>/dev/null"};
 
         try {
-            var p = Runtime.getRuntime().exec(mvcmd);
+            Process p = Runtime.getRuntime().exec(mvcmd);
             try {
                 p.waitFor(); 
             } catch (InterruptedException e) {
@@ -293,7 +293,7 @@ class RDPClientChooser {
                         + rdproot + "/Default.rdp >/dev/null 2>/dev/null"};
 
         try {
-            var p = Runtime.getRuntime().exec(rdpcmd);
+            Process p = Runtime.getRuntime().exec(rdpcmd);
             logger.info("RDP Client Launched from {}", rdproot);
             try {
                 p.waitFor(); 

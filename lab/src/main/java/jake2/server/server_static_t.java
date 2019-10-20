@@ -30,7 +30,7 @@ import java.io.RandomAccessFile;
 
 public class server_static_t {
     public server_static_t() {
-        for (var n = 0; n < Defines.MAX_CHALLENGES; n++) {
+        for (int n = 0; n < Defines.MAX_CHALLENGES; n++) {
             challenges[n] = new challenge_t();
         }
     }

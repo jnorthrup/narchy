@@ -152,14 +152,14 @@ public class SND_MIX extends SND_JAVA {
 
     static final channel_t[] channels = new channel_t[MAX_CHANNELS];
     static {
-        for (var i = 0; i < MAX_CHANNELS; i++)
+        for (int i = 0; i < MAX_CHANNELS; i++)
             channels[i] = new channel_t();
     }
 
     static void WriteLinearBlastStereo16() {
 
-        for (var i = 0; i < snd_linear_count; i += 2) {
-            var val = snd_p.get(i) >> 8;
+        for (int i = 0; i < snd_linear_count; i += 2) {
+            int val = snd_p.get(i) >> 8;
             if (val > 0x7fff)
                 snd_out.put(i, (short) 0x7fff);
             else if (val < (short) 0x8000)
@@ -180,11 +180,11 @@ public class SND_MIX extends SND_JAVA {
     static void TransferStereo16(ByteBuffer pbuf, int endtime) {
 
         snd_p = paintbuffer;
-        var lpaintedtime = paintedtime;
+        int lpaintedtime = paintedtime;
 
         while (lpaintedtime < endtime) {
 
-            var lpos = lpaintedtime & ((dma.samples >> 1) - 1);
+            int lpos = lpaintedtime & ((dma.samples >> 1) - 1);
 
 
             snd_out = pbuf.asShortBuffer();
@@ -216,15 +216,15 @@ public class SND_MIX extends SND_JAVA {
     static void TransferPaintBuffer(int endtime) {
 
 
-        var pbuf = ByteBuffer.wrap(dma.buffer);
+        ByteBuffer pbuf = ByteBuffer.wrap(dma.buffer);
         pbuf.order(ByteOrder.LITTLE_ENDIAN);
 
         if (SND_DMA.s_testsound.value != 0.0f) {
 
 
-            var count2 = (endtime - paintedtime) * 2;
-            for (var i = 0; i < count2; i += 2) {
-                var v = (int) (Math.sin((paintedtime + i) * 0.1) * 20000 * 256);
+            int count2 = (endtime - paintedtime) * 2;
+            for (int i = 0; i < count2; i += 2) {
+                int v = (int) (Math.sin((paintedtime + i) * 0.1) * 20000 * 256);
                 paintbuffer.put(i, v);
                 paintbuffer.put(i + 1, v);
             }
@@ -233,17 +233,17 @@ public class SND_MIX extends SND_JAVA {
         if (dma.samplebits == 16 && dma.channels == 2) { 
             TransferStereo16(pbuf, endtime);
         } else {
-            var p = 0;
-            var count = (endtime - paintedtime) * dma.channels;
-            var out_mask = dma.samples - 1;
-            var out_idx = paintedtime * dma.channels & out_mask;
-            var step = 3 - dma.channels;
+            int p = 0;
+            int count = (endtime - paintedtime) * dma.channels;
+            int out_mask = dma.samples - 1;
+            int out_idx = paintedtime * dma.channels & out_mask;
+            int step = 3 - dma.channels;
 
             int val;
             switch (dma.samplebits) {
                 case 16:
 
-                    var out = pbuf.asShortBuffer();
+                    ShortBuffer out = pbuf.asShortBuffer();
                     while (count-- > 0) {
                         val = paintbuffer.get(p) >> 8;
                         p += step;
@@ -287,13 +287,13 @@ public class SND_MIX extends SND_JAVA {
         
         while (paintedtime < endtime) {
 
-            var end = endtime;
+            int end = endtime;
             if (endtime - paintedtime > PAINTBUFFER_SIZE)
                 end = paintedtime + PAINTBUFFER_SIZE;
 
             
             while (true) {
-                var ps = s_pendingplays.next;
+                playsound_t ps = s_pendingplays.next;
                 if (ps == s_pendingplays)
                     break; 
                 if (ps.begin <= paintedtime) {
@@ -317,10 +317,10 @@ public class SND_MIX extends SND_JAVA {
                 
             } else {
 
-                var stop = (end < s_rawend) ? end : s_rawend;
+                int stop = (end < s_rawend) ? end : s_rawend;
 
                 for (i = paintedtime; i < stop; i++) {
-                    var s = i & (MAX_RAW_SAMPLES - 1);
+                    int s = i & (MAX_RAW_SAMPLES - 1);
 
                     paintbuffer.put((i - paintedtime) * 2, s_rawsamples
                             .get(2 * s));
@@ -342,21 +342,21 @@ public class SND_MIX extends SND_JAVA {
             
             
             for (i = 0; i < MAX_CHANNELS; i++) {
-                var ch = channels[i];
-                var ltime = paintedtime;
+                channel_t ch = channels[i];
+                int ltime = paintedtime;
 
                 while (ltime < end) {
                     if (ch.sfx == null || (ch.leftvol == 0 && ch.rightvol == 0))
                         break;
 
 
-                    var count = end - ltime;
+                    int count = end - ltime;
 
 
                     if (ch.end - ltime < count)
                         count = ch.end - ltime;
 
-                    var sc = WaveLoader.LoadSound(ch.sfx);
+                    sfxcache_t sc = WaveLoader.LoadSound(ch.sfx);
                     if (sc == null)
                         break;
 
@@ -397,9 +397,9 @@ public class SND_MIX extends SND_JAVA {
     static void InitScaletable() {
 
         s_volume.modified = false;
-        for (var i = 0; i < 32; i++) {
-            var scale = (int) (i * 8 * 256 * s_volume.value);
-            for (var j = 0; j < 256; j++)
+        for (int i = 0; i < 32; i++) {
+            int scale = (int) (i * 8 * 256 * s_volume.value);
+            for (int j = 0; j < 256; j++)
                 snd_scaletable[i][j] = ((byte) j) * scale;
         }
     }
@@ -414,15 +414,15 @@ public class SND_MIX extends SND_JAVA {
             ch.rightvol = 255;
 
 
-        var lscale = snd_scaletable[ch.leftvol >> 3];
-        var rscale = snd_scaletable[ch.rightvol >> 3];
-        var sfx = ch.pos;
+        int[] lscale = snd_scaletable[ch.leftvol >> 3];
+        int[] rscale = snd_scaletable[ch.rightvol >> 3];
+        int sfx = ch.pos;
 
         
 
-        for (var i = 0; i < count; i++, offset++) {
-            var left = paintbuffer.get(offset * 2);
-            var right = paintbuffer.get(offset * 2 + 1);
+        for (int i = 0; i < count; i++, offset++) {
+            int left = paintbuffer.get(offset * 2);
+            int right = paintbuffer.get(offset * 2 + 1);
             int data = sc.data[sfx + i];
             left += lscale[data];
             right += rscale[data];
@@ -439,17 +439,17 @@ public class SND_MIX extends SND_JAVA {
             int offset) {
         portable_samplepair_t samp;
 
-        var leftvol = ch.leftvol * snd_vol;
-        var rightvol = ch.rightvol * snd_vol;
-        var bb = ByteBuffer.wrap(sc.data);
+        int leftvol = ch.leftvol * snd_vol;
+        int rightvol = ch.rightvol * snd_vol;
+        ByteBuffer bb = ByteBuffer.wrap(sc.data);
         bb.order(ByteOrder.LITTLE_ENDIAN);
-        var sb = bb.asShortBuffer();
-        var sfx = ch.pos;
+        ShortBuffer sb = bb.asShortBuffer();
+        int sfx = ch.pos;
 
         
-        for (var i = 0; i < count; i++, offset++) {
-            var left = paintbuffer.get(offset * 2);
-            var right = paintbuffer.get(offset * 2 + 1);
+        for (int i = 0; i < count; i++, offset++) {
+            int left = paintbuffer.get(offset * 2);
+            int right = paintbuffer.get(offset * 2 + 1);
             int data = sb.get(sfx + i);
             left += (data * leftvol) >> 8;
             right += (data * rightvol) >> 8;

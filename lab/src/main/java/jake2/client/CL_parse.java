@@ -83,9 +83,9 @@ public class CL_parse {
         Globals.cls.downloadtempname += ".tmp";
 
 
-        var name = DownloadFileName(Globals.cls.downloadtempname);
+        String name = DownloadFileName(Globals.cls.downloadtempname);
 
-        var fp = Lib.fopen(name, "r+b");
+        RandomAccessFile fp = Lib.fopen(name, "r+b");
 
         if (fp != null) { 
             
@@ -133,7 +133,7 @@ public class CL_parse {
                 return;
             }
 
-            var filename = Cmd.Argv(1);
+            String filename = Cmd.Argv(1);
 
             if (filename.contains("..")) {
                 Com.Printf("Refusing to download a path with ..\n");
@@ -170,7 +170,7 @@ public class CL_parse {
     public static void RegisterSounds() {
         S.BeginRegistration();
         CL_tent.RegisterTEntSounds();
-        for (var i = 1; i < Defines.MAX_SOUNDS; i++) {
+        for (int i = 1; i < Defines.MAX_SOUNDS; i++) {
             if (Globals.cl.configstrings[Defines.CS_SOUNDS + i] == null
                     || Globals.cl.configstrings[Defines.CS_SOUNDS + i].isEmpty()
                     || "\0"
@@ -194,7 +194,7 @@ public class CL_parse {
 
         
         int size = MSG.ReadShort(Globals.net_message);
-        var percent = MSG.ReadByte(Globals.net_message);
+        int percent = MSG.ReadByte(Globals.net_message);
         if (size == -1) {
             Com.Printf("Server does not have this file.\n");
             if (Globals.cls.download != null) {
@@ -211,7 +211,7 @@ public class CL_parse {
 
         
         if (Globals.cls.download == null) {
-            var name = DownloadFileName(Globals.cls.downloadtempname).toLowerCase();
+            String name = DownloadFileName(Globals.cls.downloadtempname).toLowerCase();
 
             FS.CreatePath(name);
 
@@ -248,9 +248,9 @@ public class CL_parse {
             }
 
 
-            var oldn = DownloadFileName(Globals.cls.downloadtempname);
-            var newn = DownloadFileName(Globals.cls.downloadname);
-            var r = Lib.rename(oldn, newn);
+            String oldn = DownloadFileName(Globals.cls.downloadtempname);
+            String newn = DownloadFileName(Globals.cls.downloadname);
+            int r = Lib.rename(oldn, newn);
             if (r != 0)
                 Com.Printf("failed to rename.\n");
 
@@ -284,7 +284,7 @@ public class CL_parse {
         Globals.cls.state = Defines.ca_connected;
 
 
-        var i = MSG.ReadLong(Globals.net_message);
+        int i = MSG.ReadLong(Globals.net_message);
         Globals.cls.serverProtocol = i;
 
         
@@ -297,7 +297,7 @@ public class CL_parse {
         Globals.cl.attractloop = MSG.ReadByte(Globals.net_message) != 0;
 
 
-        var str = MSG.ReadString(Globals.net_message);
+        String str = MSG.ReadString(Globals.net_message);
         Globals.cl.gamedir = str;
         Com.dprintln("gamedir=" + str);
 
@@ -335,11 +335,11 @@ public class CL_parse {
      * ================== CL_ParseBaseline ==================
      */
     public static void ParseBaseline() {
-        var nullstate = new entity_state_t(null);
+        entity_state_t nullstate = new entity_state_t(null);
 
         int[] bits = {0};
-        var newnum = CL_ents.ParseEntityBits(bits);
-        var es = Globals.cl_entities[newnum].baseline;
+        int newnum = CL_ents.ParseEntityBits(bits);
+        entity_state_t es = Globals.cl_entities[newnum].baseline;
         CL_ents.ParseDelta(nullstate, es, newnum, bits[0]);
     }
 
@@ -358,7 +358,7 @@ public class CL_parse {
         ci.name = s;
 
 
-        var t = s.indexOf('\\');
+        int t = s.indexOf('\\');
         
 
         if (t != -1) {
@@ -387,7 +387,7 @@ public class CL_parse {
         } else {
 
 
-            var pos = s.indexOf('/');
+            int pos = s.indexOf('/');
 
             if (pos == -1)
                 pos = s.indexOf('/');
@@ -396,10 +396,10 @@ public class CL_parse {
                 Com.Error(Defines.ERR_FATAL, "Invalid model name:" + s);
             }
 
-            var model_name = s.substring(0, pos);
+            String model_name = s.substring(0, pos);
 
 
-            var skin_name = s.substring(pos + 1);
+            String skin_name = s.substring(pos + 1);
 
 
             model_filename = "players/" + model_name + "/tris.md2";
@@ -439,7 +439,7 @@ public class CL_parse {
             }
 
             
-            for (var i = 0; i < CL_view.num_cl_weaponmodels; i++) {
+            for (int i = 0; i < CL_view.num_cl_weaponmodels; i++) {
                 weapon_filename = "players/" + model_name + '/'
                         + CL_view.cl_weaponmodels[i];
                 ci.weaponmodel[i] = Globals.re.RegisterModel(weapon_filename);
@@ -475,9 +475,9 @@ public class CL_parse {
      * Load the skin, icon, and model for a client ================
      */
     public static void ParseClientinfo(int player) {
-        var s = Globals.cl.configstrings[player + Defines.CS_PLAYERSKINS];
+        String s = Globals.cl.configstrings[player + Defines.CS_PLAYERSKINS];
 
-        var ci = Globals.cl.clientinfo[player];
+        clientinfo_t ci = Globals.cl.clientinfo[player];
 
         LoadClientinfo(ci, s);
     }
@@ -491,9 +491,9 @@ public class CL_parse {
         if (i < 0 || i >= Defines.MAX_CONFIGSTRINGS)
             Com.Error(Defines.ERR_DROP, "configstring > MAX_CONFIGSTRINGS");
 
-        var s = MSG.ReadString(Globals.net_message);
+        String s = MSG.ReadString(Globals.net_message);
 
-        var olds = Globals.cl.configstrings[i];
+        String olds = Globals.cl.configstrings[i];
         Globals.cl.configstrings[i] = s;
         
         
@@ -545,8 +545,8 @@ public class CL_parse {
      * ================== CL_ParseStartSoundPacket ==================
      */
     public static void ParseStartSoundPacket() {
-        var flags = MSG.ReadByte(Globals.net_message);
-        var sound_num = MSG.ReadByte(Globals.net_message);
+        int flags = MSG.ReadByte(Globals.net_message);
+        int sound_num = MSG.ReadByte(Globals.net_message);
 
         float volume;
         if ((flags & Defines.SND_VOLUME) != 0)
@@ -624,7 +624,7 @@ public class CL_parse {
                 break;
             }
 
-            var cmd = MSG.ReadByte(Globals.net_message);
+            int cmd = MSG.ReadByte(Globals.net_message);
 
             if (cmd == -1) {
                 SHOWNET("END OF MESSAGE");
@@ -670,7 +670,7 @@ public class CL_parse {
                 break;
 
             case Defines.svc_print:
-                var i = MSG.ReadByte(Globals.net_message);
+                int i = MSG.ReadByte(Globals.net_message);
                 if (i == Defines.PRINT_CHAT) {
                     S.StartLocalSound("misc/talk.wav");
                     Globals.con.ormask = 128;
@@ -684,7 +684,7 @@ public class CL_parse {
                 break;
 
             case Defines.svc_stufftext:
-                var s = MSG.ReadString(Globals.net_message);
+                String s = MSG.ReadString(Globals.net_message);
                 Com.DPrintf("stufftext: " + s + '\n');
                 Cbuf.AddText(s);
                 break;

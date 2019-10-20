@@ -89,7 +89,7 @@ public interface TruthFunction {
         @Override
         public @Nullable Truth apply(@Nullable Truth T, @Nullable Truth B, float minConf, NAL n) {
             if (swap) {
-                @Nullable var x = T;
+                @Nullable Truth x = T;
                 T = B;
                 B = x;
             }

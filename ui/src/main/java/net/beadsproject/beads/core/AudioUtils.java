@@ -32,7 +32,7 @@ public final class AudioUtils {
      * @param in  buffer of shorts.
      */
     public static void shortToFloat(float[] out, short[] in) {
-        for (var i = 0; i < in.length; i++) {
+        for (int i = 0; i < in.length; i++) {
             out[i] = (float) (in[i] / 32768.);
         }
     }
@@ -44,7 +44,7 @@ public final class AudioUtils {
      * @param in  buffer of floats.
      */
     public static void floatToShort(short[] out, float[] in) {
-        for (var i = 0; i < in.length; i++) {
+        for (int i = 0; i < in.length; i++) {
             out[i] = (short) (32767. * in[i]);
         }
     }
@@ -71,18 +71,18 @@ public final class AudioUtils {
      * @param bigEndian Format
      */
     private static void floatToByte(byte[] out, int outstart, float[] in, int instart, int inlength, boolean bigEndian) {
-        var bufsz = Math.min(inlength, in.length);
-        var ib = outstart;
+        int bufsz = Math.min(inlength, in.length);
+        int ib = outstart;
         if (bigEndian) {
-            for (var i = 0; i < bufsz; ++i) {
-                var y = (short) (32767. * Math.min(Math.max(in[i + instart], -1.0f),
+            for (int i = 0; i < bufsz; ++i) {
+                short y = (short) (32767. * Math.min(Math.max(in[i + instart], -1.0f),
                         1.0f));
                 out[ib++] = (byte) ((y >> 8) & 0xFF);
                 out[ib++] = (byte) (y & 0xFF);
             }
         } else {
-            for (var i = 0; i < bufsz; ++i) {
-                var y = (short) (32767. * in[i + instart]);
+            for (int i = 0; i < bufsz; ++i) {
+                short y = (short) (32767. * in[i + instart]);
                 out[ib++] = (byte) (y & 0xFF);
                 out[ib++] = (byte) ((y >> 8) & 0xFF);
             }
@@ -137,10 +137,10 @@ public final class AudioUtils {
      */
     private static void byteToFloat(float[] out, byte[] in, boolean bigEndian, int startIndexInByteArray, int startIndexInFloatArray, int numFloats) {
         if (bigEndian) {
-            var ib = startIndexInByteArray;
-            var min = Math.min(out.length, startIndexInFloatArray + numFloats);
-            for (var i = startIndexInFloatArray; i < min; ++i) {
-                var sample = ((in[ib] << 8) | (in[ib + 1] & 0xFF)) / 32768.0F;
+            int ib = startIndexInByteArray;
+            int min = Math.min(out.length, startIndexInFloatArray + numFloats);
+            for (int i = startIndexInFloatArray; i < min; ++i) {
+                float sample = ((in[ib] << 8) | (in[ib + 1] & 0xFF)) / 32768.0F;
 
                 
                 
@@ -149,10 +149,10 @@ public final class AudioUtils {
                 out[i] = sample;
             }
         } else {
-            var ib = startIndexInByteArray;
-            var min = Math.min(out.length, startIndexInFloatArray + numFloats);
-            for (var i = startIndexInFloatArray; i < min; ++i) {
-                var sample = ((in[ib] & 0xFF) | (in[ib + 1] << 8)) / 32768.0F;
+            int ib = startIndexInByteArray;
+            int min = Math.min(out.length, startIndexInFloatArray + numFloats);
+            for (int i = startIndexInFloatArray; i < min; ++i) {
+                float sample = ((in[ib] & 0xFF) | (in[ib + 1] << 8)) / 32768.0F;
                 ib += 2;
                 out[i] = sample;
             }
@@ -225,7 +225,7 @@ public final class AudioUtils {
      */
     public static void deinterleave(float[] source, int nChannels, int nFrames, float[][] result) {
         for (int i = 0, count = 0; i < nFrames; ++i) {
-            for (var j = 0; j < nChannels; ++j) {
+            for (int j = 0; j < nChannels; ++j) {
                 result[j][i] = source[count++];
             }
         }
@@ -243,7 +243,7 @@ public final class AudioUtils {
     public static void interleave(float[][] source, int nChannels,
                                   int nFrames, float[] result) {
         for (int i = 0, counter = 0; counter < result.length && i < nFrames; ++i) {
-            for (var j = 0; j < nChannels; ++j) {
+            for (int j = 0; j < nChannels; ++j) {
                 result[counter++] = source[j][i];
             }
         }
@@ -262,7 +262,7 @@ public final class AudioUtils {
     public static void interleave(float[][] source, int nChannels,
                                   int nFrames, int offset, float[] result) {
         for (int i = offset, counter = 0; counter < result.length && i < nFrames; ++i) {
-            for (var j = 0; j < nChannels; ++j) {
+            for (int j = 0; j < nChannels; ++j) {
                 result[counter++] = source[j][i];
             }
         }
@@ -275,13 +275,13 @@ public final class AudioUtils {
      * @param dest
      */
     public static void stretchBuffer(float[][] source, float[][] dest) {
-        var numChannels = Math.min(source.length, dest.length);
+        int numChannels = Math.min(source.length, dest.length);
 
-        var segStep = (source[0].length - 1.0) / (dest[0].length - 1.0);
+        double segStep = (source[0].length - 1.0) / (dest[0].length - 1.0);
 
-        for (var ch = 0; ch < numChannels; ch++) {
-            var src = source[ch];
-            var dst = dest[ch];
+        for (int ch = 0; ch < numChannels; ch++) {
+            float[] src = source[ch];
+            float[] dst = dest[ch];
 
             
             if (src.length == 1 || dst.length == 1) {
@@ -302,15 +302,15 @@ public final class AudioUtils {
              */
 
 
-            var segment = -1;
+            int segment = -1;
             double segstart = 0, segend = 0, seggrad = 0; 
 
             double fractionalSegment = 0;
 
-            for (var i = 1; i < dst.length - 1; i++) {
+            for (int i = 1; i < dst.length - 1; i++) {
                 
                 fractionalSegment += segStep;
-                var currentSegment = (int) Math.floor(fractionalSegment);
+                int currentSegment = (int) Math.floor(fractionalSegment);
                 if (currentSegment != segment) {
                     
                     segment = currentSegment;
@@ -331,10 +331,10 @@ public final class AudioUtils {
      * @param buffer
      */
     public static void reverseBuffer(float[][] buffer) {
-        for (var b : buffer) {
+        for (float[] b : buffer) {
             for (int left = 0, right = b.length - 1; left < right; left++, right--) {
 
-                var temp = b[left];
+                float temp = b[left];
                 b[left] = b[right];
                 b[right] = temp;
             }
@@ -352,9 +352,9 @@ public final class AudioUtils {
      * @return the result
      */
     public static double fastPow01(double a, double b) {
-        var realA = Math.max(0, Math.min(1, a));
-        var x = (int) (Double.doubleToLongBits(realA) >> 32);
-        var y = (int) (b * (x - 1072632447) + 1072632447);
+        double realA = Math.max(0, Math.min(1, a));
+        int x = (int) (Double.doubleToLongBits(realA) >> 32);
+        int y = (int) (b * (x - 1072632447) + 1072632447);
         return Math.max(0, Math.min(1, Double.longBitsToDouble(((long) y) << 32)));
     }
 
@@ -366,7 +366,7 @@ public final class AudioUtils {
      * @return a URL if successful, null otherwise.
      */
     private static URL urlFromString(String s) {
-        var url = ClassLoader.getSystemResource(s);
+        URL url = ClassLoader.getSystemResource(s);
         if (url != null) {
             return url;
         }
@@ -374,7 +374,7 @@ public final class AudioUtils {
             url = new URL(s);
         } catch (Exception e) {
             try {
-                var f = new File(s);
+                File f = new File(s);
                 url = f.toURI().toURL();
             } catch (MalformedURLException e1) {
                 e1.printStackTrace();

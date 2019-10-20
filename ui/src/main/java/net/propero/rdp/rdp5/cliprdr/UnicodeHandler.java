@@ -56,9 +56,9 @@ public class UnicodeHandler extends TypeHandler {
 
     @Override
     public void handleData(RdpPacket data, int length, ClipInterface c) {
-        var thingy = "";
-        for (var i = 0; i < length; i += 2) {
-            var aByte = data.getLittleEndian16();
+        String thingy = "";
+        for (int i = 0; i < length; i += 2) {
+            int aByte = data.getLittleEndian16();
             if (aByte != 0)
                 thingy += (char) (aByte);
         }
@@ -82,11 +82,11 @@ public class UnicodeHandler extends TypeHandler {
 
             s = Utilities_Localised.strReplaceAll(s, "" + (char) 0x0a, ""
                     + (char) 0x0d + (char) 0x0a);
-            var sBytes = s.getBytes();
-            var length = sBytes.length;
-            var lengthBy2 = length * 2;
+            byte[] sBytes = s.getBytes();
+            int length = sBytes.length;
+            int lengthBy2 = length * 2;
             RdpPacket p = new RdpPacket_Localised(lengthBy2);
-            for (var sByte : sBytes) {
+            for (byte sByte : sBytes) {
                 p.setLittleEndian16(sByte);
             }
             sBytes = new byte[length * 2];
@@ -103,7 +103,7 @@ public class UnicodeHandler extends TypeHandler {
      */
     @Override
     public void send_data(Transferable in, ClipInterface c) {
-        var data = fromTransferable(in);
+        byte[] data = fromTransferable(in);
         c.send_data(data, data.length);
     }
 

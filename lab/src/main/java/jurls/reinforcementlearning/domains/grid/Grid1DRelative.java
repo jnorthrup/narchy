@@ -29,7 +29,7 @@ public class Grid1DRelative implements World {
     public Grid1DRelative(int size, int totalTime, double noise, double focusVelocity) {
         this.time = 1;
         this.size = size;
-        var VISUALIZE_PERIOD = Math.pow(10, 4);
+        double VISUALIZE_PERIOD = Math.pow(10, 4);
         this.ENERGY_COST_FACTOR = 0.01;
         this.MATCH_REWARD_FACTOR = 1.0;
         this.REWARD_MAGNITUDE = 1;
@@ -94,7 +94,7 @@ public class Grid1DRelative implements World {
 
         double energyCost = 0;
 
-        var match = 1.0 / (1.0 + Math.abs(position - focusPosition));
+        double match = 1.0 / (1.0 + Math.abs(position - focusPosition));
         
         if (action[0] > 0.25)
             energyCost += 1.0;
@@ -102,13 +102,13 @@ public class Grid1DRelative implements World {
             energyCost += 1.0;
 
 
-        var reward = REWARD_MAGNITUDE * ((MATCH_REWARD_FACTOR * match) - (energyCost * ENERGY_COST_FACTOR));
+        double reward = REWARD_MAGNITUDE * ((MATCH_REWARD_FACTOR * match) - (energyCost * ENERGY_COST_FACTOR));
         
         
         
         double min=0, max=0;
-        for (var i = 0; i < size; i++) {
-            final var exp = 2.0;
+        for (int i = 0; i < size; i++) {
+            final double exp = 2.0;
             sensor[i] = Math.pow(1.0 / (1.0 + Math.abs( ((double)i)-focusPosition)),exp) + (Math.random()*noise);
             if (sensor[i] < 0.2)
                 sensor[i] = 0;

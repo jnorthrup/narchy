@@ -35,7 +35,7 @@ public final class BytesInput implements DataInput {
     }
 
     public int skipBytes(int n) {
-        var skip = Math.min(n, this.bb.remaining());
+        int skip = Math.min(n, this.bb.remaining());
         this.bb.position(this.bb.position() + skip);
         return skip;
     }

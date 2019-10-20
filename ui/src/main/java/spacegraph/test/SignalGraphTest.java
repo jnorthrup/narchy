@@ -25,7 +25,7 @@ public class SignalGraphTest {
 
         public VideoTransformPort(Function<VideoSource,VideoTransform> t) {
             super();
-            var in = new ConstantPort<VideoSource>(VideoSource.class);
+            ConstantPort<VideoSource> in = new ConstantPort<VideoSource>(VideoSource.class);
             out = new ConstantPort<>(VideoSource.class);
             west(in);
             east(out);
@@ -55,9 +55,9 @@ public class SignalGraphTest {
 
     public static void main(String[] args) {
 
-        var w = GraphEdit2D.graphWindow(1024, 1024);
+        GraphEdit2D w = GraphEdit2D.graphWindow(1024, 1024);
 
-        for (var c : WebCam.theFirst(10)) {
+        for (WebCam c : WebCam.theFirst(10)) {
             w.add(new Surplier(c.toString(), Surface.class, () -> {
                 return Splitting.row(new ConstantPort(c), 0.1f, new VideoSurface(c));
                 ///return new PushButton("cam1");

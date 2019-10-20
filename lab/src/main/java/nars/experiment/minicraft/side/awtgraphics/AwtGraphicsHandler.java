@@ -29,9 +29,9 @@ public class AwtGraphicsHandler extends GraphicsHandler {
         container = new JFrame("Minicraft");
 
         try {
-            var ii = new ImageIcon(new URL("file:sprites/other/mouse.png"));
-            var im = ii.getImage();
-            var tk = canvas.getToolkit();
+            ImageIcon ii = new ImageIcon(new URL("file:sprites/other/mouse.png"));
+            Image im = ii.getImage();
+            Toolkit tk = canvas.getToolkit();
             myCursor = tk.createCustomCursor(im, new Point(0, 0), "MyCursor");
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -47,7 +47,7 @@ public class AwtGraphicsHandler extends GraphicsHandler {
         panel.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                var d = e.getComponent().getSize();
+                Dimension d = e.getComponent().getSize();
                 canvas.setBounds(0, 0, d.width, d.height);
                 screenWidth = d.width;
                 screenHeight = d.height;
@@ -94,7 +94,7 @@ public class AwtGraphicsHandler extends GraphicsHandler {
         g.dispose();
 
 
-        var cg = canvas.getGraphics();
+        Graphics cg = canvas.getGraphics();
         cg.drawImage(buffer, 0, 0, null);
         cg.dispose();
 
@@ -125,9 +125,9 @@ public class AwtGraphicsHandler extends GraphicsHandler {
     @Override
     public void drawImage(Sprite sprite, int x, int y) {
 
-        var awtSprite = (AwtSprite) sprite;
+        AwtSprite awtSprite = (AwtSprite) sprite;
         if (awtSprite.image == null) {
-            var other = (AwtSprite) SpriteStore.get().loadSprite(awtSprite.ref);
+            AwtSprite other = (AwtSprite) SpriteStore.get().loadSprite(awtSprite.ref);
             awtSprite.image = other.image;
         }
         g.drawImage(awtSprite.image, x, y, null);
@@ -135,16 +135,16 @@ public class AwtGraphicsHandler extends GraphicsHandler {
 
     @Override
     public void drawImage(Sprite sprite, int x, int y, Color tint) {
-        var width = sprite.getWidth();
-        var height = sprite.getHeight();
+        int width = sprite.getWidth();
+        int height = sprite.getHeight();
         drawImage(sprite, x, y, width, height, tint);
     }
 
     @Override
     public void drawImage(Sprite sprite, int x, int y, int width, int height) {
-        var awtSprite = (AwtSprite) sprite;
+        AwtSprite awtSprite = (AwtSprite) sprite;
         if (awtSprite.image == null) {
-            var other = (AwtSprite) SpriteStore.get().loadSprite(awtSprite.ref);
+            AwtSprite other = (AwtSprite) SpriteStore.get().loadSprite(awtSprite.ref);
             awtSprite.image = other.image;
         }
         g.drawImage(awtSprite.image, x, y, width, height, null);
@@ -154,7 +154,7 @@ public class AwtGraphicsHandler extends GraphicsHandler {
     public void drawImage(Sprite sprite, int x, int y, int width, int height,
                           Color tint) {
         drawImage(sprite, x, y, width, height);
-        var old = g.getColor();
+        java.awt.Color old = g.getColor();
         this.setColor(tint);
         this.fillRect(x, y, width, height);
         g.setColor(old);

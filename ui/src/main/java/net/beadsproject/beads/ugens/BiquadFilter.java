@@ -358,7 +358,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
                         / a0;
 
                 
-                for (var currsamp = 2; currsamp < bufferSize; currsamp++) {
+                for (int currsamp = 2; currsamp < bufferSize; currsamp++) {
                     bo[currsamp] = (b0 * bi[currsamp] + b1 * bi[currsamp - 1]
                             + b2 * bi[currsamp - 2] - a1 * bo[currsamp - 1] - a2
                             * bo[currsamp - 2])
@@ -388,7 +388,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
                         / a0;
 
                 
-                for (var currsamp = 2; currsamp < bufferSize; currsamp++) {
+                for (int currsamp = 2; currsamp < bufferSize; currsamp++) {
                     freq = freqUGen.getValue(0, currsamp);
                     q = qUGen.getValue(0, currsamp);
                     gain = gainUGen.getValue(0, currsamp);
@@ -416,14 +416,14 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
             
 
             if (cuedInputMemory) {
-                for (var i = 0; i < channels; i++) {
+                for (int i = 0; i < channels; i++) {
                     bi1m[i] = cbi1m[i];
                     bi2m[i] = cbi2m[i];
                 }
                 cuedInputMemory = false;
             }
             if (cuedOutputMemory) {
-                for (var i = 0; i < channels; i++) {
+                for (int i = 0; i < channels; i++) {
                     bo1m[i] = cbo1m[i];
                     bo2m[i] = cbo2m[i];
                 }
@@ -433,7 +433,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
 
             if (areAllStatic) {
 
-                for (var i = 0; i < channels; i++) {
+                for (int i = 0; i < channels; i++) {
                     bi = bufIn[i];
                     bo = bufOut[i];
 
@@ -446,7 +446,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
                             / a0;
 
                     
-                    for (var currsamp = 2; currsamp < bufferSize; currsamp++) {
+                    for (int currsamp = 2; currsamp < bufferSize; currsamp++) {
 
                         bo[currsamp] = (b0 * bi[currsamp] + b1
                                 * bi[currsamp - 1] + b2 * bi[currsamp - 2] - a1
@@ -477,7 +477,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
                 gain = gainUGen.getValue(0, 0);
                 vc.calcVals();
 
-                for (var i = 0; i < channels; i++) {
+                for (int i = 0; i < channels; i++) {
                     bufOut[i][0] = (b0 * bufIn[i][0] + b1 * bi1m[i] + b2
                             * bi2m[i] - a1 * bo1m[i] - a2 * bo2m[i])
                             / a0;
@@ -487,20 +487,20 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
                 q = qUGen.getValue(0, 1);
                 gain = gainUGen.getValue(0, 1);
                 vc.calcVals();
-                for (var i = 0; i < channels; i++) {
+                for (int i = 0; i < channels; i++) {
                     bufOut[i][1] = (b0 * bufIn[i][1] + b1 * bufIn[i][0] + b2
                             * bi1m[i] - a1 * bufOut[i][0] - a2 * bo1m[i])
                             / a0;
                 }
 
                 
-                for (var currsamp = 2; currsamp < bufferSize; currsamp++) {
+                for (int currsamp = 2; currsamp < bufferSize; currsamp++) {
                     freq = freqUGen.getValue(0, currsamp);
                     q = qUGen.getValue(0, currsamp);
                     gain = gainUGen.getValue(0, currsamp);
                     vc.calcVals();
 
-                    for (var i = 0; i < channels; i++) {
+                    for (int i = 0; i < channels; i++) {
                         bufOut[i][currsamp] = (b0 * bufIn[i][currsamp] + b1
                                 * bufIn[i][currsamp - 1] + b2
                                 * bufIn[i][currsamp - 2] - a1
@@ -511,7 +511,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
 
                 }
 
-                for (var i = 0; i < channels; i++) {
+                for (int i = 0; i < channels; i++) {
                     
                     bi2m[i] = bufIn[i][bufferSize - 2];
                     bi1m[i] = bufIn[i][bufferSize - 1];
@@ -531,7 +531,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      * Resets the filter in case it "explodes".
      */
     private void reset() {
-        for (var i = 0; i < channels; i++) {
+        for (int i = 0; i < channels; i++) {
             bi1m[i] = 0;
             bi2m[i] = 0;
             bo1m[i] = 0;
@@ -551,9 +551,9 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     private class LPValCalculator extends ValCalculator {
         @Override
         public void calcVals() {
-            var w = two_pi_over_sf * freq;
-            var cosw = (float) Math.cos(w);
-            var a = (float) Math.sin(w) / q * .5f;
+            float w = two_pi_over_sf * freq;
+            float cosw = (float) Math.cos(w);
+            float a = (float) Math.sin(w) / q * .5f;
             b1 = 1 - cosw;
             b2 = b0 = b1 * .5f;
             a0 = 1 + a;
@@ -565,9 +565,9 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     private class HPValCalculator extends ValCalculator {
         @Override
         public void calcVals() {
-            var w = two_pi_over_sf * freq;
-            var cosw = (float) Math.cos(w);
-            var a = (float) Math.sin(w) / q * .5f;
+            float w = two_pi_over_sf * freq;
+            float cosw = (float) Math.cos(w);
+            float a = (float) Math.sin(w) / q * .5f;
             b1 = -1 - cosw;
             b2 = b0 = b1 * -.5f;
             a0 = 1 + a;
@@ -579,9 +579,9 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     private class BPSkirtValCalculator extends ValCalculator {
         @Override
         public void calcVals() {
-            var w = two_pi_over_sf * freq;
-            var sinw = (float) Math.sin(w);
-            var a = sinw / q * .5f;
+            float w = two_pi_over_sf * freq;
+            float sinw = (float) Math.sin(w);
+            float a = sinw / q * .5f;
             b1 = 0;
             b2 = 0 - (b0 = sinw * .5f);
             a0 = 1 + a;
@@ -593,7 +593,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     private class BPPeakValCalculator extends ValCalculator {
         @Override
         public void calcVals() {
-            var w = two_pi_over_sf * freq;
+            float w = two_pi_over_sf * freq;
             
             b1 = 0;
             b2 = 0 - (b0 = (float) Math.sin(w) / q * .5f);
@@ -606,8 +606,8 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     private class NotchValCalculator extends ValCalculator {
         @Override
         public void calcVals() {
-            var w = two_pi_over_sf * freq;
-            var a = (float) Math.sin(w) / q * .5f;
+            float w = two_pi_over_sf * freq;
+            float a = (float) Math.sin(w) / q * .5f;
             b2 = b0 = 1;
             a1 = b1 = -2 * (float) Math.cos(w);
             a0 = 1 + a;
@@ -618,8 +618,8 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     private class APValCalculator extends ValCalculator {
         @Override
         public void calcVals() {
-            var w = two_pi_over_sf * freq;
-            var a = (float) (Math.sin(w) / q * .5);
+            float w = two_pi_over_sf * freq;
+            float a = (float) (Math.sin(w) / q * .5);
             a2 = b0 = 1 - a;
             a1 = b1 = (float) (-2 * Math.cos(w));
             a0 = b2 = 1 + a;
@@ -629,10 +629,10 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     private class PeakingEQValCalculator extends ValCalculator {
         @Override
         public void calcVals() {
-            var A = (float) Math.pow(10, gain * .025);
-            var w = two_pi_over_sf * freq;
+            float A = (float) Math.pow(10, gain * .025);
+            float w = two_pi_over_sf * freq;
 
-            var a = (float) (Math.sin(w) / q * .5);
+            float a = (float) (Math.sin(w) / q * .5);
             b2 = 2 - (b0 = 1 + a * A);
             a1 = b1 = -2 * (float) Math.cos(w);
             a2 = 2 - (a0 = 1 + a / A);
@@ -648,12 +648,12 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     private class LowShelfValCalculator extends ValCalculator {
         @Override
         public void calcVals() {
-            var A = (float) Math.pow(10, gain * .025);
-            var w = two_pi_over_sf * freq;
-            var cosw = (float) Math.cos(w);
-            var a = (float) (Math.sin(w) / q * .5);
-            var b = 2 * a * (float) Math.sqrt(A);
-            var c = (A - 1) * cosw;
+            float A = (float) Math.pow(10, gain * .025);
+            float w = two_pi_over_sf * freq;
+            float cosw = (float) Math.cos(w);
+            float a = (float) (Math.sin(w) / q * .5);
+            float b = 2 * a * (float) Math.sqrt(A);
+            float c = (A - 1) * cosw;
             b0 = A * (A + 1 - c + b);
             b1 = 2 * A * ((A - 1) - (A + 1) * cosw);
             b2 = A * (A + 1 - c - b);
@@ -676,12 +676,12 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     private class HighShelfValCalculator extends ValCalculator {
         @Override
         public void calcVals() {
-            var A = (float) Math.pow(10, gain * .025);
-            var w = two_pi_over_sf * freq;
-            var cosw = (float) Math.cos(w);
-            var a = (float) (Math.sin(w) / q * .5);
-            var b = 2 * a * (float) Math.sqrt(A);
-            var c = (A - 1) * cosw;
+            float A = (float) Math.pow(10, gain * .025);
+            float w = two_pi_over_sf * freq;
+            float cosw = (float) Math.cos(w);
+            float a = (float) (Math.sin(w) / q * .5);
+            float b = 2 * a * (float) Math.sqrt(A);
+            float c = (A - 1) * cosw;
 
             b0 = A * (A + 1 + c + b);
             b1 = -2 * A * (A - 1 + (A + 1) * cosw);
@@ -705,7 +705,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     private class ButterworthLPValCalculator extends ValCalculator {
         @Override
         public void calcVals() {
-            var k = (float) Math.tan(freq * pi_over_sf);
+            float k = (float) Math.tan(freq * pi_over_sf);
             b0 = b2 = k * k;
             b1 = 2f * b0;
             a0 = b0 + (SQRT2 * k) + 1;
@@ -718,10 +718,10 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     private class ButterworthHPValCalculator extends ValCalculator {
         @Override
         public void calcVals() {
-            var k = (float) Math.tan(freq * pi_over_sf);
+            float k = (float) Math.tan(freq * pi_over_sf);
             b0 = b2 = 1;
             b1 = -2;
-            var k2p1 = k * k + 1;
+            float k2p1 = k * k + 1;
             a0 = k2p1 + (SQRT2 * k);
             a1 = 2f * (k2p1 - 2);
             a2 = k2p1 - (SQRT2 * k);
@@ -734,13 +734,13 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     private class ButterworthBPValCalculator extends ValCalculator {
         @Override
         public void calcVals() {
-            var hbw = pi_over_sf * .5f * freq / q;
-            var root = (float) Math.sqrt(1 + 4 * q * q);
-            var k1 = (float) Math.tan(hbw * (root - 1));
-            var k2 = (float) Math.tan(hbw * (root + 1));
+            float hbw = pi_over_sf * .5f * freq / q;
+            float root = (float) Math.sqrt(1 + 4 * q * q);
+            float k1 = (float) Math.tan(hbw * (root - 1));
+            float k2 = (float) Math.tan(hbw * (root + 1));
             b2 = -(b0 = k2 - k1);
             b1 = 0;
-            var mp1 = k1 * k2 + 1;
+            float mp1 = k1 * k2 + 1;
             a0 = mp1 + b0;
             a1 = 2 * (mp1 - 2);
             a2 = mp1 - b0;
@@ -750,7 +750,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     private class BesselLPValCalculator extends ValCalculator {
         @Override
         public void calcVals() {
-            var w = (float) Math.tan(pi_over_sf * freq);
+            float w = (float) Math.tan(pi_over_sf * freq);
             b2 = b0 = 3 * w * w;
             b1 = 2 * b0;
             a0 = 1 + 3 * w + b0;
@@ -762,10 +762,10 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     private class BesselHPValCalculator extends ValCalculator {
         @Override
         public void calcVals() {
-            var w = (float) Math.tan(pi_over_sf * freq);
+            float w = (float) Math.tan(pi_over_sf * freq);
             b2 = b0 = 3;
             b1 = -6;
-            var w2 = w * w;
+            float w2 = w * w;
             a0 = w2 + 3 * w + 3;
             a1 = 2 * w2 - 6;
             a2 = w2 - 3 * w + 3;
@@ -816,7 +816,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     private BiquadFilter setParams(DataAuvent paramBead) {
         if (paramBead != null) {
 
-            var o = paramBead.get("type");
+            Object o = paramBead.get("type");
             if (o instanceof Number) {
                 setType(((Number) o).intValue());
             } else if (o instanceof Type) {
@@ -875,7 +875,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      * @return The DataBead with stored parameters.
      */
     public DataAuvent getParams() {
-        var db = new DataAuvent();
+        DataAuvent db = new DataAuvent();
 
         if (isFreqStatic) {
             db.put("frequency", freq);
@@ -907,7 +907,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      * @return The DataBead with static float parameter values.
      */
     public DataAuvent getStaticParams() {
-        var db = new DataAuvent();
+        DataAuvent db = new DataAuvent();
         db.put("frequency", freq);
         db.put("q", q);
         db.put("gain", gain);
@@ -939,7 +939,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      */
     private BiquadFilter setType(Type ntype) {
         if (ntype != type || vc == null) {
-            var t = type;
+            Type t = type;
             type = ntype;
             switch (type) {
                 case LP:
@@ -1062,7 +1062,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
         }
 
         if (n != type || vc == null) {
-            var t = type;
+            Type t = type;
             type = n;
             switch (type) {
                 case LP:
@@ -1357,7 +1357,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
             bi1 = xm1;
             bi2 = xm2;
         } else {
-            for (var i = 0; i < channels; i++) {
+            for (int i = 0; i < channels; i++) {
                 bi1m[i] = xm1;
                 bi2m[i] = xm2;
             }
@@ -1367,13 +1367,13 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     }
 
     private BiquadFilter loadInputMemory(float[] xm1, float[] xm2) {
-        var min = Math.min(xm1.length, xm2.length);
+        int min = Math.min(xm1.length, xm2.length);
         if (channels == 1 && min > 0) {
             bi1 = xm1[0];
             bi2 = xm2[0];
             cuedInputMemory = true;
         } else {
-            for (var i = 0; i < Math.min(channels, min); i++) {
+            for (int i = 0; i < Math.min(channels, min); i++) {
                 cbi1m[i] = xm1[i];
                 cbi2m[i] = xm2[i];
                 cuedInputMemory = true;
@@ -1387,7 +1387,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
             cbo1 = ym1;
             cbo2 = ym2;
         } else {
-            for (var i = 0; i < channels; i++) {
+            for (int i = 0; i < channels; i++) {
                 cbo1m[i] = ym1;
                 cbo2m[i] = ym2;
             }
@@ -1397,13 +1397,13 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     }
 
     private BiquadFilter loadOutputMemory(float[] ym1, float[] ym2) {
-        var min = Math.min(ym1.length, ym2.length);
+        int min = Math.min(ym1.length, ym2.length);
         if (channels == 1 && min > 0) {
             bo1 = ym1[0];
             bo2 = ym2[0];
             cuedOutputMemory = true;
         } else {
-            for (var i = 0; i < Math.min(channels, min); i++) {
+            for (int i = 0; i < Math.min(channels, min); i++) {
                 bo1m[i] = ym1[i];
                 bo2m[i] = ym2[i];
                 cuedOutputMemory = true;

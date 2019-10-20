@@ -82,17 +82,17 @@ public class Sequence extends CachedCompound.TemporalCachedCompound {
         if (this.equals(y)) return true;
 
         Subterms a = subterms(), b = y.subterms();
-        var s = a.subs();
+        int s = a.subs();
         if (s !=b.subs())
             return false;
-        var st = ((Sequence)y).times;
+        Interval st = ((Sequence)y).times;
         if (!st.equals(times))
             return false; //TODO
         return Subterms.unifyCommute(events(), ((Sequence)y).events(), u);
     }
 
     public Subterms events() {
-        var ss = subterms();
+        Subterms ss = subterms();
         return new TermList(ss, 0, ss.subs()-1);
     }
 
@@ -107,9 +107,16 @@ public class Sequence extends CachedCompound.TemporalCachedCompound {
 
     @Override
     public boolean subTimesWhile(Term match, IntPredicate each) {
-        var n = times.size();
-        var ss = subterms();
-        return IntStream.range(0, n).filter(i -> times.key(i, ss).equals(match)).allMatch(i -> each.test(occToDT(times.value(i))));
+        int n = times.size();
+        Subterms ss = subterms();
+        for (int i = 0; i < n; i++) {
+            if (times.key(i, ss).equals(match)) {
+                if (!each.test(occToDT(times.value(i)))) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 //    /** transform each sub component-wise so that a remapping can be determined before constructing new ConjSeq*/
@@ -159,15 +166,15 @@ public class Sequence extends CachedCompound.TemporalCachedCompound {
 
     @Override
     public boolean eventsAND(LongObjectPredicate<Term> each, long offset, boolean decomposeConjDTernal, boolean decomposeXternal) {
-        var n = times.size();
-        var ss = subterms();
-        for (var i = 0; i < n; i++) {
-            var o = offset != ETERNAL ? times.value(i) + offset : ETERNAL;
-            var x = times.key(i, ss);
+        int n = times.size();
+        Subterms ss = subterms();
+        for (int i = 0; i < n; i++) {
+            long o = offset != ETERNAL ? times.value(i) + offset : ETERNAL;
+            Term x = times.key(i, ss);
             if (x instanceof Compound && (decomposeConjDTernal || decomposeXternal) && x.op()==CONJ) {
-                var xdt = x.dt();
+                int xdt = x.dt();
                 if ((decomposeConjDTernal && xdt ==DTERNAL) || (decomposeXternal && xdt == XTERNAL)) {
-                    for (var xx : x.subterms()) {
+                    for (Term xx : x.subterms()) {
                         if (!each.accept(o, xx))
                             return false;
                     }

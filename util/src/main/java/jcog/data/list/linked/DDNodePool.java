@@ -26,7 +26,7 @@ public class DDNodePool<E> extends MetalPool<DD<E>> {
     }
 
     public DD<E> get(E item, int owner) {
-        var x = get();
+        DD<E> x = get();
         x.item = item;
         x.owner = owner;
         return x;

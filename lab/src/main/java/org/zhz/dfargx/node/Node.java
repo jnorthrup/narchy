@@ -40,7 +40,7 @@ public abstract class Node {
     }
 
     public boolean ifHas(boolean leftOrRight, Consumer<Node> ifHas) {
-        var n = leftOrRight ? left : right;
+        Node n = leftOrRight ? left : right;
         if (n != null) {
             ifHas.accept(n);
             return true;
@@ -56,7 +56,7 @@ public abstract class Node {
         return ifEmpty(false, fillWith);
     }
     public boolean ifEmpty(boolean leftOrRight, Supplier<Node> fillWith) {
-        var n = leftOrRight ? left : right;
+        Node n = leftOrRight ? left : right;
         if (n == null) {
             n = fillWith.get();
             if (n!=null) {

@@ -5,6 +5,7 @@ import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
+import nars.term.Img;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.IdempotentBool;
@@ -37,23 +38,23 @@ public enum Image {
 
         if (t instanceof Compound && t.opID() == INH.id) {
 
-            var prodSub = intOrExt ? 1 : 0;
+            int prodSub = intOrExt ? 1 : 0;
 
-            var prod = t.sub(prodSub);
+            Term prod = t.sub(prodSub);
 
             if (prod instanceof Compound && prod.opID() == PROD.id) {
 
-                var ss = ((Compound)prod).subtermsDirect();
-                var n = ss.subs();
+                Subterms ss = ((Compound)prod).subtermsDirect();
+                int n = ss.subs();
                 if (n >= NAL.term.imageTransformSubMin /*&& (ss.structureSurface() & IMG.bit) == 0*/) {
-                    var target = intOrExt ? ImgInt : ImgExt;
+                    Img target = intOrExt ? ImgInt : ImgExt;
 
-                    var index = ss.indexOf(x);
+                    int index = ss.indexOf(x);
                     if (index != -1) {
 
-                        var qq = new Term[n + 1];
+                        Term[] qq = new Term[n + 1];
                         qq[0] = t.sub(1 - prodSub);
-                        for (var i = 0; i < n; i++) {
+                        for (int i = 0; i < n; i++) {
                             Term y;
                             if (i == index) {
                                 y = target;
@@ -63,7 +64,7 @@ public enum Image {
                             qq[i + 1] = y;
                         }
 
-                        var q = PROD.the(qq);
+                        Term q = PROD.the(qq);
                         return INH.the(intOrExt ? new Term[] { q, x } : new Term[] { x, q });
                     }
                 }
@@ -78,11 +79,11 @@ public enum Image {
 
     public static Term imageNormalize(Term _x) {
 
-        var neg = _x instanceof Neg;
-        var x = neg ? _x.unneg() : _x;
+        boolean neg = _x instanceof Neg;
+        Term x = neg ? _x.unneg() : _x;
 
         if (x instanceof Compound && x.hasAll(ImageBits) && x.opID() == INH.id) {
-            var y = _imgNormalize((Compound) x);
+            Term y = _imgNormalize((Compound) x);
             if (x != y)
                 return y.negIf(neg);
         }
@@ -123,15 +124,15 @@ public enum Image {
 
         //assert(x.op()==INH);
 
-        var xx = x.subterms();
+        Subterms xx = x.subterms();
         Term s = xx.sub(0), p = xx.sub(1);
 
         Subterms ss = null;
-        var isInt = s instanceof Compound && s.opID() == PROD.id &&
+        boolean isInt = s instanceof Compound && s.opID() == PROD.id &&
             (ss = s.subterms()).containsInstance(Op.ImgInt) && !ss.containsInstance(Op.ImgExt);
 
         Subterms pp = null;
-        var isExt = p instanceof Compound && p.opID() == PROD.id &&
+        boolean isExt = p instanceof Compound && p.opID() == PROD.id &&
             (pp = p.subterms()).containsInstance(Op.ImgExt) && !pp.containsInstance(Op.ImgInt);
 
         if (isInt == isExt)

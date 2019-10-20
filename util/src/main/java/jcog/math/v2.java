@@ -226,8 +226,8 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
      * Subtract another vector from this one and return result - alters this vector.
      */
     public final v2 subLocal(v2 v) {
-        var x1 = -v.x;
-        var y1 = -v.y;
+        float x1 = -v.x;
+        float y1 = -v.y;
         return added(x1, y1);
     }
 
@@ -316,7 +316,7 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
     }
 
     public static v2 cross(v2 a, float s) {
-        var y1 = -s * a.x;
+        float y1 = -s * a.x;
         return new v2(s * a.y, y1);
     }
 
@@ -372,7 +372,7 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
 
 
     public static void crossToOut(v2 a, float s, v2 out) {
-        var tempy = -s * a.x;
+        float tempy = -s * a.x;
         out.x = s * a.y;
         out.y = tempy;
     }
@@ -384,12 +384,12 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
     }
 
     public static v2 cross(float s, v2 a) {
-        var x1 = -s * a.y;
+        float x1 = -s * a.y;
         return new v2(x1, s * a.x);
     }
 
     public static void crossToOut(float s, v2 a, v2 out) {
-        var tempY = s * a.x;
+        float tempY = s * a.x;
         out.x = -s * a.y;
         out.y = tempY;
     }
@@ -467,7 +467,7 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
      * @return the integer hash code value
      */
     public int hashCode() {
-        var bits = 1L;
+        long bits = 1L;
         bits = 31L * bits + VecMathUtil.floatToIntBits(x);
         bits = 31L * bits + VecMathUtil.floatToIntBits(y);
         return (int) (bits ^ (bits >> 32));
@@ -505,7 +505,7 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
             return true;
 
         if (!(x instanceof v2)) return false;
-        var other = (v2) x;
+        v2 other = (v2) x;
         if (Float.floatToIntBits(this.x) != Float.floatToIntBits(other.x)) return false;
         return Float.floatToIntBits(y) == Float.floatToIntBits(other.y);
     }
@@ -701,9 +701,9 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
 
 
     public final float normalize(float scale) {
-        var sqrNorm = (this.x * this.x + this.y * this.y);
+        float sqrNorm = (this.x * this.x + this.y * this.y);
         if (sqrNorm >= Float.MIN_NORMAL) {
-            var norm = (float) Math.sqrt(sqrNorm);
+            float norm = (float) Math.sqrt(sqrNorm);
             if (norm >= Util.sqrtMIN_NORMAL) {
                 set(scale * this.x / norm, scale * this.y / norm);
                 return norm;
@@ -821,12 +821,12 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
 
         float nx = other.x, ny = other.y;
         float px = this.x, py = this.y;
-        var dx = nx - px;
+        float dx = nx - px;
         if (dx < Spatialization.EPSILONf) {
             px = this.x = nx;
             dx = 0;
         }
-        var dy = ny - py;
+        float dy = ny - py;
         if (dy < Spatialization.EPSILONf) {
             py = this.y = ny;
             dy = 0;
@@ -839,7 +839,7 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
             set(Util.lerp(rate, px, nx), Util.lerp(rate, py, ny));
         } else {
 
-            var lenSq = dx * dx + dy * dy;
+            float lenSq = dx * dx + dy * dy;
 
             if (lenSq < rate * rate) {
                 set(nx, ny); //finished

@@ -83,15 +83,15 @@ public class SphereShape extends ConvexInternalShape {
 
 	@Override
 	public void batchedUnitVectorGetSupportingVertexWithoutMargin(v3[] vectors, v3[] supportVerticesOut, int numVectors) {
-		for (var i = 0; i < numVectors; i++) {
+		for (int i = 0; i < numVectors; i++) {
 			supportVerticesOut[i].set(0f, 0f, 0f);
 		}
 	}
 
 	@Override
 	public void getAabb(Transform t, v3 aabbMin, v3 aabbMax) {
-		var margin = getMargin();
-		var extent = new v3(margin, margin, margin);
+        float margin = getMargin();
+        v3 extent = new v3(margin, margin, margin);
 
 		v3 center = t;
 		aabbMin.sub(center, extent);
@@ -105,7 +105,7 @@ public class SphereShape extends ConvexInternalShape {
 
 	@Override
 	public void calculateLocalInertia(float mass, v3 inertia) {
-		var elem = 0.4f * mass * getMargin() * getMargin();
+        float elem = 0.4f * mass * getMargin() * getMargin();
 		inertia.set(elem, elem, elem);
 	}
 

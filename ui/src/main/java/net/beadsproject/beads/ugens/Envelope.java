@@ -228,7 +228,7 @@ public class Envelope extends UGen {
      */
     public Envelope addSegments(Collection<Segment> segments) {
         if (!lock) {
-            for (var s : segments) {
+            for (Segment s : segments) {
                 if (!Float.isNaN(s.endValue) && !Float.isInfinite(s.endValue)) {
                     segments.add(s);
                     unchanged = false;
@@ -297,8 +297,8 @@ public class Envelope extends UGen {
     @Override
     public synchronized void gen() {
         if (!unchanged) {
-            var iChanged = false;
-            for (var i = 0; i < bufferSize; ++i) {
+            boolean iChanged = false;
+            for (int i = 0; i < bufferSize; ++i) {
                 if (currentSegment == null) {
                     getNextSegment();
                 } else if (currentSegment.duration == 0) {
@@ -308,7 +308,7 @@ public class Envelope extends UGen {
                     iChanged = true;
 
 
-                    var ratio = currentSegment.curvature != 1.0f ? (float) Math.pow((double) currentTime / currentSegment.duration, currentSegment.curvature) : (float) currentTime / currentSegment.duration;
+                    float ratio = currentSegment.curvature != 1.0f ? (float) Math.pow((double) currentTime / currentSegment.duration, currentSegment.curvature) : (float) currentTime / currentSegment.duration;
                     currentValue = (1f - ratio) * currentStartValue + ratio * currentSegment.endValue;
                     currentTime++;
                     if (currentTime > currentSegment.duration) getNextSegment();
@@ -328,7 +328,11 @@ public class Envelope extends UGen {
     }
 
     public LinkedList<Segment> getSegments() {
-        var segmentsCopy = segments.stream().map(Segment::new).collect(Collectors.toCollection(LinkedList::new));
+        LinkedList<Segment> segmentsCopy = new LinkedList<>();
+        for (Segment segment : segments) {
+            Segment segment1 = new Segment(segment);
+            segmentsCopy.add(segment1);
+        }
         return segmentsCopy;
     }
 

@@ -30,7 +30,7 @@ public abstract class DeriverExecutor extends Derivation {
 
 	protected static float pri(Premise p) {
 		Task t = p.task(), b = p.belief();
-		var tPri = t.priElseZero();
+        float tPri = t.priElseZero();
 		return b != null ? Math.max(
 			//Util.or(
 			//Util.min(
@@ -59,7 +59,7 @@ public abstract class DeriverExecutor extends Derivation {
 	 * run a premise
 	 */
 	protected final FastCounter run(Premise p, int ttl) {
-		var result = super.run(p, ttl);
+        FastCounter result = super.run(p, ttl);
 		result.increment();
 		return result;
 	}
@@ -172,9 +172,9 @@ public abstract class DeriverExecutor extends Derivation {
 		@Override
 		public void next(int mainTTL) {
 
-			var branchTTL = nar.deriveBranchTTL.intValue();
+            int branchTTL = nar.deriveBranchTTL.intValue();
 //
-			var q = this.queue;
+            Queue<Premise> q = this.queue;
 //			//q.clear();
 //
 //			//TODO scale ttl by the priority normalized relative to the other items in the queue
@@ -183,7 +183,7 @@ public abstract class DeriverExecutor extends Derivation {
 				if (q.size() < mainTTL - 1) {
 				//if (q.isEmpty()) {
 				//if (q.size() < mainTTL/2) {
-					var s = sample();
+                    Premise s = sample();
 					if (s!=null)
 						q.offer(s);
 					else
@@ -241,7 +241,7 @@ public abstract class DeriverExecutor extends Derivation {
 
 		@Override
 		public void add(Premise p) {
-			var x = new HashedPLink<Premise>(p, pri(p));
+            HashedPLink<Premise> x = new HashedPLink<Premise>(p, pri(p));
 			PriReference<Premise> y = bag.put(x);
 			//return x == y && !x.isDeleted(); //non-duplicate and accepted
 		}
@@ -251,11 +251,11 @@ public abstract class DeriverExecutor extends Derivation {
 
 			starting();
 
-			var cap = bag.capacity();
+            int cap = bag.capacity();
 
 			//int tries = 1 + (cap - bag.size()); //TODO penalize duplicates more
 			do {
-				var s = sample();
+                Premise s = sample();
 				if (s != null) {
 					add(s);
 					if (bag.size() >= cap)

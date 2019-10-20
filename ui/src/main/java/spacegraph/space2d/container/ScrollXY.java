@@ -120,7 +120,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
     }
 
     public ScrollXY<S> view(float w, float h) {
-        var nextView = RectFloat.WH(w, h);
+        RectFloat nextView = RectFloat.WH(w, h);
         if (this.view == null) {
             this.view = nextView; //initial
         } else {
@@ -143,8 +143,8 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
     private void layoutModel() {
 
         if (view!=null) {
-            var vw = Util.clamp(view.w, viewMin.x, viewMax.x);
-            var vh = Util.clamp(view.h, viewMin.y, viewMax.y);
+            float vw = Util.clamp(view.w, viewMin.x, viewMax.x);
+            float vh = Util.clamp(view.h, viewMin.y, viewMax.y);
             scale.set(Util.normalize(view.w, viewMin.x, viewMax.x),Util.normalize(view.h, viewMin.y, viewMax.y));
             this.view = maybeEqual(this.view, RectFloat.X0Y0WH(
                     Util.clamp(view.x, 0, viewMax.x),
@@ -153,7 +153,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         }
 
 
-        var m = this.content;
+        S m = this.content;
 
         if (m instanceof ContainerSurface)
             ((ContainerSurface)m).layout();
@@ -222,7 +222,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
     public/*synchronized*/ ScrollXY scroll(float x, float y, float w, float h) {
 
-        var autoHideScroll = true;
+        boolean autoHideScroll = true;
         setScrollBar(true, (!autoHideScroll || w < viewMax.x), true);
 
         setScrollBar(false, (!autoHideScroll || h < viewMax.y), true);
@@ -231,11 +231,11 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
         scale.visible(scrollX.visible()||scrollY.visible());
 
-        var y1 = y;
-        var y2 = y1 + h;
-        var x2 = x + w;
-        var x1 = x;
-        var nextView = RectFloat.X0Y0WH(x1, y1, x2 - x1, y2 - y1);
+        float y1 = y;
+        float y2 = y1 + h;
+        float x2 = x + w;
+        float x1 = x;
+        RectFloat nextView = RectFloat.X0Y0WH(x1, y1, x2 - x1, y2 - y1);
         if (!nextView.equals(view)) {
             this.view = nextView;
             layoutModel();
@@ -273,12 +273,12 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
     }
 
     public static <X> ScrollXY<DynGrid<X>> list(Function<X, Surface> builder, List<X> list) {
-        var s = new ScrollXY<DynGrid<X>>(ListModel.of(list), GridRenderer.value(builder));
+        ScrollXY<DynGrid<X>> s = new ScrollXY<DynGrid<X>>(ListModel.of(list), GridRenderer.value(builder));
         return s;
     }
 
     public static <X> ScrollXY<DynGrid<X>> listCached(Function<X, Surface> builder, List<X> list, int cacheCapacity) {
-        var s = new ScrollXY<DynGrid<X>>(ListModel.of(list), GridRenderer.valueCached(builder, cacheCapacity));
+        ScrollXY<DynGrid<X>> s = new ScrollXY<DynGrid<X>>(ListModel.of(list), GridRenderer.valueCached(builder, cacheCapacity));
         return s;
     }
 
@@ -308,7 +308,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         @Override
         public boolean canRender(ReSurface r) {
 
-            var k = knob.asFloat();
+            float k = knob.asFloat();
 
             if (!Float.isFinite(k)) //HACK
                 k = 1f;

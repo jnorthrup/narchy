@@ -46,8 +46,8 @@ public class StableBloomFilter<E> extends MetalBloomFilter<E> implements Countin
     }
 
     public boolean addIfMissing(E element, float unlearnIfNew) {
-        var hash = hash(element);
-        var c = contains(hash);
+        int[] hash = hash(element);
+        boolean c = contains(hash);
         if (!c) {
             if (unlearnIfNew > 0)
                 forget(unlearnIfNew, rng);
@@ -60,27 +60,27 @@ public class StableBloomFilter<E> extends MetalBloomFilter<E> implements Countin
 
     @Override
     public void remove(E element) {
-        var indices = hash(element);
+        int[] indices = hash(element);
         remove(indices);
     }
 
     public void remove(int[] indices) {
-        for (var i = 0; i < numberOfHashes; i++) {
+        for (int i = 0; i < numberOfHashes; i++) {
             decrement(indices[i]);
         }
     }
 
 
     public void forget(float forgetFactor, Random rng) {
-        var nForget = Math.ceil(forget * forgetFactor);
-        for (var i = 0; i < nForget; i++) {
+        double nForget = Math.ceil(forget * forgetFactor);
+        for (int i = 0; i < nForget; i++) {
             decrement(rng.nextInt(numberOfCells));
         }
     }
 
 
     private void decrement(int idx) {
-        var c = this.cells;
+        byte[] c = this.cells;
         if (c[idx] > 0)
             c[idx] -= 1;
     }

@@ -74,21 +74,21 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
     @Override
     public PhySurface add(Surface x) {
         return this.w.computeIfAbsent(x, (ww->{
-            var wd = new PhySurface(ww);
+            PhySurface wd = new PhySurface(ww);
             physics.physics.addBehavior(wd.repel);
             return wd;
         }));
     }
 
     public void update() {
-        for (var w : this.w.valueArray()) {
+        for (PhySurface w : this.w.valueArray()) {
             w.update();
         }
     }
 
     @Override
     public void remove(Surface x) {
-        var removed = this.w.remove(x);
+        PhySurface removed = this.w.remove(x);
         physics.physics.removeBehavior(removed.repel);
     }
 
@@ -102,30 +102,30 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
 
         public VerletVisibleLink(@Nullable Wire w) {
             super(w);
-            var a = w.a;
-            var b = w.b;
-            var ap = physics.bind(a, VerletSurface.VerletSurfaceBinding.NearestSurfaceEdge);
-            var bp = physics.bind(b, VerletSurface.VerletSurfaceBinding.NearestSurfaceEdge);
+            Surface a = w.a;
+            Surface b = w.b;
+            VerletParticle2D ap = physics.bind(a, VerletSurface.VerletSurfaceBinding.NearestSurfaceEdge);
+            VerletParticle2D bp = physics.bind(b, VerletSurface.VerletSurfaceBinding.NearestSurfaceEdge);
 
-            var extraJoints = 3;
-            var chainLen = 2 + 1 + (extraJoints * 2); //should be an odd number
+            int extraJoints = 3;
+            int chainLen = 2 + 1 + (extraJoints * 2); //should be an odd number
 
-            var chain = physics.addParticleChain(ap, bp,
+            Pair<List<VerletParticle2D>, List<VerletSpring2D>> chain = physics.addParticleChain(ap, bp,
                     chainLen, 0f /* some minimal # */, 0.5f);
 
-            var springs = chain.getTwo();
+            List<VerletSpring2D> springs = chain.getTwo();
             on(() -> {
                 //destroy the chain springs on destruction
-                var verletPhysics2D = physics.physics;
-                for (var spring : springs) {
+                VerletPhysics2D verletPhysics2D = physics.physics;
+                for (VerletSpring2D spring : springs) {
                     verletPhysics2D.removeSpringAndItsParticles(spring);
                 }
             });
 
-            var points = chain.getOne();
+            List<VerletParticle2D> points = chain.getOne();
 //        VerletParticle2D first = points.get(0);
 //        VerletParticle2D last = points.get(points.size() - 1);
-            var mid = points.get(points.size() / 2);
+            VerletParticle2D mid = points.get(points.size() / 2);
 
 
 //        if (first!=mid) {
@@ -144,7 +144,7 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
                     chain.getOne().get(chainLen - 2), false, VerletSurface.VerletSurfaceBinding.Center, graph);
 
             /** link rendering */
-            var r = renderer(chain);
+            Surface r = renderer(chain);
             on(r);
 
             graph.addRaw(r);
@@ -168,23 +168,23 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
             }
 
             @Override protected void paintLink(GL2 gl, ReSurface reSurface) {
-                var window = 100 * 1000 * 1000;
-                var renderStart = reSurface.frameNS;
+                int window = 100 * 1000 * 1000;
+                long renderStart = reSurface.frameNS;
 
-                var id = VerletVisibleLink.this.id;
-                var aa = id.activity(true, renderStart, window);
-                var bb = id.activity(false, renderStart, window);
+                Wire id = VerletVisibleLink.this.id;
+                float aa = id.activity(true, renderStart, window);
+                float bb = id.activity(false, renderStart, window);
 
-                var base = Math.min(a().radius(), b().radius());
-                var baseA = base * Util.lerp(aa, 0.25f, 0.75f);
-                var baseB = base * Util.lerp(bb, 0.25f, 0.75f);
+                float base = Math.min(a().radius(), b().radius());
+                float baseA = base * Util.lerp(aa, 0.25f, 0.75f);
+                float baseB = base * Util.lerp(bb, 0.25f, 0.75f);
                 Draw.colorHash(gl, id.typeHash(true), 0.25f + 0.45f * aa);
-                for (var s : chain.getTwo()) {
+                for (VerletSpring2D s : chain.getTwo()) {
                     VerletParticle2D a = s.a, b = s.b;
                     Draw.halfTriEdge2D(a.x, a.y, b.x, b.y, baseA, gl); //Draw.line(a.x, a.y, b.x, b.y, gl);
                 }
                 Draw.colorHash(gl, id.typeHash(false), 0.25f + 0.45f * bb);
-                for (var s : chain.getTwo()) {
+                for (VerletSpring2D s : chain.getTwo()) {
                     VerletParticle2D a = s.a, b = s.b;
                     Draw.halfTriEdge2D(b.x, b.y, a.x, a.y, baseB, gl); //Draw.line(a.x, a.y, b.x, b.y, gl);
                 }

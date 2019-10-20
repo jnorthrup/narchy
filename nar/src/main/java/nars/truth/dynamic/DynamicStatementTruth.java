@@ -70,9 +70,9 @@ public enum DynamicStatementTruth { ;
         }
 
         static Term reconstruct(Compound superterm, DynTaskify d, boolean subjOrPred, boolean union) {
-            var superSect = superterm.sub(subjOrPred ? 0 : 1);
-            var op = superterm.op();
-            var negOuter = false;
+            Term superSect = superterm.sub(subjOrPred ? 0 : 1);
+            Op op = superterm.op();
+            boolean negOuter = false;
                 if (superSect instanceof Neg) {
                         negOuter = true;
                         superSect = superSect.unneg();
@@ -91,11 +91,11 @@ public enum DynamicStatementTruth { ;
 
                 Term constantCondition = null;
                 for (int i = 0, componentsSize = d.size(); i < componentsSize; i++) {
-                    var xx = d.term(i);
+                    Term xx = d.term(i);
                     if (xx.op()==IMPL) {
 
 
-                        var tdt = xx.dt();
+                        int tdt = xx.dt();
 
                         if (tdt == XTERNAL)
                             throw new TermException("xternal in dynamic impl reconstruction", xx);
@@ -131,7 +131,7 @@ public enum DynamicStatementTruth { ;
                 if (sect == Null)
                     return Null; //allow non-Null Bool's?
 
-                var cs = c.shift();
+                long cs = c.shift();
                 //temporal information not available or was destroyed
                 outerDT = cs == ETERNAL ? DTERNAL : Tense.occToDT(subjOrPred ? -cs - sect.eventRange() : cs);
 
@@ -140,8 +140,8 @@ public enum DynamicStatementTruth { ;
                 Term[] result;
 
                 //extract passive target and verify they all match (could differ temporally, for example)
-                var common = d.get(0).term().unneg().sub(subjOrPred ? 1 : 0);
-                var n = d.size();
+                Term common = d.get(0).term().unneg().sub(subjOrPred ? 1 : 0);
+                int n = d.size();
                 if (d.anySatisfy(1, n,
                     i -> !common.equals(i.term().unneg().sub(subjOrPred ? 1 : 0))
                 )) {
@@ -159,7 +159,7 @@ public enum DynamicStatementTruth { ;
                 outerDT = DTERNAL;
             }
 
-            var common = superterm.sub(subjOrPred ? 1 : 0);
+            Term common = superterm.sub(subjOrPred ? 1 : 0);
 
             if (negOuter)
                 sect = sect.neg();
@@ -181,7 +181,7 @@ public enum DynamicStatementTruth { ;
         public boolean evalComponents(Compound superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
 
 
-            var decomposed = stmtCommon(!subjOrPred, superterm);
+            Term decomposed = stmtCommon(!subjOrPred, superterm);
             if (decomposed.unneg().op()!= CONJ) {
                 //superterm = (Compound) Image.imageNormalize(superterm);
                 decomposed = stmtCommon(!subjOrPred, superterm);
@@ -197,9 +197,9 @@ public enum DynamicStatementTruth { ;
             //assert (decomposed.op() == CONJ);
 
             //if (decomposed.op() == Op.CONJ) {
-            var common = stmtCommon(subjOrPred, superterm);
+            Term common = stmtCommon(subjOrPred, superterm);
 
-            var op = superterm.op();
+            Op op = superterm.op();
 
             return decomposed.subterms().AND(
                 y -> each.accept(stmtDecomposeStructural(op, subjOrPred, y, common), start, end)

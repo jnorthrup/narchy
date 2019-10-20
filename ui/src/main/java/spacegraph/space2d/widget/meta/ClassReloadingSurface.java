@@ -48,7 +48,7 @@ public class ClassReloadingSurface<C extends Surface> extends MutableUnitContain
 
     void error(Throwable e) {
         e.printStackTrace();
-        var m = e.getMessage();
+        String m = e.getMessage();
         set(new VectorLabel(m!=null ? m : e.toString()));
     }
 
@@ -59,14 +59,14 @@ public class ClassReloadingSurface<C extends Surface> extends MutableUnitContain
     public synchronized void reload(boolean forceIfSameClass) {
         if (reloader == null) return;
 
-        var previous = the();
+        Surface previous = the();
         busy();
 
         try {
-            var cc = reloader.reloadClass(className);
+            Class<?> cc = reloader.reloadClass(className);
             if (forceIfSameClass || currentClass !=cc) {
-                var ctor = cc.getConstructor(Util.typesOfArray(args));
-                var s = (Surface)ctor.newInstance(args);
+                Constructor<?> ctor = cc.getConstructor(Util.typesOfArray(args));
+                Surface s = (Surface)ctor.newInstance(args);
                 set(s);
                 currentClass = (Class<? extends C>) cc;
             } else {

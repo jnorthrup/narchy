@@ -53,7 +53,7 @@ public class PremiseRuleSet {
     private static final Function<String, Collection<PremiseRule>> ruleFileCache = CaffeineMemoize.build((String n) -> {
 
         byte[] bb;
-        try (var nn = NAR.class.getClassLoader().getResourceAsStream(n)) {
+        try (InputStream nn = NAR.class.getClassLoader().getResourceAsStream(n)) {
             bb = nn.readAllBytes();
         } catch (IOException e) {
             e.printStackTrace();
@@ -77,7 +77,7 @@ public class PremiseRuleSet {
 
         return lines.map(String::trim).filter(s -> !s.isEmpty() && !s.startsWith("//")).map(s -> {
 
-            var s1 = s;
+            String s1 = s;
             if (s1.contains("..")) {
                 s1 = s1.replace("A..", "%A.."); //add var pattern manually to ellipsis
                 //s = s.replace("%A..B=_", "%A..%B=_"); //add var pattern manually to ellipsis

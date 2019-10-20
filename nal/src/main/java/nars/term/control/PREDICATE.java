@@ -59,10 +59,10 @@ public interface PREDICATE<X> extends Term, Predicate<X> {
 
     static <X> PREDICATE<X> _andFlat(List<PREDICATE<X>> pp) {
         restart: do {
-            var ppp = pp.size();
+            int ppp = pp.size();
             if (pp.size()<=1)
                 break;
-            for (var i = 0; i < ppp; i++) {
+            for (int i = 0; i < ppp; i++) {
                 if (pp.get(i).reduceIn(pp)) {
                     continue restart; //modified
                 }
@@ -84,7 +84,7 @@ public interface PREDICATE<X> extends Term, Predicate<X> {
     }
 
     static @Nullable <X> PREDICATE<X> andFlat(Collection<PREDICATE<X>> cond, @Nullable PREDICATE<X> conseq) {
-        var c = cond.iterator();
+        Iterator<PREDICATE<X>> c = cond.iterator();
         return andFlat(Iterators.toArray(
                     (conseq != null ? Iterators.concat(c, Iterators.singletonIterator(conseq)) : c),
                     PREDICATE.class)

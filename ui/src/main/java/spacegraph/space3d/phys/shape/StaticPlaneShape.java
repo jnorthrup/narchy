@@ -59,16 +59,16 @@ public class StaticPlaneShape extends ConcaveShape {
 	
 	@Override
 	public void processAllTriangles(TriangleCallback callback, v3 aabbMin, v3 aabbMax) {
-		var tmp = new v3();
-		var tmp1 = new v3();
-		var tmp2 = new v3();
+        v3 tmp = new v3();
+        v3 tmp1 = new v3();
+        v3 tmp2 = new v3();
 
-		var halfExtents = new v3();
+        v3 halfExtents = new v3();
 		halfExtents.sub(aabbMax, aabbMin);
 		halfExtents.scaled(0.5f);
 
-		var radius = halfExtents.length();
-		var center = new v3();
+        float radius = halfExtents.length();
+        v3 center = new v3();
 		center.add(aabbMax, aabbMin);
 		center.scaled(0.5f);
 
@@ -80,7 +80,7 @@ public class StaticPlaneShape extends ConcaveShape {
 		TransformUtil.planeSpace1(planeNormal, tangentDir0, tangentDir1);
 
 
-		var projectedCenter = new v3();
+        v3 projectedCenter = new v3();
 		tmp.scale(planeNormal.dot(center) - planeConstant, planeNormal);
 		projectedCenter.sub(center, tmp);
 

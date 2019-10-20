@@ -25,7 +25,7 @@ public class FloatND extends ArrayTensor implements HyperPoint, Serializable, Co
     }
 
     public static FloatND fill(int dims, float value) {
-        var a = new float[dims];
+        float[] a = new float[dims];
         Arrays.fill(a, value);
         return new FloatND(a);
     }
@@ -43,12 +43,12 @@ public class FloatND extends ArrayTensor implements HyperPoint, Serializable, Co
     @Override
     public double distance(HyperPoint h) {
         if (this == h) return 0;
-        var p = (FloatND) h;
+        FloatND p = (FloatND) h;
         float sumSq = 0;
-        for (var i = 0; i < data.length; i++) {
-            var x = data[i];
-            var y = p.data[i];
-            var xMinY = x - y;
+        for (int i = 0; i < data.length; i++) {
+            float x = data[i];
+            float y = p.data[i];
+            float xMinY = x - y;
             sumSq += xMinY * xMinY;
         }
         return Math.sqrt(sumSq);
@@ -64,7 +64,7 @@ public class FloatND extends ArrayTensor implements HyperPoint, Serializable, Co
         if (this == o) return true;
         if (!(o instanceof FloatND)) return false;
 
-        var floatND = (FloatND) o;
+        FloatND floatND = (FloatND) o;
         return /*hash == floatND.hashCode() && */Arrays.equals(data, floatND.data);
     }
 

@@ -67,7 +67,7 @@ public class GraphMeter {
 
 
     public static <X> double clustering(AdjGraph<X,?> g, X node) {
-        var n = g.node(node);
+        int n = g.node(node);
         return clustering(new UndirectedGraph(g), n);
     }
     /**
@@ -90,15 +90,15 @@ public class GraphMeter {
         if (g.directed()) throw new IllegalArgumentException(
                 "graph is directed");
 
-        var n = g.neighborsOut(i).toArray();
+        int[] n = g.neighborsOut(i).toArray();
 
         if (n.length == 0) return 0;
         if (n.length == 1) return 1;
 
-        var edges = 0;
+        int edges = 0;
 
-        for (var j = 0; j < n.length; ++j)
-            for (var k = j + 1; k < n.length; ++k)
+        for (int j = 0; j < n.length; ++j)
+            for (int k = j + 1; k < n.length; ++k)
                 if (g.isEdge(n[j], n[k]))
                     ++edges;
 
@@ -119,19 +119,19 @@ public class GraphMeter {
      */
     public static void multicast(Graph g, int[] b, Random r) {
 
-        var c1 = new int[g.size()];
-        var c2 = new int[g.size()];
-        for (var i = 0; i < c1.length; ++i) c2[i] = c1[i] = WHITE;
+        int[] c1 = new int[g.size()];
+        int[] c2 = new int[g.size()];
+        for (int i = 0; i < c1.length; ++i) c2[i] = c1[i] = WHITE;
         c2[0] = c1[0] = BLACK;
 
-        var k = 0;
-        for (var black = 1; k < b.length || black < g.size(); ++k) {
-            for (var i = 0; i < c2.length; ++i) {
+        int k = 0;
+        for (int black = 1; k < b.length || black < g.size(); ++k) {
+            for (int i = 0; i < c2.length; ++i) {
                 MutableIntCollection neighbours = g.neighborsOut(i);
                 IntIterator it = neighbours.intIterator();
-                for (var j = r.nextInt(neighbours.size()); j > 0; --j)
+                for (int j = r.nextInt(neighbours.size()); j > 0; --j)
                     it.next();
-                var randn = it.next();
+                int randn = it.next();
 
                 
                 if (c1[i] == BLACK) 
@@ -196,7 +196,7 @@ public class GraphMeter {
      */
     private void bfs(int from) {
 
-        var q = new IntArrayList();
+        IntArrayList q = new IntArrayList();
 
         q.add(from);
         q.add(0);
@@ -205,11 +205,11 @@ public class GraphMeter {
         color[from] = GREY;
 
         while (!q.isEmpty()) {
-            var u = q.removeAtIndex(0);
-            var du = q.removeAtIndex(0);
+            int u = q.removeAtIndex(0);
+            int du = q.removeAtIndex(0);
 
             g.neighborsOut(u).forEach(j->{
-                var cj = color[j];
+                int cj = color[j];
                 if (cj == WHITE) {
                     color[j] = GREY;
 
@@ -250,7 +250,7 @@ public class GraphMeter {
         if (root[i] == i) 
         {
             int j;
-            var s = stack.size();
+            int s = stack.size();
             do {
                 j = stack.removeAtIndex(--s);
                 color[j] = -color[j];
@@ -270,7 +270,7 @@ public class GraphMeter {
      */
     public List<IntHashSet> weakly(Graph g) {
 
-        var size = g.size();
+        int size = g.size();
 
         this.g = g;
         if (cluster == null) cluster = new IntHashSet();
@@ -278,10 +278,10 @@ public class GraphMeter {
 
         
 
-        for (var i = 0; i < size; ++i) color[i] = WHITE;
-        var actCluster = 0;
+        for (int i = 0; i < size; ++i) color[i] = WHITE;
+        int actCluster = 0;
         int j;
-        for (var i = 0; i < size; ++i) {
+        for (int i = 0; i < size; ++i) {
             if (color[i] != WHITE)
                 continue;
 
@@ -289,7 +289,7 @@ public class GraphMeter {
             bfs(i); 
             --actCluster;
             for (j = 0; j < size; ++j) {
-                var cj = color[j];
+                int cj = color[j];
                 if (cj == BLACK || cluster.contains(cj))
                     color[j] = actCluster;
             }
@@ -300,7 +300,7 @@ public class GraphMeter {
 
         actCluster = -actCluster;
         List<IntHashSet> x = new FasterList(actCluster);
-        for (var i = 0; i < actCluster; i++) {
+        for (int i = 0; i < actCluster; i++) {
             x.add(new IntHashSet(1));
         }
 
@@ -323,7 +323,7 @@ public class GraphMeter {
         if (d == null || d.length < g.size()) d = new int[g.size()];
         if (color == null || color.length < g.size()) color = new int[g.size()];
 
-        for (var j = 0; j < g.size(); ++j) {
+        for (int j = 0; j < g.size(); ++j) {
             color[j] = WHITE;
             d[j] = -1;
         }
@@ -345,7 +345,7 @@ public class GraphMeter {
         dist(g, k);
 
         Arrays.fill(b, 0);
-        for (var aD : d) {
+        for (int aD : d) {
             if (aD >= 0 && aD < b.length) b[aD]++;
         }
     }
@@ -365,23 +365,23 @@ public class GraphMeter {
 
         this.g = g;
         stack.clear();
-        var size = g.size();
+        int size = g.size();
         if (root == null || root.length < size) root = new int[size];
         if (color == null || color.length < size) color = new int[size];
-        for (var i = 0; i < size; ++i) color[i] = WHITE;
+        for (int i = 0; i < size; ++i) color[i] = WHITE;
         counter = 1;
 
         
         
         
-        for (var i = 0; i < size; ++i) {
+        for (int i = 0; i < size; ++i) {
             if (color[i] == WHITE) tarjanVisit(i);
         }
-        for (var i = 0; i < size; ++i) color[i] = 0;
-        for (var i = 0; i < size; ++i) color[root[i]]++;
-        var ht = new IntIntHashMap();
-        for (var j = 0; j < size; ++j) {
-            var cj = color[j];
+        for (int i = 0; i < size; ++i) color[i] = 0;
+        for (int i = 0; i < size; ++i) color[root[i]]++;
+        IntIntHashMap ht = new IntIntHashMap();
+        for (int j = 0; j < size; ++j) {
+            int cj = color[j];
             if (cj > 0) {
                 ht.put(j, cj);
             }

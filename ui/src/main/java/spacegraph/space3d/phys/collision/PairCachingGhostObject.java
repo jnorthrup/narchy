@@ -41,14 +41,14 @@ public class PairCachingGhostObject extends GhostObject {
 	 */
 	@Override
 	public void addOverlappingObjectInternal(Broadphasing otherProxy, Broadphasing thisProxy) {
-		var actualThisProxy = thisProxy != null? thisProxy : broadphase;
+        Broadphasing actualThisProxy = thisProxy != null? thisProxy : broadphase;
 		assert(actualThisProxy != null);
 
-		var otherObject = otherProxy.data;
+        Collidable otherObject = otherProxy.data;
 		assert (otherObject != null);
 
 
-		var index = overlappingObjects.indexOf(otherObject);
+        int index = overlappingObjects.indexOf(otherObject);
 		if (index == -1) {
 			overlappingObjects.add(otherObject);
 			hashPairCache.addOverlappingPair(actualThisProxy, otherProxy);
@@ -57,12 +57,12 @@ public class PairCachingGhostObject extends GhostObject {
 
 	@Override
 	public void removeOverlappingObjectInternal(Broadphasing otherProxy, Intersecter intersecter, Broadphasing thisProxy1) {
-		var otherObject = otherProxy.data;
-		var actualThisProxy = thisProxy1 != null? thisProxy1 : broadphase;
+        Collidable otherObject = otherProxy.data;
+        Broadphasing actualThisProxy = thisProxy1 != null? thisProxy1 : broadphase;
 		assert(actualThisProxy != null);
 
 		assert (otherObject != null);
-		var index = overlappingObjects.indexOf(otherObject);
+        int index = overlappingObjects.indexOf(otherObject);
 		if (index != -1) {
             
             overlappingObjects.setFast(index, overlappingObjects.get(overlappingObjects.size() - 1));

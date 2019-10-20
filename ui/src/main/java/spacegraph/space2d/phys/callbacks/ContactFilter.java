@@ -48,14 +48,14 @@ public enum ContactFilter { ;
      * @return
      */
     public static boolean shouldCollide(Fixture fixtureA, Fixture fixtureB) {
-        var filterA = fixtureA.getFilterData();
-        var filterB = fixtureB.getFilterData();
+        Filter filterA = fixtureA.getFilterData();
+        Filter filterB = fixtureB.getFilterData();
 
         if (filterA.groupIndex == filterB.groupIndex && filterA.groupIndex != 0) {
             return filterA.groupIndex > 0;
         }
 
-        var collide = (filterA.maskBits & filterB.categoryBits) != 0 &&
+        boolean collide = (filterA.maskBits & filterB.categoryBits) != 0 &&
                 (filterA.categoryBits & filterB.maskBits) != 0;
         return collide;
     }

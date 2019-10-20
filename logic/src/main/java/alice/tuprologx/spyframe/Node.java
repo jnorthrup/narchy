@@ -42,6 +42,6 @@ public class Node{
    */
   protected void xShift(float dx){
     x+=dx;
-    for(var n: kids) n.xShift(dx);
+    for(Node n: kids) n.xShift(dx);
   }
 }

@@ -62,7 +62,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink>, Com
      * returns 0 for none
      */
     default byte priPunc(Random rng) {
-        var i = Roulette.selectRouletteCached(4, j -> priIndex((byte)j), rng);
+        int i = Roulette.selectRouletteCached(4, j -> priIndex((byte)j), rng);
         return i != -1 ? p(i) : 0;
     }
 

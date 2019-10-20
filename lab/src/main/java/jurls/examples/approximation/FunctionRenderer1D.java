@@ -5,6 +5,7 @@
  */
 package jurls.examples.approximation;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,15 +30,15 @@ public class FunctionRenderer1D extends javax.swing.JPanel {
         g.setColor(Color.black);
         g.fillRect(0, 0, getWidth(), getHeight());
 
-        for (var rf : renderFunctions) {
+        for (RenderFunction1D rf : renderFunctions) {
             g.setColor(rf.getColor());
 
             double prevX = 0;
             double prevY = 0;
             for (double x = 0; x < 1.0; x += 0.01) {
-                var y0 =rf.compute(x);
-                var y = (0.5f * y0+0.5)*getHeight();
-                var px = (int)(getWidth() * x);
+                double y0 =rf.compute(x);
+                double y = (0.5f * y0+0.5)*getHeight();
+                int px = (int)(getWidth() * x);
                 g.drawLine((int) prevX, (int) prevY, px, (int) y);
                 prevX = px;
                 prevY = y;
@@ -54,7 +55,7 @@ public class FunctionRenderer1D extends javax.swing.JPanel {
     
     private void initComponents() {
 
-        var layout = new javax.swing.GroupLayout(this);
+        GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

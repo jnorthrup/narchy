@@ -135,7 +135,7 @@ public class player_state_t {
 
 		rdflags= f.readInt();
 
-		for (var n = 0; n < Defines.MAX_STATS; n++)
+		for (int n = 0; n < Defines.MAX_STATS; n++)
 			stats[n]= f.readShort();
 	}
 
@@ -175,7 +175,7 @@ public class player_state_t {
 
 		f.writeInt(rdflags);
 
-		for (var n = 0; n < Defines.MAX_STATS; n++)
+		for (int n = 0; n < Defines.MAX_STATS; n++)
 			f.writeShort(stats[n]);
 	}
 
@@ -198,7 +198,7 @@ public class player_state_t {
 
 		Com.Println("rdflags: " + rdflags);
 
-		for (var n = 0; n < Defines.MAX_STATS; n++)
+		for (int n = 0; n < Defines.MAX_STATS; n++)
 			System.out.println("stats[" + n + "]: " + stats[n]);
 	}
 }

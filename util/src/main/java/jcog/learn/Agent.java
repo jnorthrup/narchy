@@ -43,7 +43,7 @@ public abstract class Agent {
         } else {
 //            Util.normalize(actionFeedback);
         }
-        var decided = decide(actionFeedback, reward, input);
+        int decided = decide(actionFeedback, reward, input);
         this.lastDecision = decided;
         return decided;
     }

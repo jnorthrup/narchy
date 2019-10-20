@@ -91,7 +91,7 @@ public class ClipBMP extends Component {
      *
      */
     private static byte[] intToWord(int parValue) {
-        var retValue = new byte[2];
+        byte[] retValue = new byte[2];
         retValue[0] = (byte) (parValue & 0x00FF);
         retValue[1] = (byte) ((parValue >> 8) & 0x00FF);
         return (retValue);
@@ -104,7 +104,7 @@ public class ClipBMP extends Component {
      *
      */
     private static byte[] intToDWord(int parValue) {
-        var retValue = new byte[4];
+        byte[] retValue = new byte[4];
         retValue[0] = (byte) (parValue & 0x00FF);
         retValue[1] = (byte) ((parValue >> 8) & 0x000000FF);
         retValue[2] = (byte) ((parValue >> 16) & 0x000000FF);
@@ -132,30 +132,30 @@ public class ClipBMP extends Component {
         try {
 
 
-            var bilen = 40;
-            var bi = new byte[bilen];
+            int bilen = 40;
+            byte[] bi = new byte[bilen];
             fs.read(bi, 0, bilen);
 
 
-            var nwidth = ((bi[7] & 0xff) << 24)
+            int nwidth = ((bi[7] & 0xff) << 24)
                     | ((bi[6] & 0xff) << 16)
                     | ((bi[5] & 0xff) << 8) | bi[4] & 0xff;
 
 
-            var nheight = ((bi[11] & 0xff) << 24)
+            int nheight = ((bi[11] & 0xff) << 24)
                     | ((bi[10] & 0xff) << 16)
                     | ((bi[9] & 0xff) << 8) | bi[8] & 0xff;
 
 
-            var nbitcount = ((bi[15] & 0xff) << 8) | bi[14] & 0xff;
+            int nbitcount = ((bi[15] & 0xff) << 8) | bi[14] & 0xff;
 
 
-            var nsizeimage = ((bi[23] & 0xff) << 24)
+            int nsizeimage = ((bi[23] & 0xff) << 24)
                     | ((bi[22] & 0xff) << 16)
                     | ((bi[21] & 0xff) << 8) | bi[20] & 0xff;
 
 
-            var nclrused = ((bi[35] & 0xff) << 24)
+            int nclrused = ((bi[35] & 0xff) << 24)
                     | ((bi[34] & 0xff) << 16)
                     | ((bi[33] & 0xff) << 8) | bi[32] & 0xff;
 
@@ -165,13 +165,13 @@ public class ClipBMP extends Component {
                 case 24:
 
 
-                    var npad = (nsizeimage / nheight) - nwidth * 3;
-                    var brgb = new byte[(nwidth + npad) * 3 * nheight];
+                    int npad = (nsizeimage / nheight) - nwidth * 3;
+                    byte[] brgb = new byte[(nwidth + npad) * 3 * nheight];
                     fs.read(brgb, 0, (nwidth + npad) * 3 * nheight);
-                    var nindex = 0;
-                    var ndata = new int[nheight * nwidth];
-                    for (var j = 0; j < nheight; j++) {
-                        for (var i = 0; i < nwidth; i++) {
+                    int nindex = 0;
+                    int[] ndata = new int[nheight * nwidth];
+                    for (int j = 0; j < nheight; j++) {
+                        for (int i = 0; i < nwidth; i++) {
                             ndata[nwidth * (nheight - j - 1) + i] = (0xff) << 24
                                     | ((brgb[nindex + 2] & 0xff) << 16)
                                     | ((brgb[nindex + 1] & 0xff) << 8)
@@ -193,7 +193,7 @@ public class ClipBMP extends Component {
                 case 16: {
 
 
-                    var nNumColors = 0;
+                    int nNumColors = 0;
                     if (nclrused > 0) {
                         nNumColors = nclrused;
                     } else {
@@ -211,11 +211,11 @@ public class ClipBMP extends Component {
                     }
 
 
-                    var npalette = new int[nNumColors];
-                    var bpalette = new byte[nNumColors * 4];
+                    int[] npalette = new int[nNumColors];
+                    byte[] bpalette = new byte[nNumColors * 4];
                     fs.read(bpalette, 0, nNumColors * 4);
-                    var nindex8 = 0;
-                    for (var n = 0; n < nNumColors; n++) {
+                    int nindex8 = 0;
+                    for (int n = 0; n < nNumColors; n++) {
                         npalette[n] = (0xff) << 24
                                 | ((bpalette[nindex8 + 2] & 0xff) << 16)
                                 | ((bpalette[nindex8 + 1] & 0xff) << 8)
@@ -230,15 +230,15 @@ public class ClipBMP extends Component {
                     }
 
 
-                    var npad8 = (nsizeimage / nheight) - nwidth;
+                    int npad8 = (nsizeimage / nheight) - nwidth;
 
 
-                    var bdata = new byte[(nwidth + npad8) * nheight];
+                    byte[] bdata = new byte[(nwidth + npad8) * nheight];
                     fs.read(bdata, 0, (nwidth + npad8) * nheight);
                     nindex8 = 0;
-                    var ndata8 = new int[nwidth * nheight];
-                    for (var j8 = 0; j8 < nheight; j8++) {
-                        for (var i8 = 0; i8 < nwidth; i8++) {
+                    int[] ndata8 = new int[nwidth * nheight];
+                    for (int j8 = 0; j8 < nheight; j8++) {
+                        for (int i8 = 0; i8 < nwidth; i8++) {
                             ndata8[nwidth * (nheight - j8 - 1) + i8] = npalette[(bdata[nindex8] & 0xff)]
                                     | npalette[(bdata[nindex8 + 1] & 0xff)] << 8;
                             nindex8 += 2;
@@ -254,7 +254,7 @@ public class ClipBMP extends Component {
                 case 8: {
 
 
-                    var nNumColors = 0;
+                    int nNumColors = 0;
                     if (nclrused > 0) {
                         nNumColors = nclrused;
                     } else {
@@ -272,11 +272,11 @@ public class ClipBMP extends Component {
                     }
 
 
-                    var npalette = new int[nNumColors];
-                    var bpalette = new byte[nNumColors * 4];
+                    int[] npalette = new int[nNumColors];
+                    byte[] bpalette = new byte[nNumColors * 4];
                     fs.read(bpalette, 0, nNumColors * 4);
-                    var nindex8 = 0;
-                    for (var n = 0; n < nNumColors; n++) {
+                    int nindex8 = 0;
+                    for (int n = 0; n < nNumColors; n++) {
                         npalette[n] = (0xff) << 24
                                 | ((bpalette[nindex8 + 2] & 0xff) << 16)
                                 | ((bpalette[nindex8 + 1] & 0xff) << 8)
@@ -291,15 +291,15 @@ public class ClipBMP extends Component {
                     }
 
 
-                    var npad8 = (nsizeimage / nheight) - nwidth;
+                    int npad8 = (nsizeimage / nheight) - nwidth;
 
 
-                    var bdata = new byte[(nwidth + npad8) * nheight];
+                    byte[] bdata = new byte[(nwidth + npad8) * nheight];
                     fs.read(bdata, 0, (nwidth + npad8) * nheight);
                     nindex8 = 0;
-                    var ndata8 = new int[nwidth * nheight];
-                    for (var j8 = 0; j8 < nheight; j8++) {
-                        for (var i8 = 0; i8 < nwidth; i8++) {
+                    int[] ndata8 = new int[nwidth * nheight];
+                    for (int j8 = 0; j8 < nheight; j8++) {
+                        for (int i8 = 0; i8 < nwidth; i8++) {
                             ndata8[nwidth * (nheight - j8 - 1) + i8] = npalette[(bdata[nindex8] & 0xff)];
                             nindex8++;
                         }
@@ -314,7 +314,7 @@ public class ClipBMP extends Component {
                 case 4:
 
 
-                    var nNumColors = 0;
+                    int nNumColors = 0;
                     if (nclrused > 0) {
                         nNumColors = nclrused;
                     } else {
@@ -332,11 +332,11 @@ public class ClipBMP extends Component {
                     }
 
 
-                    var npalette = new int[nNumColors + 1];
-                    var bpalette = new byte[nNumColors * 4];
+                    int[] npalette = new int[nNumColors + 1];
+                    byte[] bpalette = new byte[nNumColors * 4];
                     fs.read(bpalette, 0, nNumColors * 4);
-                    var nindex8 = 0;
-                    for (var n = 0; n < nNumColors; n++) {
+                    int nindex8 = 0;
+                    for (int n = 0; n < nNumColors; n++) {
                         npalette[n] = (0xff) << 24
                                 | ((bpalette[nindex8 + 2] & 0xff) << 16)
                                 | ((bpalette[nindex8 + 1] & 0xff) << 8)
@@ -345,12 +345,12 @@ public class ClipBMP extends Component {
                     }
 
 
-                    var npad8 = (nsizeimage * 2 / nheight) - nwidth;
+                    int npad8 = (nsizeimage * 2 / nheight) - nwidth;
                     
                     if (npad8 == 4)
                         npad8 = 0;
 
-                    var bdata = new byte[(nwidth / 2 + npad8) * nheight];
+                    byte[] bdata = new byte[(nwidth / 2 + npad8) * nheight];
                     fs.read(bdata, 0, (nwidth / 2 + npad8) * nheight);
 
                     
@@ -358,9 +358,9 @@ public class ClipBMP extends Component {
                     nindex8 = 0;
 
 
-                    var ndata8 = new int[nwidth * nheight];
-                    for (var j8 = 0; j8 < nheight; j8++) {
-                        for (var i8 = 0; i8 < (nwidth) - 1; i8 += 2) {
+                    int[] ndata8 = new int[nwidth * nheight];
+                    for (int j8 = 0; j8 < nheight; j8++) {
+                        for (int i8 = 0; i8 < (nwidth) - 1; i8 += 2) {
                             ndata8[nwidth * (nheight - j8 - 1) + i8] = npalette[bdata[nindex8] & 0x0f];
                             ndata8[nwidth * (nheight - j8 - 1) + i8 + 1] = npalette[((bdata[nindex8] & 0xf0) / 0xf)];
                             System.out.print("1:" + (bdata[nindex8] & 0x0f) + '\t');
@@ -466,7 +466,7 @@ public class ClipBMP extends Component {
      */
     private boolean convertImage(Image parImage, int parWidth, int parHeight) {
         bitmap = new int[parWidth * parHeight];
-        var pg = new PixelGrabber(parImage, 0, 0, parWidth, parHeight,
+        PixelGrabber pg = new PixelGrabber(parImage, 0, 0, parWidth, parHeight,
                 bitmap, 0, parWidth);
         try {
             pg.grabPixels();
@@ -474,7 +474,7 @@ public class ClipBMP extends Component {
             e.printStackTrace();
             return (false);
         }
-        var pad = (4 - ((parWidth * 3) % 4)) * parHeight;
+        int pad = (4 - ((parWidth * 3) % 4)) * parHeight;
         biSizeImage = ((parWidth * parHeight) * 3) + pad;
         bfSize = biSizeImage + BITMAPFILEHEADER_SIZE + BITMAPINFOHEADER_SIZE;
         biWidth = parWidth;
@@ -489,25 +489,25 @@ public class ClipBMP extends Component {
      * Each scan line must be padded to an even 4-byte boundary.
      */
     private void writeBitmap() {
-        var size = (biWidth * biHeight) - 1;
-        var pad = 4 - ((biWidth * 3) % 4);
+        int size = (biWidth * biHeight) - 1;
+        int pad = 4 - ((biWidth * 3) % 4);
         if (pad == 4) 
             pad = 0;
-        var rowIndex = size - biWidth;
-        var lastRowIndex = rowIndex;
+        int rowIndex = size - biWidth;
+        int lastRowIndex = rowIndex;
         try {
-            var padCount = 0;
-            var rowCount = 1;
-            var rgb = new byte[3];
-            for (var j = 0; j < size; j++) {
-                var value = bitmap[rowIndex];
+            int padCount = 0;
+            int rowCount = 1;
+            byte[] rgb = new byte[3];
+            for (int j = 0; j < size; j++) {
+                int value = bitmap[rowIndex];
                 rgb[0] = (byte) (value & 0xFF);
                 rgb[1] = (byte) ((value >> 8) & 0xFF);
                 rgb[2] = (byte) ((value >> 16) & 0xFF);
                 fo.write(rgb);
                 if (rowCount == biWidth) {
                     padCount += pad;
-                    for (var i = 1; i <= pad; i++) {
+                    for (int i = 1; i <= pad; i++) {
                         fo.write(0x00);
                     }
                     rowCount = 1;

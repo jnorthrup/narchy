@@ -77,8 +77,8 @@ public class DefaultTypesConvertors extends TypesConverters {
 
 
     protected DefaultTypesConvertors() {
-        var numConv = new NumberConvertor(NumberType.LONG);
-        var boolConv = new BooleanConvertor();
+        NumberConvertor numConv = new NumberConvertor(NumberType.LONG);
+        BooleanConvertor boolConv = new BooleanConvertor();
 
         toString.put(SimpleTypes._bool(), BooleanConvertor.toString);
         toString.put(SimpleTypes.boolObject(), BooleanConvertor.toString);
@@ -120,18 +120,18 @@ public class DefaultTypesConvertors extends TypesConverters {
         toValues.put(BigDecimal.class, new NumberConvertor(NumberType.BIGDECIMAL));
         toValues.put(BigInteger.class, new NumberConvertor(NumberType.BIGINTEGER));
 
-        var sConvertor = new StringConvertor();
+        StringConvertor sConvertor = new StringConvertor();
         //toStringConvertors().put(String.class, x->x);
         toString.put(CharSequence.class, Object::toString);
         toValues.put(String.class, sConvertor);
 
-        var cConv = new CharConvertor();
+        CharConvertor cConv = new CharConvertor();
         toString.put(Character.class, CharConvertor.toString);
         toString.put(char.class, CharConvertor.toString);
         toValues.put(Character.class, cConv);
         toValues.put(char.class, cConv);
 
-        var bConv = new BooleanConvertor();
+        BooleanConvertor bConv = new BooleanConvertor();
         toString.put(Boolean.class, BooleanConvertor.toString);
         toString.put(boolean.class, BooleanConvertor.toString);
         toValues.put(Boolean.class, bConv);
@@ -190,20 +190,20 @@ public class DefaultTypesConvertors extends TypesConverters {
 //        toStringConvertors().put(Charset.class, charsetConv);
 //        toValueConvertors().put(Charset.class, charsetConv);
 
-        for (var toStrSrvc : ServiceLoader.load(ConvertToStringService.class)) {
+        for (ConvertToStringService toStrSrvc : ServiceLoader.load(ConvertToStringService.class)) {
             if (toStrSrvc != null) {
-                var type = toStrSrvc.getValueType();
-                var conv = toStrSrvc.getConvertor();
+                Class type = toStrSrvc.getValueType();
+                Function<Object, String> conv = toStrSrvc.getConvertor();
                 if (type != null && conv != null) {
                     toString.put(type, conv);
                 }
             }
         }
 
-        for (var toValSrvc : ServiceLoader.load(ConvertToValueService.class)) {
+        for (ConvertToValueService toValSrvc : ServiceLoader.load(ConvertToValueService.class)) {
             if (toValSrvc != null) {
-                var type = toValSrvc.getValueType();
-                var conv = toValSrvc.getConvertor();
+                Class type = toValSrvc.getValueType();
+                Function<String, Object> conv = toValSrvc.getConvertor();
                 if (type != null && conv != null) {
                     toValues.put(type, conv);
                 }

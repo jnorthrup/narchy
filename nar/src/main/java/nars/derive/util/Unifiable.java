@@ -30,10 +30,10 @@ public enum Unifiable { ;
 
     public static void constrainUnifiable(Subterms a, PatternHow p) {
 
-        var x = /*unwrapPolarize...*/(a.sub(1));
+        Term x = /*unwrapPolarize...*/(a.sub(1));
         if (x instanceof Variable) {
 
-            var y = a.sub(2);
+            Term y = a.sub(2);
             if (y instanceof Variable) {
 
                 //both x and y are constant
@@ -46,7 +46,7 @@ public enum Unifiable { ;
                 else
                     varBits = VAR_DEP.bit | VAR_INDEP.bit;
 
-                var strict = a.contains(UniSubst.NOVEL);
+                boolean strict = a.contains(UniSubst.NOVEL);
 
                 p.constrain(new Unifiability((Variable)x, (Variable)y, strict, varBits));
             }
@@ -54,10 +54,10 @@ public enum Unifiable { ;
     }
 
     public static void constraintEvent(Subterms a, PatternHow p, boolean unifiable) {
-        var conj = a.sub(0);
+        Term conj = a.sub(0);
         if (conj instanceof Variable) {
-            var x = a.sub(1);
-            var xu = x.unneg();
+            Term x = a.sub(1);
+            Term xu = x.unneg();
             if (xu instanceof Variable) {
 
                 p.is(conj, CONJ);
@@ -125,12 +125,12 @@ public enum Unifiable { ;
 //                    return true;
             }
 
-            var cs = conj.structure();
+            int cs = conj.structure();
             if (x instanceof Neg && !Op.hasAny(cs, NEG.bit))
                 return true; // simple test
 
-            var cv = conj.hasVars();
-            var xv = x.hasVars();
+            boolean cv = conj.hasVars();
+            boolean xv = x.hasVars();
             /* undecidable */
             if (!cv && !xv)
                 return !x.hasAny(CONJ) && !Conj.eventOf(conj, x);

@@ -101,10 +101,10 @@ public class Curve2 {
         if ((x < this.xs[0]) || (x > this.xs[size - 1])) return -1;
 
 
-        var idxLo = 0;
-        var idxHi = size - 1;
+        int idxLo = 0;
+        int idxHi = size - 1;
         while ((idxHi - idxLo) > 1) {
-            var idxMid = (idxHi + idxLo) >> 1;
+            int idxMid = (idxHi + idxLo) >> 1;
             if (x >= this.xs[idxMid]) idxLo = idxMid;
             else idxHi = idxMid;
         }
@@ -130,7 +130,7 @@ public class Curve2 {
         int idxHi;
 
         if (idxLo >= 0) {
-            var inc = 1;
+            int inc = 1;
             if (x >= this.xs[idxLo]) {    
                 idxHi = idxLo + 1;
                 if (idxHi >= size - 1) return idxLo;
@@ -164,7 +164,7 @@ public class Curve2 {
 
         
         while ((idxHi - idxLo) > 1) {
-            var idxMid = (idxHi + idxLo) >> 1;
+            int idxMid = (idxHi + idxLo) >> 1;
             if (x >= this.xs[idxMid]) idxLo = idxMid;
             else idxHi = idxMid;
         }
@@ -184,13 +184,13 @@ public class Curve2 {
     public void calc(float startX, float stopX, float[] a, int off, int len) {
         len--;
 
-        var stepX = (stopX - startX) / len;
-        var idx = indexOf(startX);
+        float stepX = (stopX - startX) / len;
+        int idx = indexOf(startX);
 
         a[off] = calc(startX, idx);        
 
         for (int i = 1, j = off; i < len; i++) {
-            var x = startX + i * stepX;
+            float x = startX + i * stepX;
             idx = indexOf(x, idx);
             a[++j] = calc(x, idx);
         }
@@ -213,7 +213,7 @@ public class Curve2 {
                 yDrv = new float[size + 16];
             }
 
-            var u = new float[size - 1];
+            float[] u = new float[size - 1];
 
             yDrv[0] = 0.0f;        
             u[0] = 0.0f;
@@ -222,8 +222,8 @@ public class Curve2 {
             int j;
             int i;
             for (i = 1, j = 0, k = 2; k < size; i++, j++, k++) {
-                var sig = (xs[i] - xs[j]) / (xs[k] - xs[j]);
-                var p = sig * yDrv[j] + 2.0f;
+                float sig = (xs[i] - xs[j]) / (xs[k] - xs[j]);
+                float p = sig * yDrv[j] + 2.0f;
                 yDrv[i] = (sig - 1.0f) / p;
                 u[i] = (ys[k] - ys[i]) / (xs[k] - xs[i]) -
                         (ys[i] - ys[j]) / (xs[i] - xs[j]);
@@ -256,10 +256,10 @@ public class Curve2 {
 
     private float linear(float x, int idxLo) {
 
-        var idxHi = idxLo + 1;
-        var h = this.xs[idxHi] - this.xs[idxLo];
-        var a = (this.xs[idxHi] - x) / h;
-        var b = 1.0f - a;
+        int idxHi = idxLo + 1;
+        float h = this.xs[idxHi] - this.xs[idxLo];
+        float a = (this.xs[idxHi] - x) / h;
+        float b = 1.0f - a;
 
         return (a * this.ys[idxLo] + b * this.ys[idxHi]);
     }
@@ -267,10 +267,10 @@ public class Curve2 {
     
     private float spline(float x, int idxLo) {
 
-        var idxHi = idxLo + 1;
-        var h = this.xs[idxHi] - this.xs[idxLo];
-        var a = (this.xs[idxHi] - x) / h;
-        var b = 1.0f - a;
+        int idxHi = idxLo + 1;
+        float h = this.xs[idxHi] - this.xs[idxLo];
+        float a = (this.xs[idxHi] - x) / h;
+        float b = 1.0f - a;
 
         return (a * this.ys[idxLo] + b * this.ys[idxHi] +
                 ((a * a * a - a) * yDrv[idxLo] + (b * b * b - b) * yDrv[idxHi]) * (h * h) / 6.0f);

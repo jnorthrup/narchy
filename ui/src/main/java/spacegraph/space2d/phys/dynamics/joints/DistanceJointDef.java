@@ -104,7 +104,7 @@ public class DistanceJointDef extends JointDef {
         bodyB = b2;
         localAnchorA.set(bodyA.getLocalPoint(anchor1));
         localAnchorB.set(bodyB.getLocalPoint(anchor2));
-        var d = anchor2.subClone(anchor1);
+        v2 d = anchor2.subClone(anchor1);
         length = d.length();
         return this;
     }

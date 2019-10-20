@@ -47,8 +47,8 @@ public class Minimal1 implements World {
         
         
         
-        final var duration = 9000000;
-        final var freq = 0.5;
+        final int duration = 9000000;
+        final double freq = 0.5;
         
         new Thread(() -> {
             try {

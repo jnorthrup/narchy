@@ -25,21 +25,21 @@ public class ContainerMenu extends Menu {
 
         if (input.left.clicked) {
             window = 0;
-            var tmp = selected;
+            int tmp = selected;
             selected = oSelected;
             oSelected = tmp;
         }
         if (input.right.clicked) {
             window = 1;
-            var tmp = selected;
+            int tmp = selected;
             selected = oSelected;
             oSelected = tmp;
         }
 
-        var i = window == 1 ? player.inventory : container;
-        var i2 = window == 0 ? player.inventory : container;
+        Inventory i = window == 1 ? player.inventory : container;
+        Inventory i2 = window == 0 ? player.inventory : container;
 
-        var len = i.items.size();
+        int len = i.items.size();
         if (selected < 0) selected = 0;
         if (selected >= len) selected = len - 1;
 

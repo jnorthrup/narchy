@@ -42,7 +42,7 @@ public abstract class AbstractBiFunctionChip<X, Y, Z> extends Gridding {
     protected abstract BiFunction<X, Y, Z> f();
 
     private void commit(X x, Y y) {
-        var z = f().apply(x, y);
+        Z z = f().apply(x, y);
         if (z != null)
             out.out(z);
     }

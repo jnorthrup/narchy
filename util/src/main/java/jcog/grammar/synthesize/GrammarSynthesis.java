@@ -32,22 +32,22 @@ public class GrammarSynthesis {
     }
 
     public static Grammar getGrammarSingle(String example, Predicate<String> oracle) {
-        var time = System.currentTimeMillis();
+        long time = System.currentTimeMillis();
         if (!oracle.test(example)) {
             throw new RuntimeException("Invalid example: " + example);
         }
         Log.info("PROCESSING EXAMPLE:\n" + example);
-        var node = getNode(example, oracle);
+        Node node = getNode(example, oracle);
         Log.info("SINGLE REGEX TIME: " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds");
         time = System.currentTimeMillis();
-        var grammar = new Grammar(node, MergesSynthesis.getMergesSingle(node, node, oracle));
+        Grammar grammar = new Grammar(node, MergesSynthesis.getMergesSingle(node, node, oracle));
         Log.info("SINGLE MERGE TIME: " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds");
         return grammar;
     }
 
     public static Grammar learn(List<Node> roots, Predicate<String> oracle) {
-        var time = System.currentTimeMillis();
-        var grammar = new Grammar(new MultiAlternationNode(
+        long time = System.currentTimeMillis();
+        Grammar grammar = new Grammar(new MultiAlternationNode(
                 new NodeData(null, Context.EMPTY), roots), MergesSynthesis.getMergesMultiple(roots, oracle));
         Log.info("MULTIPLE MERGE TIME: " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds");
         return grammar;
@@ -55,15 +55,15 @@ public class GrammarSynthesis {
 
     public static Grammar learn(Iterable<String> examples, Predicate<String> oracle) {
         List<Node> roots = new ArrayList<>();
-        for (var example : examples) {
+        for (String example : examples) {
             roots.add(getNode(example, oracle));
         }
         return learn(roots, oracle);
     }
 
     public static Grammar getRegularGrammarMultipleFromRoots(List<Node> roots, Predicate<String> oracle) {
-        var time = System.currentTimeMillis();
-        var grammar = new Grammar(
+        long time = System.currentTimeMillis();
+        Grammar grammar = new Grammar(
                 new MultiAlternationNode(
                         new NodeData(null, Context.EMPTY),
                         roots),
@@ -73,12 +73,16 @@ public class GrammarSynthesis {
     }
 
     public static Grammar getRegularGrammarMultiple(Collection<String> examples, Predicate<String> oracle) {
-        var roots = examples.stream().map(example -> getNode(example, oracle)).collect(Collectors.toList());
+        List<Node> roots = new ArrayList<>();
+        for (String example : examples) {
+            Node node = getNode(example, oracle);
+            roots.add(node);
+        }
         return getRegularGrammarMultipleFromRoots(roots, oracle);
     }
 
     public static boolean getCheck(Predicate<String> oracle, Context context, Iterable<String> examples) {
-        for (var example : examples) {
+        for (String example : examples) {
             if (!oracle.test(context.pre + example + context.post) || (context.useExtra() && !oracle.test(context.extraPre + example + context.extraPost))) {
                 return false;
             }
@@ -94,9 +98,9 @@ public class GrammarSynthesis {
             return new GrammarUtils.Maybe<>();
         }
         List<Node> constantChildren = new ArrayList<>();
-        for (var child : node.getChildren()) {
+        for (Node child : node.getChildren()) {
             if (child instanceof RepetitionNode) {
-                var repChild = (RepetitionNode) child;
+                RepetitionNode repChild = (RepetitionNode) child;
                 if (!(repChild.start instanceof ConstantNode) && !(repChild.start instanceof MultiConstantNode)) {
                     return new GrammarUtils.Maybe<>();
                 }

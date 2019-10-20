@@ -13,13 +13,13 @@ public enum CommonSets {
 
     static {
         List<Character> chList = new ArrayList<>();
-        for (var i = 'a'; i <= 'z'; i++) {
+        for (char i = 'a'; i <= 'z'; i++) {
             chList.add(i);
         }
-        for (var i = 'A'; i <= 'Z'; i++) {
+        for (char i = 'A'; i <= 'Z'; i++) {
             chList.add(i);
         }
-        for (var i = '0'; i <= '9'; i++) {
+        for (char i = '0'; i <= '9'; i++) {
             chList.add(i);
         }
         chList.add('_');
@@ -55,8 +55,8 @@ public enum CommonSets {
     public static final int ENCODING_LENGTH = 128; 
 
     public static char[] listToArray(List<Character> charList) {
-        var result = new char[charList.size()];
-        for (var i = 0; i < charList.size(); i++) {
+        char[] result = new char[charList.size()];
+        for (int i = 0; i < charList.size(); i++) {
             result[i] = charList.get(i);
         }
         return result;
@@ -64,23 +64,23 @@ public enum CommonSets {
 
     public static List<Character> arrayToList(char[] charArr) {
         List<Character> chList = new ArrayList<>(charArr.length);
-        for (var ch : charArr) {
+        for (char ch : charArr) {
             chList.add(ch);
         }
         return chList;
     }
 
     public static char[] complementarySet(char[] set) {
-        var book = emptyBook();
-        for (var b : set) {
+        boolean[] book = emptyBook();
+        for (char b : set) {
             book[b] = true;
         }
         return bookToSet(book, false);
     }
 
     public static char[] minimum(char[] set) {
-        var book = emptyBook();
-        for (var b : set) {
+        boolean[] book = emptyBook();
+        for (char b : set) {
             book[b] = true;
         }
         return bookToSet(book, true);
@@ -88,8 +88,8 @@ public enum CommonSets {
 
     public static List<Character> interpretToken(String token) {
         List<Character> result;
-        var c0 = token.charAt(0);
-        var len = token.length();
+        char c0 = token.charAt(0);
+        int len = token.length();
         if (len == 1) {
             if (c0 == '.') {
                 result = DOT_L;
@@ -135,7 +135,7 @@ public enum CommonSets {
     }
 
     private static boolean[] emptyBook() {
-        var book = new boolean[ENCODING_LENGTH];
+        boolean[] book = new boolean[ENCODING_LENGTH];
 
 
 
@@ -143,8 +143,8 @@ public enum CommonSets {
     }
 
     private static char[] bookToSet(boolean[] book, boolean persistedFlag) {
-        var newSet = new char[ENCODING_LENGTH];
-        var i = 0;
+        char[] newSet = new char[ENCODING_LENGTH];
+        int i = 0;
         for (char j = 0; j < book.length; j++) {
             if (book[j] == persistedFlag) {
                 newSet[i++] = j;

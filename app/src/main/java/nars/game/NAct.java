@@ -54,8 +54,8 @@ import static nars.Op.BELIEF;
         float[] last = {0};
         actionUnipolar(t, (f) -> {
 
-            var f1 = f;
-            var unknown = (f1 != f1) || (f1 < thresh && (f1 > (1f - thresh)));
+            float f1 = f;
+            boolean unknown = (f1 != f1) || (f1 < thresh && (f1 > (1f - thresh)));
             if (unknown) {
                 f1 = defaultValue == defaultValue ? defaultValue : last[0];
             }
@@ -63,7 +63,7 @@ import static nars.Op.BELIEF;
             if (last[0] > 0.5f)
                 f1 = Util.lerp(momentumOn, f1, last[0]);
 
-            var positive = f1 > 0.5f;
+            boolean positive = f1 > 0.5f;
 
 
             if (positive) {
@@ -97,15 +97,15 @@ import static nars.Op.BELIEF;
 
     default @Nullable GoalActionConcept actionTriStateContinuous(Term s, IntPredicate i) {
 
-        var m = new GoalActionConcept(s, (b, d) -> {
+        GoalActionConcept m = new GoalActionConcept(s, (b, d) -> {
 
 
             int ii;
             if (d == null) {
                 ii = 0;
             } else {
-                var f = d.freq();
-                var deadZoneFreqRadius =
+                float f = d.freq();
+                float deadZoneFreqRadius =
                         //1f / 6;
                         1f/12;
 
@@ -117,7 +117,7 @@ import static nars.Op.BELIEF;
                     ii = 0;
             }
 
-            var accepted = i.test(ii);
+            boolean accepted = i.test(ii);
             if (!accepted)
                 ii = 0;
 
@@ -151,7 +151,7 @@ import static nars.Op.BELIEF;
             if (d == null) {
                 ii = 0;
             } else {
-                var f = d.freq();
+                float f = d.freq();
                 if (f == 1f) {
                     ii = +1;
                 } else if (f == 0) {
@@ -292,12 +292,12 @@ import static nars.Op.BELIEF;
      *    a pair of up/down buttons for discretely incrementing and decrementing a value within a given range
      */
     default GoalActionConcept[] actionDial(Term down, Term up, FloatSupplier x, FloatConsumer y, float min, float max, int steps) {
-        var delta = 1f/steps * (max - min);
+        float delta = 1f/steps * (max - min);
         return actionStep(down,up, (c)->{
-            var before = x.asFloat();
-            var next = Util.clamp(before + c * delta, min, max);
+            float before = x.asFloat();
+            float next = Util.clamp(before + c * delta, min, max);
             y.accept(next);
-            var actualNext = x.asFloat();
+            float actualNext = x.asFloat();
             /** a significant change */
             return !Util.equals(before, actualNext, delta / 4);
         });
@@ -340,45 +340,45 @@ import static nars.Op.BELIEF;
 
         assert(!tl.equals(tr));
 
-        var l = new AtomicFloat(0);
-        var r = new AtomicFloat(0);
+        AtomicFloat l = new AtomicFloat(0);
+        AtomicFloat r = new AtomicFloat(0);
 
 //        float decay =
 //                //0.5f;
 //                //0.9f;
 //                1f; //instant
 
-        var n = nar();
-        var LA = action(tl, (b, g) -> {
+        NAR n = nar();
+        GoalActionConcept LA = action(tl, (b, g) -> {
 
-            var q = Q.q(b,g);
-            var qC =
+            float q = Q.q(b,g);
+            float qC =
                 //(g!=null ? g.expectation() : 0);
                 q;
-            var xq = q >= thresh.asFloat();
-            var y = L.accept(xq && qC >= r.floatValue());
+            boolean xq = q >= thresh.asFloat();
+            boolean y = L.accept(xq && qC >= r.floatValue());
             l.set(xq ? qC : 0);
 
 
             float feedback =
                     y ? 1 : 0;
-            var c =
+            float c =
                     n.confDefault(BELIEF);
             return $.t(feedback, c);
 
         });
-        var RA = action(tr, (b, g) -> {
-            var q = Q.q(b,g);
-            var qC =
+        GoalActionConcept RA = action(tr, (b, g) -> {
+            float q = Q.q(b,g);
+            float qC =
                 //(g!=null ? g.expectation() : 0);
                 q;
-            var xq = q >= thresh.asFloat();
-            var y = R.accept(xq && qC >= l.floatValue());
+            boolean xq = q >= thresh.asFloat();
+            boolean y = R.accept(xq && qC >= l.floatValue());
             r.set(xq ? qC : 0);
 
             float feedback =
                     y ? 1 : 0;
-            var c =
+            float c =
                     n.confDefault(BELIEF);
             return $.t(feedback, c);
         });
@@ -426,8 +426,8 @@ import static nars.Op.BELIEF;
         FloatToFloatFunction ifGoalMissing =
                 x -> 0;
 
-        var x = actionUnipolar(t, true, ifGoalMissing, (f) -> {
-            var posOrNeg = f >= thresh.asFloat();
+        GoalActionConcept x = actionUnipolar(t, true, ifGoalMissing, (f) -> {
+            boolean posOrNeg = f >= thresh.asFloat();
             return on.accept(posOrNeg) ?
                     1f :
                     0;  //deliberate off
@@ -477,15 +477,15 @@ import static nars.Op.BELIEF;
      *  TODO make a negative polarity option
      */
     default GoalActionConcept actionHemipolar(Term s, FloatToFloatFunction update) {
-        var epsilon = NAL.truth.TRUTH_EPSILON/2;
+        float epsilon = NAL.truth.TRUTH_EPSILON/2;
         return actionUnipolar(s, (raw)->{
             if (raw==raw) {
 
                 if (raw > 0.5f + epsilon) {
-                    var feedback = update.valueOf((raw - 0.5f) * 2);
+                    float feedback = update.valueOf((raw - 0.5f) * 2);
                     return feedback > (0.5f + epsilon) ? 0.5f + feedback / 2 : 0;
                 } else {
-                    var feedback = update.valueOf( 0);
+                    float feedback = update.valueOf( 0);
                     return 0; //override
                 }
 
@@ -506,7 +506,7 @@ import static nars.Op.BELIEF;
     }
 
     default GoalActionConcept[] actionStep(Term down, Term up, IntPredicate each) {
-        var thresh = 4/6f;
+        float thresh = 4/6f;
         return actionPushButtonMutex(
             down,up,
             ifNeg -> ifNeg && each.test(-1),
@@ -548,12 +548,12 @@ import static nars.Op.BELIEF;
         long[] last = { Long.MIN_VALUE };
 
         return x->{
-            var y = false;
+            boolean y = false;
             if (x) {
-                var w = what();
-                var now = w.time();
-                var prev = last[0];
-                var period = durations * w.durPhysical();
+                What w = what();
+                long now = w.time();
+                long prev = last[0];
+                float period = durations * w.durPhysical();
                 if (prev == Long.MIN_VALUE) prev = (long) (now - Math.ceil(period));
                 if (now - prev >= period) {
                     last[0] = now;

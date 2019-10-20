@@ -46,33 +46,33 @@ public class DistanceConstraint extends TypedConstraint {
     @Override
     public void solveConstraint(float timeStep) {
 
-        var tmp = new v3();
-        var tmp2 = new v3();
+        v3 tmp = new v3();
+        v3 tmp2 = new v3();
 
 
-        var centerOfMassA = rbA.getCenterOfMassTransform(new Transform());
-        var centerOfMassB = rbB.getCenterOfMassTransform(new Transform());
+        Transform centerOfMassA = rbA.getCenterOfMassTransform(new Transform());
+        Transform centerOfMassB = rbB.getCenterOfMassTransform(new Transform());
 
-        var pivotAInW = new v3(pivotInA);
+        v3 pivotAInW = new v3(pivotInA);
         centerOfMassA.transform(pivotAInW);
 
-        var pivotBInW = new v3(pivotInB);
+        v3 pivotBInW = new v3(pivotInB);
         centerOfMassB.transform(pivotBInW);
 
 
-        var rel_pos1 = new v3();
+        v3 rel_pos1 = new v3();
         rel_pos1.sub(pivotAInW, centerOfMassA);
-        var rel_pos2 = new v3();
+        v3 rel_pos2 = new v3();
         rel_pos2.sub(pivotBInW, centerOfMassB);
 
 
-        var vel1 = rbA.getVelocityInLocalPoint(rel_pos1, new v3());
-        var vel2 = rbB.getVelocityInLocalPoint(rel_pos2, new v3());
-        var vel = new v3();
+        v3 vel1 = rbA.getVelocityInLocalPoint(rel_pos1, new v3());
+        v3 vel2 = rbB.getVelocityInLocalPoint(rel_pos2, new v3());
+        v3 vel = new v3();
         vel.sub(vel1, vel2);
 
-        var normal = jac.linearJointAxis;
-        var rel_vel = vel.dot(normal);
+        v3 normal = jac.linearJointAxis;
+        float rel_vel = vel.dot(normal);
 
 
 			/*
@@ -83,12 +83,12 @@ public class DistanceConstraint extends TypedConstraint {
 
         
         tmp.sub(pivotAInW, pivotBInW);
-        var depth = -tmp.dot(normal);
+        float depth = -tmp.dot(normal);
 
-        var damping = 1f;
-        var impulse = error * ((depth * tau / timeStep) - (damping * rel_vel ));
+        float damping = 1f;
+        float impulse = error * ((depth * tau / timeStep) - (damping * rel_vel ));
 
-        var impulseClamp = this.impulseClamp;
+        float impulseClamp = this.impulseClamp;
         if (impulseClamp > 0f) {
             if (impulse < -impulseClamp) {
                 impulse = -impulseClamp;
@@ -99,7 +99,7 @@ public class DistanceConstraint extends TypedConstraint {
         }
 
         appliedImpulse += impulse;
-        var impulse_vector = new v3();
+        v3 impulse_vector = new v3();
         impulse_vector.scale(impulse, normal);
 
         tmp.sub(pivotAInW, centerOfMassA);
@@ -116,21 +116,21 @@ public class DistanceConstraint extends TypedConstraint {
 
         appliedImpulse = 0;
 
-        var posA = rbA.getCenterOfMassTransform(new Transform());
-        var posB = rbB.getCenterOfMassTransform(new Transform());
+        Transform posA = rbA.getCenterOfMassTransform(new Transform());
+        Transform posB = rbB.getCenterOfMassTransform(new Transform());
 
-        var relA = new v3(pivotInA);
+        v3 relA = new v3(pivotInA);
         posA.transform(relA);
 
-        var relB = new v3(pivotInB);
+        v3 relB = new v3(pivotInB);
         posB.transform(relB);
 
-        var del = new v3();
+        v3 del = new v3();
         del.sub(posB, posA);
 
-        var currDist = (float) Math.sqrt(del.dot(del));
+        float currDist = (float) Math.sqrt(del.dot(del));
 
-        var ortho = del;
+        v3 ortho = del;
         ortho.scaled(1f / currDist);
 
 

@@ -30,7 +30,7 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
 
     public static void main(String[] args) throws IOException, JSchException {
 
-        var s = new SSHSurface();
+        SSHSurface s = new SSHSurface();
         SpaceGraph.window(new MetaFrame(s), 800, 600);
 
         s.start(new JCTermSwingFrame().connect("me", "localhost", 22));
@@ -121,12 +121,12 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
 
     void setFont(String fname) {
         font = Font.decode(fname);
-        var b = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
-        var graphics = (Graphics2D) (b.getGraphics());
+        BufferedImage b = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics = (Graphics2D) (b.getGraphics());
         graphics.setFont(font);
 
         {
-            var fo = graphics.getFontMetrics();
+            FontMetrics fo = graphics.getFontMetrics();
             descent = fo.getDescent();
       /*
       System.out.println(fo.getDescent());
@@ -148,7 +148,7 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
         background = new BufferedImage(char_width, char_height,
                 BufferedImage.TYPE_INT_RGB);
         {
-            var foog = (Graphics2D) (background.getGraphics());
+            Graphics2D foog = (Graphics2D) (background.getGraphics());
             foog.setColor(getBackGround());
             foog.fillRect(0, 0, char_width, char_height);
             foog.dispose();
@@ -157,14 +157,14 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
 
     public void pixelSize(int w, int h) {
 
-        var pixelSize = new Dimension(getTermWidth(), getTermHeight());
+        Dimension pixelSize = new Dimension(getTermWidth(), getTermHeight());
 
-        var imgOrg = img;
+        BufferedImage imgOrg = img;
         if (graphics != null)
             graphics.dispose();
 
-        var column = w / getCharWidth();
-        var row = h / getCharHeight();
+        int column = w / getCharWidth();
+        int row = h / getCharHeight();
         term_width = column;
         term_height = row;
 
@@ -181,7 +181,7 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
         redraw(0, 0, w, h);
 
         if (imgOrg != null) {
-            var clip = graphics.getClip();
+            Shape clip = graphics.getClip();
             graphics.setClip(0, 0, getTermWidth(), getTermHeight());
             graphics.drawImage(imgOrg, 0, 0, null);
             graphics.setClip(clip);
@@ -209,7 +209,7 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
 
         this.connection = connection;
         if (connection != null) {
-            var in = connection.getInputStream();
+            InputStream in = connection.getInputStream();
             out = connection.getOutputStream();
             emulator = new EmulatorVT100(this, in);
             emulator.start();
@@ -252,7 +252,7 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
 //                    modifers, code, e.getKeyChar()
 //            );
 
-            var code = Keyboard.newtKeyCode2AWTKeyCode(e.getKeyCode());
+            int code = Keyboard.newtKeyCode2AWTKeyCode(e.getKeyCode());
             if (pressedOrReleased) {
                 keyPressed( code, e.getKeyChar() );
 
@@ -266,7 +266,7 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
 
     public void processKeyEvent(KeyEvent e) {
 
-        var id = e.getID();
+        int id = e.getID();
         switch (id) {
             case KeyEvent.KEY_PRESSED:
                 keyPressed(e);
@@ -363,16 +363,16 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
     }
 
     public void keyTyped(KeyEvent e) {
-        var keychar = e.getKeyChar();
+        char keychar = e.getKeyChar();
         keyTyped(keychar);
     }
 
     public void keyTyped(char keychar) {
         if ((keychar & 0xff00) != 0) {
-            var foo = new char[1];
+            char[] foo = new char[1];
             foo[0] = keychar;
             try {
-                var goo = new String(foo).getBytes("EUC-JP");
+                byte[] goo = new String(foo).getBytes("EUC-JP");
                 out.write(goo, 0, goo.length);
                 out.flush();
             } catch (Exception eee) {
@@ -490,7 +490,7 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
         if (graphics == null)
             return;
         antialiasing = foo;
-        var mode = foo ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+        Object mode = foo ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON
                 : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF;
         Map<Object, Object> hints = new RenderingHints(
                 RenderingHints.KEY_TEXT_ANTIALIASING, mode);
@@ -529,7 +529,7 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
 
     public void setBackGround(Object b) {
         bground = toColor(b);
-        var foog = (Graphics2D) (background.getGraphics());
+        Graphics2D foog = (Graphics2D) (background.getGraphics());
         foog.setColor(getBackGround());
         foog.fillRect(0, 0, char_width, char_height);
         foog.dispose();

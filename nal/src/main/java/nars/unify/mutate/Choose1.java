@@ -44,7 +44,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
     }
 
     public static @Nullable Termutator choose1(Ellipsis ellipsis, Term x, SortedSet<Term> yFree, Unify u) {
-        var ys = yFree.size();
+        int ys = yFree.size();
 
         if (ellipsis.minArity > ys - 1)
             return null; //impossible
@@ -57,10 +57,10 @@ public class Choose1 extends Termutator.AbstractTermutator {
                 //check if both elements actually could match x0.  if only one can, then no need to termute.
                 //TODO generalize to n-terms
                 //TODO include volume pre-test
-                var aa = yFree.first();
-                var a = Subterms.possiblyUnifiable(x, aa, u.varBits);
-                var bb = yFree.last();
-                var b = Subterms.possiblyUnifiable(x, bb, u.varBits);
+                Term aa = yFree.first();
+                boolean a = Subterms.possiblyUnifiable(x, aa, u.varBits);
+                Term bb = yFree.last();
+                boolean b = Subterms.possiblyUnifiable(x, bb, u.varBits);
                 if (!a && !b) {
                     return null; //impossible
                 } else if (a && !b) {
@@ -83,19 +83,19 @@ public class Choose1 extends Termutator.AbstractTermutator {
     @Override
     public @Nullable Termutator preprocess(Unify u) {
         //resolve to constant if possible
-        var xEllipsis = u.resolveTermRecurse(this.xEllipsis);
+        Term xEllipsis = u.resolveTermRecurse(this.xEllipsis);
         if (this.xEllipsis != xEllipsis && this.xEllipsis instanceof Ellipsis && !(xEllipsis instanceof Ellipsis)) {
             //became non-ellipsis
-            var es = xEllipsis instanceof Fragment ? xEllipsis.subs() : 1;
+            int es = xEllipsis instanceof Fragment ? xEllipsis.subs() : 1;
             if (((Ellipsis) this.xEllipsis).minArity > es) {
                 return null; //assigned to less arity than required
             }
         }
 
-        var x = u.resolveTermRecurse(this.x);
+        Term x = u.resolveTermRecurse(this.x);
 
-        var yy = new TermList(this.yy);
-        var yy2 = u.resolveSubsRecurse(yy);
+        TermList yy = new TermList(this.yy);
+        Subterms yy2 = u.resolveSubsRecurse(yy);
         if (yy2!=null && (xEllipsis!=this.xEllipsis || x!=this.x || yy!=yy2 )) {
 
             if (xEllipsis instanceof Ellipsis) {
@@ -105,7 +105,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
             } else {
                 //can this happen?
                 yy2 = yy2.commuted();
-                var ys = yy2.subs();
+                int ys = yy2.subs();
 
                 //TODO reduce to Subterms.unifyCommutive test
                 if (ys == 1 && xEllipsis instanceof Fragment && xEllipsis.subs()==0) {
@@ -125,15 +125,15 @@ public class Choose1 extends Termutator.AbstractTermutator {
     @Override
     public void mutate(Termutator[] chain, int current, Unify u) {
 
-        var l = yy.length-1;
-        var shuffle = u.random.nextInt(yy.length);
+        int l = yy.length-1;
+        int shuffle = u.random.nextInt(yy.length);
 
-        var start = u.size();
+        int start = u.size();
 
-        for (var x = u.resolveTerm(this.x); l >=0; l--) {
+        for (Term x = u.resolveTerm(this.x); l >=0; l--) {
 
-            var iy = (shuffle + l) % yy.length;
-            var y = yy[iy];
+            int iy = (shuffle + l) % yy.length;
+            Term y = yy[iy];
             if (x.unify(y, u)) {
                 if (xEllipsis.unify( Fragment.matchedExcept(yy, iy), u)) {
                     if (!u.tryMutate(chain, current))

@@ -57,7 +57,7 @@ public class DiscretizedScalarFeature {
 
         @Override
         public String toString() {
-            var interval = value();
+            double[] interval = value();
             return name + '=' + ((label != null ? (label + '[') : "") + Texts.n4(interval[0]) + ".." + Texts.n4(interval[1]) + ']');
         }
 
@@ -73,8 +73,8 @@ public class DiscretizedScalarFeature {
 
         public String condition(boolean isTrue) {
 
-            var var = name;
-            var range = value();
+            String var = name;
+            double[] range = value();
             if (isTrue) {
                 if (range[0] == Double.NEGATIVE_INFINITY && range[1] == Double.POSITIVE_INFINITY)
                     return "true";

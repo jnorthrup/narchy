@@ -15,14 +15,14 @@ class MIDI {
     public MIDI() {
 
 
-        var infos = MidiSystem.getMidiDeviceInfo();
+        MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
 
         MidiInReceiver receiver = null;
-        for (var info : infos) {
+        for (MidiDevice.Info info : infos) {
             try {
-                var ii = info;
+                MidiDevice.Info ii = info;
 
-                var device = MidiSystem.getMidiDevice(ii);
+                MidiDevice device = MidiSystem.getMidiDevice(ii);
 
                 System.out.println(device + "\t" + device.getClass());
                 System.out.println("\t" + device.getDeviceInfo());
@@ -44,7 +44,7 @@ class MIDI {
             }
         }
 
-        var receiver1 = receiver;
+        MidiInReceiver receiver1 = receiver;
 
         Arrays.fill(volume, Float.NaN);
 
@@ -72,8 +72,8 @@ class MIDI {
 
 
             if (m instanceof ShortMessage) {
-                var s = (ShortMessage) m;
-                var cmd = s.getCommand();
+                ShortMessage s = (ShortMessage) m;
+                int cmd = s.getCommand();
                 switch (cmd) {
                     case ShortMessage.NOTE_OFF:
                         if ((volume[s.getData1()] == volume[s.getData1()]) && (volume[s.getData1()] > 0))

@@ -55,7 +55,7 @@ public class ByteBufferVertexData extends VertexData {
 
 	@Override
 	public <T extends v3> T getVertex(int idx, T out) {
-		var off = idx*vertexStride;
+        int off = idx*vertexStride;
 		out.x = vertexData.getFloat(off);
 		out.y = vertexData.getFloat(off+ 4);
 		out.z = vertexData.getFloat(off+4*2);
@@ -64,7 +64,7 @@ public class ByteBufferVertexData extends VertexData {
 
 	@Override
 	public void setVertex(int idx, float x, float y, float z) {
-		var off = idx*vertexStride;
+        int off = idx*vertexStride;
 		vertexData.putFloat(off, x);
 		vertexData.putFloat(off+ 4, y);
 		vertexData.putFloat(off+4*2, z);

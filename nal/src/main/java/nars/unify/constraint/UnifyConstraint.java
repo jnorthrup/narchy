@@ -48,7 +48,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 	}
 
 	public static UnifyConstraint intern(UnifyConstraint x) {
-		var y = constra.putIfAbsent(x.term(), x);
+        UnifyConstraint y = constra.putIfAbsent(x.term(), x);
 		return y != null ? y : x;
 	}
 
@@ -87,16 +87,16 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 	public boolean remainAmong(UnifyConstraint[] constraintsCopy) {
 		UnifyConstraint x = this;
 
-		var xRel = x instanceof RelationConstraint;
+        boolean xRel = x instanceof RelationConstraint;
 
-		for (var y : constraintsCopy) {
+		for (UnifyConstraint y : constraintsCopy) {
 			if (y != null && x != y) {
 				if (x.x.equals(y.x)) { //same target
-					var yRel = y instanceof RelationConstraint;
+                    boolean yRel = y instanceof RelationConstraint;
 					if (xRel && yRel) {
 						//binary constraint
-						var X = (RelationConstraint) x;
-						var Y = (RelationConstraint) y;
+                        RelationConstraint X = (RelationConstraint) x;
+                        RelationConstraint Y = (RelationConstraint) y;
 						if (X.y.equals(Y.y)) {
 							if (!X.remainAmong(Y)) {
 								return false;
@@ -142,7 +142,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 
 		public static <U extends Unify> UnifyConstraint<U> the(List<UnifyConstraint<U>> cc) {
 
-			var ccn = cc.size();
+            int ccn = cc.size();
 
             switch (ccn) {
                 case 0:
@@ -176,12 +176,12 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 //                    return cc.get(0);
 //            }
 
-			var d = cc.toArray(new UnifyConstraint[ccn]);
+            UnifyConstraint[] d = cc.toArray(new UnifyConstraint[ccn]);
 			Arrays.sort(d, PREDICATE.sortByCostIncreasing);
 
 			if (NAL.test.DEBUG_EXTRA) {
 				Term target = d[0].x;
-				for (var i = 1; i < d.length; i++)
+				for (int i = 1; i < d.length; i++)
 					assert (d[i].x.equals(target));
 			}
 
@@ -196,7 +196,12 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 		@Override
 		public boolean invalid(Term x, U f) {
 
-			return Arrays.stream(subConstraint).anyMatch(c -> c.invalid(x, f));
+			for (UnifyConstraint<U> c : subConstraint) {
+				if (c.invalid(x, f)) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 

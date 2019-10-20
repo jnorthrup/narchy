@@ -92,9 +92,9 @@ public class UserContextInputStream extends InputStream {
      * from the previous version
      */
     private void fireReadCalled() {
-        var event = new ReadEvent(this);
+        ReadEvent event = new ReadEvent(this);
 
-        for (var readListener : readListeners) {
+        for (ReadListener readListener : readListeners) {
             readListener.readCalled(event);
         }
 

@@ -40,7 +40,7 @@ public class ArrayTermVector extends TermVector {
         if (!(obj instanceof Subterms))
             return false;
 
-        var that = (Subterms) obj;
+        Subterms that = (Subterms) obj;
 
         //HACK
         //if (!(that instanceof TermVector) && !(that instanceof AnonVector) && !(that instanceof RemappedSubterms.HashCachedRemappedSubterms) && !(that instanceof RemappedSubterms.RepeatedSubterms))
@@ -53,7 +53,7 @@ public class ArrayTermVector extends TermVector {
 
         if (obj instanceof ArrayTermVector) {
 
-            var v = (ArrayTermVector) obj;
+            ArrayTermVector v = (ArrayTermVector) obj;
 //            if (terms == v.terms)
 //                return true;
 //            int n = terms.length;
@@ -72,12 +72,17 @@ public class ArrayTermVector extends TermVector {
             return Arrays.equals(terms, v.terms);
 
         } else {
-            var x = this.terms;
-            var s = x.length;
+            Term[] x = this.terms;
+            int s = x.length;
             if (s != that.subs())
                 return false;
 
-            return IntStream.range(0, s).allMatch(i -> x[i].equals(that.sub(i)));
+            for (int i = 0; i < s; i++) {
+                if (!x[i].equals(that.sub(i))) {
+                    return false;
+                }
+            }
+            return true;
 
         }
 

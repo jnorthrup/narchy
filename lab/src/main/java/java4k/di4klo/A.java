@@ -179,7 +179,13 @@ public class A extends GamePanel {
 						if (gameData.charAt(g + 140) == 'e')
 							g2d.fillRect(((g - z - j * h) % spriteSize[m]) * n, ((g - z - j * h) / spriteSize[m]) * n, n, n);
 
-					var b = IntStream.of(6, 8, 21).anyMatch(i1 -> i == i1);
+					boolean b = false;
+					for (int i1 : new int[]{6, 8, 21}) {
+						if (i == i1) {
+							b = true;
+							break;
+						}
+					}
 					if (b) {
 						g2d.setColor(colorChart[12]); 
 						g2d.fillRect(2, 4, 2, 2);
@@ -211,7 +217,7 @@ public class A extends GamePanel {
 	public void paintComponent(Graphics sg) {
 
 
-		var remaining = nextFrameStart - System.nanoTime();
+        long remaining = nextFrameStart - System.nanoTime();
 		if (remaining > 0) {
 			return;
 		}
@@ -894,8 +900,8 @@ public class A extends GamePanel {
 	@Override
 	public void processAWTEvent(AWTEvent awtEvent) {
 		if (awtEvent instanceof MouseEvent) {
-			var e = (MouseEvent) awtEvent;
-			var down = false;
+            MouseEvent e = (MouseEvent) awtEvent;
+            boolean down = false;
 			switch (e.getID()) {
 			case MouseEvent.MOUSE_PRESSED:
 				down = true;

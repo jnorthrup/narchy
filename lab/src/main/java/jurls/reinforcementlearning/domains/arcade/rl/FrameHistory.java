@@ -72,7 +72,7 @@ public class FrameHistory implements Cloneable {
 
     public Object clone() {
         try {
-            var obj = (FrameHistory)super.clone();
+            FrameHistory obj = (FrameHistory)super.clone();
 
             obj.frames = new LinkedList<>();
 

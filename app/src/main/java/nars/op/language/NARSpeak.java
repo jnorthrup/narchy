@@ -137,7 +137,7 @@ public class NARSpeak {
 //    }
 //
     public static void main(String[] args) throws Narsese.NarseseException {
-        var n = NARS.realtime(10f).get();
+        NAR n = NARS.realtime(10f).get();
 
         new Deriver(Derivers.nal(n, 1, 8
                 //"curiosity.nal"

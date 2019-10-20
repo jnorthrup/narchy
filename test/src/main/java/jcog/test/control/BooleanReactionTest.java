@@ -20,7 +20,7 @@ public class BooleanReactionTest extends MiniTest {
         sense($.inh("i", id), ()-> this.i = input.getAsBoolean());
 
         actionPushButton($.inh("o", id), (o) -> {
-            var c = reward.accept(i, o);
+            boolean c = reward.accept(i, o);
             this.reward = c ? 1f : 0f;
             return o;
         });
@@ -29,7 +29,7 @@ public class BooleanReactionTest extends MiniTest {
 
     @Override
     protected float myReward() {
-        var r = reward;
+        float r = reward;
         reward = 0;
         return r;
     }

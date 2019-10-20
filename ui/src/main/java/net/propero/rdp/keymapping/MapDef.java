@@ -121,7 +121,7 @@ public class MapDef {
      * @throws KeyMapException Any parsing errors which may occur
      */
     public MapDef(String definition) throws KeyMapException {
-        var st = new StringTokenizer(definition);
+        StringTokenizer st = new StringTokenizer(definition);
         try {
             
             characterDef = (Integer.parseInt(st.nextToken()) == 1);
@@ -139,7 +139,7 @@ public class MapDef {
             scancode = Integer.decode(st.nextToken());
 
 
-            var modifiers = Integer.parseInt(st.nextToken());
+            int modifiers = Integer.parseInt(st.nextToken());
             shiftDown = ((modifiers & FLAG_SHIFT) != 0);
             ctrlDown = ((modifiers & FLAG_CTRL) != 0);
             altDown = ((modifiers & FLAG_ALT) != 0);
@@ -234,7 +234,7 @@ public class MapDef {
         if (!characterDef)
             return 0;
 
-        var dist = 0;
+        int dist = 0;
         if (ctrlDown != e.isControlDown())
             dist += 1;
         if (altDown != e.isAltDown())
@@ -271,7 +271,7 @@ public class MapDef {
             
             if (capslock && Character.isLetter(e.getKeyChar())
                     && Character.isUpperCase(e.getKeyChar()) && e.isShiftDown()) {
-                var c = Character.toLowerCase(e.getKeyChar());
+                char c = Character.toLowerCase(e.getKeyChar());
                 return ((characterDef) && (this.keyChar == c));
             }
         }
@@ -307,7 +307,7 @@ public class MapDef {
     public void writeToStream(PrintStream p) {
 
 
-        var definition = String.valueOf(characterDef ? 1 : 0);
+        String definition = String.valueOf(characterDef ? 1 : 0);
 
         
         definition += "\t";
@@ -321,7 +321,7 @@ public class MapDef {
         definition += "\t0x" + Integer.toHexString(scancode);
 
 
-        var modifiers = 0;
+        int modifiers = 0;
         modifiers |= (shiftDown ? FLAG_SHIFT : 0);
         modifiers |= (ctrlDown ? FLAG_CTRL : 0);
         modifiers |= (altDown ? FLAG_ALT : 0);

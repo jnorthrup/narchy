@@ -46,9 +46,9 @@ public class NewtKeyboard extends Finger implements KeyListener {
 //            if (!t.key(e, pressOrRelease))
 //                e.setConsumed(true);
 //        }
-        var s = keyFocus.getOpaque();
+        Surface s = keyFocus.getOpaque();
         if (s != null) {
-            var ss = s;
+            Surface ss = s;
             if (!ss.showing()) {
                 keyFocus.compareAndSet(s, null); //free the focus
                 return;
@@ -87,27 +87,27 @@ public class NewtKeyboard extends Finger implements KeyListener {
     protected void focusTraverse(float _angle) {
 
 
-        var x = keyFocus.get();
+        Surface x = keyFocus.get();
         if (x == null)
             return; //nothing to start with
 
-        var xc = x.bounds.center();
+        v2 xc = x.bounds.center();
 
-        var angleInRadians = MathUtils.radians(_angle);
+        float angleInRadians = MathUtils.radians(_angle);
 
         //search neighborhood for what can be focused in the provided direction
         //TODO abstract to multi-level bfs/dfs graph search with early termination and heuristics etc
-        var next = new TopN<Surface>(new Surface[1], s -> {
-            var c = s.bounds.center();
-            var dAngle = Math.abs(angleInRadians - Math.atan2(c.y - xc.y, c.x - xc.x));
+        TopN<Surface> next = new TopN<Surface>(new Surface[1], s -> {
+            v2 c = s.bounds.center();
+            double dAngle = Math.abs(angleInRadians - Math.atan2(c.y - xc.y, c.x - xc.x));
             if (dAngle < Math.PI / 4 /* +-45deg */){
-                var d = 1f / (1 + c.distanceSq(xc));
+                float d = 1f / (1 + c.distanceSq(xc));
                 return d;
             } else {
                 return Float.NaN;
             }
         });
-        var parent = ((Surface)x.parent).parentOrSelf(ContainerSurface.class);
+        ContainerSurface parent = ((Surface)x.parent).parentOrSelf(ContainerSurface.class);
         parent.whileEach(c -> {
             if (c == x)
                 return true;
@@ -116,7 +116,7 @@ public class NewtKeyboard extends Finger implements KeyListener {
             next.accept(c);
             return true;
         });
-        var n = next.get(0);
+        Surface n = next.get(0);
         if (n!=null) {
             focus(n);
         }
@@ -127,8 +127,8 @@ public class NewtKeyboard extends Finger implements KeyListener {
         if (!(s instanceof KeyPressed))
             throw new UnsupportedOperationException(s + " does not implement " + KeyPressed.class);
 
-        var ss = (KeyPressed) s;
-        var r = keyFocus.getAndSet(s);
+        KeyPressed ss = (KeyPressed) s;
+        Surface r = keyFocus.getAndSet(s);
         if (r != s) {
             if (r != null)
                 ((KeyPressed) r).keyEnd();

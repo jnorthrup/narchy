@@ -45,11 +45,11 @@ public class PlayerView {
      */
     public static float SV_CalcRoll(float[] angles, float[] velocity) {
 
-        var side = Math3D.DotProduct(velocity, right);
+        float side = Math3D.DotProduct(velocity, right);
         float sign = side < 0 ? -1 : 1;
         side = Math.abs(side);
 
-        var value = GameBase.sv_rollangle.value;
+        float value = GameBase.sv_rollangle.value;
 
         if (side < GameBase.sv_rollspeed.value)
             side = side * value / GameBase.sv_rollspeed.value;
@@ -69,7 +69,7 @@ public class PlayerView {
 
     public static void P_DamageFeedback(edict_t player) {
 
-        var client = player.client;
+        gclient_t client = player.client;
 
         
         client.ps.stats[Defines.STAT_FLASHES] = 0;
@@ -113,7 +113,7 @@ public class PlayerView {
             }
         }
 
-        var realcount = count;
+        float realcount = count;
         if (count < 10)
             count = 10; 
 
@@ -121,7 +121,7 @@ public class PlayerView {
         if ((GameBase.level.time > player.pain_debounce_time)
                 && 0 == (player.flags & Defines.FL_GODMODE)
                 && (client.invincible_framenum <= GameBase.level.framenum)) {
-            var r = 1 + (Lib.rand() & 1);
+            int r = 1 + (Lib.rand() & 1);
             player.pain_debounce_time = GameBase.level.time + 0.7f;
             int l;
             if (player.health < 25)
@@ -180,7 +180,7 @@ public class PlayerView {
             Math3D.VectorSubtract(client.damage_from, player.s.origin, v);
             Math3D.VectorNormalize(v);
 
-            var side = Math3D.DotProduct(v, right);
+            float side = Math3D.DotProduct(v, right);
             client.v_dmg_roll = kick * side * 0.3f;
 
             side = -Math3D.DotProduct(v, forward);
@@ -211,7 +211,7 @@ public class PlayerView {
         float ratio;
 
 
-        var angles = ent.client.ps.kick_angles;
+        float[] angles = ent.client.ps.kick_angles;
 
         
         if (ent.deadflag != 0) {
@@ -244,7 +244,7 @@ public class PlayerView {
             angles[Defines.PITCH] += ratio * ent.client.fall_value;
 
 
-            var delta = Math3D.DotProduct(ent.velocity, forward);
+            float delta = Math3D.DotProduct(ent.velocity, forward);
             angles[Defines.PITCH] += delta * GameBase.run_pitch.value;
 
             delta = Math3D.DotProduct(ent.velocity, right);
@@ -278,7 +278,7 @@ public class PlayerView {
         v[2] -= ratio * ent.client.fall_value * 0.4;
 
 
-        var bob = bobfracsin * xyspeed * GameBase.bob_up.value;
+        float bob = bobfracsin * xyspeed * GameBase.bob_up.value;
         if (bob > 6)
             bob = 6;
         
@@ -326,7 +326,7 @@ public class PlayerView {
 
         int i;
         for (i = 0; i < 3; i++) {
-            var delta = ent.client.oldviewangles[i] - ent.client.ps.viewangles[i];
+            float delta = ent.client.oldviewangles[i] - ent.client.ps.viewangles[i];
             if (delta > 180)
                 delta -= 360;
             if (delta < -180)
@@ -360,8 +360,8 @@ public class PlayerView {
 
         if (a <= 0)
             return;
-        var a2 = v_blend[3] + (1 - v_blend[3]) * a;
-        var a3 = v_blend[3] / a2;
+        float a2 = v_blend[3] + (1 - v_blend[3]) * a;
+        float a3 = v_blend[3] / a2;
 
         v_blend[0] = v_blend[0] * a3 + r * (1 - a3);
         v_blend[1] = v_blend[1] * a3 + g * (1 - a3);
@@ -379,7 +379,7 @@ public class PlayerView {
 
         float[] vieworg = {0, 0, 0};
         Math3D.VectorAdd(ent.s.origin, ent.client.ps.viewoffset, vieworg);
-        var contents = GameBase.gi.pointcontents.pointcontents(vieworg);
+        int contents = GameBase.gi.pointcontents.pointcontents(vieworg);
         if ((contents & (Defines.CONTENTS_LAVA | Defines.CONTENTS_SLIME | Defines.CONTENTS_WATER)) != 0)
             ent.client.ps.rdflags |= Defines.RDF_UNDERWATER;
         else
@@ -501,7 +501,7 @@ public class PlayerView {
             }
             ent.pain_debounce_time = GameBase.level.time;
 
-            var damage = (int) ((delta - 30) / 2);
+            int damage = (int) ((delta - 30) / 2);
             if (damage < 1)
                 damage = 1;
             float[] dir = {0, 0, 0};
@@ -528,12 +528,12 @@ public class PlayerView {
             return;
         }
 
-        var waterlevel = current_player.waterlevel;
-        var old_waterlevel = current_client.old_waterlevel;
+        int waterlevel = current_player.waterlevel;
+        int old_waterlevel = current_client.old_waterlevel;
         current_client.old_waterlevel = waterlevel;
 
-        var breather = current_client.breather_framenum > GameBase.level.framenum;
-        var envirosuit = current_client.enviro_framenum > GameBase.level.framenum;
+        boolean breather = current_client.breather_framenum > GameBase.level.framenum;
+        boolean envirosuit = current_client.enviro_framenum > GameBase.level.framenum;
 
         
         
@@ -720,7 +720,7 @@ public class PlayerView {
             return;
 
         if (ent.powerarmor_time > GameBase.level.time) {
-            var pa_type = GameItems.PowerArmorType(ent);
+            int pa_type = GameItems.PowerArmorType(ent);
             switch (pa_type) {
                 case Defines.POWER_ARMOR_SCREEN:
                     ent.s.effects |= Defines.EF_POWERSCREEN;
@@ -819,12 +819,12 @@ public class PlayerView {
         if (ent.s.modelindex != 255)
             return;
 
-        var client = ent.client;
+        gclient_t client = ent.client;
 
-        var duck = (client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0;
-        var run = xyspeed != 0;
+        boolean duck = (client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0;
+        boolean run = xyspeed != 0;
 
-        var skip = false;
+        boolean skip = false;
         
         if (duck != client.anim_duck
                 && client.anim_priority < Defines.ANIM_DEATH)
@@ -908,7 +908,7 @@ public class PlayerView {
         
         
         
-        for (var i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) {
             current_client.ps.pmove.origin[i] = (short) (ent.s.origin[i] * 8.0);
             current_client.ps.pmove.velocity[i] = (short) (ent.velocity[i] * 8.0);
         }
@@ -962,7 +962,7 @@ public class PlayerView {
                 bobmove = 0.0625f;
         }
 
-        var bobtime = (current_client.bobtime += bobmove);
+        float bobtime = (current_client.bobtime += bobmove);
 
         if ((current_client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0)
             bobtime *= 4;

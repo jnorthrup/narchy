@@ -30,7 +30,7 @@ public class Grid1D implements World {
     public Grid1D(int size, int totalTime, double noise, double cycleSkew) {
         this.time = 0;
         this.size = size;
-        var VISUALIZE_PERIOD = Math.pow(10, 4);
+        double VISUALIZE_PERIOD = Math.pow(10, 4);
         this.REWARD_MAGNITUDE = 100.0;
         this.ENERGY_COST =  this.REWARD_MAGNITUDE / 100.0;
         this.JUMP_FRACTION = 0.0;        
@@ -61,7 +61,7 @@ public class Grid1D implements World {
         this.action = action;
 
 
-        var stepSize = (    action[0] +
+        double stepSize = (    action[0] +
                             2 * action[1] + 
                             3 * action[2] + 
                             4 * action[3] - 
@@ -100,7 +100,7 @@ public class Grid1D implements World {
         # Represent the presence or absence of the current position in the bin.
         */
         
-        for (var i = 0; i < sensor.length; i++) {
+        for (int i = 0; i < sensor.length; i++) {
             sensor[i] = (Math.random()*noise);
         }            
         sensor[simpleState] = 1 - (Math.random()*noise);
@@ -112,7 +112,7 @@ public class Grid1D implements World {
     
     public double getReward(double[] sensor) {
 
-        var reward = 0.;
+        double reward = 0.;
         reward -= sensor[8] * REWARD_MAGNITUDE;
         reward += sensor[3] * REWARD_MAGNITUDE;
         
@@ -126,8 +126,8 @@ public class Grid1D implements World {
 
     @Override
     public String toString() {
-        var s = "";
-        for (var i = 0; i < size; i++) {
+        String s = "";
+        for (int i = 0; i < size; i++) {
             char c;
             if (i == simpleState)
                 c = 'O';
@@ -136,7 +136,7 @@ public class Grid1D implements World {
             s += c;
         }
         s += "\n";
-        for (var i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             char c;
             if (action[i] > 0)
                 c = 'X';

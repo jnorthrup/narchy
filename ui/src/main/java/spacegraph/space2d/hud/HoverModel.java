@@ -26,9 +26,9 @@ public abstract class HoverModel {
 
         @Override
         public RectFloat pos() {
-            var scale = 0.25f;
-            var resolution = Math.max(f.boundsScreen.w, f.boundsScreen.h);
-            var ss = scale * resolution;
+            float scale = 0.25f;
+            float resolution = Math.max(f.boundsScreen.w, f.boundsScreen.h);
+            float ss = scale * resolution;
             return RectFloat.XYWH(f.posPixel, ss, ss);
         }
     }
@@ -41,7 +41,7 @@ public abstract class HoverModel {
 
         @Override
         public RectFloat pos() {
-            var ss = f.globalToPixel(s.bounds);
+            RectFloat ss = f.globalToPixel(s.bounds);
             return ss.scale(0.25f).move(ss.w/2, ss.h / 2);
         }
     }

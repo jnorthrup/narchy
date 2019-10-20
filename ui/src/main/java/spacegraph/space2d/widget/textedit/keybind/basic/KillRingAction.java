@@ -17,7 +17,7 @@ public class KillRingAction implements Action {
 
   @Override
   public void execute(TextEditModel editor, String... args) {
-    var currentBuffer = editor.buffer();
+      Buffer currentBuffer = editor.buffer();
     if (currentBuffer.isLineEnd()) {
       currentBuffer.delete();
     } else {
@@ -29,10 +29,10 @@ public class KillRingAction implements Action {
   }
 
   private static void setClipboardString(String value) {
-    var selection = new StringSelection(value);
+      StringSelection selection = new StringSelection(value);
 
-    var toolKit = Toolkit.getDefaultToolkit();
-    var clipboard = toolKit.getSystemClipboard();
+      Toolkit toolKit = Toolkit.getDefaultToolkit();
+      Clipboard clipboard = toolKit.getSystemClipboard();
     clipboard.setContents(selection, selection);
   }
 }

@@ -83,7 +83,7 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
     }
 
     private static boolean isLogFine() {
-        var level = logLevel();
+        Level level = logLevel();
         return level != null && level.intValue() <= Level.FINE.intValue();
     }
 
@@ -148,14 +148,14 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
     @Override
     protected void onAdd(Node<Class, Function> r) {
         super.onAdd(r);
-        var type = r.id();
+        Class type = r.id();
         if (type != null)
             classes.add(type);
     }
 
     @Override
     protected void onRemoved(Node<Class, Function> r) {
-        var type = r.id();
+        Class type = r.id();
         if (type != null)
             classes.remove(type);
         super.onRemoved(r);
@@ -174,7 +174,7 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
      */
     public List<Class> roots(Class type, boolean strongCompare, boolean childToParent, boolean incParent, boolean incChildren
     ) {
-        var fromClasses = strongCompare ?
+        Collection<Class> fromClasses = strongCompare ?
                 List.of(type) :
                 classes.getAssignableFrom(type, incParent, incChildren);
         if (fromClasses.size() <= 1) {
@@ -208,7 +208,7 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
     public Path<Class, Function> pathFirst(Class from, Class to) {
         if (from == null) throw new IllegalArgumentException("from==null");
         if (to == null) throw new IllegalArgumentException("to==null");
-        var y = new Path[1];
+        Path[] y = new Path[1];
         findPath(from, to, (x -> { y[0] = x; return false; /* just the first one */}));
         return y[0];
     }
@@ -247,9 +247,9 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
         );
 
         while (pfinder.hasNext()) {
-            var path = pfinder.next();
+            Path<Class, Function> path = pfinder.next();
             if (path == null) break;
-            var lastnode = path.node(-1);
+            Class lastnode = path.node(-1);
             //assert(!lastnode.equals(to));
             if (lastnode != null && lastnode == to) {
                 if (!filter.test(path))
@@ -263,14 +263,14 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
         if (fromType == null) throw new IllegalArgumentException("fromType==null");
         if (targetType == null) throw new IllegalArgumentException("targetType==null");
 
-        var starts = roots(fromType, false, true, true, false);
+        List<Class> starts = roots(fromType, false, true, true, false);
         if (starts == null || starts.isEmpty()) {
             throw new ClassCastException("can't cast " + fromType + " to " + targetType + ", can't find start class");
         }
 
         List<Path<Class, Function>> p = new FasterList<>();
 
-        for (var startCls : starts) {
+        for (Class startCls : starts) {
 
 
 
@@ -341,7 +341,7 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
 
         Class cv = value.getClass();
 
-        var lvariants = paths(cv, targetType);
+        List<Path<Class, Function>> lvariants = paths(cv, targetType);
 //        lvariants.removeIf(p -> p.nodeCount() > 2);
 //
 //        Collection<Path<Class, Function>> removeSet = new LinkedHashSet<>();
@@ -361,14 +361,14 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
         Collection<Throwable> castErrors = new FasterList<>();
         Collection<Converter> scasters = new FasterList<>();
 
-        for (var path : lvariants) {
+        for (Path<Class, Function> path : lvariants) {
             //int psize = path.size();
-            var ncount = path.nodeCount();
+            int ncount = path.nodeCount();
             //if( psize==1 ){
             if (ncount == 1) {
-                var conv = path.edge(0, 1);
+                Function conv = path.edge(0, 1);
                 try {
-                    var res = conv.apply(value);
+                    Object res = conv.apply(value);
                     if (castedConvertor != null) castedConvertor.accept(conv);
                     return res;
                 } catch (Throwable ex) {
@@ -380,9 +380,9 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
             }
         }
 
-        for (var c : scasters) {
+        for (Converter c : scasters) {
             try {
-                var res = c.apply(value);
+                Object res = c.apply(value);
                 if (castedConvertor != null)
                     castedConvertor.accept(c);
                 return res;
@@ -391,9 +391,9 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
             }
         }
 
-        var ci = -1;
-        var castErrMess = new StringBuilder();
-        for (var err : castErrors) {
+        int ci = -1;
+        StringBuilder castErrMess = new StringBuilder();
+        for (Throwable err : castErrors) {
             ci++;
             if (ci > 0) castErrMess.append('\n');
             castErrMess.append(err.getMessage());
@@ -416,15 +416,15 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
 
     public <X,Y> List<Function<X, Y>> applicable(Class<? extends X> cfrom, Class<? extends Y> cto) {
 
-        var roots = roots(cfrom, false, true, true, false);
+        List<Class> roots = roots(cfrom, false, true, true, false);
         if (roots.isEmpty())
             return Collections.EMPTY_LIST;
 
         List<Function<X, Y>> convertors = new FasterList(roots.size());
-        for(var cf : roots ){
-            var paths = paths(cf, cto);
+        for(Class cf : roots ){
+            List<Path<Class, Function>> paths = paths(cf, cto);
             if( paths != null ) {
-                for (var c : paths) {
+                for (Path<Class, Function> c : paths) {
                     convertors.add(Converter.the(c));
                 }
             }

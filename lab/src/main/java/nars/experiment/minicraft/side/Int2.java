@@ -25,7 +25,7 @@ public final class Int2 implements java.io.Serializable {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Int2) {
-            var compare = (Int2) obj;
+            Int2 compare = (Int2) obj;
             return x == compare.x && y == compare.y;
         }
         return false;

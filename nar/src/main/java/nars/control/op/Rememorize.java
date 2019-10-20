@@ -22,7 +22,7 @@ public final class Rememorize extends Remember {
 
 	@Override
 	protected Concept concept() {
-		var c = this.concept;
+        Concept c = this.concept;
 		return ((c == null) || c.isDeleted()) ? ((this.concept = super.concept())) : c;
 	}
 

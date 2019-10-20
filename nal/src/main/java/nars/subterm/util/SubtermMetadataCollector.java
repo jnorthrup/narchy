@@ -22,7 +22,7 @@ public final class SubtermMetadataCollector {
 
     public SubtermMetadataCollector(Term[] terms) {
         //assert (terms.length <= Param.COMPOUND_SUBTERMS_MAX);
-        for (var x : terms)
+        for (Term x : terms)
             collectMetadata(x);
     }
 
@@ -50,10 +50,10 @@ public final class SubtermMetadataCollector {
     }
 
     public void collectMetadata(Term x) {
-        var hash = x.hashCode();
+        int hash = x.hashCode();
         if (x instanceof Atomic) {
 
-            var xo = x.op();
+            Op xo = x.op();
 
             collectNonVar(xo, hash);
 
@@ -63,7 +63,7 @@ public final class SubtermMetadataCollector {
         } else {
             this.hash = Util.hashCombine(this.hash, hash);
 
-            var xstructure = x.structure();
+            int xstructure = x.structure();
             this.structure |= xstructure;
 
             if ((xstructure & VAR_PATTERN.bit) != 0)

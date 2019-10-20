@@ -1223,14 +1223,14 @@ public class M_Actor {
                     self.monsterinfo.currentmove = actor_move_taunt;
 
 
-                var name = actor_names[(self.index) % MAX_ACTOR_NAMES];
+                String name = actor_names[(self.index) % MAX_ACTOR_NAMES];
 
                 game_import_t.cprintf(other, Defines.PRINT_CHAT, name + ": "
                         + messages[Lib.rand() % 3] + "!\n");
                 return;
             }
 
-            var n = Lib.rand() % 3;
+            int n = Lib.rand() % 3;
             switch (n) {
                 case 0:
                     self.monsterinfo.currentmove = actor_move_pain1;
@@ -1363,7 +1363,7 @@ public class M_Actor {
         public boolean think(edict_t self) {
 
             self.monsterinfo.currentmove = actor_move_attack;
-            var n = (Lib.rand() & 15) + 3 + 7;
+            int n = (Lib.rand() & 15) + 3 + 7;
             self.monsterinfo.pausetime = GameBase.level.time + n
                     * Defines.FRAMETIME;
 
@@ -1430,8 +1430,8 @@ public class M_Actor {
 
             if (self.message != null) {
 
-                for (var n = 1; n <= GameBase.game.maxclients; n++) {
-                    var ent = GameBase.g_edicts[n];
+                for (int n = 1; n <= GameBase.game.maxclients; n++) {
+                    edict_t ent = GameBase.g_edicts[n];
                     if (!ent.inuse)
                         continue;
                     game_import_t.cprintf(ent, Defines.PRINT_CHAT,
@@ -1474,7 +1474,7 @@ public class M_Actor {
 
             if (0 != (self.spawnflags & 6) && (self.pathtarget != null)) {
 
-                var savetarget = self.target;
+                String savetarget = self.target;
                 self.target = self.pathtarget;
                 GameUtil.G_UseTargets(self, other);
                 self.target = savetarget;

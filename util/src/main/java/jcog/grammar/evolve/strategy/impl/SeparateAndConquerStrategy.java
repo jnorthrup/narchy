@@ -42,10 +42,10 @@ import java.util.*;
 public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
 
     public static final Comparator<Ranking> comparator = (o1, o2) -> {
-        var fitness1 = o1.getFitness();
-        var fitness2 = o2.getFitness();
-        var compare = 0;
-        for (var i = 0; i < fitness1.length; i++) {
+        double[] fitness1 = o1.getFitness();
+        double[] fitness2 = o2.getFitness();
+        int compare = 0;
+        for (int i = 0; i < fitness1.length; i++) {
             compare = Double.compare(fitness1[i], fitness2[i]);
             if (compare != 0) {
                 return compare;
@@ -60,7 +60,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
     @Override
     protected void readParameters(Configuration configuration) {
         super.readParameters(configuration);
-        var parameters = configuration.getStrategyParameters();
+        Map<String, String> parameters = configuration.getStrategyParameters();
         if (parameters != null) {
             if (parameters.containsKey("convertToUnmatch")) {
                 convertToUnmatch = Boolean.parseBoolean(parameters.get("convertToUnmatch"));
@@ -104,7 +104,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
 
             context.setSeparateAndConquerEnabled(true);
 
-            var terminationCriteriaGenerationsCounter = 0;
+            int terminationCriteriaGenerationsCounter = 0;
             String oldGenerationBestValue = null;
             int generation;
             Set<Node> bests = new UnifiedSet<>();
@@ -112,7 +112,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
                 context.setStripedPhase(context.getDataSetContainer().isDataSetStriped() && ((generation % context.getDataSetContainer().getProposedNormalDatasetInterval()) != 0));
 
                 evolve();
-                var best = rankings.first();
+                Ranking best = rankings.first();
 
                 
                 List<Node> tmpBests = new LinkedList<>(bests);
@@ -120,9 +120,9 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
                 
                 tmpBests.add(best.getNode());
 
-                var joinedBest = joinSolutions(tmpBests);
+                Node joinedBest = joinSolutions(tmpBests);
                 context.setSeparateAndConquerEnabled(false);
-                var fitnessOfJoined = objective.fitness(joinedBest);
+                double[] fitnessOfJoined = objective.fitness(joinedBest);
                 context.setSeparateAndConquerEnabled(true);
                 
                 
@@ -132,20 +132,26 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
                     
                     listener.logGeneration(this, generation + 1, joinedBest, fitnessOfJoined, this.rankings);
                 }
-                var allPerfect = Arrays.stream(this.rankings.first().getFitness()).noneMatch(fitness -> Math.round(fitness * 10000) != 0);
+                boolean allPerfect = true;
+                for (double fitness : this.rankings.first().getFitness()) {
+                    if (Math.round(fitness * 10000) != 0) {
+                        allPerfect = false;
+                        break;
+                    }
+                }
                 if (allPerfect) {
                     break;
                 }
 
                 Objective trainingObjective = new PerformacesObjective();
                 trainingObjective.setup(context);
-                var trainingPerformace = trainingObjective.fitness(best.getNode());
+                double[] trainingPerformace = trainingObjective.fitness(best.getNode());
                 Map<String, Double> performancesMap = new HashMap<>();
                 PerformacesObjective.populatePerformancesMap(trainingPerformace, performancesMap, isFlagging);
 
                 double pr = !isFlagging ? performancesMap.get("match precision") : performancesMap.get("flag precision");
 
-                var newBestValue = best.getDescription();
+                String newBestValue = best.getDescription();
                 if (newBestValue.equals(oldGenerationBestValue)) {
                     terminationCriteriaGenerationsCounter++;
                 } else {
@@ -157,7 +163,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
                     terminationCriteriaGenerationsCounter = 0;
                     bests.add(best.getNode());
 
-                    var builder = new StringBuilder();
+                    StringBuilder builder = new StringBuilder();
                     best.getNode().describe(builder);
                     context.getTrainingDataset().addSeparateAndConquerLevel(builder.toString(), (int) context.getSeed(), convertToUnmatch, isFlagging);
 
@@ -177,7 +183,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
 
             }
 
-            var best = rankings.first();
+            Ranking best = rankings.first();
             bests.add(best.getNode());
 
              
@@ -186,7 +192,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
             if (listener != null) {
                 List<Node> dividedPopulation = new ArrayList<>(population.size());
                 List<Node> tmpBests = new LinkedList<>(bests);
-                for (var r : rankings) {
+                for (Ranking r : rankings) {
                     tmpBests.set(tmpBests.size() - 1, r.getNode());
                     dividedPopulation.add(joinSolutions(tmpBests));
                 }
@@ -220,8 +226,8 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
         while (nodes.size() > 1) {
 
             while (nodes.size() > 0) {
-                var first = nodes.pollFirst();
-                var second = nodes.pollFirst();
+                Node first = nodes.pollFirst();
+                Node second = nodes.pollFirst();
 
                 if (second != null) {
                     tmp.addLast(new Or(first, second));

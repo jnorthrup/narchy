@@ -35,9 +35,9 @@ public class RegexMatcher extends DFA {
     }
 
     public final boolean match(String str) {
-        var s = is;
-        var t = this.transitionTable;
-        var rejected = rs;
+        int s = is;
+        int[][] t = this.transitionTable;
+        int rejected = rs;
         for (int i = 0, length = str.length()-1; (length--) >= 0; i++) {
             if ((s = t[s][str.charAt(i)]) == rejected) {
                 return false; 

@@ -36,10 +36,10 @@ public class GhostPairCallback extends OverlappingPairCallback {
 
 	@Override
 	public BroadphasePair addOverlappingPair(Broadphasing proxy0, Broadphasing proxy1) {
-		var colObj0 = proxy0.data;
-		var colObj1 = proxy1.data;
-		var ghost0 = GhostObject.upcast(colObj0);
-		var ghost1 = GhostObject.upcast(colObj1);
+		Collidable colObj0 = proxy0.data;
+		Collidable colObj1 = proxy1.data;
+		GhostObject ghost0 = GhostObject.upcast(colObj0);
+		GhostObject ghost1 = GhostObject.upcast(colObj1);
 
 		if (ghost0 != null) {
 			ghost0.addOverlappingObjectInternal(proxy1, proxy0);
@@ -52,10 +52,10 @@ public class GhostPairCallback extends OverlappingPairCallback {
 
 	@Override
 	public Object removeOverlappingPair(Broadphasing proxy0, Broadphasing proxy1, Intersecter intersecter) {
-		var colObj0 = proxy0.data;
-		var colObj1 = proxy1.data;
-		var ghost0 = GhostObject.upcast(colObj0);
-		var ghost1 = GhostObject.upcast(colObj1);
+		Collidable colObj0 = proxy0.data;
+		Collidable colObj1 = proxy1.data;
+		GhostObject ghost0 = GhostObject.upcast(colObj0);
+		GhostObject ghost1 = GhostObject.upcast(colObj1);
 		
 		if (ghost0 != null) {
 			ghost0.removeOverlappingObjectInternal(proxy1, intersecter, proxy0);

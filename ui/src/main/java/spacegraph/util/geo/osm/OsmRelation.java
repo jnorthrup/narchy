@@ -24,7 +24,7 @@ public class OsmRelation extends OsmGroup {
     @Override
     public void forEach(Consumer<OsmElement> eachChild) {
         if (children!=null) {
-            for (var child : children) {
+            for (OsmElement child : children) {
                 eachChild.accept(child);
             }
         }

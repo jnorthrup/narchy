@@ -45,8 +45,8 @@ public class HashMapTagSet implements TagSet, Serializable {
     }
 
     public void add(float priDividedAmong, String... tags) {
-        var each = priDividedAmong / tags.length;
-        for (var t : tags)
+        float each = priDividedAmong / tags.length;
+        for (String t : tags)
             add(t, each);
     }
 
@@ -64,7 +64,7 @@ public class HashMapTagSet implements TagSet, Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof HashMapTagSet)) return false;
-        var h = (HashMapTagSet) o;
+        HashMapTagSet h = (HashMapTagSet) o;
         return id.equals(h.id) && data.equals(h.data);
     }
 
@@ -84,7 +84,7 @@ public class HashMapTagSet implements TagSet, Serializable {
         if (Util.equals(pri, 0f, EPSILON))
             return data.remove(tag) != null;
         else {
-            var existing = data.put(tag, pri);
+            Float existing = data.put(tag, pri);
             return existing == null || !Util.equals(existing, EPSILON);
         }
     }
@@ -95,7 +95,7 @@ public class HashMapTagSet implements TagSet, Serializable {
 
         boolean[] mod = {true};
         data.merge(tag, pri, (existing, added) -> {
-            var next = Util.unitize(existing + added );
+            float next = Util.unitize(existing + added );
             mod[0] = !Util.equals(existing,next, EPSILON);
             return next;
         });
@@ -107,12 +107,12 @@ public class HashMapTagSet implements TagSet, Serializable {
      * mix another tagset in
      */
     public boolean add(HashMapTagSet tag, float pri) {
-        var p = Util.unitize(pri);
+        float p = Util.unitize(pri);
 
         boolean[] modified = {false};
-        for (var entry : tag.data.entrySet()) {
-            var k = entry.getKey();
-            var v = entry.getValue();
+        for (Map.Entry<String, Float> entry : tag.data.entrySet()) {
+            String k = entry.getKey();
+            Float v = entry.getValue();
             modified[0] |= add(k, v * p);
         }
 
@@ -121,7 +121,7 @@ public class HashMapTagSet implements TagSet, Serializable {
 
     @Override
     public float pri(String tag) {
-        var f = data.get(tag);
+        Float f = data.get(tag);
         if (f == null)
             return 0;
         return f;

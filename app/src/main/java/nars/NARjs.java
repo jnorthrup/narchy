@@ -41,11 +41,11 @@ public class NARjs {
     }
 
     public static void main(String[] args) throws java.io.IOException {
-        var j = NARjs.the();
+        NARjs j = NARjs.the();
 
         System.out.println(NAR.VERSION
                 + " Javascript Console - :h for help, :q to exit");
-        var br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         System.out.print("> ");
 
         String s;
@@ -59,7 +59,7 @@ public class NARjs {
                     continue;
                 }
 
-                var ret = j.eval(s);
+                Object ret = j.eval(s);
 
                 if (ret != null) {
                     System.out.println(ret);

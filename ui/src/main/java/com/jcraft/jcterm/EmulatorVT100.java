@@ -53,11 +53,11 @@ public final class EmulatorVT100 extends TerminalEmulator {
         y = char_height;
 
         try {
-            var intargi = 0;
-            var intarg = new int[10];
+            int intargi = 0;
+            int[] intarg = new int[10];
             while (true) {
 
-                var b = getChar();
+                byte b = getChar();
 
                 
 
@@ -253,7 +253,7 @@ public final class EmulatorVT100 extends TerminalEmulator {
 
                     intargi = 0;
                     intarg[intargi] = 0;
-                    var digit = 0;
+                    int digit = 0;
 
                     while (true) {
                         b = getChar();
@@ -306,7 +306,7 @@ public final class EmulatorVT100 extends TerminalEmulator {
                             continue;
                         }
 
-                        for (var i = 0; i <= intargi; i++) {
+                        for (int i = 0; i <= intargi; i++) {
                             Object fg = null;
                             Object bg = null;
                             Object tmp = null;

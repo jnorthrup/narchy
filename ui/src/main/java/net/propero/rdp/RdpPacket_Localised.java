@@ -102,7 +102,7 @@ public class RdpPacket_Localised extends RdpPacket {
                     "memory accessed out of Range!");
         }
 
-        var oldpos = getPosition();
+        int oldpos = getPosition();
 
         setPosition(mem_offset);
         bb.put(array, array_offset, len);
@@ -124,7 +124,7 @@ public class RdpPacket_Localised extends RdpPacket {
             throw new ArrayIndexOutOfBoundsException(
                     "Memory accessed out of Range!");
 
-        var oldpos = getPosition();
+        int oldpos = getPosition();
         setPosition(mem_offset);
         bb.get(array, array_offset, len);
         setPosition(oldpos);
@@ -133,11 +133,11 @@ public class RdpPacket_Localised extends RdpPacket {
     @Override
     public void copyToPacket(RdpPacket_Localised dst, int srcOffset,
                              int dstOffset, int len) {
-        var olddstpos = dst.getPosition();
-        var oldpos = getPosition();
+        int olddstpos = dst.getPosition();
+        int oldpos = getPosition();
         dst.setPosition(dstOffset);
         setPosition(srcOffset);
-        for (var i = 0; i < len; i++)
+        for (int i = 0; i < len; i++)
             dst.set8(bb.get());
         dst.setPosition(olddstpos);
         setPosition(oldpos);
@@ -146,11 +146,11 @@ public class RdpPacket_Localised extends RdpPacket {
     @Override
     public void copyFromPacket(RdpPacket_Localised src, int srcOffset,
                                int dstOffset, int len) {
-        var oldsrcpos = src.getPosition();
-        var oldpos = getPosition();
+        int oldsrcpos = src.getPosition();
+        int oldpos = getPosition();
         src.setPosition(srcOffset);
         setPosition(dstOffset);
-        for (var i = 0; i < len; i++)
+        for (int i = 0; i < len; i++)
             bb.put((byte) src.get8());
         src.setPosition(oldsrcpos);
         setPosition(oldpos);

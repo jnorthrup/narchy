@@ -69,7 +69,7 @@ final byte[][] dottexture =
     void R_InitParticleTexture()
 	{
 		int		x,y;
-		var data = new byte[8 * 8 * 4];
+        byte[] data = new byte[8 * 8 * 4];
 
 		
 		
@@ -127,12 +127,12 @@ final byte[][] dottexture =
 	 */
 	@Override
     public void GL_ScreenShot_f() {
-		var sb = new StringBuilder(FS.Gamedir() + "/scrshot/jake00.tga");
+        StringBuilder sb = new StringBuilder(FS.Gamedir() + "/scrshot/jake00.tga");
 	    FS.CreatePath(sb.toString());
-		var file = new File(sb.toString());
+        File file = new File(sb.toString());
 
-		var i = 0;
-		var offset = sb.length() - 6;
+        int i = 0;
+        int offset = sb.length() - 6;
 	    while (file.exists() && i++ < 100) {
 	        sb.setCharAt(offset, (char) ((i/10) + '0'));
 	        sb.setCharAt(offset + 1, (char) ((i%10) + '0'));
@@ -144,11 +144,11 @@ final byte[][] dottexture =
 	    }
 	    
 	    try {
-			var out = new RandomAccessFile(file, "rw");
-			var ch = out.getChannel();
-			var fileLength = TGA_HEADER_SIZE + vid.getWidth() * vid.getHeight() * 3;
+            RandomAccessFile out = new RandomAccessFile(file, "rw");
+            FileChannel ch = out.getChannel();
+            int fileLength = TGA_HEADER_SIZE + vid.getWidth() * vid.getHeight() * 3;
 	        out.setLength(fileLength);
-			var image = ch.map(FileChannel.MapMode.READ_WRITE, 0,
+            MappedByteBuffer image = ch.map(FileChannel.MapMode.READ_WRITE, 0,
 	                fileLength);
 	        
 	        
@@ -163,7 +163,7 @@ final byte[][] dottexture =
 	        
 	        image.position(TGA_HEADER_SIZE);
 
-			var rgb = image.slice();
+            ByteBuffer rgb = image.slice();
 
 	        
 	        if (vid.getWidth() % 4 != 0) {
@@ -181,7 +181,7 @@ final byte[][] dottexture =
 	            gl.glReadPixels(0, 0, vid.getWidth(), vid.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, rgb);
 
                 for (i = TGA_HEADER_SIZE; i < fileLength; i += 3) {
-					var tmp = image.get(i);
+                    byte tmp = image.get(i);
                     image.put(i, image.get(i + 2));
 		            image.put(i + 2, tmp);
 		        }
@@ -249,7 +249,7 @@ final byte[][] dottexture =
 		if ( qglPointParameterfEXT )
 		{
 
-			var attenuations = Lib.newFloatBuffer(4);
+            FloatBuffer attenuations = Lib.newFloatBuffer(4);
             attenuations.put(0,gl_particle_att_a.value);
             attenuations.put(1,gl_particle_att_b.value);
             attenuations.put(2,gl_particle_att_c.value);

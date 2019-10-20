@@ -62,7 +62,7 @@ public abstract class Light extends Warp {
     void R_RenderDlight(dlight_t light) {
         float[] v = { 0, 0, 0 };
 
-        var rad = light.intensity * 0.35f;
+        float rad = light.intensity * 0.35f;
 
         Math3D.VectorSubtract(light.origin, r_origin, v);
 
@@ -75,8 +75,8 @@ public abstract class Light extends Warp {
         gl.glVertex3f(v[0], v[1], v[2]);
         gl.glColor3f(0, 0, 0);
         for (i = 16; i >= 0; i--) {
-            var a = (float) (i / 16.0f * Math.PI * 2);
-            for (var j = 0; j < 3; j++)
+            float a = (float) (i / 16.0f * Math.PI * 2);
+            for (int j = 0; j < 3; j++)
                 v[j] = (float) (light.origin[j] + vright[j] * Math.cos(a) * rad + vup[j]
                         * Math.sin(a) * rad);
             gl.glVertex3f(v[0], v[1], v[2]);
@@ -101,8 +101,8 @@ public abstract class Light extends Warp {
         gl.glEnable(GL_BLEND);
         gl.glBlendFunc(GL_ONE, GL_ONE);
 
-        for (var i = 0; i < r_newrefdef.num_dlights; i++) {
-            var l = r_newrefdef.dlights[i];
+        for (int i = 0; i < r_newrefdef.num_dlights; i++) {
+            dlight_t l = r_newrefdef.dlights[i];
             R_RenderDlight(l);
         }
 
@@ -130,8 +130,8 @@ public abstract class Light extends Warp {
         if (node.contents != -1)
             return;
 
-        var splitplane = node.plane;
-        var dist = Math3D.DotProduct(light.origin, splitplane.normal)
+        cplane_t splitplane = node.plane;
+        float dist = Math3D.DotProduct(light.origin, splitplane.normal)
                 - splitplane.dist;
 
         if (dist > light.intensity - DLIGHT_CUTOFF) {
@@ -144,16 +144,16 @@ public abstract class Light extends Warp {
         }
 
         
-        for (var i = 0; i < node.numsurfaces; i++) {
+        for (int i = 0; i < node.numsurfaces; i++) {
 
-            var surf = r_worldmodel.surfaces[node.firstsurface + i];
+            msurface_t surf = r_worldmodel.surfaces[node.firstsurface + i];
 
             /*
              * cwei bugfix for dlight behind the walls
              */
             dist = Math3D.DotProduct(light.origin, surf.plane.normal)
                     - surf.plane.dist;
-            var sidebit = (dist >= 0) ? 0 : Defines.SURF_PLANEBACK;
+            int sidebit = (dist >= 0) ? 0 : Defines.SURF_PLANEBACK;
             if ((surf.flags & Defines.SURF_PLANEBACK) != sidebit)
                 continue;
             /*
@@ -182,8 +182,8 @@ public abstract class Light extends Warp {
 
         r_dlightframecount = r_framecount + 1; 
         
-        for (var i = 0; i < r_newrefdef.num_dlights; i++) {
-            var l = r_newrefdef.dlights[i];
+        for (int i = 0; i < r_newrefdef.num_dlights; i++) {
+            dlight_t l = r_newrefdef.dlights[i];
             R_MarkLights(l, 1 << i, r_worldmodel.nodes[0]);
         }
     }
@@ -208,25 +208,25 @@ public abstract class Light extends Warp {
                 return -1;
 
 
-            var plane = node.plane;
-            var front = Math3D.DotProduct(start, plane.normal) - plane.dist;
-            var back = Math3D.DotProduct(end, plane.normal) - plane.dist;
-            var side = (front < 0);
-            var sideIndex = (side) ? 1 : 0;
+            cplane_t plane = node.plane;
+            float front = Math3D.DotProduct(start, plane.normal) - plane.dist;
+            float back = Math3D.DotProduct(end, plane.normal) - plane.dist;
+            boolean side = (front < 0);
+            int sideIndex = (side) ? 1 : 0;
 
             if ((back < 0) == side) {
                 node = node.children[sideIndex];
                 continue;
             }
 
-            var frac = front / (front - back);
+            float frac = front / (front - back);
             float[] mid = {0, 0, 0};
             mid[0] = start[0] + (end[0] - start[0]) * frac;
             mid[1] = start[1] + (end[1] - start[1]) * frac;
             mid[2] = start[2] + (end[2] - start[2]) * frac;
 
 
-            var r = RecursiveLightPoint(node.children[sideIndex], start, mid);
+            int r = RecursiveLightPoint(node.children[sideIndex], start, mid);
             if (r >= 0)
                 return r; 
 
@@ -237,24 +237,24 @@ public abstract class Light extends Warp {
             Math3D.VectorCopy(mid, lightspot);
             lightplane = plane;
 
-            var surfIndex = node.firstsurface;
+            int surfIndex = node.firstsurface;
             float[] scale = {0, 0, 0};
-            for (var i = 0; i < node.numsurfaces; i++, surfIndex++) {
-                var surf = r_worldmodel.surfaces[surfIndex];
+            for (int i = 0; i < node.numsurfaces; i++, surfIndex++) {
+                msurface_t surf = r_worldmodel.surfaces[surfIndex];
 
                 if ((surf.flags & (Defines.SURF_DRAWTURB | Defines.SURF_DRAWSKY)) != 0)
                     continue;
 
-                var tex = surf.texinfo;
+                mtexinfo_t tex = surf.texinfo;
 
-                var s = (int) (Math3D.DotProduct(mid, tex.vecs[0]) + tex.vecs[0][3]);
-                var t = (int) (Math3D.DotProduct(mid, tex.vecs[1]) + tex.vecs[1][3]);
+                int s = (int) (Math3D.DotProduct(mid, tex.vecs[0]) + tex.vecs[0][3]);
+                int t = (int) (Math3D.DotProduct(mid, tex.vecs[1]) + tex.vecs[1][3]);
 
                 if (s < surf.texturemins[0] || t < surf.texturemins[1])
                     continue;
 
-                var ds = s - surf.texturemins[0];
-                var dt = t - surf.texturemins[1];
+                int ds = s - surf.texturemins[0];
+                int dt = t - surf.texturemins[1];
 
                 if (ds > surf.extents[0] || dt > surf.extents[1])
                     continue;
@@ -265,17 +265,17 @@ public abstract class Light extends Warp {
                 ds >>= 4;
                 dt >>= 4;
 
-                var lightmap = surf.samples;
+                ByteBuffer lightmap = surf.samples;
 
                 Math3D.VectorCopy(Globals.vec3_origin, pointcolor);
                 if (lightmap != null) {
 
-                    var lightmapIndex = 0;
+                    int lightmapIndex = 0;
                     lightmapIndex += 3 * (dt * ((surf.extents[0] >> 4) + 1) + ds);
 
-                    for (var maps = 0; maps < Defines.MAXLIGHTMAPS
+                    for (int maps = 0; maps < Defines.MAXLIGHTMAPS
                             && surf.styles[maps] != (byte) 255; maps++) {
-                        var rgb = r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb;
+                        float[] rgb = r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb;
                         scale[0] = gl_modulate.value * rgb[0];
                         scale[1] = gl_modulate.value * rgb[1];
                         scale[2] = gl_modulate.value * rgb[2];
@@ -328,11 +328,11 @@ public abstract class Light extends Warp {
         
         
         
-        for (var lnum = 0; lnum < r_newrefdef.num_dlights; lnum++) {
-            var dl = r_newrefdef.dlights[lnum];
+        for (int lnum = 0; lnum < r_newrefdef.num_dlights; lnum++) {
+            dlight_t dl = r_newrefdef.dlights[lnum];
 
             Math3D.VectorSubtract(currententity.origin, dl.origin, end);
-            var add = dl.intensity - Math3D.VectorLength(end);
+            float add = dl.intensity - Math3D.VectorLength(end);
             add *= (1.0f / 256);
             if (add > 0) {
                 Math3D.VectorMA(color, add, dl.color, color);
@@ -353,17 +353,17 @@ public abstract class Light extends Warp {
         float[] impact = { 0, 0, 0 };
         float[] local = { 0, 0, 0 };
 
-        var smax = (surf.extents[0] >> 4) + 1;
-        var tmax = (surf.extents[1] >> 4) + 1;
-        var tex = surf.texinfo;
+        int smax = (surf.extents[0] >> 4) + 1;
+        int tmax = (surf.extents[1] >> 4) + 1;
+        mtexinfo_t tex = surf.texinfo;
 
-        for (var lnum = 0; lnum < r_newrefdef.num_dlights; lnum++) {
+        for (int lnum = 0; lnum < r_newrefdef.num_dlights; lnum++) {
             if ((surf.dlightbits & (1 << lnum)) == 0)
                 continue;
 
-            var dl = r_newrefdef.dlights[lnum];
-            var frad = dl.intensity;
-            var fdist = Math3D.DotProduct(dl.origin, surf.plane.normal)
+            dlight_t dl = r_newrefdef.dlights[lnum];
+            float frad = dl.intensity;
+            float fdist = Math3D.DotProduct(dl.origin, surf.plane.normal)
                     - surf.plane.dist;
             frad -= Math.abs(fdist);
 
@@ -373,7 +373,7 @@ public abstract class Light extends Warp {
                 continue;
             fminlight = frad - fminlight;
 
-            for (var i = 0; i < 3; i++) {
+            for (int i = 0; i < 3; i++) {
                 impact[i] = dl.origin[i] - surf.plane.normal[i] * fdist;
             }
 
@@ -382,19 +382,19 @@ public abstract class Light extends Warp {
             local[1] = Math3D.DotProduct(impact, tex.vecs[1]) + tex.vecs[1][3]
                     - surf.texturemins[1];
 
-            var pfBL = s_blocklights;
-            var pfBLindex = 0;
+            float[] pfBL = s_blocklights;
+            int pfBLindex = 0;
             float ftacc;
             int t;
             for (t = 0, ftacc = 0; t < tmax; t++, ftacc += 16) {
-                var td = (int) (local[1] - ftacc);
+                int td = (int) (local[1] - ftacc);
                 if (td < 0)
                     td = -td;
 
                 float fsacc;
                 int s;
                 for (s = 0, fsacc = 0; s < smax; s++, fsacc += 16, pfBLindex += 3) {
-                    var sd = (int) (local[0] - fsacc);
+                    int sd = (int) (local[0] - fsacc);
 
                     if (sd < 0)
                         sd = -sd;
@@ -420,7 +420,7 @@ public abstract class Light extends Warp {
     @Override
     void R_SetCacheState(msurface_t surf) {
 
-        for (var maps = 0; maps < Defines.MAXLIGHTMAPS
+        for (int maps = 0; maps < Defines.MAXLIGHTMAPS
                 && surf.styles[maps] != (byte) 255; maps++) {
             surf.cached_light[maps] = r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].white;
         }
@@ -440,9 +440,9 @@ public abstract class Light extends Warp {
             Com.Error(Defines.ERR_DROP,
                     "R_BuildLightMap called for non-lit surface");
 
-        var smax = (surf.extents[0] >> 4) + 1;
-        var tmax = (surf.extents[1] >> 4) + 1;
-        var size = smax * tmax;
+        int smax = (surf.extents[0] >> 4) + 1;
+        int tmax = (surf.extents[1] >> 4) + 1;
+        int size = smax * tmax;
         if (size > ((s_blocklights.length * Defines.SIZE_OF_FLOAT) >> 4))
             Com.Error(Defines.ERR_DROP, "Bad s_blocklights size");
 
@@ -455,7 +455,7 @@ public abstract class Light extends Warp {
                 for (i = 0; i < size * 3; i++)
                     s_blocklights[i] = 255;
 
-                for (var maps = 0; maps < Defines.MAXLIGHTMAPS
+                for (int maps = 0; maps < Defines.MAXLIGHTMAPS
                         && surf.styles[maps] != (byte) 255; maps++) {
                 }
                 
@@ -468,14 +468,14 @@ public abstract class Light extends Warp {
                     && surf.styles[nummaps] != (byte) 255; nummaps++)
                 ;
 
-            var lightmap = surf.samples;
-            var lightmapIndex = 0;
+            ByteBuffer lightmap = surf.samples;
+            int lightmapIndex = 0;
 
 
             float[] scale = {0, 0, 0, 0};
             if (nummaps == 1) {
 
-                for (var maps = 0; maps < Defines.MAXLIGHTMAPS
+                for (int maps = 0; maps < Defines.MAXLIGHTMAPS
                         && surf.styles[maps] != (byte) 255; maps++) {
                     bl = s_blocklights;
 
@@ -483,8 +483,14 @@ public abstract class Light extends Warp {
                         scale[i] = gl_modulate.value
                                 * r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[i];
 
-                    var result = IntStream.of(0, 1, 2).noneMatch(v -> scale[v] != 1.0F);
-                    var blp = 0;
+                    boolean result = true;
+                    for (int v : new int[]{0, 1, 2}) {
+                        if (scale[v] != 1.0F) {
+                            result = false;
+                            break;
+                        }
+                    }
+                    int blp = 0;
                     if (result) {
                         for (i = 0; i < size; i++) {
                             bl[blp++] = lightmap.get(lightmapIndex++) & 0xFF;
@@ -508,7 +514,7 @@ public abstract class Light extends Warp {
 
                 Arrays.fill(s_blocklights, 0, size * 3, 0.0f);
 
-                for (var maps = 0; maps < Defines.MAXLIGHTMAPS
+                for (int maps = 0; maps < Defines.MAXLIGHTMAPS
                         && surf.styles[maps] != (byte) 255; maps++) {
                     bl = s_blocklights;
 
@@ -516,8 +522,14 @@ public abstract class Light extends Warp {
                         scale[i] = gl_modulate.value
                                 * r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[i];
 
-                    var result = IntStream.of(0, 1, 2).noneMatch(v -> scale[v] != 1.0F);
-                    var blp = 0;
+                    boolean result = true;
+                    for (int v : new int[]{0, 1, 2}) {
+                        if (scale[v] != 1.0F) {
+                            result = false;
+                            break;
+                        }
+                    }
+                    int blp = 0;
                     if (result) {
                         for (i = 0; i < size; i++) {
                             bl[blp++] += lightmap.get(lightmapIndex++) & 0xFF;
@@ -549,11 +561,11 @@ public abstract class Light extends Warp {
         
         stride -= smax;
         bl = s_blocklights;
-        var blp = 0;
+        int blp = 0;
 
         int monolightmap = gl_monolightmap.string.charAt(0);
 
-        var destp = 0;
+        int destp = 0;
 
         int j;
         int max;
@@ -599,7 +611,7 @@ public abstract class Light extends Warp {
                      * the greatest * channel exceeds 1.0
                      */
                     if (max > 255) {
-                        var t = 255.0F / max;
+                        float t = 255.0F / max;
 
                         r *= t;
                         g *= t;
@@ -652,7 +664,7 @@ public abstract class Light extends Warp {
                      * the greatest * channel exceeds 1.0
                      */
                     if (max > 255) {
-                        var t = 255.0F / max;
+                        float t = 255.0F / max;
 
                         r *= t;
                         g *= t;

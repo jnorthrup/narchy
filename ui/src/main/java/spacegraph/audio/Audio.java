@@ -67,8 +67,8 @@ public class Audio implements Runnable {
 
     public Audio(int polyphony) {
 
-        var mixers = AudioSystem.getMixerInfo();
-        for (var i : mixers) {
+        Mixer.Info[] mixers = AudioSystem.getMixerInfo();
+        for (Mixer.Info i : mixers) {
             System.out.println(i);
         }
 
@@ -77,11 +77,11 @@ public class Audio implements Runnable {
                 //AudioSystem.getMixer(mixers[2]);
 
         try {
-            var format = new AudioFormat(rate, 16, 2, true, false);
+            AudioFormat format = new AudioFormat(rate, 16, 2, true, false);
             sdl = AudioSystem.getSourceDataLine(format);
             //sdl = (SourceDataLine) AudioSystem.getMixer(null).getLine(new Line.Info(SourceDataLine.class));
 
-            var bufferBytes = bufferSize * 2 * 2;
+            int bufferBytes = bufferSize * 2 * 2;
             sdl.open(format, bufferBytes);
             soundBuffer.order(ByteOrder.LITTLE_ENDIAN);
             sdl.start();
@@ -96,7 +96,7 @@ public class Audio implements Runnable {
 
 
         try {
-            var volumeControl = (FloatControl) sdl.getControl(FloatControl.Type.MASTER_GAIN);
+            FloatControl volumeControl = (FloatControl) sdl.getControl(FloatControl.Type.MASTER_GAIN);
             volumeControl.setValue(volumeControl.getMaximum());
         } catch (IllegalArgumentException ignored) {
             System.out.println("Failed to setAt the sound volume");
@@ -118,15 +118,15 @@ public class Audio implements Runnable {
 	 * Prints information about the current Mixer to System.out.
 	 */
 	public static void printMixerInfo() {
-        var mixerinfo = AudioSystem.getMixerInfo();
-		for (var i = 0; i < mixerinfo.length; i++) {
-            var name = mixerinfo[i].getName();
+        Mixer.Info[] mixerinfo = AudioSystem.getMixerInfo();
+		for (int i = 0; i < mixerinfo.length; i++) {
+            String name = mixerinfo[i].getName();
 			if (name.isEmpty())
 				name = "No name";
 			System.out.println((i+1) + ") " + name + " --- " + mixerinfo[i].getDescription());
-            var m = AudioSystem.getMixer(mixerinfo[i]);
-            var lineinfo = m.getSourceLineInfo();
-            for (var aLineinfo : lineinfo) {
+            Mixer m = AudioSystem.getMixer(mixerinfo[i]);
+            Line.Info[] lineinfo = m.getSourceLineInfo();
+            for (Line.Info aLineinfo : lineinfo) {
                 System.out.println("  - " + aLineinfo);
             }
 		}
@@ -223,24 +223,24 @@ public class Audio implements Runnable {
 
         float gain = max16;
 
-        var ba = soundBuffer.array();
+        byte[] ba = soundBuffer.array();
 
 
-        var b = 0;
-        for (var i = 0; i < bufferSize; i++) {
-            var l = ((short)Util.clampSafe(leftBuf[i] * gain, min16, max16));
+        int b = 0;
+        for (int i = 0; i < bufferSize; i++) {
+            short l = ((short)Util.clampSafe(leftBuf[i] * gain, min16, max16));
             //soundBufferShort.put(l);
             ba[b++] = (byte) (l & 0x00ff);
             ba[b++] = (byte) (l >> 8);
-            var r = ((short)Util.clampSafe(rightBuf[i] * gain, min16, max16));
+            short r = ((short)Util.clampSafe(rightBuf[i] * gain, min16, max16));
             //soundBufferShort.put(r);
             ba[b++] = (byte) (r & 0x00ff);
             ba[b++] = (byte) (r >> 8);
         }
 
-        var bw = bufferSize * 2 * 2;
+        int bw = bufferSize * 2 * 2;
 //        byte[] ba = soundBuffer.array();
-        var br = sdl.write(ba, 0, bw);
+        int br = sdl.write(ba, 0, bw);
         if (br!=bw)
             throw new WTF();
 
@@ -257,7 +257,7 @@ public class Audio implements Runnable {
     @Override
     public void run() {
 
-        var idle = 0;
+        int idle = 0;
         while (alive) {
 
             if (mixer.isEmpty()) {

@@ -48,7 +48,7 @@ public class DirectArrayList<E> extends ArrayList<E> {
     @Override
     public boolean add(E e) {
 
-        var b = super.add(e);
+        boolean b = super.add(e);
         if (autoupdateData) {
             updateData();
         }
@@ -57,7 +57,7 @@ public class DirectArrayList<E> extends ArrayList<E> {
 
     @Override
     public boolean addAll(Collection<? extends E> c) {
-        var b = super.addAll(c);
+        boolean b = super.addAll(c);
         if (autoupdateData) {
             updateData();
         }
@@ -66,7 +66,7 @@ public class DirectArrayList<E> extends ArrayList<E> {
 
     @Override
     public boolean addAll(int index, Collection<? extends E> c) {
-        var b = super.addAll(index, c);
+        boolean b = super.addAll(index, c);
         if (autoupdateData) {
             updateData();
         }

@@ -141,13 +141,13 @@ public final class HumanReadableByteCount implements Comparable<HumanReadableByt
     public static HumanReadableByteCount valueOf(String byteCount) {
 
         try {
-            var lower = byteCount.toLowerCase(Locale.ROOT).trim();
-            var matcher = BYTE_COUNT_PATTERN.matcher(lower);
+            String lower = byteCount.toLowerCase(Locale.ROOT).trim();
+            Matcher matcher = BYTE_COUNT_PATTERN.matcher(lower);
 
             Preconditions.checkArgument(matcher.matches(), "Invalid byte string: %s", byteCount);
 
-            var size = Long.parseLong(matcher.group(1));
-            var suffix = matcher.group(2);
+            long size = Long.parseLong(matcher.group(1));
+            String suffix = matcher.group(2);
 
             if (suffix != null && !SUFFIXES.containsKey(suffix)) {
                 throw new IllegalArgumentException("Invalid byte string: " + byteCount + ". Wrong byte unit");
@@ -156,7 +156,7 @@ public final class HumanReadableByteCount implements Comparable<HumanReadableByt
             return new HumanReadableByteCount(size, suffix != null ? SUFFIXES.get(suffix) : ByteUnit.BYTE);
 
         } catch (NumberFormatException e) {
-            var byteError = "Size must be specified as bytes (b), "
+            String byteError = "Size must be specified as bytes (b), "
                     + "kibibytes (k), mebibytes (m), gibibytes (g), tebibytes (t), or pebibytes(p). "
                     + "E.g. 50b, 100k, or 250m.";
 
@@ -223,7 +223,7 @@ public final class HumanReadableByteCount implements Comparable<HumanReadableByt
         if ((otherByteCount == null) || (getClass() != otherByteCount.getClass())) {
             return false;
         }
-        var other = (HumanReadableByteCount) otherByteCount;
+        HumanReadableByteCount other = (HumanReadableByteCount) otherByteCount;
         if (unit == other.unit) {
             return size == other.size;
         }
@@ -237,7 +237,7 @@ public final class HumanReadableByteCount implements Comparable<HumanReadableByt
      */
     @Override
     public int hashCode() {
-        var bytes = toBytes();
+        long bytes = toBytes();
         return (int) (bytes ^ (bytes >>> 32));
     }
 
@@ -248,7 +248,7 @@ public final class HumanReadableByteCount implements Comparable<HumanReadableByt
      */
     @Override
     public String toString() {
-        var units = unit.toString().toLowerCase(Locale.ENGLISH);
+        String units = unit.toString().toLowerCase(Locale.ENGLISH);
         if (size == 1) {
             units = units.substring(0, units.length() - 1);
         }

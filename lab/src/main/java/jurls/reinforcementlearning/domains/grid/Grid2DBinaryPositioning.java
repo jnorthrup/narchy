@@ -28,7 +28,7 @@ public class Grid2DBinaryPositioning implements World {
         this.w = x;
         this.h = y;
         this.size = x * y;
-        var VISUALIZE_PERIOD = Math.pow(10, 4);
+        double VISUALIZE_PERIOD = Math.pow(10, 4);
         this.MATCH_REWARD_FACTOR = size*1.0;
         this.REWARD_MAGNITUDE = 5.0;
         this.JUMP_FRACTION = 0.01;
@@ -72,27 +72,27 @@ public class Grid2DBinaryPositioning implements World {
         double match = 0;
 
 
-        var ax = i(action[0]) + 2 * i(action[1]) + 4 * i(action[2]) + 8 * i(action[3]);
-        var ay = i(action[4]) + 2 * i(action[5]) + 4 * i(action[6]) + 8 * i(action[7]);
+        int ax = i(action[0]) + 2 * i(action[1]) + 4 * i(action[2]) + 8 * i(action[3]);
+        int ay = i(action[4]) + 2 * i(action[5]) + 4 * i(action[6]) + 8 * i(action[7]);
 
-        var adx = Math.abs(ax - focusPositionW);
-        var ady = Math.abs(ay - focusPositionH);
+        double adx = Math.abs(ax - focusPositionW);
+        double ady = Math.abs(ay - focusPositionH);
         match += 1.0/(1.0+Math.sqrt(adx*adx + ady*ady));
 
-        var reward = REWARD_MAGNITUDE * ((MATCH_REWARD_FACTOR * match));
+        double reward = REWARD_MAGNITUDE * ((MATCH_REWARD_FACTOR * match));
         
         if (reward!=0)
             System.out.println(match + " " + " -> " + reward);
         
         
         
-        final var exp = 2.0;
-        for (var x = 0; x < w; x++) {
-            for (var y = 0; y < h; y++) {
-                var dx = Math.abs(x - focusPositionW);
-                var dy = Math.abs(y - focusPositionH);
-                var distScale = 1.0/(1.0+Math.sqrt(dx*dx + dy*dy));
-                var v = Math.pow(distScale, exp);
+        final double exp = 2.0;
+        for (int x = 0; x < w; x++) {
+            for (int y = 0; y < h; y++) {
+                double dx = Math.abs(x - focusPositionW);
+                double dy = Math.abs(y - focusPositionH);
+                double distScale = 1.0/(1.0+Math.sqrt(dx*dx + dy*dy));
+                double v = Math.pow(distScale, exp);
                 if (v < 0.1) v = 0;
                 set(sensor, x, y, v);
             }

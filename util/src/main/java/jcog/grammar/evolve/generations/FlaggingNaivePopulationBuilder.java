@@ -74,23 +74,29 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
 
     @Override
     public void setup(Configuration configuration) {
-        var trainingDataset = configuration.getDatasetContainer().getTrainingDataset();
+        DataSet trainingDataset = configuration.getDatasetContainer().getTrainingDataset();
         this.population.addAll(this.setup(configuration, trainingDataset));
     }
     
     private List<Node> setup(Configuration configuration, DataSet usedTrainingDataset) {
         List<Node> newPopulation = new LinkedList<>();
-        var dataSet = usedTrainingDataset;
+        DataSet dataSet = usedTrainingDataset;
 
 
-        var phrases = dataSet.getExamples().stream().filter(example -> !example.match.isEmpty()).map(Example::getString).collect(Collectors.toSet());
+        Set<String> phrases = new HashSet<>();
+        for (Example example : dataSet.getExamples()) {
+            if (!example.match.isEmpty()) {
+                String string = example.getString();
+                phrases.add(string);
+            }
+        }
 
-        var examples = Math.min(configuration.getEvolutionParameters().getPopulationSize() / 3, phrases.size());
+        int examples = Math.min(configuration.getEvolutionParameters().getPopulationSize() / 3, phrases.size());
 
         List<String> uniquePhrases = new ArrayList<>(phrases);
 
-        var counter = 0;
-        for (var node : uniquePhrases) {
+        int counter = 0;
+        for (String node : uniquePhrases) {
             if (this.useDottification) {
                 newPopulation.add(createByExample(node, true, false));
                 newPopulation.add(createByExample(node, true, true));
@@ -107,10 +113,10 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
     private Node createByExample(String example, boolean replace, boolean compact) {
 
 
-        var d = this.useWordClasses ? "\\d" : ".";
+        String d = this.useWordClasses ? "\\d" : ".";
         Node letters;
         if(useWordClasses){
-            var l = new ListMatch();
+            ListMatch l = new ListMatch();
             l.add(new RegexRange("A-Za-z"));
             letters = l;
         } else {
@@ -118,7 +124,7 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
         }
 
         Deque<Node> nodes = new LinkedList<>();
-        for (var c : example.toCharArray()) {
+        for (char c : example.toCharArray()) {
             if (replace) {
                 if (Character.isLetter(c)) {
                     nodes.add(letters.cloneTree());
@@ -139,12 +145,12 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
             
             
             while (nodes.size()>0) {
-                var node = nodes.pollFirst();
-                var nodeValue = node.toString();
-                var isRepeat = false;
+                Node node = nodes.pollFirst();
+                String nodeValue = node.toString();
+                boolean isRepeat = false;
                 while (nodes.size()>0){
-                    var next = nodes.peek();
-                    var nextValue = next.toString();
+                    Node next = nodes.peek();
+                    String nextValue = next.toString();
 
                     if(nodeValue.equals(nextValue)){
                         isRepeat = true;
@@ -168,8 +174,8 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
         while (nodes.size() > 1) {
 
             while (nodes.size() > 0) {
-                var first = nodes.pollFirst();
-                var second = nodes.pollFirst();
+                Node first = nodes.pollFirst();
+                Node second = nodes.pollFirst();
 
                 if (second != null) {
                     tmp.addLast(new Concatenator(first, second));

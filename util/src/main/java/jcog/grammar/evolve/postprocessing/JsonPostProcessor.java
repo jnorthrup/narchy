@@ -41,12 +41,12 @@ public class JsonPostProcessor extends BasicPostprocessor {
         super.elaborate(config, results, timeTaken);
         
         System.out.println("Saving results...");
-        var sdf = new SimpleDateFormat("yyyyMMddhhmmss");
-        var dateFormatted = sdf.format(new Date());
-        var pathOfFile = config.getOutputFolder().getAbsolutePath() + File.separator + "results-"+dateFormatted+".json";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
+        String dateFormatted = sdf.format(new Date());
+        String pathOfFile = config.getOutputFolder().getAbsolutePath() + File.separator + "results-"+dateFormatted+".json";
         saveToJson(results, pathOfFile);
 
-        var time = String.format("%d h, %d m, %d s",
+        String time = String.format("%d h, %d m, %d s",
                 TimeUnit.MILLISECONDS.toHours(timeTaken),
                 TimeUnit.MILLISECONDS.toMinutes(timeTaken) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(timeTaken)),
                 TimeUnit.MILLISECONDS.toSeconds(timeTaken) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeTaken)));

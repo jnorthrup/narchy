@@ -35,7 +35,7 @@ public class ReplChip extends Gridding {
             //System.out.println(x.getKeyCode() + "\t" + x.getKeyChar() + "\t" + x.getKeySymbol());
 
             if (x.getKeyCode() == KeyEvent.VK_ENTER && (!enterOrControlEnter() || x.isControlDown())) {
-                var cmd = in.edit.text();
+                String cmd = in.edit.text();
 
                 if (clearOnEnter())
                     in.edit.text("");

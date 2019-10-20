@@ -15,7 +15,7 @@ public interface WritableTensor extends Tensor {
 
     /** returns the new value after adding */
     default float addAt(float x, int linearCell) {
-        var next = getAt(linearCell);
+        float next = getAt(linearCell);
         if (next!=next) next = 0; //reset to zero
         next += x;
         setAt(linearCell, next);
@@ -23,8 +23,8 @@ public interface WritableTensor extends Tensor {
     }
 
     default void setAt(int linearCellStart, float[] values) {
-        var i = linearCellStart;
-        for (var v: values)
+        int i = linearCellStart;
+        for (float v: values)
             setAt(i++, v);
     }
 
@@ -37,9 +37,9 @@ public interface WritableTensor extends Tensor {
     }
 
     default float merge(int linearCell, float arg, FloatFloatToFloatFunction x, @Nullable PriReturn returning) {
-        var prev = getAt(linearCell);
+        float prev = getAt(linearCell);
 
-        var next = x.apply(prev, arg);
+        float next = x.apply(prev, arg);
 
         if (prev!=next)
             setAt(linearCell, next);
@@ -48,17 +48,17 @@ public interface WritableTensor extends Tensor {
     }
 
     default void fill(float x) {
-        var v = volume();
-        for (var i = 0; i < v; i++)
+        int v = volume();
+        for (int i = 0; i < v; i++)
             setAt(i, x);
     }
 
     default void setAll(float[] values) {
-        var v = volume();
+        int v = volume();
         if(v!=values.length)
             throw new ArrayIndexOutOfBoundsException();
 
-        for (var i = 0; i < v; i++)
+        for (int i = 0; i < v; i++)
             setAt(i, values[i]);
     }
 

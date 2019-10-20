@@ -16,17 +16,17 @@ public class RowVars {
     private static HashSet<String> findRowVars(Formula f) {
 
 
-        var result = new HashSet<String>();
+        HashSet<String> result = new HashSet<String>();
         if (!StringUtil.emptyString(f.theFormula)
             && f.theFormula.contains(Formula.R_PREF)) {
-            var fnew = new Formula();
+            Formula fnew = new Formula();
             fnew.read(f.theFormula);
             while (fnew.listP() && !fnew.empty()) {
-                var arg = fnew.getArgument(0);
+                String arg = fnew.getArgument(0);
                 if (arg.startsWith(Formula.R_PREF))
                     result.add(arg);
                 else {
-                    var argF = new Formula();
+                    Formula argF = new Formula();
                     argF.read(arg);
                     if (argF.listP())
                         result.addAll(findRowVars(argF));
@@ -45,10 +45,10 @@ public class RowVars {
      */
     private static HashMap<String,Integer> getRowVarMaxArities(HashMap<String,HashSet<String>> ar, KB kb) {
 
-        var arities = new HashMap<String, Integer>();
-        for (var rowvar : ar.keySet()) {
-            var preds = ar.get(rowvar);
-            for (var pred : preds) {
+        HashMap<String, Integer> arities = new HashMap<String, Integer>();
+        for (String rowvar : ar.keySet()) {
+            HashSet<String> preds = ar.get(rowvar);
+            for (String pred : preds) {
                 if (kb.kbCache.valences.get(pred) != null) {
                     int arity = kb.kbCache.valences.get(pred);
                     if (arities.containsKey(pred)) {
@@ -73,18 +73,23 @@ public class RowVars {
      */
     public static HashMap<String,Integer> getRowVarMaxAritiesWithOtherArgs(HashMap<String,HashSet<String>> ar, KB kb, Formula f) {
 
-        var arities = new HashMap<String, Integer>();
-        for (var rowvar : ar.keySet()) {
-            var preds = ar.get(rowvar);
-            for (var pred : preds) {
-                var start = f.theFormula.indexOf('(' + pred);
-                var end = f.theFormula.indexOf(')', start);
-                var simpleFS = f.theFormula.substring(start, end + 1);
-                var simpleF = new Formula();
+        HashMap<String, Integer> arities = new HashMap<String, Integer>();
+        for (String rowvar : ar.keySet()) {
+            HashSet<String> preds = ar.get(rowvar);
+            for (String pred : preds) {
+                int start = f.theFormula.indexOf('(' + pred);
+                int end = f.theFormula.indexOf(')', start);
+                String simpleFS = f.theFormula.substring(start, end + 1);
+                Formula simpleF = new Formula();
                 simpleF.read(simpleFS);
-                var bound = simpleF.listLength();
-                var count = IntStream.range(0, bound).filter(i -> simpleF.getArgument(i).startsWith(Formula.V_PREF)).count();
-                var nonRowVar = (int) count;
+                int bound = simpleF.listLength();
+                long count = 0L;
+                for (int i = 0; i < bound; i++) {
+                    if (simpleF.getArgument(i).startsWith(Formula.V_PREF)) {
+                        count++;
+                    }
+                }
+                int nonRowVar = (int) count;
 
                 if (kb.kbCache != null && kb.kbCache.valences != null &&
                     kb.kbCache.valences.get(pred) != null) {
@@ -106,10 +111,10 @@ public class RowVars {
     private static HashMap<String,HashSet<String>> 
         mergeValueSets(HashMap<String,HashSet<String>> ar1, HashMap<String,HashSet<String>> ar2) {
 
-        var result = new HashMap<String, HashSet<String>>(ar1);
-        for (var key : ar2.keySet()) {
-            var values = ar2.get(key);
-            var arg1values = ar1.get(key);
+        HashMap<String, HashSet<String>> result = new HashMap<String, HashSet<String>>(ar1);
+        for (String key : ar2.keySet()) {
+            HashSet<String> values = ar2.get(key);
+            HashSet<String> arg1values = ar1.get(key);
             if (arg1values == null)
                 result.put(key, values);
             else {
@@ -125,7 +130,7 @@ public class RowVars {
     private static HashMap<String,HashSet<String>> 
         addToValueSet(HashMap<String,HashSet<String>> ar, String key, String value) {
 
-        var val = ar.get(key);
+        HashSet<String> val = ar.get(key);
         if (val == null) 
             val = new HashSet<>();
         val.add(value);
@@ -138,31 +143,31 @@ public class RowVars {
     private static HashMap<String,HashSet<String>> getRowVarRelLogOps(Formula f, String pred) {
 
 
-        var result = new HashMap<String, HashSet<String>>();
+        HashMap<String, HashSet<String>> result = new HashMap<String, HashSet<String>>();
         if (Formula.isQuantifier(pred)) {
-            var arg2 = new Formula(f.getArgument(2));
+            Formula arg2 = new Formula(f.getArgument(2));
             if (arg2 != null)
                 return getRowVarRelations(arg2);
         }
         else if (pred.equals(Formula.NOT)) {
-            var arg1 = new Formula(f.getArgument(1));
+            Formula arg1 = new Formula(f.getArgument(1));
             if (arg1 != null)
                 return getRowVarRelations(arg1);
             else
                 return result;
         }
         else if (List.of(Formula.EQUAL, Formula.IFF, Formula.IF).contains(pred)) {
-            var arg1 = new Formula(f.getArgument(1));
-            var arg2 = new Formula(f.getArgument(2));
+            Formula arg1 = new Formula(f.getArgument(1));
+            Formula arg2 = new Formula(f.getArgument(2));
             if (arg1 != null && arg2 != null)
                 return mergeValueSets(getRowVarRelations(arg1),getRowVarRelations(arg2));
             else
                 return result;
         }
         else {
-            var args = f.complexArgumentsToArrayList(1);
-            for (var i = 1; i < args.size(); i++) {
-                var f2 = new Formula(args.get(i));
+            ArrayList<String> args = f.complexArgumentsToArrayList(1);
+            for (int i = 1; i < args.size(); i++) {
+                Formula f2 = new Formula(args.get(i));
                 result = mergeValueSets(result,getRowVarRelations(f2));
             }
             return result;
@@ -178,14 +183,14 @@ public class RowVars {
     private static HashMap<String,HashSet<String>> getRowVarRelations(Formula f) {
 
 
-        var result = new HashMap<String, HashSet<String>>();
+        HashMap<String, HashSet<String>> result = new HashMap<String, HashSet<String>>();
         if (!f.theFormula.contains("@") || f.empty() || f.atom())
             return result;
-        var pred = f.getArgument(0);
+        String pred = f.getArgument(0);
         if (!f.theFormula.substring(1).contains("(")) {
 
-            var rowvars = findRowVars(f);
-            for (var var : rowvars) {
+            HashSet<String> rowvars = findRowVars(f);
+            for (String var : rowvars) {
                 addToValueSet(result, var, pred);
             }
             return result;
@@ -194,9 +199,9 @@ public class RowVars {
             return getRowVarRelLogOps(f,pred);
         }
         else {
-            var args = f.complexArgumentsToArrayList(1);
-            for (var arg : args) {
-                var f2 = new Formula(arg);
+            ArrayList<String> args = f.complexArgumentsToArrayList(1);
+            for (String arg : args) {
+                Formula f2 = new Formula(arg);
                 if (f2.theFormula.startsWith("@")) {
 
                     addToValueSet(result, f2.theFormula, pred);
@@ -244,7 +249,7 @@ public class RowVars {
      */
     public static ArrayList<Formula> expandRowVars(KB kb, Formula f) {
 
-        var formresult = new ArrayList<Formula>();
+        ArrayList<Formula> formresult = new ArrayList<Formula>();
         if (!f.theFormula.contains("@")) {
             
             formresult.add(f);
@@ -252,27 +257,27 @@ public class RowVars {
         }
         if (DEBUG)
             System.out.println("Info in RowVars.expandRowVars(): f: " +f);
-        var rels = getRowVarRelations(f);
-        var rowVarMaxArities = getRowVarMaxAritiesWithOtherArgs(rels, kb, f);
+        HashMap<String, HashSet<String>> rels = getRowVarRelations(f);
+        HashMap<String, Integer> rowVarMaxArities = getRowVarMaxAritiesWithOtherArgs(rels, kb, f);
         Set<String> result = new TreeSet<>();
         result.add(f.theFormula);
-        var rowvars = findRowVars(f);
-        for (var var : rowvars) {
+        HashSet<String> rowvars = findRowVars(f);
+        for (String var : rowvars) {
             if (DEBUG)
                 System.out.println("Info in RowVars.expandRowVars(): var: " + var);
-            var replaceString = new StringBuilder();
-            var maxArity = 7;
+            StringBuilder replaceString = new StringBuilder();
+            int maxArity = 7;
             if (rowVarMaxArities.containsKey(var) && maxArity > rowVarMaxArities.get(var))
                 maxArity = rowVarMaxArities.get(var);
             Set<String> newresult = new TreeSet<>();
-            var replaceVar = var.replace('@', '?');
-            for (var j = 0; j < maxArity; j++) {
+            String replaceVar = var.replace('@', '?');
+            for (int j = 0; j < maxArity; j++) {
                 if (j > 0)
                     replaceString.append(' ');
                 replaceString.append(replaceVar).append(j + 1);
                 if (DEBUG)
                     System.out.println("Info in RowVars.expandRowVars(): replace: " + replaceString);
-                for (var form : result) {
+                for (String form : result) {
                     form = form.replaceAll('\\' + var, replaceString.toString());
                     if (DEBUG)
                         System.out.println("Info in RowVars.expandRowVars(): form: " + form);
@@ -282,7 +287,11 @@ public class RowVars {
             result = newresult;
         }
 
-        var formulas = result.stream().map(Formula::new).collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<Formula> formulas = new ArrayList<>();
+        for (String s : result) {
+            Formula formula = new Formula(s);
+            formulas.add(formula);
+        }
         formresult = formulas;
         if (DEBUG)
             System.out.println("Info in RowVars.expandRowVars(): exiting with: " + formresult);
@@ -294,12 +303,12 @@ public class RowVars {
     public static void main(String[] args) {
 
 
-        var fstring = "(=> (and (contraryAttribute @ROW1) (identicalListItems (ListFn @ROW1) (ListFn @ROW2))) (contraryAttribute @ROW2))";
-        var f = new Formula(fstring);
+        String fstring = "(=> (and (contraryAttribute @ROW1) (identicalListItems (ListFn @ROW1) (ListFn @ROW2))) (contraryAttribute @ROW2))";
+        Formula f = new Formula(fstring);
         System.out.println("Info in RowVars.main(): " + findRowVars(f));
         KBmanager.manager.initializeOnce();
         System.out.println("Info in RowVars.main(): finished initialization");
-        var kb = KBmanager.manager.getKB(KBmanager.manager.getPref("sumokbname"));
+        KB kb = KBmanager.manager.getKB(KBmanager.manager.getPref("sumokbname"));
         RowVars.DEBUG = true;
         System.out.println("Info in RowVars.main(): " + getRowVarRelations(f));
     }

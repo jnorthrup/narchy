@@ -45,7 +45,7 @@ public abstract class AbstractDynamicClassLoader extends ClassLoader
 	public void addURLs(URL... urls) {
 		if(urls == null)
 			throw new IllegalArgumentException("Array URLs must not be null.");
-		for (var url : urls) {
+		for (URL url : urls) {
 			if(!listURLs.contains(url))
 				listURLs.add(url);
 		}
@@ -62,7 +62,7 @@ public abstract class AbstractDynamicClassLoader extends ClassLoader
 	{
 		if(urls == null)
 			throw new IllegalArgumentException("Array URLs must not be null.");
-		for (var url : urls) {
+		for (URL url : urls) {
 			if(!listURLs.contains(url))
 				throw new IllegalArgumentException("URL: " + url + "not found.");
 			listURLs.remove(url);
@@ -77,7 +77,7 @@ public abstract class AbstractDynamicClassLoader extends ClassLoader
 
 	public URL[] getURLs()
 	{
-		var result = new URL[listURLs.size()];
+        URL[] result = new URL[listURLs.size()];
 		listURLs.toArray(result);
 		return result;
 	}

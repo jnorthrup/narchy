@@ -41,7 +41,7 @@ public class KeyValueGrid implements GridModel {
 
     @Override
     public @Nullable Object get(int x, int y) {
-        var k = this.keys;
+        Object[] k = this.keys;
         if ((y < 0) || y >= keys.length)
             return null; //OOB
 

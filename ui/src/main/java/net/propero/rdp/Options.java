@@ -111,7 +111,7 @@ public class Options {
         else
             bpp_mask = 0xFFFFFF;
 
-        var colour_model = new DirectColorModel(24, 0xFF0000, 0x00FF00, 0x0000FF);
+        DirectColorModel colour_model = new DirectColorModel(24, 0xFF0000, 0x00FF00, 0x0000FF);
     }
 
 }

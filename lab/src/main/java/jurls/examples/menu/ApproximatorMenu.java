@@ -25,7 +25,7 @@ public class ApproximatorMenu extends RLMenu {
         public NumberOfBitsMenu(String direction) {
             super("No. " + direction + " bits");
 
-            var bg = new ButtonGroup();
+            ButtonGroup bg = new ButtonGroup();
             bg.add(bits8);
             bg.add(bits10);
             bg.add(bits12);
@@ -67,7 +67,7 @@ public class ApproximatorMenu extends RLMenu {
         public ActivationFunctionMenu(String layer) {
             super("Activation Function For " + layer + " layer");
 
-            var bg = new ButtonGroup();
+            ButtonGroup bg = new ButtonGroup();
             bg.add(atan);
             bg.add(tanh);
             bg.add(rbf);
@@ -120,7 +120,7 @@ public class ApproximatorMenu extends RLMenu {
         numberOfInputBitsMenu.addActionListener(new MyAction(""));
         numberOfOutputBitsMenu.addActionListener(new MyAction(""));
 
-        var bg = new ButtonGroup();
+        ButtonGroup bg = new ButtonGroup();
         bg.add(fourier);
         bg.add(wavelet);
         bg.add(neuralNet);
@@ -157,7 +157,7 @@ public class ApproximatorMenu extends RLMenu {
             ApproxParameters approxParameters
     ) {
         return numInputVectorElements -> {
-            var numFeatures = (int) featuresMenu.getObject();
+            int numFeatures = (int) featuresMenu.getObject();
 
             ParameterizedFunction f = null;
 

@@ -17,7 +17,7 @@ public class RuleLife {
 	
 	
 	public void ResetToDefaults() {
-		for (var i = 0; i <= 8; i++) {
+		for (int i = 0; i <= 8; i++) {
 			RulesS[i] = false;
 			RulesB[i] = false;
 		}
@@ -31,19 +31,19 @@ public class RuleLife {
 
         ResetToDefaults();
 
-		var st = new StringTokenizer(sStr, ",/", true);
-		var iNum = 1;
+        StringTokenizer st = new StringTokenizer(sStr, ",/", true);
+        int iNum = 1;
         while (st.hasMoreTokens()) {
-			var sTok = st.nextToken();
+            String sTok = st.nextToken();
             if ((sTok.compareTo("/") == 0) || (sTok.compareTo(",") == 0)) {
 				iNum++;
 				continue;
 			}
 
-			for (var i = 0; i < sTok.length(); i++) {
-				var cChar = sTok.charAt(i);
+			for (int i = 0; i < sTok.length(); i++) {
+                char cChar = sTok.charAt(i);
                 if (Character.isDigit(cChar)) {
-					var iCharVal = cChar - '0';
+                    int iCharVal = cChar - '0';
                     if ((iCharVal >= 0) && (iCharVal <= 8)) {
 						
 						if ((sTok.charAt(0) == 'S') || (sTok.charAt(0) == 's'))
@@ -66,7 +66,7 @@ public class RuleLife {
 	
 	
 	public void InitFromPrm(boolean[] rulS, boolean[] rulB) {
-		for (var i = 0; i <= 8; i++) {
+		for (int i = 0; i <= 8; i++) {
 			RulesS[i] = rulS[i];
 			RulesB[i] = rulB[i];
 		}
@@ -84,7 +84,7 @@ public class RuleLife {
 
 
         int i;
-		var sBff = "";
+        String sBff = "";
         for (i = 0; i <= 8; i++)
 			
 			if (RulesS[i])
@@ -109,19 +109,19 @@ public class RuleLife {
 	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 					   short[][] crrState, short[][] tmpState, MJBoard mjb) {
-		var modCnt = 0;
-		var lurd = new int[4];
+        int modCnt = 0;
+        int[] lurd = new int[4];
 
-		for (var i = 0; i < sizX; ++i) {
+		for (int i = 0; i < sizX; ++i) {
 			
 			lurd[0] = (i > 0) ? i - 1 : (isWrap) ? sizX - 1 : sizX;
 			lurd[2] = (i < sizX - 1) ? i + 1 : (isWrap) ? 0 : sizX;
-			for (var j = 0; j < sizY; ++j) {
+			for (int j = 0; j < sizY; ++j) {
 				
 				lurd[1] = (j > 0) ? j - 1 : (isWrap) ? sizY - 1 : sizY;
 				lurd[3] = (j < sizY - 1) ? j + 1 : (isWrap) ? 0 : sizY;
-				var bOldVal = crrState[i][j];
-				var iCnt = 0;
+                short bOldVal = crrState[i][j];
+                int iCnt = 0;
                 if (crrState[lurd[0]][lurd[1]] != 0)
 					++iCnt;
 				if (crrState[i][lurd[1]] != 0)
@@ -140,7 +140,7 @@ public class RuleLife {
 					++iCnt;
 
 
-				var bNewVal = bOldVal;
+                short bNewVal = bOldVal;
                 if (bOldVal == 0)
 				{
 					if (RulesB[iCnt]) 

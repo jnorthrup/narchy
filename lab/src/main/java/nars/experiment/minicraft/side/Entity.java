@@ -47,28 +47,28 @@ public abstract class Entity implements java.io.Serializable {
     }
 
     public void updatePosition(World world, int tileSize) {
-        var pixels = (int) Math.ceil(Math.max(Math.abs(dx), Math.abs(dy)) * tileSize);
+        int pixels = (int) Math.ceil(Math.max(Math.abs(dx), Math.abs(dy)) * tileSize);
 
-        var favorVertical = (Math.abs(dy) > Math.abs(dx));
-        var hitTop = false;
-        var hitBottom = false;
+        boolean favorVertical = (Math.abs(dy) > Math.abs(dx));
+        boolean hitTop = false;
+        boolean hitBottom = false;
 
-        var left = this.getLeft(tileSize);
-        var right = this.getRight(tileSize);
-        var top = this.getTop(tileSize);
-        var bottom = this.getBottom(tileSize);
+        float left = this.getLeft(tileSize);
+        float right = this.getRight(tileSize);
+        float top = this.getTop(tileSize);
+        float bottom = this.getBottom(tileSize);
 
-        var topLeft = true;
-        var topRight = true;
-        var bottomLeft = true;
-        var bottomRight = true;
-        var middleLeft = true;
-        var middleRight = true;
+        boolean topLeft = true;
+        boolean topRight = true;
+        boolean bottomLeft = true;
+        boolean bottomRight = true;
+        boolean middleLeft = true;
+        boolean middleRight = true;
 
-        var scale = 1.f / pixels;
+        float scale = 1.f / pixels;
 
         if (favorVertical) {
-            for (var i = 1; i <= pixels && topLeft && topRight && bottomLeft && bottomRight; i++) {
+            for (int i = 1; i <= pixels && topLeft && topRight && bottomLeft && bottomRight; i++) {
                 top += dy * scale;
                 bottom += dy * scale;
 
@@ -86,7 +86,7 @@ public abstract class Entity implements java.io.Serializable {
                     bottom -= dy * scale;
                 }
             }
-            for (var i = 1; i <= pixels && topLeft && topRight && bottomLeft && bottomRight; i++) {
+            for (int i = 1; i <= pixels && topLeft && topRight && bottomLeft && bottomRight; i++) {
                 left += dx * scale;
                 right += dx * scale;
 
@@ -103,7 +103,7 @@ public abstract class Entity implements java.io.Serializable {
                 }
             }
         } else {
-            for (var i = 1; i <= pixels && topLeft && topRight && bottomLeft && bottomRight; i++) {
+            for (int i = 1; i <= pixels && topLeft && topRight && bottomLeft && bottomRight; i++) {
                 left += dx * scale;
                 right += dx * scale;
 
@@ -119,7 +119,7 @@ public abstract class Entity implements java.io.Serializable {
                     right -= dx * scale;
                 }
             }
-            for (var i = 1; i <= pixels && topLeft && topRight && bottomLeft && bottomRight; i++) {
+            for (int i = 1; i <= pixels && topLeft && topRight && bottomLeft && bottomRight; i++) {
                 top += dy * scale;
                 bottom += dy * scale;
 
@@ -156,7 +156,7 @@ public abstract class Entity implements java.io.Serializable {
             if (hitBottom) {
 
 
-                var dmg = ((int) (114 * dy)) - 60;
+                int dmg = ((int) (114 * dy)) - 60;
                 if (dmg > 0) {
                     this.takeDamage(dmg);
                 }
@@ -198,25 +198,25 @@ public abstract class Entity implements java.io.Serializable {
     }
 
     public boolean isInWater(World world, int tileSize) {
-        var left = (int) this.getLeft(tileSize);
-        var right = (int) this.getRight(tileSize);
-        var top = (int) this.getTop(tileSize);
-        var bottom = (int) this.getBottom(tileSize);
+        int left = (int) this.getLeft(tileSize);
+        int right = (int) this.getRight(tileSize);
+        int top = (int) this.getTop(tileSize);
+        int bottom = (int) this.getBottom(tileSize);
         return (world.isLiquid(left, top) || world.isLiquid(right, top)
                 || world.isLiquid(left, bottom) || world.isLiquid(right, bottom));
     }
 
     public boolean isHeadUnderWater(World world, int tileSize) {
-        var top = (int) this.getTop(tileSize);
-        var centerX = (int) this.getCenterX(tileSize);
+        int top = (int) this.getTop(tileSize);
+        int centerX = (int) this.getCenterX(tileSize);
         return world.isLiquid(centerX, top);
     }
 
     public boolean isInWaterOrClimbable(World world, int tileSize) {
-        var left = (int) this.getLeft(tileSize);
-        var right = (int) this.getRight(tileSize);
-        var top = (int) this.getTop(tileSize);
-        var bottom = (int) this.getBottom(tileSize);
+        int left = (int) this.getLeft(tileSize);
+        int right = (int) this.getRight(tileSize);
+        int top = (int) this.getTop(tileSize);
+        int bottom = (int) this.getBottom(tileSize);
         return (world.isLiquid(left, top) || world.isLiquid(right, top)
                 || world.isLiquid(left, bottom) || world.isLiquid(right, bottom)
                 || world.isClimbable(left, top) || world.isClimbable(right, top)
@@ -225,38 +225,38 @@ public abstract class Entity implements java.io.Serializable {
 
     public boolean collidesWith(Entity entity, int tileSize) {
 
-        var left1 = this.x;
-        var left2 = entity.x;
-        var right1 = this.getRight(tileSize);
-        var right2 = entity.getRight(tileSize);
-        var top1 = this.y;
-        var top2 = entity.y;
-        var bottom1 = this.getBottom(tileSize);
-        var bottom2 = entity.getBottom(tileSize);
+        float left1 = this.x;
+        float left2 = entity.x;
+        float right1 = this.getRight(tileSize);
+        float right2 = entity.getRight(tileSize);
+        float top1 = this.y;
+        float top2 = entity.y;
+        float bottom1 = this.getBottom(tileSize);
+        float bottom2 = entity.getBottom(tileSize);
 
         return !(bottom1 < top2 || top1 > bottom2 || right1 < left2 || left1 > right2);
     }
 
     public boolean inBoundingBox(Int2 pos, int tileSize) {
-        var left = (int) this.getLeft(tileSize);
+        int left = (int) this.getLeft(tileSize);
         if (pos.x < left) {
             return false;
         }
-        var right = (int) this.getRight(tileSize);
+        int right = (int) this.getRight(tileSize);
         if (pos.x > right) {
             return false;
         }
-        var top = (int) this.getTop(tileSize);
+        int top = (int) this.getTop(tileSize);
         if (pos.y < top) {
             return false;
         }
-        var bottom = (int) this.getBottom(tileSize);
+        int bottom = (int) this.getBottom(tileSize);
         return pos.y <= bottom;
     }
 
     public void draw(GraphicsHandler g, float cameraX, float cameraY, int screenWidth,
                      int screenHeight, int tileSize) {
-        var pos = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, screenWidth,
+        Int2 pos = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, screenWidth,
                 screenHeight, tileSize, x, y);
         if (StockMethods.onScreen) {
             sprite.draw(g, pos.x, pos.y, widthPX, heightPX);

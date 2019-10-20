@@ -60,7 +60,7 @@ public class Clock {
 		return (System.nanoTime() - startTime) / 1000L;
 	}
 	public long getTimeThenReset() {
-		var x = getTimeMicroseconds();
+        long x = getTimeMicroseconds();
 		reset();
 		return x;
 	}

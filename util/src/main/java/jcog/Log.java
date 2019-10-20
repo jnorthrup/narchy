@@ -14,16 +14,16 @@ public class Log {
 
     static {
 
-        var root = root();
-        var c = root.getLoggerContext();
+        ch.qos.logback.classic.Logger root = root();
+        LoggerContext c = root.getLoggerContext();
         c.reset();
 
-        var ca = new ConsoleAppender<ILoggingEvent>();
+        ConsoleAppender<ILoggingEvent> ca = new ConsoleAppender<ILoggingEvent>();
         ca.setContext(c);
         //ca.setWithJansi(true);
         ca.setName("*");
 
-        var layout = new PatternLayout();
+        PatternLayout layout = new PatternLayout();
         //layout.setPattern("%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n");
         layout.setPattern(
                 "%X{NDC0} %highlight(%.-1level) %logger - %msg%n"
@@ -36,7 +36,7 @@ public class Log {
         ca.setImmediateFlush(false);
         ca.setLayout(layout);
 
-        var encoder = new LayoutWrappingEncoder<ILoggingEvent>();
+        LayoutWrappingEncoder<ILoggingEvent> encoder = new LayoutWrappingEncoder<ILoggingEvent>();
         encoder.setContext(c);
         encoder.setLayout(layout);
         ca.setEncoder(encoder);

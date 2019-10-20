@@ -34,7 +34,7 @@ public class AStarGoalFind<F extends Solution> {
 
     public AStarGoalFind(Problem<F> problem, F initialNode, F goalNode) {
 
-        var endNode = this.search(problem, initialNode, goalNode);
+        F endNode = this.search(problem, initialNode, goalNode);
 
         this.plan = endNode!=null ? AStarGoalFind.path(endNode) : null;
 
@@ -55,7 +55,7 @@ public class AStarGoalFind<F extends Solution> {
         path.add(node);
         Solution currentNode = node;
         while (currentNode.parent() != null) {
-            var parent = currentNode.parent();
+            Solution parent = currentNode.parent();
             path.add(0, parent);
             currentNode = parent;
         }
@@ -86,7 +86,7 @@ public class AStarGoalFind<F extends Solution> {
         while (openSet.size() > 0 && (maxSteps < 0 || this.iteration < maxSteps)) {
 
 
-            var currentNode = openSet.poll();
+            F currentNode = openSet.poll();
 
 
 
@@ -99,15 +99,15 @@ public class AStarGoalFind<F extends Solution> {
                 return currentNode;
             }
 
-            var successorNodes = problem.next(currentNode);
-            for (var successorNode : successorNodes) {
+            Iterable<F> successorNodes = problem.next(currentNode);
+            for (F successorNode : successorNodes) {
                 if (closedSet.contains(successorNode))
                     continue;
                 /* Special rule for nodes that are generated within other nodes:
                  * We need to ensure that we use the node and
                  * its g value from the openSet if its already discovered
                  */
-                var discSuccessorNode = openSet.getNode(successorNode);
+                F discSuccessorNode = openSet.getNode(successorNode);
                 boolean inOpenSet;
                 if (discSuccessorNode != null) {
                     successorNode = discSuccessorNode;
@@ -116,7 +116,7 @@ public class AStarGoalFind<F extends Solution> {
                     inOpenSet = false;
                 }
 
-                var tentativeG = currentNode.g() + problem.cost(currentNode,successorNode);
+                double tentativeG = currentNode.g() + problem.cost(currentNode,successorNode);
                 
                 if (inOpenSet && tentativeG >= successorNode.g())
                     continue;

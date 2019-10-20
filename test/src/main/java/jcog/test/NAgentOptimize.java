@@ -17,7 +17,7 @@ public class NAgentOptimize {
                 //new BooleanChoiceTest(n, (prev,next)->next==true)
                 new BooleanReactionTest(n,
                         ()-> {
-                            var period = 8;
+                            int period = 8;
                             return n.time() % period < period / 2;
                         },
                         (i, o) -> i==o
@@ -31,8 +31,8 @@ public class NAgentOptimize {
     public NAgentOptimize(Function<NAR, Game> agent, int experimentCycles, int repeats) {
 
 
-        var l = new Lab<NAR>(() -> {
-            var n = NARS.tmp();
+        Lab<NAR> l = new Lab<NAR>(() -> {
+            NAR n = NARS.tmp();
             n.random();
 
             /* defaults TODO "learn" these from the experiments and reapply them in future experiments */
@@ -91,7 +91,7 @@ public class NAgentOptimize {
         ;
 
 
-        var o = l.optilive(n->agent.apply(n.get()),
+        Optilive<NAR, Game> o = l.optilive(n->agent.apply(n.get()),
                 jcog.lab.Optimize.repeat((Game t) -> {
                     double[] rewardSum = {0}, dexSum = { 0 };
                     t.onFrame(()-> {
@@ -105,10 +105,10 @@ public class NAgentOptimize {
                             ee.printStackTrace();
                         return Float.NEGATIVE_INFINITY;
                     }
-                    var time = t.nar().time();
-                    var frames = ((double)time) / t.nar().dur();
-                    var rewardMean = rewardSum[0]/frames;
-                    var dexMean= dexSum[0]/frames;
+                    long time = t.nar().time();
+                    double frames = ((double)time) / t.nar().dur();
+                    double rewardMean = rewardSum[0]/frames;
+                    double dexMean= dexSum[0]/frames;
                     //return rewardSum[0];
                     return (float) ((1 + rewardMean) * (1 + dexMean));
                     //return rewardSum[0] * (1 + dexSum[0]);

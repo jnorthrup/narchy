@@ -677,22 +677,22 @@ public class SamplePlayer extends UGen {
                 if (positionEnvelope != null) {
 
 
-                    var startPosition = positionEnvelope.getValue(0, 0);
-                    var endPosition = positionEnvelope.getValue(0,
+                    float startPosition = positionEnvelope.getValue(0, 0);
+                    float endPosition = positionEnvelope.getValue(0,
                             bufferSize - 1);
-                    var startPosInSamples = (long) (sample
+                    long startPosInSamples = (long) (sample
                             .msToSamples(startPosition));
-                    var endPosInSamples = (long) (sample
+                    long endPosInSamples = (long) (sample
                             .msToSamples(endPosition));
-                    var numSamples = 1 + Math.abs(endPosInSamples
+                    long numSamples = 1 + Math.abs(endPosInSamples
                             - startPosInSamples);
                     if (endPosInSamples >= startPosInSamples) {
-                        var samples = new float[getOuts()][(int) numSamples];
+                        float[][] samples = new float[getOuts()][(int) numSamples];
                         sample.getFrames((int) startPosInSamples, samples);
                         AudioUtils.stretchBuffer(samples, bufOut);
                     } else {
 
-                        var samples = new float[getOuts()][(int) numSamples];
+                        float[][] samples = new float[getOuts()][(int) numSamples];
                         sample.getFrames((int) endPosInSamples, samples);
                         AudioUtils.reverseBuffer(samples);
                         AudioUtils.stretchBuffer(samples, bufOut);
@@ -706,8 +706,8 @@ public class SamplePlayer extends UGen {
                         case NO_LOOP_BACKWARDS:
                             double normalisedRate = (loopType == LoopType.NO_LOOP_FORWARDS) ? rate
                                     : -rate;
-                            var numSamples = (long) (Math.abs(rate) * bufferSize);
-                            var numMs = sample.samplesToMs(numSamples);
+                            long numSamples = (long) (Math.abs(rate) * bufferSize);
+                            double numMs = sample.samplesToMs(numSamples);
                             boolean isPlayingForwards;
                             if (normalisedRate >= 0) 
                             {
@@ -726,7 +726,7 @@ public class SamplePlayer extends UGen {
                             }
                             if (numSamples <= 0)
                                 return;
-                            var frames = new float[outs][(int) numSamples];
+                            float[][] frames = new float[outs][(int) numSamples];
                             if (isPlayingForwards) {
                                 sample.getFrames(
                                         (int) sample.msToSamples(position), frames);
@@ -750,7 +750,7 @@ public class SamplePlayer extends UGen {
                 }
             } else 
             {
-                for (var i = 0; i < bufferSize; i++) {
+                for (int i = 0; i < bufferSize; i++) {
                     
                     switch (interpolationType) {
                         case ADAPTIVE:
@@ -772,7 +772,7 @@ public class SamplePlayer extends UGen {
                             sample.getFrameNoInterp(position, frame);
                             break;
                     }
-                    for (var j = 0; j < outs; j++) {
+                    for (int j = 0; j < outs; j++) {
                         bufOut[j][i] = frame[j % sample.getNumChannels()];
                         
                     }

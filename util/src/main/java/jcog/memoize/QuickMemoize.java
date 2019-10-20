@@ -27,20 +27,20 @@ public class QuickMemoize<X, Y> {
     }
 
     public void resize(int _capacity) {
-        var capacity = nextPower2(_capacity, 4 /* was: 16 */);
+        int capacity = nextPower2(_capacity, 4 /* was: 16 */);
         if (data!=null && capacity == data.length)
             return; //same size
 
-        var nextShift = intLog2(capacity);
+        int nextShift = intLog2(capacity);
 
         if (this.data!=null) {
             throw new TODO("copy to the new instance and replace the fields here");
         }
 
         this.shift = nextShift;
-        var nextMask = capacity - 1;
+        int nextMask = capacity - 1;
         this.mask = nextMask;
-        var nextData = new Pair[capacity];
+        Pair[] nextData = new Pair[capacity];
         this.data = nextData;
     }
 
@@ -51,20 +51,20 @@ public class QuickMemoize<X, Y> {
     public @Nullable <P> Y apply(@Nullable X x, P p, BiFunction<X, P, Y> calc) {
         Pair<X, Y> s1;
 
-        var data = this.data;
+        Pair<X, Y>[] data = this.data;
 
-        var hash = this.hash(x);
-        var h = hash & mask;
+        int hash = this.hash(x);
+        int h = hash & mask;
         if ((s1 = data[h]) != null && x.equals(s1.getOne()))
             return s1.getTwo();
 
 
-        var h2 = (hash >> shift) & mask;
+        int h2 = (hash >> shift) & mask;
         Pair<X, Y> s2;
         if ((s2 = data[h2]) != null && x.equals(s2.getOne()))
             return s2.getTwo();
 
-        var xy = calc.apply(x, p);
+        Y xy = calc.apply(x, p);
         if (store(x,xy)) {
             Pair<X, Y> s3 = new HashCachedPair(x, xy);
             data[s1 == null || (s2 != null && toggle()) ? h : h2] = s3;
@@ -86,7 +86,12 @@ public class QuickMemoize<X, Y> {
     }
 
     public int valueCount() {
-        var count = Arrays.stream(data).filter(Objects::nonNull).count();
+        long count = 0L;
+        for (Pair<X, Y> datum : data) {
+            if (datum != null) {
+                count++;
+            }
+        }
         return (int) count;
     }
 
@@ -114,7 +119,7 @@ public class QuickMemoize<X, Y> {
         if (n < min) return min;
         if (isPowerOf2(n))
             return n;
-        var i = min;
+        long i = min;
         while (i < n) {
             i *= 2;
             if (i <= 0) return 1L << 62;

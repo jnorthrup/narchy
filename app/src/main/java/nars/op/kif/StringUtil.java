@@ -75,7 +75,7 @@ public class StringUtil {
      */
     public static String encode(String input) {
 
-        var encoded = input;
+        String encoded = input;
         try {
             encoded = URLEncoder.encode(input, getCharset());
         }
@@ -95,7 +95,7 @@ public class StringUtil {
      */
     public static String decode(String input) {
 
-        var decoded = input;
+        String decoded = input;
         try {
             decoded = URLDecoder.decode(input, getCharset());
         }
@@ -312,9 +312,9 @@ public class StringUtil {
      */
     public static String spacesToUnderlines(String input) {
 
-        var s = input.split("\\s+");
-        var sb = new StringBuilder();
-        for (var i = 0; i < s.length; i++) {
+        String[] s = input.split("\\s+");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < s.length; i++) {
             sb.append(s[i]);
             if ((i+1) < s.length) {
                 sb.append('_');
@@ -327,9 +327,9 @@ public class StringUtil {
      */
     public static String camelCaseToUnderlines(String input) {
 
-        var sb = new StringBuilder();
-        var lastChar = ' ';
-        for (var c : input.toCharArray()) {
+        StringBuilder sb = new StringBuilder();
+        char lastChar = ' ';
+        for (char c : input.toCharArray()) {
             if (Character.isUpperCase(c) && Character.isLowerCase(lastChar))
                 sb.append("_").append(c);
             else
@@ -354,11 +354,11 @@ public class StringUtil {
      */
     public static String removeEnclosingChar(String s, int n, char c) {
 
-        var sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         if (isNonEmptyString(s)) {
             sb.append(s);
-            var lasti = (sb.length() - 1);
-            for (var count = 0; ((count < n)
+            int lasti = (sb.length() - 1);
+            for (int count = 0; ((count < n)
                     && (lasti > 0)
                     && (sb.charAt(0) == c)
                     && (sb.charAt(lasti) == c)); count++) {
@@ -376,11 +376,11 @@ public class StringUtil {
      */
     public static String removeEnclosingChars(String s, int n, char c) {
 
-        var sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         if (isNonEmptyString(s)) {
             sb.append(s);
-            var lasti = (sb.length() - 1);
-            for (var count = 0; ((count < n)
+            int lasti = (sb.length() - 1);
+            for (int count = 0; ((count < n)
                     && (lasti > 0)
                     && (sb.charAt(0) == c)
                     && (sb.charAt(lasti) == c)); count++) {
@@ -398,11 +398,11 @@ public class StringUtil {
      */
     public static String removeEnclosingCharPair(String s, int n, char c1, char c2) {
 
-        var sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         if (isNonEmptyString(s)) {
             sb.append(s);
-            var lasti = (sb.length() - 1);
-            for (var count = 0; ((count < n)
+            int lasti = (sb.length() - 1);
+            for (int count = 0; ((count < n)
                     && (lasti > 0)
                     && (sb.charAt(0) == c1)
                     && (sb.charAt(lasti) == c2)); count++) {
@@ -421,11 +421,11 @@ public class StringUtil {
 
         if (StringUtil.emptyString(sentence))
             return sentence;
-        var m = Pattern.compile("(\\w)'re").matcher(sentence);
+        Matcher m = Pattern.compile("(\\w)'re").matcher(sentence);
         
         while (m.find()) {
 
-            var group = m.group(1);
+            String group = m.group(1);
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
@@ -433,7 +433,7 @@ public class StringUtil {
         
         while (m.find()) {
 
-            var group = m.group(1);
+            String group = m.group(1);
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
@@ -441,7 +441,7 @@ public class StringUtil {
         
         while (m.find()) {
 
-            var group = m.group(1);
+            String group = m.group(1);
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
@@ -449,7 +449,7 @@ public class StringUtil {
         
         while (m.find()) {
 
-            var group = m.group(1);
+            String group = m.group(1);
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
@@ -457,7 +457,7 @@ public class StringUtil {
         
         while (m.find()) {
 
-            var group = m.group(1);
+            String group = m.group(1);
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
@@ -465,7 +465,7 @@ public class StringUtil {
         
         while (m.find()) {
 
-            var group = m.group(1);
+            String group = m.group(1);
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
@@ -473,7 +473,7 @@ public class StringUtil {
         
         while (m.find()) {
 
-            var group = m.group(1);
+            String group = m.group(1);
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
@@ -507,7 +507,7 @@ public class StringUtil {
      */
     public static String normalizeSpaceChars(String str) {
 
-        var ans = str;
+        String ans = str;
         if (isNonEmptyString(ans)) {
             
             ans = ans.replaceAll("\\s+", " ");
@@ -530,7 +530,7 @@ public class StringUtil {
 
         if (al == null || al.size() < 1)
             return "";
-        var sb = String.join(" ", al);
+        String sb = String.join(" ", al);
         return sb;
     }
 
@@ -553,7 +553,7 @@ public class StringUtil {
                 (!Character.isJavaIdentifierStart(s.charAt(0)) ||
                         s.charAt(0) > 122))
             s = 'S' + s.substring(1);
-        var i = 1;
+        int i = 1;
         while (i < s.length()) {
             if (!Character.isJavaIdentifierPart(s.charAt(i)) ||
                     s.charAt(i) > 122)
@@ -578,7 +578,7 @@ public class StringUtil {
             s = Character.toLowerCase(s.charAt(0)) + s.substring(1);
         if (!Character.isLetter(s.charAt(0)))
             s = 's' + s.substring(1);
-        var i = 1;
+        int i = 1;
         while (i < s.length()) {
             if (!Character.isLetter(s.charAt(i)) &&
                     !Character.isDigit(s.charAt(i)) &&
@@ -597,12 +597,12 @@ public class StringUtil {
      */
     public static String escapeQuoteChars(String str) {
 
-        var ans = str;
+        String ans = str;
         if (isNonEmptyString(str)) {
-            var sb = new StringBuilder();
-            var prevCh = 'x';
-            var ch = 'x';
-            for (var i = 0; i < str.length(); i++) {
+            StringBuilder sb = new StringBuilder();
+            char prevCh = 'x';
+            char ch = 'x';
+            for (int i = 0; i < str.length(); i++) {
                 ch = str.charAt(i);
                 if ((ch == '"') && (prevCh != '\\')) {
                     sb.append('\\');
@@ -623,12 +623,12 @@ public class StringUtil {
      */
     public static String escapeEscapeChars(String str) {
 
-        var ans = str;
+        String ans = str;
         if (isNonEmptyString(str)) {
-            var sb = new StringBuilder();
-            var prevCh = 'x';
-            var ch = 'x';
-            for (var i = 0; i < str.length(); i++) {
+            StringBuilder sb = new StringBuilder();
+            char prevCh = 'x';
+            char ch = 'x';
+            for (int i = 0; i < str.length(); i++) {
                 ch = str.charAt(i);
                 if ((ch == '\\') && (prevCh != '\\')) {
                     sb.append('\\');
@@ -648,13 +648,13 @@ public class StringUtil {
      */
     public static String removeQuoteEscapes(String str) {
 
-        var ans = str;
+        String ans = str;
         if (isNonEmptyString(str)) {
-            var sb = new StringBuilder();
-            var prevCh = 'x';
-            var ch = 'x';
-            var strlen = str.length();
-            for (var i = 0; i < strlen; i++) {
+            StringBuilder sb = new StringBuilder();
+            char prevCh = 'x';
+            char ch = 'x';
+            int strlen = str.length();
+            for (int i = 0; i < strlen; i++) {
                 ch = str.charAt(i);
                 if ((ch == '"') && (prevCh == '\\')) {
                     sb.deleteCharAt(sb.length() - 1);
@@ -675,13 +675,13 @@ public class StringUtil {
      */
     public static String removeEscapedEscapes(String str) {
 
-        var ans = str;
+        String ans = str;
         if (isNonEmptyString(str)) {
-            var sb = new StringBuilder();
-            var prevCh = 'x';
-            var ch = 'x';
-            var strlen = str.length();
-            for (var i = 0; i < strlen; i++) {
+            StringBuilder sb = new StringBuilder();
+            char prevCh = 'x';
+            char ch = 'x';
+            int strlen = str.length();
+            for (int i = 0; i < strlen; i++) {
                 ch = str.charAt(i);
                 if ((ch == '\\') && (prevCh == '\\')) {
                     sb.deleteCharAt(sb.length() - 1);
@@ -702,17 +702,17 @@ public class StringUtil {
      */
     public static String removeEscapedDoubleQuotes(String str) {
 
-        var ans = str;
+        String ans = str;
         if (isNonEmptyString(str)) {
-            var sb = new StringBuilder();
-            var prevCh = 'x';
-            var ch = 'x';
-            var strlen = str.length();
-            for (var i = 0; i < strlen; i++) {
+            StringBuilder sb = new StringBuilder();
+            char prevCh = 'x';
+            char ch = 'x';
+            int strlen = str.length();
+            for (int i = 0; i < strlen; i++) {
                 ch = str.charAt(i);
                 if ((ch == '"') && (prevCh == '\\')) {
                     sb.deleteCharAt(sb.length() - 1);
-                    var prevI = (i - 2);
+                    int prevI = (i - 2);
                     if (prevI > -1) {
                         prevCh = str.charAt(prevI);
                     }
@@ -736,13 +736,13 @@ public class StringUtil {
      */
     public static String removeInternalDoubleQuotes(String str) {
 
-        var ans = str;
+        String ans = str;
         if (isNonEmptyString(str)) {
-            var newstr = str.trim();
-            var sb = new StringBuilder();
-            var ch = 'x';
-            var strlen = newstr.length();
-            for (var i = 0; i < strlen; i++) {
+            String newstr = str.trim();
+            StringBuilder sb = new StringBuilder();
+            char ch = 'x';
+            int strlen = newstr.length();
+            for (int i = 0; i < strlen; i++) {
                 ch = newstr.charAt(i);
                 if (ch != '"') {
                     sb.append(ch);
@@ -761,12 +761,12 @@ public class StringUtil {
      */
     public static String replaceRepeatedDoubleQuotes(String str) {
 
-        var ans = str;
+        String ans = str;
         if (isNonEmptyString(str)) {
-            var sb = new StringBuilder();
-            var prevCh = 'x';
-            var ch = 'x';
-            for (var i = 0; i < str.length(); i++) {
+            StringBuilder sb = new StringBuilder();
+            char prevCh = 'x';
+            char ch = 'x';
+            for (int i = 0; i < str.length(); i++) {
                 ch = str.charAt(i);
                 if ((ch == '"') && (prevCh == '"')) {
                     sb.setCharAt(sb.length() - 1, '\\');
@@ -796,9 +796,9 @@ public class StringUtil {
             System.out.println("Error in StringUtil.allCapsToSUMOID(): str is null");
             return "";
         }
-        var sb = new StringBuilder();
-        var under = false;
-        for (var i = 0; i < str.length(); i++) {
+        StringBuilder sb = new StringBuilder();
+        boolean under = false;
+        for (int i = 0; i < str.length(); i++) {
             if (str.charAt(i) == '_')
                 under = true;
             else {
@@ -841,7 +841,7 @@ public class StringUtil {
      */
     public static String replaceNonAsciiChars(String str) {
 
-        var ans = str;
+        String ans = str;
         if (isNonEmptyString(ans)) {
             ans = ans.replaceAll("[^\\p{ASCII}]", "x");
         }
@@ -854,7 +854,7 @@ public class StringUtil {
      */
     public static String replaceNonIdChars(String st) {
 
-        var ans = st;
+        String ans = st;
         if (isNonEmptyString(ans)) {
             ans = ans.replaceAll("[\\W.]", "x");
             while (ans.matches(".+[^\\p{Alnum}]$")) {
@@ -873,10 +873,10 @@ public class StringUtil {
      */
     public static String getDateTime(String pattern) {
 
-        var dateTime = "";
+        String dateTime = "";
         try {
             if (isNonEmptyString(pattern)) {
-                var sdf = new SimpleDateFormat(pattern);
+                SimpleDateFormat sdf = new SimpleDateFormat(pattern);
                 sdf.setTimeZone(new SimpleTimeZone(0, "Greenwich"));
                 dateTime = sdf.format(new Date());
             }
@@ -899,20 +899,20 @@ public class StringUtil {
      */
     public static String replaceDateTime(String input) {
 
-        var output = input;
+        String output = input;
         try {
-            var token = "{date}";
+            String token = "{date}";
             if (isNonEmptyString(output) && output.contains(token)) {
-                var tlen = token.length();
-                var sb = new StringBuilder(output);
-                var p1f = sb.indexOf(token);
+                int tlen = token.length();
+                StringBuilder sb = new StringBuilder(output);
+                int p1f = sb.indexOf(token);
                 while (p1f > -1) {
-                    var p1b = (p1f + tlen);
+                    int p1b = (p1f + tlen);
                     if (p1b < sb.length()) {
-                        var p2f = sb.indexOf(token, p1b);
+                        int p2f = sb.indexOf(token, p1b);
                         if (p2f > -1) {
-                            var pattern = sb.substring(p1b, p2f);
-                            var p2b = (p2f + tlen);
+                            String pattern = sb.substring(p1b, p2f);
+                            int p2b = (p2f + tlen);
                             sb.replace(p1f, p2b, getDateTime(pattern));
                             p1f = sb.indexOf(token);
                         }
@@ -935,7 +935,7 @@ public class StringUtil {
      */
     public static boolean isUri(String input) {
 
-        var ans = false;
+        boolean ans = false;
         try {
             ans = (isNonEmptyString(input)
                     && (input.matches("^.?http://.+")
@@ -967,7 +967,7 @@ public class StringUtil {
      */
     public static boolean isInteger(String s) {
 
-        var isValidInteger = false;
+        boolean isValidInteger = false;
         try {
             Integer.parseInt(s.trim()); 
             isValidInteger = true;
@@ -986,13 +986,13 @@ public class StringUtil {
      */
     public static boolean isQuotedString(CharSequence input) {
 
-        var ans = false;
+        boolean ans = false;
         try {
             if (isNonEmptyString(input)) {
-                var ilen = input.length();
+                int ilen = input.length();
                 if (ilen > 2) {
-                    var fc = input.charAt(0);
-                    var lc = input.charAt(ilen - 1);
+                    char fc = input.charAt(0);
+                    char lc = input.charAt(ilen - 1);
                     ans = (((fc == '"') && (lc == '"'))
                             || ((fc == '\'') && (lc == '\'')) || (fc == '`'));
                 }
@@ -1012,7 +1012,7 @@ public class StringUtil {
      */
     public static String makeQuotedString(String input, char quoteChar) {
 
-        var ans = input;
+        String ans = input;
         try {
             if (isNonEmptyString(input)
                     && !isQuotedString(input)
@@ -1061,7 +1061,7 @@ public class StringUtil {
      */
     public static String concatN(String input, int n) {
 
-        var ans = "";
+        String ans = "";
         try {
             ans = String.valueOf(input).repeat(Math.max(0, n));
         }
@@ -1084,9 +1084,9 @@ public class StringUtil {
      */
     public static String treeReplace(String oldPattern, String newTerm, String tree) {
 
-        var result = tree;
+        String result = tree;
         try {
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             if (tree.matches(oldPattern))
                 sb.append(newTerm);
             else if (Formula.listP(tree)) {
@@ -1094,12 +1094,12 @@ public class StringUtil {
                     sb.append(tree);
                 }
                 else {
-                    var f = new Formula();
+                    Formula f = new Formula();
                     f.read(tree);
                     List tuple = f.literalToArrayList();
                     sb.append('(');
-                    var i = 0;
-                    for (var it = tuple.iterator(); it.hasNext(); i++) {
+                    int i = 0;
+                    for (Iterator it = tuple.iterator(); it.hasNext(); i++) {
                         if (i > 0) sb.append(' ');
                         sb.append(treeReplace(oldPattern,
                                 newTerm,
@@ -1128,10 +1128,10 @@ public class StringUtil {
      */
     public static ArrayList kifListToArrayList(String kifListAsString) {
 
-        var ans = new ArrayList();
+        ArrayList ans = new ArrayList();
         try {
             if (isNonEmptyString(kifListAsString)) {
-                var f = new Formula();
+                Formula f = new Formula();
                 f.read(kifListAsString);
                 ans = f.literalToArrayList();
             }
@@ -1154,13 +1154,13 @@ public class StringUtil {
      */
     public static String replaceUnsafeNamespaceDelimiters(String input) {
 
-        var output = input;
+        String output = input;
         try {
             if (isNonEmptyString(output)) {
-                var safe = ("$1" + getSafeNamespaceDelimiter() + "$2");
-                var unsafe = Arrays.asList(getKifNamespaceDelimiter(),
+                String safe = ("$1" + getSafeNamespaceDelimiter() + "$2");
+                List<String> unsafe = Arrays.asList(getKifNamespaceDelimiter(),
                         getW3cNamespaceDelimiter());
-                for (var delim : unsafe) {
+                for (String delim : unsafe) {
                     output = output.replaceAll("(\\w)" + delim + "(\\w)", safe);
                 }
             }
@@ -1184,11 +1184,11 @@ public class StringUtil {
      */
     public static String safeToKifNamespaceDelimiters(String input) {
 
-        var output = input;
+        String output = input;
         try {
             if (isNonEmptyString(output)) {
-                var safedelim = getSafeNamespaceDelimiter();
-                var kifdelim = getKifNamespaceDelimiter();
+                String safedelim = getSafeNamespaceDelimiter();
+                String kifdelim = getKifNamespaceDelimiter();
                 output = output.replace(safedelim, kifdelim);
             }
         }
@@ -1204,12 +1204,12 @@ public class StringUtil {
      */
     public static String toSafeNamespaceDelimiter(String term) {
 
-        var ans = term;
+        String ans = term;
         try {
             if (isNonEmptyString(term) && !isUri(term)) {
-                var safe = getSafeNamespaceDelimiter();
-                var kif = getKifNamespaceDelimiter();
-                var w3c = getW3cNamespaceDelimiter();
+                String safe = getSafeNamespaceDelimiter();
+                String kif = getKifNamespaceDelimiter();
+                String w3c = getW3cNamespaceDelimiter();
                 ans = term.replaceFirst(kif, safe);
                 if (!kif.equals(w3c)) {
                     ans = ans.replaceFirst(w3c, safe);
@@ -1232,7 +1232,7 @@ public class StringUtil {
     public static String toSafeNamespaceDelimiter(String kbHref, String term) {
 
 
-        var ans = term;
+        String ans = term;
         try {
             if (StringUtil.emptyString(kbHref))
                 ans = toSafeNamespaceDelimiter(term);
@@ -1247,7 +1247,7 @@ public class StringUtil {
      */
     public static String w3cToKif(String term) {
 
-        var ans = term;
+        String ans = term;
         if (isNonEmptyString(term) && !StringUtil.isUri(term)) {
             ans = term.replaceFirst(getW3cNamespaceDelimiter(),
                     getKifNamespaceDelimiter());
@@ -1259,7 +1259,7 @@ public class StringUtil {
      */
     public static String kifToW3c(String term) {
 
-        var ans = term;
+        String ans = term;
         if (isNonEmptyString(term) && !StringUtil.isUri(term)) {
             ans = term.replaceFirst(getKifNamespaceDelimiter(),
                     getW3cNamespaceDelimiter());
@@ -1271,7 +1271,7 @@ public class StringUtil {
      */
     public static boolean quoted(String input) {
 
-        var trimmed = input.trim();
+        String trimmed = input.trim();
         if (trimmed.charAt(0) == '\'' && trimmed.charAt(trimmed.length()-1) == '\'')
             return true;
         return trimmed.charAt(0) == '\"' && trimmed.charAt(trimmed.length() - 1) == '\"';
@@ -1281,7 +1281,7 @@ public class StringUtil {
      */
     public static String quote(String input) {
 
-        var str = StringUtil.removeEnclosingQuotes(input);
+        String str = StringUtil.removeEnclosingQuotes(input);
         str = StringUtil.escapeQuoteChars(str);
         return StringUtil.makeQuotedString(str, '"');
     }
@@ -1290,7 +1290,7 @@ public class StringUtil {
      */
     public static String unquote(String input) {
 
-        var ans = input;
+        String ans = input;
         ans = StringUtil.removeEnclosingQuotes(ans);
         return StringUtil.replaceRepeatedDoubleQuotes(ans);
     }
@@ -1299,10 +1299,10 @@ public class StringUtil {
      */
     public static boolean isLocalTermReference(String term) {
 
-        var ans = false;
+        boolean ans = false;
         if (isNonEmptyString(term)) {
-            var blankNodeTokens = Arrays.asList("#", "~", getLocalReferenceBaseName());
-            for (var bnt : blankNodeTokens) {
+            List<String> blankNodeTokens = Arrays.asList("#", "~", getLocalReferenceBaseName());
+            for (String bnt : blankNodeTokens) {
                 ans = (term.startsWith(bnt) && !term.matches(".*\\s+.*"));
                 if (ans) break;
             }
@@ -1341,17 +1341,17 @@ public class StringUtil {
      */
     public static File renameFileIfExists(File f) {
 
-        var result = f;
+        File result = f;
         try {
-            var canonicalPath = result.getCanonicalPath();
-            var lidx = canonicalPath.lastIndexOf('.');
-            var suff = "";
-            var base = canonicalPath;
+            String canonicalPath = result.getCanonicalPath();
+            int lidx = canonicalPath.lastIndexOf('.');
+            String suff = "";
+            String base = canonicalPath;
             if (lidx != -1) {
                 suff = canonicalPath.substring(lidx);
                 base = canonicalPath.substring(0, lidx);
             }
-            var fc = 0;
+            int fc = 0;
             while (result.exists()) {
                 fc++;
                 result = new File(base + '-' + fc + suff);
@@ -1367,16 +1367,16 @@ public class StringUtil {
      */
     public static String wordWrap(String input, int length) {
 
-        var result = input;
+        String result = input;
         try {
             if (StringUtil.isNonEmptyString(input)
                     && (length > 0)
                     && (input.length() > length)) {
-                var sb = new StringBuilder(input);
-                var ls = System.getProperty("line.separator");
-                var lslen = ls.length();
-                var j = length;
-                var i = 0;
+                StringBuilder sb = new StringBuilder(input);
+                String ls = System.getProperty("line.separator");
+                int lslen = ls.length();
+                int j = length;
+                int i = 0;
                 while (sb.length() > j) {
                     while ((j > i) && !Character.isWhitespace(sb.charAt(j)))
                         j--;
@@ -1419,7 +1419,7 @@ public class StringUtil {
      */
     public static String integerToPaddedString(int intval) {
 
-        var ID = String.valueOf(intval);
+        String ID = String.valueOf(intval);
         if (ID.length() > 8) {
             System.out.println("Error in StringUtil.integerToPaddedString(): max number exceeded: " +
                 ID);
@@ -1439,7 +1439,7 @@ public class StringUtil {
 
         if (StringUtil.emptyString(input))
             return null;
-        var result = new StringBuilder();
+        StringBuilder result = new StringBuilder();
         if (Character.isJavaIdentifierStart(input.charAt(0)))
             if (upcaseFirst)
                 result.append(Character.toUpperCase(input.charAt(0)));
@@ -1450,7 +1450,7 @@ public class StringUtil {
                 result.append("I_");
             else
                 result.append("r_");
-        for (var i = 1; i < input.length(); i++) {
+        for (int i = 1; i < input.length(); i++) {
             if (input.charAt(i) != ' ') {
                 if (Character.isJavaIdentifierPart(input.charAt(i)) && input.charAt(i) != '$')
                     result.append(input.charAt(i));
@@ -1476,8 +1476,8 @@ public class StringUtil {
      */
     public static int findBalancedParen(int pIndex, CharSequence st) {
 
-        var parenLevel = 1;
-        for (var i = pIndex + 1; i < st.length(); i++) {
+        int parenLevel = 1;
+        for (int i = pIndex + 1; i < st.length(); i++) {
             if (st.charAt(i) == '(')
                 parenLevel++;
             if (st.charAt(i) == ')') {
@@ -1500,7 +1500,7 @@ public class StringUtil {
             result = new StringBuffer(st);
         else
             result = new StringBuffer();
-        for (var i = 0; i < totalLength - st.length(); i++) {
+        for (int i = 0; i < totalLength - st.length(); i++) {
             if (prepend)
                 result.insert(0, fillchar);
             else
@@ -1541,12 +1541,12 @@ public class StringUtil {
      */
      public static String getContents(File aFile) {
 
-         var contents = "";
+         String contents = "";
 
         try {
 
 
-            try (var input = new BufferedReader(new FileReader(aFile))) {
+            try (BufferedReader input = new BufferedReader(new FileReader(aFile))) {
                 /*
                  * readLine is a bit quirky :
                  * it returns the content of a line MINUS the newline.
@@ -1570,7 +1570,7 @@ public class StringUtil {
      */
     public static String filterHtml(String input)  {
 
-        var out = input.replaceAll("<.*?>", "");
+        String out = input.replaceAll("<.*?>", "");
 
         
         out = out.replaceAll(" +", " ");

@@ -24,11 +24,11 @@ public class EternalDefaultTable extends DynamicTaskTable {
     private EternalDefaultTable(Concept c, Truth t, byte punc, NAR n) {
         super(c.term(), punc == BELIEF);
 
-        var stamp = n.evidence();
-        var creation = n.time();
+        long[] stamp = n.evidence();
+        long creation = n.time();
 
         {
-            var tt = new EternalTask(c.term(), punc, truth = new MutableTruth(t), creation, stamp);
+            EternalTask tt = new EternalTask(c.term(), punc, truth = new MutableTruth(t), creation, stamp);
             tt.pri(n.priDefault(punc));
             this.task = tt;
         }
@@ -45,9 +45,9 @@ public class EternalDefaultTable extends DynamicTaskTable {
     }
 
     public static EternalDefaultTable add(Concept c, Truth t, byte punc, NAR n) {
-        var tb = new EternalDefaultTable(c, t, punc, n);
+        EternalDefaultTable tb = new EternalDefaultTable(c, t, punc, n);
 
-        var tables = (BeliefTables) c.table(punc);
+        BeliefTables tables = (BeliefTables) c.table(punc);
 
         tables.add(tb);
 

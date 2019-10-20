@@ -70,7 +70,7 @@ public final class PredicateFeature<L> implements Predicate<Function<String,L>> 
     @SuppressWarnings("unchecked")
     @Override
     public boolean test(Function<String,L> x) {
-        var y = x.apply(column);
+        L y = x.apply(column);
         return y!=null && predicate.test(y);
     }
 
@@ -84,8 +84,8 @@ public final class PredicateFeature<L> implements Predicate<Function<String,L>> 
      */
     @Override
     public int hashCode() {
-        final var prime = 31;
-        var result = 1;
+        final int prime = 31;
+        int result = 1;
         result = prime * result + ((column == null) ? 0 : column.hashCode());
         result = prime * result + ((label == null) ? 0 : label.hashCode());
         result = prime * result + ((predicate == null) ? 0 : predicate.hashCode());
@@ -104,7 +104,7 @@ public final class PredicateFeature<L> implements Predicate<Function<String,L>> 
         if (getClass() != obj.getClass())
             return false;
         @SuppressWarnings("rawtypes")
-        var other = (PredicateFeature) obj;
+        PredicateFeature other = (PredicateFeature) obj;
         if (column == null) {
             if (other.column != null)
                 return false;

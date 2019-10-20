@@ -46,9 +46,9 @@ public class UGenOutput extends AudioIO {
     @Override
     protected UGen getAudioInput(int[] channels) {
 
-        var ctx = getContext();
-        var ioAudioFormat = ctx.getAudioFormat();
-        var audioFormat =
+        AudioContext ctx = getContext();
+        IOAudioFormat ioAudioFormat = ctx.getAudioFormat();
+        AudioFormat audioFormat =
                 new AudioFormat(ioAudioFormat.sampleRate, ioAudioFormat.bitDepth, ioAudioFormat.inputs, ioAudioFormat.signed, ioAudioFormat.bigEndian);
         return new JavaSoundRTInput(ctx, audioFormat);
     }
@@ -56,14 +56,14 @@ public class UGenOutput extends AudioIO {
     @Override
     public boolean read(float[] buf, int readRate) {
 
-        var samples = buf.length;
+        int samples = buf.length;
         context.setBufferSize(samples);
 
         update();
 
-        var c = 0;
-        for (var i = 0; i < samples; i++) {
-            var j = 0;
+        int c = 0;
+        for (int i = 0; i < samples; i++) {
+            int j = 0;
             buf[c++] = context.out.getValue(j, i);
         }
         return !context.stopped;
@@ -116,10 +116,10 @@ public class UGenOutput extends AudioIO {
          * Set up JavaSound. Requires that JavaSound has been set up in AudioContext.
          */
         void initJavaSound() {
-            var info = new DataLine.Info(TargetDataLine.class, audioFormat);
+            DataLine.Info info = new DataLine.Info(TargetDataLine.class, audioFormat);
             try {
                 targetDataLine = (TargetDataLine) AudioSystem.getLine(info);
-                var inputBufferSize = 5000;
+                int inputBufferSize = 5000;
                 targetDataLine.open(audioFormat, inputBufferSize);
                 if (targetDataLine == null) System.out.println("no line");
                 else

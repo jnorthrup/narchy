@@ -49,7 +49,7 @@ public class Triangulation {
      * @return ArrayList of ArrayLists which are triangles in form of indexes into array vertices
      */
     private static ArrayList<int[]> triangulate(int numContures, int[] numVerticesInContures, v2[] vertices) {
-        var p = new Polygon(numContures, numVerticesInContures, vertices);
+        Polygon p = new Polygon(numContures, numVerticesInContures, vertices);
 //        if (debug) {
 //
 //            p.setDebugOption(debug);

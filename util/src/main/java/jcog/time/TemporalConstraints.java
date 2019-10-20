@@ -160,7 +160,7 @@ public class TemporalConstraints<E> {
     private void addConstraint(AllenNode<E> nodeAdd) {
 
 
-        var constraintnetwork1 = this.constraintnetwork;
+        ArrayList<ShortArrayList> constraintnetwork1 = this.constraintnetwork;
         for (int i = 0, constraintnetwork1Size = constraintnetwork1.size(); i < constraintnetwork1Size; i++) {
             constraintnetwork1.get(i).add(bin_all); 
         }
@@ -169,8 +169,8 @@ public class TemporalConstraints<E> {
         nodeAdd.allen = this.constraintnetwork.size() - 1;
         
         if (this.constraintnetwork.size() > 1) {
-            var previousALShort = this.constraintnetwork.get(0);
-            for (var i = 0; i < previousALShort.size(); i++)
+            ShortArrayList previousALShort = this.constraintnetwork.get(0);
+            for (int i = 0; i < previousALShort.size(); i++)
                 
                 this.constraintnetwork.get(this.constraintnetwork.size() - 1).add(bin_all); 
 
@@ -196,10 +196,10 @@ public class TemporalConstraints<E> {
         
         if (!this.modeledConstraints.contains(c)) {
 
-            var modeledConstraints1 = this.modeledConstraints;
+            ArrayList<Constraint<E>> modeledConstraints1 = this.modeledConstraints;
             for (int i = 0, modeledConstraints1Size = modeledConstraints1.size(); i < modeledConstraints1Size; i++) {
-                var currentConstraint = modeledConstraints1.get(i);
-                var src = currentConstraint.src;
+                Constraint<E> currentConstraint = modeledConstraints1.get(i);
+                AllenNode<E> src = currentConstraint.src;
                 if (src.equals(c.src) && (currentConstraint.tgt.equals(c.tgt))) {
                     return false;
                 }
@@ -231,8 +231,8 @@ public class TemporalConstraints<E> {
     private void addConstraintToConstraintNetwork(Constraint<E> constraintAdd) {
 
 
-        var i = constraintAdd.src.allen;
-        var j = constraintAdd.tgt.allen;
+        int i = constraintAdd.src.allen;
+        int j = constraintAdd.tgt.allen;
 
         
         this.constraintnetwork.get(i).set(j, constraintAdd.constraints);
@@ -255,18 +255,18 @@ public class TemporalConstraints<E> {
         if (previouslyInconsistent) return false; 
         if (this.modeledConstraints.isEmpty()) return true;
 
-        var S = this.constraintnetwork.size();
-        var stack = new ArrayList<BooleanArrayList>(S);
-        for (var i = 0; i < S; i++) {
-            var currentStackEntryAL = new BooleanArrayList(S);
-            for (var j = 0; j < S; j++) {
+        int S = this.constraintnetwork.size();
+        ArrayList<BooleanArrayList> stack = new ArrayList<BooleanArrayList>(S);
+        for (int i = 0; i < S; i++) {
+            BooleanArrayList currentStackEntryAL = new BooleanArrayList(S);
+            for (int j = 0; j < S; j++) {
                 currentStackEntryAL.add(false); 
             }
             stack.add(currentStackEntryAL);
         }
 
 
-        var start = this.modeledConstraints.get(modeledConstraints.size() - 1);
+        Constraint<E> start = this.modeledConstraints.get(modeledConstraints.size() - 1);
 
         List<IntIntPair> batchStack = new ArrayList<>();
         batchStack.add(pair(start.src.allen, start.tgt.allen));
@@ -278,26 +278,26 @@ public class TemporalConstraints<E> {
 
         while (!batchStack.isEmpty()) {
 
-            var currentEdge = batchStack.get(0);
+            IntIntPair currentEdge = batchStack.get(0);
             batchStack.remove(0);
             
             stack.get(currentEdge.getOne()).set(currentEdge.getTwo(), false);
 
 
-            var i = currentEdge.getOne();
-            var ci = this.constraintnetwork.get(i);
+            int i = currentEdge.getOne();
+            ShortArrayList ci = this.constraintnetwork.get(i);
 
-            var j = currentEdge.getTwo();
+            int j = currentEdge.getTwo();
             
-            for (var k = 0; k < S; k++) {
+            for (int k = 0; k < S; k++) {
 
-                var cnk = this.constraintnetwork.get(k);
-                var ckj = cnk.get(j);
-                var cki = cnk.get(i);
+                ShortArrayList cnk = this.constraintnetwork.get(k);
+                short ckj = cnk.get(j);
+                short cki = cnk.get(i);
 
-                var cik = ci.get(k);
-                var cjk = this.constraintnetwork.get(j).get(k);
-                var cij = ci.get(j);
+                short cik = ci.get(k);
+                short cjk = this.constraintnetwork.get(j).get(k);
+                short cij = ci.get(j);
                 
                 
                 
@@ -310,26 +310,26 @@ public class TemporalConstraints<E> {
                 }
 
 
-                var ckjtemp = cnk.get(j);
+                short ckjtemp = cnk.get(j);
                 if ((ckj != ckjtemp && (ckjtemp & ckj) == ckj)) {
 
                     
                     if ((!stack.get(k).get(j))) {  
                         
                         stack.get(k).set(j, true);
-                        var updatePair = pair(k, j);
+                        IntIntPair updatePair = pair(k, j);
                         batchStack.add(updatePair);
                     }
                     if ((!stack.get(j).get(k))) {  
                         
                         stack.get(j).set(k, true);
-                        var updatePairInverse = pair(j, k);
+                        IntIntPair updatePairInverse = pair(j, k);
                         batchStack.add(updatePairInverse);
                     }
                     
                     cnk.set(j, ckj);
 
-                    var iCon = TemporalConstraints.inverseConstraintsShort(ckj);
+                    short iCon = TemporalConstraints.inverseConstraintsShort(ckj);
                     this.constraintnetwork.get(j).set(k, iCon);
                 }
                 
@@ -344,25 +344,25 @@ public class TemporalConstraints<E> {
                 }
 
 
-                var ciktemp = ci.get(k);
+                short ciktemp = ci.get(k);
                 if ((cik != ciktemp && (ciktemp & cik) == cik)) {
 
                     if ((!stack.get(i).get(k))) {  
                         
                         stack.get(i).set(k, true);
-                        var updatePair = pair(i, k);
+                        IntIntPair updatePair = pair(i, k);
                         batchStack.add(updatePair);
                     }
                     if ((!stack.get(k).get(i))) {  
                         
                         stack.get(k).set(i, true);
-                        var updatePairInverse = pair(k, i);
+                        IntIntPair updatePairInverse = pair(k, i);
                         batchStack.add(updatePairInverse);
                     }
                     
                     ci.set(k, cik);
 
-                    var iCon = TemporalConstraints.inverseConstraintsShort(cik);
+                    short iCon = TemporalConstraints.inverseConstraintsShort(cik);
                     cnk.set(i, iCon);
 
 
@@ -389,18 +389,18 @@ public class TemporalConstraints<E> {
     private static Short collectConstraintsShort(Short c1, Short c2) {
         short result = 0;
         
-        for (var i = 0; i < 14; i++) {
+        for (int i = 0; i < 14; i++) {
 
-            var c1select = (short) (1 << i);
+            short c1select = (short) (1 << i);
             
             if ((short) (c1 & c1select) == c1select) { 
-                for (var j = 0; j < 14; j++) {
+                for (int j = 0; j < 14; j++) {
 
-                    var c2select = (short) (1 << j);
+                    short c2select = (short) (1 << j);
                     
                     if ((short) (c2 & c2select) == c2select) {
 
-                        var constraints = transitivematrixshort[i][j];
+                        short constraints = transitivematrixshort[i][j];
 
                         result |= constraints;
                         if ((result & bin_all) == bin_all) {
@@ -498,7 +498,7 @@ public class TemporalConstraints<E> {
      */
 
     public static ArrayList<String> getConstraintStringFromConstraintShort(short c) {
-        var result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<String>();
         
         if ((short) (c & bin_before) == bin_before) result.add(str_before);
         

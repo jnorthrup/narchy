@@ -34,9 +34,9 @@ public class CachedAnon extends Anon {
         } else {
             int max;
             if (toUniques < (max = uniques())) {
-                var termToId = map.termToId;
-                var idToTerm = map.idToTerm;
-                for (var i = toUniques; i < max; i++)
+                ObjectByteHashMap<Term> termToId = map.termToId;
+                FasterList<Term> idToTerm = map.idToTerm;
+                for (int i = toUniques; i < max; i++)
                     termToId.removeKey(idToTerm.get(i));
                 idToTerm.removeAbove(toUniques);
 
@@ -68,7 +68,7 @@ public class CachedAnon extends Anon {
     }
 
     private Term putCache(Compound x) {
-        var y = super.applyPosCompound(x);
+        Term y = super.applyPosCompound(x);
         if (y instanceof Compound && cache((Compound) y, false))
             getCache.put((Compound) y, x);
         return y;

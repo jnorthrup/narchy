@@ -46,7 +46,7 @@ public class CylinderShapeX extends CylinderShape {
 
 	@Override
 	public void batchedUnitVectorGetSupportingVertexWithoutMargin(v3[] vectors, v3[] supportVerticesOut, int numVectors) {
-		for (var i = 0; i < numVectors; i++) {
+		for (int i = 0; i < numVectors; i++) {
 			cylinderLocalSupportX(getHalfExtentsWithoutMargin(new v3()), vectors[i], supportVerticesOut[i]);
 		}
 	}

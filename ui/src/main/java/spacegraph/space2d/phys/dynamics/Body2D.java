@@ -225,14 +225,14 @@ public class Body2D extends Transform {
      */
     public final Fixture addFixture(FixtureDef def) {
 
-        var fixture = new Fixture();
+        Fixture fixture = new Fixture();
         fixture.body = this;
         fixture.create(this, def);
 
 
         W.invoke(() -> {
             if ((flags & e_activeFlag) == e_activeFlag) {
-                var broadPhase = W.contactManager.broadPhase;
+                BroadPhase broadPhase = W.contactManager.broadPhase;
                 fixture.createProxies(broadPhase, this);
             }
 
@@ -257,9 +257,9 @@ public class Body2D extends Transform {
      */
     public final void updateFixtures(Consumer<Fixture> tx) {
         W.invoke(() -> {
-            var broadPhase = W.contactManager.broadPhase;
+            BroadPhase broadPhase = W.contactManager.broadPhase;
 
-            for (var f = fixtures; f != null; f = f.next) {
+            for (Fixture f = fixtures; f != null; f = f.next) {
 
                 f.destroyProxies(broadPhase);
 
@@ -307,14 +307,14 @@ public class Body2D extends Transform {
     public final void addFixture(PolygonFixture polygon, FixtureDef def) {
 
 
-        var convex = polygon.convexDecomposition();
+        Polygon[] convex = polygon.convexDecomposition();
 
         def.polygon = convex.length > 1 ? polygon : null;
 
 
-        for (var p : convex) {
+        for (Polygon p : convex) {
             p.flip();
-            var ps = new PolygonShape();
+            PolygonShape ps = new PolygonShape();
             ps.set(p.vertices(), p.size());
             def.shape = ps;
             polygon.fixtureList.add(addFixture(def));
@@ -339,9 +339,9 @@ public class Body2D extends Transform {
             assert (fixtureCount > 0);
 
 
-            var node = fixtures;
+            Fixture node = fixtures;
             Fixture last = null;
-            var found = false;
+            boolean found = false;
             while (node != null) {
                 if (node == fixture) {
                     node = fixture.next;
@@ -363,13 +363,13 @@ public class Body2D extends Transform {
             }
 
 
-            var edge = contacts;
+            ContactEdge edge = contacts;
             while (edge != null) {
-                var c = edge.contact;
+                Contact c = edge.contact;
                 edge = edge.next;
 
-                var fixtureA = c.aFixture;
-                var fixtureB = c.bFixture;
+                Fixture fixtureA = c.aFixture;
+                Fixture fixtureB = c.bFixture;
 
                 if (fixture == fixtureA || fixture == fixtureB) {
 
@@ -379,7 +379,7 @@ public class Body2D extends Transform {
             }
 
             if ((flags & e_activeFlag) == e_activeFlag) {
-                var broadPhase = W.contactManager.broadPhase;
+                BroadPhase broadPhase = W.contactManager.broadPhase;
                 fixture.destroyProxies(broadPhase);
             }
 
@@ -411,7 +411,7 @@ public class Body2D extends Transform {
      */
     public final boolean setTransform(v2 p, float angle, float epsilon) {
 
-        var change = false;
+        boolean change = false;
         if (!posNext.equals(p, epsilon)) {
             posNext.set(p);
             change = true;
@@ -436,8 +436,8 @@ public class Body2D extends Transform {
             sweep.c0.set(sweep.c);
             sweep.a0 = sweep.a;
 
-            var broadPhase = W.contactManager.broadPhase;
-            for (var f = fixtures; f != null; f = f.next)
+            BroadPhase broadPhase = W.contactManager.broadPhase;
+            for (Fixture f = fixtures; f != null; f = f.next)
                 f.synchronize(broadPhase, this, this);
         });
 
@@ -726,7 +726,7 @@ public class Body2D extends Transform {
             m_invI = 1.0f / m_I;
         }
 
-        var oldCenter = new v2();
+        v2 oldCenter = new v2();
 
         oldCenter.set(sweep.c);
         sweep.localCenter.set(massData.center);
@@ -735,7 +735,7 @@ public class Body2D extends Transform {
         sweep.c.set(sweep.c0);
 
 
-        var temp = new v2();
+        v2 temp = new v2();
         temp.set(sweep.c).subbed(oldCenter);
         v2.crossToOut(velAngular, temp, temp);
         vel.added(temp);
@@ -758,8 +758,8 @@ public class Body2D extends Transform {
         m_invI = 0.0f;
         sweep.localCenter.set(0, 0);
 
-        var massData = pmd;
-        for (var f = fixtures; f != null; f = f.next) {
+        MassData massData = pmd;
+        for (Fixture f = fixtures; f != null; f = f.next) {
             if (f.density != 0.0f) {
                 f.getMassData(massData);
                 m_massArea += massData.mass;
@@ -778,10 +778,10 @@ public class Body2D extends Transform {
         assert (type == DYNAMIC);
 
 
-        var localCenter = new v2();
+        v2 localCenter = new v2();
         localCenter.set(0, 0);
-        var temp = new v2();
-        for (var f = fixtures; f != null; f = f.next) {
+        v2 temp = new v2();
+        for (Fixture f = fixtures; f != null; f = f.next) {
             if (f.density == 0.0f) {
                 continue;
             }
@@ -813,7 +813,7 @@ public class Body2D extends Transform {
             m_invI = 0.0f;
         }
 
-        var oldCenter = new v2();
+        v2 oldCenter = new v2();
 
         oldCenter.set(sweep.c);
         sweep.localCenter.set(localCenter);
@@ -824,7 +824,7 @@ public class Body2D extends Transform {
 
         temp.set(sweep.c).subbed(oldCenter);
 
-        var temp2 = oldCenter;
+        v2 temp2 = oldCenter;
         v2.crossToOutUnsafe(velAngular, temp, temp2);
         vel.added(temp2);
 
@@ -837,7 +837,7 @@ public class Body2D extends Transform {
      * @return the same point expressed in world coordinates.
      */
     public final v2 getWorldPoint(v2 localPoint) {
-        var v = new v2();
+        v2 v = new v2();
         getWorldPointToOut(localPoint, v);
         return v;
     }
@@ -857,7 +857,7 @@ public class Body2D extends Transform {
      * @return the same vector expressed in world coordinates.
      */
     public final v2 getWorldVector(v2 localVector) {
-        var out = new v2();
+        v2 out = new v2();
         getWorldVectorToOut(localVector, out);
         return out;
     }
@@ -877,7 +877,7 @@ public class Body2D extends Transform {
      * @return the corresponding local point relative to the body's origin.
      */
     public final v2 getLocalPoint(v2 worldPoint) {
-        var out = new v2();
+        v2 out = new v2();
         getLocalPointToOut(worldPoint, out);
         return out;
     }
@@ -893,7 +893,7 @@ public class Body2D extends Transform {
      * @return the corresponding local vector.
      */
     public final v2 getLocalVector(v2 worldVector) {
-        var out = new v2();
+        v2 out = new v2();
         getLocalVectorToOut(worldVector, out);
         return out;
     }
@@ -913,14 +913,14 @@ public class Body2D extends Transform {
      * @return the world velocity of a point.
      */
     public final v2 getLinearVelocityFromWorldPoint(v2 worldPoint) {
-        var out = new v2();
+        v2 out = new v2();
         getLinearVelocityFromWorldPointToOut(worldPoint, out);
         return out;
     }
 
     private void getLinearVelocityFromWorldPointToOut(v2 worldPoint, v2 out) {
-        var tempX = worldPoint.x - sweep.c.x;
-        var tempY = worldPoint.y - sweep.c.y;
+        float tempX = worldPoint.x - sweep.c.x;
+        float tempY = worldPoint.y - sweep.c.y;
         out.x = -velAngular * tempY + vel.x;
         out.y = velAngular * tempX + vel.y;
     }
@@ -932,7 +932,7 @@ public class Body2D extends Transform {
      * @return the world velocity of a point.
      */
     public final v2 getLinearVelocityFromLocalPoint(v2 localPoint) {
-        var out = new v2();
+        v2 out = new v2();
         getLinearVelocityFromLocalPointToOut(localPoint, out);
         return out;
     }
@@ -1005,19 +1005,19 @@ public class Body2D extends Transform {
             setAwake(true);
 
 
-            var ce = contacts;
+            ContactEdge ce = contacts;
             while (ce != null) {
-                var ce0 = ce;
+                ContactEdge ce0 = ce;
                 ce = ce.next;
                 W.contactManager.destroy(ce0.contact);
             }
             contacts = null;
 
 
-            var broadPhase = W.contactManager.broadPhase;
-            for (var f = fixtures; f != null; f = f.next) {
-                var proxyCount = f.m_proxyCount;
-                for (var i = 0; i < proxyCount; ++i) {
+            BroadPhase broadPhase = W.contactManager.broadPhase;
+            for (Fixture f = fixtures; f != null; f = f.next) {
+                int proxyCount = f.m_proxyCount;
+                for (int i = 0; i < proxyCount; ++i) {
                     broadPhase.touchProxy(f.proxies[i].id);
                 }
             }
@@ -1121,8 +1121,8 @@ public class Body2D extends Transform {
                 flags |= e_activeFlag;
 
 
-                var broadPhase = W.contactManager.broadPhase;
-                for (var f = fixtures; f != null; f = f.next) {
+                BroadPhase broadPhase = W.contactManager.broadPhase;
+                for (Fixture f = fixtures; f != null; f = f.next) {
                     f.createProxies(broadPhase, this);
                 }
 
@@ -1131,15 +1131,15 @@ public class Body2D extends Transform {
                 flags &= ~e_activeFlag;
 
 
-                var broadPhase = W.contactManager.broadPhase;
-                for (var f = fixtures; f != null; f = f.next) {
+                BroadPhase broadPhase = W.contactManager.broadPhase;
+                for (Fixture f = fixtures; f != null; f = f.next) {
                     f.destroyProxies(broadPhase);
                 }
 
 
-                var ce = contacts;
+                ContactEdge ce = contacts;
                 while (ce != null) {
-                    var ce0 = ce;
+                    ContactEdge ce0 = ce;
                     ce = ce.next;
                     W.contactManager.destroy(ce0.contact);
                 }
@@ -1224,21 +1224,21 @@ public class Body2D extends Transform {
     private final Transform pxf = new Transform();
 
     protected void synchronizeFixtures() {
-        var xf1 = pxf;
+        Transform xf1 = pxf;
 
-        var a = sweep.a0;
+        float a = sweep.a0;
 
         Rot r = xf1;
-        var rs = r.s = (float) Math.sin(a);
-        var rc = r.c = (float) Math.cos(a);
+        float rs = r.s = (float) Math.sin(a);
+        float rc = r.c = (float) Math.cos(a);
 
         float sx = sweep.localCenter.x, sy = sweep.localCenter.y;
-        var p = xf1.pos;
+        v2 p = xf1.pos;
         p.x = sweep.c0.x - rc * sx + rs * sy;
         p.y = sweep.c0.y - rs * sx - rc * sy;
 
-        var broadPhase = W.contactManager.broadPhase;
-        for (var f = fixtures; f != null; f = f.next)
+        BroadPhase broadPhase = W.contactManager.broadPhase;
+        for (Fixture f = fixtures; f != null; f = f.next)
             f.synchronize(broadPhase, xf1, this);
 
 
@@ -1250,7 +1250,7 @@ public class Body2D extends Transform {
         Rot q = this;
         q.s = (float) Math.sin(sweep.a);
         q.c = (float) Math.cos(sweep.a);
-        var v = sweep.localCenter;
+        v2 v = sweep.localCenter;
         pos.x = sweep.c.x - q.c * v.x + q.s * v.y;
         pos.y = sweep.c.y - q.s * v.x - q.c * v.y;
     }

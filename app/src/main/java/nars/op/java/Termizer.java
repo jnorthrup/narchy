@@ -25,7 +25,7 @@ public interface Termizer {
 	}
 
 	default Object[] object(Object prefix, Term[] t) {
-		var x = new Object[t.length+1];
+        Object[] x = new Object[t.length+1];
 		x[0] = prefix;
 		return Util.map(this::object, x, 1, t, 0, t.length);
 	}

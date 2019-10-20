@@ -17,15 +17,15 @@ public class StepTruthlet extends ProxyTruthlet {
 
     @Override
     public void truth(long when, float[] freqEvi) {
-        var s = start();
-        var e = end();
+        long s = start();
+        long e = end();
 
         if (s <= when && when <= e) {
             super.truth(when, freqEvi); 
         } else {
 
-            var sd = Math.abs(s - when);
-            var ed = Math.abs(e - when);
+            long sd = Math.abs(s - when);
+            long ed = Math.abs(e - when);
             long dist; float f;
             if (sd <= ed) {
                 dist = sd;

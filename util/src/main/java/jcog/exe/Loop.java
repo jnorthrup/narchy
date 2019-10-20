@@ -67,7 +67,7 @@ public abstract class Loop extends FixedRateTimedFuture {
     public Loop(AtomicInteger periodMS) {
         super();
 
-        var p = periodMS.get();
+        int p = periodMS.get();
 
         //HACK trigger change in period value to trigger start
         periodMS.set(-1);
@@ -128,7 +128,7 @@ public abstract class Loop extends FixedRateTimedFuture {
             starting();
         //}
 
-        var t = Exe.timer();
+        HashedWheelTimer t = Exe.timer();
         setPeriodNS(NANOSECONDS.convert(nextPeriodMS, TimeUnit.MILLISECONDS));
         reset(t.wheels, t.resolution);
         t.reschedule(this);
@@ -214,7 +214,7 @@ public abstract class Loop extends FixedRateTimedFuture {
 
 
     public float getFPS() {
-        var pms = periodMS();
+        int pms = periodMS();
         if (pms > 0 /* isRunning() */) {
             return 1000f / pms;
         } else {
@@ -223,7 +223,7 @@ public abstract class Loop extends FixedRateTimedFuture {
     }
 
     public long periodNS() {
-        var m = periodMS();
+        int m = periodMS();
         return m >= 0  ? m * 1_000_000L : -1;
     }
 

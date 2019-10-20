@@ -56,10 +56,10 @@ class ClipPolygon {
 	 * This function calcs the distance from a 3D plane.
 	 */
 	private static void plane_clip_polygon_collect(v3 point0, v3 point1, float dist0, float dist1, OArrayList<v3> clipped, int[] clipped_count) {
-		var _prevclassif = (dist0 > BulletGlobals.SIMD_EPSILON);
-		var _classif = (dist1 > BulletGlobals.SIMD_EPSILON);
+        boolean _prevclassif = (dist0 > BulletGlobals.SIMD_EPSILON);
+        boolean _classif = (dist1 > BulletGlobals.SIMD_EPSILON);
 		if (_classif != _prevclassif) {
-			var blendfactor = -dist0 / (dist1 - dist0);
+            float blendfactor = -dist0 / (dist1 - dist0);
             
             vec_blend(clipped.get(clipped_count[0]), point0, point1, blendfactor);
 			clipped_count[0]++;
@@ -79,11 +79,11 @@ class ClipPolygon {
 	public static int plane_clip_polygon(Vector4f plane, OArrayList<v3> polygon_points, int polygon_point_count, OArrayList<v3> clipped) {
 		ArrayPool<int[]> intArrays = ArrayPool.the(int.class);
 
-		var clipped_count = intArrays.getExact(1);
+        int[] clipped_count = intArrays.getExact(1);
 		clipped_count[0] = 0;
 
 
-		var firstdist = distance_point_plane(plane, polygon_points.get(0));
+        float firstdist = distance_point_plane(plane, polygon_points.get(0));
 		if (!(firstdist > BulletGlobals.SIMD_EPSILON)) {
             
             
@@ -91,10 +91,10 @@ class ClipPolygon {
 			clipped_count[0]++;
 		}
 
-		var olddist = firstdist;
-		for (var i = 1; i<polygon_point_count; i++) {
+        float olddist = firstdist;
+		for (int i = 1; i<polygon_point_count; i++) {
 
-			var dist = distance_point_plane(plane, polygon_points.get(i));
+            float dist = distance_point_plane(plane, polygon_points.get(i));
 
             
             
@@ -120,7 +120,7 @@ class ClipPolygon {
 				clipped,
 				clipped_count);
 
-		var ret = clipped_count[0];
+        int ret = clipped_count[0];
 		intArrays.put(clipped_count);
 		return ret;
 	}
@@ -134,11 +134,11 @@ class ClipPolygon {
 	public static int plane_clip_triangle(Vector4f plane, v3 point0, v3 point1, v3 point2, OArrayList<v3> clipped) {
 		ArrayPool<int[]> intArrays = ArrayPool.the(int.class);
 
-		var clipped_count = intArrays.getExact(1);
+        int[] clipped_count = intArrays.getExact(1);
 		clipped_count[0] = 0;
 
 
-		var firstdist = distance_point_plane(plane, point0);
+        float firstdist = distance_point_plane(plane, point0);
 		if (!(firstdist > BulletGlobals.SIMD_EPSILON)) {
             
             clipped.get(clipped_count[0]).set(point0);
@@ -146,8 +146,8 @@ class ClipPolygon {
 		}
 
 
-		var olddist = firstdist;
-		var dist = distance_point_plane(plane, point1);
+        float olddist = firstdist;
+        float dist = distance_point_plane(plane, point1);
 
 		plane_clip_polygon_collect(
 				point0, point1,
@@ -180,7 +180,7 @@ class ClipPolygon {
 				clipped,
 				clipped_count);
 
-		var ret = clipped_count[0];
+        int ret = clipped_count[0];
 		intArrays.put(clipped_count);
 		return ret;
 	}

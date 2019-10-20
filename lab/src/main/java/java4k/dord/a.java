@@ -42,7 +42,7 @@ public class a extends GamePanel {
   @Override
   public void run() {
     
-    final var S
+    final String S
         = "aaaaabbbbabbbbabbbbabbbbaaaaaaabbbbabbbbabbbbabbbbccccccccccaaacccca"
         + "ccccaccccaccccaccccaaaccccccccccddddddddddaaaddddaddddaddddaddddaddd"
         + "daaaddddddddddeeeeeeeeeeaaaeeeeaeeeeaeeeeaeeeeaeeeeaaaeeeeeeeeeeaaaa"
@@ -797,54 +797,54 @@ public class a extends GamePanel {
         + "igagsgaggagbhbgi"
         + "igaaagaggagbbggi";    
     
-    final var TILES = 34;
-      final var TILE_GREEN_BRICK = 2;
-    final var TILE_BLUE_BRICK = 3;
+    final int TILES = 34;
+      final int TILE_GREEN_BRICK = 2;
+    final int TILE_BLUE_BRICK = 3;
 
-      final var TILE_EMPTY = 6;
-      final var TILE_GREEN_KEY = 10;
+      final int TILE_EMPTY = 6;
+      final int TILE_GREEN_KEY = 10;
 
-      final var TILE_RED_ENEMY_1 = 15;
-    final var TILE_GREEN_ENEMY_0 = 16;
-    final var TILE_GREEN_ENEMY_1 = 17;
-    final var TILE_BLUE_ENEMY_0 = 18;
-    final var TILE_BLUE_ENEMY_1 = 19;
-    final var TILE_SPIKES_ENEMY_0 = 20;
-    final var TILE_SPIKES_ENEMY_1 = 21;
-    final var TILE_YELLOW_ENEMY_0 = 22;
-    final var TILE_YELLOW_ENEMY_1 = 23;
-    final var TILE_FLIPPED_RED_ENEMY_0 = 24;
-    final var TILE_FLIPPED_RED_ENEMY_1 = 25;
-    final var TILE_ORANGE_ENEMY_0 = 26;
-    final var TILE_ORANGE_ENEMY_1 = 27;
-    final var TILE_MAGENETA_ENEMY_0 = 28;
-    final var TILE_MAGENETA_ENEMY_1 = 29;
-      final var TILE_PLAYER_1 = 31;
-    final var TILE_PLAYER_2 = 32;
-    final var TILE_PLAYER_3 = 33;
+      final int TILE_RED_ENEMY_1 = 15;
+    final int TILE_GREEN_ENEMY_0 = 16;
+    final int TILE_GREEN_ENEMY_1 = 17;
+    final int TILE_BLUE_ENEMY_0 = 18;
+    final int TILE_BLUE_ENEMY_1 = 19;
+    final int TILE_SPIKES_ENEMY_0 = 20;
+    final int TILE_SPIKES_ENEMY_1 = 21;
+    final int TILE_YELLOW_ENEMY_0 = 22;
+    final int TILE_YELLOW_ENEMY_1 = 23;
+    final int TILE_FLIPPED_RED_ENEMY_0 = 24;
+    final int TILE_FLIPPED_RED_ENEMY_1 = 25;
+    final int TILE_ORANGE_ENEMY_0 = 26;
+    final int TILE_ORANGE_ENEMY_1 = 27;
+    final int TILE_MAGENETA_ENEMY_0 = 28;
+    final int TILE_MAGENETA_ENEMY_1 = 29;
+      final int TILE_PLAYER_1 = 31;
+    final int TILE_PLAYER_2 = 32;
+    final int TILE_PLAYER_3 = 33;
 
-      final var CHAR_SPIKES = 'i';
-      final var CHAR_APPEARING_BLOCK = 'n';
-      final var CHAR_GREEN_ENEMY = 'r';
-    final var CHAR_BLUE_ENEMY = 's';
-    final var CHAR_SPIKES_ENEMY = 't';
-    final var CHAR_YELLOW_ENEMY = 'u';
-    final var CHAR_FLIPPED_RED_ENEMY = 'v';
+      final char CHAR_SPIKES = 'i';
+      final char CHAR_APPEARING_BLOCK = 'n';
+      final char CHAR_GREEN_ENEMY = 'r';
+    final char CHAR_BLUE_ENEMY = 's';
+    final char CHAR_SPIKES_ENEMY = 't';
+    final char CHAR_YELLOW_ENEMY = 'u';
+    final char CHAR_FLIPPED_RED_ENEMY = 'v';
 
-      final var FRAME_WIDTH = 160;
-    final var FRAME_HEIGHT = 120;
+      final int FRAME_WIDTH = 160;
+    final int FRAME_HEIGHT = 120;
 
-      final var ENEMY_TYPE_RED = 0;
+      final int ENEMY_TYPE_RED = 0;
 
-    var tiles = new BufferedImage[TILES];
-    var imageBuffer = new BufferedImage(
+      BufferedImage[] tiles = new BufferedImage[TILES];
+      BufferedImage imageBuffer = new BufferedImage(
         FRAME_WIDTH, FRAME_HEIGHT, BufferedImage.TYPE_INT_RGB);
-    var g = imageBuffer.createGraphics();
+      Graphics2D g = imageBuffer.createGraphics();
 
-    var i = 0;
-    var j = 0;
-    var k = 0;
-    var x = 0;
+      int i = 0;
+      int j = 0;
+      int k = 0;
+      int x = 0;
     int y;
 
 
@@ -905,74 +905,74 @@ public class a extends GamePanel {
     long nextFrameStartTime = 0;
       float playerVy = 0;
       float playerY = 0;
-    var arrowTime = 0;
-    var playerX = 0;
-    var playerSpriteOffset = 0;
-    var counter = 0;
-    var level = 0;
-    var resetDelay = 1;
-    var blockDelay = 0;
-    var blockIndex = 0;
-    var appearingBlocks = 0;
-    var diamonds = 0;
-    var advanceLevel = 0;
-    var blockClear = false;
-    var keysReleased = false;
+      int arrowTime = 0;
+      int playerX = 0;
+      int playerSpriteOffset = 0;
+      int counter = 0;
+      int level = 0;
+      int resetDelay = 1;
+      int blockDelay = 0;
+      int blockIndex = 0;
+      int appearingBlocks = 0;
+      int diamonds = 0;
+      int advanceLevel = 0;
+      boolean blockClear = false;
+      boolean keysReleased = false;
       Graphics2D g2 = null;
-    final var MAP_HEIGHT = 12;
-    final var MAP_WIDTH = 16;
-    var map = new int[MAP_HEIGHT][MAP_WIDTH];
-    var blocks = new int[10][2];
-    var enemies = new ArrayList<int[]>();
-    var BACKGROUND_COLOR = new Color(0x7F92FF);
-      final var YELLOW_RADIUS = 10;
-      final var APPEARING_BLOCK_DELAY = 50;
-      final var ADVANCE_LEVEL_DELAY = 25;
-      final var MAX_VY = 3f;
-      final var JUMP_VY = -1.6f;
-      final var GRAVITY = 0.05f;
-      final var LEVELS = 56;
-      final var ENEMY_TYPE_MAGENETA = 7;
-      final var ENEMY_TYPE_ORANGE = 6;
-      final var ENEMY_TYPE_FLIPPED_RED = 5;
-      final var ENEMY_TYPE_YELLOW = 4;
-      final var ENEMY_TYPE_SPIKES = 3;
-      final var ENEMY_TYPE_BLUE = 2;
-      final var ENEMY_TYPE_GREEN = 1;
-      final var ENEMY_RADIUS = 6;
-      final var ENEMY_CY = 5;
-      final var ENEMY_CX = 4;
-      final var ENEMY_TYPE = 3;
-      final var ENEMY_V = 2;
-      final var ENEMY_Y = 1;
-      final var ENEMY_X = 0;
-      final var SCREEN_HEIGHT = 600;
-      final var SCREEN_WIDTH = 800;
-      final var KEY_X = 120;
-      final var KEY_R = 114;
-      final var KEY_P = 112;
-      final var KEY_N = 110;
-      final var KEY_RIGHT = 1007;
-      final var KEY_LEFT = 1006;
-      final var CHAR_MAGENETA_ENEMY = 'x';
-      final var CHAR_ORANGE_ENEMY = 'w';
-      final var CHAR_RED_ENEMY = 'q';
-      final var CHAR_PLAYER = 'z';
-      final var CHAR_ANTIGRAVITY = 'm';
-      final var CHAR_DIAMOND = 'h';
-      final var CHAR_EMPTY = 'g';
-      final var TILE_PLAYER_0 = 30;
-      final var TILE_RED_ENEMY_0 = 14;
-      final var TILE_APPEARING_BLOCK = 13;
-      final var TILE_ANTIGRAVITY = 12;
-      final var TILE_BLUE_KEY = 11;
-      final var TILE_RED_KEY = 9;
-      final var TILE_SPIKES = 8;
-      final var TILE_DIAMOND = 7;
-      final var TILE_LEFT_BRICK = 5;
-      final var TILE_RIGHT_BRICK = 4;
-      final var TILE_RED_BRICK = 1;
-      final var TILE_BRICK = 0;
+    final int MAP_HEIGHT = 12;
+    final int MAP_WIDTH = 16;
+      int[][] map = new int[MAP_HEIGHT][MAP_WIDTH];
+      int[][] blocks = new int[10][2];
+      ArrayList<int[]> enemies = new ArrayList<int[]>();
+      Color BACKGROUND_COLOR = new Color(0x7F92FF);
+      final int YELLOW_RADIUS = 10;
+      final int APPEARING_BLOCK_DELAY = 50;
+      final int ADVANCE_LEVEL_DELAY = 25;
+      final float MAX_VY = 3f;
+      final float JUMP_VY = -1.6f;
+      final float GRAVITY = 0.05f;
+      final int LEVELS = 56;
+      final int ENEMY_TYPE_MAGENETA = 7;
+      final int ENEMY_TYPE_ORANGE = 6;
+      final int ENEMY_TYPE_FLIPPED_RED = 5;
+      final int ENEMY_TYPE_YELLOW = 4;
+      final int ENEMY_TYPE_SPIKES = 3;
+      final int ENEMY_TYPE_BLUE = 2;
+      final int ENEMY_TYPE_GREEN = 1;
+      final int ENEMY_RADIUS = 6;
+      final int ENEMY_CY = 5;
+      final int ENEMY_CX = 4;
+      final int ENEMY_TYPE = 3;
+      final int ENEMY_V = 2;
+      final int ENEMY_Y = 1;
+      final int ENEMY_X = 0;
+      final int SCREEN_HEIGHT = 600;
+      final int SCREEN_WIDTH = 800;
+      final int KEY_X = 120;
+      final int KEY_R = 114;
+      final int KEY_P = 112;
+      final int KEY_N = 110;
+      final int KEY_RIGHT = 1007;
+      final int KEY_LEFT = 1006;
+      final char CHAR_MAGENETA_ENEMY = 'x';
+      final char CHAR_ORANGE_ENEMY = 'w';
+      final char CHAR_RED_ENEMY = 'q';
+      final char CHAR_PLAYER = 'z';
+      final char CHAR_ANTIGRAVITY = 'm';
+      final char CHAR_DIAMOND = 'h';
+      final char CHAR_EMPTY = 'g';
+      final int TILE_PLAYER_0 = 30;
+      final int TILE_RED_ENEMY_0 = 14;
+      final int TILE_APPEARING_BLOCK = 13;
+      final int TILE_ANTIGRAVITY = 12;
+      final int TILE_BLUE_KEY = 11;
+      final int TILE_RED_KEY = 9;
+      final int TILE_SPIKES = 8;
+      final int TILE_DIAMOND = 7;
+      final int TILE_LEFT_BRICK = 5;
+      final int TILE_RIGHT_BRICK = 4;
+      final int TILE_RED_BRICK = 1;
+      final int TILE_BRICK = 0;
       while(true) {
 
           int[] enemy;
@@ -1049,7 +1049,7 @@ public class a extends GamePanel {
           }
           blockClear = !blockClear;
         }
-            var insideOfBrick = false;
+              boolean insideOfBrick = false;
         for(i = 0; i < 2; i++) {
           for(j = 0; j < 2; j++) {
             if (map[((9 * i + ((int)playerY) + FRAME_HEIGHT) 
@@ -1061,10 +1061,16 @@ public class a extends GamePanel {
         }
 
 
-            var px = playerX;
-            var py = (int)playerY;
-            var b = IntStream.of(KEY_X, KEY_R, KEY_N, KEY_P).noneMatch(v -> a[v]);
-        if (b) {
+              int px = playerX;
+              int py = (int)playerY;
+            boolean b = true;
+            for (int v : new int[]{KEY_X, KEY_R, KEY_N, KEY_P}) {
+              if (a[v]) {
+                b = false;
+                break;
+              }
+            }
+            if (b) {
           keysReleased = true;
         }
         if (keysReleased && a[KEY_R]) {
@@ -1083,8 +1089,8 @@ public class a extends GamePanel {
           resetDelay = 1;
         }
         playerSpriteOffset = 0;
-            var floorY = 10;
-            var vk = 1;
+              int floorY = 10;
+              int vk = 1;
         if (map[((5 + ((int)playerY) + FRAME_HEIGHT) % FRAME_HEIGHT) / 10]
                  [((5 + playerX + FRAME_WIDTH) % FRAME_WIDTH) / 10] 
                       == TILE_ANTIGRAVITY) {
@@ -1119,12 +1125,12 @@ public class a extends GamePanel {
           }
         }
 
-            var remainderVy = 0;
+              int remainderVy = 0;
               int q;
               int z;
               for(k = 0; k < 2 || remainderVy != 0; k++) {
           x = playerX;
-                var Y = playerY;
+                  float Y = playerY;
           if (k == 0) {
             if (a[KEY_LEFT]) {
               arrowTime++;
@@ -1176,8 +1182,8 @@ public class a extends GamePanel {
           playerY = (playerY + FRAME_HEIGHT) % FRAME_HEIGHT;
           for(i = 0; i < 2; i++) {
             for(j = 0; j < 2; j++) {
-              var mx = ((9 * j + playerX + FRAME_WIDTH) % FRAME_WIDTH) / 10;
-              var my = ((9 * i + ((int)playerY) + FRAME_HEIGHT)
+                int mx = ((9 * j + playerX + FRAME_WIDTH) % FRAME_WIDTH) / 10;
+                int my = ((9 * i + ((int)playerY) + FRAME_HEIGHT)
                   % FRAME_HEIGHT) / 10;
               z = map[my][mx];
               if (z <= TILE_LEFT_BRICK) {
@@ -1215,7 +1221,7 @@ public class a extends GamePanel {
             p = ((9 * j + px + FRAME_WIDTH) % FRAME_WIDTH) / 10;            
             q = ((9 * i + py + FRAME_HEIGHT) % FRAME_HEIGHT) / 10;
             if (map[q][p] == TILE_APPEARING_BLOCK) {
-              var blockUnfound = true;
+                boolean blockUnfound = true;
               for(y = 0; y < 2; y++) {
                 for(x = 0; x < 2; x++) {
                   if (p == ((9 * x + playerX + FRAME_WIDTH) % FRAME_WIDTH) / 10
@@ -1400,29 +1406,29 @@ public class a extends GamePanel {
   @Override
   public boolean handleEvent(Event e) {
     
-    final var KEY_LEFT = 1006;
-    final var KEY_RIGHT = 1007;
-    final var KEY_N = 110;
-    final var KEY_P = 112;
-    final var KEY_R = 114;
+    final int KEY_LEFT = 1006;
+    final int KEY_RIGHT = 1007;
+    final int KEY_N = 110;
+    final int KEY_P = 112;
+    final int KEY_R = 114;
 
-      for (var i : new int[]{KEY_LEFT, KEY_RIGHT, KEY_N, KEY_P, KEY_R}) {
+      for (int i : new int[]{KEY_LEFT, KEY_RIGHT, KEY_N, KEY_P, KEY_R}) {
       if (e.key == i) {
         return a[e.key]
                 = e.id == 401 || e.id == 403;
       }
     }
-      final var KEY_X = 120;
+      final int KEY_X = 120;
       return a[KEY_X]
             = e.id == 401 || e.id == 403;
   }  
 
   
   public static void main(String[] args) throws Throwable {
-    var frame = new javax.swing.JFrame(
+      JFrame frame = new javax.swing.JFrame(
         "Dord");
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    var applet = new a();
+      java4k.dord.a applet = new a();
     applet.setPreferredSize(new java.awt.Dimension(800, 600));
     frame.add(applet, java.awt.BorderLayout.CENTER);
     frame.setResizable(false);    

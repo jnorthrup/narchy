@@ -63,7 +63,7 @@ public abstract class BinaryOperator extends ParentNode {
 
     @Override
     public Node cloneTree() {
-        var bop = buildCopy();
+        BinaryOperator bop = buildCopy();
         if (size() >= 2) {
             cloneChild(get(0), bop);
             cloneChild(get(1), bop);

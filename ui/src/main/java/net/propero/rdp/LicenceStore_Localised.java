@@ -39,14 +39,14 @@ public class LicenceStore_Localised extends LicenceStore {
 
     @Override
     public byte[] load_licence() {
-        var prefs = Preferences.userNodeForPackage(this.getClass());
+        Preferences prefs = Preferences.userNodeForPackage(this.getClass());
         return prefs.getByteArray("licence." + Options.hostname, null);
 
     }
 
     @Override
     public void save_licence(byte[] databytes) {
-        var prefs = Preferences.userNodeForPackage(this.getClass());
+        Preferences prefs = Preferences.userNodeForPackage(this.getClass());
         prefs.putByteArray("licence." + Options.hostname, databytes);
     }
 

@@ -179,7 +179,7 @@ public class AudioUtils {
     public static void performData(byte[] data) {
         //For some reason line.write seems to affect the data
         //to avoid the side effect, we copy it
-        var dataCopy = new byte[data.length];
+        byte[] dataCopy = new byte[data.length];
         System.arraycopy(data, 0, dataCopy, 0, data.length);
 
         SourceDataLine line = null;
@@ -199,7 +199,7 @@ public class AudioUtils {
 
 
     public static void performSOS() throws IOException {
-        var baos = new ByteArrayOutputStream();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Encoder.generateSOS(baos);
         performData(baos.toByteArray());
     }
@@ -213,7 +213,7 @@ public class AudioUtils {
             throws UnsupportedAudioFileException,
             IOException {
 
-        var msg = new StringBuilder();
+        StringBuilder msg = new StringBuilder();
 
         var sDecoder = new StreamDecoder(out) {
 
@@ -235,7 +235,7 @@ public class AudioUtils {
             }
         };
 
-        var audioInputStream =
+        AudioInputStream audioInputStream =
                 AudioSystem.getAudioInputStream(kDefaultFormat,
                         AudioSystem.getAudioInputStream(inputFile));
 
@@ -267,7 +267,7 @@ public class AudioUtils {
 
     public static void writeWav(File file, byte[] data, AudioFormat format) throws IllegalArgumentException, IOException {
 
-        var ais = new AudioInputStream(new ByteArrayInputStream(data), format, data.length);
+        AudioInputStream ais = new AudioInputStream(new ByteArrayInputStream(data), format, data.length);
         AudioSystem.write(ais, AudioFileFormat.Type.WAVE, file);
         ais.close();
 
@@ -275,29 +275,29 @@ public class AudioUtils {
     }
 
     public static void displayMixerInfo() {
-        var mInfos = AudioSystem.getMixerInfo();
+        Mixer.Info[] mInfos = AudioSystem.getMixerInfo();
         if (mInfos == null) {
             System.out.println("No Mixers found");
             return;
         }
 
-        for (var mInfo : mInfos) {
+        for (Mixer.Info mInfo : mInfos) {
             System.out.println("Mixer Info: " + mInfo);
-            var mixer = AudioSystem.getMixer(mInfo);
-            var lines = mixer.getSourceLineInfo();
-            for (var info : lines) {
+            Mixer mixer = AudioSystem.getMixer(mInfo);
+            Line.Info[] lines = mixer.getSourceLineInfo();
+            for (Line.Info info : lines) {
                 System.out.println("\tSource: " + info);
             }
             lines = mixer.getTargetLineInfo();
-            for (var line : lines) {
+            for (Line.Info line : lines) {
                 System.out.println("\tTarget: " + line);
             }
         }
     }
 
     public static void displayAudioFileTypes() {
-        var types = AudioSystem.getAudioFileTypes();
-        for (var type : types) {
+        AudioFileFormat.Type[] types = AudioSystem.getAudioFileTypes();
+        for (AudioFileFormat.Type type : types) {
             System.out.println("Audio File Type:" + type);
         }
     }
@@ -306,15 +306,15 @@ public class AudioUtils {
     // NOT USED!! - replaced by MicrophoneListener.run()
     public static void listenToMicrophone(AudioBuffer buff) {
         try {
-            var buffSize = 4096;
-            var line = getTargetDataLine(kDefaultFormat);
+            int buffSize = 4096;
+            TargetDataLine line = getTargetDataLine(kDefaultFormat);
             line.open(kDefaultFormat, buffSize);
 
-            var out = new ByteArrayOutputStream();
-            var data = new byte[line.getBufferSize() / 5];
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            byte[] data = new byte[line.getBufferSize() / 5];
             line.start();
             while (true) {
-                var numBytesRead = line.read(data, 0, data.length);
+                int numBytesRead = line.read(data, 0, data.length);
                 buff.write(data, 0, numBytesRead);
             }
 	    /*
@@ -329,15 +329,15 @@ public class AudioUtils {
 
     public static void recordToFile(File file, int length) {
         try {
-            var buffSize = 4096;
-            var line = getTargetDataLine(kDefaultFormat);
+            int buffSize = 4096;
+            TargetDataLine line = getTargetDataLine(kDefaultFormat);
             line.open(kDefaultFormat, buffSize);
 
-            var out = new ByteArrayOutputStream();
-            var data = new byte[line.getBufferSize() / 5];
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            byte[] data = new byte[line.getBufferSize() / 5];
             line.start();
-            for (var i = 0; i < length; i++) {
-                var numBytesRead = line.read(data, 0, data.length);
+            for (int i = 0; i < length; i++) {
+                int numBytesRead = line.read(data, 0, data.length);
                 out.write(data, 0, numBytesRead);
             }
             line.drain();
@@ -353,7 +353,7 @@ public class AudioUtils {
 
     static TargetDataLine getTargetDataLine(AudioFormat format)
             throws LineUnavailableException {
-        var info = new DataLine.Info(TargetDataLine.class, format);
+        DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
         if (!AudioSystem.isLineSupported(info)) {
             throw new LineUnavailableException();
         }
@@ -362,7 +362,7 @@ public class AudioUtils {
 
     static SourceDataLine getSourceDataLine(AudioFormat format)
             throws LineUnavailableException {
-        var info = new DataLine.Info(SourceDataLine.class, format);
+        DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
         if (!AudioSystem.isLineSupported(info)) {
             throw new LineUnavailableException();
         }
@@ -371,7 +371,7 @@ public class AudioUtils {
 
     public static void encodeFileToWav(File inputFile, File outputFile)
             throws IOException {
-        var baos = new ByteArrayOutputStream();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Encoder.encodeStream(new FileInputStream(inputFile), baos);
         writeWav(outputFile, baos.toByteArray(), kDefaultFormat);
     }
@@ -379,7 +379,7 @@ public class AudioUtils {
 
     public static void performFile(File file)
             throws IOException {
-        var baos = new ByteArrayOutputStream();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Encoder.encodeStream(new FileInputStream(file), baos);
         performData(baos.toByteArray());
     }
@@ -428,7 +428,7 @@ public class AudioUtils {
             if (baos.size() < n * requiredPresent) {
                 return null;
             }
-            var result = ArrayUtils.subarray(baos.toByteArray(), 0, n);
+            byte[] result = ArrayUtils.subarray(baos.toByteArray(), 0, n);
             return result;
         }
 
@@ -449,7 +449,7 @@ public class AudioUtils {
                 baos.reset();
                 return;
             }
-            var buff = ArrayUtils.subarray(baos.toByteArray(), n - 1, baos.size() - n);
+            byte[] buff = ArrayUtils.subarray(baos.toByteArray(), n - 1, baos.size() - n);
             baos.reset();
             baos.write(buff);
         }
@@ -458,7 +458,7 @@ public class AudioUtils {
          * @return the current size of the buffer
          */
         public synchronized int size() {
-            var size = baos.size();
+            int size = baos.size();
             return size;
         }
     }

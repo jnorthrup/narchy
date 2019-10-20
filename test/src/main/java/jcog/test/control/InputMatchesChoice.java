@@ -16,27 +16,27 @@ public class InputMatchesChoice extends AbstractAgentTest {
     @Override
     protected void test(IntIntToObjectFunction<Agent> agentBuilder) {
 
-        var agent = agentBuilder.value(2, 2);
+        Agent agent = agentBuilder.value(2, 2);
 
-        var cycles = 500;
+        int cycles = 500;
 
         Random rng = new XoRoShiRo128PlusRandom(1);
-        var acts = new IntIntHashMap();
+        IntIntHashMap acts = new IntIntHashMap();
 
         float nextReward = 0;
         float rewardSum = 0;
-        for (var i = 0; i < cycles; i++) {
+        for (int i = 0; i < cycles; i++) {
 
-            var which = rng.nextBoolean();
+            boolean which = rng.nextBoolean();
 
-            var action = agent.act(nextReward, new float[]{which ? 1 : 0, which ? 0 : 1} );
+            int action = agent.act(nextReward, new float[]{which ? 1 : 0, which ? 0 : 1} );
 
             acts.addToValue(action, 1);
 
             nextReward = (which ? action == 1 : action == 0) ? +1 : -1;
             rewardSum += nextReward;
         }
-        var rewardMean = rewardSum / cycles;
+        float rewardMean = rewardSum / cycles;
         System.out.println(agent.getClass() + " " + agent.summary() + '\n' + acts + ' ' + rewardMean);
         assertTrue(rewardMean > 0); //should be tougher
     }

@@ -41,14 +41,20 @@ public abstract class AbstractButton extends Widget {
     @Override
     public Surface finger(Finger finger) {
         Surface result = this;
-        var finished = false;
-        var f = super.finger(finger);
+        boolean finished = false;
+        Surface f = super.finger(finger);
         if (f == this) {
             if (enabled() && finger.test(click)) {
                 result = this;
                 finished = true;
             } else {
-                var b = IntStream.of(CLICK_BUTTON, 1, 0).anyMatch(finger::dragging);
+                boolean b = false;
+                for (int i : new int[]{CLICK_BUTTON, 1, 0}) {
+                    if (finger.dragging(i)) {
+                        b = true;
+                        break;
+                    }
+                }
                 if (b) {
                     //allow pass-through for drag actions
                     result = null;
@@ -116,7 +122,7 @@ public abstract class AbstractButton extends Widget {
     public boolean key(KeyEvent e, boolean pressedOrReleased) {
         if (!super.key(e, pressedOrReleased)) {
             if (pressedOrReleased) {
-                var c = e.getKeyCode();
+                short c = e.getKeyCode();
                 if (c == VK_ENTER || c == VK_SPACE) {
                     onClick(e);
                     return true;

@@ -2,6 +2,8 @@ package asanf.FOM.Util;
 
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 /**
@@ -36,7 +38,12 @@ public class DTMatrix<E> {
 	 */
 	protected double[][] allocateMatrix(int size)
 	{
-		var tmp = IntStream.range(0, size).mapToObj(i -> new double[i + 1]).toArray(double[][]::new);
+		List<double[]> list = new ArrayList<>();
+		for (int i = 0; i < size; i++) {
+			double[] doubles = new double[i + 1];
+			list.add(doubles);
+		}
+		double[][] tmp = list.toArray(new double[0][]);
         return tmp;
 	}
 	
@@ -48,9 +55,9 @@ public class DTMatrix<E> {
 	 */
 	protected double[][] growSize(double[][] matrix)
 	{
-		var newSize = matrix.length * 2;
-		var newMatrix = allocateMatrix(newSize);
-		for(var i = 0; i < matrix.length; i++){
+        int newSize = matrix.length * 2;
+        double[][] newMatrix = allocateMatrix(newSize);
+		for(int i = 0; i < matrix.length; i++){
 			System.arraycopy(matrix[i], 0, newMatrix[i], 0, matrix[i].length);
 		}
 		return newMatrix;
@@ -72,7 +79,7 @@ public class DTMatrix<E> {
 	 * @return Il valore associato al termine target
 	 */
 	protected double getValue(E term){
-		var i = index(term);
+        int i = index(term);
 		return values[i][i];
 	}
 	
@@ -83,11 +90,11 @@ public class DTMatrix<E> {
 	 * @return Il valore associato a first e second 
 	 */
 	protected double getValue(E first, E second){
-		var i = index(first);
-		var j = index(second);
+        int i = index(first);
+        int j = index(second);
 
 		if (i < j) {
-			var tmp = i;
+            int tmp = i;
 			i = j;
 			j = tmp;
 		}
@@ -101,12 +108,12 @@ public class DTMatrix<E> {
 	 * @param value il valore da associare a target
 	 */
 	protected void setValue(E term, double value){
-		var i = index(term);
+        int i = index(term);
 		values[i][i] = value;
 	}
 
 	public int index(E term) {
-		var i = terms.getIfAbsent(term, -1);
+        int i = terms.getIfAbsent(term, -1);
 		if(i ==-1){
 			i = terms.size();
 			terms.put(term, i);
@@ -122,11 +129,11 @@ public class DTMatrix<E> {
 	 * @param value il valore da associare alla coppia
 	 */
 	protected void setValue(E first, E second, double value){
-		var i = index(first);
-		var j = index(second);
+        int i = index(first);
+        int j = index(second);
 
 		if (i < j) {
-			var tmp = i;
+            int tmp = i;
 			i = j;
 			j = tmp;
 		}
@@ -140,7 +147,7 @@ public class DTMatrix<E> {
 	 * @param increment incremento
 	 */
 	protected void add(E term, double increment){
-		var i = index(term);
+        int i = index(term);
 		values[i][i] += increment;
 	}
 	
@@ -151,10 +158,10 @@ public class DTMatrix<E> {
 	 * @param increment incremento
 	 */
 	protected void add(E first, E second, double increment){
-		var i = index(first);
-		var j = index(second);
+        int i = index(first);
+        int j = index(second);
 		if (i < j) {
-			var tmp = i;
+            int tmp = i;
 			i = j;
 			j = tmp;
 		}
@@ -162,8 +169,8 @@ public class DTMatrix<E> {
 	}
 	
 	protected void normalizeBy(double value){
-        for(var i = 0; i < values.length; i++)
-			for(var j = 0; j < values[i].length; j++){
+        for(int i = 0; i < values.length; i++)
+			for(int j = 0; j < values[i].length; j++){
 				values[i][j] /= value;
 			}
 	}

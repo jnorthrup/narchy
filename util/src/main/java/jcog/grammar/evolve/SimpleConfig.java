@@ -69,7 +69,7 @@ public class SimpleConfig {
         assert !(isFlagging&&isStriped);
 
 
-        var configuration = new Configuration();
+        Configuration configuration = new Configuration();
         configuration.setConfigName("Console config");
         configuration.getEvolutionParameters().setGenerations(generations);
         configuration.getEvolutionParameters().setPopulationSize(populationSize);
@@ -78,7 +78,7 @@ public class SimpleConfig {
                 MultithreadStrategy.THREADS_KEY, String.valueOf(numberThreads)
         );
 
-        var terminationGenerations = (int)(termination * configuration.getEvolutionParameters().getGenerations() / 100.0);
+        int terminationGenerations = (int)(termination * configuration.getEvolutionParameters().getGenerations() / 100.0);
         if(termination==100.0){
             configuration.getStrategyParameters().put("terminationCriteria","false");  
         } else {
@@ -92,7 +92,7 @@ public class SimpleConfig {
             throw new IllegalArgumentException("You must define a dataset");
         }
         dataset.populateUnmatchesFromMatches();
-        var datasetContainer = new DatasetContainer(dataset);
+        DatasetContainer datasetContainer = new DatasetContainer(dataset);
         datasetContainer.createDefaultRanges((int) configuration.getInitialSeed());
         
         dataset.updateStats();

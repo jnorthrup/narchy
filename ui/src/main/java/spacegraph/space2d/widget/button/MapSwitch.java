@@ -6,13 +6,13 @@ public enum MapSwitch { ;
     /** TODO decide initialization semantics */
     public static <X> ButtonSet the(Map<X,Runnable> x) {
 
-        var b = new ToggleButton[x.size()];
+        ToggleButton[] b = new ToggleButton[x.size()];
 
         int[] i = {0};
-        for (var entry : x.entrySet()) {
-            var xx = entry.getKey();
-            var r = entry.getValue();
-            var tb = new CheckBox(xx.toString());
+        for (Map.Entry<X, Runnable> entry : x.entrySet()) {
+            X xx = entry.getKey();
+            Runnable r = entry.getValue();
+            CheckBox tb = new CheckBox(xx.toString());
             tb.on((c, enabled) -> {
                 if (enabled)
                     r.run();

@@ -21,8 +21,8 @@ import spacegraph.video.Tex;
   @Override
   @Deprecated protected void innerDraw(GL2 gl) {
 
-    var tt = TextureProvider.the.getTexture(gl, String.valueOf(bufferChar.getChar()));
-    var texture = tt.texture;
+      Tex tt = TextureProvider.the.getTexture(gl, String.valueOf(bufferChar.getChar()));
+      Texture texture = tt.texture;
     if (texture==null) return; //HACK
 
     texture.enable(gl);

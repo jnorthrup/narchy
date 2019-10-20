@@ -295,7 +295,7 @@ public abstract class Tuple2d implements java.io.Serializable, Cloneable {
      * @return the integer hash code value
      */  
     public int hashCode() {
-        var bits = 1L;
+        long bits = 1L;
 	bits = 31L * bits + VecMathUtil.doubleToLongBits(x);
 	bits = 31L * bits + VecMathUtil.doubleToLongBits(y);
 	return (int) (bits ^ (bits >> 32));
@@ -327,7 +327,7 @@ public abstract class Tuple2d implements java.io.Serializable, Cloneable {
     public boolean equals(Object t1)
     {
         try {
-            var t2 = (Tuple2d) t1;
+            Tuple2d t2 = (Tuple2d) t1;
            return(this.x == t2.x && this.y == t2.y);
         }
         catch (NullPointerException | ClassCastException e2) {return false;}
@@ -346,7 +346,7 @@ public abstract class Tuple2d implements java.io.Serializable, Cloneable {
     public boolean epsilonEquals(Tuple2d t1, double epsilon)
     {
 
-        var diff = x - t1.x;
+        double diff = x - t1.x;
         if(Double.isNaN(diff)) return false;
        if((diff<0?-diff:diff) > epsilon) return false;
 

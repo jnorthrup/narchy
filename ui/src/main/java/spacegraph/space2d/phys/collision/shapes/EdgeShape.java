@@ -86,22 +86,22 @@ public class EdgeShape extends Shape {
 
     @Override
     public float distance(Transform xf, v2 p, int childIndex, v2 normalOut) {
-        var xfqc = xf.c;
-        var xfqs = xf.s;
-        var xfpx = xf.pos.x;
-        var xfpy = xf.pos.y;
-        var v1x = (xfqc * m_vertex1.x - xfqs * m_vertex1.y) + xfpx;
-        var v1y = (xfqs * m_vertex1.x + xfqc * m_vertex1.y) + xfpy;
-        var v2x = (xfqc * m_vertex2.x - xfqs * m_vertex2.y) + xfpx;
-        var v2y = (xfqs * m_vertex2.x + xfqc * m_vertex2.y) + xfpy;
+        float xfqc = xf.c;
+        float xfqs = xf.s;
+        float xfpx = xf.pos.x;
+        float xfpy = xf.pos.y;
+        float v1x = (xfqc * m_vertex1.x - xfqs * m_vertex1.y) + xfpx;
+        float v1y = (xfqs * m_vertex1.x + xfqc * m_vertex1.y) + xfpy;
+        float v2x = (xfqc * m_vertex2.x - xfqs * m_vertex2.y) + xfpx;
+        float v2y = (xfqs * m_vertex2.x + xfqc * m_vertex2.y) + xfpy;
 
-        var dx = p.x - v1x;
-        var dy = p.y - v1y;
-        var sx = v2x - v1x;
-        var sy = v2y - v1y;
-        var ds = dx * sx + dy * sy;
+        float dx = p.x - v1x;
+        float dy = p.y - v1y;
+        float sx = v2x - v1x;
+        float sy = v2y - v1y;
+        float ds = dx * sx + dy * sy;
         if (ds > 0) {
-            var s2 = sx * sx + sy * sy;
+            float s2 = sx * sx + sy * sy;
             if (ds > s2) {
                 dx = p.x - v2x;
                 dy = p.y - v2y;
@@ -111,7 +111,7 @@ public class EdgeShape extends Shape {
             }
         }
 
-        var d1 = (float) Math.sqrt(dx * dx + dy * dy);
+        float d1 = (float) Math.sqrt(dx * dx + dy * dy);
         if (d1 > 0) {
             normalOut.x = 1 / d1 * dx;
             normalOut.y = 1 / d1 * dy;
@@ -129,61 +129,61 @@ public class EdgeShape extends Shape {
     @Override
     public boolean raycast(RayCastOutput output, RayCastInput input, Transform xf, int childIndex) {
 
-        var v1 = m_vertex1;
-        var v2 = m_vertex2;
+        v2 v1 = m_vertex1;
+        v2 v2 = m_vertex2;
         Rot xfq = xf;
-        var xfp = xf.pos;
+        jcog.math.v2 xfp = xf.pos;
 
 
-        var tempx = input.p1.x - xfp.x;
-        var tempy = input.p1.y - xfp.y;
-        var p1x = xfq.c * tempx + xfq.s * tempy;
-        var p1y = -xfq.s * tempx + xfq.c * tempy;
+        float tempx = input.p1.x - xfp.x;
+        float tempy = input.p1.y - xfp.y;
+        float p1x = xfq.c * tempx + xfq.s * tempy;
+        float p1y = -xfq.s * tempx + xfq.c * tempy;
 
         tempx = input.p2.x - xfp.x;
         tempy = input.p2.y - xfp.y;
-        var p2x = xfq.c * tempx + xfq.s * tempy;
-        var p2y = -xfq.s * tempx + xfq.c * tempy;
+        float p2x = xfq.c * tempx + xfq.s * tempy;
+        float p2y = -xfq.s * tempx + xfq.c * tempy;
 
 
         normal.x = v2.y - v1.y;
         normal.y = v1.x - v2.x;
         normal.normalize();
-        var normalx = normal.x;
-        var normaly = normal.y;
+        float normalx = normal.x;
+        float normaly = normal.y;
 
         
         
         
         tempx = v1.x - p1x;
         tempy = v1.y - p1y;
-        var numerator = normalx * tempx + normaly * tempy;
-        var dy = p2y - p1y;
-        var dx = p2x - p1x;
-        var denominator = normalx * dx + normaly * dy;
+        float numerator = normalx * tempx + normaly * tempy;
+        float dy = p2y - p1y;
+        float dx = p2x - p1x;
+        float denominator = normalx * dx + normaly * dy;
 
         if (denominator == 0.0f) {
             return false;
         }
 
-        var t = numerator / denominator;
+        float t = numerator / denominator;
         if (t < 0.0f || 1.0f < t) {
             return false;
         }
 
 
-        var rx = v2.x - v1.x;
-        var ry = v2.y - v1.y;
-        var rr = rx * rx + ry * ry;
+        float rx = v2.x - v1.x;
+        float ry = v2.y - v1.y;
+        float rr = rx * rx + ry * ry;
         if (rr == 0.0f) {
             return false;
         }
-        var qx = p1x + t * dx;
+        float qx = p1x + t * dx;
         tempx = qx - v1.x;
-        var qy = p1y + t * dy;
+        float qy = p1y + t * dy;
         tempy = qy - v1.y;
 
-        var s = (tempx * rx + tempy * ry) / rr;
+        float s = (tempx * rx + tempy * ry) / rr;
         if (s < 0.0f || 1.0f < s) {
             return false;
         }
@@ -203,14 +203,14 @@ public class EdgeShape extends Shape {
 
     @Override
     public void computeAABB(AABB aabb, Transform xf, int childIndex) {
-        var lowerBound = aabb.lowerBound;
-        var upperBound = aabb.upperBound;
+        v2 lowerBound = aabb.lowerBound;
+        v2 upperBound = aabb.upperBound;
         Rot xfq = xf;
 
-        var v1x = (xfq.c * m_vertex1.x - xfq.s * m_vertex1.y) + xf.pos.x;
-        var v1y = (xfq.s * m_vertex1.x + xfq.c * m_vertex1.y) + xf.pos.y;
-        var v2x = (xfq.c * m_vertex2.x - xfq.s * m_vertex2.y) + xf.pos.x;
-        var v2y = (xfq.s * m_vertex2.x + xfq.c * m_vertex2.y) + xf.pos.y;
+        float v1x = (xfq.c * m_vertex1.x - xfq.s * m_vertex1.y) + xf.pos.x;
+        float v1y = (xfq.s * m_vertex1.x + xfq.c * m_vertex1.y) + xf.pos.y;
+        float v2x = (xfq.c * m_vertex2.x - xfq.s * m_vertex2.y) + xf.pos.x;
+        float v2y = (xfq.s * m_vertex2.x + xfq.c * m_vertex2.y) + xf.pos.y;
 
         lowerBound.x = Math.min(v1x, v2x);
         lowerBound.y = Math.min(v1y, v2y);
@@ -232,7 +232,7 @@ public class EdgeShape extends Shape {
 
     @Override
     public Shape clone() {
-        var edge = new EdgeShape();
+        EdgeShape edge = new EdgeShape();
         edge.skinRadius = this.skinRadius;
         edge.m_hasVertex0 = this.m_hasVertex0;
         edge.m_hasVertex3 = this.m_hasVertex3;

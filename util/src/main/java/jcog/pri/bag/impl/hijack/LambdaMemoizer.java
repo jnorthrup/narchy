@@ -19,7 +19,7 @@ public class LambdaMemoizer {
 
     public static <V> Function<Object[], V> memoize(Class klass, String methodName, Class[] paramTypes, MemoizeBuilder<V> m) {
         try {
-            var method = klass.getDeclaredMethod(methodName, paramTypes);
+            Method method = klass.getDeclaredMethod(methodName, paramTypes);
             method.trySetAccessible();
             return memoize(m, method);
 
@@ -29,12 +29,12 @@ public class LambdaMemoizer {
     }
 
     public static <V> Function<Object[], V> memoize(MemoizeBuilder<V> m, Method method) {
-        var lookup = MethodHandles.lookup();
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
         try {
-            var h = lookup.unreflect(method)
+            MethodHandle h = lookup.unreflect(method)
                     .asSpreader(Object[].class, method.getParameterCount());
 
-            var methodID = serial.getAndIncrement();
+            int methodID = serial.getAndIncrement();
 
             Function<ArgKey, V> compute = x -> {
                 try {
@@ -44,7 +44,7 @@ public class LambdaMemoizer {
                 }
             };
 
-            var memoizedCalls = m.apply(compute);
+            Memoize<ArgKey, V> memoizedCalls = m.apply(compute);
 
             return args -> memoizedCalls.apply(new ArgKey(methodID, args));
 
@@ -72,7 +72,7 @@ public class LambdaMemoizer {
 
         @Override
         public boolean equals(Object o) {
-            var argList = (ArgKey) o;
+            ArgKey argList = (ArgKey) o;
             return hash == argList.hash && Arrays.equals(args, argList.args);
         }
 

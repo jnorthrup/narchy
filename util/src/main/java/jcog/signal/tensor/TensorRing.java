@@ -77,10 +77,10 @@ public class TensorRing extends AbstractShapedTensor implements WritableTensor {
 
     @Override
     public void forEach(IntFloatProcedure each, int start, int end) {
-        var v = volume();
-        var offset = width * target();
-        var ii = idx(offset, start, v);
-        for (var i = start; i < end; i++ ) {
+        int v = volume();
+        int offset = width * target();
+        int ii = idx(offset, start, v);
+        for (int i = start; i < end; i++ ) {
             each.value(i, getAtDirect(ii++));
             if (ii == v) ii = 0;
         }
@@ -88,9 +88,9 @@ public class TensorRing extends AbstractShapedTensor implements WritableTensor {
 
     @Override
     public void forEachReverse(IntFloatProcedure each, int start, int end) {
-        var v = volume();
-        var offset = width * target();
-        for (var i = end-1; i >= start; i-- ) {
+        int v = volume();
+        int offset = width * target();
+        for (int i = end-1; i >= start; i-- ) {
             each.value(i, getAtDirect(idx(offset, i, v)));
         }
     }
@@ -120,9 +120,9 @@ public class TensorRing extends AbstractShapedTensor implements WritableTensor {
 
     public void setAt(int linearCellStart, float[] values) {
 
-        var v = volume();
-        var i = idx(linearCellStart);
-        for (var x : values) {
+        int v = volume();
+        int i = idx(linearCellStart);
+        for (float x : values) {
             buffer.setAt(i++, x);
             if (i == v) i = 0;
         }
@@ -157,7 +157,7 @@ public class TensorRing extends AbstractShapedTensor implements WritableTensor {
     }
 
     public final float[] snapshot(@Nullable float[] output) {
-        var v = volume();
+        int v = volume();
         if (output==null || output.length != v)
             output = new float[v];
         writeTo(output);

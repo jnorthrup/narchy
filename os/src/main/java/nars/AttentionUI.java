@@ -58,12 +58,12 @@ public class AttentionUI {
 //    }
 
 	public static Surface whatMixer(NAR n) {
-		var w = new WhatMixer(n);
+        WhatMixer w = new WhatMixer(n);
 		return DurSurface.get(w, n, w::commit);
 	}
 
 	public static GraphEdit2D graphGraph(NAR n) {
-		var g = new GraphEdit2D();
+        GraphEdit2D g = new GraphEdit2D();
 		g.resize(800, 800);
 		//g.windoSizeMinRel(0.02f, 0.02f);
 
@@ -77,7 +77,7 @@ public class AttentionUI {
 
 	@Deprecated
 	public static Surface objectGraphs(NAR n) {
-		var g = new ObjectGraphs(()->
+        ObjectGraphs g = new ObjectGraphs(()->
 			//n.partStream()
 			Stream.concat(Streams.stream(n.control.graph.nodeIDs()), n.partStream())
 				.iterator()
@@ -98,13 +98,13 @@ public class AttentionUI {
 //					if (eID!=null)
 //						eID.weight(1f).color(0.2f, 0.2f, 0.5f);
 //				}
-			var nn = n.control.graph.node(xx.id);
+            Node<PriNode, Object> nn = n.control.graph.node(xx.id);
 				if (nn != null) {
 					//to identity object
 
 
 					for (Node<PriNode, Object> c : nn.nodes(false, true)) {
-						var e = graph.edge(xx, c.id());
+                        EdgeVis<Object> e = graph.edge(xx, c.id());
 						if (e != null) {
 							e.weight(1f).color(0.5f, 0.5f, 0.5f);
 						}
@@ -121,10 +121,10 @@ public class AttentionUI {
 	public static Graph2D objectGraph(Graph2D.Graph2DRenderer<Object> renderer) {
 		return new Graph2D<>()
 			.render((xx, graph) -> {
-				var x = xx.id;
+                Object x = xx.id;
 				if (x instanceof Prioritized) {
-					var node = (Prioritized) x;
-					var s = node.priElseZero();
+                    Prioritized node = (Prioritized) x;
+                    float s = node.priElseZero();
 					xx.pri = s;
 					//((Widget)xx.the()).color.set(Math.min(s, 1), Math.min(s, 1), 0, 1);
 				} else {
@@ -135,10 +135,10 @@ public class AttentionUI {
 			.update(new ForceDirected2D<>() {
 				@Override
 				protected void size(MutableRectFloat m, float a) {
-					var q = m.node.pri;
-					var s = (float) (Math.sqrt((Math.max(0, q))));
+                    float q = m.node.pri;
+                    float s = (float) (Math.sqrt((Math.max(0, q))));
 					//w = Util.clamp(s * a, 2, 32);
-					var w = 10 + 2 + s * a;
+                    float w = 10 + 2 + s * a;
 					m.size(w, w);
 				}
 			});
@@ -180,10 +180,10 @@ public class AttentionUI {
 
 		private Graph2D<Object> graph(Graph2D<Object> g) {
 			g.build(x -> {
-						var xid = x.id;
-						var label = xid.toString();
+                        Object xid = x.id;
+                        String label = xid.toString();
 
-						var lazy = true;
+                        boolean lazy = true;
 					x.set(lazy ? Surplier.button(label, () -> icon(xid, label)) : icon(xid,label));
 
 
@@ -247,7 +247,7 @@ public class AttentionUI {
 		}
 
 		private void update() {
-			var channel = n.parts(What.class).map(WhatMixer::mix).collect(toList());
+            List<Surface> channel = n.parts(What.class).map(WhatMixer::mix).collect(toList());
 			if (channel.isEmpty())
 				set(new BitmapLabel("Empty"));
 			else

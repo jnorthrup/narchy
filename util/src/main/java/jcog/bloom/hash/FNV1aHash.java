@@ -13,10 +13,10 @@ public class FNV1aHash {
     }
 
     public static int hash(byte[] data, int len) {
-        var hash = OFFSET_BASIS;
+        int hash = OFFSET_BASIS;
 
-        for (var i = 0; i < len; i++) {
-            var octet = data[i];
+        for (int i = 0; i < len; i++) {
+            byte octet = data[i];
             hash ^= octet;
             hash *= PRIME;
         }

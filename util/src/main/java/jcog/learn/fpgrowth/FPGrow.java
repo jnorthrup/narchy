@@ -28,10 +28,10 @@ public class FPGrow {
 
     public FPGrow grow(List<List<String>> data) {
 
-        var itemCount = count(data);
+        HashMap<String, Integer> itemCount = count(data);
 
 
-        for (var transaction : data) {
+        for (List<String> transaction : data) {
             transaction.sort((o1, o2) ->
                     Integer.compare(itemCount.get(o2), itemCount.get(o1)));
         }
@@ -50,36 +50,36 @@ public class FPGrow {
         Map<String, FPNode> headerTable = new HashMap<>();
 
 
-        for (var entry : itemCount.entrySet()) {
-            var itemName = entry.getKey();
-            var count = entry.getValue();
+        for (Entry<String, Integer> entry : itemCount.entrySet()) {
+            String itemName = entry.getKey();
+            Integer count = entry.getValue();
             if (count >= this.supportThreshold) {
-                var node = new FPNode(itemName);
+                FPNode node = new FPNode(itemName);
                 node.support = count;
                 headerTable.put(itemName, node);
             }
         }
 
-        var root = buildTree(data, itemCount, headerTable);
+        FPNode root = buildTree(data, itemCount, headerTable);
 
         if (root == null || root.children.isEmpty()) return;
 
         
         if (isSingleBranch(root)) {
-            var curr = root;
+            FPNode curr = root;
 
-            var path = new ArrayList<FPNode>(curr.children.values());
+            ArrayList<FPNode> path = new ArrayList<FPNode>(curr.children.values());
 
             List<List<FPNode>> combinations = new ArrayList<>();
             combinations(path, combinations);
 
             for (int i = 0, combinationsSize = combinations.size(); i < combinationsSize; i++) {
-                var combine = combinations.get(i);
-                var supp = 0;
+                List<FPNode> combine = combinations.get(i);
+                int supp = 0;
 
                 List<String> rule = new ArrayList<>();
 
-                for (var node : combine) {
+                for (FPNode node : combine) {
                     rule.add(node.itemName);
                     supp = node.support;
                 }
@@ -93,7 +93,7 @@ public class FPGrow {
 
         }
 
-        for (var header : headerTable.values()) {
+        for (FPNode header : headerTable.values()) {
 
             List<String> rule = new ArrayList<>();
             rule.add(header.itemName);
@@ -112,13 +112,13 @@ public class FPGrow {
 
             
             List<List<String>> newCPB = new LinkedList<>();
-            var nextNode = header;
+            FPNode nextNode = header;
             while ((nextNode = nextNode.next) != null) {
-                var leaf_supp = nextNode.support;
+                int leaf_supp = nextNode.support;
 
 
-                var path = new LinkedList<String>();
-                var parent = nextNode;
+                LinkedList<String> path = new LinkedList<String>();
+                FPNode parent = nextNode;
                 while (!"ROOT".equals((parent = parent.parent).itemName)) {
                     path.push(parent.itemName);
                 }
@@ -139,33 +139,39 @@ public class FPGrow {
      * @param combinations
      */
     private static void combinations(ArrayList<FPNode> path, List<List<FPNode>> combinations) {
-        var length = path.size();
+        int length = path.size();
         if (length == 0) return;
-        var c = Math.pow(2, length);
-        for (var i = 1; i < c; i++) {
+        double c = Math.pow(2, length);
+        for (int i = 1; i < c; i++) {
 
-            var bitmap = Integer.toBinaryString(i);
-            var bound = bitmap.length();
-            var combine = IntStream.range(0, bound).filter(j -> bitmap.charAt(j) == '1').mapToObj(j -> path.get(length - bitmap.length() + j)).collect(Collectors.toList());
+            String bitmap = Integer.toBinaryString(i);
+            int bound = bitmap.length();
+            List<FPNode> combine = new ArrayList<>();
+            for (int j = 0; j < bound; j++) {
+                if (bitmap.charAt(j) == '1') {
+                    FPNode fpNode = path.get(length - bitmap.length() + j);
+                    combine.add(fpNode);
+                }
+            }
             combinations.add(combine);
         }
     }
 
 
     private static FPNode buildTree(List<List<String>> transactions, Map<String, Integer> itemCount, Map<String, FPNode> headerTable) {
-        var root = new FPNode("ROOT");
+        FPNode root = new FPNode("ROOT");
         root.parent = null;
 
-        for (var transaction : transactions) {
-            var prev = root;
-            var children = prev.children;
+        for (List<String> transaction : transactions) {
+            FPNode prev = root;
+            Map<String, FPNode> children = prev.children;
 
-            for (var itemName : transaction) {
+            for (String itemName : transaction) {
                 
                 if (!headerTable.containsKey(itemName)) continue;
 
                 FPNode t;
-                var cc = children.get(itemName);
+                FPNode cc = children.get(itemName);
                 if (cc != null) {
                     cc.support++;
                     t = cc;
@@ -175,7 +181,7 @@ public class FPGrow {
                     children.put(itemName, t);
 
 
-                    var header = headerTable.get(itemName);
+                    FPNode header = headerTable.get(itemName);
                     if (header != null) {
                         header.attach(t);
                     }
@@ -190,13 +196,13 @@ public class FPGrow {
     }
 
     private static boolean isSingleBranch(FPNode root) {
-        var rect = true;
+        boolean rect = true;
         while (!root.children.isEmpty()) {
             if (root.children.size() > 1) {
                 rect = false;
                 break;
             }
-            var childName = root.children.keySet().iterator().next();
+            String childName = root.children.keySet().iterator().next();
             root = root.children.get(childName);
         }
         return rect;
@@ -204,9 +210,9 @@ public class FPGrow {
 
 
     private static HashMap<String, Integer> count(List<List<String>> transactions) {
-        var itemCount = new HashMap<String, Integer>();
-        for (var transaction : transactions) {
-            for (var item : transaction) {
+        HashMap<String, Integer> itemCount = new HashMap<String, Integer>();
+        for (List<String> transaction : transactions) {
+            for (String item : transaction) {
                 itemCount.compute(item, (i, v) -> (v == null) ? 1 : v + 1);
             }
         }
@@ -222,18 +228,18 @@ public class FPGrow {
      * @throws IOException
      */
     private static List<List<String>> load(String filename) throws IOException {
-        var br = new BufferedReader(new FileReader(new File(filename)));
+        BufferedReader br = new BufferedReader(new FileReader(new File(filename)));
         List<List<String>> transactions = new ArrayList<>();
 
 
-        var pattern = Pattern.compile("gain=\\w*|loss=\\w*");
+        Pattern pattern = Pattern.compile("gain=\\w*|loss=\\w*");
 
         String newline;
         while ((newline = br.readLine()) != null) {
-            var matcher = pattern.matcher(newline);
+            Matcher matcher = pattern.matcher(newline);
             newline = matcher.replaceAll("");
             newline = newline.replaceAll("( )+", " ");
-            var items = newline.split(" ");
+            String[] items = newline.split(" ");
             transactions.add(new ArrayList<>(Arrays.asList(items)));
         }
         br.close();
@@ -249,11 +255,11 @@ public class FPGrow {
      */
     private static void testHeadTable(HashMap<String, FPNode> headers) {
         if (headers == null) return;
-        for (var entry : headers.entrySet()) {
-            var headerName = entry.getKey();
-            var supp = headers.get(headerName).support;
-            var buff = new StringBuilder();
-            var currPointer = entry.getValue().next;
+        for (Entry<String, FPNode> entry : headers.entrySet()) {
+            String headerName = entry.getKey();
+            int supp = headers.get(headerName).support;
+            StringBuilder buff = new StringBuilder();
+            FPNode currPointer = entry.getValue().next;
             while (currPointer != null) {
                 buff.append(currPointer.itemName).append('(').append(currPointer.support).append(")---->");
                 currPointer = currPointer.next;
@@ -271,11 +277,11 @@ public class FPGrow {
     private void print(int minLength) {
         float count = freq.size();
         stream().forEach(entry -> {
-            var rule = entry.getKey();
+            List<String> rule = entry.getKey();
             if (rule.size() < minLength)
                 return;
             int support = entry.getValue();
-            var supportPct = entry.getValue() / count;
+            float supportPct = entry.getValue() / count;
             System.out.println(n4(supportPct) + '\t' + Arrays.toString(rule.toArray()));
         });
     }
@@ -283,10 +289,10 @@ public class FPGrow {
     private Stream<Entry<List<String>, Integer>> stream() {
         return freq.entrySet().stream().sorted((e1, e2) -> {
 
-            var i = Integer.compare(e2.getValue(), e1.getValue());
+            int i = Integer.compare(e2.getValue(), e1.getValue());
             if (i == 0) {
-                var c1 = e1.getKey().size();
-                var c2 = e2.getKey().size();
+                int c1 = e1.getKey().size();
+                int c2 = e2.getKey().size();
                 return Integer.compare(c1, c2);
             }
             return i;
@@ -295,7 +301,7 @@ public class FPGrow {
 
 
     public static void main(String[] args) throws IOException {
-        var model = new FPGrow();
+        FPGrow model = new FPGrow();
 
         model.grow(FPGrow.load("/home/me/Downloads/FPGrowth-master/data/census-sample20.dat"));
 
@@ -334,7 +340,7 @@ public class FPGrow {
         }
 
         public void attach(FPNode t) {
-            var node = this;
+            FPNode node = this;
             while (node.next != null) {
                 node = node.next;
             }

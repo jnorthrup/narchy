@@ -34,7 +34,7 @@ public class C4 {
         private final int opponent;
 
         public NARPlayer(int whoAmI, ConnectFour.ConnectFourState game) {
-            var n = NARchy.core(2);
+            NAR n = NARchy.core(2);
             ((RealTime) n.time).durFPS(10f);
 
 //            n.beliefPriDefault.set(0.5f);
@@ -42,8 +42,8 @@ public class C4 {
             this.n = n;
 
 
-            var o = new Opjects(n);
-            var play = o.a("c", ConnectFour.ConnectFourState.Play.class);
+            Opjects o = new Opjects(n);
+            ConnectFour.ConnectFourState.Play play = o.a("c", ConnectFour.ConnectFourState.Play.class);
 
             play.init(game, whoAmI);
             this.play = play;
@@ -75,8 +75,8 @@ public class C4 {
                 n.input("$1.0 --whoWon(c," + opponent + ")! |..+1s");
 
 
-                for (var i = 0; i < play.game.cols; i++) {
-                    for (var c : new boolean[]{true/*, false */}) {
+                for (int i = 0; i < play.game.cols; i++) {
+                    for (boolean c : new boolean[]{true/*, false */}) {
                         n.input(dropConcept(i, c) + "@ |..+500ms");
                     }
                 }
@@ -105,18 +105,18 @@ public class C4 {
                     e.printStackTrace();
                 }
 
-                var triesRemain = 7;
-                var tried = new IntHashSet();
+                int triesRemain = 7;
+                IntHashSet tried = new IntHashSet();
                 while (triesRemain-- > 0 && play.game.moving() == play.player) {
 
-                    var max = Float.NEGATIVE_INFINITY;
-                    var which = -1;
+                    float max = Float.NEGATIVE_INFINITY;
+                    int which = -1;
 
-                    for (var i = 0; i < play.game.cols; i++) {
+                    for (int i = 0; i < play.game.cols; i++) {
                         if (tried.contains(i))
                             continue;
-                        var d = dropConcept(i, true);
-                        var gd = d.goals().truth(n.time(), n.time() + n.dur(), n);
+                        Concept d = dropConcept(i, true);
+                        Truth gd = d.goals().truth(n.time(), n.time() + n.dur(), n);
 
                         if (gd != null && gd.expectation() > max) {
                             which = i;
@@ -151,13 +151,13 @@ public class C4 {
         public Surface beliefCharts() {
 
             Supplier<FasterList> collectionFactory = FasterList::new;
-            var fasterList = collectionFactory.get();
-            var bound = play.game.cols;
-            for (var i = 0; i < bound; i++) {
-                var term = dropConcept(i, true).term();
+            FasterList fasterList = collectionFactory.get();
+            int bound = play.game.cols;
+            for (int i = 0; i < bound; i++) {
+                Term term = dropConcept(i, true).term();
                 fasterList.add(term);
             }
-            var c =(List<Term>) fasterList;
+            List<Term> c =(List<Term>) fasterList;
 
             c.add($.$$("whoWon(c,1)"));
             c.add($.$$("whoWon(c,0)"));
@@ -169,20 +169,20 @@ public class C4 {
 
     public static void main(String[] args) {
 
-        var game = new ConnectFour.ConnectFourState();
+        ConnectFour.ConnectFourState game = new ConnectFour.ConnectFourState();
 
-        var frame = ConnectFour.constructApplicationFrame(game);
+        JFrame frame = ConnectFour.constructApplicationFrame(game);
         frame.setSize(450, 450);
         frame.setVisible(true);
 
-        var A = new NARPlayer(1, game);
-        var B = new NARPlayer(2, game);
+        NARPlayer A = new NARPlayer(1, game);
+        NARPlayer B = new NARPlayer(2, game);
 
 
         while (true) {
 
 
-            var who = game.moving();
+            int who = game.moving();
 
 
             if (who == 1) {
@@ -196,17 +196,17 @@ public class C4 {
             frame.repaint();
 
 
-            var winner = A.play.whoWon();
+            int winner = A.play.whoWon();
             B.play.whoWon();
 
             if (winner != 0) {
 
-                var loser = winner == 1 ? 2 : 1;
+                int loser = winner == 1 ? 2 : 1;
 
                 System.err.println("winner: " + winner);
 
 
-                for (var i = 0; i < 10; i++) {
+                for (int i = 0; i < 10; i++) {
                     A.play.whoWon();
                     B.play.whoWon();
 

@@ -15,7 +15,7 @@ public class SourceEnvironment {
     private final StringBuilder stringBuilder = new StringBuilder();
 
     public String allocateVariable() {
-        var v = "x" + nextVariable++;
+        String v = "x" + nextVariable++;
         append("double ").append(v).append(";").nl();
         return v;
     }

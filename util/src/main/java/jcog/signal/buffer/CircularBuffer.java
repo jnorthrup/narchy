@@ -159,9 +159,9 @@ public abstract class CircularBuffer {
         lock.lock();
         try {
 
-            var w = writeAt.get();
-            var r = readAt.get();
-            var c = capacityInternal();
+            int w = writeAt.get();
+            int r = readAt.get();
+            int c = capacityInternal();
             int s;
             if (w > r)
                 s = w - r;
@@ -170,7 +170,7 @@ public abstract class CircularBuffer {
             } else {
                 s = r + (c-w);
             }
-            var a = c - s;
+            int a = c - s;
             assert(a >= 0 && a <= c);
             return a;
         } finally {
@@ -223,7 +223,7 @@ public abstract class CircularBuffer {
     public void mark() {
         lock.lock();
         try {
-            var m = marks.peek();
+            BufMark m = marks.peek();
             if (m != null && m.index == bufEnd) {
                 if (writeAt.get() == capacityInternal() && !m.flag)
                     marks.add(new BufMark(bufEnd, true));
@@ -267,7 +267,7 @@ public abstract class CircularBuffer {
     public boolean wasMarked(boolean clear) {
         lock.lock();
         try {
-            var wasMarked = this.wasMarked;
+            boolean wasMarked = this.wasMarked;
             if (clear) this.wasMarked = false;
             return wasMarked;
         } finally {
@@ -310,7 +310,7 @@ public abstract class CircularBuffer {
     public int freeHead(int atMost) {
         lock.lock();
         try {
-            var bs = writeAt.get();
+            int bs = writeAt.get();
             if (atMost > 0) {
                 atMost = Math.max(atMost, bs);
                 bufStart = (bufStart + atMost) % capacityInternal();
@@ -337,7 +337,7 @@ public abstract class CircularBuffer {
                     readAt.set(viewPtr + (capacityInternal() - bufStart));
                 }
                 writeAt.addAndGet(-atMost);
-                var m = marks.peek();
+                BufMark m = marks.peek();
                 while (m != null && ((bufEnd > bufStart && (m.index < bufStart || m.index > bufEnd)) || (m.index < bufStart && m.index > bufEnd))) {
                     marks.poll();
                     m = marks.peek();
@@ -378,7 +378,7 @@ public abstract class CircularBuffer {
     public void setPeekPosition(int position) {
         lock.lock();
         try {
-            var bs = writeAt.get();
+            int bs = writeAt.get();
             if (position < bs) {
                 viewPtr = (bufStart + position) % capacityInternal();
                 readAt.set(position);

@@ -135,12 +135,12 @@ public class Parser {
 	 */
 	public Term nextTerm(boolean endNeeded) {
 		try {
-			var t = tokenizer.readToken();
+			Tokenizer.Token t = tokenizer.readToken();
 			if (t.isEOF())
 				return null;
 
 			tokenizer.unreadToken(t);
-			var term = expr(false);
+			Term term = expr(false);
 			if (term == null)
 				/*Castagna 06/2011*/
 	            
@@ -182,13 +182,13 @@ public class Parser {
 	 */
 	public static Term parseSingleTerm(String st, PrologOperators op) throws InvalidTermException {
 		try {
-			var p = new Parser(st, op);
-			var t = p.tokenizer.readToken();
+			Parser p = new Parser(st, op);
+			Tokenizer.Token t = p.tokenizer.readToken();
 			if (t.isEOF())
 	            throw new InvalidTermException("Term starts with EOF");
 
 			p.tokenizer.unreadToken(t);
-			var term = p.expr(false);
+			Term term = p.expr(false);
 			if (term == null)
 				throw new InvalidTermException("Term is null");
 			if (!p.tokenizer.readToken().isEOF())
@@ -208,14 +208,14 @@ public class Parser {
 
 	private IdentifiedTerm exprA(int maxPriority, boolean commaIsEndMarker) throws InvalidTermException, IOException {
 
-		var leftSide = exprB(maxPriority, commaIsEndMarker);
+		IdentifiedTerm leftSide = exprB(maxPriority, commaIsEndMarker);
 
 
-		var t = tokenizer.readToken();
+		Tokenizer.Token t = tokenizer.readToken();
 		for (; t.isOperator(commaIsEndMarker); t = tokenizer.readToken()) {
 
-			var YFX = ops.opPrio(t.seq, "yfx");
-			var YF = ops.opPrio(t.seq, "yf");
+			int YFX = ops.opPrio(t.seq, "yfx");
+			int YF = ops.opPrio(t.seq, "yf");
 
 			
 			
@@ -225,7 +225,7 @@ public class Parser {
 
 			
 			if (YFX >= YF && YFX >= PrologOperators.OP_LOW){
-				var ta = exprA(YFX-1, commaIsEndMarker);
+				IdentifiedTerm ta = exprA(YFX-1, commaIsEndMarker);
 				if (ta != null) {
 					/*Castagna 06/2011*/
 					
@@ -251,14 +251,14 @@ public class Parser {
 	private IdentifiedTerm exprB(int maxPriority, boolean commaIsEndMarker) throws InvalidTermException, IOException {
 
 
-		var left = parseLeftSide(commaIsEndMarker, maxPriority);
+		IdentifiedTerm left = parseLeftSide(commaIsEndMarker, maxPriority);
 
 
-		var operator = tokenizer.readToken();
+		Tokenizer.Token operator = tokenizer.readToken();
 		for (; operator.isOperator(commaIsEndMarker); operator = tokenizer.readToken()) {
-			var XFX = ops.opPrio(operator.seq, "xfx");
-			var XFY = ops.opPrio(operator.seq, "xfy");
-			var XF = ops.opPrio(operator.seq, "xf");
+			int XFX = ops.opPrio(operator.seq, "xfx");
+			int XFY = ops.opPrio(operator.seq, "xfy");
+			int XF = ops.opPrio(operator.seq, "xf");
 
 			
 			
@@ -267,9 +267,9 @@ public class Parser {
 			if (XF > maxPriority || XF < PrologOperators.OP_LOW) XF = -1;
 
 
-			var haveAttemptedXFX = false;
+			boolean haveAttemptedXFX = false;
 			if (XFX >= XFY && XFX >= XF && XFX >= left.priority) {
-				var found = exprA(XFX - 1, commaIsEndMarker);
+				IdentifiedTerm found = exprA(XFX - 1, commaIsEndMarker);
 				if (found != null) {
 					/*Castagna 06/2011*/
 					
@@ -282,7 +282,7 @@ public class Parser {
 			}
 			
 			if (XFY >= XF && XFY >= left.priority){
-				var found = exprA(XFY, commaIsEndMarker);
+				IdentifiedTerm found = exprA(XFY, commaIsEndMarker);
 				if (found != null) {
 					/*Castagna 06/2011*/
 					
@@ -301,7 +301,7 @@ public class Parser {
 
 			
 			if (!haveAttemptedXFX && XFX >= left.priority) {
-				var found = exprA(XFX - 1, commaIsEndMarker);
+				IdentifiedTerm found = exprA(XFX - 1, commaIsEndMarker);
 				if (found != null) {
 					/*Castagna 06/2011*/
 					
@@ -329,13 +329,13 @@ public class Parser {
 	 */
 	private IdentifiedTerm parseLeftSide(boolean commaIsEndMarker, int maxPriority) throws InvalidTermException, IOException {
 
-		var f = tokenizer.readToken();
+		Tokenizer.Token f = tokenizer.readToken();
 		if (f.isOperator(commaIsEndMarker)) {
-			var FX = ops.opPrio(f.seq, "fx");
-			var FY = ops.opPrio(f.seq, "fy");
+			int FX = ops.opPrio(f.seq, "fx");
+			int FY = ops.opPrio(f.seq, "fy");
 
 			if ("-".equals(f.seq)) {
-				var t = tokenizer.readToken();
+				Tokenizer.Token t = tokenizer.readToken();
 				if (t.isNumber())
 					/*Michele Castagna 06/2011*/
 					
@@ -350,9 +350,9 @@ public class Parser {
 			if (FX > maxPriority) FX = -1;
 
 
-			var haveAttemptedFX = false;
+			boolean haveAttemptedFX = false;
 			if (FX >= FY && FX >= PrologOperators.OP_LOW){
-				var found = exprA(FX-1, commaIsEndMarker);
+				IdentifiedTerm found = exprA(FX-1, commaIsEndMarker);
 				if (found != null)
 					/*Castagna 06/2011*/
 					
@@ -363,7 +363,7 @@ public class Parser {
 			}
 			
 			if (FY >= PrologOperators.OP_LOW) {
-				var found = exprA(FY, commaIsEndMarker);
+				IdentifiedTerm found = exprA(FY, commaIsEndMarker);
 				if (found != null)
 					/*Castagna 06/2011*/
 					
@@ -372,7 +372,7 @@ public class Parser {
 			}
 			
 			if (!haveAttemptedFX && FX >= PrologOperators.OP_LOW) {
-				var found = exprA(FX-1, commaIsEndMarker);
+				IdentifiedTerm found = exprA(FX-1, commaIsEndMarker);
 				if (found != null)
 					/*Castagna 06/2011*/
 					
@@ -396,7 +396,7 @@ public class Parser {
 	 *              '(' exprA(1200) ')'
 	 */
 	private Term expr0() throws InvalidTermException, IOException {
-		var t1 = tokenizer.readToken();
+		Tokenizer.Token t1 = tokenizer.readToken();
 
 		/*Castagna 06/2011*/
 		/*
@@ -410,7 +410,7 @@ public class Parser {
 			return new Var(t1.seq);             
 		*/
 
-		var tempStart = tokenizer.tokenStart();
+		int tempStart = tokenizer.tokenStart();
 
         if (t1.isType(Tokenizer.INTEGER)) {
         	Term i = Parser.parseInteger(t1.seq);
@@ -431,7 +431,13 @@ public class Parser {
         }
 		/**/
 
-		var result = IntStream.of(Tokenizer.ATOM, Tokenizer.SQ_SEQUENCE, Tokenizer.DQ_SEQUENCE).anyMatch(t1::isType);
+		boolean result = false;
+		for (int i : new int[]{Tokenizer.ATOM, Tokenizer.SQ_SEQUENCE, Tokenizer.DQ_SEQUENCE}) {
+			if (t1.isType(i)) {
+				result = true;
+				break;
+			}
+		}
 		if (result) {
 			if (!t1.isFunctor())
 			/*Castagna 06/2011*/
@@ -443,12 +449,12 @@ public class Parser {
 			}
 			/**/
 
-			var functor = t1.seq;
-			var t2 = tokenizer.readToken();
+			String functor = t1.seq;
+			Tokenizer.Token t2 = tokenizer.readToken();
 			if (!t2.isType(Tokenizer.LPAR))
 				throw new InvalidTermException("Something identified as functor misses its first left parenthesis");
-			var a = expr0_arglist();
-			var t3 = tokenizer.readToken();
+			LinkedList<Term> a = expr0_arglist();
+			Tokenizer.Token t3 = tokenizer.readToken();
 			if (t3.isType(Tokenizer.RPAR))      
 			/*Castagna 06/2011*/
 			{
@@ -467,7 +473,7 @@ public class Parser {
 		}
 
 		if (t1.isType(Tokenizer.LPAR)) {
-			var term = expr(false);
+			Term term = expr(false);
 			if (tokenizer.readToken().isType(Tokenizer.RPAR))
 				return term;
 			/*Castagna 06/2011*/
@@ -479,12 +485,12 @@ public class Parser {
 		}
 
 		if (t1.isType(Tokenizer.LBRA)) {
-			var t2 = tokenizer.readToken();
+			Tokenizer.Token t2 = tokenizer.readToken();
 			if (t2.isType(Tokenizer.RBRA))
 				return Struct.emptyList();
 
 			tokenizer.unreadToken(t2);
-			var term = expr0_list();
+			Term term = expr0_list();
 			if (tokenizer.readToken().isType(Tokenizer.RBRA))
 				return term;
 			/*Castagna 06/2011*/
@@ -496,7 +502,7 @@ public class Parser {
 		}
 
 		if (t1.isType(Tokenizer.LBRA2)) {
-			var t2 = tokenizer.readToken();
+			Tokenizer.Token t2 = tokenizer.readToken();
 			if (t2.isType(Tokenizer.RBRA2))
 			/*Castagna 06/2011*/
 			{
@@ -507,7 +513,7 @@ public class Parser {
 			}
 			/**/
 			tokenizer.unreadToken(t2);
-			var arg = expr(false);
+			Term arg = expr(false);
 			t2 = tokenizer.readToken();
 			if (t2.isType(Tokenizer.RBRA2))
 			/*Castagna 06/2011*/
@@ -534,8 +540,8 @@ public class Parser {
 
 	
 	private Term expr0_list() throws InvalidTermException, IOException {
-		var head = expr(true);
-		var t = tokenizer.readToken();
+		Term head = expr(true);
+		Tokenizer.Token t = tokenizer.readToken();
 		if (",".equals(t.seq))
 			return new Struct(head, expr0_list());
 		if ("|".equals(t.seq))
@@ -555,16 +561,16 @@ public class Parser {
 
 	
 	private LinkedList<Term> expr0_arglist() throws InvalidTermException, IOException {
-		var head = expr(true);
-		var t = tokenizer.readToken();
+		Term head = expr(true);
+		Tokenizer.Token t = tokenizer.readToken();
 		if (",".equals(t.seq)) {
-			var l = expr0_arglist();
+			LinkedList<Term> l = expr0_arglist();
 			l.addFirst(head);
 			return l;
 		}
 		if (")".equals(t.seq)) {
 			tokenizer.unreadToken(t);
-			var l = new LinkedList<Term>();
+			LinkedList<Term> l = new LinkedList<Term>();
 			l.add(head);
 			return l;
 		}
@@ -581,12 +587,12 @@ public class Parser {
 	
 
 	static NumberTerm parseInteger(String s) {
-		var num = java.lang.Long.parseLong(s);
+		long num = java.lang.Long.parseLong(s);
 		return num > Integer.MIN_VALUE && num < Integer.MAX_VALUE ? new NumberTerm.Int((int) num) : new NumberTerm.Long(num);
 	}
 
 	static NumberTerm.Double parseFloat(String s) {
-		var num = java.lang.Double.parseDouble(s);
+		double num = java.lang.Double.parseDouble(s);
 		return new NumberTerm.Double(num);
 	}
 
@@ -683,13 +689,13 @@ public class Parser {
                         throw new NoSuchElementException();
                 }
                 hasNext = false;
-				var temp = next;
+				Term temp = next;
                 next = null;
                 return temp;
             } else
                 if (hasNext()) {
                     hasNext = false;
-					var temp = next;
+					Term temp = next;
                     next = null;
                     return temp;
                 }

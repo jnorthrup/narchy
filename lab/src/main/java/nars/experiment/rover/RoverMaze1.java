@@ -51,8 +51,8 @@ public class RoverMaze1 {
                     protected Body3D create(Dynamics3D world) {
                         torso.body.clearForces();
 
-                        var n = super.create(world);
-                        var p = new HingeConstraint(torso.body, body, v(0, 0.2f, 0), v(0, -1f, 0), v(1, 0, 0), v(1, 0, 0));
+                        Body3D n = super.create(world);
+                        HingeConstraint p = new HingeConstraint(torso.body, body, v(0, 0.2f, 0), v(0, -1f, 0), v(1, 0, 0), v(1, 0, 0));
                         p.setLimit(-1.0f, 1.0f);
                         add(p);
                         return n;
@@ -72,11 +72,11 @@ public class RoverMaze1 {
                     @Override
                     protected Body3D create(Dynamics3D world) {
 
-                        var l = super.create(world);
+                        Body3D l = super.create(world);
 
 
                         l.clearForces();
-                        var p = new HingeConstraint(neck.body, body, v(0, 0.6f, 0), v(0, -0.6f, 0), v(0, 1, 0), v(0, 1, 0));
+                        HingeConstraint p = new HingeConstraint(neck.body, body, v(0, 0.6f, 0), v(0, -0.6f, 0), v(0, 1, 0), v(0, 1, 0));
                         p.setLimit(-0.75f, 0.75f);
 
 

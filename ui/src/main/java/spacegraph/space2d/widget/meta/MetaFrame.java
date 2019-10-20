@@ -119,8 +119,8 @@ public class MetaFrame extends Bordering  {
         super.starting();
 
 
-        var surface = get(0);
-        var wm = (surface instanceof MenuSupplier) ? ((MenuSupplier) surface).menu() : null;
+        Surface surface = get(0);
+        Surface wm = (surface instanceof MenuSupplier) ? ((MenuSupplier) surface).menu() : null;
         if(wm!=null)
 
             set(S,wm);
@@ -219,7 +219,7 @@ public class MetaFrame extends Bordering  {
     }
 
     protected Surface label() {
-        var x = the();
+        Surface x = the();
         if (x!=null) {
             Surface label;
             if (x instanceof Labeled)

@@ -24,7 +24,7 @@ public class QuoteState extends TokenizerState {
 	 */
     private void checkBufLength(int i) {
 		if (i >= charbuf.length) {
-			var nb = new char[charbuf.length * 2];
+            char[] nb = new char[charbuf.length * 2];
 			System.arraycopy(charbuf, 0, nb, 0, charbuf.length);
 			charbuf = nb;
 		}
@@ -40,7 +40,7 @@ public class QuoteState extends TokenizerState {
 	@Override
 	public Token nextToken(PushbackReader r, int cin, Tokenizer t) throws IOException {
 
-		var i = 0;
+        int i = 0;
 		charbuf[i++] = (char) cin;
 		int c;
 		do {
@@ -52,7 +52,7 @@ public class QuoteState extends TokenizerState {
 			charbuf[i++] = (char) c;
 		} while (c != cin);
 
-		var sval = String.copyValueOf(charbuf, 0, i);
+        String sval = String.copyValueOf(charbuf, 0, i);
 		return new Token(Token.TT_QUOTED, sval, BigDecimal.ZERO);
 	}
 }

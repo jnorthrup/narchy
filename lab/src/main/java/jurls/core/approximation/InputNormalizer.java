@@ -26,12 +26,12 @@ public class InputNormalizer implements ParameterizedFunction {
     }
 
     private double[] normalizeInput(double[] xs) {
-        var xs2 = new double[xs.length];
+        double[] xs2 = new double[xs.length];
 
-        for (var i = 0; i < xs.length; ++i) {
-            var x = xs[i];
-            var max = maxInputs[i];
-            var min = minInputs[i];
+        for (int i = 0; i < xs.length; ++i) {
+            double x = xs[i];
+            double max = maxInputs[i];
+            double min = minInputs[i];
             if (x > max) {
                 max = maxInputs[i] = x;
             }

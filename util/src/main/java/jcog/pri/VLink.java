@@ -43,7 +43,7 @@ public final class VLink<X> extends HashedPLink<X> {
 
 
     public void update(@Nullable Consumer<VLink<X>> f) {
-        var tt = get();
+        X tt = get();
         if ((tt instanceof Prioritized) && ((Prioritized) tt).isDeleted())
             delete();
         else {

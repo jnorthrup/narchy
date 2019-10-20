@@ -63,9 +63,9 @@ public class PropagationQueue {
      * @return true if propagation succeeded, false otherwise.
      */
     public boolean propagate() {
-        var feasible = true;
+        boolean feasible = true;
         while (!queue.isEmpty()) {
-            var propagator = queue.removeFirst();
+            Propagator propagator = queue.removeFirst();
             
             
             

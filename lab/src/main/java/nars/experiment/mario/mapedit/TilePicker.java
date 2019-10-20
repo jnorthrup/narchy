@@ -22,7 +22,7 @@ public class TilePicker extends JComponent implements MouseListener, MouseMotion
     private LevelEditor tilePickChangedListener;
 
     public TilePicker() {
-        var size = new Dimension(256, 256);
+        Dimension size = new Dimension(256, 256);
         setPreferredSize(size);
         setMinimumSize(size);
         setMaximumSize(size);
@@ -42,14 +42,14 @@ public class TilePicker extends JComponent implements MouseListener, MouseMotion
         g.setColor(new Color(0x8090ff));
         g.fillRect(0, 0, 256, 256);
 
-        for (var x = 0; x < 16; x++)
-            for (var y = 0; y < 16; y++) {
+        for (int x = 0; x < 16; x++)
+            for (int y = 0; y < 16; y++) {
                 g.drawImage(Art.level[x][y], (x << 4), (y << 4), null);
             }
 
         g.setColor(Color.WHITE);
-        var xPickedTile = (pickedTile & 0xff) % 16;
-        var yPickedTile = (pickedTile & 0xff) / 16;
+        int xPickedTile = (pickedTile & 0xff) % 16;
+        int yPickedTile = (pickedTile & 0xff) / 16;
         g.drawRect(xPickedTile * 16, yPickedTile * 16, 15, 15);
 
         g.setColor(Color.BLACK);

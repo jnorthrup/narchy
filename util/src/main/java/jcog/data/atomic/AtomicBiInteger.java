@@ -52,8 +52,8 @@ public class AtomicBiInteger extends AtomicLong
     {
         while(true)
         {
-            var encoded = get();
-            var update = encodeHi(encoded,hi);
+            long encoded = get();
+            long update = encodeHi(encoded,hi);
             if (compareAndSet(encoded,update))
                 return getHi(encoded);
         }
@@ -69,8 +69,8 @@ public class AtomicBiInteger extends AtomicLong
     {
         while(true)
         {
-            var encoded = get();
-            var update = encodeLo(encoded,lo);
+            long encoded = get();
+            long update = encodeLo(encoded,lo);
             if (compareAndSet(encoded,update))
                 return getLo(encoded);
         }
@@ -101,10 +101,10 @@ public class AtomicBiInteger extends AtomicLong
     {
         while(true)
         {
-            var encoded = get();
+            long encoded = get();
             if (getHi(encoded)!=expectHi)
                 return false;
-            var update = encodeHi(encoded,hi);
+            long update = encodeHi(encoded,hi);
             if (compareAndSet(encoded,update))
                 return true;
         }
@@ -124,10 +124,10 @@ public class AtomicBiInteger extends AtomicLong
     {
         while(true)
         {
-            var encoded = get();
+            long encoded = get();
             if (getLo(encoded)!=expectLo)
                 return false;
-            var update = encodeLo(encoded,lo);
+            long update = encodeLo(encoded,lo);
             if (compareAndSet(encoded,update))
                 return true;
         }
@@ -145,7 +145,7 @@ public class AtomicBiInteger extends AtomicLong
      */
     public boolean compareAndSet(long encoded, int hi, int lo)
     {
-        var update = encode(hi,lo);
+        long update = encode(hi,lo);
         return compareAndSet(encoded,update);
     }
 
@@ -162,8 +162,8 @@ public class AtomicBiInteger extends AtomicLong
      */
     public boolean compareAndSet(int expectHi, int hi, int expectLo, int lo)
     {
-        var encoded = encode(expectHi,expectLo);
-        var update = encode(hi,lo);
+        long encoded = encode(expectHi,expectLo);
+        long update = encode(hi,lo);
         return compareAndSet(encoded,update);
     }
 
@@ -177,9 +177,9 @@ public class AtomicBiInteger extends AtomicLong
     {
         while(true)
         {
-            var encoded = get();
-            var hi = getHi(encoded)+delta;
-            var update = encodeHi(encoded,hi);
+            long encoded = get();
+            int hi = getHi(encoded)+delta;
+            long update = encodeHi(encoded,hi);
             if (compareAndSet(encoded,update))
                 return hi;
         }
@@ -195,9 +195,9 @@ public class AtomicBiInteger extends AtomicLong
     {
         while(true)
         {
-            var encoded = get();
-            var lo = getLo(encoded)+delta;
-            var update = encodeLo(encoded,lo);
+            long encoded = get();
+            int lo = getLo(encoded)+delta;
+            long update = encodeLo(encoded,lo);
             if (compareAndSet(encoded,update))
                 return lo;
         }
@@ -213,8 +213,8 @@ public class AtomicBiInteger extends AtomicLong
     {
         while(true)
         {
-            var encoded = get();
-            var update = encode(getHi(encoded)+deltaHi, getLo(encoded)+deltaLo);
+            long encoded = get();
+            long update = encode(getHi(encoded)+deltaHi, getLo(encoded)+deltaLo);
             if (compareAndSet(encoded,update))
                 return;
         }
@@ -251,8 +251,8 @@ public class AtomicBiInteger extends AtomicLong
      */
     public static long encode(int hi, int lo)
     {
-        var h = ((long)hi)&0xFFFF_FFFFL;
-        var l = ((long)lo)&0xFFFF_FFFFL;
+        long h = ((long)hi)&0xFFFF_FFFFL;
+        long l = ((long)lo)&0xFFFF_FFFFL;
         return (h<<32)+l;
     }
 
@@ -265,8 +265,8 @@ public class AtomicBiInteger extends AtomicLong
      */
     public static long encodeHi(long encoded, int hi)
     {
-        var h = ((long)hi)&0xFFFF_FFFFL;
-        var l = encoded&0xFFFF_FFFFL;
+        long h = ((long)hi)&0xFFFF_FFFFL;
+        long l = encoded&0xFFFF_FFFFL;
         return (h<<32)+l;
     }
     
@@ -279,8 +279,8 @@ public class AtomicBiInteger extends AtomicLong
      */
     public static long encodeLo(long encoded, int lo)
     {
-        var h = (encoded>>32)&0xFFFF_FFFFL;
-        var l = ((long)lo)&0xFFFF_FFFFL;
+        long h = (encoded>>32)&0xFFFF_FFFFL;
+        long l = ((long)lo)&0xFFFF_FFFFL;
         return (h<<32)+l;
     }
 }

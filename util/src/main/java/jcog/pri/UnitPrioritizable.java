@@ -11,11 +11,11 @@ public interface UnitPrioritizable extends Prioritizable {
         if (inc <= EPSILON)
             return 0;
 
-        var beforeAfter = priDelta((x, y)-> ((x!=x) ? 0 : x) + y, inc);
+        float[] beforeAfter = priDelta((x, y)-> ((x!=x) ? 0 : x) + y, inc);
 
-        var after = beforeAfter[1];
-        var before = beforeAfter[0];
-        var delta = (before != before) ? after : (after - before);
+        float after = beforeAfter[1];
+        float before = beforeAfter[0];
+        float delta = (before != before) ? after : (after - before);
         return Math.max(0, inc - delta); //should be >= 0
     }
 }

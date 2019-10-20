@@ -35,7 +35,7 @@ public class Proxy implements alice.tuprologx.runtime.tcp.Prolog {
     public Theory getTheory() throws IOException, ClassNotFoundException {
         out.writeObject(new NetMsg("getTheory"));
         out.flush();
-        var b=(Boolean)in.readObject();
+        Boolean b=(Boolean)in.readObject();
         if (b){
             return (Theory)in.readObject();
         }
@@ -47,7 +47,7 @@ public class Proxy implements alice.tuprologx.runtime.tcp.Prolog {
         out.writeObject(new NetMsg("setTheory"));
         out.writeObject(th);
         out.flush();
-        var b=(Boolean)in.readObject();
+        Boolean b=(Boolean)in.readObject();
         if (!b){
             throw new InvalidTheoryException();
         }
@@ -58,7 +58,7 @@ public class Proxy implements alice.tuprologx.runtime.tcp.Prolog {
         out.writeObject(new NetMsg("addTheory"));
         out.writeObject(th);
         out.flush();
-        var b=(Boolean)in.readObject();
+        Boolean b=(Boolean)in.readObject();
         if (!b){
             throw new InvalidTheoryException();
         }
@@ -70,7 +70,7 @@ public class Proxy implements alice.tuprologx.runtime.tcp.Prolog {
         out.writeObject(new NetMsg("solveString"));
         out.writeObject(st);
         out.flush();
-        var b=(Boolean)in.readObject();
+        Boolean b=(Boolean)in.readObject();
         if (b){
             return (Solution)in.readObject();
         } else {
@@ -83,7 +83,7 @@ public class Proxy implements alice.tuprologx.runtime.tcp.Prolog {
         out.writeObject(new NetMsg("solveTerm"));
         out.writeObject(term);
         out.flush();
-        var b=(Boolean)in.readObject();
+        Boolean b=(Boolean)in.readObject();
         if (b){
             return (Solution)in.readObject();
         } else {
@@ -95,7 +95,7 @@ public class Proxy implements alice.tuprologx.runtime.tcp.Prolog {
     public Solution solveNext() throws IOException, ClassNotFoundException, NoSolutionException {
         out.writeObject(new NetMsg("solveNext"));
         out.flush();
-        var b=(Boolean)in.readObject();
+        Boolean b=(Boolean)in.readObject();
         if (b){
             return (Solution)in.readObject();
         } else {
@@ -129,7 +129,7 @@ public class Proxy implements alice.tuprologx.runtime.tcp.Prolog {
         out.writeObject(new NetMsg("loadLibrary"));
         out.writeObject(st);
         out.flush();
-        var b=(Boolean)in.readObject();
+        Boolean b=(Boolean)in.readObject();
         if (!b){
             throw new InvalidLibraryException();
         }
@@ -140,7 +140,7 @@ public class Proxy implements alice.tuprologx.runtime.tcp.Prolog {
         out.writeObject(new NetMsg("unloadLibrary"));
         out.writeObject(st);
         out.flush();
-        var b=(Boolean)in.readObject();
+        Boolean b=(Boolean)in.readObject();
         if (!b){
             throw new InvalidLibraryException();
         }

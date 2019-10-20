@@ -41,19 +41,26 @@ public class VersionMap<X, Y> implements Map<X, Y>, Function<X,Versioned<Y>> {
 
     public boolean replace(BiFunction<? super X, ? super Y, ? extends Y> function) {
         List<Object[]> replacements = new FasterList();
-        map.forEach((v,val)->{
-           if (val!=null) {
-               var x = val.get();
-               if (x!=null) {
-                   var y = function.apply(v, x);
-                   if (!x.equals(y)) {
-                       replacements.add(new Object[] { v, y });
-                   }
-               }
-           }
-        });
+        for (Entry<X, Versioned<Y>> entry : map.entrySet()) {
+            X v = entry.getKey();
+            Versioned<Y> val = entry.getValue();
+            if (val != null) {
+                Y x = val.get();
+                if (x != null) {
+                    Y y = function.apply(v, x);
+                    if (!x.equals(y)) {
+                        replacements.add(new Object[]{v, y});
+                    }
+                }
+            }
+        }
         if (!replacements.isEmpty()) {
-            return replacements.stream().allMatch(r -> set((X) r[0], (Y) r[1]));
+            for (Object[] r : replacements) {
+                if (!set((X) r[0], (Y) r[1])) {
+                    return false;
+                }
+            }
+            return true;
         }
         return true;
     }
@@ -77,7 +84,7 @@ public class VersionMap<X, Y> implements Map<X, Y>, Function<X,Versioned<Y>> {
 
     @Override
     public @Nullable Y remove(Object key) {
-        var x = map.remove(key);
+        Versioned<Y> x = map.remove(key);
         return x != null ? x.get() : null;
     }
 
@@ -113,17 +120,17 @@ public class VersionMap<X, Y> implements Map<X, Y>, Function<X,Versioned<Y>> {
 
     /** copied from AbstractMap.java */
     @Override public String toString() {
-        var i = this.entrySet().iterator();
+        Iterator<Entry<X, Y>> i = this.entrySet().iterator();
         if (!i.hasNext()) {
             return "{}";
         } else {
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb.append('{');
 
             while(true) {
-                var e = i.next();
-                var key = e.getKey();
-                var value = e.getValue();
+                Entry<X, Y> e = i.next();
+                X key = e.getKey();
+                Y value = e.getValue();
                 sb.append(key == this ? "(this Map)" : key);
                 sb.append('=');
                 sb.append(value == this ? "(this Map)" : value);
@@ -141,33 +148,37 @@ public class VersionMap<X, Y> implements Map<X, Y>, Function<X,Versioned<Y>> {
      */
     @Override
     public Set<Entry<X, Y>> entrySet() {
-        var s = size();
+        int s = size();
         if (s == 0)
             return Set.of();
         else {
 
             ArrayUnenforcedSet<Entry<X, Y>> e = new ArrayUnenforcedSet<>(0, new Entry[s]);
-            map.forEach((k, v) -> {
-                var vv = v.get();
+            for (Entry<X, Versioned<Y>> entry : map.entrySet()) {
+                X k = entry.getKey();
+                Versioned<Y> v = entry.getValue();
+                Y vv = v.get();
                 if (vv != null)
                     e.add(new AbstractMap.SimpleImmutableEntry<>(k, vv));
-            });
+            }
             return e;
         }
     }
 
     @Override
     public Set<X> keySet() {
-        var s = size();
+        int s = size();
         if (s == 0)
             return Collections.EMPTY_SET;
         //else if (s == 1) ...
         else {
             ArrayUnenforcedSet<X> e = new ArrayUnenforcedSet(0, new Object[s]);
-            map.forEach((k, v) -> {
-                if (v!=null)
+            for (Entry<X, Versioned<Y>> entry : map.entrySet()) {
+                X k = entry.getKey();
+                Versioned<Y> v = entry.getValue();
+                if (v != null)
                     e.add(k);
-            });
+            }
             return e;
         }
     }
@@ -175,7 +186,12 @@ public class VersionMap<X, Y> implements Map<X, Y>, Function<X,Versioned<Y>> {
     /** @noinspection SimplifyStreamApiCallChains*/
     @Override
     public Collection<Y> values() {
-        return entrySet().stream().map(Entry::getValue).collect(toList()); //HACK
+        List<Y> list = new ArrayList<>();
+        for (Entry<X, Y> xyEntry : entrySet()) {
+            Y value = xyEntry.getValue();
+            list.add(value);
+        }
+        return list; //HACK
     }
 
 
@@ -202,18 +218,20 @@ public class VersionMap<X, Y> implements Map<X, Y>, Function<X,Versioned<Y>> {
 
 
     public void forEach(BiConsumer<? super X, ? super Y> each) {
-        map.forEach((x,yy)->{
-            var y = yy.get();
-            if (y!=null)
+        for (Entry<X, Versioned<Y>> entry : map.entrySet()) {
+            X x = entry.getKey();
+            Versioned<Y> yy = entry.getValue();
+            Y y = yy.get();
+            if (y != null)
                 each.accept(x, y);
-        });
+        }
     }
 
 
     public boolean forEachVersioned(BiPredicate<? super X, ? super Y> each) {
-        var ee = map.entrySet();
-        for (var e : ee) {
-            var y = e.getValue().get();
+        Set<Entry<X, Versioned<Y>>> ee = map.entrySet();
+        for (Entry<X, Versioned<Y>> e : ee) {
+            Y y = e.getValue().get();
             if (y != null) {
                 if (!each.test(e.getKey(), y)) {
                     return false;
@@ -238,7 +256,7 @@ public class VersionMap<X, Y> implements Map<X, Y>, Function<X,Versioned<Y>> {
 
     @Override
     public Y get(/*X*/Object key) {
-        var v = map.get(key);
+        Versioned<Y> v = map.get(key);
         return v != null ? v.get() : null;
     }
 

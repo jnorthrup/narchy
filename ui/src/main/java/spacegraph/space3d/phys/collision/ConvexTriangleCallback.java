@@ -86,17 +86,17 @@ class ConvexTriangleCallback extends TriangleCallback {
 		this.resultOut = resultOut;
 
 
-		var convexInTriangleSpace = new Transform();
+        Transform convexInTriangleSpace = new Transform();
 
 		triBody.getWorldTransform(convexInTriangleSpace);
 		convexInTriangleSpace.invert();
 		convexInTriangleSpace.mul(convexBody.getWorldTransform(new Transform()));
 
-		var convexShape = convexBody.shape();
+        CollisionShape convexShape = convexBody.shape();
 		
 		convexShape.getAabb(convexInTriangleSpace, aabbMin, aabbMax);
-		var extraMargin = collisionMarginTriangle;
-		var extra = new v3();
+        float extraMargin = collisionMarginTriangle;
+        v3 extra = new v3();
 		extra.set(extraMargin, extraMargin, extraMargin);
 
 		aabbMax.add(extra);
@@ -115,7 +115,7 @@ class ConvexTriangleCallback extends TriangleCallback {
 
 		ci.intersecter1 = intersecter;
 
-		var ob = triBody;
+        Collidable ob = triBody;
 
 
 
@@ -151,10 +151,10 @@ class ConvexTriangleCallback extends TriangleCallback {
 			tm.init(triangle[0], triangle[1], triangle[2]);
 			tm.setMargin(collisionMarginTriangle);
 
-			var tmpShape = ob.shape();
+            CollisionShape tmpShape = ob.shape();
 			ob.internalSetTemporaryCollisionShape(tm);
 
-			var colAlgo = ci.intersecter1.findAlgorithm(convexBody, triBody, manifoldPtr);
+            CollisionAlgorithm colAlgo = ci.intersecter1.findAlgorithm(convexBody, triBody, manifoldPtr);
 			
 			
 

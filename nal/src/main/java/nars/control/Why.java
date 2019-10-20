@@ -3,6 +3,7 @@ package nars.control;
 import jcog.util.ArrayUtil;
 import nars.$;
 import nars.NAL;
+import nars.subterm.Subterms;
 import nars.term.LazyTerm;
 import nars.term.Term;
 import nars.term.Termed;
@@ -12,6 +13,7 @@ import org.eclipse.collections.api.block.procedure.primitive.ShortProcedure;
 import org.eclipse.collections.impl.set.mutable.primitive.ShortHashSet;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.IntConsumer;
+import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
@@ -31,7 +33,7 @@ public enum Why { ;
 		if (why.length == 1)
 			return why(why[0]);
 
-		var excess = why.length - (capacity-1);
+        int excess = why.length - (capacity-1);
 		if (excess > 0) {
 			//TODO if (excess == 1) simple case
 
@@ -51,7 +53,7 @@ public enum Why { ;
 
 
 	@Nullable public static Term why(RoaringBitmap why, int capacity) {
-		var ss = why.getCardinality();
+        int ss = why.getCardinality();
 		if (ss == 0)
 			return null;
 
@@ -60,9 +62,9 @@ public enum Why { ;
 
 		//convert to array for sampling
 
-		var i = new short[ss];
-		var in = 0;
-		var ii = why.getIntIterator();
+        short[] i = new short[ss];
+        int in = 0;
+        PeekableIntIterator ii = why.getIntIterator();
 		while (ii.hasNext())
 			i[in++] = (short) ii.next();
 
@@ -109,13 +111,13 @@ public enum Why { ;
 			case 1: return c[0].why(); //TODO check capacity
 			case 2: return why(c[0].why(), c[1].why(), capacity);
 			default: {
-				var ct = new Term[c.length];
-				var vt = 0;
-				var nulls = false;
+                Term[] ct = new Term[c.length];
+                int vt = 0;
+                boolean nulls = false;
 				for (int i = 0, cLength = c.length; i < cLength; i++) {
-					var ci = c[i];
+                    Caused ci = c[i];
 					if (ci!=null) {
-						var cti = ct[i] = ci.why();
+                        Term cti = ct[i] = ci.why();
 						if (cti!=null)
 							vt += cti.volume();
 						else
@@ -134,9 +136,9 @@ public enum Why { ;
 				} else {
 					//flatten and sample
 					//ShortHashSet s = new ShortHashSet(ct.length * capacity);
-					var s = new RoaringBitmap();
+                    RoaringBitmap s = new RoaringBitmap();
 					IntConsumer addToS = s::add;
-					for (var cc : ct)
+					for (Term cc : ct)
 						toSet(cc, addToS);
 
 					return why(s, capacity);
@@ -158,16 +160,16 @@ public enum Why { ;
 		if (whyB == null)
 			return whyA; //TODO check cap
 
-		var wa = whyA.volume();
+        int wa = whyA.volume();
 		if (whyA.equals(whyB) && wa <= capacity)
 			return whyA; //same
 
-		var wb = whyB.volume();
+        int wb = whyB.volume();
 		if (wa + wb + 1 <= capacity) {
 			return SETe.the(whyA, whyB);
 		} else {
 			//must reduce or sample
-			var s = new RoaringBitmap();
+            RoaringBitmap s = new RoaringBitmap();
 			IntConsumer addToS = s::add;
 			toSet(whyA, addToS);
 			toSet(whyB, addToS);
@@ -186,13 +188,13 @@ public enum Why { ;
 			each.value(causes, s(why), pri);
 		} else {
 			//split
-			var s = why.subterms();
-			var n = s.subs();
+            Subterms s = why.subterms();
+            int n = s.subs();
 
 			assert (why.opID() == SETe.id  && n > 1);
 
-			var priEach = pri/n;
-			for (var i = 0; i < n; i++)
+            float priEach = pri/n;
+			for (int i = 0; i < n; i++)
 				eval(s.sub(i), priEach, causes, each);
 		}
 	}
@@ -204,13 +206,13 @@ public enum Why { ;
 			s.value(s(why));
 		} else {
 			//TODO optimized case of simple set with no recursive inner-sets
-			var seen = Why.toSet(why); //TODO RoaringBitmap
+            ShortHashSet seen = Why.toSet(why); //TODO RoaringBitmap
 			seen.forEach(s);
 		}
 	}
 
 	@Deprecated public static ShortHashSet toSet(Term why) {
-		var s = new ShortHashSet(why.volume() /* estimate */);
+        ShortHashSet s = new ShortHashSet(why.volume() /* estimate */);
 		toSet(why, s);
 		return s;
 	}
@@ -228,10 +230,10 @@ public enum Why { ;
 		if (w instanceof IdempotInt) {
 			each.accept(s(w));
 		} else {
-			var ww = w.subterms();
-			var wn = ww.subs();
+            Subterms ww = w.subterms();
+            int wn = ww.subs();
 			assert (w.opID() == SETe.id  && wn > 1);
-			for (var i = 0; i < wn; i++)
+			for (int i = 0; i < wn; i++)
 				toSet(ww.sub(i), each);
 		}
 	}

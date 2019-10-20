@@ -60,19 +60,19 @@ public class SimpleTunnelInitiator implements TunnellerInitiator {
             throw new RuntimeException("Failed to build tunneller.jar", var10);
         }
 
-        var jarpath = console.cacheFile(Classpath.createBinaryEntry("tunneller.jar", bootJar));
-        var cachePath = SimpleTunnelInitiator.detectCachePath(jarpath);
+        String jarpath = console.cacheFile(Classpath.createBinaryEntry("tunneller.jar", bootJar));
+        String cachePath = SimpleTunnelInitiator.detectCachePath(jarpath);
         FutureBox<TunnellerConnection> tc = new FutureBox();
         var th = new ProcessHandler() {
             Link diag;
 
             public void started(OutputStream stdIn, InputStream stdOut, InputStream stdErr) {
-                var log = new LineLoggerOutputStream("", SimpleTunnelInitiator.this.logger.getLogger("console").warn());
-                var dlog = new LineLoggerOutputStream("", SimpleTunnelInitiator.this.logger.getLogger("tunneller").info());
+                LineLoggerOutputStream log = new LineLoggerOutputStream("", SimpleTunnelInitiator.this.logger.getLogger("console").warn());
+                LineLoggerOutputStream dlog = new LineLoggerOutputStream("", SimpleTunnelInitiator.this.logger.getLogger("tunneller").info());
                 this.diag = SimpleTunnelInitiator.this.streamCopyService.link(stdErr, log, true);
-                var thread = new Thread(() -> {
+                Thread thread = new Thread(() -> {
                     try {
-                        var tcon = new TunnellerConnection("tunneller", stdOut, stdIn, new PrintStream(dlog), connTimeout, TimeUnit.SECONDS);
+                        TunnellerConnection tcon = new TunnellerConnection("tunneller", stdOut, stdIn, new PrintStream(dlog), connTimeout, TimeUnit.SECONDS);
                         tc.setData(tcon);
                     } catch (IOException | InterruptedException | TimeoutException var2) {
                         tc.setError(var2);
@@ -94,8 +94,8 @@ public class SimpleTunnelInitiator implements TunnellerInitiator {
                 tc.setErrorIfWaiting(new RuntimeException("Tunneller exit code: " + exitCode));
             }
         };
-        var proc = console.startProcess(null, this.tunnellerCommand(jarpath), null, th);
-        var conn = fget(tc);
+        Destroyable proc = console.startProcess(null, this.tunnellerCommand(jarpath), null, th);
+        TunnellerConnection conn = fget(tc);
         return new SimpleTunnelInitiator.CosnoleWrapper(new TunnellerControlConsole(conn, cachePath), proc);
     }
 
@@ -133,7 +133,7 @@ public class SimpleTunnelInitiator implements TunnellerInitiator {
     }
 
     private static String detectCachePath(String jarpath) {
-        var cachePath = jarpath;
+        String cachePath = jarpath;
         if (jarpath.indexOf(47) >= 0) {
             cachePath = jarpath.substring(0, jarpath.lastIndexOf(47) + 1);
         }
@@ -166,8 +166,8 @@ public class SimpleTunnelInitiator implements TunnellerInitiator {
 
         try {
             FutureBox<Void> done = new FutureBox();
-            var stdOut = new ByteArrayOutputStream(8*1024);
-            var stdErr = new ByteArrayOutputStream(8*1024);
+            ByteArrayOutputStream stdOut = new ByteArrayOutputStream(8*1024);
+            ByteArrayOutputStream stdErr = new ByteArrayOutputStream(8*1024);
             var handler = new ProcessHandler() {
                 Link lout;
                 Link lerr;
@@ -195,13 +195,13 @@ public class SimpleTunnelInitiator implements TunnellerInitiator {
             } catch (InterruptedException | ExecutionException var11) {
             }
 
-            var outr = new BufferedReader(new StringReader(new String(stdOut.toByteArray())));
-            var errr = new BufferedReader(new StringReader(new String(stdErr.toByteArray())));
-            var p = Pattern.compile("(openjdk|java) version \"([^\"]*)\"");
+            BufferedReader outr = new BufferedReader(new StringReader(new String(stdOut.toByteArray())));
+            BufferedReader errr = new BufferedReader(new StringReader(new String(stdErr.toByteArray())));
+            Pattern p = Pattern.compile("(openjdk|java) version \"([^\"]*)\"");
 
             while(true) {
 
-                var line = errr.readLine();
+                String line = errr.readLine();
                 if (line == null) {
                     this.logger.fatal().log("JVM verification failed: " + this.javaCmd);
 
@@ -215,7 +215,7 @@ public class SimpleTunnelInitiator implements TunnellerInitiator {
                     }
                 }
 
-                var m = p.matcher(line);
+                Matcher m = p.matcher(line);
                 if (m.matches()) {
                     return m.group(2);
                 }

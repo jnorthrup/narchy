@@ -69,7 +69,7 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
     }
 
     public static int secondaryHash(Object key) {
-        var hash = key.hashCode();
+        int hash = key.hashCode();
         hash ^= (hash >>> 20) ^ (hash >>> 12);
         hash ^= (hash >>> 7) ^ (hash >>> 4);
         return hash;
@@ -90,9 +90,9 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
         if (key == null) {
             throw new NullPointerException();
         }
-        var hash = secondaryHash(key);
-        var tab = mTable;
-        var index = hash & (tab.length - 1);
+        int hash = secondaryHash(key);
+        SimpleHashSetEntry<T>[] tab = mTable;
+        int index = hash & (tab.length - 1);
         for (SimpleHashSetEntry<T> e = tab[index], prev = null; e != null; prev = e, e = e.mNext) {
             if (e.mHash == hash && key.equals(e.mKey)) {
                 if (prev == null) {
@@ -113,10 +113,10 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
             throw new NullPointerException();
         }
 
-        var hash = secondaryHash(key);
-        var tab = mTable;
-        var index = hash & (tab.length - 1);
-        for (var e = tab[index]; e != null; e = e.mNext) {
+        int hash = secondaryHash(key);
+        SimpleHashSetEntry<T>[] tab = mTable;
+        int index = hash & (tab.length - 1);
+        for (SimpleHashSetEntry<T> e = tab[index]; e != null; e = e.mNext) {
             if (e.mKey == key || (e.mHash == hash && e.mKey.equals(key))) {
                 return false;
             }
@@ -138,7 +138,7 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
      */
     private SimpleHashSetEntry<T>[] makeTable(int newCapacity) {
         @SuppressWarnings("unchecked")
-        var newTable = (SimpleHashSetEntry<T>[]) new SimpleHashSetEntry[newCapacity];
+        SimpleHashSetEntry<T>[] newTable = (SimpleHashSetEntry<T>[]) new SimpleHashSetEntry[newCapacity];
         mTable = newTable;
         threshold = (newCapacity >> 1) + (newCapacity >> 2); 
         return newTable;
@@ -151,31 +151,31 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
      * will be new unless we were already at MAXIMUM_CAPACITY.
      */
     private SimpleHashSetEntry<T>[] grow(float factor) {
-        var oldTable = mTable;
-        var oldCapacity = oldTable.length;
+        SimpleHashSetEntry<T>[] oldTable = mTable;
+        int oldCapacity = oldTable.length;
         if (oldCapacity == MAXIMUM_CAPACITY) {
             return oldTable;
         }
-        var newCapacity = (int)Math.floor(oldCapacity * factor);
-        var newTable = makeTable(newCapacity);
+        int newCapacity = (int)Math.floor(oldCapacity * factor);
+        SimpleHashSetEntry<T>[] newTable = makeTable(newCapacity);
         if (mSize == 0) {
             return newTable;
         }
 
-        for (var j = 0; j < oldCapacity; j++) {
+        for (int j = 0; j < oldCapacity; j++) {
             /*
              * Rehash the bucket using the minimum number of field writes.
              * This is the most subtle and delicate code in the class.
              */
-            var e = oldTable[j];
+            SimpleHashSetEntry<T> e = oldTable[j];
             if (e == null) {
                 continue;
             }
-            var highBit = e.mHash & oldCapacity;
+            int highBit = e.mHash & oldCapacity;
             newTable[j | highBit] = e;
             SimpleHashSetEntry<T> broken = null;
-            for (var n = e.mNext; n != null; e = n, n = n.mNext) {
-                var nextHighBit = n.mHash & oldCapacity;
+            for (SimpleHashSetEntry<T> n = e.mNext; n != null; e = n, n = n.mNext) {
+                int nextHighBit = n.mHash & oldCapacity;
                 if (nextHighBit != highBit) {
                     if (broken == null) {
                         newTable[j | nextHighBit] = n;
@@ -197,8 +197,8 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
         if (key == null) {
             throw new NullPointerException();
         }
-        var hash = secondaryHash(key);
-        var tab = mTable;
+        int hash = secondaryHash(key);
+        SimpleHashSetEntry<T>[] tab = mTable;
         return Stream.iterate(tab[hash & (tab.length - 1)], Objects::nonNull, e -> e.mNext).anyMatch(e -> e.mKey == key || (e.mHash == hash && e.mKey.equals(key)));
     }
 
@@ -251,7 +251,7 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
 
         private HashSetIterator() {
 
-            var tab = mTable;
+            SimpleHashSetEntry<T>[] tab = mTable;
                 SimpleHashSetEntry<T> next = null;
                 while (next == null && nextIndex < tab.length) {
                     next = tab[nextIndex++];
@@ -269,9 +269,9 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
         public T next() {
 
 
-            var entryToReturn = nextEntry;
-            var tab = mTable;
-            var next = entryToReturn.mNext;
+            SimpleHashSetEntry<T> entryToReturn = nextEntry;
+            SimpleHashSetEntry<T>[] tab = mTable;
+            SimpleHashSetEntry<T> next = entryToReturn.mNext;
             while (next == null && nextIndex < tab.length) {
                 next = tab[nextIndex++];
             }

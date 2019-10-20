@@ -36,7 +36,7 @@ public class GameChase {
 
         if (!ent.client.chase_target.inuse
                 || ent.client.chase_target.client.resp.spectator) {
-            var old = ent.client.chase_target;
+            edict_t old = ent.client.chase_target;
             ChaseNext(ent);
             if (ent.client.chase_target == old) {
                 ent.client.chase_target = null;
@@ -45,7 +45,7 @@ public class GameChase {
             }
         }
 
-        var targ = ent.client.chase_target;
+        edict_t targ = ent.client.chase_target;
 
         float[] ownerv = {0, 0, 0};
         Math3D.VectorCopy(targ.s.origin, ownerv);
@@ -72,7 +72,7 @@ public class GameChase {
         if (targ.groundentity == null)
             o[2] += 16;
 
-        var trace = game_import_t.trace(ownerv, Globals.vec3_origin,
+        trace_t trace = game_import_t.trace(ownerv, Globals.vec3_origin,
                 Globals.vec3_origin, o, targ, Defines.MASK_SOLID);
 
         float[] goal = {0, 0, 0};
@@ -105,7 +105,7 @@ public class GameChase {
             ent.client.ps.pmove.pm_type = Defines.PM_FREEZE;
     
         Math3D.VectorCopy(goal, ent.s.origin);
-        for (var i = 0; i < 3; i++)
+        for (int i = 0; i < 3; i++)
             ent.client.ps.pmove.delta_angles[i] = (short) Math3D
                     .ANGLE2SHORT(targ.client.v_angle[i]
                             - ent.client.resp.cmd_angles[i]);
@@ -129,7 +129,7 @@ public class GameChase {
         if (null == ent.client.chase_target)
             return;
 
-        var i = ent.client.chase_target.index;
+        int i = ent.client.chase_target.index;
         edict_t e;
         do {
             i++;
@@ -152,7 +152,7 @@ public class GameChase {
         if (ent.client.chase_target == null)
             return;
 
-        var i = ent.client.chase_target.index;
+        int i = ent.client.chase_target.index;
         edict_t e;
         do {
             i--;
@@ -171,8 +171,8 @@ public class GameChase {
 
     public static void GetChaseTarget(edict_t ent) {
 
-        for (var i = 1; i <= GameBase.maxclients.value; i++) {
-            var other = GameBase.g_edicts[i];
+        for (int i = 1; i <= GameBase.maxclients.value; i++) {
+            edict_t other = GameBase.g_edicts[i];
             if (other.inuse && !other.client.resp.spectator) {
                 ent.client.chase_target = other;
                 ent.client.update_chase = true;

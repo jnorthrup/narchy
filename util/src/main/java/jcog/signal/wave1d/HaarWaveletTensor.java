@@ -19,7 +19,7 @@ public class HaarWaveletTensor extends ArrayTensor {
 
     private float[] tmp;
     public void update() {
-        var v = Util.largestPowerOf2NoGreaterThan(src.volume())*2;
+        int v = Util.largestPowerOf2NoGreaterThan(src.volume())*2;
         if(tmp==null || tmp.length!= v) {
             tmp = new float[v];
         } else {

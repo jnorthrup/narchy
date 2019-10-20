@@ -7,11 +7,13 @@ import nars.$;
 import nars.Op;
 import nars.attention.What;
 import nars.subterm.Subterms;
+import nars.subterm.TermList;
 import nars.term.Variable;
 import nars.term.*;
 import nars.term.atom.IdempotentBool;
 import nars.term.util.cache.Intermed;
 import org.eclipse.collections.api.RichIterable;
+import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.set.primitive.ByteSet;
 import org.eclipse.collections.api.tuple.Pair;
@@ -21,6 +23,7 @@ import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
+import java.util.ListIterator;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -56,7 +59,7 @@ public enum Factorize {
             Factorize::_factorize, 32 * 1024);
 
     private static Term[] _factorize(Intermed.SubtermsKey x) {
-        var xx = x.subs;
+        Subterms xx = x.subs;
 
         Term[] xxx = distribute(xx), yyy;
         yyy = xxx != null ? applyConj(xxx, xx.hasVarDep() ? f : fIfNoDep) : null;
@@ -69,7 +72,7 @@ public enum Factorize {
 
     /** returns null if detects no reason to re-process */
     private static @Nullable Term[] distribute(Subterms xx) {
-        var x = xx.toList();
+        TermList x = xx.toList();
 
         //TODO track what subterms (if any) are totally un-involved and exclude them from processing in subsequent stages
         //TODO sort the subterms for optimal processing order
@@ -78,7 +81,7 @@ public enum Factorize {
             stable = true;
 
             for (int i = 0, xLength = x.size(); i < xLength; i++) {
-                var s = x.get(i);
+                Term s = x.get(i);
                 Term var;
 
                 //TODO optimization step: distribute any equal(#x,constant) terms
@@ -87,7 +90,7 @@ public enum Factorize {
 //                }
 
                 if (Functor.func(s).equals(Member.member) && (var = s.subPath((byte) 0, (byte) 0)) instanceof Variable) {
-                    var r = s.subPath((byte) 0, (byte) 1);
+                    Term r = s.subPath((byte) 0, (byte) 1);
                     if (r.op().set) {
                         if (xLength == 2) {
                             //special case: there is no reason to process this because it consists of one member and one non-member
@@ -100,14 +103,14 @@ public enum Factorize {
 
                         Subterms rs = null;
 
-                        var jj = x.listIterator();
+                        ListIterator<Term> jj = x.listIterator();
                         while (jj.hasNext()) {
-                            var xj = jj.next();
+                            Term xj = jj.next();
                             if (xj.containsRecursively(var)) {
                                 jj.remove();
                                 if (rs == null)
                                      rs = r.subterms();
-                                for (var rr : rs) {
+                                for (Term rr : rs) {
                                     jj.add(xj.replace(var, rr));
                                 }
                             }
@@ -145,12 +148,12 @@ public enum Factorize {
 
         /** shadow target -> replacements */
         UnifiedSetMultimap<Term, ObjectBytePair<Term>>[] pp = new UnifiedSetMultimap[]{null};
-        var n = (byte) x.length;
-        for (var i = 0; i < n; i++) {
-            var s = x[i];
-            var pathMin = s.subs() == 1 ? 2 : 1; //dont factor the direct subterm of 1-arity compound (ex: negation, {x}, (x) )
+        byte n = (byte) x.length;
+        for (int i = 0; i < n; i++) {
+            Term s = x[i];
+            int pathMin = s.subs() == 1 ? 2 : 1; //dont factor the direct subterm of 1-arity compound (ex: negation, {x}, (x) )
             if (s instanceof Compound) {
-                var ii = i;
+                int ii = i;
                 s.pathsTo((Term v) -> true, v -> true, (path, what) -> {
 
                     //if (what.unneg().volume() > 1) { //dont remap any atomics
@@ -158,7 +161,7 @@ public enum Factorize {
                         if (path.size() >= pathMin) {
                             if (pp[0] == null)
                                 pp[0] = UnifiedSetMultimap.newMultimap();
-                            var v1 = shadow(s, path, f);
+                            Term v1 = shadow(s, path, f);
                             if (!(v1 instanceof IdempotentBool))
                                 pp[0].put(v1, pair(what, (byte)ii));
                         }
@@ -169,30 +172,30 @@ public enum Factorize {
             }
         }
 
-        var p = pp[0];
+        UnifiedSetMultimap<Term, ObjectBytePair<Term>> p = pp[0];
         if (p == null)
             return null;
 
-        var r = p.keyMultiValuePairsView().select((pathwhat) -> pathwhat.getTwo().size() > 1).toSortedList(c);
+        MutableList<Pair<Term, RichIterable<ObjectBytePair<Term>>>> r = p.keyMultiValuePairsView().select((pathwhat) -> pathwhat.getTwo().size() > 1).toSortedList(c);
 
         if (r.isEmpty())
             return null;
 
 
-        var rr = r.get(0);
+        Pair<Term, RichIterable<ObjectBytePair<Term>>> rr = r.get(0);
         ByteSet masked = rr.getTwo().collectByte(ObjectBytePair::getTwo).toSet();
         Set<Term> t = new UnifiedSet<>(n - masked.size() + 1);
         for (byte i = 0; i < n; i++)
             if (!masked.contains(i)) {
                 t.add(x[i]);
             }
-        var s = $.sete(rr.getTwo().collect((ob) -> {
-            var y = ob.getOne();
+        Term s = $.sete(rr.getTwo().collect((ob) -> {
+            Term y = ob.getOne();
             return y.op() == CONJ && y.dt() == DTERNAL ? SETe.the(y.subterms()) : y; //flatten
         }));
         if (s instanceof IdempotentBool)
             return null;
-        var m = $.func(Member.member, f, s);
+        Term m = $.func(Member.member, f, s);
         if (m == Null)
             return null;
 
@@ -222,7 +225,7 @@ public enum Factorize {
         @Override
         protected Term applyUnnormalized(Term x, int volMax, What w) {
 
-            var y = factorize.apply(x.subterms().commuted());
+            Term[] y = factorize.apply(x.subterms().commuted());
             if (y.length == 0)
                 return x; //unchanged
 

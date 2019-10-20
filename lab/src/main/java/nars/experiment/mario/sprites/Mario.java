@@ -164,7 +164,7 @@ public class Mario extends Sprite {
         visible = ((invulnerableTime / 2) & 1) == 0;
 
         wasOnGround = onGround;
-        var sideWaysSpeed = keys[KEY_SPEED] ? 1.2f : 0.6f;
+        float sideWaysSpeed = keys[KEY_SPEED] ? 1.2f : 0.6f;
 
 
         if (onGround) {
@@ -246,7 +246,7 @@ public class Mario extends Sprite {
         calcPic();
 
         if (sliding) {
-            for (var i = 0; i < 1; i++) {
+            for (int i = 0; i < 1; i++) {
                 world.addSprite(new Sparkle((int) (x + Math.random() * 4 - 2) + facing * 8, (int) (y + Math.random() * 4) - 24, (float) (Math.random() * 2 - 1), (float) Math.random() * 1, 0, 1, 5));
             }
             ya *= 0.5f;
@@ -296,7 +296,7 @@ public class Mario extends Sprite {
     }
 
     private void calcPic() {
-        var runFrame = 0;
+        int runFrame = 0;
 
         if (large) {
             runFrame = ((int) (runTime / 20)) % 4;
@@ -323,7 +323,7 @@ public class Mario extends Sprite {
             if (xa > 1 || xa < -1) runFrame = large ? 9 : 7;
 
             if (xa > 3 || xa < -3) {
-                for (var i = 0; i < 3; i++) {
+                for (int i = 0; i < 3; i++) {
                     world.addSprite(new Sparkle((int) (x + Math.random() * 8 - 4), (int) (y + Math.random() * 4), (float) (Math.random() * 2 - 1), (float) Math.random() * -1, 0, 1, 5));
                 }
             }
@@ -357,7 +357,7 @@ public class Mario extends Sprite {
             ya += 8;
         }
 
-        var collide = false;
+        boolean collide = false;
         if (ya > 0) {
             if (isBlocking(x + xa - width, y + ya, xa, 0)) collide = true;
             else if (isBlocking(x + xa + width, y + ya, xa, 0)) collide = true;
@@ -415,20 +415,20 @@ public class Mario extends Sprite {
     }
 
     private boolean isBlocking(float _x, float _y, float xa, float ya) {
-        var x = (int) (_x / 16);
-        var y = (int) (_y / 16);
+        int x = (int) (_x / 16);
+        int y = (int) (_y / 16);
         if (x == (int) (this.x / 16) && y == (int) (this.y / 16)) return false;
 
-        var blocking = world.level.isBlocking(x, y, xa, ya);
+        boolean blocking = world.level.isBlocking(x, y, xa, ya);
 
-        var block = world.level.getBlock(x, y);
+        byte block = world.level.getBlock(x, y);
 
         if (((Level.TILE_BEHAVIORS[block & 0xff]) & Level.BIT_PICKUPABLE) > 0) {
             Mario.getCoin();
 
             world.level.setBlock(x, y, (byte) 0);
-            for (var xx = 0; xx < 2; xx++)
-                for (var yy = 0; yy < 2; yy++)
+            for (int xx = 0; xx < 2; xx++)
+                for (int yy = 0; yy < 2; yy++)
                     world.addSprite(new Sparkle(x * 16 + xx * 8 + (int) (Math.random() * 8), y * 16 + yy * 8 + (int) (Math.random() * 8), 0, 0, 0, 2, 5));
         }
 
@@ -445,7 +445,7 @@ public class Mario extends Sprite {
         if (deathTime > 0 || world.paused) return;
 
 
-        var targetY = enemy.y - enemy.height / 2;
+        float targetY = enemy.y - enemy.height / 2;
         move(0, targetY - y);
 
 
@@ -465,7 +465,7 @@ public class Mario extends Sprite {
             carried = shell;
             shell.carried = true;
         } else {
-            var targetY = shell.y - shell.height / 2;
+            float targetY = shell.y - shell.height / 2;
             move(0, targetY - y);
 
 
@@ -503,7 +503,7 @@ public class Mario extends Sprite {
     }
 
     private void win() {
-        var retirement_benefit = 8;
+        int retirement_benefit = 8;
         coins += retirement_benefit;
 
         xDeathPos = (int) x;
@@ -570,7 +570,7 @@ public class Mario extends Sprite {
 
         if (deathTime > 0 || world.paused) return;
 
-        var targetY = bill.y - bill.height / 2;
+        float targetY = bill.y - bill.height / 2;
         move(0, targetY - y);
 
 
@@ -584,12 +584,18 @@ public class Mario extends Sprite {
     }
 
     public byte getKeyMask() {
-        var mask = IntStream.range(0, 7).filter(i -> keys[i]).map(i -> (1 << i)).reduce(0, (a, b) -> a | b);
+        int mask = 0;
+        for (int i = 0; i < 7; i++) {
+            if (keys[i]) {
+                int i1 = (1 << i);
+                mask = mask | i1;
+            }
+        }
         return (byte) mask;
     }
 
     public void setKeys(byte mask) {
-        for (var i = 0; i < 7; i++) {
+        for (int i = 0; i < 7; i++) {
             keys[i] = (mask & (1 << i)) > 0;
         }
     }

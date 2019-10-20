@@ -44,7 +44,7 @@ public class Fireball extends Sprite {
     @Override
     public void move() {
         if (deadTime > 0) {
-            for (var i = 0; i < 8; i++) {
+            for (int i = 0; i < 8; i++) {
                 world.addSprite(new Sparkle((int) (x + Math.random() * 8 - 4) + 4, (int) (y + Math.random() * 8 - 4) + 2, (float) Math.random() * 2 - 1 - facing, (float) Math.random() * 2 - 1, 0, 1, 5));
             }
             spriteContext.removeSprite(this);
@@ -62,7 +62,7 @@ public class Fireball extends Sprite {
             facing = -1;
         }
 
-        var sideWaysSpeed = 8f;
+        float sideWaysSpeed = 8f;
         xa = facing * sideWaysSpeed;
 
         world.checkFireballCollide(this);
@@ -112,8 +112,8 @@ public class Fireball extends Sprite {
             ya += 8;
         }
 
-        var collide = false;
-        var width = 4;
+        boolean collide = false;
+        int width = 4;
         if (ya > 0) {
             if (isBlocking(x + xa - width, y + ya, xa, 0)) collide = true;
             else if (isBlocking(x + xa + width, y + ya, xa, 0)) collide = true;
@@ -168,14 +168,14 @@ public class Fireball extends Sprite {
     }
 
     private boolean isBlocking(float _x, float _y, float xa, float ya) {
-        var x = (int) (_x / 16);
-        var y = (int) (_y / 16);
+        int x = (int) (_x / 16);
+        int y = (int) (_y / 16);
         if (x == (int) (this.x / 16) && y == (int) (this.y / 16)) return false;
 
-        var blocking = world.level.isBlocking(x, y, xa, ya);
+        boolean blocking = world.level.isBlocking(x, y, xa, ya);
 
         @SuppressWarnings("unused")
-        var block = world.level.getBlock(x, y);
+        byte block = world.level.getBlock(x, y);
 
         return blocking;
     }

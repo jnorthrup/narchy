@@ -5,6 +5,7 @@
  */
 package jurls.reinforcementlearning.domains;
 
+import javax.swing.*;
 import java.awt.*;
 
 /**
@@ -29,19 +30,19 @@ public class PhysicsRenderer extends javax.swing.JPanel {
         g.setColor(new Color(0, 0, 0, 0.25f));
         g.fillRect(0, 0, getWidth(), getHeight());
 
-        var g2 = (Graphics2D)g;
+        Graphics2D g2 = (Graphics2D)g;
         g2.setStroke(st);
         if (physics2D != null) {
             g.setColor(Color.magenta);
             g.drawLine(0, (int) physics2D.floor, getWidth(), (int) physics2D.floor);
 
             g.setColor(Color.orange);
-            for (var c : physics2D.connections) {
+            for (Connection c : physics2D.connections) {
                 g.drawLine((int) c.p1.x, (int) c.p1.y, (int) c.p2.x, (int) c.p2.y);
             }
 
             g.setColor(Color.green);
-            for (var p : physics2D.points) {
+            for (Point p : physics2D.points) {
                 g.drawArc((int) p.x - 10, (int) p.y - 10, 20, 20, 0, 360);
             }
         }
@@ -56,7 +57,7 @@ public class PhysicsRenderer extends javax.swing.JPanel {
     
     private void initComponents() {
 
-        var layout = new javax.swing.GroupLayout(this);
+        GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

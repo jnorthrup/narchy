@@ -27,7 +27,7 @@ public abstract class Find<X> implements Solution {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (other instanceof Find) {
-            var otherNode = (Find) other;
+            Find otherNode = (Find) other;
             return (this.id.equals(otherNode.id));
         }
         return false;

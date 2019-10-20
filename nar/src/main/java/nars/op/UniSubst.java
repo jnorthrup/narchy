@@ -15,6 +15,8 @@ import nars.term.util.TermException;
 import nars.term.util.transform.InlineFunctor;
 import nars.unify.UnifyTransform;
 
+import java.util.Map;
+
 import static nars.Op.VAR_DEP;
 import static nars.Op.VAR_INDEP;
 import static nars.term.atom.IdempotentBool.Null;
@@ -91,15 +93,15 @@ public class UniSubst extends Functor implements InlineFunctor<Evaluation> {
     @Override
     public Term apply(Evaluation e, /*@NotNull*/ Subterms a) {
 
-        var pp = a.subs();
+        int pp = a.subs();
         if (pp < 3)
             throw new TermException(UniSubst.class.getSimpleName() + " argument underflow", a);
 
         //TODO cache these in compiled unisubst instances
-        var strict = false;
-        var var = Op.VAR_DEP.bit | VAR_INDEP.bit;
-        for (var p = 3; p < pp; p++) {
-            var ap = a.sub(p);
+        boolean strict = false;
+        int var = Op.VAR_DEP.bit | VAR_INDEP.bit;
+        for (int p = 3; p < pp; p++) {
+            Term ap = a.sub(p);
             if (ap instanceof Atom) {
                 if (ap.equals(NOVEL))
                     strict = true;
@@ -118,16 +120,16 @@ public class UniSubst extends Functor implements InlineFunctor<Evaluation> {
     }
 
     private Term apply(Subterms a, int var, boolean strict) {
-        var c = a.sub(0);
-        var x = a.sub(1);
-        var y = a.sub(2);
+        Term c = a.sub(0);
+        Term x = a.sub(1);
+        Term y = a.sub(2);
 
         if (x.equals(y))
             return strict ? Null : c;
 
-        var hasVar = x.hasAny(var) || y.hasAny(var);
+        boolean hasVar = x.hasAny(var) || y.hasAny(var);
         //boolean hasXternal = x.hasXternal() || y.hasXternal();
-        var tryUnify = hasVar;// || hasXternal;
+        boolean tryUnify = hasVar;// || hasXternal;
 
         if (!tryUnify)
             return Null;
@@ -186,10 +188,10 @@ public class UniSubst extends Functor implements InlineFunctor<Evaluation> {
 
         /** commit substitutions to the premise */
         public void commitSubst() {
-            var termTermMap = parent.retransform;
-            for (var entry : this.xy.entrySet()) {
-                var key = entry.getKey();
-                var value = entry.getValue();
+            Map<Term, Term> termTermMap = parent.retransform;
+            for (Map.Entry<Variable, Term> entry : this.xy.entrySet()) {
+                Variable key = entry.getKey();
+                Term value = entry.getValue();
                 termTermMap.put(key, value);
             }
         }

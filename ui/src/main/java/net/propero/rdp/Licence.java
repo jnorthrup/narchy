@@ -96,11 +96,11 @@ class Licence {
      */
     private static void save_licence(RdpPacket_Localised data, int length) {
         logger.debug("save_licence");
-        var startpos = data.getPosition();
+        int startpos = data.getPosition();
         data.incrementPosition(2); 
         /* Skip three strings */
         int len;
-        for (var i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) {
             len = data.getLittleEndian32();
             data.incrementPosition(len);
             /*
@@ -119,7 +119,7 @@ class Licence {
             return;
         }
 
-        var databytes = new byte[len];
+        byte[] databytes = new byte[len];
         data.copyToByteArray(databytes, 0, data.getPosition(), len);
 
         new LicenceStore_Localised().save_licence(databytes);
@@ -140,9 +140,9 @@ class Licence {
     }
 
     private static byte[] generate_hwid() {
-        var hwid = new byte[LICENCE_HWID_SIZE];
+        byte[] hwid = new byte[LICENCE_HWID_SIZE];
         Secure.setLittleEndian32(hwid, 2);
-        var name = Options.hostname.getBytes(StandardCharsets.US_ASCII);
+        byte[] name = Options.hostname.getBytes(StandardCharsets.US_ASCII);
 
         System.arraycopy(name, 0, hwid, 4, Math.min(name.length, LICENCE_HWID_SIZE - 4));
         return hwid;
@@ -158,7 +158,7 @@ class Licence {
      */
     public void process(RdpPacket_Localised data) throws RdesktopException,
             IOException, CryptoException {
-        var tag = data.get8();
+        int tag = data.get8();
         data.incrementPosition(3); 
 
         switch (tag) {
@@ -201,9 +201,9 @@ class Licence {
     private void process_demand(RdpPacket_Localised data)
             throws RdesktopException,
             IOException, CryptoException {
-        var server_random = new byte[Secure.SEC_RANDOM_SIZE];
-        var host = Options.hostname.getBytes(StandardCharsets.US_ASCII);
-        var user = Options.username.getBytes(StandardCharsets.US_ASCII);
+        byte[] server_random = new byte[Secure.SEC_RANDOM_SIZE];
+        byte[] host = Options.hostname.getBytes(StandardCharsets.US_ASCII);
+        byte[] user = Options.username.getBytes(StandardCharsets.US_ASCII);
 
         /* retrieve the server random */
         data.copyToByteArray(server_random, 0, data.getPosition(),
@@ -211,25 +211,25 @@ class Licence {
         data.incrementPosition(server_random.length);
 
         /* Null client keys are currently used */
-        var null_data = new byte[Secure.SEC_MODULUS_SIZE];
+        byte[] null_data = new byte[Secure.SEC_MODULUS_SIZE];
         this.generate_keys(null_data, server_random, null_data);
 
         if (!Options.built_in_licence && Options.load_licence) {
-            var licence_data = load_licence();
+            byte[] licence_data = load_licence();
             if ((licence_data != null) && (licence_data.length > 0)) {
                 logger.debug("licence_data.length = {}", licence_data.length);
                 /* Generate a signature for the HWID buffer */
-                var hwid = generate_hwid();
-                var signature = secure.sign(this.licence_sign_key, 16, 16,
+                byte[] hwid = generate_hwid();
+                byte[] signature = secure.sign(this.licence_sign_key, 16, 16,
                         hwid, hwid.length);
 
                 /* now crypt the hwid */
-                var rc4_licence = new RC4();
-                var crypt_key = new byte[this.licence_key.length];
+                RC4 rc4_licence = new RC4();
+                byte[] crypt_key = new byte[this.licence_key.length];
                 System.arraycopy(this.licence_key, 0, crypt_key, 0,
                         this.licence_key.length);
                 rc4_licence.engineInitEncrypt(crypt_key);
-                var crypt_hwid = new byte[LICENCE_HWID_SIZE];
+                byte[] crypt_hwid = new byte[LICENCE_HWID_SIZE];
                 rc4_licence.crypt(hwid, 0, LICENCE_HWID_SIZE, crypt_hwid, 0);
 
                 present(null_data, null_data, licence_data,
@@ -254,7 +254,7 @@ class Licence {
 
         data.incrementPosition(6);
 
-        var tokenlen = data.getLittleEndian16();
+        int tokenlen = data.getLittleEndian16();
 
         if (tokenlen != LICENCE_TOKEN_SIZE) {
             throw new RdesktopException("Wrong Tokenlength!");
@@ -262,7 +262,7 @@ class Licence {
         this.in_token = new byte[tokenlen];
         data.copyToByteArray(this.in_token, 0, data.getPosition(), tokenlen);
         data.incrementPosition(tokenlen);
-        var in_sig = new byte[LICENCE_SIGNATURE_SIZE];
+        byte[] in_sig = new byte[LICENCE_SIGNATURE_SIZE];
         data.copyToByteArray(in_sig, 0, data.getPosition(),
                 LICENCE_SIGNATURE_SIZE);
         data.incrementPosition(LICENCE_SIGNATURE_SIZE);
@@ -283,10 +283,10 @@ class Licence {
      */
     private void send_authresp(byte[] token, byte[] crypt_hwid, byte[] signature)
             throws RdesktopException, IOException, CryptoException {
-        var sec_flags = Secure.SEC_LICENCE_NEG;
-        var length = 58;
+        int sec_flags = Secure.SEC_LICENCE_NEG;
+        int length = 58;
 
-        var data = secure.init(sec_flags, length + 2);
+        RdpPacket_Localised data = secure.init(sec_flags, length + 2);
 
         data.set8(LICENCE_TAG_AUTHRESP);
         data.set8(2); 
@@ -328,13 +328,13 @@ class Licence {
     private void present(byte[] client_random, byte[] rsa_data,
                          byte[] licence_data, int licence_size, byte[] hwid, byte[] signature)
             throws RdesktopException, IOException, CryptoException {
-        var sec_flags = Secure.SEC_LICENCE_NEG;
-        var length = /* rdesktop is 16 not 20, but this must be wrong?! */
+        int sec_flags = Secure.SEC_LICENCE_NEG;
+        int length = /* rdesktop is 16 not 20, but this must be wrong?! */
                 20 + Secure.SEC_RANDOM_SIZE + Secure.SEC_MODULUS_SIZE
                         + Secure.SEC_PADDING_SIZE + licence_size + LICENCE_HWID_SIZE
                         + LICENCE_SIGNATURE_SIZE;
 
-        var s = secure.init(sec_flags, length + 4);
+        RdpPacket_Localised s = secure.init(sec_flags, length + 4);
 
         s.set8(LICENCE_TAG_PRESENT);
         s.set8(2); 
@@ -385,36 +385,36 @@ class Licence {
             throws RdesktopException,
             IOException, CryptoException {
 
-        var rc4_licence = new RC4();
+        RC4 rc4_licence = new RC4();
 
         /* parse incoming packet and save encrypted token */
         if (!parse_authreq(data)) {
             throw new RdesktopException("Authentication Request was corrupt!");
         }
-        var out_token = new byte[LICENCE_TOKEN_SIZE];
+        byte[] out_token = new byte[LICENCE_TOKEN_SIZE];
         System.arraycopy(this.in_token, 0, out_token, 0, LICENCE_TOKEN_SIZE);
 
         /* decrypt token. It should read TEST in Unicode */
-        var crypt_key = new byte[this.licence_key.length];
+        byte[] crypt_key = new byte[this.licence_key.length];
         System.arraycopy(this.licence_key, 0, crypt_key, 0,
                 this.licence_key.length);
         rc4_licence.engineInitDecrypt(crypt_key);
-        var decrypt_token = new byte[LICENCE_TOKEN_SIZE];
+        byte[] decrypt_token = new byte[LICENCE_TOKEN_SIZE];
         rc4_licence.crypt(this.in_token, 0, LICENCE_TOKEN_SIZE, decrypt_token,
                 0);
 
         /* construct HWID */
-        var hwid = Licence.generate_hwid();
+        byte[] hwid = Licence.generate_hwid();
 
         /* generate signature for a buffer of token and HWId */
-        var sealed_buffer = new byte[LICENCE_TOKEN_SIZE + LICENCE_HWID_SIZE];
+        byte[] sealed_buffer = new byte[LICENCE_TOKEN_SIZE + LICENCE_HWID_SIZE];
         System
                 .arraycopy(decrypt_token, 0, sealed_buffer, 0,
                         LICENCE_TOKEN_SIZE);
         System.arraycopy(hwid, 0, sealed_buffer, LICENCE_TOKEN_SIZE,
                 LICENCE_HWID_SIZE);
 
-        var out_sig = secure.sign(this.licence_sign_key, 16, 16, sealed_buffer,
+        byte[] out_sig = secure.sign(this.licence_sign_key, 16, 16, sealed_buffer,
                 sealed_buffer.length);
 
         /* deliberately break signature if licencing disabled */
@@ -426,7 +426,7 @@ class Licence {
         System.arraycopy(this.licence_key, 0, crypt_key, 0,
                 this.licence_key.length);
         rc4_licence.engineInitEncrypt(crypt_key);
-        var crypt_hwid = new byte[LICENCE_HWID_SIZE];
+        byte[] crypt_hwid = new byte[LICENCE_HWID_SIZE];
         rc4_licence.crypt(hwid, 0, LICENCE_HWID_SIZE, crypt_hwid, 0);
 
         this.send_authresp(out_token, crypt_hwid, out_sig);
@@ -440,24 +440,24 @@ class Licence {
      * @throws CryptoException
      */
     private void process_issue(RdpPacket_Localised data) throws CryptoException {
-        var rc4_licence = new RC4();
-        var key = new byte[this.licence_key.length];
+        RC4 rc4_licence = new RC4();
+        byte[] key = new byte[this.licence_key.length];
         System.arraycopy(this.licence_key, 0, key, 0, this.licence_key.length);
 
         data.incrementPosition(2);
-        var length = data.getLittleEndian16();
+        int length = data.getLittleEndian16();
 
         if (data.getPosition() + length > data.getEnd()) {
             return;
         }
 
         rc4_licence.engineInitDecrypt(key);
-        var buffer = new byte[length];
+        byte[] buffer = new byte[length];
         data.copyToByteArray(buffer, 0, data.getPosition(), length);
         rc4_licence.crypt(buffer, 0, length, buffer, 0);
         data.copyFromByteArray(buffer, 0, data.getPosition(), length);
 
-        var check = data.getLittleEndian16();
+        int check = data.getLittleEndian16();
         if (check != 0) {
             
         }
@@ -491,12 +491,12 @@ class Licence {
     private void send_request(byte[] client_random, byte[] rsa_data,
                               byte[] username, byte[] hostname) throws RdesktopException,
             IOException, CryptoException {
-        var sec_flags = Secure.SEC_LICENCE_NEG;
-        var userlen = (username.length == 0 ? 0 : username.length + 1);
-        var hostlen = (hostname.length == 0 ? 0 : hostname.length + 1);
-        var length = 128 + userlen + hostlen;
+        int sec_flags = Secure.SEC_LICENCE_NEG;
+        int userlen = (username.length == 0 ? 0 : username.length + 1);
+        int hostlen = (hostname.length == 0 ? 0 : hostname.length + 1);
+        int length = 128 + userlen + hostlen;
 
-        var buffer = secure.init(sec_flags, length);
+        RdpPacket_Localised buffer = secure.init(sec_flags, length);
 
         buffer.set8(LICENCE_TAG_REQUEST);
         buffer.set8(2); 
@@ -566,8 +566,8 @@ class Licence {
     private void generate_keys(byte[] client_key, byte[] server_key,
                                byte[] client_rsa) {
 
-        var temp_hash = secure.hash48(client_rsa, client_key, server_key, 65);
-        var session_key = secure.hash48(temp_hash, server_key, client_key, 65);
+        byte[] temp_hash = secure.hash48(client_rsa, client_key, server_key, 65);
+        byte[] session_key = secure.hash48(temp_hash, server_key, client_key, 65);
 
         System.arraycopy(session_key, 0, this.licence_sign_key, 0, 16);
 

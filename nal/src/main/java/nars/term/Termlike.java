@@ -99,8 +99,8 @@ public interface Termlike {
      * non-recursive, visits only 1 layer deep, and not the current if compound
      */
     default int intifyShallow(int v, IntObjectToIntFunction<Term> reduce) {
-        var n = subs();
-        for (var i = 0; i < n; i++)
+        int n = subs();
+        for (int i = 0; i < n; i++)
             v = reduce.intValueOf(v, sub(i));
         return v;
     }
@@ -161,7 +161,7 @@ public interface Termlike {
     }
 
     default   boolean hasAllAny(/*@NotNull*/ int all, int any) {
-        var s = structure();
+        int s = structure();
         return Op.has(s, all, true) && Op.has(s, any, false);
     }
 
@@ -245,8 +245,8 @@ public interface Termlike {
     }
 
     default int addAllTo(Term[] t, int offset) {
-        var s = subs();
-        for (var i = 0; i < s; )
+        int s = subs();
+        for (int i = 0; i < s; )
             t[offset++] = sub(i++);
         return s;
     }

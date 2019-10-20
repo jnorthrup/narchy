@@ -140,7 +140,7 @@ public final class MathUtils {
      * @return absolute value of x
      */
     public static int abs(int x) {
-        var y = x >> 31;
+        int y = x >> 31;
         return (x ^ y) - y;
     }
 
@@ -151,7 +151,7 @@ public final class MathUtils {
      * @return power^2 value
      */
     public static int ceilPowerOf2(int x) {
-        var pow2 = 1;
+        int pow2 = 1;
         while (pow2 < x) {
             pow2 <<= 1;
         }
@@ -221,7 +221,7 @@ public final class MathUtils {
     }
 
     public static double dualSign(double a, double b) {
-        var x = (a >= 0 ? a : -a);
+        double x = (a >= 0 ? a : -a);
         return (b >= 0 ? x : -x);
     }
 
@@ -243,8 +243,8 @@ public final class MathUtils {
      */
     @Deprecated
     public static float fastInverseSqrt(float x) {
-        var half = 0.5F * x;
-        var i = Float.floatToIntBits(x);
+        float half = 0.5F * x;
+        int i = Float.floatToIntBits(x);
         i = 0x5f375a86 - (i >> 1);
         x = Float.intBitsToFloat(i);
         return x * (1.5F - half * x * x);
@@ -265,7 +265,7 @@ public final class MathUtils {
         float x = Float.floatToRawIntBits(a);
         x *= INV_SHIFT23;
         x -= 127;
-        var y = x - (x >= 0 ? (int) x : (int) x - 1);
+        float y = x - (x >= 0 ? (int) x : (int) x - 1);
         b *= x + (y - y * y) * 0.346607f;
         y = b - (b >= 0 ? (int) b : (int) b - 1);
         y = (y - y * y) * 0.33971f;
@@ -297,7 +297,7 @@ public final class MathUtils {
     }
 
     public static long floor(double x) {
-        var y = (long) x;
+        long y = (long) x;
         if (x < 0 && x != y) {
             y--;
         }
@@ -313,7 +313,7 @@ public final class MathUtils {
      * @since 0012
      */
     public static int floor(float x) {
-        var y = (int) x;
+        int y = (int) x;
         if (x < 0 && x != y) {
             y--;
         }
@@ -356,7 +356,7 @@ public final class MathUtils {
      * @return impulse value (as double)
      */
     public static double impulse(double k, double t) {
-        var h = k * t;
+        double h = k * t;
         return h * Math.exp(1.0 - h);
     }
 
@@ -372,7 +372,7 @@ public final class MathUtils {
      * @return impulse value (as float)
      */
     public static float impulse(float k, float t) {
-        var h = k * t;
+        float h = k * t;
         return (float) (h * Math.exp(1.0f - h));
     }
 

@@ -30,6 +30,7 @@ import jcog.data.list.FasterList;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -55,7 +56,7 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
     }
 
     public BasicPath<N, E> clone() {
-        var p = new BasicPath(graph, start);
+        BasicPath p = new BasicPath(graph, start);
         p.list.addAll(list);
         return p;
     }
@@ -70,18 +71,22 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
         if (beginIndex < 0) throw new IllegalArgumentException("beginIndex<0");
         if (endIndex < 0) throw new IllegalArgumentException("endIndex<0");
 
-        var ncnt = nodeCount();
+        int ncnt = nodeCount();
         if (ncnt == 0 || ncnt == 1) return Collections.EMPTY_LIST; //empty
 
 
-        var l = fetch(beginIndex, endIndex).stream().map(FromTo::id).collect(Collectors.toList());
+        List<E> l = new ArrayList<>();
+        for (FromTo<Node<N, E>, E> nodeEFromTo : fetch(beginIndex, endIndex)) {
+            E id = nodeEFromTo.id();
+            l.add(id);
+        }
 
         return l;
     }
 
     @Override
     public List<FromTo<Node<N, E>, E>> fetch(int from, int to) {
-        var ncnt = nodeCount();
+        int ncnt = nodeCount();
 
         if (from < 0) from = Math.max((ncnt + from), 0);
 
@@ -91,19 +96,19 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
 
         if (ncnt == 0 || ncnt == 1) return Collections.EMPTY_LIST; //empty
 
-        var dir = to - from;
+        int dir = to - from;
 
         List<FromTo<Node<N, E>, E>> l = new FasterList<>(to - from);
 
         if (dir > 0) {
-            for (var i = from; i < to; i++) {
-                var e = list.get(i);
+            for (int i = from; i < to; i++) {
+                FromTo<Node<N, E>, E> e = list.get(i);
                 if (e != null && e.id() != null)
                     l.add(e);
             }
         } else if (dir < 0) {
-            for (var i = Math.min(from, to); i < Math.max(from, to); i++) {
-                var e = list.get(i);
+            for (int i = Math.min(from, to); i < Math.max(from, to); i++) {
+                FromTo<Node<N, E>, E> e = list.get(i);
                 if (e != null && e.id() != null) {
                     l.add(0, new ImmutableDirectedEdge<>(e.to(), e.id(), e.from()));
                 }
@@ -126,8 +131,8 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
     @Override
     public BasicPath<N, E> append(E e, N n) {
         if (n == null) throw new IllegalArgumentException("n == null");
-        var ncnt = nodeCount();
-        var newPath = new BasicPath<N, E>(graph, start);
+        int ncnt = nodeCount();
+        BasicPath<N, E> newPath = new BasicPath<N, E>(graph, start);
         N last;
         if (ncnt == 0) {
             last = start;
@@ -153,17 +158,22 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
     @Override
     public int count(N n) {
         if (n == null) return 0;
-        var s = nodeCount();
-        var count = IntStream.range(0, s).filter(ni -> n.equals(node(ni))).count();
-        var cnt = (int) count;
+        int s = nodeCount();
+        long count = 0L;
+        for (int ni = 0; ni < s; ni++) {
+            if (n.equals(node(ni))) {
+                count++;
+            }
+        }
+        int cnt = (int) count;
 
         return cnt;
     }
 
     private Set<N> nodeSet() {
-        var nc = nodeCount();
+        int nc = nodeCount();
         Set<N> nset = new UnifiedSet<>(nc);
-        for (var ni = 0; ni < nc; ni++) {
+        for (int ni = 0; ni < nc; ni++) {
             nset.add(node(ni));
         }
         return nset;
@@ -174,9 +184,9 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
         //synchronized (this) {
             if (countMap != null) return countMap;
 
-        var ns = nodeSet();
+        Set<N> ns = nodeSet();
             countMap = new ObjectIntHashMap<>(ns.size());
-            for (var n : ns)
+            for (N n : ns)
                 countMap.put(n, count(n));
 
             return countMap;
@@ -198,11 +208,11 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
     @Override
     public int nodeCount() {
         if (list == null) return 0;
-        var lsize = list.size();
+        int lsize = list.size();
         if (lsize < 1)
             return 0;
         else if (lsize == 1) {
-            var e = list.get(0);
+            FromTo<Node<N, E>, E> e = list.get(0);
             return ((e.id() != null) && (e.to().id() != null)) ? 2 : 1;
         } else
             return lsize + 1; //???
@@ -210,7 +220,7 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
 
     @Override
     public N node(int nodeIndex) {
-        var ncnt = nodeCount();
+        int ncnt = nodeCount();
         if (nodeIndex < 0) {
             return (ncnt + nodeIndex) < 0 ? null : node(ncnt + nodeIndex);
         }

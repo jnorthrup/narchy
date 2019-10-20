@@ -48,7 +48,7 @@ public class PlayerTrail {
     static boolean trail_active;
     static {
         
-        for (var n = 0; n < TRAIL_LENGTH; n++)
+        for (int n = 0; n < TRAIL_LENGTH; n++)
             trail[n] = new edict_t(n);
     }
 
@@ -66,7 +66,7 @@ public class PlayerTrail {
         if (GameBase.deathmatch.value != 0)
             return;
 
-        for (var n = 0; n < PlayerTrail.TRAIL_LENGTH; n++) {
+        for (int n = 0; n < PlayerTrail.TRAIL_LENGTH; n++) {
             PlayerTrail.trail[n] = GameUtil.G_Spawn();
             PlayerTrail.trail[n].classname = "player_trail";
         }
@@ -105,9 +105,9 @@ public class PlayerTrail {
         if (!trail_active)
             return null;
 
-        var marker = trail_head;
+        int marker = trail_head;
 
-        for (var n = PlayerTrail.TRAIL_LENGTH; n > 0; n--) {
+        for (int n = PlayerTrail.TRAIL_LENGTH; n > 0; n--) {
             if (PlayerTrail.trail[marker].timestamp <= self.monsterinfo.trail_time)
                 marker = NEXT(marker);
             else

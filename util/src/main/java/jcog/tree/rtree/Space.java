@@ -189,7 +189,7 @@ public interface Space<X> extends Nodelike<X> {
 //    }
 
     default List<X> asList() {
-        var s = size();
+        int s = size();
         if (s > 0) {
             List<X> l = new FasterList<>(s);
             this.forEach(l::add);

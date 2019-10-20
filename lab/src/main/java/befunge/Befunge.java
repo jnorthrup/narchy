@@ -17,17 +17,17 @@ public enum Befunge {
     ;
 
     public static void main(String[] args) throws IOException {
-        var stdin = new BufferedReader(new InputStreamReader(System.in));
-        var board = new Board();
-        for(var y = 0; y < 25; y++){
-            var line = stdin.readLine().toCharArray();
+        BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+        Board board = new Board();
+        for(int y = 0; y < 25; y++){
+            char[] line = stdin.readLine().toCharArray();
             if (line.length == 0) break;
-            for(var x = 0; x < 80 && x < line.length; x++){
+            for(int x = 0; x < 80 && x < line.length; x++){
                 board.put(y, x, line[x]);
             }
         }
 
-        var p = new Pointer(board);
+        Pointer p = new Pointer(board);
         while(p.step());
     }
 
@@ -59,7 +59,7 @@ public enum Befunge {
             });
 
             map.put('-', () -> {
-                var temp = -stack.pop();
+                @NotNull long temp = -stack.pop();
                 temp += stack.pop();
                 stack.push(temp);
             });
@@ -96,8 +96,8 @@ public enum Befunge {
 
             map.put('?', () -> {
                 int[] xarray = {-1, 1, 0, 0};
-                var r = new Random();
-                var t = r.nextInt(3);
+                Random r = new Random();
+                int t = r.nextInt(3);
                 dx = xarray[t];
                 int[] yarray = {0, 0, -1, 1};
                 dy = yarray[t];
@@ -115,7 +115,7 @@ public enum Befunge {
 
             map.put('"', () -> {
                 move();
-                var c = this.board.get(y, x);
+                char c = this.board.get(y, x);
                 while(c != '"'){
                     stack.push((long) c);
                     move();
@@ -141,16 +141,16 @@ public enum Befunge {
             map.put('#', this::move);
 
             map.put('p', () -> {
-                var y1 = stack.pop().intValue();
-                var x1 = stack.pop().intValue();
-                var v = (char)stack.pop().shortValue();
+                int y1 = stack.pop().intValue();
+                int x1 = stack.pop().intValue();
+                char v = (char)stack.pop().shortValue();
                 this.board.put(y1, x1, v);
             });
 
             map.put('g', () -> {
-                var y1 = stack.pop().intValue();
-                var x1 = stack.pop().intValue();
-                var c = this.board.get(y1, x1);
+                int y1 = stack.pop().intValue();
+                int x1 = stack.pop().intValue();
+                char c = this.board.get(y1, x1);
                 stack.push((long) c);
             });
 
@@ -165,7 +165,7 @@ public enum Befunge {
         }
 
         boolean step(){
-            var c = board.get(y, x);
+            char c = board.get(y, x);
             if (c == '@') return false;
             if (Character.isDigit(c)) stack.push((long) c-'0');
             else map.get(c).run();

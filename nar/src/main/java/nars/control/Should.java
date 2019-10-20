@@ -57,9 +57,9 @@ public enum Should { ;
 			f = new float[ww];
 			fNorm = new float[ww];
 			predictor = new Predictor[ww];
-			var rng = n.random();
-			for (var p = 0; p < ww; p++) {
-				var pp = new Predictor();
+            Random rng = n.random();
+			for (int p = 0; p < ww; p++) {
+                Predictor pp = new Predictor();
 				pp.randomize(rng);
 				predictor[p] = pp;
 			}
@@ -69,27 +69,27 @@ public enum Should { ;
 		public void accept(NAR n, FasterList<Cause> cc) {
 
 
-			var c = cc.array();
-			var ww = Math.min(c.length, cc.size());
+            Cause[] c = cc.array();
+            int ww = Math.min(c.length, cc.size());
 			if (f.length != ww) {
 				allocate(n, ww);
 			}
 
-			var want = n.emotion.want.clone();
+            float[] want = n.emotion.want.clone();
 			Util.normalizeCartesian(want);
 
 
 			//2. learn
 			float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY;
-			for (var i = 0; i < ww; i++) {
-				var v = c[i].value;
+			for (int i = 0; i < ww; i++) {
+                float v = c[i].value;
 				//v = Math.max(0, v); //clip at 0
 				f[i] = v;
 				min = Math.min(v, min);
 				max = Math.max(v, max);
 			}
 
-			var range = max - min;
+            float range = max - min;
 			if (range < ScalarValue.EPSILON) {
 //                        float flat = 1f/ww;
 //                        for (int i = 0; i < ww; i++)
@@ -100,29 +100,29 @@ public enum Should { ;
 
 
 				double errTotal = 0;
-				for (var i = 0; i < ww; i++) {
+				for (int i = 0; i < ww; i++) {
 
 					fNorm[i] = Util.normalizeSafe(f[i], min, max);
 
-					var specificLearningRate =
+                    float specificLearningRate =
 						learningRate;
 //						learningRate * Math.max(0.1f,
 //							//Math.abs(0.5f-fNorm[i])*2f
 //							Math.abs(f[i]) / Math.max(Math.abs(min), Math.abs(max)) //extremeness
 //						);
 
-					var P = this.predictor[i];
+                    Predictor P = this.predictor[i];
 
-					var out = P.put(want, new float[] { fNorm[i] }, specificLearningRate);
+                    float[] out = P.put(want, new float[] { fNorm[i] }, specificLearningRate);
 
-					var p = Util.unitize(out[0]);
-					var pri = p * (1-explorationRate) + explorationRate;
+                    float p = Util.unitize(out[0]);
+                    float pri = p * (1-explorationRate) + explorationRate;
 					c[i].pri(pri);
 
 					errTotal += P.errorAbs();
 				}
 
-				var errAvg = errTotal / ww;
+                double errAvg = errTotal / ww;
 
 				//if(PRINT_AVG_ERR && n.random().nextFloat() < 0.03f)
 					//System.out.println(this + ":\t" + errAvg + " avg err");
@@ -145,8 +145,8 @@ public enum Should { ;
 		@Override
 		public void accept(FasterList<Cause> cc) {
 
-			var c = cc.array();
-			var ww = Math.min(c.length, cc.size());
+            Cause[] c = cc.array();
+            int ww = Math.min(c.length, cc.size());
 			if (f.length != ww) {
 				f = new float[ww];
 				fNorm = new float[ww];
@@ -154,8 +154,8 @@ public enum Should { ;
 
 
 			float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY;
-			for (var i = 0; i < ww; i++) {
-				var v = c[i].value;
+			for (int i = 0; i < ww; i++) {
+                float v = c[i].value;
 				v = Math.max(0, v); //clip at 0
 				f[i] = v;
 				min = Math.min(v, min);
@@ -167,16 +167,16 @@ public enum Should { ;
 //                        for (int i = 0; i < ww; i++)
 //                            c[i].setPri(flat);
 			} else {
-				for (var i = 0; i < ww; i++) {
-					var v = f[i];
-					var vNorm = Util.normalizeSafe(v, min, max);
+				for (int i = 0; i < ww; i++) {
+                    float v = f[i];
+                    float vNorm = Util.normalizeSafe(v, min, max);
 					fNorm[i] = lerpSafe(momentum, vNorm, fNorm[i]);
 				}
 			}
 			//System.out.println(n4(min) + " " + n4(max) + "\t" + n4(nmin) + " " + n4(nmax));
 
-			var range = 1 - explorationRate;
-			for (var i = 0; i < ww; i++)
+            float range = 1 - explorationRate;
+			for (int i = 0; i < ww; i++)
 				c[i].pri(explorationRate + range * fNorm[i]);
 
 		}
@@ -192,14 +192,14 @@ public enum Should { ;
 		@Override
 		public void accept(FasterList<Cause> cc) {
 
-			var c = cc.array();
-			var ww = Math.min(c.length, cc.size());
+            Cause[] c = cc.array();
+            int ww = Math.min(c.length, cc.size());
 			if (f.length != ww)
 				f = new float[ww];
 
 			float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY;
-			for (var i = 0; i < ww; i++) {
-				var r = c[i].value;
+			for (int i = 0; i < ww; i++) {
+                float r = c[i].value;
 
 				float v;
 				if (r == r)
@@ -214,11 +214,11 @@ public enum Should { ;
 //                    System.out.println(min + "\t" + max);
 
 			if (Util.equals(min, max)) {
-				for (var i = 0; i < ww; i++)
+				for (int i = 0; i < ww; i++)
 					c[i].pri(explorationRate); //flat
 			} else {
-				var range = 1 - explorationRate;
-				for (var i = 0; i < ww; i++)
+                float range = 1 - explorationRate;
+				for (int i = 0; i < ww; i++)
 					c[i].pri(explorationRate + range * Util.normalizeSafe(f[i], min, max));
 			}
 		}

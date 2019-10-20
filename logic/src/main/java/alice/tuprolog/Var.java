@@ -112,15 +112,15 @@ public class Var extends Term {
                 this.completeName = name;
                 break;
             case PROGRESSIVE: {
-                var extra = idExecCtx < BinTxt.maxBase ? 1 : 2;
-                var c = new StringBuilder(1 + extra /* estimate */);
+                int extra = idExecCtx < BinTxt.maxBase ? 1 : 2;
+                StringBuilder c = new StringBuilder(1 + extra /* estimate */);
                 c.append('_');
                 BinTxt.append(c, count, BinTxt.maxBase);
                 this.completeName = c.toString();
                 break;
             }
             default: {
-                var name = this.name;
+                String name = this.name;
                 int extra;
                 if (idExecCtx < BinTxt.maxBase) {
                     extra = 1;
@@ -156,13 +156,13 @@ public class Var extends Term {
      */
     @Override
     public Term copy(Map<Var, Var> vMap, int idExecCtx) {
-        var tt = term();
+        Term tt = term();
         if (tt == this) {
             if (idExecCtx==ORIGINAL) {
                 vMap.putIfAbsent(this, this);
                 return this;
             } else {
-                var y = vMap.computeIfAbsent(this, k -> new Var(k.name, k.timestamp));
+                Var y = vMap.computeIfAbsent(this, k -> new Var(k.name, k.timestamp));
                 y.rename(idExecCtx, 0);
                 return y;
             }
@@ -179,11 +179,11 @@ public class Var extends Term {
      */
     @Override
     Term copy(Map<Var, Var> vMap, Map<Term, Var> substMap) {
-        var v = vMap.computeIfAbsent(this,
+        Var v = vMap.computeIfAbsent(this,
             tis -> new Var(tis.name, Var.PROGRESSIVE, vMap.size(), tis.timestamp)
         );
 
-        var t = term();
+        Term t = term();
 
         if (t instanceof Var) {
             Var tt;
@@ -213,7 +213,7 @@ public class Var extends Term {
      * De-unify the variables of list
      */
     static void free(Iterable<Var> varsUnified) {
-        for (var t : varsUnified) {
+        for (Var t : varsUnified) {
             t.link = null;
         }
     }
@@ -243,7 +243,7 @@ public class Var extends Term {
     @Override
     public final Term term() {
         Term tt = this;
-        var t = link;
+        Term t = link;
         while (t != null) {
             tt = t;
             if (t instanceof Var) {
@@ -282,37 +282,37 @@ public class Var extends Term {
 
     @Override
     public boolean isEmptyList() {
-        var t = term();
+        Term t = term();
         return t != this && t.isEmptyList();
     }
 
     @Override
     public boolean isAtom() {
-        var t = term();
+        Term t = term();
         return t != this && t.isAtom();
     }
 
     @Override
     public boolean isCompound() {
-        var t = term();
+        Term t = term();
         return t != this && t.isCompound();
     }
 
     @Override
     public boolean isAtomic() {
-        var t = term();
+        Term t = term();
         return t != this && t.isAtomic();
     }
 
     @Override
     public boolean isList() {
-        var t = term();
+        Term t = term();
         return t != this && t.isList();
     }
 
     @Override
     public boolean isGround() {
-        var t = term();
+        Term t = term();
         return t != this && t.isGround();
     }
 
@@ -341,9 +341,9 @@ public class Var extends Term {
      */
     private boolean occurCheck(Collection<Var> vl, Struct t) {
 
-        var arity = t.subs();
-        for (var c = 0; c < arity; c++) {
-            var x = t.subResolve(c);
+        int arity = t.subs();
+        for (int c = 0; c < arity; c++) {
+            Term x = t.subResolve(c);
             if (this == x) {
                 return true;
             }
@@ -353,7 +353,7 @@ public class Var extends Term {
                     return true;
                 }
             } else if (x instanceof Var) {
-                var v = (Var) x;
+                Var v = (Var) x;
                 if (v.link == null) {
                     vl.add(v);
                 }
@@ -376,7 +376,7 @@ public class Var extends Term {
      */
     @Override
     void resolveTerm(long count) {
-        var tt = term();
+        Term tt = term();
         if (tt != this) {
             tt.resolveTerm(count);
         } else {
@@ -415,7 +415,7 @@ public class Var extends Term {
      */
     @Override
     boolean unify(Collection<Var> vl1, Collection<Var> vl2, Term t) {
-        var tt = term();
+        Term tt = term();
         if (tt == this) {
 
             if (t instanceof Var) {
@@ -467,7 +467,7 @@ public class Var extends Term {
 	  */
     @Override
     public boolean isGreater(Term t) {
-        var tt = term();
+        Term tt = term();
         if (tt == this) {
             t = t.term();
             return t instanceof Var && timestamp > ((Var) t).timestamp;
@@ -478,7 +478,7 @@ public class Var extends Term {
 
     @Override
     public boolean isGreaterRelink(Term t, ArrayList<String> vorder) {
-        var tt = term();
+        Term tt = term();
         if (tt == this) {
             t = t.term();
             if (!(t instanceof Var)) return false;
@@ -494,7 +494,7 @@ public class Var extends Term {
 
     @Override
     public boolean isEqual(Term t) {
-        var tt = term();
+        Term tt = term();
         if (tt == this) {
             t = t.term();
             return (t instanceof Var && timestamp == ((Var) t).timestamp);
@@ -514,7 +514,7 @@ public class Var extends Term {
      */
     @Override
     public String toString() {
-        var tt = term();
+        Term tt = term();
         if (name != null) {
             return tt == this ? completeName : completeName + " / " + tt;
         } else {
@@ -534,7 +534,7 @@ public class Var extends Term {
      * bound variable
      */
     public String toStringFlattened() {
-        var tt = term();
+        Term tt = term();
         if (name != null) {
             return tt == this ? completeName : tt.toString();
         } else {

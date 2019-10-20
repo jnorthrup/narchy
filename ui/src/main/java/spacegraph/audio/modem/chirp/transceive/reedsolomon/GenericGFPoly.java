@@ -46,10 +46,10 @@ final class GenericGFPoly {
             throw new IllegalArgumentException();
         }
         this.field = field;
-        var coefficientsLength = coefficients.length;
+        int coefficientsLength = coefficients.length;
         if (coefficientsLength > 1 && coefficients[0] == 0) {
             // Leading term must be non-zero for anything except the constant polynomial "0"
-            var firstNonZero = 1;
+            int firstNonZero = 1;
             while (firstNonZero < coefficientsLength && coefficients[firstNonZero] == 0) {
                 firstNonZero++;
             }
@@ -103,15 +103,15 @@ final class GenericGFPoly {
         }
         if (a == 1) {
             // Just the sum of the coefficients
-            var result = 0;
-            for (var coefficient : coefficients) {
+            int result = 0;
+            for (int coefficient : coefficients) {
                 result = GenericGF.addOrSubtract(result, coefficient);
             }
             return result;
         }
-        var result = coefficients[0];
-        var size = coefficients.length;
-        for (var i = 1; i < size; i++) {
+        int result = coefficients[0];
+        int size = coefficients.length;
+        for (int i = 1; i < size; i++) {
             result = GenericGF.addOrSubtract(field.multiply(a, result), coefficients[i]);
         }
         return result;
@@ -128,19 +128,19 @@ final class GenericGFPoly {
             return this;
         }
 
-        var smallerCoefficients = this.coefficients;
-        var largerCoefficients = other.coefficients;
+        int[] smallerCoefficients = this.coefficients;
+        int[] largerCoefficients = other.coefficients;
         if (smallerCoefficients.length > largerCoefficients.length) {
-            var temp = smallerCoefficients;
+            int[] temp = smallerCoefficients;
             smallerCoefficients = largerCoefficients;
             largerCoefficients = temp;
         }
-        var sumDiff = new int[largerCoefficients.length];
-        var lengthDiff = largerCoefficients.length - smallerCoefficients.length;
+        int[] sumDiff = new int[largerCoefficients.length];
+        int lengthDiff = largerCoefficients.length - smallerCoefficients.length;
         // Copy high-order terms only found in higher-degree polynomial's coefficients
         System.arraycopy(largerCoefficients, 0, sumDiff, 0, lengthDiff);
 
-        for (var i = lengthDiff; i < largerCoefficients.length; i++) {
+        for (int i = lengthDiff; i < largerCoefficients.length; i++) {
             sumDiff[i] = GenericGF.addOrSubtract(smallerCoefficients[i - lengthDiff], largerCoefficients[i]);
         }
 
@@ -154,14 +154,14 @@ final class GenericGFPoly {
         if (isZero() || other.isZero()) {
             return field.getZero();
         }
-        var aCoefficients = this.coefficients;
-        var aLength = aCoefficients.length;
-        var bCoefficients = other.coefficients;
-        var bLength = bCoefficients.length;
-        var product = new int[aLength + bLength - 1];
-        for (var i = 0; i < aLength; i++) {
-            var aCoeff = aCoefficients[i];
-            for (var j = 0; j < bLength; j++) {
+        int[] aCoefficients = this.coefficients;
+        int aLength = aCoefficients.length;
+        int[] bCoefficients = other.coefficients;
+        int bLength = bCoefficients.length;
+        int[] product = new int[aLength + bLength - 1];
+        for (int i = 0; i < aLength; i++) {
+            int aCoeff = aCoefficients[i];
+            for (int j = 0; j < bLength; j++) {
                 product[i + j] = GenericGF.addOrSubtract(product[i + j],
                         field.multiply(aCoeff, bCoefficients[j]));
             }
@@ -176,11 +176,11 @@ final class GenericGFPoly {
         if (scalar == 1) {
             return this;
         }
-        var size = coefficients.length;
-        var product = new int[10];
-        var count = 0;
-        for (var coefficient : coefficients) {
-            var multiply = field.multiply(coefficient, scalar);
+        int size = coefficients.length;
+        int[] product = new int[10];
+        int count = 0;
+        for (int coefficient : coefficients) {
+            int multiply = field.multiply(coefficient, scalar);
             if (product.length == count) product = Arrays.copyOf(product, count * 2);
             product[count++] = multiply;
         }
@@ -195,9 +195,9 @@ final class GenericGFPoly {
         if (coefficient == 0) {
             return field.getZero();
         }
-        var size = coefficients.length;
-        var product = new int[size + degree];
-        for (var i = 0; i < size; i++) {
+        int size = coefficients.length;
+        int[] product = new int[size + degree];
+        for (int i = 0; i < size; i++) {
             product[i] = field.multiply(coefficients[i], coefficient);
         }
         return new GenericGFPoly(field, product);
@@ -211,17 +211,17 @@ final class GenericGFPoly {
             throw new IllegalArgumentException("Divide by 0");
         }
 
-        var quotient = field.getZero();
-        var remainder = this;
+        GenericGFPoly quotient = field.getZero();
+        GenericGFPoly remainder = this;
 
-        var denominatorLeadingTerm = other.getCoefficient(other.getDegree());
-        var inverseDenominatorLeadingTerm = field.inverse(denominatorLeadingTerm);
+        int denominatorLeadingTerm = other.getCoefficient(other.getDegree());
+        int inverseDenominatorLeadingTerm = field.inverse(denominatorLeadingTerm);
 
         while (remainder.getDegree() >= other.getDegree() && !remainder.isZero()) {
-            var degreeDifference = remainder.getDegree() - other.getDegree();
-            var scale = field.multiply(remainder.getCoefficient(remainder.getDegree()), inverseDenominatorLeadingTerm);
-            var term = other.multiplyByMonomial(degreeDifference, scale);
-            var iterationQuotient = field.buildMonomial(degreeDifference, scale);
+            int degreeDifference = remainder.getDegree() - other.getDegree();
+            int scale = field.multiply(remainder.getCoefficient(remainder.getDegree()), inverseDenominatorLeadingTerm);
+            GenericGFPoly term = other.multiplyByMonomial(degreeDifference, scale);
+            GenericGFPoly iterationQuotient = field.buildMonomial(degreeDifference, scale);
             quotient = quotient.addOrSubtract(iterationQuotient);
             remainder = remainder.addOrSubtract(term);
         }
@@ -234,9 +234,9 @@ final class GenericGFPoly {
         if (isZero()) {
             return "0";
         }
-        var result = new StringBuilder(8 * getDegree());
-        for (var degree = getDegree(); degree >= 0; degree--) {
-            var coefficient = getCoefficient(degree);
+        StringBuilder result = new StringBuilder(8 * getDegree());
+        for (int degree = getDegree(); degree >= 0; degree--) {
+            int coefficient = getCoefficient(degree);
             if (coefficient != 0) {
                 if (coefficient < 0) {
                     if (degree == getDegree()) {
@@ -251,7 +251,7 @@ final class GenericGFPoly {
                     }
                 }
                 if (degree == 0 || coefficient != 1) {
-                    var alphaPower = field.log(coefficient);
+                    int alphaPower = field.log(coefficient);
                     switch (alphaPower) {
                         case 0:
                             result.append('1');

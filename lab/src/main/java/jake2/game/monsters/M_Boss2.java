@@ -446,7 +446,7 @@ public class M_Boss2 {
             float[] vec = { 0, 0, 0 };
 
             Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, vec);
-            var range = Math3D.VectorLength(vec);
+            float range = Math3D.VectorLength(vec);
 
             if (range <= 125) {
                 self.monsterinfo.currentmove = boss2_move_attack_pre_mg;
@@ -561,7 +561,7 @@ public class M_Boss2 {
                 Math3D.VectorCopy(self.enemy.s.origin, spot2);
                 spot2[2] += self.enemy.viewheight;
 
-                var tr = game_import_t.trace(spot1, null, null, spot2, self,
+                trace_t tr = game_import_t.trace(spot1, null, null, spot2, self,
                         Defines.CONTENTS_SOLID | Defines.CONTENTS_MONSTER
                                 | Defines.CONTENTS_SLIME
                                 | Defines.CONTENTS_LAVA);
@@ -571,10 +571,10 @@ public class M_Boss2 {
                     return false;
             }
 
-            var enemy_range = GameUtil.range(self, self.enemy);
+            int enemy_range = GameUtil.range(self, self.enemy);
             float[] temp = {0, 0, 0};
             Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, temp);
-            var enemy_yaw = Math3D.vectoyaw(temp);
+            float enemy_yaw = Math3D.vectoyaw(temp);
 
             self.ideal_yaw = enemy_yaw;
 

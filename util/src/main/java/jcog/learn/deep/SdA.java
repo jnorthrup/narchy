@@ -27,7 +27,7 @@ public class SdA {
         else this.rng = rng;
 
         
-        for(var i = 0; i<this.n_layers; i++) {
+        for(int i = 0; i<this.n_layers; i++) {
             int ins;
             if(i == 0) {
                 ins = this.n_ins;
@@ -47,20 +47,20 @@ public class SdA {
     }
 
     public double[] pretrain(double[] train_X, double lr, double corruption_level, int epochs) {
-        var y = new double[outs];
+        double[] y = new double[outs];
         pretrain(new double[][] { train_X }, lr, corruption_level, epochs);
         return dA_layers[n_layers-1].encode(train_X, y);
     }
 
     public void pretrain(double[][] train_X, double lr, double corruption_level, int epochs) {
-        var layer_input = new double[0];
-        var N = train_X.length;
+        double[] layer_input = new double[0];
+        int N = train_X.length;
 
-        for(var i = 0; i<n_layers; i++) {
-            for(var epoch = 0; epoch<epochs; epoch++) {
-                for(var n = 0; n< N; n++) {
+        for(int i = 0; i<n_layers; i++) {
+            for(int epoch = 0; epoch<epochs; epoch++) {
+                for(int n = 0; n< N; n++) {
                     
-                    for(var l = 0; l<=i; l++) {
+                    for(int l = 0; l<=i; l++) {
 
                         if(l == 0) {
                             layer_input = new double[n_ins];
@@ -70,7 +70,7 @@ public class SdA {
                             if(l == 1) prev_layer_input_size = n_ins;
                             else prev_layer_input_size = hidden_layer_sizes[l-2];
 
-                            var prev_layer_input = new double[prev_layer_input_size];
+                            double[] prev_layer_input = new double[prev_layer_input_size];
                             System.arraycopy(layer_input, 0, prev_layer_input, 0, prev_layer_input_size);
 
                             layer_input = new double[hidden_layer_sizes[l-1]];
@@ -89,16 +89,16 @@ public class SdA {
     }
 
     public void finetune(double[][] train_X, double[][] train_Y, double lr, int epochs) {
-        var layer_input = new double[0];
+        double[] layer_input = new double[0];
 
-        var prev_layer_input = new double[0];
+        double[] prev_layer_input = new double[0];
 
-        for(var epoch = 0; epoch<epochs; epoch++) {
-            var N = train_X.length;
-            for(var n = 0; n< N; n++) {
+        for(int epoch = 0; epoch<epochs; epoch++) {
+            int N = train_X.length;
+            for(int n = 0; n< N; n++) {
 
                 
-                for(var i = 0; i<n_layers; i++) {
+                for(int i = 0; i<n_layers; i++) {
                     if(i == 0) {
                         prev_layer_input = new double[n_ins];
                         System.arraycopy(train_X[n], 0, prev_layer_input, 0, n_ins);
@@ -121,18 +121,18 @@ public class SdA {
 
     public void predict(double[] x, double[] y) {
 
-        var prev_layer_input = new double[n_ins];
+        double[] prev_layer_input = new double[n_ins];
         System.arraycopy(x, 0, prev_layer_input, 0, n_ins);
 
 
-        var layer_input = new double[0];
-        for(var i = 0; i<n_layers; i++) {
+        double[] layer_input = new double[0];
+        for(int i = 0; i<n_layers; i++) {
             layer_input = new double[sigmoid_layers[i].n_out];
 
-            for(var k = 0; k<sigmoid_layers[i].n_out; k++) {
-                var linear_output = 0.0;
+            for(int k = 0; k<sigmoid_layers[i].n_out; k++) {
+                double linear_output = 0.0;
 
-                for(var j = 0; j<sigmoid_layers[i].n_in; j++) {
+                for(int j = 0; j<sigmoid_layers[i].n_in; j++) {
                     linear_output += sigmoid_layers[i].W[k][j] * prev_layer_input[j];
                 }
                 linear_output += sigmoid_layers[i].b[k];
@@ -145,9 +145,9 @@ public class SdA {
             }
         }
 
-        for(var i = 0; i<log_layer.n_out; i++) {
+        for(int i = 0; i<log_layer.n_out; i++) {
             y[i] = 0;
-            for(var j = 0; j<log_layer.n_in; j++) {
+            for(int j = 0; j<log_layer.n_in; j++) {
                 y[i] += log_layer.W[i][j] * layer_input[j];
             }
             y[i] += log_layer.b[i];
@@ -158,14 +158,14 @@ public class SdA {
 
 
     private static void test_sda() {
-        var rng = new Random(123);
+        Random rng = new Random(123);
 
-        var pretrain_lr = 0.1;
-        var corruption_level = 0.3;
-        var pretraining_epochs = 1000;
+        double pretrain_lr = 0.1;
+        double corruption_level = 0.3;
+        int pretraining_epochs = 1000;
 
-        var n_ins = 28;
-        var n_outs = 2;
+        int n_ins = 28;
+        int n_outs = 2;
         int[] hidden_layer_sizes = {15, 15};
 
 
@@ -184,7 +184,7 @@ public class SdA {
         };
 
 
-        var sda = new SdA(n_ins, hidden_layer_sizes, n_outs, rng);
+        SdA sda = new SdA(n_ins, hidden_layer_sizes, n_outs, rng);
 
         
         sda.pretrain(train_X, pretrain_lr, corruption_level, pretraining_epochs);
@@ -202,8 +202,8 @@ public class SdA {
                 {0, 1},
                 {0, 1}
         };
-        var finetune_epochs = 500;
-        var finetune_lr = 0.1;
+        int finetune_epochs = 500;
+        double finetune_lr = 0.1;
         sda.finetune(train_X, train_Y, finetune_lr, finetune_epochs);
 
 
@@ -215,13 +215,13 @@ public class SdA {
                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1}
         };
 
-        var test_N = 4;
-        var test_Y = new double[test_N][n_outs];
+        int test_N = 4;
+        double[][] test_Y = new double[test_N][n_outs];
 
         
-        for(var i = 0; i<test_N; i++) {
+        for(int i = 0; i<test_N; i++) {
             sda.predict(test_X[i], test_Y[i]);
-            for(var j = 0; j<n_outs; j++) {
+            for(int j = 0; j<n_outs; j++) {
                 System.out.print(test_Y[i][j] + " ");
             }
             System.out.println();

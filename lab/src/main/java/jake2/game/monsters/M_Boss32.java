@@ -1048,7 +1048,7 @@ public class M_Boss32 {
         @Override
         public boolean think(edict_t self) {
 
-            var r = Lib.random();
+            float r = Lib.random();
             if (r <= 0.3)
                 game_import_t.sound(self, Defines.CHAN_AUTO, sound_taunt1, 1,
                         Defines.ATTN_NONE, 0);
@@ -1570,7 +1570,7 @@ public class M_Boss32 {
         public boolean think(edict_t self) {
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
 
-            var flash_number = Defines.MZ2_MAKRON_BLASTER_1
+            int flash_number = Defines.MZ2_MAKRON_BLASTER_1
                     + (self.s.frame - FRAME_attak405);
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
@@ -1669,10 +1669,10 @@ public class M_Boss32 {
         public boolean think(edict_t self) {
             float[] vec = { 0, 0, 0 };
 
-            var r = Lib.random();
+            float r = Lib.random();
 
             Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, vec);
-            var range = Math3D.VectorLength(vec);
+            float range = Math3D.VectorLength(vec);
 
             if (r <= 0.3)
                 self.monsterinfo.currentmove = makron_move_attack3;
@@ -1762,7 +1762,7 @@ public class M_Boss32 {
             self.deadflag = Defines.DEAD_DEAD;
             self.takedamage = Defines.DAMAGE_YES;
 
-            var tempent = GameUtil.G_Spawn();
+            edict_t tempent = GameUtil.G_Spawn();
             Math3D.VectorCopy(self.s.origin, tempent.s.origin);
             Math3D.VectorCopy(self.s.angles, tempent.s.angles);
             tempent.s.origin[1] -= 84;
@@ -1787,7 +1787,7 @@ public class M_Boss32 {
                 Math3D.VectorCopy(self.enemy.s.origin, spot2);
                 spot2[2] += self.enemy.viewheight;
 
-                var tr = game_import_t.trace(spot1, null, null, spot2, self,
+                trace_t tr = game_import_t.trace(spot1, null, null, spot2, self,
                         Defines.CONTENTS_SOLID | Defines.CONTENTS_MONSTER
                                 | Defines.CONTENTS_SLIME
                                 | Defines.CONTENTS_LAVA);
@@ -1797,10 +1797,10 @@ public class M_Boss32 {
                     return false;
             }
 
-            var enemy_range = GameUtil.range(self, self.enemy);
+            int enemy_range = GameUtil.range(self, self.enemy);
             float[] temp = {0, 0, 0};
             Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, temp);
-            var enemy_yaw = Math3D.vectoyaw(temp);
+            float enemy_yaw = Math3D.vectoyaw(temp);
 
             self.ideal_yaw = enemy_yaw;
 
@@ -1936,7 +1936,7 @@ public class M_Boss32 {
             SP_monster_makron(self);
 
 
-            var player = GameBase.level.sight_client;
+            edict_t player = GameBase.level.sight_client;
             if (player == null)
                 return true;
 
@@ -1958,7 +1958,7 @@ public class M_Boss32 {
         @Override
         public boolean think(edict_t self) {
 
-            var ent = GameUtil.G_Spawn();
+            edict_t ent = GameUtil.G_Spawn();
             ent.nextthink = GameBase.level.time + 0.8f;
             ent.think = MakronSpawn;
             ent.target = self.target;

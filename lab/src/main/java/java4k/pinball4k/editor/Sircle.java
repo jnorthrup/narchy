@@ -52,7 +52,7 @@ public class Sircle extends LevelObject {
 	
 	@Override
     public int getSortValue() {
-		var val = super.getSortValue();
+        int val = super.getSortValue();
 		return (radius << 26) | (val >>> 6);
 	}
 

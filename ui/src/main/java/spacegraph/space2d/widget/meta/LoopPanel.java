@@ -30,7 +30,7 @@ public class LoopPanel extends Gridding {
         fpsLabel = new IntSpinner(fps, f -> f + "fps", 0, 100);
 
         if (loop instanceof InstrumentedLoop) {
-            var iloop = (InstrumentedLoop) loop;
+            InstrumentedLoop iloop = (InstrumentedLoop) loop;
             cycleTimePlot = new Plot2D(128, Plot2D.Line)
                     .add("cycleTime", iloop.cycleTime::asFloat)
                     .add("dutyTime", iloop.dutyTime::asFloat)
@@ -88,8 +88,8 @@ public class LoopPanel extends Gridding {
     public void update() {
         if (busy.compareAndSet(false, true)) {
             if (!pause) {
-                var f = fps.intValue();
-                var g = Math.round(loop.getFPS());
+                int f = fps.intValue();
+                int g = Math.round(loop.getFPS());
                 if (f > 0) {
                     if (f != g) {
                         loop.setFPS(f);

@@ -33,25 +33,25 @@ public class LightingEngine implements Serializable {
     }
 
     private void init() {
-        for (var x = 0; x < width; x++) {
-            for (var y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 lightValues[x][y] = 0;
                 lightFlow[x][y] = Direction.UNKNOWN;
             }
         }
         if (isSun) {
             List<LightingPoint> sources = $.newArrayList(width);
-            for (var x = 0; x < width; x++) {
+            for (int x = 0; x < width; x++) {
                 getSunSources(x, sources);
             }
             spreadLightingDijkstra(sources);
         } else {
-            for (var x = 0; x < width; x++) {
-                var tx = tiles[x];
-                var fx = lightFlow[x];
-                var lx = lightValues[x];
+            for (int x = 0; x < width; x++) {
+                Tile[] tx = tiles[x];
+                Direction[] fx = lightFlow[x];
+                int[] lx = lightValues[x];
 
-                for (var y = 0; y < height; y++) {
+                for (int y = 0; y < height; y++) {
                     if (tx[y].type.lightEmitting > 0) {
                         fx[y] = Direction.SOURCE;
                         lx[y] = tx[y].type.lightEmitting;
@@ -85,8 +85,8 @@ public class LightingEngine implements Serializable {
         lightFlow[x][y] = Direction.UNKNOWN;
         if (isSun) {
 
-            var sun = true;
-            for (var i = 0; i < height; i++) {
+            boolean sun = true;
+            for (int i = 0; i < height; i++) {
                 if (tiles[x][i].type.lightBlocking != 0) {
                     sun = false;
                     break;
@@ -106,7 +106,7 @@ public class LightingEngine implements Serializable {
 
     public List<LightingPoint> getSunSources(int column, List<LightingPoint> sources) {
 
-        for (var y = 0; y < height - 1; y++) {
+        for (int y = 0; y < height - 1; y++) {
             if (tiles[column][y].type.lightBlocking != 0) {
                 break;
             }
@@ -116,15 +116,15 @@ public class LightingEngine implements Serializable {
     }
 
     public void resetLighting(int x, int y) {
-        var left = Math.max(x - Constants.LIGHT_VALUE_SUN, 0);
-        var right = Math.min(x + Constants.LIGHT_VALUE_SUN, width - 1);
-        var top = Math.max(y - Constants.LIGHT_VALUE_SUN, 0);
+        int left = Math.max(x - Constants.LIGHT_VALUE_SUN, 0);
+        int right = Math.min(x + Constants.LIGHT_VALUE_SUN, width - 1);
+        int top = Math.max(y - Constants.LIGHT_VALUE_SUN, 0);
         List<LightingPoint> sources = new LinkedList<>();
 
 
-        var bufferLeft = (left > 0);
-        var bufferRight = (right < width - 1);
-        var bufferTop = (top > 0);
+        boolean bufferLeft = (left > 0);
+        boolean bufferRight = (right < width - 1);
+        boolean bufferTop = (top > 0);
         if (bufferTop) {
             if (bufferLeft) {
                 sources.add(getLightingPoint(left - 1, top - 1));
@@ -134,13 +134,13 @@ public class LightingEngine implements Serializable {
                 sources.add(getLightingPoint(right + 1, top - 1));
                 zeroLightValue(right + 1, top - 1);
             }
-            for (var i = left; i <= right; i++) {
+            for (int i = left; i <= right; i++) {
                 sources.add(getLightingPoint(i, top - 1));
                 zeroLightValue(i, top - 1);
             }
         }
-        var bottom = Math.min(y + Constants.LIGHT_VALUE_SUN, height - 1);
-        var bufferBottom = (bottom < height - 1);
+        int bottom = Math.min(y + Constants.LIGHT_VALUE_SUN, height - 1);
+        boolean bufferBottom = (bottom < height - 1);
         if (bufferBottom) {
             if (bufferLeft) {
                 sources.add(getLightingPoint(left - 1, bottom + 1));
@@ -150,25 +150,25 @@ public class LightingEngine implements Serializable {
                 sources.add(getLightingPoint(right + 1, bottom + 1));
                 zeroLightValue(right + 1, bottom + 1);
             }
-            for (var i = left; i <= right; i++) {
+            for (int i = left; i <= right; i++) {
                 sources.add(getLightingPoint(i, bottom + 1));
                 zeroLightValue(i, bottom + 1);
             }
         }
         if (bufferLeft) {
-            for (var i = top; i <= bottom; i++) {
+            for (int i = top; i <= bottom; i++) {
                 sources.add(getLightingPoint(left - 1, i));
                 zeroLightValue(left - 1, i);
             }
         }
         if (bufferRight) {
-            for (var i = top; i <= bottom; i++) {
+            for (int i = top; i <= bottom; i++) {
                 sources.add(getLightingPoint(right + 1, i));
                 zeroLightValue(right + 1, i);
             }
         }
-        for (var i = left; i <= right; i++) {
-            for (var j = top; j <= bottom; j++) {
+        for (int i = left; i <= right; i++) {
+            for (int j = top; j <= bottom; j++) {
                 if (lightFlow[i][j] == Direction.SOURCE) {
                     sources.add(getLightingPoint(i, j));
                 }
@@ -203,7 +203,7 @@ public class LightingEngine implements Serializable {
 
         @Override
         public boolean equals(Object o) {
-            var other = (LightingPoint) o;
+            LightingPoint other = (LightingPoint) o;
             return other.x == this.x && other.y == this.y;
         }
 
@@ -212,18 +212,18 @@ public class LightingEngine implements Serializable {
             if (tiles[x][y].type.lightBlocking == Constants.LIGHT_VALUE_OPAQUE) {
                 return neighbors;
             }
-            var newValue = lightValue - 1 - tiles[x][y].type.lightBlocking;
+            int newValue = lightValue - 1 - tiles[x][y].type.lightBlocking;
             neighbors = getExactNeighbors(width, height, newValue);
 
             return neighbors;
         }
 
         public List<LightingPoint> getExactNeighbors(int width, int height, int lightingValue) {
-            var neighbors = new LinkedList<LightingPoint>();
+            LinkedList<LightingPoint> neighbors = new LinkedList<LightingPoint>();
 
-            var bufferRight = (x < width - 1);
-            var bufferUp = (y > 0);
-            var bufferDown = (y < height - 1);
+            boolean bufferRight = (x < width - 1);
+            boolean bufferUp = (y > 0);
+            boolean bufferDown = (y < height - 1);
 
             if (bufferRight) {
                 neighbors.add(new LightingPoint(x + 1, y, Direction.RIGHT, lightingValue));
@@ -236,7 +236,7 @@ public class LightingEngine implements Serializable {
                             lightingValue));
                 }
             }
-            var bufferLeft = (x > 0);
+            boolean bufferLeft = (x > 0);
             if (bufferLeft) {
                 neighbors.add(new LightingPoint(x - 1, y, Direction.LEFT, lightingValue));
                 if (bufferUp) {
@@ -275,7 +275,7 @@ public class LightingEngine implements Serializable {
         if (sources.isEmpty())
             return;
         Set<LightingPoint> out = new HashSet<>(sources.size());
-        var in = new PriorityQueue<LightingPoint>(sources.size(),
+        PriorityQueue<LightingPoint> in = new PriorityQueue<LightingPoint>(sources.size(),
                 new LightValueComparator());
 
 
@@ -283,7 +283,7 @@ public class LightingEngine implements Serializable {
 
         in.addAll(sources);
         while (!in.isEmpty()) {
-            var current = in.poll();
+            LightingPoint current = in.poll();
             out.add(current);
 
             if (current.lightValue <= lightValues[current.x][current.y] || current.lightValue < 0) {
@@ -295,8 +295,8 @@ public class LightingEngine implements Serializable {
                     && current.flow != Direction.SOURCE) {
                 System.out.println("There's a bug in the source map!");
             }
-            var neighbors = current.getNeighbors(isSun, width, height);
-            for (var next : neighbors) {
+            List<LightingPoint> neighbors = current.getNeighbors(isSun, width, height);
+            for (LightingPoint next : neighbors) {
                 if (out.contains(next)) {
                     continue;
                 }

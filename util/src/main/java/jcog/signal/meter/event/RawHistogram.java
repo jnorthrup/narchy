@@ -47,12 +47,12 @@ public class RawHistogram {
         assert fractionBits == h.fractionBits;
         totalCount += h.totalCount;
         overRange += h.overRange;
-        for (var i = 0; i < sampleCount.length; i++)
+        for (int i = 0; i < sampleCount.length; i++)
             sampleCount[i] += h.sampleCount[i];
     }
 
     public int sample(double time) {
-        var bucket = (int) ((Double.doubleToRawLongBits(time) >> (52 - fractionBits)) - floor);
+        int bucket = (int) ((Double.doubleToRawLongBits(time) >> (52 - fractionBits)) - floor);
         if (bucket >= sampleCount.length)
             overRange++;
         else if (bucket >= 0)
@@ -62,14 +62,14 @@ public class RawHistogram {
     }
 
     public double percentile(double fraction) {
-        var value = (long) (totalCount * (1 - fraction));
+        long value = (long) (totalCount * (1 - fraction));
         value -= overRange;
         if (value < 0)
             return Double.POSITIVE_INFINITY;
-        for (var i = sampleCount.length - 1; i >= 0; i--) {
+        for (int i = sampleCount.length - 1; i >= 0; i--) {
             value -= sampleCount[i];
             if (value < 0) {
-                var bits = ((((i + floor) << 1) + 1) << (51 - fractionBits));
+                long bits = ((((i + floor) << 1) + 1) << (51 - fractionBits));
                 return Double.longBitsToDouble(bits);
             }
         }

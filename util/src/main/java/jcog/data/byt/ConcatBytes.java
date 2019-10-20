@@ -18,7 +18,7 @@ public class ConcatBytes implements AbstractBytes {
 
     @Override
     public byte at(int index) {
-        var al = a.length();
+        int al = a.length();
         return at(index, al);
     }
 
@@ -33,8 +33,8 @@ public class ConcatBytes implements AbstractBytes {
 
     @Override
     public AbstractBytes subSequence(int start, int end) {
-        var x = new byte[end-start];
-        var al = a.length();
+        byte[] x = new byte[end-start];
+        int al = a.length();
         for (int i = start, j = 0; i < end; i++) {
             x[j++] = at(i, al);
         }

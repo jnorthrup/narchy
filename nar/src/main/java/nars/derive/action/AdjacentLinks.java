@@ -41,14 +41,14 @@ public class AdjacentLinks extends TaskAction {
 	protected void accept(Task x, RuleCause why, Derivation d) {
 
 
-		var to = d._beliefTerm;
+        Term to = d._beliefTerm;
 
 		if (!to.op().conceptualizable)  return; //HACK the matcher isnt 100% in case of INT beliefTerm, since premiseKey erases it
 
-		var task = d._task;
-		var from = task.term().concept();
+        Task task = d._task;
+        Term from = task.term().concept();
 		to = to.concept();
-		var tgt = adj.adjacent(from, to, task.punc(), ((TaskLinkWhat)d.x).links, d);
+        Term tgt = adj.adjacent(from, to, task.punc(), ((TaskLinkWhat)d.x).links, d);
 
 		if (tgt != null) {
 			if (NAL.DEBUG) {

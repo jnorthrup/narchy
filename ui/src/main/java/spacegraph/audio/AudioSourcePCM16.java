@@ -67,26 +67,26 @@ public class AudioSourcePCM16 extends AudioSource {
 
     @Override protected void decode(float[] target, int samples) {
 
-        var gain = 1.0 / shortRange; //compute in double for exra precision
+        double gain = 1.0 / shortRange; //compute in double for exra precision
 
-        var channels = line.getFormat().getChannels();
+        int channels = line.getFormat().getChannels();
 
-        var sb = ByteBuffer.wrap(preByteBuffer).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+        ShortBuffer sb = ByteBuffer.wrap(preByteBuffer).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
 
-        var r = samples;
-        var j = 0;
+        int r = samples;
+        int j = 0;
         switch (channels) {
             case 1:
                 while (r > 0) {
-                    var s = sb.get();
+                    short s = sb.get();
                     target[j++] = (float) (s * gain);
                     r--;
                 }
                 break;
             case 2:
                 while (r > 0) {
-                    var a = sb.get();
-                    var b = sb.get();
+                    short a = sb.get();
+                    short b = sb.get();
                     target[j++] = (float) (((a * gain) + (b * gain)) / 2);
                     r--;
                 }

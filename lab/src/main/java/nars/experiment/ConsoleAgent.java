@@ -85,7 +85,7 @@ public class ConsoleAgent extends GameX {
                         }
                         return false;
                     } else {
-                        var c = e.getKeyChar();
+                        char c = e.getKeyChar();
                         //TODO restrict alphabet?
                         write(c);
                         return true;
@@ -110,22 +110,22 @@ public class ConsoleAgent extends GameX {
 
             {
 
-                var id = ConsoleAgent.this.id;
+                Term id = ConsoleAgent.this.id;
 
-                var lr = actionPushButtonMutex($.inh(id, "left"), $.inh(id, "right"), this::Left, this::Right, moveThresh::floatValue);
-                var OFF = $.t(0, nar.confDefault(BELIEF));
+                GoalActionConcept[] lr = actionPushButtonMutex($.inh(id, "left"), $.inh(id, "right"), this::Left, this::Right, moveThresh::floatValue);
+                PreciseTruth OFF = $.t(0, nar.confDefault(BELIEF));
                 lr[0].goalDefault(OFF, nar);
                 lr[1].goalDefault(OFF, nar);
 
                 if (R.H() > 1) {
-                    var ud = actionPushButtonMutex($.inh(id, "up"), $.inh(id, "down"), this::Up, this::Down, moveThresh::floatValue);
+                    GoalActionConcept[] ud = actionPushButtonMutex($.inh(id, "up"), $.inh(id, "down"), this::Up, this::Down, moveThresh::floatValue);
                     ud[0].goalDefault(OFF, nar);
                     ud[1].goalDefault(OFF, nar);
                 }
-                for (var c : alphabet) {
-                    var C = $.inh(id, $.quote(String.valueOf(c)));
+                for (char c : alphabet) {
+                    Term C = $.inh(id, $.quote(String.valueOf(c)));
                     //actionPushButton(C, writeThresh::floatValue, () -> write(c));
-                    var cc = actionUnipolar(C, (x) -> {
+                    GoalActionConcept cc = actionUnipolar(C, (x) -> {
                         if (x > writeThresh.floatValue()) {
                             if (write(c))
                                 return 1;
@@ -140,7 +140,7 @@ public class ConsoleAgent extends GameX {
 
         reward("similar", 1f, () -> {
 
-            var s = similarity(R.chars, W.chars);
+            float s = similarity(R.chars, W.chars);
             return s;
         });
 
@@ -156,7 +156,7 @@ public class ConsoleAgent extends GameX {
 
 
         GameX.Companion.initFn(fps, (n) -> {
-            var a = new ConsoleAgent(3, 1, n);
+            ConsoleAgent a = new ConsoleAgent(3, 1, n);
             SpaceGraph.window(new Gridding(a.R, a.W), 800, 400);
             return a;
         });
@@ -165,8 +165,8 @@ public class ConsoleAgent extends GameX {
 
     private static float similarity(char[][] a, char[][] b) {
         int total = 0, equal = 0;
-        for (var j = 0; j < a[0].length; j++) {
-            for (var i = 0; i < a.length; i++) {
+        for (int j = 0; j < a[0].length; j++) {
+            for (int i = 0; i < a.length; i++) {
                 equal += (a[i][j] == b[i][j]) ? 1 : 0;
                 total++;
             }
@@ -185,32 +185,32 @@ public class ConsoleAgent extends GameX {
             super(w, h);
 
             this.chars = new char[w][h];
-            for (var cc : chars)
+            for (char[] cc : chars)
                 Arrays.fill(cc, alphabet[0]);
 
             //TODO use Bitmap3D or Tensor something
-            var charMatrix = new Signal[w][h][alphabet.length];
+            Signal[][][] charMatrix = new Signal[w][h][alphabet.length];
 
 
 //            PriNode charAttn = new PriNode(id);
 //            nar.control.input(charAttn, sensorPri);
 
-            for (var x = 0; x < w; x++) {
-                for (var y = 0; y < h; y++) {
-                    var XY = $.p($.the(x), $.the(y));
+            for (int x = 0; x < w; x++) {
+                for (int y = 0; y < h; y++) {
+                    Term XY = $.p($.the(x), $.the(y));
                     //PriNode xy = new PriNode(XY);
                     //nar.control.input(xy, charAttn);
 
                     for (int i = 0, alphabetLength = alphabet.length; i < alphabetLength; i++) {
-                        var a = alphabet[i];
-                        var xya =
+                        char a = alphabet[i];
+                        Term xya =
                                 $.inh(id, $.p($.quote(String.valueOf(a)), XY));
                                 //$.funcImg((Atomic)id, $.the(a), XY);
-                        var xx = x;
-                        var yy = y;
+                        int xx = x;
+                        int yy = y;
 
                         //HACK
-                        var cm = charMatrix[x][y][i] = sense(xya, () -> chars[xx][yy] == a);
+                        Signal cm = charMatrix[x][y][i] = sense(xya, () -> chars[xx][yy] == a);
                         //nar.control.input(((ScalarSignal)(cm).pri, xy);
 
                     }
@@ -231,7 +231,7 @@ public class ConsoleAgent extends GameX {
 
         @Override
         public TextCharacter charAt(int col, int row) {
-            var t = new TextCharacter(chars[col][row]);
+            TextCharacter t = new TextCharacter(chars[col][row]);
             return t;
         }
 
@@ -239,7 +239,7 @@ public class ConsoleAgent extends GameX {
         @Override
         protected boolean setBackgroundColor(GL2 gl, TextCharacter c, int col, int row) {
             //nar.beliefTruth(charMatrix[col][row][], nar.time());
-            var cc = 0.25f; //nar.concepts.pri(charMatrix[col][row].target, 0);
+            float cc = 0.25f; //nar.concepts.pri(charMatrix[col][row].target, 0);
             if (cc == cc) {
                 gl.glColor4f(cc, cc, cc, 0.95f);
                 return true;
@@ -248,25 +248,25 @@ public class ConsoleAgent extends GameX {
         }
 
         public boolean Left() {
-            var before = c[0];
+            int before = c[0];
             c[0] = Math.max(0, c[0] - 1);
             return c[0]!=before;
         }
 
         public boolean Up() {
-            var before = c[1];
+            int before = c[1];
             c[1] = Math.max(0, c[1] - 1);
             return c[1]!=before;
         }
 
         public boolean Down() {
-            var before = c[1];
+            int before = c[1];
             c[1] = Math.min(rows() - 1, c[1] + 1);
             return c[1]!=before;
         }
 
         public boolean Right() {
-            var before = c[0];
+            int before = c[0];
             c[0] = Math.min(cols() - 1, c[0] + 1);
             return c[0]!=before;
         }
@@ -281,9 +281,9 @@ public class ConsoleAgent extends GameX {
         }
 
         public boolean write(char value) {
-            var cx = this.c[0];
-            var cy = this.c[1];
-            var prev = chars[cx][cy];
+            int cx = this.c[0];
+            int cy = this.c[1];
+            char prev = chars[cx][cy];
             if (prev!=value) {
                 chars[cx][cy] = value;
                 return true;

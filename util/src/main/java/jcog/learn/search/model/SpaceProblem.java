@@ -67,7 +67,7 @@ public class SpaceProblem implements Problem<SpaceProblem.SpaceFind> {
 
         public boolean equals(Object other) {
             if (other instanceof SpaceFind) {
-                var otherNode = (SpaceFind) other;
+                SpaceFind otherNode = (SpaceFind) other;
                 return (this.x == otherNode.x) && (this.y == otherNode.y);
             }
             return false;
@@ -84,7 +84,7 @@ public class SpaceProblem implements Problem<SpaceProblem.SpaceFind> {
 
         public boolean goalOf(Solution other) {
             if (other instanceof SpaceFind) {
-                var otherNode = (SpaceFind) other;
+                SpaceFind otherNode = (SpaceFind) other;
                 return (this.x == otherNode.x) && (this.y == otherNode.y);
             }
             return false;

@@ -82,8 +82,8 @@ public class Shell {
      * TODO make stream/iterable
      */
     private static void narsese(Supplier<String> s) {
-        var n = NARchy.ui();
-        var in = s.get();
+        NAR n = NARchy.ui();
+        String in = s.get();
         if (in != null) {
             try {
                 n.input(in);
@@ -99,13 +99,13 @@ public class Shell {
      */
     private static void narseseStdin() {
 
-        var lr = new LineNumberReader(new InputStreamReader(System.in));
+        LineNumberReader lr = new LineNumberReader(new InputStreamReader(System.in));
 
-        var n = NARchy.ui();
+        NAR n = NARchy.ui();
         n.startFPS(10f);
         while (true) {
             try {
-                var l = lr.readLine();
+                String l = lr.readLine();
                 if (l == null)
                     break; 
                 n.input(l);

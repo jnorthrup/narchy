@@ -64,7 +64,7 @@ public class SensorBeliefTables extends BeliefTables {
 
     @Override
     public final void remember(Remember r) {
-        var x = r.input;
+        Task x = r.input;
         if (x instanceof SeriesTask)
             return; //already inserted when constructed, dont allow any other way
 
@@ -79,16 +79,16 @@ public class SensorBeliefTables extends BeliefTables {
     }
 
     private boolean absorbNonSignal(Remember r) {
-        var seriesStart = series.start();
+        long seriesStart = series.start();
         if (seriesStart == Tense.TIMELESS)
             return false;
-        var seriesEnd = series.end();
+        long seriesEnd = series.end();
         if (seriesEnd == Tense.TIMELESS)
             seriesEnd = seriesStart;
 
-        var cleanMargin = cleanMarginCycles(r.what.dur());
-        var ss = seriesStart + cleanMargin;
-        var ee = seriesEnd - cleanMargin;
+        int cleanMargin = cleanMarginCycles(r.what.dur());
+        long ss = seriesStart + cleanMargin;
+        long ee = seriesEnd - cleanMargin;
         return ss < ee && series.absorbNonSignal(r.input, ss, ee);
     }
 
@@ -96,9 +96,9 @@ public class SensorBeliefTables extends BeliefTables {
 
     /** pre-commit */
     public boolean input(Truth value, When<What> when, Term why) {
-        var next = series.add(value, when, why);
-        var prev = this.current;
-        var novel = next!=null && next!=prev;
+        SeriesTask next = series.add(value, when, why);
+        SeriesTask prev = this.current;
+        boolean novel = next!=null && next!=prev;
         this.prev = prev;
         this.current = next;
         return novel;
@@ -112,14 +112,14 @@ public class SensorBeliefTables extends BeliefTables {
         Task next = this.current;
         //assert(prev!=next);
 
-        var nextPri = pri *
+        float nextPri = pri *
                     lerp((float) SensorBeliefTables.surprise(prev, next, dur),
                             minSurprise, 1);
 
             next.pri(nextPri);
 
             if (link) {
-                var ww = (TaskLinkWhat) w;
+                TaskLinkWhat ww = (TaskLinkWhat) w;
                 ww.link(next);
 //                AbstractTaskLink tl = AtomicTaskLink.link(next.term());
 //                tl.priSet(BELIEF, nextPri);
@@ -142,18 +142,18 @@ public class SensorBeliefTables extends BeliefTables {
      */
     static double surprise(Task prev, Task next, float dur) {
 
-        var NEW = prev == null;
+        boolean NEW = prev == null;
         if (NEW)
             return 1;
 
-        var stretched = prev == next;
+        boolean stretched = prev == next;
         if (stretched)
             return 0;
 
-        var deltaFreq = Math.abs(prev.freq() - next.freq()); //TODO use a moving average or other anomaly/surprise detection
+        float deltaFreq = Math.abs(prev.freq() - next.freq()); //TODO use a moving average or other anomaly/surprise detection
 
-        var sepCycles  = Math.abs(next.start() - prev.end());
-        var deltaTime = 1 - NAL.evi(1, sepCycles, dur);
+        long sepCycles  = Math.abs(next.start() - prev.end());
+        double deltaTime = 1 - NAL.evi(1, sepCycles, dur);
 
         return Util.or(deltaFreq , deltaTime);
     }

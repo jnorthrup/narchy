@@ -24,12 +24,12 @@ public class MetalTreeSet<T extends Comparable> extends AbstractSet<T> implement
 	}
 
 	public MetalTreeSet(T[] initialValues) {
-		for (var t : initialValues)
+		for (T t : initialValues)
 			addFast(t);
 	}
 
 	public final boolean add(T t) {
-		var sizeBefore = size;
+        int sizeBefore = size;
 		addFast(t);
 		return (size > sizeBefore);
 	}
@@ -40,8 +40,8 @@ public class MetalTreeSet<T extends Comparable> extends AbstractSet<T> implement
 
 	private TreeNode<T> add(TreeNode<T> n, T y) {
 		if (n != null) {
-			var x = n.x;
-			var c = x != y ? x.compareTo(y) : 0;
+            T x = n.x;
+            int c = x != y ? x.compareTo(y) : 0;
 			if (c > 0) {
 				n.left = add(n.left, y);
 			} else if (c < 0) {
@@ -56,7 +56,7 @@ public class MetalTreeSet<T extends Comparable> extends AbstractSet<T> implement
 	}
 
 	public boolean remove(Object t) {
-		var sizeBefore = size;
+        int sizeBefore = size;
 		removeFast(t);
 		return (sizeBefore > size);
 	}
@@ -67,9 +67,9 @@ public class MetalTreeSet<T extends Comparable> extends AbstractSet<T> implement
 
 	private TreeNode<T> remove(TreeNode<T> n, Object y) {
 		if (n != null) {
-			var x = n.x;
+            T x = n.x;
 			TreeNode<T> nr = n.right, nl = n.left;
-			var c = x != y ? x.compareTo(y) : 0;
+            int c = x != y ? x.compareTo(y) : 0;
 			if (c == 0) {
 				size--;
 				if (nr == null) {
@@ -77,7 +77,7 @@ public class MetalTreeSet<T extends Comparable> extends AbstractSet<T> implement
 				} else if (nl == null) {
 					return nr;
 				} else {
-					var min = nr.first();
+                    TreeNode<T> min = nr.first();
 					min.right = remove(nr, min.x);
 					min.left = nl;
 					return min;
@@ -97,8 +97,8 @@ public class MetalTreeSet<T extends Comparable> extends AbstractSet<T> implement
 
 	private boolean contains(TreeNode<T> n, T y) {
 		if (n != null) {
-			var x = n.x;
-			var xt = x != y ? x.compareTo(y) : 0;
+            T x = n.x;
+            int xt = x != y ? x.compareTo(y) : 0;
 			return xt == 0 || contains(xt > 0 ? n.left : n.right, y);
 		}
 		return false;
@@ -153,7 +153,7 @@ public class MetalTreeSet<T extends Comparable> extends AbstractSet<T> implement
 	}
 
 	public <X> X[] toArray(X[] target) {
-		var size = this.size;
+        int size = this.size;
 		if (target.length < size)
 			target = Arrays.copyOf(target, size);
 
@@ -231,7 +231,7 @@ public class MetalTreeSet<T extends Comparable> extends AbstractSet<T> implement
 
 		private TreeSetIterator(TreeNode<T> root, int size) {
 			super(size / 2 /* TODO better size estimate, log2(n) or something */);
-			var n = root;
+            TreeNode<T> n = root;
 			do {
 				this.add(n);
 			} while ((n = n.left) != null);
@@ -247,10 +247,10 @@ public class MetalTreeSet<T extends Comparable> extends AbstractSet<T> implement
 		public T next() {
 //			if (!this.hasNext())
 //				throw new IllegalStateException("You have attempted to get the next value on an empty set!");
-			var n = this.removeLast();
+            TreeNode<T> n = this.removeLast();
 			if (n.right != null) {
-				var r = n.right;
-				var l = r.left;
+                TreeNode<T> r = n.right;
+                TreeNode<T> l = r.left;
 
 				this.add(r);
 

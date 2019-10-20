@@ -52,8 +52,8 @@ public class BasicExecutionStatus {
             return;
         }
 
-        var bestPerformance = best.getTrainingPerformances().get("match f-measure");
-        var candidatePerformance = candidate.getTrainingPerformances().get("match f-measure");
+        Double bestPerformance = best.getTrainingPerformances().get("match f-measure");
+        Double candidatePerformance = candidate.getTrainingPerformances().get("match f-measure");
         if((candidatePerformance > bestPerformance) || 
                 ((candidatePerformance.equals(bestPerformance)) && (candidate.getSolution().length()<best.getSolution().length()))){
             this.best = candidate;

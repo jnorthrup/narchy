@@ -113,7 +113,7 @@ public class Theory implements Iterable<Term>, Serializable {
         if (th.isTextual() && isTextual()) {
             theory += th.theory;
         } else if (!th.isTextual() && !isTextual()) {
-            var otherClauseList = th.clauseList;
+            Struct otherClauseList = th.clauseList;
             if (clauseList.isEmptyList())
                 clauseList = otherClauseList;
             else {

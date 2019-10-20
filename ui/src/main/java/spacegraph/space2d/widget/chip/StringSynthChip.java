@@ -48,7 +48,7 @@ public class StringSynthChip extends Bordering {
 
         set(N, new Gridding(awesome(pitch, "music"), awesome(pluck, "compress")));
 
-        var o = awesome(output, "play");
+        Surface o = awesome(output, "play");
 
         set(o);
 

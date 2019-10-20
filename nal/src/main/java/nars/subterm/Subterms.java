@@ -55,8 +55,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	}
 
 	static int hash(Term[] term, int n) {
-		var h = 1;
-		for (var i = 0; i < n; i++)
+        int h = 1;
+		for (int i = 0; i < n; i++)
 			h = Util.hashCombine(h, term[i]);
 		return h;
 	}
@@ -69,7 +69,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 		Subterms aa = a.subterms(), bb = b.subterms();
 
-		var commonStructure = aa.structure() & bb.structure();
+        int commonStructure = aa.structure() & bb.structure();
 		if (excludeVariables)
 			commonStructure &= ~(Op.Variable) & AtomicConstant;
 
@@ -104,7 +104,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 			Term inequalVariableX = null, inequalVariableY = null;
 
-			for (var i = 0; i < s; i++) {
+			for (int i = 0; i < s; i++) {
 				Term x = a.sub(i), y = b.sub(i);
 				if (x instanceof Variable && y instanceof Variable) {
 					if (inequalVariableX == null && !x.equals(y)) {
@@ -112,7 +112,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 						inequalVariableY = y;
 					}
 				} else {
-					var d = x.compareTo(y);
+                    int d = x.compareTo(y);
 					if (d != 0)
 						return d;
 				}
@@ -124,7 +124,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	}
 
 	static boolean unifyLinear(Subterms x, Subterms y, Unify u) {
-		var n = x.subs();
+        int n = x.subs();
 		assert (y.subs() == n);
 		switch (n) {
 			case 0:
@@ -144,7 +144,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 		if (x0 == y0)
 			return x.sub(1).unify(y.sub(1), u);
 
-		var v0 = u.vars(x0) + u.vars(y0);
+        int v0 = u.vars(x0) + u.vars(y0);
 		if (v0 == 0) {
 			return x0.unify(y0, u) && x.sub(1).unify(y.sub(1), u);
 		} else {
@@ -152,7 +152,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 			if (x1 == y1)
 				return x0.unify(y0, u);
 
-			var v1 = u.vars(x1) + u.vars(y1);
+            int v1 = u.vars(x1) + u.vars(y1);
 			boolean forward;
 			forward = v1 == v0 ? x0.volume() + y0.volume() <= x1.volume() + y1.volume() : v0 < v1;
 			return forward ?
@@ -163,14 +163,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 	static boolean unifyRandom(Subterms x, Subterms y, int n, Unify u) {
 		if (n == 2) {
-			var s = u.random.nextBoolean() ? 0 : 1;
+            int s = u.random.nextBoolean() ? 0 : 1;
 			return x.sub(s).unify(y.sub(s), u) && x.sub(1 - s).unify(y.sub(1 - s), u);
 		} else {
-			var order = new byte[n];
-			for (var i = 0; i < n; i++)
+            byte[] order = new byte[n];
+			for (int i = 0; i < n; i++)
 				order[i] = (byte) i;
 			ArrayUtil.shuffle(order, u.random);
-			for (var b : order) {
+			for (byte b : order) {
 				if (!x.sub(b).unify(y.sub(b), u))
 					return false;
 			}
@@ -186,20 +186,25 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //    }
 
 	static boolean unifyLinearN_Forward(Subterms x, Subterms y, /*@NotNull*/ Unify u) {
-		var s = x.subs();
-		return IntStream.range(0, s).allMatch(i -> x.sub(i).unify(y.sub(i), u));
+        int s = x.subs();
+		for (int i = 0; i < s; i++) {
+			if (!x.sub(i).unify(y.sub(i), u)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	static boolean unifyLinearN_TwoPhase(Subterms x, Subterms y, int n, Unify u) {
 		//TODO elide subsequent repeats
 		MetalBitSet m = null;
-		for (var i = 0; i < n; i++) {
+		for (int i = 0; i < n; i++) {
 			Term xi = x.sub(i), yi = y.sub(i);
 
 			if (xi.equals(yi))
 				continue;
 
-			var now = (i == n - 1 && m == null /* last one anyway so just do it */) || (!u.varIn(xi) && !u.varIn(yi));
+            boolean now = (i == n - 1 && m == null /* last one anyway so just do it */) || (!u.varIn(xi) && !u.varIn(yi));
 			if (now) {
 				if (!xi.unify(yi, u))
 					return false;
@@ -213,21 +218,26 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 		//process remaining non-constant subterms
 
-		var nonconst = m.cardinality();
+        int nonconst = m.cardinality();
 		if (nonconst == 1) {
-			var which = m.next(true, -1, n);
+            int which = m.next(true, -1, n);
 			return x.sub(which).unify(y.sub(which), u);
 		} else {
 
-			var c = new int[nonconst];
-			var k = 0;
+            int[] c = new int[nonconst];
+            int k = 0;
 			//sort based on heuristic of estimated simplicity
-			for (var i = 0; i < n && k < nonconst; i++) {
+			for (int i = 0; i < n && k < nonconst; i++) {
 				if (m.get(i))
 					c[k++] = i;
 			}
 			QuickSort.sort(c, cc -> -(x.sub(cc).volume() + y.sub(cc).volume())); //sorts descending
-			return Arrays.stream(c).allMatch(cc -> x.sub(cc).unify(y.sub(cc), u));
+			for (int cc : c) {
+				if (!x.sub(cc).unify(y.sub(cc), u)) {
+					return false;
+				}
+			}
+			return true;
 		}
 	}
 
@@ -239,15 +249,15 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 */
 	static int possiblyUnifiableWhileEliminatingEqualAndConstants(TermList xx, TermList yy, Unify u) {
 
-		var xxs = xx.size();
+        int xxs = xx.size();
 
 		//assert(yy.size()==n);
 		if (yy.size() != xxs)
 			return -1;
 
-		for (var i = 0; i < xxs; ) {
+		for (int i = 0; i < xxs; ) {
 //            Term xi = u.resolvePosNeg(xx.get(i));
-			var xi = xx.get(i);
+            Term xi = xx.get(i);
 			if (yy.removeFirst(xi)) {
 				xx.removeFast(i);
 				xxs--;
@@ -296,15 +306,15 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 * assumes that equality, structure commonality, and equal subterm count have been tested
 	 */
 	static boolean unifyCommute(Subterms x, Subterms y, Unify u) {
-		var xx = u.resolveListIfChanged(x, true);
+        TermList xx = u.resolveListIfChanged(x, true);
 		if (xx == null) xx = x.toList();
 
-		var yy = u.resolveListIfChanged(y, true);
+        TermList yy = u.resolveListIfChanged(y, true);
 		if (yy == null) yy = y.toList();
 
 		//TermList xx = x.toList(), yy = y.toList();
 
-		var i = possiblyUnifiableWhileEliminatingEqualAndConstants(xx, yy, u);
+        int i = possiblyUnifiableWhileEliminatingEqualAndConstants(xx, yy, u);
 		switch (i) {
 			case -1:
 				return false;
@@ -332,7 +342,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 	static boolean possiblyUnifiableAssumingNotEqual(Termlike xx, Termlike yy, int var) {
 
-		var varOrTemporal = var | CONJ.bit; //Op.Temporal;
+        int varOrTemporal = var | CONJ.bit; //Op.Temporal;
 		int XS = xx.structure(), YS = yy.structure();
 		if (((XS & varOrTemporal) == 0) && ((YS & varOrTemporal) == 0)) //no variables or temporals
 			return false;
@@ -341,15 +351,15 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 
 //        int XS = xx.structure(), YS = yy.structure();
-		var XSc = XS & (~var);
+        int XSc = XS & (~var);
 		if (XSc == 0)
 			return true; //X contains only vars
-		var YSc = YS & (~var);
+        int YSc = YS & (~var);
 		if (YSc == 0)
 			return true; //Y contains only vars
 
 		if (XSc == XS && YSc == YS) {
-			var noTemporal = (XS & Op.Temporal) == 0 && ((YS & Op.Temporal) == 0);
+            boolean noTemporal = (XS & Op.Temporal) == 0 && ((YS & Op.Temporal) == 0);
 			return noTemporal ? xx.equals(yy) : ((XS & CONJ.bit) != 0 || ((YS & CONJ.bit) != 0)) || (XS == YS && xx.volume() == yy.volume());
 
 		}
@@ -393,16 +403,16 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	}
 
 	static @Nullable TermList transformSubInline(Subterms e, UnaryOperator<Term> f, TermList out, int subsTotal, int i) {
-		var xes = e.subs();
+        int xes = e.subs();
 
 		if (out == null)
 			out = new DisposableTermList(subsTotal - 1 + xes /*estimate */, i);
 		else
 			out.ensureExtraCapacityExact(xes - 1);
 
-		for (var j = 0; j < xes; j++) {
+		for (int j = 0; j < xes; j++) {
 
-			var k = f.apply(e.sub(j)); //assert(k!=null);
+            Term k = f.apply(e.sub(j)); //assert(k!=null);
 
 			if (k == IdempotentBool.Null) {
 				return null;
@@ -481,7 +491,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 	default @Nullable Term subSub(int start, int end, byte[] path) {
 		Termlike ptr = this;
-		for (var i = start; i < end; i++) {
+		for (int i = start; i < end; i++) {
 			if ((ptr = ptr.subSafe(path[i])) == IdempotentBool.Null)
 				return null;
 		}
@@ -490,7 +500,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 	default @Nullable Term subSubUnsafe(int start, int end, byte[] path) {
 		Termlike ptr = this;
-		for (var i = start; i < end; )
+		for (int i = start; i < end; )
 			ptr = ptr.sub(path[i++]);
 		return (Term) ptr;
 	}
@@ -525,9 +535,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //    }
 
 	default <X> X[] array(Function<Term, X> map, IntFunction<X[]> arrayizer) {
-		var s = subs();
-		var xx = arrayizer.apply(s);
-		for (var i = 0; i < s; i++)
+        int s = subs();
+        X[] xx = arrayizer.apply(s);
+		for (int i = 0; i < s; i++)
 			xx[i] = map.apply(sub(i));
 		return xx;
 	}
@@ -537,7 +547,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	}
 
 	default @Nullable Term subRoulette(Random rng, FloatFunction<Term> subValue) {
-		var s = subs();
+        int s = subs();
 		switch (s) {
 			case 0:
 				return null;
@@ -549,7 +559,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	}
 
 	default @Nullable Term sub(Random rng) {
-		var s = subs();
+        int s = subs();
 		switch (s) {
 			case 0:
 				return null;
@@ -561,7 +571,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	}
 
 	default Subterms remove(Term event) {
-		var t = removing(event);
+        Term[] t = removing(event);
 		return (t == null || t.length == subs()) ? this : Op.terms.subterms(t);
 	}
 
@@ -571,14 +581,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	}
 
 	default void forEachI(ObjectIntProcedure<Term> t) {
-		var s = subs();
-		for (var i = 0; i < s; i++)
+        int s = subs();
+		for (int i = 0; i < s; i++)
 			t.value(sub(i), i);
 	}
 
 	default <X> void forEachWith(BiConsumer<Term, X> t, X argConst) {
-		var s = subs();
-		for (var i = 0; i < s; i++)
+        int s = subs();
+		for (int i = 0; i < s; i++)
 			t.accept(sub(i), argConst);
 	}
 
@@ -587,17 +597,17 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 */
 	default Subterms commuted() {
 		if (subs() <= 1) return this;
-		var x = arrayShared();
-		var y = Terms.commute(x);
+        Term[] x = arrayShared();
+        Term[] y = Terms.commute(x);
 		return x == y ? this : new TermList(y);
 	}
 
 	default boolean isSorted() {
-		var s = subs();
+        int s = subs();
 		if (s < 2) return true;
-		var p = sub(0);
-		for (var i = 1; i < s; i++) {
-			var n = sub(i);
+        Term p = sub(0);
+		for (int i = 1; i < s; i++) {
+            Term n = sub(i);
 			if (p.compareTo(n) > 0)
 				return false;
 			p = n;
@@ -606,11 +616,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	}
 
 	default boolean isCommuted() {
-		var s = subs();
+        int s = subs();
 		if (s < 2) return true;
-		var p = sub(0);
-		for (var i = 1; i < s; i++) {
-			var n = sub(i);
+        Term p = sub(0);
+		for (int i = 1; i < s; i++) {
+            Term n = sub(i);
 			if (p.compareTo(n) >= 0)
 				return false;
 			p = n;
@@ -639,7 +649,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	@SuppressWarnings("LambdaUnfriendlyMethodOverload")
 	default /*@NotNull*/ SortedSet<Term> toSetSorted(UnaryOperator<Term> map) {
 		MetalTreeSet<Term> u = new MetalTreeSet();
-		for (var z : this)
+		for (Term z : this)
 			u.add(map.apply(z));
 		return u;
 	}
@@ -666,10 +676,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //    }
 
 	default /*@NotNull*/ SortedSet<Term> toSetSorted(Predicate<Term> t) {
-		var s = subs();
+        int s = subs();
 		switch (s) {
 			case 1:
-				var the = sub(0);
+                Term the = sub(0);
 				return t.test(the) ? ArrayUnenforcedSortedSet.the(the) : ArrayUnenforcedSortedSet.empty;
 			case 2:
 				Term a = sub(0), b = sub(1);
@@ -684,10 +694,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
 					return ArrayUnenforcedSortedSet.the(b);
 			default:
 				List<Term> u = new FasterList<>(s);
-				for (var x : this) {
+				for (Term x : this) {
 					if (t.test(x)) u.add(x);
 				}
-				var us = u.size();
+                int us = u.size();
 				if (us == s) {
 					if (this instanceof TermVector)
 						return ArrayUnenforcedSortedSet.the(this.arrayShared());
@@ -721,7 +731,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 * this is meant to be a clone always
 	 */
 	default Term[] arrayClone() {
-		var s = subs();
+        int s = subs();
 		return s == 0 ? Op.EmptyTermArray : arrayClone(new Term[s], 0, s);
 	}
 
@@ -744,7 +754,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 * @return a Mutable Set, unless empty
 	 */
 	default /*@NotNull*/ MutableSet<Term> toSet() {
-		var s = subs();
+        int s = subs();
 		UnifiedSet<Term> u = new UnifiedSet(s, 0.99f);
 		if (s > 0)
 		    addAllTo(u);
@@ -752,11 +762,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	}
 
 	default @Nullable <C extends Collection<Term>> C collect(Predicate<Term> ifTrue, C c) {
-		var s = subs();
+        int s = subs();
 		//UnifiedSet<Term> u = null;
-		for (var i = 0; i < s; i++) {
+		for (int i = 0; i < s; i++) {
 			/*@NotNull*/
-			var x = sub(i);
+            Term x = sub(i);
 			if (ifTrue.test(x)) {
 //                    if (c == null)
 //                        c = new UnifiedSet<>((s - i) * 2);
@@ -789,7 +799,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 */
 	/*@NotNull*/
 	default Set<Term> recurseSubtermsToSet(Op _onlyType) {
-		var onlyType = _onlyType.bit;
+        int onlyType = _onlyType.bit;
 		if (!hasAny(onlyType))
 			return Sets.mutable.empty();
 
@@ -836,10 +846,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	default boolean containsRecursively(/*@NotNull*/ Term x, boolean root, Predicate<Term> subTermOf) {
 
 		if (!impossibleSubTerm(x)) {
-			var s = subs();
+            int s = subs();
 			Term prev = null;
-			for (var i = 0; i < s; i++) {
-				var ii = sub(i);
+			for (int i = 0; i < s; i++) {
+                Term ii = sub(i);
 				if (different(prev, ii)) {
 					if (ii == x ||
 						((root ? ii.equalsRoot(x) : ii.equals(x)) || ii.containsRecursively(x, root, subTermOf)))
@@ -852,27 +862,32 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	}
 
 	default boolean equalTerms(/*@NotNull*/ Subterms c) {
-		var s = subs();
+        int s = subs();
 		if (s != c.subs())
 			return false;
-		return IntStream.range(0, s).allMatch(i -> sub(i).equals(c.sub(i)));
+		for (int i = 0; i < s; i++) {
+			if (!sub(i).equals(c.sub(i))) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	default boolean equalTerms(/*@NotNull*/ Term[] c) {
-		var s = subs();
+        int s = subs();
 		if (s != c.length)
 			return false;
 		return ANDi((x,i) -> x.equals(c[i]));
 	}
 
 	default void addAllTo(Collection target) {
-		for (var term : this)
+		for (Term term : this)
 			target.add(term);
 	}
 
 	default void addAllTo(FasterList target) {
 		target.ensureCapacity(subs());
-		for (var term : this)
+		for (Term term : this)
 			target.addFast(term);
 	}
 
@@ -888,9 +903,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 	default Term[] terms(/*@NotNull*/ IntObjectPredicate<Term> filter) {
 		TermList l = null;
-		var s = subs();
-		for (var i = 0; i < s; i++) {
-			var t = sub(i);
+        int s = subs();
+		for (int i = 0; i < s; i++) {
+            Term t = sub(i);
 			if (filter.accept(i, t)) {
 				if (l == null)
 					l = new TermList(subs() - i);
@@ -904,7 +919,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 		if (start < 0 || stop > subs())
 			throw new ArrayIndexOutOfBoundsException();
 
-		for (var i = start; i < stop; i++)
+		for (int i = start; i < stop; i++)
 			action.accept(sub(i));
 	}
 
@@ -928,10 +943,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	}
 
 	default boolean countEquals(Predicate<Term> match, int n) {
-		var s = subs();
+        int s = subs();
 		if (n > s) return false; //impossible
-		var c = 0;
-		for (var i = 0; i < s; i++) {
+        int c = 0;
+		for (int i = 0; i < s; i++) {
 			if (match.test(sub(i))) {
 				c++;
 				if (c > n)
@@ -954,7 +969,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 * if there is no subterm or the index is out of bounds, returns false.
 	 */
 	default boolean subIsOrOOB(int i, Op o) {
-		var x = sub(i, null);
+        Term x = sub(i, null);
 		return x != null && x.opID() == o.id;
 	}
 
@@ -1042,7 +1057,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 * return the first subterm matching the predicate, or null if none match
 	 */
 	default @Nullable Term subFirst(Predicate<Term> match) {
-		var i = indexOf(match);
+        int i = indexOf(match);
 		return i != -1 ? sub(i) : null;
 	}
 
@@ -1087,9 +1102,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 * TODO write negating version of this that negates only up to subs() bits
 	 */
 	default MetalBitSet indicesOfBits(Predicate<Term> match) {
-		var n = subs();
-		var m = MetalBitSet.bits(n);
-		for (var i = 0; i < n; i++) {
+        int n = subs();
+        MetalBitSet m = MetalBitSet.bits(n);
+		for (int i = 0; i < n; i++) {
 			if (match.test(sub(i)))
 				m.set(i);
 		}
@@ -1110,7 +1125,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 	default @Nullable Term[] subsIncExc(MetalBitSet s, boolean includeOrExclude) {
 
-		var c = s.cardinality();
+        int c = s.cardinality();
 
 		if (c == 0) {
 //            if (!includeOrExclude)
@@ -1118,7 +1133,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 			return includeOrExclude ? Op.EmptyTermArray : arrayShared();
 		}
 
-		var size = subs();
+        int size = subs();
 		assert (c <= size) : "bitset has extra bits setAt beyond the range of subterms";
 
 		if (includeOrExclude) {
@@ -1130,10 +1145,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
 		}
 
 
-		var newSize = includeOrExclude ? c : size - c;
-		var t = new Term[newSize];
-		var j = 0;
-		for (var i = 0; i < size; i++) {
+        int newSize = includeOrExclude ? c : size - c;
+        Term[] t = new Term[newSize];
+        int j = 0;
+		for (int i = 0; i < size; i++) {
 			if (s.get(i) == includeOrExclude)
 				t[j++] = sub(i);
 		}
@@ -1146,7 +1161,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 */
 	/*@NotNull*/
 	default Term[] subRangeArray(int from, int to) {
-		var n = subs();
+        int n = subs();
 		if (from == Integer.MIN_VALUE) from = 0;
 		if (to == Integer.MAX_VALUE) to = n;
 
@@ -1155,13 +1170,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 		} else {
 
-			var s = to - from;
+            int s = to - from;
 			if (s == 0)
 				return EmptyTermArray;
 			else {
-				var l = new Term[s];
-				var y = from;
-				for (var i = 0; i < s; i++)
+                Term[] l = new Term[s];
+                int y = from;
+				for (int i = 0; i < s; i++)
 					l[i] = sub(y++);
 				return l;
 			}
@@ -1173,10 +1188,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	}
 
 	default int indexOf(/*@NotNull*/ Predicate<Term> p, int after) {
-		var s = subs();
+        int s = subs();
 		Term prev = null;
-		for (var i = after + 1; i < s; i++) {
-			var next = sub(i);
+		for (int i = after + 1; i < s; i++) {
+            Term next = sub(i);
 			if (different(prev, next)) {
 				if (p.test(next))
 					return i;
@@ -1193,10 +1208,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 * @param p
 	 */
 	default boolean AND(/*@NotNull*/ Predicate<Term> p) {
-		var s = subs();
+        int s = subs();
 		Term prev = null;
-		for (var i = 0; i < s; i++) {
-			var next = sub(i);
+		for (int i = 0; i < s; i++) {
+            Term next = sub(i);
 			if (different(prev, next)) {
 				if (!p.test(next))
 					return false;
@@ -1213,10 +1228,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 * @param p
 	 */
 	default boolean OR(/*@NotNull*/ Predicate<Term> p) {
-		var s = subs();
+        int s = subs();
 		Term prev = null;
-		for (var i = 0; i < s; i++) {
-			var next = sub(i);
+		for (int i = 0; i < s; i++) {
+            Term next = sub(i);
 			if (different(prev, next)) {
 				if (p.test(next))
 					return true;
@@ -1230,26 +1245,36 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 * supplies the i'th index as 2nd lambda argument. all subterms traversed, incl repeats
 	 */
 	default boolean ANDi(/*@NotNull*/ ObjectIntPredicate<Term> p) {
-		var s = subs();
-		return IntStream.range(0, s).allMatch(i -> p.accept(sub(i), i));
+        int s = subs();
+		for (int i = 0; i < s; i++) {
+			if (!p.accept(sub(i), i)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
 	 * supplies the i'th index as 2nd lambda argument. all subterms traversed, incl repeats
 	 */
 	default boolean ORi(/*@NotNull*/ ObjectIntPredicate<Term> p) {
-		var s = subs();
-		return IntStream.range(0, s).anyMatch(i -> p.accept(sub(i), i));
+        int s = subs();
+		for (int i = 0; i < s; i++) {
+			if (p.accept(sub(i), i)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
 	 * warning: elides test for repeated subterm
 	 */
 	default <X> boolean ORwith(/*@NotNull*/ BiPredicate<Term, X> p, X param) {
-		var s = subs();
+        int s = subs();
 		Term prev = null;
-		for (var i = 0; i < s; i++) {
-			var next = sub(i);
+		for (int i = 0; i < s; i++) {
+            Term next = sub(i);
 			if (different(prev, next)) {
 				if (p.test(next, param))
 					return true;
@@ -1263,10 +1288,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 * warning: elides test for repeated subterm
 	 */
 	default <X> boolean ANDwith(/*@NotNull*/ BiPredicate<Term, X> p, X param) {
-		var s = subs();
+        int s = subs();
 		Term prev = null;
-		for (var i = 0; i < s; i++) {
-			var next = sub(i);
+		for (int i = 0; i < s; i++) {
+            Term next = sub(i);
 			if (different(prev, next)) {
 				if (!p.test(next, param))
 					return false;
@@ -1280,18 +1305,23 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 * visits each, incl repeats
 	 */
 	default <X> boolean ANDwithOrdered(/*@NotNull*/ BiPredicate<Term, X> p, X param) {
-		var s = subs();
-		return IntStream.range(0, s).allMatch(i -> p.test(sub(i), param));
+        int s = subs();
+		for (int i = 0; i < s; i++) {
+			if (!p.test(sub(i), param)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
 	 * warning: elides test for repeated subterm
 	 */
 	default boolean ANDrecurse(Predicate<Term> p) {
-		var s = subs();
+        int s = subs();
 		Term prev = null;
-		for (var i = 0; i < s; i++) {
-			var next = sub(i);
+		for (int i = 0; i < s; i++) {
+            Term next = sub(i);
 			if (different(prev, next)) {
 				if (!p.test(next) || (next instanceof Compound && !((Compound) next).ANDrecurse(p)))
 					return false;
@@ -1305,10 +1335,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 * warning: elides test for repeated subterm
 	 */
 	default boolean ORrecurse(Predicate<Term> p) {
-		var s = subs();
+        int s = subs();
 		Term prev = null;
-		for (var i = 0; i < s; i++) {
-			var next = sub(i);
+		for (int i = 0; i < s; i++) {
+            Term next = sub(i);
 			if (different(prev, next)) {
 				if (p.test(next) || (next instanceof Compound && ((Compound) next).ORrecurse(p)))
 					return true;
@@ -1348,10 +1378,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 * removes first occurrence only
 	 */
 	default Term[] removing(int index) {
-		var s = subs();
-		var x = new Term[s - 1];
-		var k = 0;
-		for (var j = 0; j < s; j++) {
+        int s = subs();
+        Term[] x = new Term[s - 1];
+        int k = 0;
+		for (int j = 0; j < s; j++) {
 			if (j != index)
 				x[k++] = sub(j);
 		}
@@ -1369,7 +1399,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	}
 
 	default @Nullable Term[] removing(Term x) {
-		var toRemove = indicesOfBits(x::equals);
+        MetalBitSet toRemove = indicesOfBits(x::equals);
 		return toRemove.cardinality() == 0 ? null : removing(toRemove);
 	}
 
@@ -1381,13 +1411,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //    }
 
 	default Subterms transformSub(int which, UnaryOperator<Term> f) {
-		var x = sub(which);
-		var y = f.apply(x);
+        Term x = sub(which);
+        Term y = f.apply(x);
 		//if (x == y)
 		if (x.equals(y))
 			return this;
 
-		var yy = arrayClone();
+        Term[] yy = arrayClone();
 		yy[which] = y;
 		return Op.terms.subterms(yy);
 	}
@@ -1405,14 +1435,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 		TermList y = null;
 
-		var s = subs();
+        int s = subs();
 
 
-		for (var i = 0; i < s; i++) {
+		for (int i = 0; i < s; i++) {
 
-			var xi = sub(i);
+            Term xi = sub(i);
 
-			var yi = f.apply(xi);
+            Term yi = f.apply(xi);
 
 			//if (yi instanceof Bool) {
 			if (yi == IdempotentBool.Null)
@@ -1421,7 +1451,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 			if (yi instanceof Fragment) {
 
-				var yy = yi.subterms();
+                Subterms yy = yi.subterms();
 				if (s == 1) {
 					return (yy.subs() == 0) ?
 						EmptySubterms //the empty ellipsis is the only subterm

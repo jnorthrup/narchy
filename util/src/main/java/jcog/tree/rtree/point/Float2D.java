@@ -34,17 +34,17 @@ public class Float2D implements HyperPoint, Comparable<Float2D> {
     @Override
     public double distance(HyperPoint p) {
         if (p == this) return 0;
-        var p2 = (Float2D) p;
+        Float2D p2 = (Float2D) p;
 
-        var dx = p2.x - x;
-        var dy = p2.y - y;
+        float dx = p2.x - x;
+        float dy = p2.y - y;
         return  Math.sqrt(dx * dx + dy * dy);
     }
 
     @Override
     public double distance(HyperPoint p, int d) {
         if (p == this) return 0;
-        var p2 = (Float2D) p;
+        Float2D p2 = (Float2D) p;
         switch (d) {
             case 0:
                 return Math.abs(p2.x - x);
@@ -65,7 +65,7 @@ public class Float2D implements HyperPoint, Comparable<Float2D> {
         if (this == o) return true;
         if (!(o instanceof Float2D)) return false;
 
-        var float2D = (Float2D) o;
+        Float2D float2D = (Float2D) o;
 
         if (Float.compare(float2D.x, x) != 0) return false;
         return Float.compare(float2D.y, y) == 0;
@@ -83,7 +83,7 @@ public class Float2D implements HyperPoint, Comparable<Float2D> {
     @Override
     public int compareTo(Float2D o) {
         if (this == o) return 0;
-        var a = Float.compare(x, o.x);
+        int a = Float.compare(x, o.x);
         if (a != 0) return a;
         return Float.compare(y, o.y);
     }

@@ -65,7 +65,7 @@ public final class Misc extends Mesh {
     void R_InitParticleTexture()
 	{
 		int		x,y;
-		var data = new byte[8 * 8 * 4];
+        byte[] data = new byte[8 * 8 * 4];
 
 		
 		
@@ -122,12 +122,12 @@ public final class Misc extends Mesh {
 	 */
 	@Override
     public void GL_ScreenShot_f() {
-		var sb = new StringBuilder(FS.Gamedir() + "/scrshot/jake00.tga");
+        StringBuilder sb = new StringBuilder(FS.Gamedir() + "/scrshot/jake00.tga");
 	    FS.CreatePath(sb.toString());
-		var file = new File(sb.toString());
+        File file = new File(sb.toString());
 
-		var i = 0;
-		var offset = sb.length() - 6;
+        int i = 0;
+        int offset = sb.length() - 6;
 	    while (file.exists() && i++ < 100) {
 	        sb.setCharAt(offset, (char) ((i/10) + '0'));
 	        sb.setCharAt(offset + 1, (char) ((i%10) + '0'));
@@ -139,11 +139,11 @@ public final class Misc extends Mesh {
 	    }
 	    
 	    try {
-			var out = new RandomAccessFile(file, "rw");
-			var ch = out.getChannel();
-			var fileLength = TGA_HEADER_SIZE + vid.getWidth() * vid.getHeight() * 3;
+            RandomAccessFile out = new RandomAccessFile(file, "rw");
+            FileChannel ch = out.getChannel();
+            int fileLength = TGA_HEADER_SIZE + vid.getWidth() * vid.getHeight() * 3;
 	        out.setLength(fileLength);
-			var image = ch.map(FileChannel.MapMode.READ_WRITE, 0,
+            MappedByteBuffer image = ch.map(FileChannel.MapMode.READ_WRITE, 0,
 	                fileLength);
 	        
 	        
@@ -175,7 +175,7 @@ public final class Misc extends Mesh {
 	            gl.glReadPixels(0, 0, vid.getWidth(), vid.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, image);
 
                 for (i = TGA_HEADER_SIZE; i < fileLength; i += 3) {
-					var tmp = image.get(i);
+                    byte tmp = image.get(i);
                     image.put(i, image.get(i + 2));
 		            image.put(i + 2, tmp);
 		        }
@@ -242,7 +242,7 @@ public final class Misc extends Mesh {
 		if ( qglPointParameterfEXT )
 		{
 
-			var att_buffer=Lib.newFloatBuffer(4);
+            FloatBuffer att_buffer=Lib.newFloatBuffer(4);
 			att_buffer.put(0,gl_particle_att_a.value);
 			att_buffer.put(1,gl_particle_att_b.value);
 			att_buffer.put(2,gl_particle_att_c.value);

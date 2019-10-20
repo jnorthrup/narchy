@@ -54,7 +54,7 @@ public class mmove_t {
 		else 
 		{
 			f. writeInt(frame.length);
-			for (var aFrame : frame) aFrame.write(f);
+			for (mframe_t aFrame : frame) aFrame.write(f);
 		}
 		f.writeAdapter(endfunc);
 	}
@@ -65,10 +65,10 @@ public class mmove_t {
 		firstframe = f.readInt();
 		lastframe = f.readInt();
 
-		var len = f.readInt();
+        int len = f.readInt();
 		
 		frame = new mframe_t[len];
-		for (var n = 0; n < len ; n++)
+		for (int n = 0; n < len ; n++)
 		{			
 			frame[n] = new mframe_t();
 			frame[n].read(f);

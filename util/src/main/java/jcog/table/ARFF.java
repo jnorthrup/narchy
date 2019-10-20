@@ -51,10 +51,7 @@ import tech.tablesaw.columns.strings.StringColumnType;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
@@ -143,10 +140,10 @@ import java.util.stream.IntStream;
         this();
         int[] state = {COMMENT};
 
-        var collectedComment = new StringBuilder();
+        StringBuilder collectedComment = new StringBuilder();
 
         String line;
-        var lineno = 1;
+        int lineno = 1;
         while ((line = r.readLine()) != null) {
             readLine(lineno++, state, line.trim(), collectedComment);
         }
@@ -185,14 +182,14 @@ import java.util.stream.IntStream;
 //        }
 //    }
 private static void joinWith(Row r, Appendable s, CharSequence del) throws IOException {
-    var first = true;
-    for (var i = 0; i < r.columnCount(); i++) {
+    boolean first = true;
+    for (int i = 0; i < r.columnCount(); i++) {
 
-        var o = r.getObject(i);
+        Object o = r.getObject(i);
         if (!first)
             s.append(del);
 
-        var oo = o!=null ? o.toString() : "null";
+        String oo = o!=null ? o.toString() : "null";
 
         s.append(o instanceof Number ? oo : quoteIfNecessary(oo));
 
@@ -200,13 +197,13 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
     }
 }
     static boolean isQuoteNecessary(CharSequence t) {
-        var len = t.length();
+        int len = t.length();
 
         if (len > 1 && t.charAt(0) == '\"' && t.charAt(len - 1) == '\"')
             return false; 
 
-        for (var i = 0; i < len; i++) {
-            var x = t.charAt(i);
+        for (int i = 0; i < len; i++) {
+            char x = t.charAt(i);
             switch (x) {
                 case ' ':
                 case '.':
@@ -226,7 +223,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
     }
 
     private void readLine(int lineNum, int[] state, String line, StringBuilder collectedComment) throws ARFFParseError {
-        var ll = line.length();
+        int ll = line.length();
         switch (state[0]) {
             case COMMENT:
                 if (ll > 1 && line.charAt(0) == '%') {
@@ -238,7 +235,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
                 }
                 break;
             case HEADER:
-                var lowerline = line.toLowerCase();
+                String lowerline = line.toLowerCase();
                 if (lowerline.startsWith("@relation")) {
                     readRelationDefinition(line);
                 } else if (lowerline.startsWith("@attribute")) {
@@ -260,32 +257,32 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
     }
 
     private void readRelationDefinition(String line) {
-        var i = line.indexOf(' ');
+        int i = line.indexOf(' ');
         relation = line.substring(i + 1);
     }
 
 
     private void readAttributeDefinition(int lineno, String line) throws ARFFParseError {
-        var s = new Scanner(line);
-        var p = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*|\\{[^}]+}|'[^']+'|\"[^\"]+\"");
-        var keyword = s.findInLine(p);
-        var name = s.findInLine(p);
-        var type = s.findInLine(p);
+        Scanner s = new Scanner(line);
+        Pattern p = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*|\\{[^}]+}|'[^']+'|\"[^\"]+\"");
+        String keyword = s.findInLine(p);
+        String name = s.findInLine(p);
+        String type = s.findInLine(p);
 
         if (name == null || type == null) {
             throw new ARFFParseError(lineno, "Attribute definition cannot be parsed");
         }
 
-        var lowertype = type.toLowerCase();
+        String lowertype = type.toLowerCase();
 
         if (List.of("real", "numeric", "integer").contains(lowertype)) {
             defineNumeric(name);
         } else if ("string".equals(lowertype)) {
             defineText(name);
         } else  {
-            var a = line.indexOf('{');
+            int a = line.indexOf('{');
             if (a != -1) {
-                var b = line.indexOf('}');
+                int b = line.indexOf('}');
                 if (b != -1) {
                     line = line.substring(a+1, b);
                     defineNominal(name, line.split("\\s*,\\s*"));
@@ -297,24 +294,24 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
     }
 
     private void parseData(int lineno, String line) throws ARFFParseError {
-        var num_attributes = columnCount();
+        int num_attributes = columnCount();
 
 
 //        if (line.charAt(0) == '{' && line.charAt(line.length() - 1) == '}') {
 //            throw new ARFFParseError(lineno, "Sparse data not supported (yet).");
 //        } else {
         {
-            var tokens = line.split(",");
+            String[] tokens = line.split(",");
             if (tokens.length != num_attributes) {
                 throw new ARFFParseError(lineno, "Warning: line " + lineno + " does not contain the right " +
                         "number of elements (should be " + num_attributes + ", got " + tokens.length + ".\n\t" + line);
             }
 
-            var datum = new Object[num_attributes];
-            for (var i = 0; i < num_attributes; i++) {
+            Object[] datum = new Object[num_attributes];
+            for (int i = 0; i < num_attributes; i++) {
                 
                 //String name = attrName(i);
-                var t = column(i).type();
+                ColumnType t = column(i).type();
                 if (t == DoubleColumnType.instance()) {
                     if (tokens[i] == null || "null".equals(tokens[i]))
                         datum[i] = valueIfNull;
@@ -354,7 +351,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
                 return true;
         }
 
-        var values = categories(name);
+        String[] values = categories(name);
         return Arrays.asList(values).contains(token);
     }
 
@@ -402,14 +399,14 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
 
         s.append("@relation ").append(relation).append(NEW_LINE);
 
-        var columnNames = columnNames();
+        List<String> columnNames = columnNames();
         for (int i = 0, columnNamesSize = columnNames.size(); i < columnNamesSize; i++) {
-            var cc = column(i);
+            Column<?> cc = column(i);
 
-            var name = cc.name();
+            String name = cc.name();
             s.append("@attribute ").append(quoteIfNecessary(name)).append(" ");
 
-            var type = cc.type();
+            ColumnType type = cc.type();
             if (type == ColumnType.DOUBLE)
                 s.append("numeric");
             else if (type == ColumnType.STRING)
@@ -430,7 +427,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
 
             s.append("@data").append(NEW_LINE);
 
-            for (var r : this) {
+            for (Row r : this) {
                 joinWith(r, s, ",");
                 s.append(NEW_LINE);
             }
@@ -445,7 +442,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
      * Save the data into a file.
      */
     public void writeToFile(String filename) throws IOException {
-        try (var w = new FileWriter(filename)) {
+        try (FileWriter w = new FileWriter(filename)) {
             write(w);
             w.flush();
         }
@@ -507,7 +504,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
             throw new RuntimeException("schemas differ");
         }
         boolean[] changed = {false};
-        for (var p : incoming) {
+        for (Row p : incoming) {
             changed[0] |= add(p);
         }
         return changed[0];
@@ -562,17 +559,17 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
          * TODO hints for extracting Nominals
          */
         public ARFFObject(Class<X> c) {
-            var C = Reflect.on(c);
+            Reflect C = Reflect.on(c);
 
             FasterList<Function<X, ?>> extractor = new FasterList();
 
-            for (var e : C.fields(true, false).entrySet()) {
-                var n = e.getKey();
+            for (Map.Entry<String, Reflect> e : C.fields(true, false).entrySet()) {
+                String n = e.getKey();
 
                 Field field = e.getValue().get();
                 field.trySetAccessible();
 
-                var t = Primitives.wrap(field.getType());
+                Class<?> t = Primitives.wrap(field.getType());
                 if (Byte.class.isAssignableFrom(t) || Short.class.isAssignableFrom(t) || Integer.class.isAssignableFrom(t) || Long.class.isAssignableFrom(t)) {
                     defineNumeric(n);
                     extractor.add(x -> {
@@ -627,8 +624,13 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
         }
 
         public boolean put(X x) {
-            var n = columnCount();
-            var o = IntStream.range(0, n).mapToObj(i -> extractor[i].apply(x)).toArray();
+            int n = columnCount();
+            List<Object> list = new ArrayList<>();
+            for (int i = 0; i < n; i++) {
+                Object apply = extractor[i].apply(x);
+                list.add(apply);
+            }
+            Object[] o = list.toArray();
             return add(o);
         }
     }

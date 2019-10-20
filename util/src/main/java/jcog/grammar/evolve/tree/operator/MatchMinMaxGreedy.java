@@ -44,11 +44,11 @@ public class MatchMinMaxGreedy extends TernaryOperator {
 
     @Override
     public boolean isValid() {
-        var first = getFirst();
-        var validFirst = first.isValid() && !(first instanceof Concatenator || first instanceof Quantifier || first instanceof MatchMinMax || first instanceof MatchMinMaxGreedy || first instanceof Lookaround);
+        Node first = getFirst();
+        boolean validFirst = first.isValid() && !(first instanceof Concatenator || first instanceof Quantifier || first instanceof MatchMinMax || first instanceof MatchMinMaxGreedy || first instanceof Lookaround);
 
-        var second = getSecond();
-        var third = getThird();
+        Node second = getSecond();
+        Node third = getThird();
 
         if (third instanceof Constant && second instanceof Constant) {
             int leftValue;

@@ -92,8 +92,8 @@ public class HijackMemory extends Memory {
         super.start(nar);
         //    private long now;
         //    private int dur;
-        var onDur = nar.onDur(this::commit);
-        var forgetPeriodDurs = 64;
+        DurLoop onDur = nar.onDur(this::commit);
+        int forgetPeriodDurs = 64;
         onDur.durs(forgetPeriodDurs);
     }
 
@@ -106,13 +106,13 @@ public class HijackMemory extends Memory {
     }
 
     private void commit() {
-        var forgetTemperature = 0.1f;
+        float forgetTemperature = 0.1f;
         table.commit(table.forget(forgetTemperature));
     }
 
     @Override
     public Concept get(Term key, boolean createIfMissing) {
-        var x = table.get(key);
+        PLink<Concept> x = table.get(key);
         if (x != null) {
             boost(x, getBoost);
             return x.get();
@@ -122,8 +122,8 @@ public class HijackMemory extends Memory {
     }
 
     public @Nullable Concept create(Term key) {
-        var kc = nar.conceptBuilder.apply(key);
-        var inserted = table.put(new HashedPLink<>(kc, priPut(key, kc)));
+        Concept kc = nar.conceptBuilder.apply(key);
+        PLink<Concept> inserted = table.put(new HashedPLink<>(kc, priPut(key, kc)));
         if (inserted == null) {
             return kc;
         } else {
@@ -144,10 +144,10 @@ public class HijackMemory extends Memory {
 
     @Override
     public void set(Term key, Concept value) {
-        var existing = table.get(key);
+        PLink<Concept> existing = table.get(key);
         if (existing==null || (existing.get()!=value && !(existing.get() instanceof PermanentConcept))) {
 //            remove(key);
-            var inserted = table.put(new HashedPLink<>(value, initialTask));
+            PLink<Concept> inserted = table.put(new HashedPLink<>(value, initialTask));
             /* other */
             if (inserted == null && (value instanceof PermanentConcept)) {
                 throw new RuntimeException("unresolvable hash collision between PermanentConcepts: " + null + ' ' + value);
@@ -163,7 +163,7 @@ public class HijackMemory extends Memory {
     @Override
     public void forEach(Consumer<? super Concept> c) {
 
-        for (var k : table) {
+        for (PLink<Concept> k : table) {
             c.accept(k.get());
         }
 
@@ -181,7 +181,7 @@ public class HijackMemory extends Memory {
 
     @Override
     public @Nullable Concept remove(Term entry) {
-        var e = table.remove(entry);
+        PLink<Concept> e = table.remove(entry);
         return e != null ? e.get() : null;
     }
 

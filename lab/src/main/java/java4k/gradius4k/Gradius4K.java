@@ -95,7 +95,7 @@ public class Gradius4K extends GamePanel {
     public Gradius4K() {
         enableEvents(8);
 
-        var f = new JFrame();
+        JFrame f = new JFrame();
         f.setContentPane(this);
         f.setSize(500, 500);
         f.setVisible(true);
@@ -112,29 +112,29 @@ public class Gradius4K extends GamePanel {
     public void run() {
 
 
-        var i = 0;
-        var j = 0;
-        var k = 0;
-        var x = 0;
-        var y = 0;
-        var z = 0;
-        var s = 0;
-        var v = 0;
+        int i = 0;
+        int j = 0;
+        int k = 0;
+        int x = 0;
+        int y = 0;
+        int z = 0;
+        int s = 0;
+        int v = 0;
 
         float dx = 0;
         float dy = 0;
 
-        var sprites = new BufferedImage[14 * 4096];
-        var g = (Graphics2D) image.getGraphics();
+        BufferedImage[] sprites = new BufferedImage[14 * 4096];
+        Graphics2D g = (Graphics2D) image.getGraphics();
 
-        var defaultTransform = g.getTransform();
-        var random = new Random(7);
+        AffineTransform defaultTransform = g.getTransform();
+        Random random = new Random(7);
 
-        final var S = "\uff00\u0000\u0100\u0000\u0000\u0100\u0000\u0000\u0100\u0000\u0100\u0000\u0000\u0100\u0000\u0000\u0100\u01ff\uf000\u0c00\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u00f0\u001c\u00f0\uf000\ufc00\u0000\uf000\ue000\u0000\u0000\u0000\u0000\u0000\u0000\u0300\u00ff\u003c\u0fc0\u00ff\u003c\u3ff0\u0100\u8000\u8000\u0100\u8000\u8000\u0100\u8000\u0080\u8001\u0080\u0080\u8001\u0080\u8080\u8001\u0080\u8080\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u00fe\u0000\u0000\u008c\u0000\u00e0\u0000\u0000\u00f8\u0000\u003f\u00fe\u00fc\u803f\u00ff\u00fe\ue03f\u00ff\u000f\u00ff\uf000\u0003\u003c\uc000\u0000\u0000\u00ff\u0000\u0000\u00ff\u0003\u003c\uc000\u000f\u00ff\uf000\uc3c3\u00c3\u7c00\u8181\u0081\u3000\u0000\u0000\u0000\u0000\u0000\u001f\u8181\u0081\u301f\uc3c3\u00c3\u7c1f\u0d01\u0205\uba1b\ub6b7\u1776\u0a1a\u0202\u0101\u130e\u2322\u9062\u8689\u4464\u4952\u087e\u0304\u3f08\u8050\u888f\u22f7\uf722\u8f88\u5585\u0a3f\u807f\u4443\u142b\u2b28\u2c2b\u2b17\u4344\u7f80\u150e\u6412\u8c84\uc9fa\u8889\u244f\u1514\u0f0c\u0a07\u3912\u603c\u9292\uc2a2\u1122\u2010\u3f40\u1b06\u5b2a\uc7a2\u54be\ube54\ua2c7\u2a5b\u061b\u1807\u403e\u807e\ufe81\u7142\ua2cb\u4e92\u1e2e\u0407\u4538\u5458\u5762\ucacc\u9ce9\u93ba\u2b55\u990f\uf191\u322e\u4120\u4442\u526d\ud52d\ua4a6\u1c07\u6330\ucf47\u9c9e\u9e9c\u47cf\u3063\u0718\u0505\u790f\u8949\u9191\u84e5\ud584\ubfb5\u2191\u0101\u8202\uee92\uaae9\u8a8c\u8acb\ua1a5\u0820";
+        final String S = "\uff00\u0000\u0100\u0000\u0000\u0100\u0000\u0000\u0100\u0000\u0100\u0000\u0000\u0100\u0000\u0000\u0100\u01ff\uf000\u0c00\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u00f0\u001c\u00f0\uf000\ufc00\u0000\uf000\ue000\u0000\u0000\u0000\u0000\u0000\u0000\u0300\u00ff\u003c\u0fc0\u00ff\u003c\u3ff0\u0100\u8000\u8000\u0100\u8000\u8000\u0100\u8000\u0080\u8001\u0080\u0080\u8001\u0080\u8080\u8001\u0080\u8080\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u00fe\u0000\u0000\u008c\u0000\u00e0\u0000\u0000\u00f8\u0000\u003f\u00fe\u00fc\u803f\u00ff\u00fe\ue03f\u00ff\u000f\u00ff\uf000\u0003\u003c\uc000\u0000\u0000\u00ff\u0000\u0000\u00ff\u0003\u003c\uc000\u000f\u00ff\uf000\uc3c3\u00c3\u7c00\u8181\u0081\u3000\u0000\u0000\u0000\u0000\u0000\u001f\u8181\u0081\u301f\uc3c3\u00c3\u7c1f\u0d01\u0205\uba1b\ub6b7\u1776\u0a1a\u0202\u0101\u130e\u2322\u9062\u8689\u4464\u4952\u087e\u0304\u3f08\u8050\u888f\u22f7\uf722\u8f88\u5585\u0a3f\u807f\u4443\u142b\u2b28\u2c2b\u2b17\u4344\u7f80\u150e\u6412\u8c84\uc9fa\u8889\u244f\u1514\u0f0c\u0a07\u3912\u603c\u9292\uc2a2\u1122\u2010\u3f40\u1b06\u5b2a\uc7a2\u54be\ube54\ua2c7\u2a5b\u061b\u1807\u403e\u807e\ufe81\u7142\ua2cb\u4e92\u1e2e\u0407\u4538\u5458\u5762\ucacc\u9ce9\u93ba\u2b55\u990f\uf191\u322e\u4120\u4442\u526d\ud52d\ua4a6\u1c07\u6330\ucf47\u9c9e\u9e9c\u47cf\u3063\u0718\u0505\u790f\u8949\u9191\u84e5\ud584\ubfb5\u2191\u0101\u8202\uee92\uaae9\u8a8c\u8acb\ua1a5\u0820";
 
 
-        var background = new int[65536];
-        var orbs = new int[3][3][16][16][16][16];
+        int[] background = new int[65536];
+        int[][][][][][] orbs = new int[3][3][16][16][16][16];
         for (s = 0; s < 14; s++) { 
             for (i = 0; i < 3; i++) { 
                 for (j = 0; j < 3; j++) { 
@@ -145,14 +145,14 @@ public class Gradius4K extends GamePanel {
                             dx = 0.393f * k;
                             dy = 0.393f * z;
 
-                            var red1 = 127 + (int) (127 * Math.sin(dx));
-                            var red2 = 127 + (int) (127 * Math.sin(dy));
+                            int red1 = 127 + (int) (127 * Math.sin(dx));
+                            int red2 = 127 + (int) (127 * Math.sin(dy));
 
-                            var green1 = 127 + (int) (127 * Math.sin(dx + 1.05f));
-                            var green2 = 127 + (int) (127 * Math.sin(dy + 1.05f));
+                            int green1 = 127 + (int) (127 * Math.sin(dx + 1.05f));
+                            int green2 = 127 + (int) (127 * Math.sin(dy + 1.05f));
 
-                            var blue1 = 127 + (int) (127 * Math.sin(dx + 2.09f));
-                            var blue2 = 127 + (int) (127 * Math.sin(dy + 2.09f));
+                            int blue1 = 127 + (int) (127 * Math.sin(dx + 2.09f));
+                            int blue2 = 127 + (int) (127 * Math.sin(dy + 2.09f));
 
                             
                             if (i == 1) {
@@ -186,11 +186,11 @@ public class Gradius4K extends GamePanel {
                                     for (x = 0; x < 16; x++) {
                                         dx = 7.5f - x;
                                         dy = 7.5f - y;
-                                        var radius = (float) Math.sqrt(dx * dx + dy * dy) / 8;
+                                        float radius = (float) Math.sqrt(dx * dx + dy * dy) / 8;
                                         if (radius <= 1) {
-                                            var red = red1 + (int) ((red2 - red1) * radius);
-                                            var green = green1 + (int) ((green2 - green1) * radius);
-                                            var blue = blue1 + (int) ((blue2 - blue1) * radius);
+                                            int red = red1 + (int) ((red2 - red1) * radius);
+                                            int green = green1 + (int) ((green2 - green1) * radius);
+                                            int blue = blue1 + (int) ((blue2 - blue1) * radius);
 
                                             orbs[i][j][k][z][y][x] = 0xFF000000 | (red << 16) | (green << 8) | blue;
                                         }
@@ -221,23 +221,23 @@ public class Gradius4K extends GamePanel {
             }
         }
 
-        var halfPipe = new int[256][256][2];
+        int[][][] halfPipe = new int[256][256][2];
         for (y = 0; y < 256; y++) {
             for (x = 0; x < 256; x++) {
                 float d = x - 128;
                 float e = y - 128;
-                var A = e * e + 4096;
-                var t = (8192 + (float) Math.sqrt(67108864 + 49152 * A)) / (2 * A);
-                var hx = d * t;
+                float A = e * e + 4096;
+                float t = (8192 + (float) Math.sqrt(67108864 + 49152 * A)) / (2 * A);
+                float hx = d * t;
                 halfPipe[y][x][0] = ((int) (512 + hx)) & 0xFF;
-                var hz = 64 - 64 * t;
-                var hy = e * t;
+                float hz = 64 - 64 * t;
+                float hy = e * t;
                 halfPipe[y][x][1] = ((int) (512 + Math.atan2(hy, hz) * 128)) & 0xFF;
             }
         }
 
 
-        var backgroundImage = new int[65536];
+        int[] backgroundImage = new int[65536];
         for (k = 0; k < 4096; k++) {
             i = random.nextInt(512) & 0xFF;
             j = random.nextInt(512) & 0xFF;
@@ -250,22 +250,22 @@ public class Gradius4K extends GamePanel {
                 }
             }
         }
-        var tileImage = new BufferedImage(32, 32, 1);
+        BufferedImage tileImage = new BufferedImage(32, 32, 1);
         tileImage.setRGB(0, 0, 32, 32, background, 0, 32);
 
 
         float halfPipeOffset = 0;
-        var queue = new ArrayList<float[]>();
+        ArrayList<float[]> queue = new ArrayList<float[]>();
         int[][] levelMap = null;
         Graphics2D g2 = null;
-        var bossMode = false;
+        boolean bossMode = false;
         float cameraVx = 0;
         float mag = 0;
-        var counter = 0;
-        var playerGun = 2;
-        var level = 1;
-        var fireworks = 0;
-        var playerShootDelay = 0;
+        int counter = 0;
+        int playerGun = 2;
+        int level = 1;
+        int fireworks = 0;
+        int playerShootDelay = 0;
         while (true) {
 
             if (paused) {
@@ -322,7 +322,7 @@ public class Gradius4K extends GamePanel {
                 if (level == 2) {
                     
                     for (x = 0; x < 6; x++) {
-                        var enemy = new float[256];
+                        float[] enemy = new float[256];
                         queue.add(enemy);
                         enemy[OBJ_TYPE] = TYPE_ENEMY;
                         enemy[OBJ_X] = 785 + (x << 8) + (random.nextInt(8) << 5);
@@ -339,7 +339,7 @@ public class Gradius4K extends GamePanel {
                 if (level == 3) {
                     for (x = 0; x < 5; x++) {
 
-                        var powerUp = new float[256];
+                        float[] powerUp = new float[256];
                         queue.add(powerUp);
                         powerUp[OBJ_TYPE] = TYPE_POWER_UP;
                         powerUp[OBJ_X] = 264 + (x << 5);
@@ -353,7 +353,7 @@ public class Gradius4K extends GamePanel {
                 if (level == 4) {
                     for (i = 0; i < 32; i++) {
 
-                        var shrinker = new float[256];
+                        float[] shrinker = new float[256];
                         queue.add(shrinker);
                         shrinker[OBJ_TYPE] = TYPE_ENEMY;
                         shrinker[OBJ_X] = 800 + (random.nextInt(22) << 6);
@@ -375,7 +375,7 @@ public class Gradius4K extends GamePanel {
                             dx = (float) Math.cos(mag);
                             for (i = 0; i < 7; i++) {
 
-                                var blade = new float[256];
+                                float[] blade = new float[256];
                                 queue.add(blade);
                                 blade[OBJ_TYPE] = TYPE_ENEMY;
                                 blade[OBJ_X2] = (k << 8) + 896;
@@ -410,7 +410,7 @@ public class Gradius4K extends GamePanel {
                     bossMode = true;
 
 
-                    var boss = new float[256];
+                    float[] boss = new float[256];
                     queue.add(boss);
                     boss[OBJ_TYPE] = TYPE_ENEMY;
                     boss[OBJ_X] = 2624;
@@ -462,7 +462,7 @@ public class Gradius4K extends GamePanel {
                         level++;
                     }
                 } else if ((fireworks & 3) == 0) {
-                    var explosionSeed = new float[256];
+                    float[] explosionSeed = new float[256];
                     queue.add(explosionSeed);
                     explosionSeed[OBJ_TYPE] = TYPE_EXPLOSION_SEED;
                     explosionSeed[OBJ_X] = random.nextInt(256) + cameraX;
@@ -489,7 +489,7 @@ public class Gradius4K extends GamePanel {
                         if (random.nextBoolean()) {
                             for (i = 0; i < 5; i++) {
 
-                                var enemy = new float[256];
+                                float[] enemy = new float[256];
                                 queue.add(enemy);
                                 enemy[OBJ_TYPE] = TYPE_ENEMY;
                                 enemy[OBJ_X] = cameraX + 256 + i * 24;
@@ -507,7 +507,7 @@ public class Gradius4K extends GamePanel {
                             for (i = 0; i < 3; i++) {
                                 
                                 dx = 6.28f * random.nextFloat();
-                                var enemy = new float[256];
+                                float[] enemy = new float[256];
                                 queue.add(enemy);
                                 enemy[OBJ_TYPE] = TYPE_ENEMY;
                                 enemy[OBJ_X] = cameraX + 256 + 20 * i;
@@ -524,7 +524,7 @@ public class Gradius4K extends GamePanel {
                         } else {
                             
                             for (i = 0; i < 3; i++) {
-                                var enemy = new float[256];
+                                float[] enemy = new float[256];
                                 queue.add(enemy);
                                 enemy[OBJ_TYPE] = TYPE_ENEMY;
                                 enemy[OBJ_X] = cameraX + 256;
@@ -539,7 +539,7 @@ public class Gradius4K extends GamePanel {
                         }
                     } else if (level == 1 && cameraX > 512) {
 
-                        var enemy = new float[256];
+                        float[] enemy = new float[256];
                         queue.add(enemy);
                         enemy[OBJ_TYPE] = TYPE_ENEMY;
                         enemy[OBJ_X] = cameraX + 320;
@@ -557,10 +557,10 @@ public class Gradius4K extends GamePanel {
                 }
             }
 
-            var playerExploded = false;
+            boolean playerExploded = false;
 
             for (i = queue.size() - 1; i >= 0; i--) {
-                var object = queue.get(i);
+                float[] object = queue.get(i);
 
                 if (object[OBJ_REMOVE] == 1) {
                     queue.remove(i);
@@ -602,7 +602,7 @@ public class Gradius4K extends GamePanel {
                             for (k = 0; k < 2; k++) {
                                 for (j = 0; j < playerGun; j++) {
 
-                                    var bullet = new float[256];
+                                    float[] bullet = new float[256];
                                     queue.add(bullet);
                                     bullet[OBJ_TYPE] = TYPE_BULLET;
                                     bullet[OBJ_X] = object[OBJ_X] + 24 * (float) Math.cos(0.25f * j);
@@ -617,7 +617,7 @@ public class Gradius4K extends GamePanel {
 
                         
                         for (j = queue.size() - 1; j >= 0; j--) {
-                            var enemy = queue.get(j);
+                            float[] enemy = queue.get(j);
                             if ((enemy[OBJ_TYPE] == TYPE_ENEMY || enemy[OBJ_TYPE] == TYPE_POWER_UP) && object[OBJ_X] - 12 < enemy[OBJ_X] + 8 * enemy[OBJ_SCALE_X]
                                     && object[OBJ_X] + 12 > enemy[OBJ_X] - 8 * enemy[OBJ_SCALE_X] && object[OBJ_Y] - 8 < enemy[OBJ_Y] + 8 * enemy[OBJ_SCALE_Y]
                                     && object[OBJ_Y] + 8 > enemy[OBJ_Y] - 8 * enemy[OBJ_SCALE_Y]) {
@@ -656,7 +656,7 @@ public class Gradius4K extends GamePanel {
                         object[OBJ_REMOVE] = 1;
                         for (j = (object[OBJ_WALL_EXPLOSION] == 1) ? 16 : 128; j >= 0; j--) {
 
-                            var explosion = new float[256];
+                            float[] explosion = new float[256];
                             queue.add(explosion);
                             explosion[OBJ_TYPE] = TYPE_EXPLOSION;
                             explosion[OBJ_X] = object[OBJ_X];
@@ -672,7 +672,7 @@ public class Gradius4K extends GamePanel {
                         }
                         if (object[OBJ_MAKE_POWER_UP] == 1) {
 
-                            var powerUp = new float[256];
+                            float[] powerUp = new float[256];
                             queue.add(powerUp);
                             powerUp[OBJ_TYPE] = TYPE_POWER_UP;
                             powerUp[OBJ_X] = object[OBJ_X];
@@ -692,7 +692,7 @@ public class Gradius4K extends GamePanel {
                             
                             object[OBJ_REMOVE] = 1;
                             if (object[OBJ_ENEMY_BULLET] == 0) {
-                                var explosionSeed = new float[256];
+                                float[] explosionSeed = new float[256];
                                 queue.add(explosionSeed);
                                 explosionSeed[OBJ_TYPE] = TYPE_EXPLOSION_SEED;
                                 explosionSeed[OBJ_X] = object[OBJ_X];
@@ -711,7 +711,7 @@ public class Gradius4K extends GamePanel {
                         } else {
                             
                             for (j = queue.size() - 1; j >= 0; j--) {
-                                var enemy = queue.get(j);
+                                float[] enemy = queue.get(j);
                                 if (enemy[OBJ_TYPE] == TYPE_ENEMY && enemy[OBJ_DISABLED] == 0 && object[OBJ_X] >= enemy[OBJ_X] - 8 * enemy[OBJ_SCALE_X]
                                         && object[OBJ_Y] >= enemy[OBJ_Y] - 8 * enemy[OBJ_SCALE_Y] && object[OBJ_X] <= enemy[OBJ_X] + 8 * enemy[OBJ_SCALE_X]
                                         && object[OBJ_Y] <= enemy[OBJ_Y] + 8 * enemy[OBJ_SCALE_Y]) {
@@ -719,7 +719,7 @@ public class Gradius4K extends GamePanel {
                                     object[OBJ_REMOVE] = 1;
                                     score++;
 
-                                    var explosionSeed = new float[256];
+                                    float[] explosionSeed = new float[256];
                                     queue.add(explosionSeed);
                                     explosionSeed[OBJ_TYPE] = TYPE_EXPLOSION_SEED;
                                     explosionSeed[OBJ_NONRENDERABLE] = 1;
@@ -735,7 +735,7 @@ public class Gradius4K extends GamePanel {
                                         if (enemy[OBJ_BUBBLE] == 1 && enemy[OBJ_SCALE_X] > 1) {
                                             for (k = 0; k < 2; k++) {
 
-                                                var bubble = new float[256];
+                                                float[] bubble = new float[256];
                                                 queue.add(bubble);
                                                 bubble[OBJ_TYPE] = TYPE_ENEMY;
                                                 bubble[OBJ_VX] = random.nextFloat() - 0.5f;
@@ -833,7 +833,7 @@ public class Gradius4K extends GamePanel {
                                 object[OBJ_DISABLED] = object[OBJ_DISABLED] == 1 ? 0 : 1;
                             } else {
 
-                                var bullet = new float[256];
+                                float[] bullet = new float[256];
                                 queue.add(bullet);
                                 bullet[OBJ_X] = object[OBJ_X];
                                 bullet[OBJ_Y] = object[OBJ_Y];
@@ -870,7 +870,7 @@ public class Gradius4K extends GamePanel {
 
             if (playerExploded) {
                 player[OBJ_REMOVE] = 1;
-                var explosionSeed = new float[256];
+                float[] explosionSeed = new float[256];
                 queue.add(explosionSeed);
                 explosionSeed[OBJ_TYPE] = TYPE_EXPLOSION_SEED;
                 explosionSeed[OBJ_X] = player[OBJ_X];
@@ -894,7 +894,7 @@ public class Gradius4K extends GamePanel {
 
             
             for (i = queue.size() - 1; i >= 0; i--) {
-                var object = queue.get(i);
+                float[] object = queue.get(i);
                 if (object[OBJ_NONRENDERABLE] == 0 && object[OBJ_DISABLED] == 0) {
                     g.translate(object[OBJ_X] - 8 * object[OBJ_SCALE_X] - cameraX, object[OBJ_Y] - 8 * object[OBJ_SCALE_Y]);
                     g.scale(object[OBJ_SCALE_X], object[OBJ_SCALE_Y]);
@@ -935,21 +935,21 @@ public class Gradius4K extends GamePanel {
     @Override
     public void processKeyEvent(KeyEvent keyEvent) {
 
-        var k = keyEvent.getKeyCode();
+        int k = keyEvent.getKeyCode();
         if (k > 0) {
-            final var VK_D = 0x44;
-            final var VK_A = 0x41;
-            final var VK_S = 0x53;
-            final var VK_W = 0x57;
-            final var VK_DOWN = 0x28;
-            final var VK_LEFT = 0x25;
+            final int VK_D = 0x44;
+            final int VK_A = 0x41;
+            final int VK_S = 0x53;
+            final int VK_W = 0x57;
+            final int VK_DOWN = 0x28;
+            final int VK_LEFT = 0x25;
             switch (k) {
                 case VK_W:
-                    final var VK_UP = 0x26;
+                    final int VK_UP = 0x26;
                     k = VK_UP;
                     break;
                 case VK_D:
-                    final var VK_RIGHT = 0x27;
+                    final int VK_RIGHT = 0x27;
                     k = VK_RIGHT;
                     break;
                 case VK_A:
@@ -959,7 +959,7 @@ public class Gradius4K extends GamePanel {
                     k = VK_DOWN;
                     break;
             }
-            final var VK_SHOOT = 0x42;
+            final int VK_SHOOT = 0x42;
             keys[(k >= VK_LEFT && k <= VK_DOWN) ? k : VK_SHOOT] = keyEvent.getID() != 402;
         }
     }

@@ -66,15 +66,15 @@ public class ArkaNAR extends GameX {
 
         public static void main(String[] args) {
 
-            var id = $$("rl");
-            var FPS = 25f;
-            var n = GameX.Companion.baseNAR(FPS, 2);
+            Term id = $$("rl");
+            float FPS = 25f;
+            NAR n = GameX.Companion.baseNAR(FPS, 2);
 
             //GameX a = new FZero(id, n);
             //GameX a = new ArkaNAR(id, n, true, false);
             GameX a = new PoleCart(id, n, 0.03f);
 
-            var rl = new RLBooster(true, a,
+            RLBooster rl = new RLBooster(true, a,
                     2, 4, (i, o) -> new DQN3(i, o, Map.of(
                     DQN3.Option.ALPHA, 0.05,
                     DQN3.Option.GAMMA, 0.5,
@@ -98,7 +98,7 @@ public class ArkaNAR extends GameX {
                         )
                     ).resizeable(), 1024, 800);
 
-            var loop = n.startFPS(FPS);
+            Loop loop = n.startFPS(FPS);
 
 
         }
@@ -109,12 +109,12 @@ public class ArkaNAR extends GameX {
     public static class MultiArkaNAR {
         public static void main(String[] args) {
 
-            var n = Companion.initC(40, nn -> {
+            NAR n = Companion.initC(40, nn -> {
 
-                var a = new ArkaNAR($$("(noid,a)"), nn, cam, numeric);
+                ArkaNAR a = new ArkaNAR($$("(noid,a)"), nn, cam, numeric);
                 a.ballSpeed.set( 0.7f * a.ballSpeed.floatValue() );
 
-                var b = new ArkaNAR($$("(noid,b)"), nn, cam, numeric);
+                ArkaNAR b = new ArkaNAR($$("(noid,b)"), nn, cam, numeric);
                 b.ballSpeed.set( 0.33f * a.ballSpeed.floatValue() );
 
 //                window(new Gridding(
@@ -130,7 +130,7 @@ public class ArkaNAR extends GameX {
 
         Companion.initC(fps*2, n -> {
 
-            var a = new ArkaNAR(n, cam, numeric);
+            ArkaNAR a = new ArkaNAR(n, cam, numeric);
             n.add(a);
             window( new VectorSensorChart(a.cc, a).withControls(), 800, 800);
 
@@ -169,16 +169,16 @@ public class ArkaNAR extends GameX {
 
 
         if (numeric) {
-            var numRes = 0.2f;
-            var resX = 0.02f;
-            var px = senseNumberBi($.inh(id,"px"), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
+            float numRes = 0.2f;
+            float resX = 0.02f;
+            AbstractSensor px = senseNumberBi($.inh(id,"px"), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
             px.resolution(numRes);
-            var dx = senseNumberBi($.inh(id, "dx"), (() -> 0.5f + 0.5f * (noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
+            AbstractSensor dx = senseNumberBi($.inh(id, "dx"), (() -> 0.5f + 0.5f * (noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
             dx.resolution(numRes);
-            var cx = senseNumberBi($.inh(id, $.p("b", "x")), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
+            AbstractSensor cx = senseNumberBi($.inh(id, $.p("b", "x")), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
             cx.resolution(numRes);
-            var resY = 0.02f;
-            var cy = senseNumberBi($.inh(id ,$.p("b", "y")), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
+            float resY = 0.02f;
+            AbstractSensor cy = senseNumberBi($.inh(id ,$.p("b", "y")), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
             cy.resolution(numRes);
 //            window(NARui.beliefCharts(dx.components(), nar), 500, 500);
 
@@ -193,7 +193,7 @@ public class ArkaNAR extends GameX {
 
         onFrame(noid::next);
 
-        var dontDie = (SimpleReward) reward("die", 0, () -> Math.min(1, noid.die - noid.prevDie));
+        SimpleReward dontDie = (SimpleReward) reward("die", 0, () -> Math.min(1, noid.die - noid.prevDie));
         //dontDie.addGuard(true,false);
 
 
@@ -326,7 +326,7 @@ public class ArkaNAR extends GameX {
 
             ball.draw(g);
             paddle.draw(g);
-            for (var brick : bricks) {
+            for (Brick brick : bricks) {
                 brick.draw(g);
             }
         }
@@ -405,7 +405,7 @@ public class ArkaNAR extends GameX {
              * returns percent of movement accomplished
              */
             public synchronized boolean move(float dx) {
-                var px = x;
+                float px = x;
                 x = Util.clamp(x + dx, sizeX, SCREEN_WIDTH - sizeX);
                 return !Util.equals(px, x, 1f);
             }
@@ -561,16 +561,16 @@ public class ArkaNAR extends GameX {
 
             increaseScore();
 
-            var overlapLeft = mBall.right() - mBrick.left();
-            var overlapRight = mBrick.right() - mBall.left();
-            var overlapTop = mBall.bottom() - mBrick.top();
-            var overlapBottom = mBrick.bottom() - mBall.top();
+            float overlapLeft = mBall.right() - mBrick.left();
+            float overlapRight = mBrick.right() - mBall.left();
+            float overlapTop = mBall.bottom() - mBrick.top();
+            float overlapBottom = mBrick.bottom() - mBall.top();
 
-            var ballFromLeft = overlapLeft < overlapRight;
-            var ballFromTop = overlapTop < overlapBottom;
+            boolean ballFromLeft = overlapLeft < overlapRight;
+            boolean ballFromTop = overlapTop < overlapBottom;
 
-            var minOverlapX = ballFromLeft ? overlapLeft : overlapRight;
-            var minOverlapY = ballFromTop ? overlapTop : overlapBottom;
+            float minOverlapX = ballFromLeft ? overlapLeft : overlapRight;
+            float minOverlapY = ballFromTop ? overlapTop : overlapBottom;
 
             if (minOverlapX < minOverlapY) {
                 mBall.velocityX = ballFromLeft ? -BALL_VELOCITY : BALL_VELOCITY;
@@ -584,8 +584,8 @@ public class ArkaNAR extends GameX {
 
             bricks.clear();
 
-            for (var iX = 0; iX < COUNT_BLOCKS_X; ++iX) {
-                for (var iY = 0; iY < COUNT_BLOCKS_Y; ++iY) {
+            for (int iX = 0; iX < COUNT_BLOCKS_X; ++iX) {
+                for (int iY = 0; iY < COUNT_BLOCKS_Y; ++iY) {
                     bricks.add(new Brick((iX + 1) * (BLOCK_WIDTH + 3) + BLOCK_LEFT_MARGIN,
                             (iY + 2) * (BLOCK_HEIGHT + 3) + BLOCK_TOP_MARGIN));
                 }
@@ -613,9 +613,9 @@ public class ArkaNAR extends GameX {
             testCollision(paddle, ball);
 
 
-            var it = bricks.iterator();
+            Iterator<Brick> it = bricks.iterator();
             while (it.hasNext()) {
-                var brick = it.next();
+                Brick brick = it.next();
                 testCollision(brick, ball);
                 if (brick.destroyed) {
                     it.remove();

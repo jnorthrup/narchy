@@ -56,13 +56,13 @@ public class AutoConceptualizer extends VectorSensor {
     @Override
     public void accept(Game g) {
 
-        var n = g.nar;
-        var now = n.time();
-        var x = this.x;
-        var inputs = concepts.size();
+        NAR n = g.nar;
+        long now = n.time();
+        float[] x = this.x;
+        int inputs = concepts.size();
         for (int i = 0, inSize = inputs; i < inSize; i++) {
             Concept xx = concepts.get(i);
-            var t = ((BeliefTable) xx.table(beliefOrGoal ? BELIEF : GOAL)).truth(now, n);
+            Truth t = ((BeliefTable) xx.table(beliefOrGoal ? BELIEF : GOAL)).truth(now, n);
             float f;
             if (t == null) {
                 f = 0.5f;
@@ -72,25 +72,25 @@ public class AutoConceptualizer extends VectorSensor {
             x[i] = f;
         }
 
-        var err = ae.put(x, learningRate, noiseLevel, 0, true);
+        float err = ae.put(x, learningRate, noiseLevel, 0, true);
 
-        var outputs = ae.outputs();
-        var b = new float[outputs];
+        int outputs = ae.outputs();
+        float[] b = new float[outputs];
 
-        var thresh = n.freqResolution.floatValue();
+        float thresh = n.freqResolution.floatValue();
 
-        var w = g.what();
+        What w = g.what();
 
-        var dur = w.dur();
+        float dur = w.dur();
         long start = Math.round(now - dur / 2), end = Math.round(now + dur / 2);
-        var order = new int[inputs];
+        int[] order = new int[inputs];
         Truth truth = $.t(1f, 0.9f);
-        for (var i = 0; i < outputs; i++) {
+        for (int i = 0; i < outputs; i++) {
             b[i] = 1;
 
-            var a = ae.decode(b, true);
+            float[] a = ae.decode(b, true);
 
-            var feature = conj(order, a /* threshold, etc */, 3 /*a.length/2*/,
+            Term feature = conj(order, a /* threshold, etc */, 3 /*a.length/2*/,
                     thresh);
             if (feature != null)
                 w.accept(onFeature(feature, truth, start, end, n.evidence()));
@@ -110,18 +110,18 @@ public class AutoConceptualizer extends VectorSensor {
     private Term conj(int[] order, float[] a, int maxArity, float threshold) {
 
 
-        var n = a.length;
-        for (var i = 0; i < n; i++)
+        int n = a.length;
+        for (int i = 0; i < n; i++)
             order[i] = i;
 
-        var finalMean = 0.5f;
+        float finalMean = 0.5f;
         QuickSort.sort(order, (i) -> Math.abs(finalMean - a[i]));
 
         Set<Term> x = new UnifiedSet(maxArity);
-        var j = 0;
-        for (var i = 0; i < order.length && j < maxArity; i++) {
-            var oi = order[i];
-            var aa = a[oi];
+        int j = 0;
+        for (int i = 0; i < order.length && j < maxArity; i++) {
+            int oi = order[i];
+            float aa = a[oi];
             if (Math.abs(aa - 0.5f) < threshold)
                 break; 
 

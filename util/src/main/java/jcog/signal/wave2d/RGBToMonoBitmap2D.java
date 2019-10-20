@@ -24,23 +24,23 @@ public class RGBToMonoBitmap2D extends PlanarBitmap2D {
 
     public float get(int x, int y) {
 
-        var R = rgbMix.getAt(0);
-        var G = rgbMix.getAt(1);
-        var B = rgbMix.getAt(2);
-        var RGB = Math.abs(R) + Math.abs(G) + Math.abs(B);
+        float R = rgbMix.getAt(0);
+        float G = rgbMix.getAt(1);
+        float B = rgbMix.getAt(2);
+        float RGB = Math.abs(R) + Math.abs(G) + Math.abs(B);
         if (RGB < Float.MIN_NORMAL)
             return 0f;
 
-        var r = src.get(x, y, 0);
-        var g = src.get(x, y, 1);
-        var b = src.get(x, y, 2);
+        float r = src.get(x, y, 0);
+        float g = src.get(x, y, 1);
+        float b = src.get(x, y, 2);
         return Util.unitize((r * R + g * G + b * B) / RGB);
     }
 
     @Override
     public float get(int... cell) {
-        var x = cell[0];
-        var y = cell[1];
+        int x = cell[0];
+        int y = cell[1];
         return get(x, y);
     }
 

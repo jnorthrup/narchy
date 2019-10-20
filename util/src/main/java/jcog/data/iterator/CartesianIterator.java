@@ -24,14 +24,14 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 	 */
 	@SafeVarargs
 	public CartesianIterator(IntFunction<X[]> arrayBuilder, Iterable<X>... iterables) {
-		var size = iterables.length;
+        int size = iterables.length;
 
-		var iterators = new Iterator[size];
+        Iterator[] iterators = new Iterator[size];
 
-		var empty = false;
+        boolean empty = false;
 
-		for (var i = 0; i < size; i++) {
-			var ii = iterables[i].iterator();
+		for (int i = 0; i < size; i++) {
+            Iterator<X> ii = iterables[i].iterator();
 			if (!ii.hasNext()) {
 				empty = true;
 				break;
@@ -55,20 +55,25 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 	@Override
 	public boolean hasNext() {
 		if (values==null) return false;
-		var size = iterables.length;
-		return IntStream.range(0, size).anyMatch(i -> iterators[i].hasNext());
+        int size = iterables.length;
+		for (int i = 0; i < size; i++) {
+			if (iterators[i].hasNext()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
 	public X[] next() {
 		
 		int cursor;
-		var size = iterables.length;
+        int size = iterables.length;
 		for (cursor = size-1; cursor >= 0; cursor--)
 			if (iterators[cursor].hasNext())
 				break;
 		
-		for (var i = cursor+1; i < size; i++)
+		for (int i = cursor+1; i < size; i++)
 			iterators[i] = iterables[i].iterator();
 
 		return next(cursor, size);
@@ -76,7 +81,7 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 
 	private X[] next(int cursor, int size) {
 
-		for (var i = cursor; i < size; i++)
+		for (int i = cursor; i < size; i++)
 			values[i] = iterators[i].next();
 
 		return cloneNext() ? values.clone() : values;

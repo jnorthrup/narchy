@@ -14,8 +14,8 @@ public class AudioSourcePCMFloat extends AudioSource {
     public AudioSourcePCMFloat(TargetDataLine lm) {
         super(lm);
 
-        var f = lm.getFormat();
-        var _ub = new AudioInputStream(lm);
+        AudioFormat f = lm.getFormat();
+        AudioInputStream _ub = new AudioInputStream(lm);
 
         f = new AudioFormat(AudioFormat.Encoding.PCM_FLOAT/*f.getEncoding()*/, f.getSampleRate(),
                 32,

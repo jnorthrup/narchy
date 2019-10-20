@@ -29,6 +29,7 @@ import spacegraph.video.Draw;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.IntFunction;
@@ -80,8 +81,8 @@ public class Recog2D extends GameX {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 
-        var sh = 9;
-        var sw = 7;
+        int sh = 9;
+        int sw = 7;
         sp = senseCamera(
                 $.p(id,$.the("x"))
 
@@ -100,13 +101,13 @@ public class Recog2D extends GameX {
 //                outs, nar);
 //        train = null;
 
-        var r = rewardNormalized("correct", -1, +1, compose(() -> {
+        Reward r = rewardNormalized("correct", -1, +1, compose(() -> {
             double error = 0;
             double pcSum = 0;
-            for (var i = 0; i < maxImages; i++) {
-                var ni = this.outs.neurons[i];
+            for (int i = 0; i < maxImages; i++) {
+                BeliefVector.Neuron ni = this.outs.neurons[i];
                 ni.update();
-                var pc = ni.predictedConf;
+                float pc = ni.predictedConf;
                 pcSum += pc;
                 error += ni.error * pc;
             }
@@ -132,8 +133,58 @@ public class Recog2D extends GameX {
 
 //        int history = 256;
 
-        var bound = tv.concepts.length;
-        var g = new Gridding(
+        int bound = tv.concepts.length;
+        List<VectorLabel> list = new ArrayList<>();
+        for (int j = 0; j < bound; j++) {
+            int i = j;
+            VectorLabel vectorLabel = new VectorLabel(String.valueOf(i)) {
+                @Override
+                protected void paintIt(GL2 gl, ReSurface r) {
+                    Concept c = tv.concepts[i];
+                    BeliefVector.Neuron nn = tv.neurons[i];
+
+                    float freq;
+
+                    Truth t = nar.beliefTruth(c, nar.time());
+                    if (t != null) {
+                        float conf = t.conf();
+                        freq = t.freq();
+                    } else {
+//                            conf = nar.confMin.floatValue();
+                        float defaultFreq =
+                                0.5f;
+
+                        freq = defaultFreq;
+                    }
+
+
+                    Draw.colorBipolar(gl,
+                            2f * (freq - 0.5f)
+
+
+                    );
+
+                    //float m = 0.5f * conf;
+
+                    Draw.rect(bounds, gl);
+
+                    if (tv.verify) {
+                        float error = nn.error;
+                        if (error != error) {
+
+
+                        } else {
+
+
+                        }
+                    }
+
+
+                }
+            };
+            list.add(vectorLabel);
+        }
+        Gridding g = new Gridding(
 
 //                p = new Plot2D(history, Plot2D.Line).addAt("Reward", () ->
 //                        reward
@@ -145,51 +196,7 @@ public class Recog2D extends GameX {
 
                 new Gridding(beliefTableCharts(nar, List.of(tv.concepts), 16)),
 
-                new Gridding(IntStream.range(0, bound).mapToObj(i -> new VectorLabel(String.valueOf(i)) {
-                    @Override
-                    protected void paintIt(GL2 gl, ReSurface r) {
-                        Concept c = tv.concepts[i];
-                        var nn = tv.neurons[i];
-
-                        float freq;
-
-                        var t = nar.beliefTruth(c, nar.time());
-                        if (t != null) {
-                            var conf = t.conf();
-                            freq = t.freq();
-                        } else {
-//                            conf = nar.confMin.floatValue();
-                            var defaultFreq =
-                                    0.5f;
-
-                            freq = defaultFreq;
-                        }
-
-
-                        Draw.colorBipolar(gl,
-                                2f * (freq - 0.5f)
-
-
-                        );
-
-                        //float m = 0.5f * conf;
-
-                        Draw.rect(bounds, gl);
-
-                        if (tv.verify) {
-                            var error = nn.error;
-                            if (error != error) {
-
-
-                            } else {
-
-
-                            }
-                        }
-
-
-                    }
-                }).toArray(Surface[]::new)));
+                new Gridding(list.toArray(new Surface[0])));
 
         int[] frames = {0};
         onFrame(() -> {
@@ -217,13 +224,17 @@ public class Recog2D extends GameX {
 
     @Deprecated
     public List<Surface> beliefTableCharts(NAR nar, Collection<? extends Termed> terms, long window) {
-        var btRange = new long[2];
+        long[] btRange = new long[2];
         onFrame(() -> {
-            var now = nar.time();
+            long now = nar.time();
             btRange[0] = now - window;
             btRange[1] = now + window;
         });
-        List<Surface> list = terms.stream().map(c -> new BeliefTableChart(c, nar)).collect(toList());
+        List<Surface> list = new ArrayList<>();
+        for (Termed c : terms) {
+            BeliefTableChart beliefTableChart = new BeliefTableChart(c, nar);
+            list.add(beliefTableChart);
+        }
         return list;
     }
 
@@ -237,11 +248,11 @@ public class Recog2D extends GameX {
 
     private void redraw() {
         g.clearRect(0, 0, w, h);
-        var fontMetrics = g.getFontMetrics();
+        FontMetrics fontMetrics = g.getFontMetrics();
 
-        var s = String.valueOf((char) ('0' + image));
+        String s = String.valueOf((char) ('0' + image));
 
-        var sb = fontMetrics.getStringBounds(s, g);
+        Rectangle2D sb = fontMetrics.getStringBounds(s, g);
 
 
         g.drawString(s, Math.round(w / 2f - sb.getCenterX()), Math.round(h / 2f - sb.getCenterY()));
@@ -252,7 +263,7 @@ public class Recog2D extends GameX {
 
         GameX.Companion.initFn(FPS*2, (n) -> {
 
-            var a = new Recog2D(n);
+            Recog2D a = new Recog2D(n);
             n.add(a);
             SpaceGraph.window(a.conceptTraining(a.outs, n), 800, 600);
 
@@ -370,8 +381,8 @@ public class Recog2D extends GameX {
             }
 
             protected void update() {
-                var a = this.predictedFreq;
-                var e = this.expectedFreq;
+                float a = this.predictedFreq;
+                float e = this.expectedFreq;
                 if (e != e) {
                     this.error = 0;
                 } else if (a != a) {
@@ -384,14 +395,14 @@ public class Recog2D extends GameX {
 
         public float[] expected(float[] output) {
             output = sized(output);
-            for (var i = 0; i < concepts.length; i++)
+            for (int i = 0; i < concepts.length; i++)
                 output[i] = expected(i);
             return output;
         }
 
         public float[] actual(float[] output) {
             output = sized(output);
-            for (var i = 0; i < concepts.length; i++)
+            for (int i = 0; i < concepts.length; i++)
                 output[i] = actual(i);
             return output;
         }
@@ -418,14 +429,14 @@ public class Recog2D extends GameX {
             this.states = maxStates;
             this.neurons = new Neuron[maxStates];
             this.concepts = IntStream.range(0, maxStates).mapToObj(i -> {
-                var tt = namer.apply(i);
+                Term tt = namer.apply(i);
 
-                var n = neurons[i] = new Neuron();
+                Neuron n = neurons[i] = new Neuron();
 
                         return a.action(tt, (bb, x) -> {
 
 
-                            var predictedFreq = x != null ? x.freq() : 0.5f;
+                            float predictedFreq = x != null ? x.freq() : 0.5f;
 
 
                             n.actual(predictedFreq, x != null ? x.conf() : 0);
@@ -456,12 +467,12 @@ public class Recog2D extends GameX {
 
         void expect(IntToFloatFunction stateValue) {
 
-            for (var i = 0; i < states; i++)
+            for (int i = 0; i < states; i++)
                 neurons[i].expect(stateValue.valueOf(i));
         }
 
         public void expect(int onlyStateToBeOn) {
-            var offValue =
+            float offValue =
                     0f;
 
 

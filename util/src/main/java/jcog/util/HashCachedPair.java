@@ -47,7 +47,7 @@ public class HashCachedPair<T1, T2> implements Pair<T1, T2> {
             return true;
         }
 
-        var that = (Pair<?, ?>) o;
+        Pair<?, ?> that = (Pair<?, ?>) o;
 
         return one.equals(that.getOne()) && two.equals(that.getTwo());
     }
@@ -72,7 +72,7 @@ public class HashCachedPair<T1, T2> implements Pair<T1, T2> {
         if (this == other)
             return 0;
 
-        var i = ((Comparable<T1>) this.one).compareTo(other.getOne());
+        int i = ((Comparable<T1>) this.one).compareTo(other.getOne());
         if (i != 0)
             return i;
 

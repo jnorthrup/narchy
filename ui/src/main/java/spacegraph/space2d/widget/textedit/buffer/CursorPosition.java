@@ -11,7 +11,7 @@ public class CursorPosition implements Comparable<CursorPosition> {
 
     @Override
     public int compareTo(CursorPosition o) {
-        var rowCompare = Integer.compare(this.row, o.row);
+        int rowCompare = Integer.compare(this.row, o.row);
         if (rowCompare == 0) {
             return Integer.compare(this.col, o.col);
         } else {

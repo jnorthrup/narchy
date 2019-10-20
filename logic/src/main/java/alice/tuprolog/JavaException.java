@@ -16,16 +16,16 @@ public class JavaException extends Throwable {
 
     public Struct getException() {
 
-        var java_exception = e.getClass().getName();
+        String java_exception = e.getClass().getName();
 
-        var cause = e.getCause();
-        var causeTerm = cause != null ? new Struct(cause.toString()) : new NumberTerm.Int(0);
+        Throwable cause = e.getCause();
+        Term causeTerm = cause != null ? new Struct(cause.toString()) : new NumberTerm.Int(0);
 
-        var message = e.getMessage();
-        var messageTerm = message != null ? new Struct(message) : new NumberTerm.Int(0);
+        String message = e.getMessage();
+        Term messageTerm = message != null ? new Struct(message) : new NumberTerm.Int(0);
 
 
-        var elements = e.getStackTrace();
+        StackTraceElement[] elements = e.getStackTrace();
         
         return new Struct(java_exception, causeTerm, messageTerm,
                 new Struct(Util.map(e -> new Struct(e.toString()), new Term[elements.length], e.getStackTrace())));

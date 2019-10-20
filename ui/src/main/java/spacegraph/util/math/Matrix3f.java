@@ -844,7 +844,7 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      */
     public final void transpose() {
 
-        var temp = this.m10;
+        float temp = this.m10;
         this.m10 = this.m01;
         this.m01 = temp;
 
@@ -906,7 +906,7 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      * @param a1 the axis and angle to be converted
      */
     public final void set(AxisAngle4f a1) {
-        var mag = (float) Math.sqrt(a1.x * a1.x + a1.y * a1.y + a1.z * a1.z);
+        float mag = (float) Math.sqrt(a1.x * a1.x + a1.y * a1.y + a1.z * a1.z);
         if (mag < EPS) {
             m00 = 1.0f;
             m01 = 0.0f;
@@ -921,23 +921,23 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
             m22 = 1.0f;
         } else {
             mag = 1.0f / mag;
-            var ax = a1.x * mag;
-            var ay = a1.y * mag;
-            var az = a1.z * mag;
+            float ax = a1.x * mag;
+            float ay = a1.y * mag;
+            float az = a1.z * mag;
 
-            var sinTheta = (float) Math.sin(a1.angle);
-            var cosTheta = (float) Math.cos(a1.angle);
-            var t = 1.0f - cosTheta;
+            float sinTheta = (float) Math.sin(a1.angle);
+            float cosTheta = (float) Math.cos(a1.angle);
+            float t = 1.0f - cosTheta;
 
             m00 = t * ax * ax + cosTheta;
-            var xy = ax * ay;
+            float xy = ax * ay;
             m01 = t * xy - sinTheta * az;
-            var xz = ax * az;
+            float xz = ax * az;
             m02 = t * xz + sinTheta * ay;
 
             m10 = t * xy + sinTheta * az;
             m11 = t * ay * ay + cosTheta;
-            var yz = ay * az;
+            float yz = ay * az;
             m12 = t * yz - sinTheta * ax;
 
             m20 = t * xz - sinTheta * ay;
@@ -1110,7 +1110,7 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      * about allocating a little bit of garbage.
      */
     private void invertGeneral(Matrix3f m1) {
-        var temp = new double[9];
+        double[] temp = new double[9];
         int r, c;
 
         
@@ -1130,18 +1130,18 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
         temp[8] = m1.m22;
 
 
-        var row_perm = new int[3];
+        int[] row_perm = new int[3];
         if (!luDecomposition(temp, row_perm)) {
             
             throw new SingularMatrixException(VecMathI18N.getString("Matrix3f12"));
         }
 
 
-        var result = new double[10];
-        var count = 0;
-        for (var i = 0; i < 9; i++) {
+        double[] result = new double[10];
+        int count = 0;
+        for (int i = 0; i < 9; i++) {
             if (result.length == count) result = Arrays.copyOf(result, count * 2);
-            var v = 0.0;
+            double v = 0.0;
             result[count++] = v;
         }
         result = Arrays.copyOfRange(result, 0, count);
@@ -1187,23 +1187,23 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
     private static boolean luDecomposition(double[] matrix0,
                                            int[] row_perm) {
 
-        var row_scale = new double[3];
+        double[] row_scale = new double[3];
 
         
         {
 
-            var ptr = 0;
-            var rs = 0;
+            int ptr = 0;
+            int rs = 0;
 
 
-            var i = 3;
+            int i = 3;
             while (i-- != 0) {
 
 
-                var j = 3;
-                var big = 0.0;
+                int j = 3;
+                double big = 0.0;
                 while (j-- != 0) {
-                    var temp = matrix0[ptr++];
+                    double temp = matrix0[ptr++];
                     temp = Math.abs(temp);
                     if (temp > big) {
                         big = temp;
@@ -1218,10 +1218,10 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
             }
         }
 
-        var mtx = 0;
+        int mtx = 0;
 
         
-        for (var j = 0; j < 3; j++) {
+        for (int j = 0; j < 3; j++) {
             int i, k;
             int target, p1, p2;
             double sum;
@@ -1242,8 +1242,8 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
             }
 
 
-            var big = 0.0;
-            var imax = -1;
+            double big = 0.0;
+            int imax = -1;
             double temp;
             for (i = j; i < 3; i++) {
                 target = mtx + (3 * i) + j;
@@ -1331,25 +1331,25 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
                                            double[] matrix2) {
 
 
-        var rp = 0;
+        int rp = 0;
 
         
-        for (var k = 0; k < 3; k++) {
+        for (int k = 0; k < 3; k++) {
 
-            var cv = k;
-            var ii = -1;
+            int cv = k;
+            int ii = -1;
 
 
             int rv;
-            for (var i = 0; i < 3; i++) {
+            for (int i = 0; i < 3; i++) {
 
-                var ip = row_perm[rp + i];
-                var sum = matrix2[cv + 3 * ip];
+                int ip = row_perm[rp + i];
+                double sum = matrix2[cv + 3 * ip];
                 matrix2[cv + 3 * ip] = matrix2[cv + 3 * i];
                 if (ii >= 0) {
                     
                     rv = i * 3;
-                    for (var j = ii; j <= i - 1; j++) {
+                    for (int j = ii; j <= i - 1; j++) {
                         sum -= matrix1[rv + j] * matrix2[cv + 3 * j];
                     }
                 } else if (sum != 0.0) {
@@ -1381,7 +1381,7 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      * @return the determinant of this matrix
      */
     public final float determinant() {
-        var total = this.m00 * (this.m11 * this.m22 - this.m12 * this.m21)
+        float total = this.m00 * (this.m11 * this.m22 - this.m12 * this.m21)
                 + this.m01 * (this.m12 * this.m20 - this.m10 * this.m22)
                 + this.m02 * (this.m10 * this.m21 - this.m11 * this.m20);
         return total;
@@ -1415,8 +1415,8 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      */
     public final void rotX(float angle) {
 
-        var sinAngle = (float) Math.sin(angle);
-        var cosAngle = (float) Math.cos(angle);
+        float sinAngle = (float) Math.sin(angle);
+        float cosAngle = (float) Math.cos(angle);
 
         this.m00 = 1.0f;
         this.m01 = 0.0f;
@@ -1439,8 +1439,8 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      */
     public final void rotY(float angle) {
 
-        var sinAngle = (float) Math.sin(angle);
-        var cosAngle = (float) Math.cos(angle);
+        float sinAngle = (float) Math.sin(angle);
+        float cosAngle = (float) Math.cos(angle);
 
         this.m00 = cosAngle;
         this.m01 = 0.0f;
@@ -1463,8 +1463,8 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      */
     public final void rotZ(float angle) {
 
-        var sinAngle = (float) Math.sin(angle);
-        var cosAngle = (float) Math.cos(angle);
+        float sinAngle = (float) Math.sin(angle);
+        float cosAngle = (float) Math.cos(angle);
 
         this.m00 = cosAngle;
         this.m01 = -sinAngle;
@@ -1528,26 +1528,26 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      */
     public final void mul(Matrix3f m1) {
 
-        var m1m00 = m1.m00;
-        var m101 = m1.m10;
-        var m201 = m1.m20;
-        var m00 = this.m00 * m1m00 + this.m01 * m101 + this.m02 * m201;
-        var m1m01 = m1.m01;
-        var m111 = m1.m11;
-        var m211 = m1.m21;
-        var m01 = this.m00 * m1m01 + this.m01 * m111 + this.m02 * m211;
-        var m1m02 = m1.m02;
-        var m121 = m1.m12;
-        var m221 = m1.m22;
-        var m02 = this.m00 * m1m02 + this.m01 * m121 + this.m02 * m221;
+        float m1m00 = m1.m00;
+        float m101 = m1.m10;
+        float m201 = m1.m20;
+        float m00 = this.m00 * m1m00 + this.m01 * m101 + this.m02 * m201;
+        float m1m01 = m1.m01;
+        float m111 = m1.m11;
+        float m211 = m1.m21;
+        float m01 = this.m00 * m1m01 + this.m01 * m111 + this.m02 * m211;
+        float m1m02 = m1.m02;
+        float m121 = m1.m12;
+        float m221 = m1.m22;
+        float m02 = this.m00 * m1m02 + this.m01 * m121 + this.m02 * m221;
 
-        var m10 = this.m10 * m1m00 + this.m11 * m101 + this.m12 * m201;
-        var m11 = this.m10 * m1m01 + this.m11 * m111 + this.m12 * m211;
-        var m12 = this.m10 * m1m02 + this.m11 * m121 + this.m12 * m221;
+        float m10 = this.m10 * m1m00 + this.m11 * m101 + this.m12 * m201;
+        float m11 = this.m10 * m1m01 + this.m11 * m111 + this.m12 * m211;
+        float m12 = this.m10 * m1m02 + this.m11 * m121 + this.m12 * m221;
 
-        var m20 = this.m20 * m1m00 + this.m21 * m101 + this.m22 * m201;
-        var m21 = this.m20 * m1m01 + this.m21 * m111 + this.m22 * m211;
-        var m22 = this.m20 * m1m02 + this.m21 * m121 + this.m22 * m221;
+        float m20 = this.m20 * m1m00 + this.m21 * m101 + this.m22 * m201;
+        float m21 = this.m20 * m1m01 + this.m21 * m111 + this.m22 * m211;
+        float m22 = this.m20 * m1m02 + this.m21 * m121 + this.m22 * m221;
 
         this.m00 = m00;
         this.m01 = m01;
@@ -1582,17 +1582,17 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
             this.m22 = m1.m20 * m2.m02 + m1.m21 * m2.m12 + m1.m22 * m2.m22;
         } else {
 
-            var m00 = m1.m00 * m2.m00 + m1.m01 * m2.m10 + m1.m02 * m2.m20;
-            var m01 = m1.m00 * m2.m01 + m1.m01 * m2.m11 + m1.m02 * m2.m21;
-            var m02 = m1.m00 * m2.m02 + m1.m01 * m2.m12 + m1.m02 * m2.m22;
+            float m00 = m1.m00 * m2.m00 + m1.m01 * m2.m10 + m1.m02 * m2.m20;
+            float m01 = m1.m00 * m2.m01 + m1.m01 * m2.m11 + m1.m02 * m2.m21;
+            float m02 = m1.m00 * m2.m02 + m1.m01 * m2.m12 + m1.m02 * m2.m22;
 
-            var m10 = m1.m10 * m2.m00 + m1.m11 * m2.m10 + m1.m12 * m2.m20;
-            var m11 = m1.m10 * m2.m01 + m1.m11 * m2.m11 + m1.m12 * m2.m21;
-            var m12 = m1.m10 * m2.m02 + m1.m11 * m2.m12 + m1.m12 * m2.m22;
+            float m10 = m1.m10 * m2.m00 + m1.m11 * m2.m10 + m1.m12 * m2.m20;
+            float m11 = m1.m10 * m2.m01 + m1.m11 * m2.m11 + m1.m12 * m2.m21;
+            float m12 = m1.m10 * m2.m02 + m1.m11 * m2.m12 + m1.m12 * m2.m22;
 
-            var m20 = m1.m20 * m2.m00 + m1.m21 * m2.m10 + m1.m22 * m2.m20;
-            var m21 = m1.m20 * m2.m01 + m1.m21 * m2.m11 + m1.m22 * m2.m21;
-            var m22 = m1.m20 * m2.m02 + m1.m21 * m2.m12 + m1.m22 * m2.m22;
+            float m20 = m1.m20 * m2.m00 + m1.m21 * m2.m10 + m1.m22 * m2.m20;
+            float m21 = m1.m20 * m2.m01 + m1.m21 * m2.m11 + m1.m22 * m2.m21;
+            float m22 = m1.m20 * m2.m02 + m1.m21 * m2.m12 + m1.m22 * m2.m22;
 
             this.m00 = m00;
             this.m01 = m01;
@@ -1711,17 +1711,17 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
             this.m22 = m1.m02 * m2.m20 + m1.m12 * m2.m21 + m1.m22 * m2.m22;
         } else {
 
-            var m00 = m1.m00 * m2.m00 + m1.m10 * m2.m01 + m1.m20 * m2.m02;
-            var m01 = m1.m00 * m2.m10 + m1.m10 * m2.m11 + m1.m20 * m2.m12;
-            var m02 = m1.m00 * m2.m20 + m1.m10 * m2.m21 + m1.m20 * m2.m22;
+            float m00 = m1.m00 * m2.m00 + m1.m10 * m2.m01 + m1.m20 * m2.m02;
+            float m01 = m1.m00 * m2.m10 + m1.m10 * m2.m11 + m1.m20 * m2.m12;
+            float m02 = m1.m00 * m2.m20 + m1.m10 * m2.m21 + m1.m20 * m2.m22;
 
-            var m10 = m1.m01 * m2.m00 + m1.m11 * m2.m01 + m1.m21 * m2.m02;
-            var m11 = m1.m01 * m2.m10 + m1.m11 * m2.m11 + m1.m21 * m2.m12;
-            var m12 = m1.m01 * m2.m20 + m1.m11 * m2.m21 + m1.m21 * m2.m22;
+            float m10 = m1.m01 * m2.m00 + m1.m11 * m2.m01 + m1.m21 * m2.m02;
+            float m11 = m1.m01 * m2.m10 + m1.m11 * m2.m11 + m1.m21 * m2.m12;
+            float m12 = m1.m01 * m2.m20 + m1.m11 * m2.m21 + m1.m21 * m2.m22;
 
-            var m20 = m1.m02 * m2.m00 + m1.m12 * m2.m01 + m1.m22 * m2.m02;
-            var m21 = m1.m02 * m2.m10 + m1.m12 * m2.m11 + m1.m22 * m2.m12;
-            var m22 = m1.m02 * m2.m20 + m1.m12 * m2.m21 + m1.m22 * m2.m22;
+            float m20 = m1.m02 * m2.m00 + m1.m12 * m2.m01 + m1.m22 * m2.m02;
+            float m21 = m1.m02 * m2.m10 + m1.m12 * m2.m11 + m1.m22 * m2.m12;
+            float m22 = m1.m02 * m2.m20 + m1.m12 * m2.m21 + m1.m22 * m2.m22;
 
             this.m00 = m00;
             this.m01 = m01;
@@ -1759,17 +1759,17 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
             this.m22 = m1.m20 * m2.m20 + m1.m21 * m2.m21 + m1.m22 * m2.m22;
         } else {
 
-            var m00 = m1.m00 * m2.m00 + m1.m01 * m2.m01 + m1.m02 * m2.m02;
-            var m01 = m1.m00 * m2.m10 + m1.m01 * m2.m11 + m1.m02 * m2.m12;
-            var m02 = m1.m00 * m2.m20 + m1.m01 * m2.m21 + m1.m02 * m2.m22;
+            float m00 = m1.m00 * m2.m00 + m1.m01 * m2.m01 + m1.m02 * m2.m02;
+            float m01 = m1.m00 * m2.m10 + m1.m01 * m2.m11 + m1.m02 * m2.m12;
+            float m02 = m1.m00 * m2.m20 + m1.m01 * m2.m21 + m1.m02 * m2.m22;
 
-            var m10 = m1.m10 * m2.m00 + m1.m11 * m2.m01 + m1.m12 * m2.m02;
-            var m11 = m1.m10 * m2.m10 + m1.m11 * m2.m11 + m1.m12 * m2.m12;
-            var m12 = m1.m10 * m2.m20 + m1.m11 * m2.m21 + m1.m12 * m2.m22;
+            float m10 = m1.m10 * m2.m00 + m1.m11 * m2.m01 + m1.m12 * m2.m02;
+            float m11 = m1.m10 * m2.m10 + m1.m11 * m2.m11 + m1.m12 * m2.m12;
+            float m12 = m1.m10 * m2.m20 + m1.m11 * m2.m21 + m1.m12 * m2.m22;
 
-            var m20 = m1.m20 * m2.m00 + m1.m21 * m2.m01 + m1.m22 * m2.m02;
-            var m21 = m1.m20 * m2.m10 + m1.m21 * m2.m11 + m1.m22 * m2.m12;
-            var m22 = m1.m20 * m2.m20 + m1.m21 * m2.m21 + m1.m22 * m2.m22;
+            float m20 = m1.m20 * m2.m00 + m1.m21 * m2.m01 + m1.m22 * m2.m02;
+            float m21 = m1.m20 * m2.m10 + m1.m21 * m2.m11 + m1.m22 * m2.m12;
+            float m22 = m1.m20 * m2.m20 + m1.m21 * m2.m21 + m1.m22 * m2.m22;
 
             this.m00 = m00;
             this.m01 = m01;
@@ -1805,17 +1805,17 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
             this.m22 = m1.m02 * m2.m02 + m1.m12 * m2.m12 + m1.m22 * m2.m22;
         } else {
 
-            var m00 = m1.m00 * m2.m00 + m1.m10 * m2.m10 + m1.m20 * m2.m20;
-            var m01 = m1.m00 * m2.m01 + m1.m10 * m2.m11 + m1.m20 * m2.m21;
-            var m02 = m1.m00 * m2.m02 + m1.m10 * m2.m12 + m1.m20 * m2.m22;
+            float m00 = m1.m00 * m2.m00 + m1.m10 * m2.m10 + m1.m20 * m2.m20;
+            float m01 = m1.m00 * m2.m01 + m1.m10 * m2.m11 + m1.m20 * m2.m21;
+            float m02 = m1.m00 * m2.m02 + m1.m10 * m2.m12 + m1.m20 * m2.m22;
 
-            var m10 = m1.m01 * m2.m00 + m1.m11 * m2.m10 + m1.m21 * m2.m20;
-            var m11 = m1.m01 * m2.m01 + m1.m11 * m2.m11 + m1.m21 * m2.m21;
-            var m12 = m1.m01 * m2.m02 + m1.m11 * m2.m12 + m1.m21 * m2.m22;
+            float m10 = m1.m01 * m2.m00 + m1.m11 * m2.m10 + m1.m21 * m2.m20;
+            float m11 = m1.m01 * m2.m01 + m1.m11 * m2.m11 + m1.m21 * m2.m21;
+            float m12 = m1.m01 * m2.m02 + m1.m11 * m2.m12 + m1.m21 * m2.m22;
 
-            var m20 = m1.m02 * m2.m00 + m1.m12 * m2.m10 + m1.m22 * m2.m20;
-            var m21 = m1.m02 * m2.m01 + m1.m12 * m2.m11 + m1.m22 * m2.m21;
-            var m22 = m1.m02 * m2.m02 + m1.m12 * m2.m12 + m1.m22 * m2.m22;
+            float m20 = m1.m02 * m2.m00 + m1.m12 * m2.m10 + m1.m22 * m2.m20;
+            float m21 = m1.m02 * m2.m01 + m1.m12 * m2.m11 + m1.m22 * m2.m21;
+            float m22 = m1.m02 * m2.m02 + m1.m12 * m2.m12 + m1.m22 * m2.m22;
 
             this.m00 = m00;
             this.m01 = m01;
@@ -1895,7 +1895,7 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      * Perform cross product normalization of this matrix.
      */
     public final void normalizeCP() {
-        var mag = 1.0f / (float) Math.sqrt(m00 * m00 + m10 * m10 + m20 * m20);
+        float mag = 1.0f / (float) Math.sqrt(m00 * m00 + m10 * m10 + m20 * m20);
         m00 *= mag;
         m10 *= mag;
         m20 *= mag;
@@ -1918,7 +1918,7 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      * @param m1 Provides the matrix values to be normalized
      */
     public final void normalizeCP(Matrix3f m1) {
-        var mag = 1.0f / (float) Math.sqrt(m1.m00 * m1.m00 + m1.m10 * m1.m10 + m1.m20 * m1.m20);
+        float mag = 1.0f / (float) Math.sqrt(m1.m00 * m1.m00 + m1.m10 * m1.m10 + m1.m20 * m1.m20);
         m00 = m1.m00 * mag;
         m10 = m1.m10 * mag;
         m20 = m1.m20 * mag;
@@ -1964,7 +1964,7 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
     public boolean equals(Object o1) {
         try {
 
-            var m2 = (Matrix3f) o1;
+            Matrix3f m2 = (Matrix3f) o1;
             return (this.m00 == m2.m00 && this.m01 == m2.m01 && this.m02 == m2.m02
                     && this.m10 == m2.m10 && this.m11 == m2.m11 && this.m12 == m2.m12
                     && this.m20 == m2.m20 && this.m21 == m2.m21 && this.m22 == m2.m22);
@@ -1984,7 +1984,7 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      * @param epsilon the threshold value
      */
     public boolean epsilonEquals(Matrix3f m1, float epsilon) {
-        var status = true;
+        boolean status = true;
 
         if (Math.abs(this.m00 - m1.m00) > epsilon) status = false;
         if (Math.abs(this.m01 - m1.m01) > epsilon) status = false;
@@ -2013,7 +2013,7 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      * @return the integer hash code value
      */
     public int hashCode() {
-        var bits = 1L;
+        long bits = 1L;
         bits = 31L * bits + VecMathUtil.floatToIntBits(m00);
         bits = 31L * bits + VecMathUtil.floatToIntBits(m01);
         bits = 31L * bits + VecMathUtil.floatToIntBits(m02);
@@ -2117,8 +2117,8 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      */
     public final void transform(v3 t, v3 result) {
 
-        var x = m00 * t.x + m01 * t.y + m02 * t.z;
-        var y = m10 * t.x + m11 * t.y + m12 * t.z;
+        float x = m00 * t.x + m01 * t.y + m02 * t.z;
+        float y = m10 * t.x + m11 * t.y + m12 * t.z;
         result.z = m20 * t.x + m21 * t.y + m22 * t.z;
         result.x = x;
         result.y = y;

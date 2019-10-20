@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.Row;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
@@ -80,7 +81,11 @@ public class Optimize<S, E> extends Lab<E>  {
         this.var = new FasterList(_vars).sortThis();
 
         /* sorted */
-        List<Sensor<S, ?>> list = var.stream().map(Var::sense).collect(toList());
+        List<Sensor<S, ?>> list = new ArrayList<>();
+        for (Var<S, ?> sVar : var) {
+            Sensor<S, ?> sense = sVar.sense();
+            list.add(sense);
+        }
         this.varSensors = list;
 
         this.sensors.addAll( sensors );
@@ -95,8 +100,8 @@ public class Optimize<S, E> extends Lab<E>  {
     public static <X> FloatFunction<X> repeat(FloatFunction<X> f, int repeats) {
         return (x) -> {
             double sum = 0;
-            for (var i = 0; i < repeats; i++) {
-                var y = f.floatValueOf(x);
+            for (int i = 0; i < repeats; i++) {
+                float y = f.floatValueOf(x);
                 if (!Float.isFinite(y))
                     return y;
                 sum += y;
@@ -124,28 +129,28 @@ public class Optimize<S, E> extends Lab<E>  {
     public void run(OptimizationStrategy strategy) {
 
         //initialize numeric or numeric-able variables
-        var numVars = var.size();
+        int numVars = var.size();
 
         mid = new double[numVars];
         min = new double[numVars];
         max = new double[numVars];
         inc = new double[numVars];
 
-        var example = subj.get();
-        var i = 0;
+        S example = subj.get();
+        int i = 0;
         for (Var w: var) {
-            var s = (FloatVar) w;
+            FloatVar s = (FloatVar) w;
 
 
-            var guess = s.get(example);
+            Object guess = s.get(example);
 
 
-            var mi = min[i] = s.getMin();
-            var ma = max[i] = s.getMax();
-            var inc = this.inc[i] = s.getInc();
+            double mi = min[i] = s.getMin();
+            double ma = max[i] = s.getMax();
+            double inc = this.inc[i] = s.getInc();
 
             if (guess!=null && (mi!=mi || ma!=ma || inc!=inc)) {
-                var x = (float)guess;
+                float x = (float)guess;
                 //HACK assumption
                 mi = min[i] = x/2;
                 ma = max[i] = x*2;
@@ -164,13 +169,13 @@ public class Optimize<S, E> extends Lab<E>  {
 
 
         goal.addToSchema(data);
-        for (var varSensor : varSensors) {
+        for (Sensor<S, ?> varSensor : varSensors) {
             varSensor.addToSchema(data);
         }
         sensors.forEach(s -> s.addToSchema(data));
 
         if (logger.isTraceEnabled()) {
-            var s = data.columnNames().toString();
+            String s = data.columnNames().toString();
             logger.trace("{}", s.substring(1, s.length()-1));
         }
 
@@ -196,19 +201,19 @@ public class Optimize<S, E> extends Lab<E>  {
          */
 
         try {
-            var copy = new Object[1];
-            var y = experiment.apply(() -> {
-                var s = subject(subj.get(), point);
+            Object[] copy = new Object[1];
+            E y = experiment.apply(() -> {
+                S s = subject(subj.get(), point);
                 copy[0] = s; //for measurement
                 return s;
             });
 
-            var score = goal.apply(y).doubleValue();
+            double score = goal.apply(y).doubleValue();
 
-            var row = row(copy[0], y, score);
+            Object[] row = row(copy[0], y, score);
 
             if (logger.isTraceEnabled()) {
-                var rs = Arrays.toString(row);
+                String rs = Arrays.toString(row);
                 logger.trace("{}", rs.substring(1, rs.length()-1));
             }
 
@@ -218,7 +223,7 @@ public class Optimize<S, E> extends Lab<E>  {
         } catch (Throwable t) {
             //System.err.println(t.getMessage());
             /** enable to print exceptions */
-            var debug = false;
+            boolean debug = false;
             if (debug)
                 t.printStackTrace();
             return Double.NEGATIVE_INFINITY;
@@ -227,10 +232,10 @@ public class Optimize<S, E> extends Lab<E>  {
     }
 
     private Object[] row(Object o, E y, double score) {
-        var row = new Object[1 + var.size() + sensors.size()];
-        var j = 0;
+        Object[] row = new Object[1 + var.size() + sensors.size()];
+        int j = 0;
         row[j++] = score;
-        var x = (S) o;
+        S x = (S) o;
         for (Sensor v: varSensors)
             row[j++] = v.apply(x);
         for (Sensor s: sensors)
@@ -353,14 +358,14 @@ public class Optimize<S, E> extends Lab<E>  {
 //            func = new ObjectiveFunction( cache( func.getObjectiveFunction() ) );
 
             try {
-                var dim = o.inc.length;
+                int dim = o.inc.length;
                 //double[] range = new double[dim];
-                var step = new double[dim];
-                var init = new double[dim];
-                for (var i = 0; i < dim; i++) {
-                    var min = o.min[i];
-                    var max = o.max[i];
-                    var range = max - min;
+                double[] step = new double[dim];
+                double[] init = new double[dim];
+                for (int i = 0; i < dim; i++) {
+                    double min = o.min[i];
+                    double max = o.max[i];
+                    double range = max - min;
                     step[i] = range / o.inc[i];
                     init[i] = (Math.random() * range) + min;
                 }
@@ -406,13 +411,13 @@ public class Optimize<S, E> extends Lab<E>  {
         @Override
         protected void run(Optimize o, ObjectiveFunction func) {
 
-            var popSize =
+            int popSize =
                     (int) Math.ceil(4 + 3 * Math.log(o.var.size()));
 
 
-            var sigma = MathArrays.scale(1f, o.inc);
+            double[] sigma = MathArrays.scale(1f, o.inc);
 
-            var m = new MyCMAESOptimizer(maxIter, Double.NaN,
+            MyCMAESOptimizer m = new MyCMAESOptimizer(maxIter, Double.NaN,
                     true, 0,
                     1, new XoRoShiRo128PlusRandom(), //new MersenneTwister(System.nanoTime())
                     true, null, popSize, sigma);

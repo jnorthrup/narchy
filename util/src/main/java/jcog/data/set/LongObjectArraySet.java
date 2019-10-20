@@ -14,6 +14,7 @@ import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.iterator.MutableLongIterator;
 import org.eclipse.collections.impl.iterator.ImmutableEmptyLongIterator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -54,7 +55,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     @Override
     public LongObjectArraySet<X> sortThis() {
 
-        var size = this.size;
+        int size = this.size;
         if (size > 1)
             QuickSort.quickSort(0, size, this::whenFirstCompare, this::swap);
         return this;
@@ -97,7 +98,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     }
 
     public LongObjectArraySet<X> sortThisByValue() {
-        var size = this.size;
+        int size = this.size;
         if (size > 1)
             QuickSort.quickSort(0, size, this::valueFirstCompare, this::swap);
         return this;
@@ -126,25 +127,25 @@ public class LongObjectArraySet<X> extends FasterList<X> {
 
     private int whenFirstCompare(int ia, int ib) {
         if (ia == ib) return 0;
-        var ww = this.when;
-        var ab = Long.compare(ww[ia], ww[ib]);
+        long[] ww = this.when;
+        int ab = Long.compare(ww[ia], ww[ib]);
         if (ab != 0)
             return ab;
 
-        var ii = this.items;
+        X[] ii = this.items;
         X a = ii[ia], b = ii[ib];
         return ((Comparable)a).compareTo(b); //TODO non-Comparable compare by obj identity
     }
 
     private int valueFirstCompare(int ia, int ib) {
         if (ia == ib) return 0;
-        var ii = this.items;
+        X[] ii = this.items;
         X a = ii[ia], b = ii[ib];
-        var ab = ((Comparable)a).compareTo(b); //TODO non-Comparable compare by obj identity
+        int ab = ((Comparable)a).compareTo(b); //TODO non-Comparable compare by obj identity
         if (ab != 0)
             return ab;
 
-        var ww = when;
+        long[] ww = when;
         return Long.compare(ww[ia], ww[ib]);
     }
 
@@ -160,18 +161,23 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     }
 
     public final boolean contains(long w, X what, int startIndex, int finalIndexExc) {
-        var longs = this.when;
-        var ii = this.items;
-        return IntStream.range(startIndex, finalIndexExc).anyMatch(i -> longs[i] == w && ii[i].equals(what));
+        long[] longs = this.when;
+        X[] ii = this.items;
+        for (int i = startIndex; i < finalIndexExc; i++) {
+            if (longs[i] == w && ii[i].equals(what)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** assumes its been sorted */
     protected int _indexOf(long w, X what, int startIndex, int finalIndexExc, BiPredicate<X,X> equal, int dtTolerance) {
-        var longs = this.when;
-        var ii = this.items;
-        var forward = finalIndexExc >= startIndex;
-        for (var i = startIndex; ; i+= forward ? 1 : -1) {
-            var ll = longs[i];
+        long[] longs = this.when;
+        X[] ii = this.items;
+        boolean forward = finalIndexExc >= startIndex;
+        for (int i = startIndex; ; i+= forward ? 1 : -1) {
+            long ll = longs[i];
             if (Util.equals(ll, w, dtTolerance) && equal.test(ii[i],what))
                 return i;
             if (i == finalIndexExc || (forward && (ll > w)) || (!forward && ll < w))
@@ -186,7 +192,11 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     public String toString() {
         //HACK this could be better
         int[] i = {0};
-        var list = this.stream().map(n -> when[i[0]++] + ":" + n).collect(Collectors.toList());
+        List<String> list = new ArrayList<>();
+        for (X n : this) {
+            String s = when[i[0]++] + ":" + n;
+            list.add(s);
+        }
         return Joiner.on(',').join(list);
     }
 
@@ -211,8 +221,8 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     protected  boolean add(long w, X t, boolean valueIfExists) {
 
         //check for existing
-        var n = size();
-        for (var i = 0; i < n; i++) {
+        int n = size();
+        for (int i = 0; i < n; i++) {
             if (when(i) == w && get(i).equals(t))
                 return valueIfExists; //existing found
         }
@@ -223,10 +233,10 @@ public class LongObjectArraySet<X> extends FasterList<X> {
 
     /** add without testing for existing */
     public final void addDirect(long w, X t) {
-        var s = addAndGetSize(t);
+        int s = addAndGetSize(t);
 
         //match long[] to the Object[] capacity
-        var ww = this.when;
+        long[] ww = this.when;
         if (ww.length < s)
             this.when = ww = Arrays.copyOf(ww, items.length);
 
@@ -244,7 +254,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     }
 
     public boolean removeFirst() {
-        var s = size();
+        int s = size();
         if (s == 0)
             return false;
         else {
@@ -277,10 +287,10 @@ public class LongObjectArraySet<X> extends FasterList<X> {
 
 
     public boolean removeIf(long theLong, LongObjectPredicate<X> iff) {
-        var s = size();
-        var m = MetalBitSet.bits(s);
-        for (var i = 0; i < s; i++) {
-            var w = when[i];
+        int s = size();
+        MetalBitSet m = MetalBitSet.bits(s);
+        for (int i = 0; i < s; i++) {
+            long w = when[i];
             if (w == theLong) {
                 if (iff.accept(w, get(i)))
                     m.set(i);
@@ -295,20 +305,20 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     }
 
     public void forEachEvent(LongObjectProcedure<X> each) {
-        var n = size;
-        for (var i = 0; i < n; i++)
+        int n = size;
+        for (int i = 0; i < n; i++)
             each.value(when[i], items[i]);
     }
     public boolean AND(LongObjectPredicate<X> each) {
-        var n = size;
-        for (var i = 0; i < n; i++)
+        int n = size;
+        for (int i = 0; i < n; i++)
             if (!each.accept(when[i], items[i]))
                 return false;
         return true;
     }
     public boolean OR(LongObjectPredicate<X> each) {
-        var n = size;
-        for (var i = 0; i < n; i++)
+        int n = size;
+        for (int i = 0; i < n; i++)
             if (each.accept(when[i], items[i]))
                 return true;
         return false;
@@ -325,7 +335,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     }
 
     public boolean removeIf(LongObjectPredicate<X> iff) {
-        var s = size();
+        int s = size();
         switch (s) {
             case 0:
                 return false;
@@ -337,8 +347,8 @@ public class LongObjectArraySet<X> extends FasterList<X> {
                     return false;
             default:
 
-                var m = MetalBitSet.bits(s);
-                for (var i = 0; i < s; i++) {
+                MetalBitSet m = MetalBitSet.bits(s);
+                for (int i = 0; i < s; i++) {
                     if (iff.accept(when[i], get(i)))
                         m.set(i);
                 }
@@ -348,12 +358,12 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     }
 
     public final boolean removeAll(int... indices) {
-        var s = size;
+        int s = size;
         return removeAll(MetalBitSet.bits(s).set(indices), s);
     }
 
     private boolean removeAll(MetalBitSet m, int s) {
-        var toRemove = Math.min(m.cardinality(),s);
+        int toRemove = Math.min(m.cardinality(),s);
         if (toRemove == 0)
             return false;
         int next = -1, removed = 0;
@@ -379,7 +389,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
 
     @Override
     public void reverse() {
-        var s = size;
+        int s = size;
         if (s > 1) {
             super.reverse();
             ArrayUtil.reverse(when, 0, s);
@@ -412,7 +422,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     }
 
     public LongIterator longIterator() {
-        var s = size();
+        int s = size();
         switch (s) {
             case 0:
                 return ImmutableEmptyLongIterator.INSTANCE;

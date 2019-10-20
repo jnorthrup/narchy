@@ -29,7 +29,7 @@ public class Solution {
     }
     
     public Solution(Ranking individual){
-        var builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         individual.getNode().describe(builder);
         this.solution = builder.toString();
         this.fitness = individual.getFitness();

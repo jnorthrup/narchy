@@ -67,7 +67,7 @@ public class Lab<X> {
     }
 
     void initDefaults() {
-        final var autoInc_default = 5f;
+        final float autoInc_default = 5f;
         hints.put("autoInc", autoInc_default);
     }
 
@@ -76,7 +76,7 @@ public class Lab<X> {
      */
     public static <X> Object[] record(X x, DataTable data, List<Sensor<X, ?>> sensors) {
         synchronized (data) {
-            var row = row(x, sensors);
+            Object[] row = row(x, sensors);
             data.add(row);
             return row;
         }
@@ -84,14 +84,14 @@ public class Lab<X> {
 
     public static <X> Object[] rowVars(X x, List<Var<X, ?>> vars) {
         List<Sensor<X, ?>> sensors = new FasterList(vars.size());
-        for (var i = 0; i < vars.size(); i++)
+        for (int i = 0; i < vars.size(); i++)
             sensors.add(vars.get(i).sense());
         return row(x, sensors);
     }
 
     public static <X> Object[] row(X x, List<Sensor<X, ?>> sensors) {
-        var row = new Object[sensors.size()];
-        var c = 0;
+        Object[] row = new Object[sensors.size()];
+        int c = 0;
         for (int i = 0, sensorsSize = sensors.size(); i < sensorsSize; i++) {
             row[c++] = sensors.get(i).apply(x);
         }
@@ -121,9 +121,9 @@ public class Lab<X> {
 //        }
 //
 //
-        var unknowns = new TreeSet<String>();
-        for (var t: vars.values()) {
-            var u = t.unknown(hints);
+        TreeSet<String> unknowns = new TreeSet<String>();
+        for (Var<X, ?> t: vars.values()) {
+            List<String> u = t.unknown(hints);
             if (!u.isEmpty())
                 unknowns.addAll(u);
         }
@@ -156,16 +156,26 @@ public class Lab<X> {
      * @param goal
      */
     public Optimize<X, X> optimize(Consumer<X> procedure, Goal<X> goal) {
-        var list = vars.values().stream().filter(Var::ready).collect(toList());
+        List<Var<X, ?>> list = new ArrayList<>();
+        for (Var<X, ?> xVar : vars.values()) {
+            if (xVar.ready()) {
+                list.add(xVar);
+            }
+        }
         return optimize(subject, list,(s -> {
-            var ss = s.get();
+            X ss = s.get();
                     procedure.accept(ss);
                     return ss;
                 }), goal, new FasterList<>(sensors.values()));
     }
 
     public <Y> Optimize<X, Y> optimize(Function<Supplier<X>, Y> procedure, Goal<Y> goal, List<Sensor<Y, ?>> sensors) {
-        var list = vars.values().stream().filter(Var::ready).collect(toList());
+        List<Var<X, ?>> list = new ArrayList<>();
+        for (Var<X, ?> xVar : vars.values()) {
+            if (xVar.ready()) {
+                list.add(xVar);
+            }
+        }
         return optimize(subject, list, procedure, goal, sensors
         );
     }
@@ -177,7 +187,11 @@ public class Lab<X> {
 
     @SafeVarargs
     public final <Y> Optilive<X, Y> optilive(Function<Supplier<X>, Y> procedure, FloatFunction<Y>... goal) {
-        var list = Arrays.stream(goal).map(Goal::new).collect(toList());
+        List<Goal<Y>> list = new ArrayList<>();
+        for (FloatFunction<Y> yFloatFunction : goal) {
+            Goal<Y> yGoal = new Goal<>(yFloatFunction);
+            list.add(yGoal);
+        }
         return optilive(procedure, list, Collections.EMPTY_LIST);
     }
 
@@ -187,13 +201,23 @@ public class Lab<X> {
     }
 
     public <Y> Optilive<X, Y> optilive(Function<Supplier<X>, Y> procedure, List<Goal<Y>> goal, List<Sensor<Y, ?>> sensors) {
-        var list = vars.values().stream().filter(Var::ready).collect(toList());
+        List<Var<X, ?>> list = new ArrayList<>();
+        for (Var<X, ?> xVar : vars.values()) {
+            if (xVar.ready()) {
+                list.add(xVar);
+            }
+        }
         return new Optilive<>(subject, procedure, goal,
                 list, sensors);
     }
 
     public <Y> Optimize<X, Y> optimize(Function<Supplier<X>, Y> procedure, Goal<Y> goal, Lab<Y> sensors) {
-        var list = vars.values().stream().filter(Var::ready).collect(toList());
+        List<Var<X, ?>> list = new ArrayList<>();
+        for (Var<X, ?> xVar : vars.values()) {
+            if (xVar.ready()) {
+                list.add(xVar);
+            }
+        }
         return optimize(subject, list,
                 procedure, goal, new FasterList(sensors.sensors.values())
         );
@@ -244,7 +268,7 @@ public class Lab<X> {
 
 
     public Lab<X> sense(Sensor sensor) {
-        var removed = sensors.put(sensor.id, sensor);
+        Sensor removed = sensors.put(sensor.id, sensor);
         if (removed != null)
             throw new RuntimeException("sensor name collision");
         return this;
@@ -291,7 +315,7 @@ public class Lab<X> {
     public Lab<X> varAuto(DiscoveryFilter filter) {
         return varAuto(filter, (root, path, targetType) -> {
             FastList<Pair<Class, ObjectGraph.Accessor>> p = path.clone();
-            var key = varReflectedKey(p);
+            String key = varReflectedKey(p);
 
 
             varByClass.get(Primitives.wrap(targetType)).learn(root, key, p);
@@ -306,7 +330,7 @@ public class Lab<X> {
     private Lab<X> varAuto(DiscoveryFilter filter, Discovery<X> each) {
 
 
-        var x = (this.subject.get());
+        X x = (this.subject.get());
 
         var o = new ObjectGraph() {
 
@@ -315,7 +339,7 @@ public class Lab<X> {
                 if (this.nodes.containsKey(target))
                     return false;
 
-                var targetType = target.getClass();
+                Class<?> targetType = target.getClass();
                 if (!DiscoveryFilter.includeClass(targetType))
                     return false;
 
@@ -329,7 +353,7 @@ public class Lab<X> {
 
             @Override
             public boolean recurse(Object x) {
-                var xc = x.getClass();
+                Class<?> xc = x.getClass();
                 return DiscoveryFilter.includeClass(xc) && !contains(xc);
             }
 
@@ -345,12 +369,12 @@ public class Lab<X> {
 
             @Override
             public boolean includeField(Field f) {
-                var m = f.getModifiers();
+                int m = f.getModifiers();
                 if (!Modifier.isPublic(m) || !DiscoveryFilter.includeField(f))
                     return false;
 
-                var t = Primitives.wrap(f.getType());
-                var primitive = Primitives.unwrap(f.getType()).isPrimitive();
+                Class<?> t = Primitives.wrap(f.getType());
+                boolean primitive = Primitives.unwrap(f.getType()).isPrimitive();
                 if (contains(t)) {
                     return (!primitive || !Modifier.isFinal(m));
                 } else
@@ -363,7 +387,7 @@ public class Lab<X> {
         SortedSet<String> unknown = validate();
 
         if (!unknown.isEmpty()) {
-            for (var w: unknown) {
+            for (String w: unknown) {
                 logger.warn("unknown: {}", w);
             }
         }
@@ -379,20 +403,20 @@ public class Lab<X> {
      * extract any hints from the path (ex: annotations, etc)
      */
     private void varAuto(String key, FastList<Pair<Class, ObjectGraph.Accessor>> path) {
-        var a = path.getLast().getTwo();
+        ObjectGraph.Accessor a = path.getLast().getTwo();
         if (a instanceof ObjectGraph.FieldAccessor) {
-            var field = ((ObjectGraph.FieldAccessor) a).field;
-            var r = field.getAnnotation(Range.class);
+            Field field = ((ObjectGraph.FieldAccessor) a).field;
+            Range r = field.getAnnotation(Range.class);
             if (r != null) {
-                var min = r.min();
+                double min = r.min();
                 if (min == min)
                     hints.put(key + ".min", (float) min);
 
-                var max = r.max();
+                double max = r.max();
                 if (max == max)
                     hints.put(key + ".max", (float) max);
 
-                var inc = r.step();
+                double inc = r.step();
                 if (inc == inc)
                     hints.put(key + ".inc", (float) inc);
             }
@@ -402,7 +426,7 @@ public class Lab<X> {
 
     public Lab<X> var(String key, Function<X, Integer> get, ObjectIntProcedure<X> apply) {
         return var(key, Float.NaN, Float.NaN, Float.NaN, (x) -> get.apply(x).floatValue() /* HACK */, (x, v) -> {
-            var i = Math.round(v);
+            int i = Math.round(v);
             apply.value(x, i);
             return i;
         });
@@ -412,7 +436,7 @@ public class Lab<X> {
         return var(key, min, max, inc < 0 ? Float.NaN : inc,
             (x) -> get!=null ? get.apply(x).floatValue() : null /* HACK */,
             (x, v) -> {
-                var i = Math.round(v);
+                int i = Math.round(v);
                 apply.value(x, i);
                 return i;
         });
@@ -430,7 +454,7 @@ public class Lab<X> {
     /** TODO use an IntVar impl */
     public Lab<X> var(String id, int min, int max, int inc, ObjectIntProcedure<X> apply) {
         vars.put(id, new FloatVar<>(id, min, max, inc, null, (X x, float v) -> {
-            var vv = Math.round(v);
+            int vv = Math.round(v);
             apply.value(x, vv);
             return vv;
         }));
@@ -484,7 +508,7 @@ public class Lab<X> {
                 var(k, 0, 1, 0.5f,
                         (x)->get.apply(x) ? 1f : 0f,
                         (x, v) -> {
-                            var b = (v >= 0.5f);
+                            boolean b = (v >= 0.5f);
                             set.accept(x, b);
                             return (b) ? 1f : 0f;
                         });
@@ -492,9 +516,9 @@ public class Lab<X> {
 
             AtomicBoolean.class, (sample, k, p) -> {
                 Function<X, AtomicBoolean> get = ObjectGraph.getter(p);
-                var fr = get.apply(sample);
+                AtomicBoolean fr = get.apply(sample);
                 var(k, 0, 1, 0.5f, (x, v) -> {
-                    var b = v >= 0.5f;
+                    boolean b = v >= 0.5f;
                     get.apply(x).set(b);
                     return b ? 1f : 0f;
                 });
@@ -507,7 +531,7 @@ public class Lab<X> {
             },
             IntRange.class, (sample, k, p) -> {
                 Function<X, IntRange> get = ObjectGraph.getter(p);
-                var fr = get.apply(sample);
+                IntRange fr = get.apply(sample);
                 var(k, fr.min, fr.max, -1, null /* TODO */, (ObjectIntProcedure<X>) (x, v) -> get.apply(x).set(v));
             },
 
@@ -525,7 +549,7 @@ public class Lab<X> {
 
             FloatRange.class, (sample, k, p) -> {
                 Function<X, FloatRange> get = ObjectGraph.getter(p);
-                var fr = get.apply(sample);
+                FloatRange fr = get.apply(sample);
                 var(k, fr.min, fr.max, Float.NaN,
                         (x)-> get.apply(x).floatValue(),
                         (x, v) -> {

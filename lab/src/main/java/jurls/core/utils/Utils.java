@@ -23,8 +23,13 @@ public class Utils {
     }
 
     public static String makeIndent(int n) {
-        var result = IntStream.range(0, n).mapToObj(i -> " ").collect(Collectors.joining());
-        var sb = result;
+        StringBuilder sb1 = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            String s = " ";
+            sb1.append(s);
+        }
+        String result = sb1.toString();
+        String sb = result;
         return sb;
     }
 
@@ -34,11 +39,11 @@ public class Utils {
     }
 
     public static ActionValuePair v(ParameterizedFunction f, double[] stateAction, double[] state, int num) {
-        var max = Double.NEGATIVE_INFINITY;
-        var maxa = 0;
+        double max = Double.NEGATIVE_INFINITY;
+        int maxa = 0;
 
-        for (var i = 0; i < num; ++i) {
-            var _q = q(f, stateAction, state, i);
+        for (int i = 0; i < num; ++i) {
+            double _q = q(f, stateAction, state, i);
             if (_q > max) {
                 max = _q;
                 maxa = i;
@@ -49,7 +54,11 @@ public class Utils {
     }
 
     public static double lengthSquare(double[] v) {
-        var s = Arrays.stream(v).map(x -> x * x).sum();
+        double s = 0.0;
+        for (double x : v) {
+            double v1 = x * x;
+            s += v1;
+        }
         return s;
     }
 
@@ -60,7 +69,7 @@ public class Utils {
     public static int checkAction(int numActions, double[] behaviourLearnerOutput) {
         assert behaviourLearnerOutput.length == 1;
 
-        var action = (int) Math.round(behaviourLearnerOutput[0]);
+        int action = (int) Math.round(behaviourLearnerOutput[0]);
         if (action >= numActions) {
             action = numActions - 1;
         }
@@ -72,7 +81,7 @@ public class Utils {
     }
 
     public static void multiplySelf(double[] dest, double source) {
-        for (var i = 0; i < dest.length; ++i) {
+        for (int i = 0; i < dest.length; ++i) {
             dest[i] *= source;
         }
     }

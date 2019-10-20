@@ -65,7 +65,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
         if (initialCapacity < 0) {
             throw new IllegalArgumentException("initial capacity cannot be less than 0");
         } else {
-            var capacity = MyShortIntHashMap.smallestPowerOfTwoGreaterThan(initialCapacity << 1);
+            int capacity = MyShortIntHashMap.smallestPowerOfTwoGreaterThan(initialCapacity << 1);
             this.allocateTable(capacity);
         }
     }
@@ -80,11 +80,11 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
                 sentinelValues.oneValue += d;
         }
 
-        for (var i = 0; i < this.keys.length; ++i) {
-            var key = this.keys[i];
+        for (int i = 0; i < this.keys.length; ++i) {
+            short key = this.keys[i];
             if (isNonSentinel(key)) {
-                var index = this.probe(key);
-                var keyAtIndex = this.keys[index];
+                int index = this.probe(key);
+                short keyAtIndex = this.keys[index];
                 if (keyAtIndex == key) {
                     this.values[index] += d;
                 }
@@ -94,11 +94,11 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
     }
 
     public void filter(IntPredicate toKeep) {
-        var ss = size();
+        int ss = size();
         if (ss == 0)
             return;
 
-        var sv = this.sentinelValues;
+        SentinelValues sv = this.sentinelValues;
         if (sv != null && sv.containsZeroKey) {
             if (!toKeep.accept(sv.zeroValue)) {
                 removeKey((short) 0);
@@ -113,19 +113,19 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
         }
 
 
-        var tmp = new ShortArrayList(ss / 2 /* ESTIMATE */);
+        ShortArrayList tmp = new ShortArrayList(ss / 2 /* ESTIMATE */);
 
-        var keys = this.keys;
-        var sizeBefore = keys.length;
-        var values = this.values;
-        for (var i = 0; i < sizeBefore; ++i) {
-            var k = keys[i];
+        short[] keys = this.keys;
+        int sizeBefore = keys.length;
+        int[] values = this.values;
+        for (int i = 0; i < sizeBefore; ++i) {
+            short k = keys[i];
             if (isNonSentinel(k) && !toKeep.accept(values[i])) {
                 tmp.add(k);
             }
         }
 
-        var s = tmp.size();
+        int s = tmp.size();
         if (s > 0) {
             tmp.forEach(this::removeKey);
         }
@@ -164,13 +164,13 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
 
     @Override
     public boolean isEmpty() {
-        var s = this.sentinelValues;
+        SentinelValues s = this.sentinelValues;
         return this.occupiedWithData == 0 && (s == null || s.size() == 0);
     }
 
     @Override
     public final int size() {
-        var s = this.sentinelValues;
+        SentinelValues s = this.sentinelValues;
         return this.occupiedWithData + (s == null ? 0 : s.size());
     }
 
@@ -233,7 +233,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
     }
 
     public int hashCode() {
-        var result = 0;
+        int result = 0;
         if (this.sentinelValues != null) {
             if (this.sentinelValues.containsZeroKey) {
                 result += this.sentinelValues.zeroValue;
@@ -244,17 +244,23 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
             }
         }
 
-        var bound = this.keys.length;
-        var sum = IntStream.range(0, bound).filter(i -> isNonSentinel(this.keys[i])).map(i -> this.keys[i] ^ this.values[i]).sum();
+        int bound = this.keys.length;
+        int sum = 0;
+        for (int i = 0; i < bound; i++) {
+            if (isNonSentinel(this.keys[i])) {
+                int i1 = this.keys[i] ^ this.values[i];
+                sum += i1;
+            }
+        }
         result += sum;
 
         return result;
     }
 
     public String toString() {
-        var appendable = new StringBuilder();
+        StringBuilder appendable = new StringBuilder();
         appendable.append('{');
-        var first = true;
+        boolean first = true;
         if (this.sentinelValues != null) {
             if (this.sentinelValues.containsZeroKey) {
                 appendable.append(0).append('=').append(this.sentinelValues.zeroValue);
@@ -271,8 +277,8 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
             }
         }
 
-        for (var i = 0; i < this.keys.length; ++i) {
-            var key = this.keys[i];
+        for (int i = 0; i < this.keys.length; ++i) {
+            short key = this.keys[i];
             if (isNonSentinel(key)) {
                 if (!first) {
                     appendable.append(", ");
@@ -333,8 +339,8 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
         } else if (isRemovedKey(key)) {
             this.putForRemovedSentinel(value);
         } else {
-            var index = this.probe(key);
-            var keyAtIndex = this.keys[index];
+            int index = this.probe(key);
+            short keyAtIndex = this.keys[index];
             if (keyAtIndex == key) {
                 this.values[index] = value;
             } else {
@@ -414,7 +420,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
                 this.removeRemovedKey();
             }
         } else {
-            var index = this.probe(key);
+            int index = this.probe(key);
             if (this.keys[index] == key) {
                 this.removeKeyAtIndex(index);
             }
@@ -449,7 +455,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
         } else {
             index = this.probe(key);
             if (this.keys[index] == key) {
-                var oldValue = this.values[index];
+                int oldValue = this.values[index];
                 this.removeKeyAtIndex(index);
                 return oldValue;
             } else {
@@ -461,7 +467,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
     @Override
     public int getIfAbsentPut(short key, int value) {
         if (isEmptyKey(key)) {
-            var sv1 = this.sentinelValues;
+            SentinelValues sv1 = this.sentinelValues;
             if (sv1 == null) {
                 this.sentinelValues = newSentinel();
                 this.addEmptyKeyValue(value);
@@ -484,7 +490,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
                 return value;
             }
         } else {
-            var index = this.probe(key);
+            int index = this.probe(key);
             if (this.keys[index] == key) {
                 return this.values[index];
             } else {
@@ -533,7 +539,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
             if (this.keys[index] == key) {
                 return this.values[index];
             } else {
-                var value = function.value();
+                int value = function.value();
                 this.addKeyValueAtIndex(key, value, index);
                 return value;
             }
@@ -574,7 +580,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
             if (this.keys[index] == key) {
                 return this.values[index];
             } else {
-                var value = function.intValueOf(parameter);
+                int value = function.intValueOf(parameter);
                 this.addKeyValueAtIndex(key, value, index);
                 return value;
             }
@@ -615,7 +621,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
             if (this.keys[index] == key) {
                 return this.values[index];
             } else {
-                var value = function.valueOf(key);
+                int value = function.valueOf(key);
                 this.addKeyValueAtIndex(key, value, index);
                 return value;
             }
@@ -647,7 +653,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
 
             return this.sentinelValues.oneValue;
         } else {
-            var index = this.probe(key);
+            int index = this.probe(key);
             if (this.keys[index] == key) {
                 this.values[index] += toBeAdded;
             } else {
@@ -687,7 +693,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
     }
 
     private void copyKeys() {
-        var copy = new short[this.keys.length];
+        short[] copy = new short[this.keys.length];
         System.arraycopy(this.keys, 0, copy, 0, this.keys.length);
         this.keys = copy;
         this.copyKeysOnWrite = false;
@@ -723,12 +729,12 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
 
             return this.sentinelValues.oneValue;
         } else {
-            var index = this.probe(key);
+            int index = this.probe(key);
             if (this.keys[index] == key) {
                 this.values[index] = function.valueOf(this.values[index]);
                 return this.values[index];
             } else {
-                var value = function.valueOf(initialValueIfAbsent);
+                int value = function.valueOf(initialValueIfAbsent);
                 this.addKeyValueAtIndex(key, value, index);
                 return value;
             }
@@ -826,15 +832,15 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
     }
 
     private int slowGetIfAbsent(short key, int ifAbsent) {
-        var index = this.probe(key);
+        int index = this.probe(key);
         return this.keys[index] == key ? this.values[index] : ifAbsent;
     }
 
     private int fastGetIfAbsent(short key, int ifAbsent) {
-        var index = this.mask(key);
+        int index = this.mask(key);
 
-        for (var i = 0; i < 16; ++i) {
-            var keyAtIndex = this.keys[index];
+        for (int i = 0; i < 16; ++i) {
+            short keyAtIndex = this.keys[index];
             if (keyAtIndex == key) {
                 return this.values[index];
             }
@@ -850,7 +856,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
     }
 
     private int slowGetIfAbsentTwo(short key, int ifAbsent) {
-        var index = this.probeTwo(key, -1);
+        int index = this.probeTwo(key, -1);
         return this.keys[index] == key ? this.values[index] : ifAbsent;
     }
 
@@ -869,7 +875,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
                 throw new IllegalStateException("Key " + key + " not present.");
             }
         } else {
-            var index = this.probe(key);
+            int index = this.probe(key);
             if (isNonSentinel(this.keys[index])) {
                 return this.values[index];
             } else {
@@ -885,7 +891,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
 
     @Override
     public void forEachKey(ShortProcedure procedure) {
-        var s = this.sentinelValues;
+        SentinelValues s = this.sentinelValues;
         if (s != null) {
             if (s.containsZeroKey) {
                 procedure.value((short) 0);
@@ -896,10 +902,10 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
             }
         }
 
-        var kk = this.keys;
-        var l = kk.length;
-        for (var i = 0; i < l; ++i) {
-            var k = kk[i];
+        short[] kk = this.keys;
+        int l = kk.length;
+        for (int i = 0; i < l; ++i) {
+            short k = kk[i];
             if (isNonSentinel(k)) {
                 procedure.value(k);
             }
@@ -909,7 +915,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
 
     @Override
     public void forEachKeyValue(ShortIntProcedure procedure) {
-        var s = this.sentinelValues;
+        SentinelValues s = this.sentinelValues;
         if (s != null) {
             if (s.containsZeroKey) {
                 procedure.value((short) 0, s.zeroValue);
@@ -920,11 +926,11 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
             }
         }
 
-        var kk = this.keys;
-        var values = this.values;
-        var l = kk.length;
-        for (var i = 0; i < l; ++i) {
-            var key = kk[i];
+        short[] kk = this.keys;
+        int[] values = this.values;
+        int l = kk.length;
+        for (int i = 0; i < l; ++i) {
+            short key = kk[i];
             if (isNonSentinel(key)) {
                 procedure.value(key, values[i]);
             }
@@ -1034,14 +1040,14 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
     }
 
     private void rehash(int newCapacity) {
-        var oldLength = this.keys.length;
-        var old = this.keys;
-        var oldValues = this.values;
+        int oldLength = this.keys.length;
+        short[] old = this.keys;
+        int[] oldValues = this.values;
         this.allocateTable(newCapacity);
         this.occupiedWithData = 0;
         this.occupiedWithSentinels = 0;
 
-        for (var i = 0; i < oldLength; ++i) {
+        for (int i = 0; i < oldLength; ++i) {
             if (isNonSentinel(old[i])) {
                 this.put(old[i], oldValues[i]);
             }
@@ -1051,18 +1057,18 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
 
     int probe(short element)
     {
-        var index = this.mask(element);
-        var keyAtIndex = this.keys[index];
+        int index = this.mask(element);
+        short keyAtIndex = this.keys[index];
 
         if (keyAtIndex == element || keyAtIndex == EMPTY_KEY)
         {
             return index;
         }
 
-        var removedIndex = keyAtIndex == REMOVED_KEY ? index : -1;
-        for (var i = 1; i < INITIAL_LINEAR_PROBE; i++)
+        int removedIndex = keyAtIndex == REMOVED_KEY ? index : -1;
+        for (int i = 1; i < INITIAL_LINEAR_PROBE; i++)
         {
-            var nextIndex = (index + i) & (this.keys.length - 1);
+            int nextIndex = (index + i) & (this.keys.length - 1);
             keyAtIndex = this.keys[nextIndex];
             if (keyAtIndex == element)
             {
@@ -1081,14 +1087,14 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
     }
 
     int probeTwo(short element, int removedIndex) {
-        var index = this.spreadTwoAndMask(element);
-        var keys = this.keys;
-        var kl = keys.length;
+        int index = this.spreadTwoAndMask(element);
+        short[] keys = this.keys;
+        int kl = keys.length;
 
-        for (var i = 0; i < 16; ++i) {
+        for (int i = 0; i < 16; ++i) {
 
-            var nextIndex = index + i & kl - 1;
-            var keyAtIndex = keys[nextIndex];
+            int nextIndex = index + i & kl - 1;
+            short keyAtIndex = keys[nextIndex];
             if (keyAtIndex == element) {
                 return nextIndex;
             }
@@ -1106,15 +1112,15 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
     }
 
     int probeThree(short element, int removedIndex) {
-        var nextIndex = SpreadFunctions.shortSpreadOne(element);
-        var spreadTwo = Integer.reverse(SpreadFunctions.shortSpreadTwo(element)) | 1;
+        int nextIndex = SpreadFunctions.shortSpreadOne(element);
+        int spreadTwo = Integer.reverse(SpreadFunctions.shortSpreadTwo(element)) | 1;
 
-        var keys = this.keys;
+        short[] keys = this.keys;
 
         while (true) {
             nextIndex = this.mask(nextIndex + spreadTwo);
 
-            var keyAtIndex = keys[nextIndex];
+            short keyAtIndex = keys[nextIndex];
             if (keyAtIndex == element) {
                 return nextIndex;
             }
@@ -1130,12 +1136,12 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
     }
 
     int spreadAndMask(short element) {
-        var code = SpreadFunctions.shortSpreadOne(element);
+        int code = SpreadFunctions.shortSpreadOne(element);
         return this.mask(code);
     }
 
     int spreadTwoAndMask(short element) {
-        var code = SpreadFunctions.shortSpreadTwo(element);
+        int code = SpreadFunctions.shortSpreadTwo(element);
         return this.mask(code);
     }
 
@@ -1168,7 +1174,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
 
     @Override
     protected boolean isNonSentinelAtIndex(int index) {
-        var k = this.keys[index];
+        short k = this.keys[index];
         return isNonSentinel(keys[index]);
     }
 
@@ -1196,7 +1202,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
     }
 
     public float density() {
-        var kl = capacity();
+        int kl = capacity();
         return kl == 0 ? 0 : size() / ((float) kl);
     }
 
@@ -1228,7 +1234,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
                 }
             }
 
-            for (var i = 0; i < MyShortIntHashMap.this.keys.length; ++i) {
+            for (int i = 0; i < MyShortIntHashMap.this.keys.length; ++i) {
                 if (MyShortIntHashMap.isNonSentinel(MyShortIntHashMap.this.keys[i])) {
                     procedure.value(PrimitiveTuples.pair(MyShortIntHashMap.this.keys[i], MyShortIntHashMap.this.values[i]));
                 }
@@ -1238,7 +1244,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
 
         @Override
         public void forEachWithIndex(ObjectIntProcedure<? super ShortIntPair> objectIntProcedure) {
-            var index = 0;
+            int index = 0;
             if (MyShortIntHashMap.this.sentinelValues != null) {
                 if (MyShortIntHashMap.this.sentinelValues.containsZeroKey) {
                     objectIntProcedure.value(PrimitiveTuples.pair((short) 0, MyShortIntHashMap.this.sentinelValues.zeroValue), index);
@@ -1251,7 +1257,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
                 }
             }
 
-            for (var i = 0; i < MyShortIntHashMap.this.keys.length; ++i) {
+            for (int i = 0; i < MyShortIntHashMap.this.keys.length; ++i) {
                 if (MyShortIntHashMap.isNonSentinel(MyShortIntHashMap.this.keys[i])) {
                     objectIntProcedure.value(PrimitiveTuples.pair(MyShortIntHashMap.this.keys[i], MyShortIntHashMap.this.values[i]), index);
                     ++index;
@@ -1272,7 +1278,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
                 }
             }
 
-            for (var i = 0; i < MyShortIntHashMap.this.keys.length; ++i) {
+            for (int i = 0; i < MyShortIntHashMap.this.keys.length; ++i) {
                 if (MyShortIntHashMap.isNonSentinel(MyShortIntHashMap.this.keys[i])) {
                     procedure.value(PrimitiveTuples.pair(MyShortIntHashMap.this.keys[i], MyShortIntHashMap.this.values[i]), parameter);
                 }
@@ -1318,7 +1324,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
                     for (keys = MyShortIntHashMap.this.keys; !MyShortIntHashMap.isNonSentinel(keys[this.position]); ++this.position) {
                     }
 
-                    var result = PrimitiveTuples.pair(keys[this.position], MyShortIntHashMap.this.values[this.position]);
+                    ShortIntPair result = PrimitiveTuples.pair(keys[this.position], MyShortIntHashMap.this.values[this.position]);
                     ++this.position;
                     return result;
                 }
@@ -1566,7 +1572,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
                 }
 
                 this.lastKey = keys[this.position];
-                var result = MyShortIntHashMap.this.values[this.position];
+                int result = MyShortIntHashMap.this.values[this.position];
                 ++this.position;
                 return result;
             }
@@ -1607,8 +1613,8 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
         }
 
         public boolean containsValue(int value) {
-            var valueEqualsZeroValue = this.containsZeroKey && this.zeroValue == value;
-            var valueEqualsOneValue = this.containsOneKey && this.oneValue == value;
+            boolean valueEqualsZeroValue = this.containsZeroKey && this.zeroValue == value;
+            boolean valueEqualsOneValue = this.containsOneKey && this.oneValue == value;
             return valueEqualsZeroValue || valueEqualsOneValue;
         }
 

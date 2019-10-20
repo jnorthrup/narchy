@@ -34,7 +34,7 @@ public class Word extends Terminal {
 	 */
 	@Override
 	protected boolean qualifies(Object o) {
-		var t = (Token) o;
+        Token t = (Token) o;
 		return t.isWord();
 	}
 
@@ -43,11 +43,11 @@ public class Word extends Terminal {
 	 */
 	@Override
 	public List<String> randomExpansion(int maxDepth, int depth) {
-		var n = (int) (5.0 * Math.random()) + 3;
+        int n = (int) (5.0 * Math.random()) + 3;
 
-		var letters = new char[n];
-		for (var i = 0; i < n; i++) {
-			var c = (int) (26.0 * Math.random()) + 'a';
+        char[] letters = new char[n];
+		for (int i = 0; i < n; i++) {
+            int c = (int) (26.0 * Math.random()) + 'a';
 			letters[i] = workOnCharForRandomExpansion((char) c, i);
 		}
 

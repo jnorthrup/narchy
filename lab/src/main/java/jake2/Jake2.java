@@ -67,10 +67,10 @@ public final class Jake2 {
     }
 
     public static void run(String[] args, @Nullable Consumer<GL> onFrame) {
-        var dedicated = false;
+        boolean dedicated = false;
 
         
-        for (var n = 0; n <  args.length; n++)
+        for (int n = 0; n <  args.length; n++)
         {
             if ("+setAt".equals(args[n]))
             {
@@ -105,8 +105,8 @@ public final class Jake2 {
         }
 
 
-        var argc = (args == null) ? 1 : args.length + 1;
-        var c_args = new String[argc];
+        int argc = (args == null) ? 1 : args.length + 1;
+        String[] c_args = new String[argc];
         c_args[0] = "Jake2";
         if (argc > 1) {
             System.arraycopy(args, 0, c_args, 1, argc - 1);
@@ -116,11 +116,11 @@ public final class Jake2 {
         Globals.nostdout = Cvar.Get("nostdout", "0", 0);
 
 
-        var oldtime = Timer.Milliseconds();
+        int oldtime = Timer.Milliseconds();
         while (true) {
 
-            var newtime = Timer.Milliseconds();
-            var time = newtime - oldtime;
+            int newtime = Timer.Milliseconds();
+            int time = newtime - oldtime;
 
             if (time > 0)
                 Qcommon.Frame(time);

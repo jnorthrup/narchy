@@ -346,7 +346,7 @@ public class GameTrigger {
             if (activator.client == null)
                 return;
 
-            var index = GameItems.ITEM_INDEX(self.item);
+            int index = GameItems.ITEM_INDEX(self.item);
             if (activator.client.pers.inventory[index] == 0) {
                 if (GameBase.level.time < self.touch_debounce_time)
                     return;

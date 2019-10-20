@@ -88,7 +88,7 @@ public class Actions {
     public static void makeMap() {
         actionsMap = new HashMap<>();
         
-        for (var i = 0; i < actionNames.length; i++) {
+        for (int i = 0; i < actionNames.length; i++) {
             int v;
 
             if (i < numPlayerActions * 2) v = i;

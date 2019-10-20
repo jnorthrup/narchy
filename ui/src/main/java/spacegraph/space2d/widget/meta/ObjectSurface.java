@@ -39,12 +39,12 @@ import static java.util.stream.Collectors.toList;
  */
 public class ObjectSurface extends MutableUnitContainer<Surface> {
 
-    public static final AutoBuilder.AutoBuilding<Object, Surface> DefaultObjectSurfaceBuilder = (@Nullable var ctx, var target, @Nullable var obj) -> {
+    public static final AutoBuilder.AutoBuilding<Object, Surface> DefaultObjectSurfaceBuilder = (@Nullable Object ctx, List<Pair<Object, Iterable<Surface>>> target, @Nullable Object obj) -> {
 
         List<Surface> outer = new FasterList(0, EmptySurfaceArray);
 
-        for (var p : target) {
-            var l = collectionSurface(Streams.stream(p.getTwo()).filter(Objects::nonNull).collect(toList()));
+        for (Pair<Object, Iterable<Surface>> p : target) {
+            Surface l = collectionSurface(Streams.stream(p.getTwo()).filter(Objects::nonNull).collect(toList()));
             if (l!=null)
                 outer.add(l);
         }
@@ -55,7 +55,7 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
 
     private static @Nullable Surface collectionSurface(List<Surface> x) {
         Surface y = null;
-        var xs = x.size();
+        int xs = x.size();
         switch (xs) {
             case 0:
                 return null; //TODO shouldnt happen
@@ -190,20 +190,20 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
             //return SupplierPort.button(relationLabel(relation), ()-> {
 
 
-                for (var cxx : cx) {
+                for (Object cxx : cx) {
                     if (cxx == null)
                         continue;
 
-                    var yyy = build(cxx);
+                    Surface yyy = build(cxx);
                     if (yyy != null)
                         yy.add(yyy); //TODO depth, parent, ..
                 }
                 if (yy.isEmpty())
                     return null;
 
-            var xx = collectionSurface(yy);
+            Surface xx = collectionSurface(yy);
 
-            var l = relationLabel(relation);
+            String l = relationLabel(relation);
 
                 if (!l.isEmpty())
                     return LabeledPane.the(l, xx);
@@ -381,7 +381,7 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
         @Override
         protected void renderContent(ReSurface r) {
             //TODO configurable rate
-            var autoUpdate = true;
+            boolean autoUpdate = true;
             if (autoUpdate) {
                 slider.set(this.get.asFloat());
             }

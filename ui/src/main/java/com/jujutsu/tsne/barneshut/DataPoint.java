@@ -22,9 +22,9 @@ public class DataPoint extends ArrayRealVector {
 	
 	@Override
 	public String toString() {
-		var xStr = new StringBuilder();
-		var c = min(20, getDimension());
-		for (var i = 0; i < c; i++) {
+        StringBuilder xStr = new StringBuilder();
+        int c = min(20, getDimension());
+		for (int i = 0; i < c; i++) {
 			xStr.append(getEntry(i)).append(", ");
 		}
 		return xStr.append("DataPoint (index=").append(_ind).append(", Dim=").append(_D).append(", point=").append(xStr).append(')').toString();

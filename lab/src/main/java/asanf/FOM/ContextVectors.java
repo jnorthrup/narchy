@@ -18,7 +18,7 @@ public class ContextVectors<E> extends DTMatrix<E> implements Iterable<E> {
     public ContextVectors(Collection<E> terms) {
         super(terms.size());
 
-        for (var term : terms)
+        for (E term : terms)
             setValue(term, 1);
     }
 
@@ -32,7 +32,7 @@ public class ContextVectors<E> extends DTMatrix<E> implements Iterable<E> {
      * @brief iteratore sui termini
      */
     public ArrayList<E> getConcepts() {
-        var filteredConcepts = new ArrayList<E>();
+        ArrayList<E> filteredConcepts = new ArrayList<E>();
         terms.forEachKey(concept -> {
             if (getValue(concept) >= 0)
                 filteredConcepts.add(concept);
@@ -68,22 +68,22 @@ public class ContextVectors<E> extends DTMatrix<E> implements Iterable<E> {
 
     public void normalizeMemberships() {
         int i;
-        var concepts = getConcepts();
+        ArrayList<E> concepts = getConcepts();
         double min = 100000, max = -100000;
 
-        for (var concept : concepts) {
+        for (E concept : concepts) {
             i = index(concept);
-            for (var j = 0; j < this.values[i].length - 1; j++) {
+            for (int j = 0; j < this.values[i].length - 1; j++) {
                 if (values[i][j] < min) min = values[i][j];
                 if (values[i][j] > max) max = values[i][j];
             }
         }
 
 
-        for (var concept : concepts) {
+        for (E concept : concepts) {
             i = index(concept);
 
-            for (var j = 0; j < this.values[i].length - 1; j++) {
+            for (int j = 0; j < this.values[i].length - 1; j++) {
                 values[i][j] = (values[i][j] - min) / (max - min);
             }
         }
@@ -91,7 +91,7 @@ public class ContextVectors<E> extends DTMatrix<E> implements Iterable<E> {
     }
 
     public String toString() {
-        var toRet = new StringBuilder();
+        StringBuilder toRet = new StringBuilder();
         terms.forEachKey(t1 -> {
 
             toRet.append(t1 + ": ");

@@ -95,8 +95,8 @@ public class WorkerExec extends ThreadedExec {
 		 * updated each system dur
 		 */
 		private DeriverExecutor deriver() {
-			var d = this.deriver;
-			var systemDeriver = nar.exe.deriver;
+            DeriverExecutor d = this.deriver;
+            Deriver systemDeriver = nar.exe.deriver;
 			return systemDeriver != null && (d == null || d.deriver != systemDeriver) ?
 				(this.deriver = new DeriverExecutor.QueueDeriverExecutor(systemDeriver)) : //deriver has changed; create new executor
 				d;
@@ -108,44 +108,44 @@ public class WorkerExec extends ThreadedExec {
 
 			//Histogram loopTime = new Histogram(30_000, loopNS_recorded_max, 3);
 			//loopTime.recordValue(loopNS_recorded_max);
-			var loopTime = new FloatAveragedWindow(8, 0.5f, false).mode(FloatAveragedWindow.Mode.Mean);
+            FloatAveragedWindow loopTime = new FloatAveragedWindow(8, 0.5f, false).mode(FloatAveragedWindow.Mode.Mean);
 			loopTime.fill(loopNS_recorded_max);
 
-			var loop = nar.loop;
+            NARLoop loop = nar.loop;
 
 			while (alive.getOpaque()) {
 
 				concurrency = Math.max(1,nar.exe.concurrency());
-				var cycleTimeNS = loop.cycleTimeNS;
+                long cycleTimeNS = loop.cycleTimeNS;
 
-				var cycleStart = System.nanoTime();
+                long cycleStart = System.nanoTime();
 
 				work();
 
-				var cycleRemaining = cycleTimeNS - (System.nanoTime() - cycleStart);
+                long cycleRemaining = cycleTimeNS - (System.nanoTime() - cycleStart);
 				if (cycleRemaining < 0)
 					continue; //worked until next morning so start again
 
-				var running = loop.isRunning();
-				var throttle = running ? loop.throttle.floatValue() : 0;
+                boolean running = loop.isRunning();
+                float throttle = running ? loop.throttle.floatValue() : 0;
 				if (throttle < 1) {
 					cycleRemaining = sleep(throttle, cycleTimeNS, cycleStart, cycleRemaining);
 					if (cycleRemaining < 0 || !running)
 						continue; //slept all day
 				}
 
-				var d = deriver();
+                DeriverExecutor d = deriver();
 				if (d == null) continue;
 
-				var ww = nar.what;
-				var N = ww.size();
+                PartBag<What> ww = nar.what;
+                int N = ww.size();
 				if (N == 0) continue;
 
 				float whatGranularity = 1; //increase what slicing
 
-				var meanLoopTimeNS = loopTime.mean(); //getMean();
+                double meanLoopTimeNS = loopTime.mean(); //getMean();
 				int maxWhatLoops;
-				var minWhatLoops = 2;
+                int minWhatLoops = 2;
 				int loopsPlanned;
 				if (loopTime.mean() < 1) {
 					//TODO this means it has been measuring empty loops, add some safety limit
@@ -157,18 +157,18 @@ public class WorkerExec extends ThreadedExec {
 
 				//StringBuilder y = new StringBuilder();
 
-				var loopsRemain = loopsPlanned;
+                int loopsRemain = loopsPlanned;
 
-				var beforePlay = System.nanoTime();
+                long beforePlay = System.nanoTime();
 
 				while (loopsRemain > 0) {
 
-					var w = ww.get(rng);
+                    What w = ww.get(rng);
 					if (w == null)  break;
-					var p = w.priElseZero();
+                    float p = w.priElseZero();
 //					if (p < ScalarValue.EPSILON) continue; //HACK
 
-					var loops = Math.min(loopsRemain, (int) Util.lerpSafe(p / ww.mass(), minWhatLoops, maxWhatLoops));
+                    int loops = Math.min(loopsRemain, (int) Util.lerpSafe(p / ww.mass(), minWhatLoops, maxWhatLoops));
 					loopsRemain -= loops;
 
 					d.next(w, loops);
@@ -176,9 +176,9 @@ public class WorkerExec extends ThreadedExec {
 					//work();
 				}
 
-				var playTimeNS = System.nanoTime() - beforePlay;
+                long playTimeNS = System.nanoTime() - beforePlay;
 				//totalPlayTimeNS += playTimeNS;
-				var loopsRun = loopsPlanned - loopsRemain;
+                int loopsRun = loopsPlanned - loopsRemain;
 				if (loopsRun > 0)
 					loopTime.next/*recordValue*/(/*Math.min(loopNS_recorded_max,*/ (((float)playTimeNS)/ loopsRun));
 
@@ -187,19 +187,19 @@ public class WorkerExec extends ThreadedExec {
 
 		public long sleep(float throttle, long cycleTimeNS, long cycleStart, long cycleRemaining) {
 			//sleep at most until next cycle
-			var cycleSleepNS = Math.min(cycleRemaining, (int)(cycleTimeNS * (1.0-throttle)));
+            long cycleSleepNS = Math.min(cycleRemaining, (int)(cycleTimeNS * (1.0-throttle)));
 			Util.sleepNSwhile(cycleSleepNS, naptime, ()->{
 				work();
 				return true;
 			});
-			var afterSleep = System.nanoTime();
+            long afterSleep = System.nanoTime();
 			cycleRemaining = cycleTimeNS - (afterSleep - cycleStart);
 			return cycleRemaining;
 		}
 
 		protected void work() {
 
-			var batchSize = -1;
+            int batchSize = -1;
 			Object next;
 
 			while ((next = in.poll()) != null) {

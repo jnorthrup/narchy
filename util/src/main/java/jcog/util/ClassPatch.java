@@ -35,13 +35,13 @@ public class ClassPatch {
     public static void main(String[] args) throws Exception {
 
 
-        var parentClassLoader =
+        ClassLoader parentClassLoader =
                 
                 Thread.currentThread().getContextClassLoader();
 
 
-        var entryClass = ClassPatch.class.getName();
-        var overrides = Map.of(
+        String entryClass = ClassPatch.class.getName();
+        Map<String, byte[]> overrides = Map.of(
             entryClass,
                 new ByteBuddy().with(TypeValidation.DISABLED)
                 
@@ -67,7 +67,7 @@ public class ClassPatch {
 
             System.out.println(Arrays.toString(mainClass.getMethods()));
 
-            var main = mainClass.getMethod("main2", String[].class);
+            Method main = mainClass.getMethod("main2", String[].class);
 
             main.invoke(null, new Object[] {ArrayUtil.EMPTY_STRING_ARRAY});
         }

@@ -93,14 +93,14 @@ public enum SetFunc {
 
             @Override
             protected Term compute(Term x, Term param) {
-                var n = x.subs();
+                int n = x.subs();
                 if (n < 2)
                     return Null; 
 
                 if (x.hasAny(Op.Variable))
                     return null;
 
-                var l = new FasterList<Term>(n);
+                FasterList<Term> l = new FasterList<Term>(n);
                 l.addingAll(x.subterms().arrayShared());
                 Comparator<Term> cmp;
                 if (param instanceof Atomic && !param.hasVars()) {
@@ -123,16 +123,16 @@ public enum SetFunc {
 
                 
                 if (!y.hasVars() && x.vars() == 1) {
-                    var xx = x.subterms();
-                    var yy = y.subterms();
+                    Subterms xx = x.subterms();
+                    Subterms yy = y.subterms();
                     List<Term> missing = new FasterList(1);
-                    for (var sy : yy) {
+                    for (Term sy : yy) {
                         if (!xx.contains(sy)) {
                             missing.add(sy);
                         }
                     }
                     if (missing.size() == 1) {
-                        var xxx = xx.terms((n, xs) -> xs.op().var);
+                        Term[] xxx = xx.terms((n, xs) -> xs.op().var);
                         if (xxx.length == 1) {
                             return e.is(xxx[0], missing.get(0)) ? null : Null;
                         }
@@ -166,13 +166,13 @@ public enum SetFunc {
         @Override
         public @Nullable Term applyInline(Subterms x) {
 
-            var a = x.sub(0);
+            Term a = x.sub(0);
 //            if (a instanceof Variable)
 //                return null;
             if (!validOp(a.op()))
                 return Null;
 
-            var b = x.sub(1);
+            Term b = x.sub(1);
 //            if (b instanceof Variable)
 //                return null;
             if (!validOp(b.op()))

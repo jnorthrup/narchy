@@ -60,7 +60,7 @@ public class Constant extends Leaf<String> {
 
     @Override
     public Leaf cloneTree() {
-        var clone = new Constant(this);
+        Constant clone = new Constant(this);
         return clone;
     }
 

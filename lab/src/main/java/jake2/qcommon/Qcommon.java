@@ -112,7 +112,7 @@ public final class Qcommon extends Globals {
 			Globals.logfile_active= Cvar.Get("logfile", "0", 0);
 			Globals.showtrace= Cvar.Get("showtrace", "0", 0);
 			Globals.dedicated= Cvar.Get("dedicated", "0", CVAR_NOSET);
-			var s = Com.sprintf("%4.2f %s %s %s",
+            String s = Com.sprintf("%4.2f %s %s %s",
 					new Vargs(4)
 						.add(Globals.VERSION)
 						.add(CPUSTRING)
@@ -234,7 +234,7 @@ public final class Qcommon extends Globals {
 
 			Cbuf.Execute();
 
-			var time_before= 0;
+            int time_before= 0;
 
             if (Globals.host_speeds.value != 0.0f)
 				time_before= Timer.Milliseconds();
@@ -242,7 +242,7 @@ public final class Qcommon extends Globals {
 			Com.debugContext = "SV:";
 			SV_MAIN.SV_Frame(msec);
 
-			var time_between = 0;
+            int time_between = 0;
             if (Globals.host_speeds.value != 0.0f)
 				time_between= Timer.Milliseconds();
 			
@@ -250,13 +250,13 @@ public final class Qcommon extends Globals {
 			CL.Frame(msec);
 
 			if (Globals.host_speeds.value != 0.0f) {
-				var time_after = Timer.Milliseconds();
+                int time_after = Timer.Milliseconds();
 
-				var all= time_after - time_before;
-				var sv= time_between - time_before;
-				var cl= time_after - time_between;
-				var gm= Globals.time_after_game - Globals.time_before_game;
-				var rf= Globals.time_after_ref - Globals.time_before_ref;
+                int all= time_after - time_before;
+                int sv= time_between - time_before;
+                int cl= time_after - time_between;
+                int gm= Globals.time_after_game - Globals.time_before_game;
+                int rf= Globals.time_after_ref - Globals.time_before_ref;
 				sv -= gm;
 				cl -= rf;
 
@@ -270,7 +270,7 @@ public final class Qcommon extends Globals {
 	}
 
 	static void reconfigure(boolean clear) {
-		var dir = Cvar.Get("cddir", "", CVAR_ARCHIVE).string;
+        String dir = Cvar.Get("cddir", "", CVAR_ARCHIVE).string;
 		Cbuf.AddText("exec default.cfg\n");
 		Cbuf.AddText("bind MWHEELUP weapnext\n");
 		Cbuf.AddText("bind MWHEELDOWN weapprev\n");

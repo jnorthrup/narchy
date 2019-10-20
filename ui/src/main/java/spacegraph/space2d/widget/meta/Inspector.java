@@ -21,10 +21,10 @@ public class Inspector extends Bordering {
         super();
 
 
-        var depth = 4;
+        int depth = 4;
         include(s, depth);
 
-        var graphView = new Graph2D<Node<Surface, Object>>()
+        Graph2D graphView = new Graph2D<Node<Surface, Object>>()
 
                 .update(new ForceDirected2D())
 
@@ -41,9 +41,9 @@ public class Inspector extends Bordering {
         if (!graph.addNewNode(s) || depth <= 0)
             return;
 
-        var p = s.parent;
+        Surfacelike p = s.parent;
         if (p instanceof Surface) {
-            var pp = (Surface) p;
+            Surface pp = (Surface) p;
             include(pp, depth-1);
             graph.addEdgeIfNodesExist(pp, "->", s);
         }

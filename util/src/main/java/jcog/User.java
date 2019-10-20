@@ -76,7 +76,7 @@ public class User {
      */
     public User() {
 
-        var base = new RAMDirectory();
+        RAMDirectory base = new RAMDirectory();
         d = nrt(base);
 
         init();
@@ -127,7 +127,7 @@ public class User {
     private void init() {
 
 
-        var iwc = new IndexWriterConfig();
+        IndexWriterConfig iwc = new IndexWriterConfig();
         iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
         iwc.setCommitOnClose(true);
         
@@ -171,8 +171,8 @@ public class User {
 
     public void whileEach(Predicate<Document> d) {
         read((r) -> {
-            var n = r.numDocs();
-            for (var i = 0; i < n; i++) {
+            int n = r.numDocs();
+            for (int i = 0; i < n; i++) {
                 try {
                     if (!d.test(r.document(i)))
                         break;
@@ -184,7 +184,7 @@ public class User {
     }
 
     public void put(String id, Object x) {
-        var d = document(id, x);
+        Document d = document(id, x);
         if (d != null) {
             logger.debug("put {} {}", id, x);
             write((iw) -> {
@@ -205,10 +205,10 @@ public class User {
 
     public <X> void get(String id, Consumer<X> yy) {
         logger.debug("get {}", id);
-        var D = new Document[1];
+        Document[] D = new Document[1];
         search((iis) -> {
             try {
-                var y = iis.search(
+                TopDocs y = iis.search(
                         new TermQuery(id(id)), 1);
                 if (y.totalHits.value > 0)
                     D[0] = iis.doc(y.scoreDocs[0].doc); 
@@ -297,10 +297,10 @@ public class User {
         logger.debug("query {}", q);
         search((iis) -> {
             try {
-                var y = iis.searchAfter(after, q, n);
+                TopDocs y = iis.searchAfter(after, q, n);
                 if (y.totalHits.value > 0) {
-                    var d = new DocObj(iis.getIndexReader());
-                    for (var sd : y.scoreDocs) {
+                    DocObj d = new DocObj(iis.getIndexReader());
+                    for (ScoreDoc sd : y.scoreDocs) {
                         if (!yy.test(d.update(sd.doc, sd.score)))
                             break;
                     }
@@ -314,11 +314,11 @@ public class User {
 
     public <X> void get(String id, Supplier<X> ifAbsent, Consumer<X> with) {
         logger.debug("get {}", id);
-        var D = new Document[1];
+        Document[] D = new Document[1];
         search((is) -> {
 
             try {
-                var y = is.search(new TermQuery(id(id)), 1);
+                TopDocs y = is.search(new TermQuery(id(id)), 1);
                 if (y.totalHits.value > 0)
                     D[0] = is.doc(y.scoreDocs[0].doc);
             } catch (IOException e) {
@@ -328,7 +328,7 @@ public class User {
         if (D[0] != null) { 
             with.accept(undocument(D[0]));
         } else {
-            var a = ifAbsent.get();
+            X a = ifAbsent.get();
             if (a != null) {
                 put(id, a);
                 with.accept(a);
@@ -364,7 +364,7 @@ public class User {
     private void read(Consumer<IndexReader> with) {
         try {
 
-            var r = DirectoryReader.open(iw);
+            DirectoryReader r = DirectoryReader.open(iw);
 
             with.accept(r);
 
@@ -380,8 +380,8 @@ public class User {
 
 
             try {
-                var r = DirectoryReader.open(iw);
-                var s = new IndexSearcher(r);
+                DirectoryReader r = DirectoryReader.open(iw);
+                IndexSearcher s = new IndexSearcher(r);
                 with.accept(s);
                 r.close();
             } catch (IOException e) {
@@ -392,17 +392,17 @@ public class User {
     }
 
     public <X> X undocument(Document doc) {
-        var codec = doc.get("c");
+        String codec = doc.get("c");
         return (X) codecs.get(codec).unapply(doc);
     }
 
 
     private Document document(String id, Object x) {
 
-        var d = new Document();
+        Document d = new Document();
         d.add(new StringField(ID, id, Field.Store.YES));
 
-        var codec = codec(x);
+        String codec = codec(x);
         d.add(new StringField(CODEC, codec, Field.Store.YES));
         codecs.get(codec).apply(d, x);
         return d;
@@ -453,7 +453,7 @@ public class User {
 
                 @Override
                 public byte[] unapply(Document doc) {
-                    var bytes = doc.getBinaryValue("blob");
+                    BytesRef bytes = doc.getBinaryValue("blob");
                     return bytes.bytes;
                 }
                 /* byte[] */
@@ -468,22 +468,22 @@ public class User {
                                 Field.Store.YES));
 
                         if (o instanceof HyperRectFloat) {
-                            var r = (HyperRectFloat) o;
+                            HyperRectFloat r = (HyperRectFloat) o;
                             if (r.dim() == 4) {
-                                var min = Util.toDouble(r.min.data);
-                                var max = Util.toDouble(r.max.data);
+                                double[] min = Util.toDouble(r.min.data);
+                                double[] max = Util.toDouble(r.max.data);
                                 d.add(new DoubleRange(BOUNDS, min, max));
                             }
                         } else if (o instanceof HyperRectDouble) {
-                            var r = (HyperRectDouble) o;
+                            HyperRectDouble r = (HyperRectDouble) o;
                             if (r.dim() == 4) {
-                                var min = (r.min.coord);
-                                var max = (r.max.coord);
+                                double[] min = (r.min.coord);
+                                double[] max = (r.max.coord);
                                 d.add(new DoubleRange(BOUNDS, min, max));
                             }
                         } else if (o instanceof Longerval) {
 
-                            var l = (Longerval) o;
+                            Longerval l = (Longerval) o;
                             double[] min = {l.start, NEGATIVE_INFINITY, NEGATIVE_INFINITY, NEGATIVE_INFINITY};
                             double[] max = {l.end, POSITIVE_INFINITY, POSITIVE_INFINITY, POSITIVE_INFINITY};
                             d.add(new DoubleRange(BOUNDS, min, max));
@@ -497,8 +497,8 @@ public class User {
 
                 @Override
                 public Object unapply(Document doc) {
-                    var bytes = doc.getBinaryValue("msgpack");
-                    var javatype = doc.get("javatype");
+                    BytesRef bytes = doc.getBinaryValue("msgpack");
+                    String javatype = doc.get("javatype");
                     try {
                         return Util.fromBytes(bytes.bytes, Class.forName(javatype));
                     } catch (Exception e) {

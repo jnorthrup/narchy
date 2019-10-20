@@ -34,13 +34,13 @@ import spacegraph.util.math.Matrix3f;
 public class TransformStackList extends StackList<Transform> {
 	
 	public Transform get(Transform tr) {
-		var obj = get();
+        Transform obj = get();
 		obj.set(tr);
 		return obj;
 	}
 
 	public Transform get(Matrix3f mat) {
-		var obj = get();
+        Transform obj = get();
 		obj.basis.set(mat);
 		obj.set(0f, 0f, 0f);
 		return obj;

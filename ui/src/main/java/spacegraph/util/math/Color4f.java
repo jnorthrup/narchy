@@ -157,10 +157,10 @@ public class Color4f extends Tuple4f {
      * @since vecmath 1.2
      */
     public final Color awt() {
-        var r = Math.round(x * 255.0f);
-        var g = Math.round(y * 255.0f);
-        var b = Math.round(z * 255.0f);
-        var a = Math.round(w * 255.0f);
+        int r = Math.round(x * 255.0f);
+        int g = Math.round(y * 255.0f);
+        int b = Math.round(z * 255.0f);
+        int a = Math.round(w * 255.0f);
 
         return new Color(r, g, b, a);
     }
@@ -195,7 +195,7 @@ public class Color4f extends Tuple4f {
 
     public Color4f hsl(float hue, float sat, float lightness, float a) {
         //HACK
-        var f = new float[3];
+        float[] f = new float[3];
 
         //hsb(f, hue, saturation, brightness, a);
         Draw.hsl(f, hue, sat, lightness);
@@ -207,10 +207,10 @@ public class Color4f extends Tuple4f {
     /** does not mutate the stored values.
      * componentFunction applied to the RGB but not the alpha channel */
     public void set(FloatToFloatFunction componentFunction, GL2 gl) {
-        var r = componentFunction.valueOf(x);
-        var g = componentFunction.valueOf(y);
-        var b = componentFunction.valueOf(z);
-        var a = this.w;
+        float r = componentFunction.valueOf(x);
+        float g = componentFunction.valueOf(y);
+        float b = componentFunction.valueOf(z);
+        float a = this.w;
         gl.glColor4f(r, g, b, a);
     }
 

@@ -203,7 +203,7 @@ public abstract class Tuple3b implements java.io.Serializable, Cloneable {
     public boolean equals(Object t1)
     {
         try {
-            var t2 = (Tuple3b) t1;
+            Tuple3b t2 = (Tuple3b) t1;
            return(this.x == t2.x && this.y == t2.y && this.z == t2.z);
         }
         catch (NullPointerException | ClassCastException e2) {return false;}

@@ -20,13 +20,13 @@ public class GrassTile extends Tile {
 
     @Override
     public void render(Screen screen, Level level, int x, int y) {
-        var col = Color.get(level.grassColor, level.grassColor, level.grassColor + 111, level.grassColor + 111);
-        var transitionColor = Color.get(level.grassColor - 111, level.grassColor, level.grassColor + 111, level.dirtColor);
+        int col = Color.get(level.grassColor, level.grassColor, level.grassColor + 111, level.grassColor + 111);
+        int transitionColor = Color.get(level.grassColor - 111, level.grassColor, level.grassColor + 111, level.dirtColor);
 
-        var u = !level.getTile(x, y - 1).connectsToGrass;
-        var d = !level.getTile(x, y + 1).connectsToGrass;
-        var l = !level.getTile(x - 1, y).connectsToGrass;
-        var r = !level.getTile(x + 1, y).connectsToGrass;
+        boolean u = !level.getTile(x, y - 1).connectsToGrass;
+        boolean d = !level.getTile(x, y + 1).connectsToGrass;
+        boolean l = !level.getTile(x - 1, y).connectsToGrass;
+        boolean r = !level.getTile(x + 1, y).connectsToGrass;
 
         if (!u && !l) {
             screen.render(x * 16 + 0, y * 16 + 0, 0, col, 0);
@@ -52,8 +52,8 @@ public class GrassTile extends Tile {
     public void tick(Level level, int xt, int yt) {
         if (random.nextInt(40) != 0) return;
 
-        var xn = xt;
-        var yn = yt;
+        int xn = xt;
+        int yn = yt;
 
         if (random.nextBoolean())
             xn += random.nextInt(2) * 2 - 1;
@@ -68,7 +68,7 @@ public class GrassTile extends Tile {
     @Override
     public boolean interact(Level level, int xt, int yt, Player player, Item item, int attackDir) {
         if (item instanceof ToolItem) {
-            var tool = (ToolItem) item;
+            ToolItem tool = (ToolItem) item;
             if (tool.type == ToolType.shovel) {
                 if (player.payStamina(4 - tool.level)) {
                     level.setTile(xt, yt, Tile.dirt, 0);

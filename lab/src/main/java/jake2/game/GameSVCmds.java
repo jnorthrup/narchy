@@ -82,7 +82,7 @@ public class GameSVCmds {
 
     static int numipfilters;
     static {
-        for (var n = 0; n < GameSVCmds.MAX_IPFILTERS; n++)
+        for (int n = 0; n < GameSVCmds.MAX_IPFILTERS; n++)
             GameSVCmds.ipfilters[n] = new ipfilter_t();
     }
 
@@ -92,11 +92,11 @@ public class GameSVCmds {
     static boolean StringToFilter(String s, GameSVCmds.ipfilter_t f) {
 
         try {
-            var tk = new StringTokenizer(s, ". ");
+            StringTokenizer tk = new StringTokenizer(s, ". ");
 
             byte[] m = {0, 0, 0, 0};
             byte[] b = {0, 0, 0, 0};
-            for (var n = 0; n < 4; n++) {
+            for (int n = 0; n < 4; n++) {
                 b[n] = (byte) Lib.atoi(tk.nextToken());
                 if (b[n] != 0)
                     m[n] = -1;
@@ -119,14 +119,14 @@ public class GameSVCmds {
     static boolean SV_FilterPacket(String from) {
         int[] m = {0, 0, 0, 0};
 
-        var p = 0;
+        int p = 0;
 
-        var i = 0;
+        int i = 0;
 
         while (p < from.length() && i < 4) {
             m[i] = 0;
 
-            var c = from.charAt(p);
+            char c = from.charAt(p);
             while (c >= '0' && c <= '9') {
                 m[i] = m[i] * 10 + (c - '0');
                 c = from.charAt(p++);
@@ -138,7 +138,7 @@ public class GameSVCmds {
             p++;
         }
 
-        var in = (m[0] & 0xff) | ((m[1] & 0xff) << 8) | ((m[2] & 0xff) << 16)
+        int in = (m[0] & 0xff) | ((m[1] & 0xff) << 8) | ((m[2] & 0xff) << 16)
                 | ((m[3] & 0xff) << 24);
 
         for (i = 0; i < numipfilters; i++)
@@ -180,7 +180,7 @@ public class GameSVCmds {
      * SV_RemoveIP_f.
      */
     static void SVCmd_RemoveIP_f() {
-        var f = new GameSVCmds.ipfilter_t();
+        ipfilter_t f = new GameSVCmds.ipfilter_t();
 
         if (game_import_t.argc() < 3) {
             game_import_t.cprintf(null, Defines.PRINT_HIGH,
@@ -191,10 +191,10 @@ public class GameSVCmds {
         if (!StringToFilter(game_import_t.argv(2), f))
             return;
 
-        for (var i = 0; i < numipfilters; i++)
+        for (int i = 0; i < numipfilters; i++)
             if (ipfilters[i].mask == f.mask
                     && ipfilters[i].compare == f.compare) {
-                for (var j = i + 1; j < numipfilters; j++)
+                for (int j = i + 1; j < numipfilters; j++)
                     ipfilters[j - 1] = ipfilters[j];
                 numipfilters--;
                 game_import_t.cprintf(null, Defines.PRINT_HIGH, "Removed.\n");
@@ -210,8 +210,8 @@ public class GameSVCmds {
     static void SVCmd_ListIP_f() {
 
         game_import_t.cprintf(null, Defines.PRINT_HIGH, "Filter list:\n");
-        for (var i = 0; i < numipfilters; i++) {
-            var b = Lib.getIntBytes(ipfilters[i].compare);
+        for (int i = 0; i < numipfilters; i++) {
+            byte[] b = Lib.getIntBytes(ipfilters[i].compare);
             game_import_t
                     .cprintf(null, Defines.PRINT_HIGH, (b[0] & 0xff) + "."
                             + (b[1] & 0xff) + '.' + (b[2] & 0xff) + '.'
@@ -226,7 +226,7 @@ public class GameSVCmds {
 
         String name;
 
-        var game = game_import_t.cvar("game", "", 0);
+        cvar_t game = game_import_t.cvar("game", "", 0);
 
         if (game.string == null)
             name = Defines.GAMEVERSION + "/listip.cfg";
@@ -235,7 +235,7 @@ public class GameSVCmds {
 
         game_import_t.cprintf(null, Defines.PRINT_HIGH, "Writing " + name + ".\n");
 
-        var f = Lib.fopen(name, "rw");
+        RandomAccessFile f = Lib.fopen(name, "rw");
         if (f == null) {
             game_import_t.cprintf(null, Defines.PRINT_HIGH, "Couldn't open "
                     + name + '\n');
@@ -246,8 +246,8 @@ public class GameSVCmds {
             f.writeChars("setAt filterban " + (int) GameBase.filterban.value
                     + '\n');
 
-            for (var i = 0; i < numipfilters; i++) {
-                var b = Lib.getIntBytes(ipfilters[i].compare);
+            for (int i = 0; i < numipfilters; i++) {
+                byte[] b = Lib.getIntBytes(ipfilters[i].compare);
                 f.writeChars("sv addip " + (b[0] & 0xff) + '.' + (b[1] & 0xff)
                         + '.' + (b[2] & 0xff) + '.' + (b[3] & 0xff) + '\n');
             }
@@ -267,7 +267,7 @@ public class GameSVCmds {
      */
     public static void ServerCommand() {
 
-        var cmd = game_import_t.argv(1);
+        String cmd = game_import_t.argv(1);
         if (Lib.Q_stricmp(cmd, "test") == 0)
             Svcmd_Test_f();
         else if (Lib.Q_stricmp(cmd, "addip") == 0)

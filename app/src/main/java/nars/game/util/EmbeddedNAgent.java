@@ -7,8 +7,11 @@ import nars.NARS;
 import nars.game.Game;
 import nars.game.action.SwitchAction;
 import nars.game.sensor.GameLoop;
+import nars.game.sensor.Signal;
 import nars.term.Term;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import static java.lang.System.arraycopy;
@@ -25,7 +28,7 @@ public class EmbeddedNAgent extends Agent {
     private float nextReward = Float.NaN;
 
     private static final NAR defaultNAR() {
-        var n = NARS.tmp();
+        NAR n = NARS.tmp();
         n.termVolMax.set(10);
         n.freqResolution.set(0.1f);
         return n;
@@ -44,13 +47,24 @@ public class EmbeddedNAgent extends Agent {
 
         this.env = new Game("agent");
 
-        var sense = IntStream.range(0, inputs).mapToObj(i1 -> env.sense($.inh($.the(i1), env.id), () -> senseValue[i1])).toArray(GameLoop[]::new);
+        List<Signal> result = new ArrayList<>();
+        for (int j = 0; j < inputs; j++) {
+            int i1 = j;
+            Signal signal = env.sense($.inh($.the(i1), env.id), () -> senseValue[i1]);
+            result.add(signal);
+        }
+        GameLoop[] sense = result.toArray(new GameLoop[0]);
 
         SwitchAction act;
+        List<Object> list = new ArrayList<>();
+        for (int i = 0; i < actions; i++) {
+            Object inh = $.inh($.the(i), env.id);
+            list.add(inh);
+        }
         this.env.addSensor(act = new SwitchAction(n, (a) -> {
                 nextAction = a;
                 return true;
-            }, IntStream.range(0, actions).mapToObj(i -> $.inh($.the(i), env.id)).toArray(Term[]::new))
+            }, list.toArray(new Term[0]))
         );
 
         this.env.reward(()->nextReward);

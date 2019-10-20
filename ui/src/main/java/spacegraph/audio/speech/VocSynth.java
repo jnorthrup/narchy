@@ -28,9 +28,9 @@ public class VocSynth extends Canvas implements MouseListener, MouseMotionListen
 	}
 
 	public void paint(Graphics g) {
-		var d = size();
-		var w = d.width;
-		var h = d.height;
+        Dimension d = size();
+        int w = d.width;
+        int h = d.height;
 		//draw frame
 		g.setColor(Color.darkGray);
 		g.drawLine(0, 0, w - 1, 0);
@@ -40,7 +40,7 @@ public class VocSynth extends Canvas implements MouseListener, MouseMotionListen
 		g.drawLine(w - 1, h - 1, 0, h - 1);
 		g.setColor(Color.black);
 		//end of frame
-		for (var i = 0; i < tlength; i++)
+		for (int i = 0; i < tlength; i++)
 		// draw all tubes of vocal tract
 		{
 			g.drawLine(i * w / tlength, h / 2 - (int) (tract[i] * h / 2), (i + 1) * w / tlength, h / 2 - (int) (tract[i] * h / 2));
@@ -55,11 +55,11 @@ public class VocSynth extends Canvas implements MouseListener, MouseMotionListen
 	public void mousePressed(MouseEvent e)
 	// adjust crossarea to where mouse clicked
 	{
-		var d = size();
-		var w = d.width;
-		var h = d.height;
-		var x = e.getX();
-		var y = e.getY();
+        Dimension d = size();
+        int w = d.width;
+        int h = d.height;
+        int x = e.getX();
+        int y = e.getY();
 		if (y > h / 2) {
 			tract[x * tlength / w] = (y * 2.0 - h) / h;
 		} else {
@@ -81,11 +81,11 @@ public class VocSynth extends Canvas implements MouseListener, MouseMotionListen
 	public void mouseDragged(MouseEvent e)
 	//drag tubecrossareas with mouse
 	{
-		var d = size();
-		var w = d.width;
-		var h = d.height;
-		var x = e.getX();
-		var y = e.getY();
+        Dimension d = size();
+        int w = d.width;
+        int h = d.height;
+        int x = e.getX();
+        int y = e.getY();
 		if (x < 0) x = 0;
 		if (x > w) x = w - 1;
 		if (y < 1) y = 1;
@@ -148,7 +148,7 @@ class WaveDraw extends Canvas
 		g.drawLine(w - 1, h - 1, 0, h - 1);
 		g.setColor(Color.black);
 		//end of frame
-		for (var i = 0; i < len - 1; i++) {
+		for (int i = 0; i < len - 1; i++) {
 			g.drawLine((i * w) / len, h / 2 - (int) (buf[i] * h / 2), ((i + 1) * w) / len, h / 2 - (int) (buf[i + 1] * h / 2));
 		}
 	}
@@ -161,15 +161,15 @@ class SPanel extends Panel
 
 	public SPanel(String myTitle) {
 		setLayout(new BorderLayout());
-		var label = new Label(myTitle, Label.CENTER);
+        Label label = new Label(myTitle, Label.CENTER);
 		add("Center", label);
 		setBackground(Color.gray);
 	}
 
 	public void paint(Graphics g) {
-		var d = size();
-		var w = d.width;
-		var h = d.height;
+        Dimension d = size();
+        int w = d.width;
+        int h = d.height;
 		// frame
 		g.setColor(Color.darkGray);
 		g.drawLine(0, 0, w - 1, 0);
@@ -189,10 +189,10 @@ class CPanel extends Panel
 // display all buttons
 {
 	public CPanel(ActionListener par) {
-		var l = new Label("Presets:");
+        Label l = new Label("Presets:");
 		add(l);
         //add presetbuttons
-		var b = new Button("AH");
+        Button b = new Button("AH");
 		b.setActionCommand("AH");
 		b.addActionListener(par);
 		add(b);
@@ -226,9 +226,9 @@ class CPanel extends Panel
 	}
 
 	public void paint(Graphics g) {
-		var d = size();
-		var w = d.width;
-		var h = d.height;
+        Dimension d = size();
+        int w = d.width;
+        int h = d.height;
 		// frame
 		g.setColor(Color.darkGray);
 		g.drawLine(0, 0, w - 1, 0);
@@ -253,7 +253,7 @@ class WPanel extends Panel
 	public WPanel(double[] input, int lenin, double[] output, int lenout) {
 		inw = new WaveDraw(this, 200, 64, input, lenin);
 		outw = new WaveDraw(this, 200, 64, output, lenout);
-		var l = new Label("Input:");
+        Label l = new Label("Input:");
 		add(l);
 		add(inw);
 		l = new Label("Output:");
@@ -263,9 +263,9 @@ class WPanel extends Panel
 	}
 
 	public void paint(Graphics g) {
-		var d = size();
-		var w = d.width;
-		var h = d.height;
+        Dimension d = size();
+        int w = d.width;
+        int h = d.height;
 		// frame
 		g.setColor(Color.darkGray);
 		g.drawLine(0, 0, w - 1, 0);
@@ -350,37 +350,37 @@ class VocSynthApplet extends Applet implements ActionListener {
 
 	public void generateglwave(boolean voiced) {    //Calulation of glottal pulse
 		if (voiced) {
-			for (var i = 0; i < length / 4; i++)            // Slope
+			for (int i = 0; i < length / 4; i++)            // Slope
 			{
 				inpwave[i] = -1.0 + i * 4.0 / length;
 			}
-			for (var i = length / 4; i < 3 * length / 4; i++)    // Half circle
+			for (int i = length / 4; i < 3 * length / 4; i++)    // Half circle
 			{
 				inpwave[i] = 4.0 * Math.sqrt(length * length / 16.0 - (i - length / 2.0) * (i - length / 2.0)) / length;
 			}
-			for (var i = 3 * length / 4; i < length; i++)        // Closed Glottis
+			for (int i = 3 * length / 4; i < length; i++)        // Closed Glottis
 			{
 				inpwave[i] = -1.0;
 			}
-			for (var i = 0; i < length - 1; i++)            // Smooth the waveform
+			for (int i = 0; i < length - 1; i++)            // Smooth the waveform
 			{
 				inpwave[i] = (inpwave[i] + inpwave[i + 1]) * 0.95 / 2.0;
 			}
 			inpwave[length - 1] = (inpwave[length - 1] + inpwave[0]) * 0.95 / 2.0;
 		} else {
-			for (var i = 0; i < length - 1; i++) inpwave[i] = -1.0 + Math.random() * 2.0;
+			for (int i = 0; i < length - 1; i++) inpwave[i] = -1.0 + Math.random() * 2.0;
 		}
 	}
 
 	public void calcresponse()    // DSP routine to calculate output of lattice Filter
 	{
-		var c = 1.0; //constant k=qc
-		var r = new double[tlength + 1];    //reflections coefficients
-		var li = new double[tlength + 1];    //to lips input to reflection --(z-1)--li----lo--
-		var lo = new double[tlength + 1];    //to lips output of reflection          |refl|
-		var gi = new double[tlength + 1];    //to glottis input to reflection ------go----gi--
-		var go = new double[tlength + 1];    //to glottis output of reflection
-		for (var i = 0; i <= tlength; i++) //clear all the values
+        double c = 1.0; //constant k=qc
+        double[] r = new double[tlength + 1];    //reflections coefficients
+        double[] li = new double[tlength + 1];    //to lips input to reflection --(z-1)--li----lo--
+        double[] lo = new double[tlength + 1];    //to lips output of reflection          |refl|
+        double[] gi = new double[tlength + 1];    //to glottis input to reflection ------go----gi--
+        double[] go = new double[tlength + 1];    //to glottis output of reflection
+		for (int i = 0; i <= tlength; i++) //clear all the values
 		{
 			r[i] = 0;
 			li[i] = 0;
@@ -389,17 +389,17 @@ class VocSynthApplet extends Applet implements ActionListener {
 			go[i] = 0;
 		}
 		r[0] = 1.0; //Zgl=0
-		for (var i = 1; i < tlength; i++) {    // r=(A2-A1)/(A2+A1);
+		for (int i = 1; i < tlength; i++) {    // r=(A2-A1)/(A2+A1);
 			r[i] = (tract[i] * tract[i] - tract[i - 1] * tract[i - 1]) / (tract[i - 1] * tract[i - 1] + tract[i] * tract[i]);
 		}
 		r[tlength] = 1.0;//Zl=Inf.
 		//Main loop
-		for (var l = 0; l < 10; l++)
-			for (var k = 0; k < length; k++) {
+		for (int l = 0; l < 10; l++)
+			for (int k = 0; k < length; k++) {
 				//Input into system
 				li[0] = inpwave[k] / 2.0;
 				//Calculate all reflections
-				for (var i = tlength; i >= 0; i--) {
+				for (int i = tlength; i >= 0; i--) {
 					//to lips
 					lo[i] = (1 + r[i]) * li[i] + r[i] * gi[i];
 					//to glottis
@@ -415,17 +415,17 @@ class VocSynthApplet extends Applet implements ActionListener {
 				outwave[k] = lo[tlength];
 			}
 		// smooth start and end of array
-		var dif = outwave[length - 1] - outwave[0];
+        double dif = outwave[length - 1] - outwave[0];
 		outwave[1] += dif * 0.2;
 		outwave[length - 2] -= dif * 0.2;
 		outwave[0] += dif * 0.4;
 		outwave[length - 1] -= dif * 0.4;
 		// Normalize to 0.9 amplitude to prevent clipping
-		var seen = false;
+        boolean seen = false;
         double best = 0;
-		var bound = length;
-        for (var i1 = 0; i1 < bound; i1++) {
-			var abs = Math.abs(outwave[i1]);
+        int bound = length;
+        for (int i1 = 0; i1 < bound; i1++) {
+            double abs = Math.abs(outwave[i1]);
             if (abs >= 0) {
                 if (!seen || Double.compare(abs, best) > 0) {
                     seen = true;
@@ -433,8 +433,8 @@ class VocSynthApplet extends Applet implements ActionListener {
                 }
             }
         }
-		var max = seen ? best : 0;
-        for (var i = 0; i < length; i++) {
+        double max = seen ? best : 0;
+        for (int i = 0; i < length; i++) {
 			outwave[i] = outwave[i] * 0.9 / max;
 		}
 		wpan.outw.repaint();            //Redraw Waveform
@@ -517,7 +517,7 @@ class VocSynthApplet extends Applet implements ActionListener {
 
 	public void actionPerformed(ActionEvent e)    // Handle Buttons
 	{
-		var command = e.getActionCommand();
+        String command = e.getActionCommand();
         switch (command) {
             case "start":
 //			if (sampleStream != null && !playing) {

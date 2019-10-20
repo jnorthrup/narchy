@@ -5,7 +5,9 @@ package jcog.event;
 import jcog.exe.Exe;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
@@ -41,8 +43,16 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
         /** TODO cache the fields because reflection may be slow */
 
 
-        for (var field : fieldCache.computeIfAbsent(c, (cc) ->
-            Arrays.stream(cc.getFields()).filter(x -> x.getType() == Topic.class).toArray(Field[]::new)
+        for (Field field : fieldCache.computeIfAbsent(c, (cc) ->
+                {
+                    List<Field> list = new ArrayList<>();
+                    for (Field x : cc.getFields()) {
+                        if (x.getType() == Topic.class) {
+                            list.add(x);
+                        }
+                    }
+                    return list.toArray(new Field[0]);
+                }
         )) {
             f.accept(field);
         }
@@ -56,15 +66,15 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
      */
     static <X> RunThese all(X obj, BiConsumer<String, X> f, Predicate<String> includeKey) {
 
-        var s = new RunThese();
+        RunThese s = new RunThese();
 
         each(obj.getClass(), (field) -> {
-            var fieldName = field.getName();
+            String fieldName = field.getName();
             if (includeKey != null && !includeKey.test(fieldName))
                 return;
 
             try {
-                var t = ((Topic<X>) field.get(obj));
+                Topic<X> t = ((Topic<X>) field.get(obj));
 
 
                 s.add(
@@ -90,7 +100,7 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
     /** emits the supplier procedure's result IF there is any listener to receive it */
     default   void emit(Supplier<X> t) {
         if (!isEmpty()) {
-            var x = t.get();
+            X x = t.get();
             if (x!=null)
                 emit(x);
         }
@@ -102,9 +112,9 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
     }
 
     default Off on(LongSupplier time, LongSupplier minUpdatePeriod, Consumer<X> o) {
-        var lastUpdate = new AtomicLong(time.getAsLong() - minUpdatePeriod.getAsLong());
+        AtomicLong lastUpdate = new AtomicLong(time.getAsLong() - minUpdatePeriod.getAsLong());
         return on((x) -> {
-            var now = time.getAsLong();
+            long now = time.getAsLong();
             if (now - lastUpdate.get() >= minUpdatePeriod.getAsLong()) {
                 lastUpdate.set(now);
                 o.accept(x);

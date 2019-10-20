@@ -20,9 +20,9 @@ public class WheatTile extends Tile {
 
     @Override
     public void render(Screen screen, Level level, int x, int y) {
-        var age = level.getData(x, y);
-        var col = Color.get(level.dirtColor - 121, level.dirtColor - 11, level.dirtColor, 50);
-        var icon = age / 10;
+        int age = level.getData(x, y);
+        int col = Color.get(level.dirtColor - 121, level.dirtColor - 11, level.dirtColor, 50);
+        int icon = age / 10;
         if (icon >= 3) {
             col = Color.get(level.dirtColor - 121, level.dirtColor - 11, 50 + (icon) * 100, 40 + (icon - 3) * 2 * 100);
             if (age == 50) {
@@ -41,14 +41,14 @@ public class WheatTile extends Tile {
     public void tick(Level level, int xt, int yt) {
         if (random.nextInt(2) == 0) return;
 
-        var age = level.getData(xt, yt);
+        int age = level.getData(xt, yt);
         if (age < 50) level.setData(xt, yt, age + 1);
     }
 
     @Override
     public boolean interact(Level level, int xt, int yt, Player player, Item item, int attackDir) {
         if (item instanceof ToolItem) {
-            var tool = (ToolItem) item;
+            ToolItem tool = (ToolItem) item;
             if (tool.type == ToolType.shovel) {
                 if (player.payStamina(4 - tool.level)) {
                     level.setTile(xt, yt, Tile.dirt, 0);
@@ -73,10 +73,10 @@ public class WheatTile extends Tile {
     }
 
     private void harvest(Level level, int x, int y) {
-        var age = level.getData(x, y);
+        int age = level.getData(x, y);
 
-        var count = random.nextInt(2);
-        for (var i = 0; i < count; i++) {
+        int count = random.nextInt(2);
+        for (int i = 0; i < count; i++) {
             level.add(new ItemEntity(new ResourceItem(Resource.seeds), x * 16 + random.nextInt(10) + 3, y * 16 + random.nextInt(10) + 3));
         }
 
@@ -86,7 +86,7 @@ public class WheatTile extends Tile {
         } else if (age >= 40) {
             count = random.nextInt(2) + 1;
         }
-        for (var i = 0; i < count; i++) {
+        for (int i = 0; i < count; i++) {
             level.add(new ItemEntity(new ResourceItem(Resource.wheat), x * 16 + random.nextInt(10) + 3, y * 16 + random.nextInt(10) + 3));
         }
 

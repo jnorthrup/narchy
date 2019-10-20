@@ -48,19 +48,19 @@ abstract class AEdge {
      * @return Vrati prienik 2 hran. Pokial neexistuje, vrati null.
      */
     public static Vec2Intersect intersect(AEdge a, AEdge b) {
-        var U = a.p2.subClone(a.p1);
-        var V = b.p2.subClone(b.p1);
-        var A = new v2(a.p1);
-        var C = new v2(b.p1);
-        var uv = dCross(U, V);
+        v2 U = a.p2.subClone(a.p1);
+        v2 V = b.p2.subClone(b.p1);
+        v2 A = new v2(a.p1);
+        v2 C = new v2(b.p1);
+        double uv = dCross(U, V);
         if (uv == 0) {
             return null; 
         }
-        var k = (dCross(C, V) - dCross(A, V)) / uv;
-        var o = (dCross(C, U) - dCross(A, U)) / uv;
+        double k = (dCross(C, V) - dCross(A, V)) / uv;
+        double o = (dCross(C, U) - dCross(A, U)) / uv;
         if (o > 0 && o < 1 && k > 0 && k < 1) {
-            var ux = U.x * k + A.x;
-            var uy = U.y * k + A.y;
+            double ux = U.x * k + A.x;
+            double uy = U.y * k + A.y;
             A.set((float) ux, (float) uy);
             return new Vec2Intersect(A, k);
         } else {
@@ -74,16 +74,16 @@ abstract class AEdge {
      * @return Vrati true, ak sa hrany pretinaju.
      */
     public boolean intersectAre(v2 b1, v2 b2) {
-        var U = p2.subClone(p1);
-        var V = b2.subClone(b1);
-        var A = new v2(p1);
-        var C = new v2(b1);
-        var uv = cross(U, V);
+        v2 U = p2.subClone(p1);
+        v2 V = b2.subClone(b1);
+        v2 A = new v2(p1);
+        v2 C = new v2(b1);
+        float uv = cross(U, V);
         if (uv == 0)
             return false;
 
-        var k = (cross(C, V) - cross(A, V)) / uv;
-        var o = (cross(C, U) - cross(A, U)) / uv;
+        float k = (cross(C, V) - cross(A, V)) / uv;
+        float o = (cross(C, U) - cross(A, U)) / uv;
         return o > 0 && o < 1 && k > 0 && k < 1;
     }
 
@@ -92,13 +92,13 @@ abstract class AEdge {
      * @return Vrati najvlizsi bod na priamke voci bodu z parametra.
      */
     public v2 kolmicovyBod(v2 point) {
-        var U = p2.subClone(p1);
-        var V = new v2(p1.y - p2.y, p2.x - p1.x);
-        var uv = cross(U, V);
+        v2 U = p2.subClone(p1);
+        v2 V = new v2(p1.y - p2.y, p2.x - p1.x);
+        float uv = cross(U, V);
         if (uv == 0) {
             return null; 
         }
-        var k = (cross(point, V) - cross(p1, V)) / uv;
+        float k = (cross(point, V) - cross(p1, V)) / uv;
         if (k >= 0 && k <= 1) {
             U.scaled(k);
             return p1.addToNew(U);
@@ -113,7 +113,7 @@ abstract class AEdge {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o instanceof AEdge) {
-            var d = (AEdge) o;
+            AEdge d = (AEdge) o;
             return (d.p1 == p1 && d.p2 == p2) || (d.p1 == p2 && d.p2 == p1);
         }
         return false;

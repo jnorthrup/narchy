@@ -40,7 +40,7 @@ public class IterableThreadLocal<T> extends ThreadLocal<T>
 
     @Override
     public T get() {
-        var val = super.get();
+        T val = super.get();
         if (val == null) {
             super.set(val = supplier.get());
         }

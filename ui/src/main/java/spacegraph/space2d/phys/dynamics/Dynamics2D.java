@@ -271,7 +271,7 @@ public class Dynamics2D {
         if (bodies.add(b)) {
             if (fd.length > 0) {
                 invoke(() -> {
-                    for (var f : fd)
+                    for (FixtureDef f : fd)
                         b.addFixture(f);
                 });
             }
@@ -299,9 +299,9 @@ public class Dynamics2D {
                 b.setActive(false);
 
 
-                var je = b.joints;
+                JointEdge je = b.joints;
                 while (je != null) {
-                    var je0 = je;
+                    JointEdge je0 = je;
                     je = je.next;
                     if (destructionListener != null) {
                         destructionListener.beforeDestruct(je0.joint);
@@ -314,17 +314,17 @@ public class Dynamics2D {
                 b.joints = null;
 
 
-                var ce = b.contacts;
+                ContactEdge ce = b.contacts;
                 while (ce != null) {
-                    var ce0 = ce;
+                    ContactEdge ce0 = ce;
                     ce = ce.next;
                     contactManager.destroy(ce0.contact);
                 }
                 b.contacts = null;
 
-                var f = b.fixtures;
+                Fixture f = b.fixtures;
                 while (f != null) {
-                    var f0 = f;
+                    Fixture f0 = f;
                     f = f.next;
 
                     if (destructionListener != null) {
@@ -365,10 +365,10 @@ public class Dynamics2D {
 
 
                 j.edgeA.joint = j;
-                var B = j.getBodyB();
+                Body2D B = j.getBodyB();
                 j.edgeA.other = B;
                 j.edgeA.prev = null;
-                var A = j.getBodyA();
+                Body2D A = j.getBodyA();
                 j.edgeA.next = A.joints;
                 if (A.joints != null) {
                     A.joints.prev = j.edgeA;
@@ -386,10 +386,10 @@ public class Dynamics2D {
 
 
                 if (!j.getCollideConnected()) {
-                    var bodyA = j.getBodyA();
-                    var bodyB = j.getBodyB();
+                    Body2D bodyA = j.getBodyA();
+                    Body2D bodyB = j.getBodyB();
 
-                    var edge = bodyB.contacts();
+                    ContactEdge edge = bodyB.contacts();
                     while (edge != null) {
                         if (edge.other == bodyA) {
 
@@ -420,13 +420,13 @@ public class Dynamics2D {
             invoke(() -> {
 
 
-                var collideConnected = j.getCollideConnected();
+                boolean collideConnected = j.getCollideConnected();
 
 
-                var bodyA = j.getBodyA();
+                Body2D bodyA = j.getBodyA();
                 bodyA.setAwake(true);
 
-                var bodyB = j.getBodyB();
+                Body2D bodyB = j.getBodyB();
                 bodyB.setAwake(true);
 
 
@@ -468,7 +468,7 @@ public class Dynamics2D {
 
 
                 if (!collideConnected) {
-                    var edge = bodyB.contacts();
+                    ContactEdge edge = bodyB.contacts();
                     while (edge != null) {
                         if (edge.other == bodyA) {
 
@@ -564,7 +564,7 @@ public class Dynamics2D {
 
     private void sync() {
         Runnable next;
-        var s = queue.size();
+        int s = queue.size();
         while (((next = queue.poll()) != null)) {
             next.run();
             if (--s <= 0)
@@ -679,7 +679,7 @@ public class Dynamics2D {
     }
 
     public void bodies(Consumer<Body2D> each) {
-        for (var body : bodies) {
+        for (Body2D body : bodies) {
             each.accept(body);
         }
     }
@@ -689,7 +689,7 @@ public class Dynamics2D {
     }
 
     public void joints(Consumer<Joint> each) {
-        for (var joint : joints) {
+        for (Joint joint : joints) {
             each.accept(joint);
         }
     }
@@ -878,19 +878,19 @@ public class Dynamics2D {
         });
 
         if (!preRemove.isEmpty()) {
-            for (var body2D : preRemove) {
+            for (Body2D body2D : preRemove) {
                 removeBody(body2D);
             }
             preRemove.clear();
         }
 
 
-        var bodyCount = bodies.size();
+        int bodyCount = bodies.size();
         island.init(bodyCount + 1, contactManager.m_contactCount, jointCount,
                 contactManager.contactListener);
 
 
-        for (var c = contactManager.m_contactList; c != null; c = c.m_next) {
+        for (Contact c = contactManager.m_contactList; c != null; c = c.m_next) {
             c.m_flags &= ~Contact.ISLAND_FLAG;
         }
 
@@ -898,8 +898,8 @@ public class Dynamics2D {
 
 
         if (bodyCount > 0) {
-            var stackSize = bodyCount;
-            var stack = new Body2D[stackSize];
+            int stackSize = bodyCount;
+            Body2D[] stack = new Body2D[stackSize];
 
             bodies(seed -> {
                 if ((seed.flags & Body2D.e_islandFlag) == Body2D.e_islandFlag)
@@ -914,14 +914,14 @@ public class Dynamics2D {
 
 
                 island.clear();
-                var stackCount = 0;
+                int stackCount = 0;
                 stack[stackCount++] = seed;
                 seed.flags |= Body2D.e_islandFlag;
 
 
                 while (stackCount > 0) {
 
-                    var b = stack[--stackCount];
+                    Body2D b = stack[--stackCount];
                     if (!b.isActive())
                         continue;
 
@@ -935,8 +935,8 @@ public class Dynamics2D {
                         continue;
 
 
-                    for (var ce = b.contacts; ce != null; ce = ce.next) {
-                        var contact = ce.contact;
+                    for (ContactEdge ce = b.contacts; ce != null; ce = ce.next) {
+                        Contact contact = ce.contact;
 
 
                         if ((contact.m_flags & Contact.ISLAND_FLAG) == Contact.ISLAND_FLAG) {
@@ -949,8 +949,8 @@ public class Dynamics2D {
                         }
 
 
-                        var sensorA = contact.aFixture.isSensor;
-                        var sensorB = contact.bFixture.isSensor;
+                        boolean sensorA = contact.aFixture.isSensor;
+                        boolean sensorB = contact.bFixture.isSensor;
                         if (sensorA || sensorB) {
                             continue;
                         }
@@ -958,7 +958,7 @@ public class Dynamics2D {
                         island.add(contact);
                         contact.m_flags |= Contact.ISLAND_FLAG;
 
-                        var other = ce.other;
+                        Body2D other = ce.other;
 
 
                         if ((other.flags & Body2D.e_islandFlag) == Body2D.e_islandFlag) {
@@ -971,12 +971,12 @@ public class Dynamics2D {
                     }
 
 
-                    for (var je = b.joints; je != null; je = je.next) {
+                    for (JointEdge je = b.joints; je != null; je = je.next) {
                         if (je.joint.islandFlag) {
                             continue;
                         }
 
-                        var other = je.other;
+                        Body2D other = je.other;
 
 
                         if (!other.isActive()) {
@@ -998,9 +998,9 @@ public class Dynamics2D {
                 island.solve(profiler, step, gravity, allowSleep);
 
 
-                for (var i = 0; i < island.m_bodyCount; ++i) {
+                for (int i = 0; i < island.m_bodyCount; ++i) {
 
-                    var b = island.bodies[i];
+                    Body2D b = island.bodies[i];
                     if (b.getType() == BodyType.STATIC) {
                         b.flags &= ~Body2D.e_islandFlag;
                     }
@@ -1033,7 +1033,7 @@ public class Dynamics2D {
 
     private void solveTOI(TimeStep step) {
 
-        var island = toiIsland;
+        Island island = toiIsland;
         island.init(2 * Settings.maxTOIContacts, Settings.maxTOIContacts, 0,
                 contactManager.contactListener);
         if (stepComplete) {
@@ -1042,7 +1042,7 @@ public class Dynamics2D {
                 b.sweep.alpha0 = 0.0f;
             });
 
-            for (var c = contactManager.m_contactList; c != null; c = c.m_next) {
+            for (Contact c = contactManager.m_contactList; c != null; c = c.m_next) {
 
                 c.m_flags &= ~(Contact.TOI_FLAG | Contact.ISLAND_FLAG);
                 c.m_toiCount = 0;
@@ -1054,9 +1054,9 @@ public class Dynamics2D {
         for (; ; ) {
 
             Contact minContact = null;
-            var minAlpha = 1.0f;
+            float minAlpha = 1.0f;
 
-            for (var c = contactManager.m_contactList; c != null; c = c.m_next) {
+            for (Contact c = contactManager.m_contactList; c != null; c = c.m_next) {
 
                 if (!c.isEnabled()) {
                     continue;
@@ -1067,36 +1067,36 @@ public class Dynamics2D {
                     continue;
                 }
 
-                var alpha = 1.0f;
+                float alpha = 1.0f;
                 if ((c.m_flags & Contact.TOI_FLAG) != 0) {
 
                     alpha = c.m_toi;
                 } else {
-                    var fA = c.aFixture;
-                    var fB = c.bFixture;
+                    Fixture fA = c.aFixture;
+                    Fixture fB = c.bFixture;
 
 
                     if (fA.isSensor() || fB.isSensor()) {
                         continue;
                     }
 
-                    var bA = fA.getBody();
-                    var bB = fB.getBody();
+                    Body2D bA = fA.getBody();
+                    Body2D bB = fB.getBody();
 
-                    var typeA = bA.type;
-                    var typeB = bB.type;
+                    BodyType typeA = bA.type;
+                    BodyType typeB = bB.type;
                     assert (typeA == BodyType.DYNAMIC || typeB == BodyType.DYNAMIC);
 
-                    var activeA = bA.isAwake() && typeA != BodyType.STATIC;
-                    var activeB = bB.isAwake() && typeB != BodyType.STATIC;
+                    boolean activeA = bA.isAwake() && typeA != BodyType.STATIC;
+                    boolean activeB = bB.isAwake() && typeB != BodyType.STATIC;
 
 
                     if (!activeA && !activeB) {
                         continue;
                     }
 
-                    var collideA = bA.isBullet() || typeA != BodyType.DYNAMIC;
-                    var collideB = bB.isBullet() || typeB != BodyType.DYNAMIC;
+                    boolean collideA = bA.isBullet() || typeA != BodyType.DYNAMIC;
+                    boolean collideB = bB.isBullet() || typeB != BodyType.DYNAMIC;
 
 
                     if (!collideA && !collideB) {
@@ -1118,11 +1118,11 @@ public class Dynamics2D {
 
                     assert (alpha0 < 1.0f);
 
-                    var indexA = c.aIndex;
-                    var indexB = c.bIndex;
+                    int indexA = c.aIndex;
+                    int indexB = c.bIndex;
 
 
-                    var input = toiInput;
+                    TimeOfImpact.TOIInput input = toiInput;
                     input.proxyA.set(fA.shape(), indexA);
                     input.proxyB.set(fB.shape(), indexB);
                     input.sweepA.set(bA.sweep);
@@ -1132,7 +1132,7 @@ public class Dynamics2D {
                     pool.getTimeOfImpact().timeOfImpact(toiOutput, input);
 
 
-                    var beta = toiOutput.t;
+                    float beta = toiOutput.t;
                     if (toiOutput.state == TimeOfImpact.TOIOutputState.TOUCHING) {
                         alpha = MathUtils.min(alpha0 + (1.0f - alpha0) * beta, 1.0f);
                     } else {
@@ -1157,10 +1157,10 @@ public class Dynamics2D {
             }
 
 
-            var fA = minContact.aFixture;
-            var fB = minContact.bFixture;
-            var bA = fA.getBody();
-            var bB = fB.getBody();
+            Fixture fA = minContact.aFixture;
+            Fixture fB = minContact.bFixture;
+            Body2D bA = fA.getBody();
+            Body2D bB = fB.getBody();
 
             backup1.set(bA.sweep);
             backup2.set(bB.sweep);
@@ -1200,10 +1200,10 @@ public class Dynamics2D {
 
             tempBodies[0] = bA;
             tempBodies[1] = bB;
-            for (var i = 0; i < 2; ++i) {
-                var body = tempBodies[i];
+            for (int i = 0; i < 2; ++i) {
+                Body2D body = tempBodies[i];
                 if (body.type == BodyType.DYNAMIC) {
-                    for (var ce = body.contacts; ce != null; ce = ce.next) {
+                    for (ContactEdge ce = body.contacts; ce != null; ce = ce.next) {
                         if (island.m_bodyCount == island.m_bodyCapacity) {
                             break;
                         }
@@ -1212,7 +1212,7 @@ public class Dynamics2D {
                             break;
                         }
 
-                        var contact = ce.contact;
+                        Contact contact = ce.contact;
 
 
                         if ((contact.m_flags & Contact.ISLAND_FLAG) != 0) {
@@ -1220,15 +1220,15 @@ public class Dynamics2D {
                         }
 
 
-                        var other = ce.other;
+                        Body2D other = ce.other;
                         if (other.type == BodyType.DYNAMIC && !body.isBullet()
                                 && !other.isBullet()) {
                             continue;
                         }
 
 
-                        var sensorA = contact.aFixture.isSensor;
-                        var sensorB = contact.bFixture.isSensor;
+                        boolean sensorA = contact.aFixture.isSensor;
+                        boolean sensorB = contact.bFixture.isSensor;
                         if (sensorA || sensorB) {
                             continue;
                         }
@@ -1286,8 +1286,8 @@ public class Dynamics2D {
             island.solveTOI(subStep, bA.island, bB.island);
 
 
-            for (var i = 0; i < island.m_bodyCount; ++i) {
-                var body = island.bodies[i];
+            for (int i = 0; i < island.m_bodyCount; ++i) {
+                Body2D body = island.bodies[i];
                 body.flags &= ~Body2D.e_islandFlag;
 
                 if (body.type != BodyType.DYNAMIC) {
@@ -1297,7 +1297,7 @@ public class Dynamics2D {
                 body.synchronizeFixtures();
 
 
-                for (var ce = body.contacts; ce != null; ce = ce.next) {
+                for (ContactEdge ce = body.contacts; ce != null; ce = ce.next) {
                     ce.contact.m_flags &= ~(Contact.TOI_FLAG | Contact.ISLAND_FLAG);
                 }
             }
@@ -1339,7 +1339,7 @@ public class Dynamics2D {
     public int createParticle(ParticleDef def) {
 
 
-        var p = particles.createParticle(def);
+        int p = particles.createParticle(def);
         return p;
     }
 
@@ -1766,29 +1766,29 @@ public class Dynamics2D {
     @Deprecated
     public static void staticBox(Dynamics2D world, float x1, float y1, float x2, float y2, boolean top, boolean right, boolean bottom, boolean left) {
 
-        var cx = (x1 + x2) / 2f;
-        var w = Math.abs(x2 - x1);
-        var h = Math.abs(y2 - y1);
+        float cx = (x1 + x2) / 2f;
+        float w = Math.abs(x2 - x1);
+        float h = Math.abs(y2 - y1);
 
-        var thick = Math.min(w, h) / 20f;
+        float thick = Math.min(w, h) / 20f;
 
         if (bottom) {
-            var _bottom = world.addBody(new BodyDef(BodyType.STATIC),
+            Body2D _bottom = world.addBody(new BodyDef(BodyType.STATIC),
                     new FixtureDef(PolygonShape.box(w / 2 - thick / 2, thick / 2),
                             0, 0));
             _bottom.setTransform(new v2(cx, y1), 0);
         }
 
         if (top) {
-            var _top = world.addBody(new BodyDef(BodyType.STATIC),
+            Body2D _top = world.addBody(new BodyDef(BodyType.STATIC),
                     new FixtureDef(PolygonShape.box(w / 2 - thick / 2, thick / 2),
                             0, 0));
             _top.setTransform(new v2(cx, y2), 0);
         }
 
-        var cy = (y1 + y2) / 2f;
+        float cy = (y1 + y2) / 2f;
         if (left) {
-            var _left = world.addBody(new BodyDef(BodyType.STATIC),
+            Body2D _left = world.addBody(new BodyDef(BodyType.STATIC),
                     new FixtureDef(PolygonShape.box(thick / 2, h / 2 - thick / 2),
                             0, 0));
             _left.setTransform(new v2(x1, cy), 0);
@@ -1796,7 +1796,7 @@ public class Dynamics2D {
         }
 
         if (right) {
-            var _right = world.addBody(new BodyDef(BodyType.STATIC),
+            Body2D _right = world.addBody(new BodyDef(BodyType.STATIC),
                     new FixtureDef(PolygonShape.box(thick / 2, h / 2 - thick / 2),
                             0, 0));
             _right.setTransform(new v2(x2, cy), 0);
@@ -1817,14 +1817,14 @@ class WorldRayCastWrapper implements TreeRayCastCallback {
     private final v2 point = new v2();
 
     public float raycastCallback(RayCastInput input, int nodeId) {
-        var userData = broadPhase.get(nodeId);
-        var proxy = (FixtureProxy) userData;
-        var fixture = proxy.fixture;
-        var index = proxy.childIndex;
-        var hit = fixture.raycast(output, input, index);
+        Object userData = broadPhase.get(nodeId);
+        FixtureProxy proxy = (FixtureProxy) userData;
+        Fixture fixture = proxy.fixture;
+        int index = proxy.childIndex;
+        boolean hit = fixture.raycast(output, input, index);
 
         if (hit) {
-            var fraction = output.fraction;
+            float fraction = output.fraction;
 
             temp.set(input.p2).scaled(fraction);
             point.set(input.p1).scaled(1 - fraction).added(temp);

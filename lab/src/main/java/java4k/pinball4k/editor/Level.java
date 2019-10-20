@@ -70,7 +70,7 @@ public class Level {
 	 * @param g where to draw
 	 */
 	public void draw(Graphics2D g, LevelPanel levelPanel) {
-		for (var obj : levelObjects) {
+		for (LevelObject obj : levelObjects) {
 			obj.draw(g, levelPanel);
 		}
 	}
@@ -80,7 +80,7 @@ public class Level {
 	 * @param g where to draw
 	 */
 	public void drawHandles(Graphics2D g, LevelPanel levelPanel) {
-		for (var obj : levelObjects) {
+		for (LevelObject obj : levelObjects) {
 			obj.drawHandles(g, levelPanel);
 		}
 	}
@@ -91,13 +91,21 @@ public class Level {
 	 * @return a list of selected handles
 	 */
 	public  List<Handle> select(Rectangle rect) {
-		var list = levelObjects.stream().map(LevelObject::getHandles).flatMap(Collection::stream).filter(handle -> handle.intersects(rect)).collect(Collectors.toList());
+		List<Handle> list = new ArrayList<>();
+		for (LevelObject levelObject : levelObjects) {
+			ArrayList<Handle> handles = levelObject.getHandles();
+			for (Handle handle : handles) {
+				if (handle.intersects(rect)) {
+					list.add(handle);
+				}
+			}
+		}
 		return list;
 	}
 	
 	public ArrayList<Handle> select(ArrayList<LevelObject> objects) {
-		var selected = new ArrayList<Handle>();
-		for (var obj : levelObjects) {
+        ArrayList<Handle> selected = new ArrayList<Handle>();
+		for (LevelObject obj : levelObjects) {
 			if (objects.contains(obj)) {
 				selected.addAll(obj.getHandles());
 			}
@@ -112,9 +120,9 @@ public class Level {
 	 */
 	public void delete(List<Handle> selection) {
 		System.out.println("delete " + selection.size());
-		for (var i = selection.size() - 1; i >= 0; i--) {
-			var handle = selection.get(i);
-			var obj = handle.getLevelObject();
+		for (int i = selection.size() - 1; i >= 0; i--) {
+            Handle handle = selection.get(i);
+            LevelObject obj = handle.getLevelObject();
 			if (obj != null) {
 				levelObjects.remove(obj);
 				selection.remove(i);
@@ -124,11 +132,11 @@ public class Level {
 	}
 	
 	private static ArrayList<ArrayList<Line>> createLineStrips(ArrayList<Line> lines) {
-		var clone = (ArrayList<Line>) lines.clone();
-		var strips = new ArrayList<ArrayList<Line>>();
+        ArrayList<Line> clone = (ArrayList<Line>) lines.clone();
+        ArrayList<ArrayList<Line>> strips = new ArrayList<ArrayList<Line>>();
 		
 		while (clone.size() > 0) {
-			var strip = createStrip(clone);
+            ArrayList<Line> strip = createStrip(clone);
 			strips.add(strip);
 		}
 		
@@ -143,12 +151,12 @@ public class Level {
 	 */
 	private static ArrayList<Line> createStrip(ArrayList<Line> lines) {
 
-		var searchList = (ArrayList<Line>) lines.clone();
-		var start = searchList.get(0);
+        ArrayList<Line> searchList = (ArrayList<Line>) lines.clone();
+        Line start = searchList.get(0);
 		
 		while (start != null) {
 			searchList.remove(start);
-			var newStart = findConnectedLine(searchList, start, false);
+            Line newStart = findConnectedLine(searchList, start, false);
 			if (newStart == null) {
 				break;
 			}
@@ -156,7 +164,7 @@ public class Level {
 		}
 
 
-		var strip = new ArrayList<Line>();
+        ArrayList<Line> strip = new ArrayList<Line>();
 		while (start != null) {
 			lines.remove(start);
 			strip.add(start);
@@ -167,22 +175,22 @@ public class Level {
 	}
 
 	private static Line findConnectedLine(ArrayList<Line> lines, Line source, boolean forward) {
-		for (var i = 0; i<lines.size(); i++) {
-			var line = lines.get(i);
+		for (int i = 0; i<lines.size(); i++) {
+            Line line = lines.get(i);
 			if (line.getSortValue() == source.getSortValue()) {
 				if (forward) {
-					var p = source.p2;
+                    Point p = source.p2;
 					if (p.equals(line.p)) {
 						return line;
 					}
 					if (p.equals(line.p2) && !line.isGate) {
-						var temp = line.p;
+                        Point temp = line.p;
 						line.p = line.p2;
 						line.p2 = temp;
 						return line;
 					} 
 				} else {
-					var p = source.p;
+                    Point p = source.p;
 					if (p.equals(line.p) || p.equals(line.p2)) {
 						return line;
 					}
@@ -201,13 +209,13 @@ public class Level {
 			dataOut.writeByte(objIdxMap.get(obj).intValue());
 		}*/
 	private void sortGroups(ArrayList objects) {
-		var sortedList = new ArrayList();
-		for (var groupIdx = 0; groupIdx < groups.getSize(); groupIdx++) {
-			var group = (ArrayList<LevelObject>) groups.getElementAt(groupIdx);
-			for (var groupObjIdx = group.size()-1; groupObjIdx>=0; groupObjIdx--) {
-				var groupObj = group.get(groupObjIdx);
-				for (var objIdx = 0; objIdx<objects.size(); objIdx++) {
-					var curObj = (LevelObject) objects.get(objIdx);
+        ArrayList sortedList = new ArrayList();
+		for (int groupIdx = 0; groupIdx < groups.getSize(); groupIdx++) {
+            ArrayList<LevelObject> group = (ArrayList<LevelObject>) groups.getElementAt(groupIdx);
+			for (int groupObjIdx = group.size()-1; groupObjIdx>=0; groupObjIdx--) {
+                LevelObject groupObj = group.get(groupObjIdx);
+				for (int objIdx = 0; objIdx<objects.size(); objIdx++) {
+                    LevelObject curObj = (LevelObject) objects.get(objIdx);
 					if (groupObj == curObj) {
 						sortedList.add(0, curObj);
 						objects.remove(curObj);
@@ -225,13 +233,13 @@ public class Level {
 	 */
 	public void write(OutputStream out, boolean writeBeziers) throws IOException {
 
-		var flippers = new ArrayList<Flipper>();
-		var lines = new ArrayList<Line>();
-		var sircles = new ArrayList<Sircle>();
-		var arrows = new ArrayList<Arrow>();
-		var beziers = new ArrayList<Bezier>();
+        ArrayList<Flipper> flippers = new ArrayList<Flipper>();
+        ArrayList<Line> lines = new ArrayList<Line>();
+        ArrayList<Sircle> sircles = new ArrayList<Sircle>();
+        ArrayList<Arrow> arrows = new ArrayList<Arrow>();
+        ArrayList<Bezier> beziers = new ArrayList<Bezier>();
 		
-		for (var obj : levelObjects) {
+		for (LevelObject obj : levelObjects) {
 			if (obj instanceof Flipper) {
 				flippers.add((Flipper) obj);
 			} else if (obj instanceof Line) {
@@ -241,19 +249,19 @@ public class Level {
 			} else if (obj instanceof Arrow) {
 				arrows.add((Arrow) obj);
 			} else if (obj instanceof Bezier) {
-				var bezier = (Bezier) obj;
+                Bezier bezier = (Bezier) obj;
 				if (writeBeziers) {
 					beziers.add(bezier);
 				} else {
-					var p1 = bezier.interpolate(0);
-					var subdivs = bezier.subdivs;
-					for (var i = 1; i<=subdivs; i++) {
-						var p2 = bezier.interpolate(i/(float)subdivs);
+                    Point2D.Float p1 = bezier.interpolate(0);
+                    int subdivs = bezier.subdivs;
+					for (int i = 1; i<=subdivs; i++) {
+                        Point2D.Float p2 = bezier.interpolate(i/(float)subdivs);
 
-						var p1Int = new Point(Math.round(p1.x), Math.round(p1.y));
-						var p2Int = new Point(Math.round(p2.x), Math.round(p2.y));
+                        Point p1Int = new Point(Math.round(p1.x), Math.round(p1.y));
+                        Point p2Int = new Point(Math.round(p2.x), Math.round(p2.y));
 
-						var line = new Line(p1Int, p2Int);
+                        Line line = new Line(p1Int, p2Int);
 						lines.add(line);
 						
 						p1 = p2;
@@ -272,12 +280,12 @@ public class Level {
 		sortGroups(sircles);
 
 
-		var strips = createLineStrips(lines);
+        ArrayList<ArrayList<Line>> strips = createLineStrips(lines);
 		lines.clear();
-		var stripLineMap = new HashMap<ArrayList<Line>, Integer>();
-		for (var stripIdx = 0; stripIdx<strips.size(); stripIdx++) {
-			var strip = strips.get(stripIdx);
-			var firstLine = strip.remove(0);
+        HashMap<ArrayList<Line>, Integer> stripLineMap = new HashMap<ArrayList<Line>, Integer>();
+		for (int stripIdx = 0; stripIdx<strips.size(); stripIdx++) {
+            ArrayList<Line> strip = strips.get(stripIdx);
+            Line firstLine = strip.remove(0);
 			if (strip.size() == 0) {
 				strips.remove(strip);
 				stripIdx--;
@@ -287,7 +295,7 @@ public class Level {
 			lines.add(firstLine);
 		}
 
-		var objects = new ArrayList<LevelObject>();
+        ArrayList<LevelObject> objects = new ArrayList<LevelObject>();
 
 		objects.addAll(sircles);
 
@@ -298,7 +306,7 @@ public class Level {
 		objects.addAll(lines);
 
 
-		var dataOut = new DataOutputStream(out);
+        DataOutputStream dataOut = new DataOutputStream(out);
 
 		dataOut.writeByte('|');
 		dataOut.writeByte('|');
@@ -308,11 +316,11 @@ public class Level {
 		dataOut.writeByte(lines.size());
 		dataOut.writeByte(lines.size()+arrows.size()+sircles.size()+flippers.size());
 
-		var objIdxMap = new HashMap<LevelObject, Integer>();
+        HashMap<LevelObject, Integer> objIdxMap = new HashMap<LevelObject, Integer>();
 
-		var idx = 0;
-		for (var obj : objects) {
-			var flags = getFlags(obj);
+        int idx = 0;
+		for (LevelObject obj : objects) {
+            int flags = getFlags(obj);
 			flags |= obj.flagOr;
 			dataOut.writeByte(flags);
 			dataOut.writeByte(obj.score);
@@ -320,25 +328,25 @@ public class Level {
 			objIdxMap.put(obj, new Integer(idx));
 			idx++;
 		}
-		for (var obj : objects) {
+		for (LevelObject obj : objects) {
 			dataOut.writeByte((byte) (obj.p.x / 4));
 			dataOut.writeByte((byte) (obj.p.y / 6));
 		}
 		
 		
-		for (var sircle : sircles) {
+		for (Sircle sircle : sircles) {
 
 				dataOut.writeByte((byte) sircle.radius);
 
 		}
 		
 		
-		for (var arrow : arrows) {
+		for (Arrow arrow : arrows) {
 			dataOut.writeByte((byte) arrow.angle);
 		}
 
 		
-		for (var flipper : flippers) {
+		for (Flipper flipper : flippers) {
 			if (flipper.minAngle < 0 || flipper.maxAngle < 0) {
 				flipper.minAngle = Flipper.toPacked(Flipper.toAngle(flipper.minAngle) + 2*Math.PI);
 				flipper.maxAngle = Flipper.toPacked(Flipper.toAngle(flipper.maxAngle) + 2*Math.PI);
@@ -350,18 +358,18 @@ public class Level {
 		}
 
 
-		var lineStartIdx = flippers.size() + sircles.size() + arrows.size();
-		for (var line : lines) {
+        int lineStartIdx = flippers.size() + sircles.size() + arrows.size();
+		for (Line line : lines) {
 			dataOut.writeByte((byte) (line.p2.x / 4));
 			dataOut.writeByte((byte) (line.p2.y / 6));
 		}
 		
 		
 		dataOut.writeByte(strips.size());
-		for (var strip : strips) {
+		for (ArrayList<Line> strip : strips) {
 			dataOut.writeByte(strip.size());
 			dataOut.writeByte(stripLineMap.get(strip)+lineStartIdx);
-			for (var line : strip) {
+			for (Line line : strip) {
 				dataOut.writeByte((byte) (line.p2.x / 4));
 				dataOut.writeByte((byte) (line.p2.y / 6));
 				objIdxMap.put(line, new Integer(idx));
@@ -370,18 +378,18 @@ public class Level {
 		}
 		
 		dataOut.writeByte(groups.getSize());
-		for (var i = 0; i < groups.getSize() ; i++) {
-			var group = (ArrayList<LevelObject>) groups.getElementAt(i);
+		for (int i = 0; i < groups.getSize() ; i++) {
+            ArrayList<LevelObject> group = (ArrayList<LevelObject>) groups.getElementAt(i);
 			dataOut.writeByte(group.size());
-			var firstIdx = objIdxMap.get(group.get(0)).intValue();
+            int firstIdx = objIdxMap.get(group.get(0)).intValue();
 			if (group.size() > 0) {
 				dataOut.writeByte(firstIdx);
 			}
-			for (var obj : group) {
+			for (LevelObject obj : group) {
 				System.out.print(objIdxMap.get(obj).intValue()+" ");
 			}
 			System.out.print(" | ");
-			for (var j = 0; j<group.size(); j++) {
+			for (int j = 0; j<group.size(); j++) {
 				System.out.print((firstIdx + j)+" ");
 			}
 			System.out.println();
@@ -390,7 +398,7 @@ public class Level {
 		if (beziers.size() > 0) {
 			dataOut.writeByte(beziers.size());
 			
-			for (var bezier : beziers) {
+			for (Bezier bezier : beziers) {
 				dataOut.writeByte((byte) (bezier.p.x / 4));
 				dataOut.writeByte((byte) (bezier.p.y / 6));
 				dataOut.writeByte((byte) (bezier.p2.x / 4));
@@ -406,7 +414,7 @@ public class Level {
 	
 	
 	private static int getFlags(LevelObject obj) {
-		var flags = 0;
+        int flags = 0;
 		if (obj.visible) {
 			flags |= VISIBLE_MASK;
 		}
@@ -430,7 +438,7 @@ public class Level {
 	}
 	
 	private void read(InputStream in) throws IOException {
-		var dataIn = new DataInputStream(in);
+        DataInputStream dataIn = new DataInputStream(in);
 		
 		
 		dataIn.readUnsignedByte();
@@ -438,31 +446,31 @@ public class Level {
 		int flippers = dataIn.readByte();
 		int sircles = dataIn.readByte();
 		int arrows = dataIn.readByte();
-		var lineCnt = dataIn.readUnsignedByte();
+        int lineCnt = dataIn.readUnsignedByte();
 		
 		dataIn.readUnsignedByte();
 
-		for (var i = 0; i < sircles; i++) {
-			var sircle = new Sircle(new Point(0, 0), new Point(1, 0));
+		for (int i = 0; i < sircles; i++) {
+            Sircle sircle = new Sircle(new Point(0, 0), new Point(1, 0));
 			levelObjects.add(sircle);
 		}
 
-		for (var i = 0; i < arrows; i++) {
-			var arrow = new Arrow(new Point(0, 0), new Point(1, 0));
+		for (int i = 0; i < arrows; i++) {
+            Arrow arrow = new Arrow(new Point(0, 0), new Point(1, 0));
 			levelObjects.add(arrow);
 		}
 
-		for (var i = 0; i < flippers; i++) {
-			var flipper = new Flipper(new Point(0, 0), new Point(1, 0));
+		for (int i = 0; i < flippers; i++) {
+            Flipper flipper = new Flipper(new Point(0, 0), new Point(1, 0));
 			levelObjects.add(flipper);
 		}
 
-		for (var i = 0; i < lineCnt; i++) {
-			var line = new Line(new Point(0, 0), new Point(0, 0));
+		for (int i = 0; i < lineCnt; i++) {
+            Line line = new Line(new Point(0, 0), new Point(0, 0));
 			levelObjects.add(line);
 		}			
 		
-		for (var obj : levelObjects) {
+		for (LevelObject obj : levelObjects) {
 			int flags = dataIn.readByte();
 			obj.visible = (flags & VISIBLE_MASK) != 0;
 			obj.collidable = (flags & COLLIDABLE_MASK) != 0;
@@ -474,52 +482,52 @@ public class Level {
 			
 			obj.bounce = (flags & BUMPER_MASK) != 0 ? 1.1f : 0.75f;
 		}
-		for (var obj : levelObjects) {
+		for (LevelObject obj : levelObjects) {
 			obj.p.x = dataIn.readUnsignedByte() * 4;
 			obj.p.y = dataIn.readUnsignedByte() * 6;
 		}
 
-		var levelObjIdx = 0;
+        int levelObjIdx = 0;
 		
-		for (var i = 0; i < sircles; i++) {
-			var sircle = (Sircle) levelObjects.get(levelObjIdx++);
+		for (int i = 0; i < sircles; i++) {
+            Sircle sircle = (Sircle) levelObjects.get(levelObjIdx++);
 			sircle.radius = dataIn.readUnsignedByte();
 		}
 		
-		for (var i = 0; i < arrows; i++) {
-			var arrow = (Arrow) levelObjects.get(levelObjIdx++);
+		for (int i = 0; i < arrows; i++) {
+            Arrow arrow = (Arrow) levelObjects.get(levelObjIdx++);
 			arrow.angle = dataIn.readUnsignedByte();
 		}
 
-		for (var i = 0; i < flippers; i++) {
-			var flipper = (Flipper) levelObjects.get(levelObjIdx++);
+		for (int i = 0; i < flippers; i++) {
+            Flipper flipper = (Flipper) levelObjects.get(levelObjIdx++);
 			flipper.length = 134;
 			flipper.minAngle = dataIn.readUnsignedByte();
 			flipper.maxAngle = dataIn.readUnsignedByte();
 			flipper.leftFlipper = (dataIn.readUnsignedByte() == 0);
 		}
 		
-		for (var i = 0; i < lineCnt; i++) {
-			var line = (Line) levelObjects.get(levelObjIdx++);
+		for (int i = 0; i < lineCnt; i++) {
+            Line line = (Line) levelObjects.get(levelObjIdx++);
 			line.p2.x = dataIn.readUnsignedByte() * 4;
 			line.p2.y = dataIn.readUnsignedByte() * 6;
 		}
 
 
-		var stripsArray = new ArrayList<ArrayList<Line>>();
+        ArrayList<ArrayList<Line>> stripsArray = new ArrayList<ArrayList<Line>>();
 		
 		int strips = dataIn.readByte();
-		var stripBytes = 1+(strips*2);
-		for (var stripIdx = 0; stripIdx<strips; stripIdx++) {
-			var lines = dataIn.readUnsignedByte();
-			var prevIdx = dataIn.readUnsignedByte();
-			var linesArray = new ArrayList<Line>();
+        int stripBytes = 1+(strips*2);
+		for (int stripIdx = 0; stripIdx<strips; stripIdx++) {
+            int lines = dataIn.readUnsignedByte();
+            int prevIdx = dataIn.readUnsignedByte();
+            ArrayList<Line> linesArray = new ArrayList<Line>();
 			linesArray.add((Line) levelObjects.get(prevIdx));
-			for (var lineIdx = 0; lineIdx<lines; lineIdx++) {
-				var line = new Line((Line) levelObjects.get(prevIdx));
+			for (int lineIdx = 0; lineIdx<lines; lineIdx++) {
+                Line line = new Line((Line) levelObjects.get(prevIdx));
 				line.p.setLocation(line.p2);
-				var x_ = dataIn.readUnsignedByte();
-				var y_ = dataIn.readUnsignedByte();
+                int x_ = dataIn.readUnsignedByte();
+                int y_ = dataIn.readUnsignedByte();
 				line.p2.x = x_ * 4;
 				line.p2.y = y_ * 6;
 				prevIdx = levelObjects.size();
@@ -533,17 +541,22 @@ public class Level {
 		}
 		
 		int groupCnt = dataIn.readByte();
-		for (var groupIdx = 0; groupIdx < groupCnt; groupIdx++) {
+		for (int groupIdx = 0; groupIdx < groupCnt; groupIdx++) {
 			int objCnt = dataIn.readByte();
 			int firstIdx = dataIn.readByte();
-			var group = IntStream.range(0, objCnt).map(objIdx -> firstIdx + objIdx).mapToObj(levelObjects::get).collect(Collectors.toCollection(ArrayList::new));
+			ArrayList<LevelObject> group = new ArrayList<>();
+			for (int objIdx = 0; objIdx < objCnt; objIdx++) {
+				int i = firstIdx + objIdx;
+				LevelObject levelObject = levelObjects.get(i);
+				group.add(levelObject);
+			}
 			groups.add(group);
 		}
 
 		if (dataIn.available() > 0) {
 			int beziers = dataIn.readByte();
-			for (var i = 0; i < beziers; i++) {
-				var bezier = new Bezier(new Point(0, 0), new Point(0, 0), new Point(0, 0));
+			for (int i = 0; i < beziers; i++) {
+                Bezier bezier = new Bezier(new Point(0, 0), new Point(0, 0), new Point(0, 0));
 				bezier.p.x = dataIn.readUnsignedByte() * 4;
 				bezier.p.y = dataIn.readUnsignedByte() * 6;
 				bezier.p2.x = dataIn.readUnsignedByte() * 4;
@@ -555,15 +568,15 @@ public class Level {
 			}
 		}
 
-		var flipperBytes = 1 + (flippers * 9);
-		var sircleBytes = 1 + (sircles * 6);
-		var lineBytes = 1 + (lineCnt * 7);
-		var groupBytes = 1 + groupCnt * 2;
-		var total = flipperBytes + sircleBytes + stripBytes + groupBytes + lineBytes;
+        int flipperBytes = 1 + (flippers * 9);
+        int sircleBytes = 1 + (sircles * 6);
+        int lineBytes = 1 + (lineCnt * 7);
+        int groupBytes = 1 + groupCnt * 2;
+        int total = flipperBytes + sircleBytes + stripBytes + groupBytes + lineBytes;
 		System.out.println("reading level");
 		System.out.println(flippers+" flippers (9) "+flipperBytes);
 		System.out.println(sircles+" sircles (6) "+sircleBytes);
-		var arrowBytes = 1 + (arrows * 6);
+        int arrowBytes = 1 + (arrows * 6);
 		System.out.println(arrows+" arrows (6) "+arrowBytes);
 		System.out.println(lineCnt+" lines (7) "+lineBytes);
 		System.out.println(strips+" strips "+stripBytes);

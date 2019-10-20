@@ -75,9 +75,9 @@ public class TokenizedTerminalSetBuilder implements TerminalSetBuilder{
     private void setup(Configuration configuration, DataSet dataSet) {
 
 
-        var TOKEN_THREASHOLD = 80.0;
-        var DISCARD_W_TOKENS = true;
-        var parameters = configuration.getPopulationBuilderParameters();
+        double TOKEN_THREASHOLD = 80.0;
+        boolean DISCARD_W_TOKENS = true;
+        Map<String, String> parameters = configuration.getPopulationBuilderParameters();
         if(parameters!=null){
             
             if(parameters.containsKey("tokenThreashold")){
@@ -89,9 +89,9 @@ public class TokenizedTerminalSetBuilder implements TerminalSetBuilder{
         }
 
 
-        var charset = new CharHashSet();
+        CharHashSet charset = new CharHashSet();
 
-        var nodeFactory = configuration.getNodeFactory();
+        NodeFactory nodeFactory = configuration.getNodeFactory();
         
         Set<Leaf> terminalSet = new HashSet<>(nodeFactory.getTerminalSet());
         
@@ -99,22 +99,22 @@ public class TokenizedTerminalSetBuilder implements TerminalSetBuilder{
         Map<String,Double> tokensCounter = new HashMap<>();
 
 
-        for (var example : dataSet.getExamples()) {
-            for (var match : example.getMatchedStrings()) {
+        for (Example example : dataSet.getExamples()) {
+            for (String match : example.getMatchedStrings()) {
                 
                 
-                for(var c : match.toCharArray()){
+                for(char c : match.toCharArray()){
                     charset.add(c);
                 }
 
-                var tokens = tokenizer.tokenize(match);
+                List<String> tokens = tokenizer.tokenize(match);
                 Set<String> tokensSet = new HashSet<>(tokens);
-                for(var token : tokensSet){
+                for(String token : tokensSet){
                     if(matchW(token) && DISCARD_W_TOKENS){
                         continue;
                     }
                     if(tokensCounter.containsKey(token)){
-                        var value = tokensCounter.get(token);
+                        Double value = tokensCounter.get(token);
                         value++;
                         tokensCounter.put(token, value);
                     } else {
@@ -124,11 +124,11 @@ public class TokenizedTerminalSetBuilder implements TerminalSetBuilder{
             }
         }
 
-        var numberOfMatches = dataSet.getNumberMatches();
+        int numberOfMatches = dataSet.getNumberMatches();
         Map<String, Double> winnerTokens = new HashMap<>();
-        for (var entry : tokensCounter.entrySet()) {
-            var key = entry.getKey();
-            var double1 = entry.getValue();
+        for (Map.Entry<String, Double> entry : tokensCounter.entrySet()) {
+            String key = entry.getKey();
+            Double double1 = entry.getValue();
             Double doublePercentange = (double1 * 100.0) / numberOfMatches;
             entry.setValue(doublePercentange); 
              if(doublePercentange >= TOKEN_THREASHOLD){
@@ -137,8 +137,8 @@ public class TokenizedTerminalSetBuilder implements TerminalSetBuilder{
         }
         
         
-        for (var entry : winnerTokens.entrySet()) {
-            var token = entry.getKey();
+        for (Map.Entry<String, Double> entry : winnerTokens.entrySet()) {
+            String token = entry.getKey();
                 double v = entry.getValue();
                 Leaf leaf = new Constant(Utils.escape(token));
                 terminalSet.add(leaf);

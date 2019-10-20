@@ -36,7 +36,7 @@ public abstract class flat extends AbstractInlineFunctor1 {
     }
 
     public static @NotNull List<Term> collect(@NotNull Term[] x, @NotNull List<Term> l) {
-        for (var a : x) {
+        for (@NotNull Term a : x) {
             if (a.op() == Op.PROD || a.op().set || a.op() == Op.CONJ) {
                 ((Subterms) a).addAllTo(l);
             } else

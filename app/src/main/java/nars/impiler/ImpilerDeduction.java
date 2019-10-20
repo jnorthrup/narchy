@@ -61,24 +61,24 @@ public class ImpilerDeduction extends Search<Term, Task> {
 
 
 	public @Nullable LongToObjectFunction<Truth> estimator(boolean beliefOrGoal, Termed target) {
-		var t = get(target, nar.time(), false);
+		List<Task> t = get(target, nar.time(), false);
 		if (t.isEmpty())
 			return null;
 		return ((when)->{
 
 			double F = 0, E = 0;
-			for (var x : t) {
-				var subj = x.sub(0);
-				var eStart = when - subj.eventRange();
-				var sTruth = beliefOrGoal ? nar.beliefTruth(subj, eStart) : nar.goalTruth(subj, eStart);
+			for (Task x : t) {
+				Term subj = x.sub(0);
+				long eStart = when - subj.eventRange();
+				Truth sTruth = beliefOrGoal ? nar.beliefTruth(subj, eStart) : nar.goalTruth(subj, eStart);
 				if (sTruth!=null) {
-					var implTruth = x.truth();
-					var neg = implTruth.isNegative();
-					var c = NALTruth.Deduction.apply(sTruth, implTruth.negIf(neg), 0, nar); //TODO correct truth func for goal
+					Truth implTruth = x.truth();
+					boolean neg = implTruth.isNegative();
+					Truth c = NALTruth.Deduction.apply(sTruth, implTruth.negIf(neg), 0, nar); //TODO correct truth func for goal
 					if (c != null) {
-						var ce = c.evi();
+						double ce = c.evi();
 						E += ce;
-						var cf = c.freq();
+						float cf = c.freq();
 						F += (neg ? 1 - cf : cf) * ce;
 					}
 				}
@@ -97,15 +97,15 @@ public class ImpilerDeduction extends Search<Term, Task> {
 
 		this.in = null; //reset for repeated invocation
 
-		var target = _target.term();
+		Term target = _target.term();
 		if (target.op() == IMPL)
 			target = target.sub(forward ? 0 /* subj */ : 1 /* pred */);
 
-		var target1 = target.unneg();
+		Term target1 = target.unneg();
 		this.forward = forward;
 		this.start = when;
 
-		var rootNode = Impiler.node(target, true, nar);
+		Impiler.ImplNode rootNode = Impiler.node(target, true, nar);
 		if (rootNode != null) {
 			this.volMax = nar.termVolMax.intValue();
 			this.confMin = nar.confMin.floatValue();
@@ -147,17 +147,17 @@ public class ImpilerDeduction extends Search<Term, Task> {
 	 */
 	boolean deduce(List<BooleanObjectPair<FromTo<Node<Term, Task>, Task>>> path) {
 
-		var n = path.size();
+		int n = path.size();
 
-		var pathTasks = new Task[n];
+		Task[] pathTasks = new Task[n];
 
 		{
 			Term iPrev = null;
-			var volEstimate = 1 + n / 2; //initial cost estimate
+			int volEstimate = 1 + n / 2; //initial cost estimate
 			for (int i = 0, pathSize = path.size(); i < pathSize; i++) {
-				var ii = path.get(forward ? i : (n - 1 - i));
-				var e = ii.getTwo().id();
-				var ee = e.term();
+				BooleanObjectPair<FromTo<Node<Term, Task>, Task>> ii = path.get(forward ? i : (n - 1 - i));
+				Task e = ii.getTwo().id();
+				Term ee = e.term();
 				volEstimate += ee.volume();
 				if (volEstimate > volMax - volPadding)
 					return false; //estimated path volume exceeds limit
@@ -169,7 +169,7 @@ public class ImpilerDeduction extends Search<Term, Task> {
 				pathTasks[i] = e;
 
 
-				for (var k = 0; k < i; k++)
+				for (int k = 0; k < i; k++)
 					if (Stamp.overlap(e, pathTasks[k]))
 						return false;
 
@@ -180,21 +180,21 @@ public class ImpilerDeduction extends Search<Term, Task> {
 
 		MutableTruth tAccum = null;
 
-		var offset = start;
+		long offset = start;
 
 
-		var dur =
+		float dur =
 			//0; //?
 			nar.dur();
 
 		for (int i = 0, pathTasksLength = pathTasks.length; i < pathTasksLength; i++) {
-			var e = pathTasks[i];
-			var tCurr = e.truth(now, now, dur, true);
+			Task e = pathTasks[i];
+			Truth tCurr = e.truth(now, now, dur, true);
 			if (tCurr == null)
 				return false; //too weak
 
-			var ee = e.term();
-			var edt = ee.dt();
+			Term ee = e.term();
+			int edt = ee.dt();
 			if (edt == DTERNAL) edt = 0;
 
 			if (forward) {
@@ -216,7 +216,7 @@ public class ImpilerDeduction extends Search<Term, Task> {
 					tCurr = tCurr.neg();
 				}
 
-				var tNext = NALTruth.Deduction.apply(tAccum, tCurr, confMin, null);
+				Truth tNext = NALTruth.Deduction.apply(tAccum, tCurr, confMin, null);
 				if (tNext == null)
 					return false;
 
@@ -230,23 +230,23 @@ public class ImpilerDeduction extends Search<Term, Task> {
 
 		Term before = Null, next = Null;
         offset = 0;
-		var range = Long.MAX_VALUE;
-		var zDT = 0;
+		long range = Long.MAX_VALUE;
+		int zDT = 0;
         for (int i = 0, pathTasksLength = pathTasks.length; i < pathTasksLength; i++) {
-			var e = pathTasks[i];
+			Task e = pathTasks[i];
 
-			var ee = e.term();
+			Term ee = e.term();
 
-			var es = e.start();
+			long es = e.start();
 			if (es != ETERNAL)
 				range = Math.min(range, e.end() - es);
 
-			var ees = forward ? 0 : 1;
+			int ees = forward ? 0 : 1;
 
 			before = ee.sub(1 - ees);
 			if (forward) before = before.negIf(e.isNegative());
 
-			var dt = ee.dt();
+			int dt = ee.dt();
             switch (dt) {
                 case DTERNAL:
                     dt = 0; //HACK
@@ -272,10 +272,10 @@ public class ImpilerDeduction extends Search<Term, Task> {
 
 		}
 
-		var ccc = cc.term();
+		Term ccc = cc.term();
 		if (ccc == Null) return false;
 
-		var implication = forward ?
+		Term implication = forward ?
 			IMPL.the(ccc, zDT, before)
 			:
 			IMPL.the(ccc, zDT, next);

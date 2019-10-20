@@ -101,8 +101,8 @@ public enum Abbreviation { ;
 
         @Override
         protected @Nullable Task transform(Task x, Derivation d) {
-            var xx = x.term();
-            var yy = abbreviate((Compound)xx);
+            Term xx = x.term();
+            Term yy = abbreviate((Compound)xx);
             return yy!=null && yy.opID()==xx.opID() ? SpecialTermTask.the(x, yy, true) : null;
         }
 
@@ -126,7 +126,7 @@ public enum Abbreviation { ;
         final RecursiveTermTransform.NegObliviousTermTransform transform =new RecursiveTermTransform.NegObliviousTermTransform() {
             @Override
             public Term applyPosCompound(Compound x) {
-                var v = x.volume();
+                int v = x.volume();
                 if (v >= volMin && v <= subVolMax) {
                     Term y = abbreviateTerm(x); //terminal
                     if (y !=null)
@@ -146,7 +146,7 @@ public enum Abbreviation { ;
 
         @Override
         protected Term abbreviate(Compound x) {
-            var y = transform.applyCompound(x);
+            Term y = transform.applyCompound(x);
             return !y.equals(x) ? y : null;
         }
 
@@ -163,8 +163,8 @@ public enum Abbreviation { ;
 
         @Override
         protected @Nullable Task transform(Task x, Derivation d) {
-            var xx = x.term();
-            var yy = unabbreviateTerm(xx);
+            Term xx = x.term();
+            Term yy = unabbreviateTerm(xx);
             //TODO volMax test
             return yy != null ? SpecialTermTask.the(x, yy, true) : null;
         }
@@ -175,7 +175,7 @@ public enum Abbreviation { ;
         static final RecursiveTermTransform.NegObliviousTermTransform transform =new RecursiveTermTransform.NegObliviousTermTransform() {
             @Override
             public Term applyAtomic(Atomic a) {
-                var b = unabbreviateTerm(a);
+                Term b = unabbreviateTerm(a);
                 return b==null ? a : b;
             }
         };
@@ -189,8 +189,8 @@ public enum Abbreviation { ;
 
         @Override
         protected @Nullable Task transform(Task x, Derivation d) {
-            var xx = x.term();
-            var yy = transform.apply(xx).normalize();
+            Term xx = x.term();
+            Term yy = transform.apply(xx).normalize();
             return yy.op().taskable && !yy.equals(xx) && yy.volume() <= d.termVolMax ? SpecialTermTask.the(x, yy, true) : null;
         }
     }

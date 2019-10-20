@@ -30,8 +30,8 @@ public class ArrayIteratorNonNull<E> implements Iterator<E>, Iterable<E> {
 
 	private E find() {
 		E next = null;
-		var index = this.index;
-		var limit = this.limit;
+        int index = this.index;
+        int limit = this.limit;
 		while (++index < limit) {
 			if ((next = this.array[index])!=null)
 				break;
@@ -42,7 +42,7 @@ public class ArrayIteratorNonNull<E> implements Iterator<E>, Iterable<E> {
 
 	@Override
 	public E next() {
-		var n = next;
+        E n = next;
 		if (n == null) {
 			//called next without prior hasNext, so call that now.
 			if ((n = find())==null)

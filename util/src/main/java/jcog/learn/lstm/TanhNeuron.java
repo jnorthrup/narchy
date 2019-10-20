@@ -9,8 +9,8 @@ public final class TanhNeuron implements Neuron
 
 	@Override
 	public final double derivate(double x) {
-		var coshx = Math.cosh(x);
-		var denom = (Math.cosh(2.0*x) + 1.0);
+        double coshx = Math.cosh(x);
+        double denom = (Math.cosh(2.0*x) + 1.0);
 		return 4.0 * coshx * coshx / (denom * denom);
 	}
 

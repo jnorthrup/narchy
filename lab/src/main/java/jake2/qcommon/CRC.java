@@ -64,9 +64,9 @@ public class CRC
 
 	static int CRC_Block(byte[] start, int count)
 	{
-		var crc= CRC_INIT_VALUE;
+        short crc= CRC_INIT_VALUE;
 
-		var ndx= 0;
+        int ndx= 0;
 
 		while (count-- > 0)
 			crc= (short) ((crc << 8) ^ crctable[0xff & ((crc >> 8) ^ start[ndx++])]);
@@ -103,7 +103,7 @@ public class CRC
                         (byte) 0x21};
 				System.out.println("crc:" + (CRC_Block(data, 21) & 0xffff));
 				System.out.println("----");
-				for (var n = 0; n < 5; n++)
+				for (int n = 0; n < 5; n++)
 					System.out.println("seq:" + (Com.BlockSequenceCRCByte( data,0, 21,n*10) & 0xff));
 				
 	}

@@ -45,7 +45,7 @@ public class FingerResizeSurface extends FingerResize {
 
     @Override
     protected void resize(float x1, float y1, float x2, float y2) {
-        var r = RectFloat.XYXY(x1, y1, x2, y2);
+        RectFloat r = RectFloat.XYXY(x1, y1, x2, y2);
         s.pos(r);
     }
 

@@ -71,12 +71,12 @@ import java.util.function.Predicate;
     }
     
     public double getMin(int signal) {
-        var s = getSignal(signal);
+        ScalarColumn s = getSignal(signal);
         if (s == null) return Double.NaN;        
         return s.getMin();
     }
     public double getMax(int signal) {
-        var s = getSignal(signal);
+        ScalarColumn s = getSignal(signal);
         if (s == null) return Double.NaN;        
         return s.getMax();
     }
@@ -84,16 +84,16 @@ import java.util.function.Predicate;
     
     public void updateBounds(int signal) {
 
-        var s = getSignal(signal);
+        ScalarColumn s = getSignal(signal);
         s.resetBounds();
-        var min = Double.POSITIVE_INFINITY;
-        var max = Double.NEGATIVE_INFINITY;
+        double min = Double.POSITIVE_INFINITY;
+        double max = Double.NEGATIVE_INFINITY;
 
 
-        for (var objects : this) {
-            var e = objects[signal];
+        for (Object[] objects : this) {
+            Object e = objects[signal];
             if (e instanceof Number) {
-                var d = ((Number) e).doubleValue();
+                double d = ((Number) e).doubleValue();
                 if (d < min) min = d;
                 if (d > max) max = d;
             }
@@ -106,7 +106,7 @@ import java.util.function.Predicate;
     public void addViaReflection(Object obj) {
         Class c = obj.getClass();
         Class meter = Meters.class;
-        for (var f : c.getFields()) {
+        for (Field f : c.getFields()) {
 
 
 
@@ -130,13 +130,13 @@ import java.util.function.Predicate;
 //    }
 
     public Metrics addViaReflection(Meters... c) {
-        for (var x : c)
+        for (Meters x : c)
             add(x);
         return this;
     }
 
     public <M extends Meters<?>> M getMeter(String id) {
-        var i = indexOf(id);
+        int i = indexOf(id);
         if (i == -1) return null;
         return (M) meters.get(i);
     }
@@ -169,8 +169,8 @@ import java.util.function.Predicate;
         @Override
         public Object[] apply(Object[] f) {
 
-            var j = 0;
-            for (var c : columns) {
+            int j = 0;
+            for (int c : columns) {
                 next[j++] = f[c];
             }
             return next;
@@ -238,12 +238,12 @@ import java.util.function.Predicate;
 
     @SafeVarargs
     public final <M extends Meters<C>, C> void addAll(M... m) {
-        for (var mm : m)
+        for (M mm : m)
             add(mm);
     }
 
     public <M extends Meters<C>, C> M add(M m) {
-        for (var s : m.getSignals()) {
+        for (ScalarColumn s : m.getSignals()) {
             if (getSignal(s.id)!=null)
                 throw new RuntimeException("Signal " + s.id + " already exists in "+ this);
         }
@@ -261,16 +261,16 @@ import java.util.function.Predicate;
     public synchronized <R extends RowKey> void update(R key) {
         nextRowKey = key;
 
-        var extremaToInvalidate = new boolean[ numColumns ];
+        boolean[] extremaToInvalidate = new boolean[ numColumns ];
 
-        var nextRow = new Object[ numColumns ];
+        Object[] nextRow = new Object[ numColumns ];
         append(nextRow, extremaToInvalidate);
 
-        var c = 0;
+        int c = 0;
         for (Meters m : meters) {
-            var v = m.sample(key);
+            Object[] v = m.sample(key);
             if (v == null) continue;
-            var vl = v.length;
+            int vl = v.length;
 
             if (c + vl > nextRow.length) 
                 throw new RuntimeException("column overflow: " + m + ' ' + c + '+' + vl + '>' + nextRow.length);
@@ -294,7 +294,7 @@ import java.util.function.Predicate;
         invalidateExtrema(true, nextRow, extremaToInvalidate);
    
         
-        for (var i = 0; i < getSignals().size(); i++) {
+        for (int i = 0; i < getSignals().size(); i++) {
             if (i == 0) extremaToInvalidate[0] = true;
             if (extremaToInvalidate[i]) {        
                 updateBounds(i);
@@ -305,18 +305,18 @@ import java.util.function.Predicate;
     }
     
     private void invalidateExtrema(boolean added, Object[] row, boolean[] extremaToInvalidate) {
-        for (var i = 0; i < row.length; i++) {
-            var ri = row[i];
+        for (int i = 0; i < row.length; i++) {
+            Object ri = row[i];
             if (!(ri instanceof Number)) continue;
 
-            var n = ((Number)row[i]).doubleValue();
+            double n = ((Number)row[i]).doubleValue();
             if (Double.isNaN(n)) continue;
 
-            var min = getMin(i);
-            var max = getMax(i);
+            double min = getMin(i);
+            double max = getMax(i);
 
-            var minNAN = Double.isNaN(min);
-            var maxNAN = Double.isNaN(max);
+            boolean minNAN = Double.isNaN(min);
+            boolean maxNAN = Double.isNaN(max);
             
             if (added) {
                 
@@ -343,7 +343,7 @@ import java.util.function.Predicate;
 
         if (history > 0) {
             while (rows.size() >= history) {
-                var prev = rows.removeFirst();
+                Object[] prev = rows.removeFirst();
                 invalidateExtrema(false, prev, invalidatedExtrema);
             }
         }
@@ -355,7 +355,7 @@ import java.util.function.Predicate;
     public List<ScalarColumn> getSignals() {
         if (signalList == null) {
             signalList = new ArrayList(numColumns);
-            for (var m : meters)
+            for (Meters<?> m : meters)
                 signalList.addAll(m.getSignals());
         }
         return signalList;        
@@ -364,8 +364,8 @@ import java.util.function.Predicate;
     public Map<String,Integer> getSignalIndex() {
         if (signalIndex == null) {
             signalIndex = new HashMap(numColumns);
-            var i = 0;
-            for (var s : getSignals()) {
+            int i = 0;
+            for (ScalarColumn s : getSignals()) {
                 signalIndex.put(s.id, i++);
             }
         }
@@ -377,7 +377,7 @@ import java.util.function.Predicate;
     }
     
     public int indexOf(String signalID) {
-        var i = getSignalIndex().get(signalID);
+        Integer i = getSignalIndex().get(signalID);
         if (i == null) return -1;
         return i;
     }
@@ -387,7 +387,7 @@ import java.util.function.Predicate;
     }
     public ScalarColumn getSignal(String s) {
        if (s == null) return null;
-        var ii = indexOf(s);
+        int ii = indexOf(s);
        if (ii == -1) return null;
        return getSignals().get(ii); 
     }    
@@ -410,8 +410,8 @@ import java.util.function.Predicate;
         if ((c == null) || (c.length != numRows() )) 
             c = new Object[ numRows() ];
 
-        var r = 0;
-        for (var row : this) {
+        int r = 0;
+        for (Object[] row : this) {
             c[r++] = row[signal];
         }
         
@@ -450,15 +450,15 @@ import java.util.function.Predicate;
     }
 
     public static DoubleArrayList doubles(Iterable<Object> l) {
-        var r = new DoubleArrayList();
-        for (var o : l)
+        DoubleArrayList r = new DoubleArrayList();
+        for (Object o : l)
             if (o instanceof Number) r.add(((Number)o).doubleValue());
         return r;
     }
 
     public static double[] doubleArray(Object... l) {
-        var r = new DoubleArrayList(l.length);
-        for (var o : l)
+        DoubleArrayList r = new DoubleArrayList(l.length);
+        for (Object o : l)
             if (o instanceof Number) r.add(((Number)o).doubleValue());
         return r.toArray();
     }
@@ -477,7 +477,7 @@ import java.util.function.Predicate;
 
     public List<Object> getNewSignalValues(int column, int num) {
         List<Object> l = new ArrayList(num);
-        var r = reverseIterator();
+        Iterator<Object[]> r = reverseIterator();
         while (r.hasNext() && num > 0) {
             l.add(r.next()[column]);
             num--;
@@ -486,9 +486,9 @@ import java.util.function.Predicate;
     }
     
     public String[] getSignalIDs() {
-        var r = new String[getSignals().size()];
-        var i = 0;
-        for (var s : getSignals()) {
+        String[] r = new String[getSignals().size()];
+        int i = 0;
+        for (ScalarColumn s : getSignals()) {
             r[i++] = s.id;
         }
         return r;
@@ -517,7 +517,7 @@ import java.util.function.Predicate;
     /** print CSV with numbers up to 4 decimal points accuracy */
     public void printCSV4(PrintStream out) {
         printCSVHeader(out);
-        for (var row : this) {
+        for (Object[] row : this) {
             printCSVRow4(out, row);
         }
         out.flush();
@@ -536,10 +536,10 @@ import java.util.function.Predicate;
     }
 
     private static void printCSVRow4(PrintStream out, Object[] row) {
-        for (var o : row) {
+        for (Object o : row) {
             
             if (o instanceof Number) {
-                var n = (Number)o;
+                Number n = (Number)o;
                 out.append(Texts.n4(n.floatValue()));
             } else {
                 out.append('"').append(String.valueOf(o)).append('"');
@@ -568,9 +568,9 @@ import java.util.function.Predicate;
         out.println("@RELATION " + name());
 
 
-        var n = 0;
-        for (var m : meters) {
-            for (var s : m.getSignals()) {
+        int n = 0;
+        for (Meters<?> m : meters) {
+            for (ScalarColumn s : m.getSignals()) {
                 if (n == 0) {
                     
                     out.println("@ATTRIBUTE " + s.id + " STRING");
@@ -590,12 +590,12 @@ import java.util.function.Predicate;
         printCSVHeader(out);
 
         out.println("@DATA");
-        for (var x : this) {
+        for (Object[] x : this) {
             if (p!=null)
                 if (!p.test(x)) continue;
-            for (var i = 0; i < numColumns; i++) {
+            for (int i = 0; i < numColumns; i++) {
                 if (i < x.length) {
-                    var y = x[i];
+                    Object y = x[i];
                     if (y == null)
                         out.print('?');
                     else if (y instanceof Number)

@@ -13,6 +13,7 @@ import spacegraph.space2d.widget.menu.view.GridMenuView;
 import spacegraph.space2d.widget.meta.LazySurface;
 import spacegraph.space2d.widget.meta.MetaHover;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,8 +41,12 @@ public class TabMenu extends Menu {
     public TabMenu(Map<String, Supplier<Surface>> options, MenuView view, Function<String, ToggleButton> buttonBuilder) {
         super(options, view);
         items.clear();
-        var tabs = new Gridding();
-        var list = options.entrySet().stream().map(x -> toggle(buttonBuilder, x.getKey(), x.getValue())).collect(toList());
+        Gridding tabs = new Gridding();
+        List<Surface> list = new ArrayList<>();
+        for (Map.Entry<String, Supplier<Surface>> x : options.entrySet()) {
+            Surface toggle = toggle(buttonBuilder, x.getKey(), x.getValue());
+            list.add(toggle);
+        }
         tabs.set(list);
 
         wrap = new Splitting(tabs, 0, content.view());
@@ -50,7 +55,7 @@ public class TabMenu extends Menu {
     }
 
     public final TabMenu set(String item, boolean enable) {
-        var b = items.get(item);
+        ToggleButton b = items.get(item);
         b.on(enable);
         return this;
     }
@@ -78,7 +83,7 @@ public class TabMenu extends Menu {
             } else {
 
                 if (created[0] != null) {
-                    var removed = content.inactive(created[0]);
+                    boolean removed = content.inactive(created[0]);
                     assert(removed);
                     created[0] = null;
                 }
@@ -109,13 +114,13 @@ public class TabMenu extends Menu {
 //            });
         };
 
-        var bb = buttonBuilder.apply(label).on(toggleInside);
+        ToggleButton bb = buttonBuilder.apply(label).on(toggleInside);
         items.put(label, bb);
-        var cc = PushButton.awesome("external-link").clicked(spawnOutside);
+        PushButton cc = PushButton.awesome("external-link").clicked(spawnOutside);
 
         //return Splitting.row(bb, 0.75f, new AspectAlign(cc, AspectAlign.Align.RightTop,1, 0.75f));
 
-        var ccc = new AspectAlign(cc, 1, AspectAlign.Align.TopRight, 0.25f, 0.25f);
+        AspectAlign ccc = new AspectAlign(cc, 1, AspectAlign.Align.TopRight, 0.25f, 0.25f);
         return new MetaHover(bb, ()->ccc);
         //return new Stacking(cc, ccc);
 

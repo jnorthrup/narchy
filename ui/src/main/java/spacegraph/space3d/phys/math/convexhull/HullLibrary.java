@@ -55,26 +55,26 @@ public class HullLibrary {
 	 */
 	public boolean createConvexHull(HullDesc desc, HullResult result) {
 
-		var hr = new PHullResult();
+        PHullResult hr = new PHullResult();
 
-		var vcount = desc.vcount;
+        int vcount = desc.vcount;
 		if (vcount < 8) vcount = 8;
 
-		var vertexSource = new FasterList<v3>();
+        FasterList<v3> vertexSource = new FasterList<v3>();
 		MiscUtil.resize(vertexSource, vcount, v3.class);
 
-		var scale = new v3();
+        v3 scale = new v3();
 
-		var ovcount = new int[1];
+        int[] ovcount = new int[1];
 
-		var ok = cleanupVertices(desc.vcount, desc.vertices, desc.vertexStride, ovcount, vertexSource, desc.normalEpsilon, scale);
+        boolean ok = cleanupVertices(desc.vcount, desc.vertices, desc.vertexStride, ovcount, vertexSource, desc.normalEpsilon, scale);
 
-		var ret = false;
+        boolean ret = false;
         if (ok) {
 			
-            for (var i = 0; i<ovcount[0]; i++) {
+            for (int i = 0; i<ovcount[0]; i++) {
 
-				var v = vertexSource.get(i);
+                v3 v = vertexSource.get(i);
                 VectorUtil.mul(v, v, scale);
             }
 
@@ -82,7 +82,7 @@ public class HullLibrary {
 
 			if (ok) {
 
-				var vertexScratch = new FasterList<v3>();
+                FasterList<v3> vertexScratch = new FasterList<v3>();
 				MiscUtil.resize(vertexScratch, hr.vcount, v3.class);
 
 				bringOutYourDead(hr.vertices, hr.vcount, vertexScratch, ovcount, hr.indices, hr.indexCount);
@@ -98,20 +98,20 @@ public class HullLibrary {
 
 					MiscUtil.resize(result.indices, hr.indexCount, 0);
 
-					for (var i = 0; i<ovcount[0]; i++) {
+					for (int i = 0; i<ovcount[0]; i++) {
 						
 						
 						result.outputVertices.get(i).set(vertexScratch.get(i));
 					}
 
 					if (desc.hasHullFlag(HullFlags.REVERSE_ORDER)) {
-						var source_ptr = hr.indices;
-						var source_idx = 0;
+                        IntArrayList source_ptr = hr.indices;
+                        int source_idx = 0;
 
-						var dest_ptr = result.indices;
-						var dest_idx = 0;
+                        IntArrayList dest_ptr = result.indices;
+                        int dest_idx = 0;
 
-						for (var i = 0; i<hr.faceCount; i++) {
+						for (int i = 0; i<hr.faceCount; i++) {
 							dest_ptr.set(dest_idx, source_ptr.get(source_idx + 2));
 							dest_ptr.set(dest_idx + 1, source_ptr.get(source_idx + 1));
 							dest_ptr.set(dest_idx + 2, source_ptr.get(source_idx));
@@ -120,7 +120,7 @@ public class HullLibrary {
 						}
 					}
 					else {
-						for (var i = 0; i<hr.indexCount; i++) {
+						for (int i = 0; i<hr.indexCount; i++) {
 							result.indices.set(i, hr.indices.get(i));
 						}
 					}
@@ -132,20 +132,20 @@ public class HullLibrary {
 					result.numFaces = hr.faceCount;
 					result.numIndices = hr.indexCount + hr.faceCount;
 					MiscUtil.resize(result.indices, result.numIndices, 0);
-					for (var i = 0; i<ovcount[0]; i++) {
+					for (int i = 0; i<ovcount[0]; i++) {
 						
 						
 						result.outputVertices.get(i).set(vertexScratch.get(i));
 					}
 
 
-					var source_ptr = hr.indices;
-					var source_idx = 0;
+                    IntArrayList source_ptr = hr.indices;
+                    int source_idx = 0;
 
-					var dest_ptr = result.indices;
-					var dest_idx = 0;
+                    IntArrayList dest_ptr = result.indices;
+                    int dest_idx = 0;
 
-                    for (var i = 0; i<hr.faceCount; i++) {
+                    for (int i = 0; i<hr.faceCount; i++) {
                         dest_ptr.set(dest_idx, 3);
                         if (desc.hasHullFlag(HullFlags.REVERSE_ORDER)) {
                             dest_ptr.set(dest_idx + 1, source_ptr.get(source_idx + 2));
@@ -185,8 +185,8 @@ public class HullLibrary {
 	}
 
 	private boolean computeHull(int vcount, FasterList<v3> vertices, PHullResult result, int vlimit) {
-		var tris_count = new int[1];
-		var ret = calchull(vertices, vcount, result.indices, tris_count, vlimit);
+        int[] tris_count = new int[1];
+        int ret = calchull(vertices, vcount, result.indices, tris_count, vlimit);
 		if (ret == 0) return false;
 		result.indexCount = tris_count[0] * 3;
 		result.faceCount = tris_count[0];
@@ -196,7 +196,7 @@ public class HullLibrary {
 	}
 
 	private Tri allocateTriangle(int a, int b, int c) {
-		var tr = new Tri(a, b, c);
+        Tri tr = new Tri(a, b, c);
 		tr.id = tris.size();
 		tris.add(tr);
 
@@ -210,11 +210,11 @@ public class HullLibrary {
 	}
 
 	private void b2bfix(Tri s, Tri t) {
-		for (var i = 0; i<3; i++) {
-			var i1 = (i + 1) % 3;
-			var i2 = (i + 2) % 3;
-			var a = s.getCoord(i1);
-			var b = s.getCoord(i2);
+		for (int i = 0; i<3; i++) {
+            int i1 = (i + 1) % 3;
+            int i2 = (i + 2) % 3;
+            int a = s.getCoord(i1);
+            int b = s.getCoord(i2);
 			
 			assert (tris.get(s.neib(a, b).get()).neib(b, a).get() == s.id);
 			
@@ -236,11 +236,11 @@ public class HullLibrary {
 	private void checkit(Tri t) {
 		
 		assert (tris.get(t.id) == t);
-		for (var i = 0; i<3; i++) {
-			var i1 = (i + 1) % 3;
-			var i2 = (i + 2) % 3;
-			var a = t.getCoord(i1);
-			var b = t.getCoord(i2);
+		for (int i = 0; i<3; i++) {
+            int i1 = (i + 1) % 3;
+            int i2 = (i + 2) % 3;
+            int a = t.getCoord(i1);
+            int b = t.getCoord(i2);
 
 			assert (a != b);
 			
@@ -250,7 +250,7 @@ public class HullLibrary {
 
 	private Tri extrudable(float epsilon) {
 		Tri t = null;
-        for (var tri : tris) {
+        for (Tri tri : tris) {
 
 
             if (t == null || (tri != null && t.rise < tri.rise)) {
@@ -262,15 +262,15 @@ public class HullLibrary {
 	}
 
 	private int calchull(FasterList<v3> verts, int verts_count, IntArrayList tris_out, int[] tris_count, int vlimit) {
-		var rc = calchullgen(verts, verts_count, vlimit);
+        int rc = calchullgen(verts, verts_count, vlimit);
 		if (rc == 0) return 0;
 
-		var ts = new IntArrayList();
+        IntArrayList ts = new IntArrayList();
 
-        for (var tri : tris) {
+        for (Tri tri : tris) {
 
             if (tri != null) {
-                for (var j = 0; j < 3; j++) {
+                for (int j = 0; j < 3; j++) {
 
                     ts.add(tri.getCoord(j));
                 }
@@ -281,7 +281,7 @@ public class HullLibrary {
 		tris_count[0] = ts.size() / 3;
 		MiscUtil.resize(tris_out, ts.size(), 0);
 
-		for (var i = 0; i<ts.size(); i++) {
+		for (int i = 0; i<ts.size(); i++) {
 			tris_out.set(i, ts.get(i));
 		}
 		MiscUtil.resize(tris, 0, Tri.class);
@@ -292,24 +292,24 @@ public class HullLibrary {
 	private int calchullgen(FasterList<v3> verts, int verts_count, int vlimit) {
 		if (verts_count < 4) return 0;
 
-		var tmp = new v3();
-		var tmp1 = new v3();
-		var tmp2 = new v3();
+        v3 tmp = new v3();
+        v3 tmp1 = new v3();
+        v3 tmp2 = new v3();
 
 		if (vlimit == 0) {
 			vlimit = 1000000000;
 		}
 
 
-		var bmin = new v3(verts.get(0));
+        v3 bmin = new v3(verts.get(0));
 
-		var bmax = new v3(verts.get(0));
-		var isextreme = new IntArrayList();
+        v3 bmax = new v3(verts.get(0));
+        IntArrayList isextreme = new IntArrayList();
 
-		var allow = new IntArrayList();
+        IntArrayList allow = new IntArrayList();
 		
 
-		for (var j = 0; j<verts_count; j++) {
+		for (int j = 0; j<verts_count; j++) {
 			allow.add(1);
 			isextreme.add(0);
 			
@@ -318,16 +318,16 @@ public class HullLibrary {
 			VectorUtil.setMax(bmax, verts.get(j));
 		}
 		tmp.sub(bmax, bmin);
-		var epsilon = tmp.length() * 0.001f;
+        float epsilon = tmp.length() * 0.001f;
 		assert (epsilon != 0f);
 
-		var p = findSimplex(verts, verts_count, allow, new Int4());
+        Int4 p = findSimplex(verts, verts_count, allow, new Int4());
 		if (p.x == -1) {
 			return 0; 
 
 		
 		}
-		var center = new v3();
+        v3 center = new v3();
 		
 		
 		
@@ -335,13 +335,13 @@ public class HullLibrary {
 		VectorUtil.add(center, verts.get(p.getCoord(0)), verts.get(p.getCoord(1)), verts.get(p.getCoord(2)), verts.get(p.getCoord(3)));
 		center.scaled(1f / 4f);
 
-		var t0 = allocateTriangle(p.getCoord(2), p.getCoord(3), p.getCoord(1));
+        Tri t0 = allocateTriangle(p.getCoord(2), p.getCoord(3), p.getCoord(1));
 		t0.n.set(2, 3, 1);
-		var t1 = allocateTriangle(p.getCoord(3), p.getCoord(2), p.getCoord(0));
+        Tri t1 = allocateTriangle(p.getCoord(3), p.getCoord(2), p.getCoord(0));
 		t1.n.set(3, 2, 0);
-		var t2 = allocateTriangle(p.getCoord(0), p.getCoord(1), p.getCoord(3));
+        Tri t2 = allocateTriangle(p.getCoord(0), p.getCoord(1), p.getCoord(3));
 		t2.n.set(0, 1, 3);
-		var t3 = allocateTriangle(p.getCoord(1), p.getCoord(0), p.getCoord(2));
+        Tri t3 = allocateTriangle(p.getCoord(1), p.getCoord(0), p.getCoord(2));
 		t3.n.set(1, 0, 2);
 		isextreme.set(p.getCoord(0), 1);
 		isextreme.set(p.getCoord(1), 1);
@@ -352,9 +352,9 @@ public class HullLibrary {
 		checkit(t2);
 		checkit(t3);
 
-		var n = new v3();
+        v3 n = new v3();
 
-        for (var t : tris) {
+        for (Tri t : tris) {
 
             assert (t != null);
             assert (t.vmax < 0);
@@ -371,12 +371,12 @@ public class HullLibrary {
         Tri te;
         while (vlimit > 0 && ((te = extrudable(epsilon)) != null)) {
 			Int3 ti = te;
-			var v = te.vmax;
+            int v = te.vmax;
 			assert (v != -1);
 			assert (isextreme.get(v) == 0);  
 			isextreme.set(v, 1);
 
-			var j = tris.size();
+            int j = tris.size();
 			while ((j--) != 0) {
 				
 				if (tris.get(j) == null) {
@@ -413,7 +413,7 @@ public class HullLibrary {
 				if (above(verts, nt, center, 0.01f * epsilon) || tmp.length() < epsilon * epsilon * 0.1f) {
 
 
-					var nb = tris.get(tris.get(j).n.getCoord(0));
+                    Tri nb = tris.get(tris.get(j).n.getCoord(0));
 					assert (nb != null);
 					assert (!hasvert(nb, v));
 					assert (nb.id < j);
@@ -424,7 +424,7 @@ public class HullLibrary {
 			j = tris.size();
 			while ((j--) != 0) {
 
-				var t = tris.get(j);
+                Tri t = tris.get(j);
 				if (t == null) {
 					continue;
 				}
@@ -452,15 +452,15 @@ public class HullLibrary {
 	}
 
 	private static Int4 findSimplex(FasterList<v3> verts, int verts_count, IntArrayList allow, Int4 out) {
-		var tmp = new v3();
-		var tmp1 = new v3();
-		var tmp2 = new v3();
+        v3 tmp = new v3();
+        v3 tmp1 = new v3();
+        v3 tmp2 = new v3();
 
 		v3[] basis = { new v3(), new v3(), new v3() };
 		basis[0].set(0.01f, 0.02f, 1.0f);
-		var p0 = maxdirsterid(verts, verts_count, basis[0], allow);
+        int p0 = maxdirsterid(verts, verts_count, basis[0], allow);
 		tmp.negated(basis[0]);
-		var p1 = maxdirsterid(verts, verts_count, tmp, allow);
+        int p1 = maxdirsterid(verts, verts_count, tmp, allow);
 		
 		
 		basis[0].sub(verts.get(p0), verts.get(p1));
@@ -476,7 +476,7 @@ public class HullLibrary {
 			basis[1].set(basis[2]);
 		}
 		basis[1].normalize();
-		var p2 = maxdirsterid(verts, verts_count, basis[1], allow);
+        int p2 = maxdirsterid(verts, verts_count, basis[1], allow);
 		if (p2 == p0 || p2 == p1) {
 			tmp.negated(basis[1]);
 			p2 = maxdirsterid(verts, verts_count, tmp, allow);
@@ -490,7 +490,7 @@ public class HullLibrary {
 		basis[1].sub(verts.get(p2), verts.get(p0));
 		basis[2].cross(basis[1], basis[0]);
 		basis[2].normalize();
-		var p3 = maxdirsterid(verts, verts_count, basis[2], allow);
+        int p3 = maxdirsterid(verts, verts_count, basis[2], allow);
 		if (p3 == p0 || p3 == p1 || p3 == p2) {
 			tmp.negated(basis[2]);
 			p3 = maxdirsterid(verts, verts_count, tmp, allow);
@@ -512,7 +512,7 @@ public class HullLibrary {
 		
 		tmp1.sub(verts.get(p3), verts.get(p0));
 		if (tmp1.dot(tmp2) < 0) {
-			var swap_tmp = p2;
+            int swap_tmp = p2;
 			p2 = p3;
 			p3 = swap_tmp;
 		}
@@ -523,17 +523,17 @@ public class HullLibrary {
 	
 
 	private void extrude(Tri t0, int v) {
-		var t = new Int3(t0);
-		var n = tris.size();
-		var ta = allocateTriangle(v, t.getCoord(1), t.getCoord(2));
+        Int3 t = new Int3(t0);
+        int n = tris.size();
+        Tri ta = allocateTriangle(v, t.getCoord(1), t.getCoord(2));
 		ta.n.set(t0.n.getCoord(0), n + 1, n + 2);
 		
 		tris.get(t0.n.getCoord(0)).neib(t.getCoord(1), t.getCoord(2)).set(n);
-		var tb = allocateTriangle(v, t.getCoord(2), t.getCoord(0));
+        Tri tb = allocateTriangle(v, t.getCoord(2), t.getCoord(0));
 		tb.n.set(t0.n.getCoord(1), n + 2, n);
 		
 		tris.get(t0.n.getCoord(1)).neib(t.getCoord(2), t.getCoord(0)).set(n + 1);
-		var tc = allocateTriangle(v, t.getCoord(0), t.getCoord(1));
+        Tri tc = allocateTriangle(v, t.getCoord(0), t.getCoord(1));
 		tc.n.set(t0.n.getCoord(2), n, n + 1);
 		
 		tris.get(t0.n.getCoord(2)).neib(t.getCoord(0), t.getCoord(1)).set(n + 2);
@@ -565,13 +565,13 @@ public class HullLibrary {
 	
 	
 	private void bringOutYourDead(FasterList<v3> verts, int vcount, FasterList<v3> overts, int[] ocount, IntArrayList indices, int indexcount) {
-		var vs = vertexIndexMapping.size();
-		var tmpIndices = new IntArrayList(vs);
-		for (var i = 0; i< vs; i++) {
+        int vs = vertexIndexMapping.size();
+        IntArrayList tmpIndices = new IntArrayList(vs);
+		for (int i = 0; i< vs; i++) {
 			tmpIndices.add(vs);
 		}
 
-		var usedIndices = new IntArrayList();
+        IntArrayList usedIndices = new IntArrayList();
 		MiscUtil.resize(usedIndices, vcount, 0);
 		/*
 		JAVA NOTE: redudant
@@ -582,8 +582,8 @@ public class HullLibrary {
 
 		ocount[0] = 0;
 
-		for (var i = 0; i<indexcount; i++) {
-			var v = indices.get(i);
+		for (int i = 0; i<indexcount; i++) {
+            int v = indices.get(i);
 
 			assert (v >= 0 && v < vcount);
 
@@ -597,7 +597,7 @@ public class HullLibrary {
 				
 				overts.get(ocount[0]).set(verts.get(v)); 
 
-				for (var k = 0; k < vertexIndexMapping.size(); k++) {
+				for (int k = 0; k < vertexIndexMapping.size(); k++) {
 					if (tmpIndices.get(k) == v) {
 						vertexIndexMapping.set(k, ocount[0]);
 					}
@@ -637,17 +637,17 @@ public class HullLibrary {
 		float[] bmin = { Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE };
 		float[] bmax = { -Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE };
 
-		var vtx_ptr = svertices;
-		var vtx_idx = 0;
+        FasterList<v3> vtx_ptr = svertices;
+        int vtx_idx = 0;
 
 		
-        for (var i = 0; i<svcount; i++) {
+        for (int i = 0; i<svcount; i++) {
 
-			var p = vtx_ptr.get(vtx_idx);
+            v3 p = vtx_ptr.get(vtx_idx);
 
             vtx_idx +=/*stride*/ 1;
 
-            for (var j = 0; j<3; j++) {
+            for (int j = 0; j<3; j++) {
                 if (VectorUtil.coord(p, j) < bmin[j]) {
                     bmin[j] = VectorUtil.coord(p, j);
                 }
@@ -657,11 +657,11 @@ public class HullLibrary {
             }
         }
 
-		var dx = bmax[0] - bmin[0];
-		var dy = bmax[1] - bmin[1];
-		var dz = bmax[2] - bmin[2];
+        float dx = bmax[0] - bmin[0];
+        float dy = bmax[1] - bmin[1];
+        float dz = bmax[2] - bmin[2];
 
-		var center = new v3();
+        v3 center = new v3();
 
 		center.x = dx * 0.5f + bmin[0];
 		center.y = dy * 0.5f + bmin[1];
@@ -669,7 +669,7 @@ public class HullLibrary {
 
 		if (dx < EPSILON || dy < EPSILON || dz < EPSILON || svcount < 3) {
 
-			var len = Float.MAX_VALUE;
+            float len = Float.MAX_VALUE;
 
 			if (dx > EPSILON && dx < len) len = dx;
 			if (dy > EPSILON && dy < len) len = dy;
@@ -684,14 +684,14 @@ public class HullLibrary {
 				if (dz < EPSILON) dz = len * 0.05f;
 			}
 
-			var x1 = center.x - dx;
-			var x2 = center.x + dx;
+            float x1 = center.x - dx;
+            float x2 = center.x + dx;
 
-			var y1 = center.y - dy;
-			var y2 = center.y + dy;
+            float y1 = center.y - dy;
+            float y2 = center.y + dy;
 
-			var z1 = center.z - dz;
-			var z2 = center.z + dz;
+            float z1 = center.z - dz;
+            float z2 = center.z + dz;
 
 			addPoint(vcount, vertices, x1, y1, z1);
 			addPoint(vcount, vertices, x2, y1, z1);
@@ -704,7 +704,7 @@ public class HullLibrary {
 
 			return true; 
 		}
-		var recip = new float[3];
+        float[] recip = new float[3];
         if (scale != null) {
             scale.x = dx;
             scale.y = dy;
@@ -722,14 +722,14 @@ public class HullLibrary {
         vtx_ptr = svertices;
 		vtx_idx = 0;
 
-		for (var i = 0; i<svcount; i++) {
+		for (int i = 0; i<svcount; i++) {
 
-			var p = vtx_ptr.get(vtx_idx);
+            v3 p = vtx_ptr.get(vtx_idx);
 			vtx_idx +=/*stride*/ 1;
 
-			var px = p.x;
-			var py = p.y;
-			var pz = p.z;
+            float px = p.x;
+            float py = p.y;
+            float pz = p.z;
 
 			if (scale != null) {
 				px *= recip[0];
@@ -743,11 +743,11 @@ public class HullLibrary {
 			for (j=0; j<vcount[0]; j++) {
 
 
-				var v = vertices.get(j);
+                v3 v = vertices.get(j);
 
-				var x = v.x;
-				var y = v.y;
-				var z = v.z;
+                float x = v.x;
+                float y = v.y;
+                float z = v.z;
 
                 dx = Math.abs(x - px);
                 dy = Math.abs(y - py);
@@ -756,8 +756,8 @@ public class HullLibrary {
                 if (dx < normalepsilon && dy < normalepsilon && dz < normalepsilon) {
 
 
-					var dist1 = getDist(px, py, pz, center);
-					var dist2 = getDist(v.x, v.y, v.z, center);
+                    float dist1 = getDist(px, py, pz, center);
+                    float dist2 = getDist(v.x, v.y, v.z, center);
 
                     if (dist1 > dist2) {
                         v.x = px;
@@ -771,7 +771,7 @@ public class HullLibrary {
 
 			if (j == vcount[0]) {
 
-				var dest = vertices.get(vcount[0]);
+                v3 dest = vertices.get(vcount[0]);
                 dest.x = px;
                 dest.y = py;
                 dest.z = pz;
@@ -786,10 +786,10 @@ public class HullLibrary {
 		bmin = new float[] { Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE };
 		bmax = new float[] { -Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE };
 
-		for (var i = 0; i<vcount[0]; i++) {
+		for (int i = 0; i<vcount[0]; i++) {
 
-			var p = vertices.get(i);
-            for (var j = 0; j < 3; j++) {
+            v3 p = vertices.get(i);
+            for (int j = 0; j < 3; j++) {
                 if (VectorUtil.coord(p, j) < bmin[j]) {
                     bmin[j] = VectorUtil.coord(p, j);
                 }
@@ -804,11 +804,11 @@ public class HullLibrary {
 		dz = bmax[2] - bmin[2];
 
 		if (dx < EPSILON || dy < EPSILON || dz < EPSILON || vcount[0] < 3) {
-			var cx = dx * 0.5f + bmin[0];
-			var cy = dy * 0.5f + bmin[1];
-			var cz = dz * 0.5f + bmin[2];
+            float cx = dx * 0.5f + bmin[0];
+            float cy = dy * 0.5f + bmin[1];
+            float cz = dz * 0.5f + bmin[2];
 
-			var len = Float.MAX_VALUE;
+            float len = Float.MAX_VALUE;
 
             if (dx >= EPSILON && dx < len) len = dx;
             if (dy >= EPSILON && dy < len) len = dy;
@@ -823,14 +823,14 @@ public class HullLibrary {
                 if (dz < EPSILON) dz = len * 0.05f;
             }
 
-			var x1 = cx - dx;
-			var x2 = cx + dx;
+            float x1 = cx - dx;
+            float x2 = cx + dx;
 
-			var y1 = cy - dy;
-			var y2 = cy + dy;
+            float y1 = cy - dy;
+            float y2 = cy + dy;
 
-			var z1 = cz - dz;
-			var z2 = cz + dz;
+            float z1 = cz - dz;
+            float z2 = cz + dz;
 
             vcount[0] = 0; 
 
@@ -852,7 +852,7 @@ public class HullLibrary {
 	
 
 	private static boolean hasvert(Int3 t, int v) {
-        for (var i : new int[]{0, 1, 2}) {
+        for (int i : new int[]{0, 1, 2}) {
             if (t.getCoord(i) == v) {
                 return (true);
             }
@@ -861,11 +861,11 @@ public class HullLibrary {
 	}
 
 	private static v3 orth(v3 v, v3 out) {
-		var a = new v3();
+        v3 a = new v3();
 		a.set(0f, 0f, 1f);
 		a.cross(v, a);
 
-		var b = new v3();
+        v3 b = new v3();
 		b.set(0f, 1f, 0f);
 		b.cross(v, b);
 
@@ -880,8 +880,8 @@ public class HullLibrary {
 
 	private static int maxdirfiltered(FasterList<v3> p, int count, v3 dir, IntArrayList allow) {
 		assert (count != 0);
-		var m = -1;
-		for (var i = 0; i<count; i++) {
+        int m = -1;
+		for (int i = 0; i<count; i++) {
 			if (allow.get(i) != 0) {
 				
 				
@@ -895,13 +895,13 @@ public class HullLibrary {
 	}
 
 	private static int maxdirsterid(FasterList<v3> p, int count, v3 dir, IntArrayList allow) {
-		var tmp = new v3();
-		var tmp1 = new v3();
-		var tmp2 = new v3();
-		var u = new v3();
-		var v = new v3();
+        v3 tmp = new v3();
+        v3 tmp1 = new v3();
+        v3 tmp2 = new v3();
+        v3 u = new v3();
+        v3 v = new v3();
 
-		var m = -1;
+        int m = -1;
 		while (m == -1) {
 			m = maxdirfiltered(p, count, dir, allow);
 			if (allow.get(m) == 3) {
@@ -909,24 +909,24 @@ public class HullLibrary {
 			}
 			orth(dir, u);
 			v.cross(u, dir);
-			var ma = -1;
-			for (var x = 0f; x <= 360f; x += 45f) {
-				var s = (float) Math.sin(BulletGlobals.SIMD_RADS_PER_DEG * (x));
-				var c = (float) Math.cos(BulletGlobals.SIMD_RADS_PER_DEG * (x));
+            int ma = -1;
+			for (float x = 0f; x <= 360f; x += 45f) {
+                float s = (float) Math.sin(BulletGlobals.SIMD_RADS_PER_DEG * (x));
+                float c = (float) Math.cos(BulletGlobals.SIMD_RADS_PER_DEG * (x));
 
 				tmp1.scale(s, u);
 				tmp2.scale(c, v);
 				tmp.add(tmp1, tmp2);
 				tmp.scaled(0.025f);
 				tmp.add(dir);
-				var mb = maxdirfiltered(p, count, tmp, allow);
+                int mb = maxdirfiltered(p, count, tmp, allow);
 				if (ma == m && mb == m) {
 					allow.set(m, 3);
 					return m;
 				}
 				if (ma != -1 && ma != mb) {
-					var mc = ma;
-					for (var xx = x - 40f; xx <= x; xx += 5f) {
+                    int mc = ma;
+					for (float xx = x - 40f; xx <= x; xx += 5f) {
 						s = (float) Math.sin(BulletGlobals.SIMD_RADS_PER_DEG * (xx));
 						c = (float) Math.cos(BulletGlobals.SIMD_RADS_PER_DEG * (xx));
 
@@ -936,7 +936,7 @@ public class HullLibrary {
 						tmp.scaled(0.025f);
 						tmp.add(dir);
 
-						var md = maxdirfiltered(p, count, tmp, allow);
+                        int md = maxdirfiltered(p, count, tmp, allow);
 						if (mc == m && md == m) {
 							allow.set(m, 3);
 							return m;
@@ -954,16 +954,16 @@ public class HullLibrary {
 	}
 
 	private static v3 triNormal(v3 v0, v3 v1, v3 v2, v3 out) {
-		var tmp1 = new v3();
-		var tmp2 = new v3();
+        v3 tmp1 = new v3();
+        v3 tmp2 = new v3();
 
 		
 		
 		tmp1.sub(v1, v0);
 		tmp2.sub(v2, v1);
-		var cp = new v3();
+        v3 cp = new v3();
 		cp.cross(tmp1, tmp2);
-		var m = cp.length();
+        float m = cp.length();
 		if (m == 0) {
 			out.set(1f, 0f, 0f);
 			return out;
@@ -975,8 +975,8 @@ public class HullLibrary {
 	private static boolean above(FasterList<v3> vertices, Int3 t, v3 p, float epsilon) {
 
 
-		var n = triNormal(vertices.get(t.getCoord(0)), vertices.get(t.getCoord(1)), vertices.get(t.getCoord(2)), new v3());
-		var tmp = new v3();
+        v3 n = triNormal(vertices.get(t.getCoord(0)), vertices.get(t.getCoord(1)), vertices.get(t.getCoord(2)), new v3());
+        v3 tmp = new v3();
 		
 		tmp.sub(p, vertices.get(t.getCoord(0)));
 		return (n.dot(tmp) > epsilon); 
@@ -995,7 +995,7 @@ public class HullLibrary {
 	private static void addPoint(int[] vcount, FasterList<v3> p, float x, float y, float z) {
 
 
-		var dest = p.get(vcount[0]);
+        v3 dest = p.get(vcount[0]);
 		dest.x = x;
 		dest.y = y;
 		dest.z = z;
@@ -1003,9 +1003,9 @@ public class HullLibrary {
 	}
 	
 	private static float getDist(float px, float py, float pz, v3 p2) {
-		var dx = px - p2.x;
-		var dy = py - p2.y;
-		var dz = pz - p2.z;
+        float dx = px - p2.x;
+        float dy = py - p2.y;
+        float dz = pz - p2.z;
 
 		return dx*dx + dy*dy + dz*dz;
 	}

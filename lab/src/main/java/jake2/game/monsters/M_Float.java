@@ -1166,7 +1166,7 @@ public class M_Float {
             if (GameBase.skill.value == 3)
                 return;
 
-            var n = (Lib.rand() + 1) % 3;
+            int n = (Lib.rand() + 1) % 3;
             if (n == 0) {
                 game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
                         Defines.ATTN_NORM, 0);

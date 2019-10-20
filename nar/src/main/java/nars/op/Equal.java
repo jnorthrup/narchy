@@ -28,7 +28,7 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements Ide
     }
 
     public static Term the(Term x, Term y) {
-        @Nullable var p = pretest(x, y);
+        @Nullable Term p = pretest(x, y);
         return p != null ? p : CommutiveBinaryBidiFunctor.the(equal, x, y);
     }
 
@@ -43,7 +43,7 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements Ide
     public static Term cmp(Term a, Term b, int c) {
         if (a.compareTo(b) > 0) {
             c *= -1;
-            var x = a;
+            Term x = a;
             a = b;
             b = x;
         }
@@ -86,7 +86,7 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements Ide
 
     @Override
     protected Term compute(Evaluation e, Term x, Term y) {
-        var p = pretest(x, y);
+        Term p = pretest(x, y);
         if (p != null)
             return p;
 
@@ -104,12 +104,12 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements Ide
 
         if (x.volume() < y.volume()) {
             //swap for canonical comparison
-            var z = x;
+            Term z = x;
             x = y;
             y = z;
             xHasVar = true;
             yHasVar = false;
-            var zOp = xOp;
+            Op zOp = xOp;
             xOp = yOp;
             yOp = zOp;
         }
@@ -119,7 +119,7 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements Ide
             //algebraic solutions TODO use symbolic algebra system
             Term xf = Functor.func(x);
             if (xf.equals(MathFunc.add)) {
-                var xa = Functor.args((Compound) x, 2);
+                Subterms xa = Functor.args((Compound) x, 2);
                 Term xa0 = xa.sub(0), xa1 = xa.sub(1);
                 if (yOp == INT && xa0 instanceof Variable && xa1.op() == INT) {
                     return e.is(xa0, IdempotInt.the(((IdempotInt) y).i - ((IdempotInt) xa1).i)) ? True : Null; //"equal(add(#x,a),y)"
@@ -141,7 +141,7 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements Ide
 //                }
 
             } else if (xf.equals(MathFunc.mul)) {
-                var xa = Functor.args((Compound) x, 2);
+                Subterms xa = Functor.args((Compound) x, 2);
                 Term xa0 = xa.sub(0), xa1 = xa.sub(1);
                 if (yOp == INT && xa0 instanceof Variable && xa1 instanceof IdempotInt)
                     return e.is(xa0, $.the(((double) ((IdempotInt) y).i) / ((IdempotInt) xa1).i)) ? True : Null; //"equal(mul(#x,a),b)"

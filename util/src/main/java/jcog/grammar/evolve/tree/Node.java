@@ -41,7 +41,7 @@ public abstract class Node {
     public abstract long getId();
 
     public final String describe() {
-        var sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         describe(sb);
         return sb.toString();
     }

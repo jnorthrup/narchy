@@ -96,7 +96,7 @@ public class MutableRectFloat<X> extends v2 {
     }
 
     public void commitLerp(float rate) {
-        var v = new v2(cxPrev, cyPrev);
+        v2 v = new v2(cxPrev, cyPrev);
         v.lerp(new v2(x, y)/*this*/, rate);
         set(v);
     }
@@ -184,7 +184,7 @@ public class MutableRectFloat<X> extends v2 {
     /** stretch to maximum bounding rectangle of this rect and the provided point */
     public MutableRectFloat<X> mbr(float px, float py) {
 
-        var change = false;
+        boolean change = false;
 
         float x1 = left(), x2 = right();
         if (x1 > px) {
@@ -230,14 +230,14 @@ public class MutableRectFloat<X> extends v2 {
 
     public RectFloat normalizeScale(float cx, float cy, float cw, float ch, float minVisibleDim, float sw, float sh) {
 
-        var extent = this;
-        var ew = extent.w ;
-        var px = (cx - extent.left()) / ew;
-        var eh = extent.h;
-        var py = (cy - extent.bottom()) / eh;
+        MutableRectFloat<X> extent = this;
+        float ew = extent.w ;
+        float px = (cx - extent.left()) / ew;
+        float eh = extent.h;
+        float py = (cy - extent.bottom()) / eh;
 
-        var pw = Math.max(minVisibleDim, cw / ew);
-        var ph = Math.max(minVisibleDim, ch / eh);
+        float pw = Math.max(minVisibleDim, cw / ew);
+        float ph = Math.max(minVisibleDim, ch / eh);
 
         return RectFloat.XYWH(
                 px * sw,

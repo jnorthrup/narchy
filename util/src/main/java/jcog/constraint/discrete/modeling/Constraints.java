@@ -71,14 +71,14 @@ public class Constraints {
     }
 
     public static IntVar sum(DiscreteConstraintSolver solver, IntVar[] variables, int k) {
-        var min = k;
-        var max = k;
-        for (var i = 0; i < variables.length; i++) {
+        int min = k;
+        int max = k;
+        for (int i = 0; i < variables.length; i++) {
             
             min += variables[i].min();
             max += variables[i].max();
         }
-        var result = solver.intVar(min, max);
+        IntVar result = solver.intVar(min, max);
         solver.add(sum(variables, result, k)); 
         return result;
     }

@@ -37,13 +37,13 @@ import static jcog.Util.curve;
 public class NARS {
 
     public final NAR get(Consumer<NAR> init) {
-        var n = get();
+        NAR n = get();
         init.accept(n);
         return n;
     }
 
     public final NAR get() {
-        var n = new NAR(
+        NAR n = new NAR(
             index.get(),
             exec.get(),
                 time, rng, conceptBuilder.get(), what
@@ -101,7 +101,7 @@ public class NARS {
     @Deprecated public NARS withNAL(int minLevel, int maxLevel) {
         return then((n)-> {
 
-            var r = Derivers.nal(n, minLevel, maxLevel);
+            PremiseRuleSet r = Derivers.nal(n, minLevel, maxLevel);
 
                 if (maxLevel >= 7)
                     r.add(new STMLinker(1));
@@ -144,11 +144,11 @@ public class NARS {
 
                 n.termVolMax.set(22);
 
-                var main = (TaskLinkWhat) n.what();
+                TaskLinkWhat main = (TaskLinkWhat) n.what();
                 main.links.decay.set(0.01f);
 
 
-                var p = 0.5f;
+                float p = 0.5f;
                 n.beliefPriDefault.pri(p);
                 n.goalPriDefault.pri(p);
                 n.questionPriDefault.pri(p);
@@ -187,13 +187,13 @@ public class NARS {
 
 
         /** shared eternal belief and goal capacity curve */
-        var bgEternal = curve(termVolume,
+        ToIntFunction<Concept> bgEternal = curve(termVolume,
                 1, 8,
                 16, 4
         );
 
         /** shared temporal belief and goal capacity curve */
-        var bgTemporal = curve(termVolume,
+        ToIntFunction<Concept> bgTemporal = curve(termVolume,
                 1, 128,
                 8, 64,
                 16, 32,
@@ -201,7 +201,7 @@ public class NARS {
         );
 
         /** shared question and quest capacity curve */
-        var q = curve(termVolume,
+        ToIntFunction<Concept> q = curve(termVolume,
                 1, 8,
                 24, 4
         );
@@ -259,7 +259,7 @@ public class NARS {
     }
     
     public static NAR threadSafe(int level) {
-        var d = new DefaultNAR(level, true)
+        NARS d = new DefaultNAR(level, true)
                 .time(new RealTime.CS().durFPS(25f));
 
         d.rng = ThreadLocalRandom::current;

@@ -12,11 +12,11 @@ public class EuclideanDistance implements Distance{
 
 	@Override
 	public double distanceSq(DataPoint d1, DataPoint d2) {
-		var dd = .0;
-		var x1 = d1.getDataRef();
-		var x2 = d2.getDataRef();
-        for(var d = 0; d < d1._D; d++) {
-			var diff = (x1[d] - x2[d]);
+        double dd = .0;
+        double[] x1 = d1.getDataRef();
+        double[] x2 = d2.getDataRef();
+        for(int d = 0; d < d1._D; d++) {
+            double diff = (x1[d] - x2[d]);
             dd += diff * diff;
 	    }
 	    return dd;

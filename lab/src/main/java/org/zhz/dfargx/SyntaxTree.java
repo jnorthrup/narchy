@@ -37,11 +37,11 @@ public class SyntaxTree {
         shunt();
 
 
-        var operatingStack = new OperatingStack();
+        OperatingStack operatingStack = new OperatingStack();
 
 
         while (!nodeStack.isEmpty()) {
-            var node = nodeStack.removeLast();
+            Node node = nodeStack.removeLast();
             node.accept(operatingStack);
         }
         try {
@@ -55,21 +55,21 @@ public class SyntaxTree {
     }
 
     private void shunt() {
-        var shuntingStack = new ShuntingStack();
+        ShuntingStack shuntingStack = new ShuntingStack();
         Consumer<Node> c = n -> n.accept(shuntingStack);
-        for (var node : nodeList) {
+        for (Node node : nodeList) {
             c.accept(node);
         }
         shuntingStack.finish(nodeStack);
     }
 
     private void normalize() {
-        var index = 0;
-        var r = this.regex;
-        var len = r.length();
+        int index = 0;
+        String r = this.regex;
+        int len = r.length();
         while (index < len) {
-            var ch = r.charAt(index++);
-            var nodeList = this.nodeList;
+            char ch = r.charAt(index++);
+            FasterList<Node> nodeList = this.nodeList;
             switch (ch) {
                 case '[':
                     tryConcat();
@@ -79,23 +79,23 @@ public class SyntaxTree {
                         index++;
                     } else isComplementarySet = false;
                     List<Character> all = new FasterList<>();
-                    for (var next = r.charAt(index++); next != ']'; next = r.charAt(index++)) {
+                    for (char next = r.charAt(index++); next != ']'; next = r.charAt(index++)) {
                         if (next == '\\' || next == '.') {
                             String token;
                             if (next == '\\') {
-                                var nextNext = r.charAt(index++);
+                                char nextNext = r.charAt(index++);
                                 token = new String(new char[]{'\\', nextNext});
                             } else token = String.valueOf(next);
-                            var tokenSet = CommonSets.interpretToken(token);
+                            List<Character> tokenSet = CommonSets.interpretToken(token);
                             all.addAll(tokenSet);
                         } else all.add(next);
                     }
-                    var chSet = CommonSets.minimum(CommonSets.listToArray(all));
+                    char[] chSet = CommonSets.minimum(CommonSets.listToArray(all));
                     if (isComplementarySet) {
                         chSet = CommonSets.complementarySet(chSet);
                     }
                     nodeList.add(LeftBracket.the);
-                    for (var i = 0; i < chSet.length; i++) {
+                    for (int i = 0; i < chSet.length; i++) {
                         nodeList.add(new LChar(chSet[i]));
                         if (i == chSet.length - 1 || chSet[i + 1] == 0) break;
                         nodeList.add(new BOr());
@@ -104,10 +104,10 @@ public class SyntaxTree {
                     itemTerminated = true;
                     break;
                 case '{':
-                    var deterministicLength = false;
-                    var sb = new StringBuilder();
+                    boolean deterministicLength = false;
+                    StringBuilder sb = new StringBuilder();
                     label:
-                    for (var next = r.charAt(index++); ; ) {
+                    for (char next = r.charAt(index++); ; ) {
                         sb.append(next);
                         next = r.charAt(index++);
                         switch (next) {
@@ -118,15 +118,15 @@ public class SyntaxTree {
                                 break label;
                         }
                     }
-                    var least = Texts.i(sb.toString());
+                    int least = Texts.i(sb.toString());
 
 
-                    var most = -1;
+                    int most = -1;
                     if (!deterministicLength) {
-                        var next = r.charAt(index);
+                        char next = r.charAt(index);
                         if (next != '}') {
                             sb = new StringBuilder();
-                            for (var nextNext = r.charAt(index++); nextNext != '}'; nextNext = r.charAt(index++)) {
+                            for (char nextNext = r.charAt(index++); nextNext != '}'; nextNext = r.charAt(index++)) {
                                 sb.append(nextNext);
                             }
                             if (sb.length() != 0) {
@@ -168,13 +168,13 @@ public class SyntaxTree {
                     if (ch == '\\' || ch == '.') {
                         String token;
                         if (ch == '\\') {
-                            var next = r.charAt(index++);
+                            char next = r.charAt(index++);
                             token = new String(new char[]{'\\', next});
                         } else token = String.valueOf(ch);
-                        var tokenSet = CommonSets.interpretToken(token);
+                        List<Character> tokenSet = CommonSets.interpretToken(token);
                         nodeList.add(LeftBracket.the);
                         nodeList.add(new LChar(tokenSet.get(0)));
-                        for (var i = 1; i < tokenSet.size(); i++) {
+                        for (int i = 1; i < tokenSet.size(); i++) {
                             nodeList.add(new BOr());
                             nodeList.add(new LChar(tokenSet.get(i)));
                         }
@@ -190,7 +190,7 @@ public class SyntaxTree {
     
     private void performMany(int least, int most) {
         if (!(least == 1 && most == 1)) {
-            var nodeList = this.nodeList;
+            FasterList<Node> nodeList = this.nodeList;
             if (least == 0 && most == -1) {
                 nodeList.add(new BMany());
                 nodeList.add(new LNull());
@@ -199,9 +199,9 @@ public class SyntaxTree {
                 if (last() instanceof RightBracket) {
                     sample = new LinkedList<>();
                     sample.add(nodeList.remove(nodeList.size() - 1));
-                    var stack = 1;
-                    for (var i = nodeList.size() - 1; i >= 0; i--) {
-                        var node = nodeList.remove(i);
+                    int stack = 1;
+                    for (int i = nodeList.size() - 1; i >= 0; i--) {
+                        Node node = nodeList.remove(i);
                         if (node instanceof RightBracket) {
                             stack++;
                         } else if (node instanceof LeftBracket) {
@@ -215,7 +215,7 @@ public class SyntaxTree {
                 } else sample = Collections.singletonList(nodeList.remove(nodeList.size() - 1));
 
                 if (most == -1) {
-                    for (var i = 0; i < least; i++) {
+                    for (int i = 0; i < least; i++) {
                         nodeList.addAll(copyNodes(sample));
                         nodeList.add(new BConcat());
                     }
@@ -225,12 +225,12 @@ public class SyntaxTree {
                 } else {
                     if (least != most) {
                         nodeList.add(LeftBracket.the);
-                        for (var i = least; i <= most; i++) {
+                        for (int i = least; i <= most; i++) {
                             nodeList.add(LeftBracket.the);
                             if (i == 0) {
                                 nodeList.add(LClosure.the);
                             } else {
-                                for (var j = 0; j < i; j++) {
+                                for (int j = 0; j < i; j++) {
                                     nodeList.addAll(copyNodes(sample));
                                     if (j != i - 1) {
                                         nodeList.add(new BConcat());
@@ -245,7 +245,7 @@ public class SyntaxTree {
                         nodeList.add(RightBracket.the);
                     } else {
                         nodeList.add(LeftBracket.the);
-                        for (var i = 0; i < least; i++) {
+                        for (int i = 0; i < least; i++) {
                             nodeList.addAll(copyNodes(sample));
                             if (i != least - 1) {
                                 nodeList.add(new BConcat());
@@ -260,7 +260,7 @@ public class SyntaxTree {
 
     public static List<Node> copyNodes(List<Node> sample) {
         List<Node> result = new FasterList(sample.size());
-        for (var node : sample) {
+        for (Node node : sample) {
             result.add(node.copy());
         }
         return result;

@@ -31,7 +31,7 @@ public class PortAdapter<X,Y> extends Widget {
         this.xClass = xClass; this.yClass = yClass;
 
         TypedPort<X> x = null; TypedPort<Y> y = null;
-        var g = new Gridding(
+        Gridding g = new Gridding(
             LabeledPane.the(xClass.getName(), x = new TypedPort<>(xClass)),
             LabeledPane.the(yClass.getName(), y = new TypedPort<>(yClass))
         );

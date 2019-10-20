@@ -106,7 +106,7 @@ public class SND_JAVA extends Globals {
 
 		
 		format = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 22050, 16, 1, 2, 22050, false);
-		var dinfo = new DataLine.Info(SourceDataLine.class, format);
+        DataLine.Info dinfo = new DataLine.Info(SourceDataLine.class, format);
 		
 		try {
 			line = (SourceDataLine) AudioSystem.getLine(dinfo);

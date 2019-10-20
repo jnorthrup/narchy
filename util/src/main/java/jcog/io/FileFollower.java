@@ -70,7 +70,7 @@ public class FileFollower {
                 encoding_ = (Charset) m.get(m.firstKey());
             }
         }
-        var initOutputDestsSize = (initialOutputDestinations != null) ? initialOutputDestinations.length : 0;
+        int initOutputDestsSize = (initialOutputDestinations != null) ? initialOutputDestinations.length : 0;
         outputDestinations_ = new ArrayList(initOutputDestsSize);
         if (initialOutputDestinations != null) {
 			outputDestinations_.addAll(Arrays.asList(initialOutputDestinations).subList(0, initOutputDestsSize));
@@ -264,19 +264,19 @@ public class FileFollower {
             try {
 //                clear();
                 needsRestart_ = false;
-                var fileSize = file_.length();
-                var byteArray = new char[bufferSize_];
+                long fileSize = file_.length();
+                char[] byteArray = new char[bufferSize_];
 
-                try (var fis = new FileInputStream(file_)) {
-                    try (var r = Channels.newReader(fis.getChannel(), encoding_.newDecoder(), bufferSize_)) {
+                try (FileInputStream fis = new FileInputStream(file_)) {
+                    try (Reader r = Channels.newReader(fis.getChannel(), encoding_.newDecoder(), bufferSize_)) {
                         long lastActivityTime = 0;
-                        var numBytesRead = -1;
+                        int numBytesRead = -1;
                         if (fileSize > bufferSize_) {
                             // on lit rapidement le debut
                             if (forceReadBegin_) {
                                 forceReadBegin_ = false;
                                 // tant que c'est trop gros pour le buffer
-                                var byteArrayTemp = new char[65536];
+                                char[] byteArrayTemp = new char[65536];
                                 while (fis.available() > bufferSize_) {
                                     numBytesRead = r.read(byteArrayTemp, 0, byteArrayTemp.length);
 
@@ -295,11 +295,11 @@ public class FileFollower {
                                 print(lineSeparator);
                             }
                         }
-                        var isFileEmpty = (fileSize == 0);
+                        boolean isFileEmpty = (fileSize == 0);
                         while (continueRunning_ && !needsRestart_) {
                             numBytesRead = r.read(byteArray, 0, byteArray.length);
 
-                            var dataWasFound = (numBytesRead > 0);
+                            boolean dataWasFound = (numBytesRead > 0);
                             if (dataWasFound) {
                                 lastActivityTime = System.currentTimeMillis();
                                 print(new String(byteArray, 0, numBytesRead));
@@ -326,7 +326,7 @@ public class FileFollower {
                                 }
                             }
 
-                            var noDataLeft = (numBytesRead < byteArray.length);
+                            boolean noDataLeft = (numBytesRead < byteArray.length);
                             if (noDataLeft && !needsRestart_) {
                                 try {
                                     Thread.sleep(latency_);
@@ -349,7 +349,7 @@ public class FileFollower {
         } /* send the supplied string to all OutputDestinations */
 
         void print(String s) {
-            for (var stringConsumer : outputDestinations_) {
+            for (Consumer<String> stringConsumer : outputDestinations_) {
                 stringConsumer.accept(s);
             }
         }

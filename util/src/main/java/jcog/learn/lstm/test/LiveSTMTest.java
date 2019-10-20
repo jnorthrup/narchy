@@ -12,16 +12,16 @@ public class LiveSTMTest {
 
     public static void main(String[] args) {
 
-        var inputs = 4;
-        var outputs = 8;
+        int inputs = 4;
+        int outputs = 8;
 
-        var i = ExpectedVsActual.the(inputs, outputs);
-        var expect = i.expected;
+        ExpectedVsActual i = ExpectedVsActual.the(inputs, outputs);
+        double[] expect = i.expected;
         i.zero();
 
 
-        var cells = 8;
-        final var seqPeriod = 12;
+        int cells = 8;
+        final int seqPeriod = 12;
         var l = new LiveSTM(inputs, outputs, cells) {
 
             int t;
@@ -32,7 +32,7 @@ public class LiveSTMTest {
 
 
                 i.expected = expect;
-                var tt = t % seqPeriod;
+                int tt = t % seqPeriod;
 
 
                 i.forget =
@@ -67,7 +67,7 @@ public class LiveSTMTest {
             }
         };
 
-        for (var c = 0; c < 400000; c++) {
+        for (int c = 0; c < 400000; c++) {
             System.out.println(c + "\t\t" + Texts.n4( l.next()) + "\t\t" + i);
         }
     }

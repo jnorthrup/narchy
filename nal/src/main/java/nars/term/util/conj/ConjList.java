@@ -16,6 +16,7 @@ import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
+import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
@@ -53,7 +54,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 //    }
 
     public static ConjList events(Term conj, long occOffset) {
-        var l = new ConjList();
+        ConjList l = new ConjList();
         conj.eventsAND(l::add,
             occOffset == TIMELESS ? 0 : occOffset,
             true, false);
@@ -62,9 +63,9 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
     /** adds directly in case there is a co-negation conflict that would otherwise be caught by ordinary ConjList .add() */
     public static ConjList eventsXternal(Compound conj, long start) {
-        var ee = conj.subterms();
-        var l = new ConjList(ee.subs());
-        for (var e : ee)
+        Subterms ee = conj.subterms();
+        ConjList l = new ConjList(ee.subs());
+        for (Term e : ee)
             l.addDirect(start, e);
         return l;
     }
@@ -110,8 +111,8 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     public int[] contains(ConjList other, BiPredicate<Term,Term> equal, int maxLocations, boolean forward /* or reverse */, @Nullable MetalBitSet hit, int dtTolerance) {
         if (this == other) return new int[] { 0 };
 
-        var s = size;
-        var os = other.size;
+        int s = size;
+        int os = other.size;
         if (os > s) return EMPTY_INT_ARRAY;
         if (s == 0) return new int[] { 0 };
 
@@ -120,14 +121,14 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         if (other._start() < _start() || other._end() > _end())
             return EMPTY_INT_ARRAY;
 
-        var otherFirst = other.get(forward ? 0 : os-1);
+        Term otherFirst = other.get(forward ? 0 : os-1);
         IntArrayList locations = null;
-        var when = this.when;
+        long[] when = this.when;
 
-        var testSpan = s - os;
-        for (var j = 0; j <= testSpan; j++) {
+        int testSpan = s - os;
+        for (int j = 0; j <= testSpan; j++) {
 
-            var from = forward ? j : (s - 1 - j);
+            int from = forward ? j : (s - 1 - j);
             if (equal.test(otherFirst, get(from))) {
                 if (containsRemainder(other, from, forward, equal, hit, dtTolerance)) {
                     if (locations == null)
@@ -148,18 +149,18 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     private boolean containsRemainder(ConjList other, int start, boolean forward, BiPredicate<Term, Term> equal, @Nullable MetalBitSet hit, int dtTolerance) {
         if (hit!=null) hit.set(start);
 
-        var os = other.size;
+        int os = other.size;
         if (os == 1)
             return true; //already matched the first term
 
-        var oWhens = other.when;
-        var oItems = other.items;
-        var oo = forward ? 0 : os - 1;
-        var shift = when[start] - oWhens[oo];
-        var next = start;
-        var s = this.size;
-        var end = forward ? s -1 : 0;
-        for (var i = 1; i < os; i++) {
+        long[] oWhens = other.when;
+        Term[] oItems = other.items;
+        int oo = forward ? 0 : os - 1;
+        long shift = when[start] - oWhens[oo];
+        int next = start;
+        int s = this.size;
+        int end = forward ? s -1 : 0;
+        for (int i = 1; i < os; i++) {
             oo += forward ? 1 : -1;
             next += forward ? 1 : -1;
             if (next < 0 || next >= s)
@@ -187,15 +188,15 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         }
 
         //quick chest for absorb or conflict
-        var n = size;
+        int n = size;
         if (n > 0) {
-            var W = this.when;
-            var X = this.items;
-            var exists = false;
-            for (var i = 0; i < n; i++) {
-                var ww = W[i];
+            long[] W = this.when;
+            Term[] X = this.items;
+            boolean exists = false;
+            for (int i = 0; i < n; i++) {
+                long ww = W[i];
                 if (ww == ETERNAL || ww == when) {
-                    var ii = X[i];
+                    Term ii = X[i];
                     if (ii.equals(t)) {
                         exists = true;
                     } else {
@@ -223,8 +224,8 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
     @Override
     public int eventOccurrences() {
-        var s = size();
-        var when = this.when;
+        int s = size();
+        long[] when = this.when;
         switch (s) {
             case 0:
                 return 0;
@@ -240,8 +241,8 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
                 return when[1] == when[2] ? 2 : 3;
             default: {
                 LongHashSet h = null;
-                var first = when[0];
-                for (var i = 1; i < s; i++) {
+                long first = when[0];
+                for (int i = 1; i < s; i++) {
                     if (h == null) {
                         if (when[i] != first) {
                             h = new LongHashSet(s - i + 1);
@@ -258,9 +259,14 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
     @Override
     public int eventCount(long w) {
-        var s = size;
-        var when = this.when;
-        var count = IntStream.range(0, s).filter(i -> when[i] == w).count();
+        int s = size;
+        long[] when = this.when;
+        long count = 0L;
+        for (int i = 0; i < s; i++) {
+            if (when[i] == w) {
+                count++;
+            }
+        }
         return (int) count;
     }
 
@@ -276,21 +282,27 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
     @Override
     public Term term(TermBuilder B) {
-        var n = size;
+        int n = size;
         if (n == 0)
             return True;
 
-        var items = this.items;
+        Term[] items = this.items;
 
         if (n == 1)
             return items[0];
 
-        var when = this.when;
+        long[] when = this.when;
 
 
         if (B instanceof InterningTermBuilder) {
-            var w0 = when[0];
-            var allParallel = IntStream.range(1, n).noneMatch(i -> when[i] != w0);
+            long w0 = when[0];
+            boolean allParallel = true;
+            for (int i = 1; i < n; i++) {
+                if (when[i] != w0) {
+                    allParallel = false;
+                    break;
+                }
+            }
             //difference
             //all same time
             if (allParallel) {
@@ -304,9 +316,9 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
             //sequence shortcut
             long wa = when[0], wb = when[1];
             if (wa !=ETERNAL && wb !=ETERNAL && when[0]!=when[1]) {
-                var a = items[0];
+                Term a = items[0];
                 if (!a.hasAny(CONJ)) {
-                    var b = items[1];
+                    Term b = items[1];
                     if (!b.hasAny(CONJ)) {
                         if (!a.equals(b)) {
                             return B.conjAppend(a, Tense.occToDT(wb - wa), b);
@@ -325,7 +337,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
         //failsafe impl:
         ConjBuilder c = new ConjTree();
-        for (var i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             if (!c.add(when[i], items[i]))
                 break;
         }
@@ -336,7 +348,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
 
     public final Subterms asSubterms(boolean commute) {
-        var terms = new DisposableTermList(size, this.items);
+        DisposableTermList terms = new DisposableTermList(size, this.items);
         if (commute)
             terms.sortAndDedup();
         return terms;
@@ -376,12 +388,12 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
     void factor(ConjTree T) {
 
-        var n = size();
+        int n = size();
         if (n < 2)
             return;
 
         sortThis();
-        var u = eventOccurrences_if_sorted();
+        int u = eventOccurrences_if_sorted();
 //        if (u == n) {
 //            condense(B);
 //            return;
@@ -389,8 +401,8 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
         UnifiedMap<Term, RoaringBitmap> count = new UnifiedMap(n);
 //        Set<Term> uncount = null;
-        for (var i = 0; i < n; i++) {
-            var xi = get(i);
+        for (int i = 0; i < n; i++) {
+            Term xi = get(i);
 //            if (count.containsKey(xi.neg())) {
 //                if (uncount == null) uncount = new UnifiedSet(n);
 //                uncount.add(xi.unneg());
@@ -417,8 +429,8 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
 //            TermList toDistribute = new TermList(n);
             if (!count.keyValuesView().toSortedList().allSatisfy((xcc) -> {
-                var cc = xcc.getTwo();
-                var c = cc.getCardinality();
+                RoaringBitmap cc = xcc.getTwo();
+                int c = cc.getCardinality();
                 if (c < u) {
 //                    if (x.op() != NEG) {
 //                        if (T.pos != null && T.posRemove(x))
@@ -428,12 +440,12 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 //                            toDistribute.add(x);
 //                    }
                 } else {
-                    var ei = cc.getIntIterator();
+                    PeekableIntIterator ei = cc.getIntIterator();
                     while (ei.hasNext()) {
                         if (eventCount(ei.next()) == 1)
                             return true; //factoring would erase this event so ignore it
                     }
-                    var x = xcc.getOne();
+                    Term x = xcc.getOne();
                     //new factor component
                     if (!T.addParallel(x))
                         return false;
@@ -478,12 +490,12 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
     /** counts # of unique occurrence times, assuming that the events have already been sorted by them */
     private int eventOccurrences_if_sorted() {
-        var c = 1;
-        var when = this.when;
-        var x = when[0];
-        var s = this.size;
-        for (var i = 1; i < s; i++) {
-            var y = when[i];
+        int c = 1;
+        long[] when = this.when;
+        long x = when[0];
+        int s = this.size;
+        for (int i = 1; i < s; i++) {
+            long y = when[i];
             if (y != x) {
                 assert(y > x);
                 c++;
@@ -497,23 +509,23 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
      * assumes the list is already sorted
      * @param b*/
     public boolean condense(TermBuilder B) {
-        var s = size();
+        int s = size();
         if (s <= 1)
             return true;
 
         //sortThis();
-        var when = this.when;
-        var start = 0;
-        var last = when[0];
-        for (var i = 1; i < s; i++) {
-            var wi = when[i];
+        long[] when = this.when;
+        int start = 0;
+        long last = when[0];
+        for (int i = 1; i < s; i++) {
+            long wi = when[i];
             if (last != wi) {
                 last = wi;
                 start = i;
             } else {
                 if (i > start) {
 
-                    var x = B.conj(Arrays.copyOfRange(array(), start, i + 1));
+                    Term x = B.conj(Arrays.copyOfRange(array(), start, i + 1));
                     if (x == True) {
                         //handled below HACK
                     } else if (x == False || x == Null) {
@@ -524,7 +536,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
                         set(start, x);
                     }
 
-                    for (var r = 0; r < (i - start); r++) {
+                    for (int r = 0; r < (i - start); r++) {
                         removeThe(start + 1);
                         s--;
                         i--;
@@ -545,22 +557,22 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
 
     public int centerByVolume(int startIndex, int endIndex) {
-        var n= endIndex - startIndex;
-        var midIndex = centerByIndex(startIndex, endIndex);
+        int n= endIndex - startIndex;
+        int midIndex = centerByIndex(startIndex, endIndex);
         if (n <= 2)
             return midIndex;
-        var v = new int[10];
-        var count = 0;
-        for (var i1 = 0; i1 < n; i1++) {
-            var volume = get(startIndex + i1).volume();
+        int[] v = new int[10];
+        int count = 0;
+        for (int i1 = 0; i1 < n; i1++) {
+            int volume = get(startIndex + i1).volume();
             if (v.length == count) v = Arrays.copyOf(v, count * 2);
             v[count++] = volume;
         }
         v = Arrays.copyOfRange(v, 0, count);
 
         int bestSplit = 1, bestSplitDiff = Integer.MAX_VALUE;
-        for (var i = 1; i < n-1; i++) {
-            var pd = Math.abs(Util.sum(v, 0, i) - Util.sum(v, i, n));
+        for (int i = 1; i < n-1; i++) {
+            int pd = Math.abs(Util.sum(v, 0, i) - Util.sum(v, i, n));
             if (pd <= bestSplitDiff) {
                 bestSplit = i;
                 bestSplitDiff = pd;
@@ -577,30 +589,30 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
     /** shifts everything so that the initial when is zero. assumes it is non-empty & sorted already */
     public void shift(long shiftFrom) {
-        var currentShift = shift();
-        var delta = shiftFrom - currentShift;
+        long currentShift = shift();
+        long delta = shiftFrom - currentShift;
         if (delta == 0)
             return;
-        var when = this.when;
-        var s = this.size;
-        for (var k = 0; k < s; k++)
+        long[] when = this.when;
+        int s = this.size;
+        for (int k = 0; k < s; k++)
             when[k] += delta;
     }
 
     boolean removeAllAt(int f, ConjList x) {
-        var xn = x.size;
-        var ww = x.when;
-        var ii = x.items;
-        var removed = false;
-        for (var i = 0; i < xn; i++) {
-            var remove = remove(ww[i] + f, ii[i]);
+        int xn = x.size;
+        long[] ww = x.when;
+        Term[] ii = x.items;
+        boolean removed = false;
+        for (int i = 0; i < xn; i++) {
+            boolean remove = remove(ww[i] + f, ii[i]);
             removed = removed || remove;
         }
         return removed;
     }
 
     public long eventRange() {
-        var n = size;
+        int n = size;
         if (n <= 1)
             return 0;
         return when[n-1] - when[0];

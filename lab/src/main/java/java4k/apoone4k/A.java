@@ -127,8 +127,8 @@ public class A extends GamePanel {
 	@Override
 	public void paintComponent(Graphics appletGraphics) {
 
-		var now = System.nanoTime();
-		var delta = now - lastTime;
+		long now = System.nanoTime();
+		long delta = now - lastTime;
 		think += delta;
 
 		
@@ -136,7 +136,13 @@ public class A extends GamePanel {
 		while (think >= 10000000L) {
 			think -= 10000000L;
 
-			var b = IntStream.of(KeyEvent.VK_SPACE, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_UP, KeyEvent.VK_DOWN).anyMatch(v -> (pressed[v]));
+			boolean b = false;
+			for (int v : new int[]{KeyEvent.VK_SPACE, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_UP, KeyEvent.VK_DOWN}) {
+				if ((pressed[v])) {
+					b = true;
+					break;
+				}
+			}
 			if (b) {
 				if (!boolValues[1]) {
 					boolValues[1] = true;
@@ -202,7 +208,7 @@ public class A extends GamePanel {
 								p[6] = 2.6f;
 							}
 
-							var rand = (int) (Math.random() * rc.length);
+							int rand = (int) (Math.random() * rc.length);
 							c[0] = rc[rand];
 							c[1] = new Color(255 - c[0].getRed(), 255 - c[0].getGreen(), 255 - c[0].getBlue());
 						}
@@ -231,7 +237,7 @@ public class A extends GamePanel {
 
 						p[3] += 1;
 						ex = new float[5 * (int) (Math.random() * 15 + 20)];
-						for (var z = 0; z < ex.length; z += 5) {
+						for (int z = 0; z < ex.length; z += 5) {
 							ex[z] = p[0] + 12;
 							ex[z + 1] = p[1] + 12;
 							ex[z + 2] = (float) (Math.random() * 3.0) - 1.5f;
@@ -262,7 +268,7 @@ public class A extends GamePanel {
 				if (ex[4] <= 0) {
 					ex = null;
 				} else {
-					for (var z = 0; z < ex.length; z += 5) {
+					for (int z = 0; z < ex.length; z += 5) {
 						ex[z] += ex[z + 2];
 						ex[z + 1] += ex[z + 3];
 						ex[z + 3] += 0.02f;
@@ -287,17 +293,17 @@ public class A extends GamePanel {
 
 		offscreennGraphics.setColor(c[1]);
 		/** draw level objects */
-		var lev = (int) (p[2] / 3) * 3;
-		for (var i = 0; i < l[lev].length; i += 4) {
+		int lev = (int) (p[2] / 3) * 3;
+		for (int i = 0; i < l[lev].length; i += 4) {
 			offscreennGraphics.fillRect(l[lev][i], l[lev][i + 1], l[lev][i + 2], l[lev][i + 3]);
 		}
 
-		for (var i = 0; i < l[lev + 2].length; i += 4) {
+		for (int i = 0; i < l[lev + 2].length; i += 4) {
 			offscreennGraphics.fillRect(l[lev + 2][i], l[lev + 2][i + 1], l[lev + 2][i + 2], l[lev + 2][i + 3]);
 		}
 
 		offscreennGraphics.setColor(c[0]);
-		for (var i = 0; i < l[lev + 1].length; i += 4) {
+		for (int i = 0; i < l[lev + 1].length; i += 4) {
 			offscreennGraphics.fillRect(l[lev + 1][i], l[lev + 1][i + 1], l[lev + 1][i + 2], l[lev + 1][i + 3]);
 		}
 
@@ -310,7 +316,7 @@ public class A extends GamePanel {
 
 		/** draw particles */
 		if (ex != null) {
-			for (var z = 0; z < ex.length; z += 5) {
+			for (int z = 0; z < ex.length; z += 5) {
 				offscreennGraphics.fillRect((int) (ex[z]), (int) (ex[z + 1]), 5, 5);
 			}
 		}
@@ -318,7 +324,7 @@ public class A extends GamePanel {
 		/** render die Spielinfos */
 		offscreennGraphics.setColor(c[1]);
 		offscreennGraphics.setFont(offscreennGraphics.getFont().deriveFont(20f).deriveFont(1));
-		var s = "ApoOne4k";
+		String s = "ApoOne4k";
 		offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 30);
 		if (p[3] >= 0) {
 			offscreennGraphics.drawString("deaths: " + (int) (p[3]), 10, 30);
@@ -431,7 +437,7 @@ public class A extends GamePanel {
 	@Override
 	public void processAWTEvent(AWTEvent e) {
 		if (e instanceof KeyEvent) {
-			var event = (KeyEvent) e;
+			KeyEvent event = (KeyEvent) e;
 			if (e.getID() == KeyEvent.KEY_PRESSED) {
 				if (event.getKeyCode() < 256) {
 					pressed[event.getKeyCode()] = true;

@@ -44,9 +44,9 @@ public class RuleWLife {
 
         ResetToDefaults();
 
-		var st = new StringTokenizer(sStr, " ,", true);
+        StringTokenizer st = new StringTokenizer(sStr, " ,", true);
 		while (st.hasMoreTokens()) {
-			var sTok = st.nextToken().toUpperCase();
+            String sTok = st.nextToken().toUpperCase();
 
 
             int i;
@@ -101,9 +101,9 @@ public class RuleWLife {
 
         Validate();
 
-		var ih = isHist ? iClo : 0;
+        int ih = isHist ? iClo : 0;
 
-		var sBff = "NW" + wgtAry[1] + ",NN" + wgtAry[2] + ",NE" + wgtAry[3] + ",WW"
+        String sBff = "NW" + wgtAry[1] + ",NN" + wgtAry[2] + ",NE" + wgtAry[3] + ",WW"
                 + wgtAry[4] + ",ME" + wgtAry[5] + ",EE" + wgtAry[6] + ",SW"
                 + wgtAry[7] + ",SS" + wgtAry[8] + ",SE" + wgtAry[9] + ",HI"
                 + ih;
@@ -134,21 +134,21 @@ public class RuleWLife {
 	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState, MJBoard mjb) {
-		var modCnt = 0;
-		var lurd = new int[4];
+        int modCnt = 0;
+        int[] lurd = new int[4];
 
-		for (var i = 0; i < sizX; ++i) {
+		for (int i = 0; i < sizX; ++i) {
 			
 			lurd[0] = (i > 0) ? i - 1 : (isWrap) ? sizX - 1 : sizX;
 			lurd[2] = (i < sizX - 1) ? i + 1 : (isWrap) ? 0 : sizX;
-			for (var j = 0; j < sizY; ++j) {
+			for (int j = 0; j < sizY; ++j) {
 				
 				lurd[1] = (j > 0) ? j - 1 : (isWrap) ? sizY - 1 : sizY;
 				lurd[3] = (j < sizY - 1) ? j + 1 : (isWrap) ? 0 : sizY;
-				var bOldVal = crrState[i][j];
-				var bNewVal = bOldVal;
+                short bOldVal = crrState[i][j];
+                short bNewVal = bOldVal;
 
-				var iCnt = 0;
+                int iCnt = 0;
                 if (isHist)
 				{
 					if (bOldVal <= 1) 

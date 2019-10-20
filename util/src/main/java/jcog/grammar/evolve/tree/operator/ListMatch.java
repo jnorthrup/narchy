@@ -43,7 +43,7 @@ public class ListMatch extends UnaryOperator {
 
     @Override
     public void describe(StringBuilder builder, DescriptionContext context, RegexFlavour flavour) {
-        var child = get(0);
+        Node child = get(0);
         builder.append('[');
         child.describe(builder, context, flavour);
         builder.append(']');
@@ -60,7 +60,12 @@ public class ListMatch extends UnaryOperator {
             return false;
         }
 
-        return root.children().stream().allMatch(ListMatch::checkValid);
+        for (Node node : root.children()) {
+            if (!checkValid(node)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

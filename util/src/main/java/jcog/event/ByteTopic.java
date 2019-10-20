@@ -27,7 +27,7 @@ public class ByteTopic<X> {
 
     public ByteTopic(byte... preDefined) {
         validate(false, preDefined);
-        for (var c : preDefined)
+        for (byte c : preDefined)
             chan[c] = newTopic(c);
 
         assert(chan[ANY] == null);
@@ -37,10 +37,10 @@ public class ByteTopic<X> {
 
     @Override
     public String toString() {
-        var joiner = new StringJoiner(",");
-        for (var consumers : chan) {
+        StringJoiner joiner = new StringJoiner(",");
+        for (Topic<X> consumers : chan) {
             if (consumers != null) {
-                var toString = consumers.toString();
+                String toString = consumers.toString();
                 joiner.add(toString);
             }
         }
@@ -67,8 +67,8 @@ public class ByteTopic<X> {
             if (allowDynamic) {
                 throw new TODO();//TODO synch-free version of this using atomic ops
             } else {
-                var o = new RunThese(channelsRegistered.length);
-                for (var c : channelsRegistered)
+                RunThese o = new RunThese(channelsRegistered.length);
+                for (byte c : channelsRegistered)
                     o.add(_on(each, c, true));
                 return o;
             }
@@ -86,7 +86,7 @@ public class ByteTopic<X> {
     }
 
     public final void emit(X x, byte... chans) {
-        for (var c : chans)
+        for (byte c : chans)
             _emit(x, c);
         _emit(x, ANY);
     }
@@ -99,7 +99,7 @@ public class ByteTopic<X> {
     private void validate(boolean afterConstruction, byte[] chans) {
         if (chans.length == 0)
             throw new UnsupportedOperationException();
-        for (var c : chans) {
+        for (byte c : chans) {
             if (c < 0 || c >= ANY)
                 throw new ArrayIndexOutOfBoundsException();
             if (afterConstruction && (!allowDynamic && chan[c] == null))

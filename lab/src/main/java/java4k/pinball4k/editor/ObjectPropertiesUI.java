@@ -16,8 +16,8 @@ public class ObjectPropertiesUI extends JPanel {
 	private final MyTableModel tableModel = new MyTableModel();
 	
 	public ObjectPropertiesUI() {
-		var table = new JTable(tableModel);
-		var scrollpane = new JScrollPane(table);
+        JTable table = new JTable(tableModel);
+        JScrollPane scrollpane = new JScrollPane(table);
 		
 		setLayout(new BorderLayout());
 		add(new JLabel("Object properties:"), BorderLayout.NORTH);
@@ -51,14 +51,14 @@ public class ObjectPropertiesUI extends JPanel {
 
 		@Override
         public Object getValueAt(int row, int column) {
-			var field = getFields()[row];
+            Field field = getFields()[row];
 			if (column == 0) {
 				return field.getName() + " (" + field.getType().getSimpleName() + ")";
 			}
 			try {
-				var value = field.get(selection.get(0));
+                Object value = field.get(selection.get(0));
 				if (value instanceof Point) {
-					var point = (Point) value;
+                    Point point = (Point) value;
 					return "" + point.x + " " + point.y;
 				}
 				return value;
@@ -74,9 +74,9 @@ public class ObjectPropertiesUI extends JPanel {
 		
 		@Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-			for (var obj : selection) {
+			for (LevelObject obj : selection) {
 				try {
-					var field = getFields()[rowIndex];
+                    Field field = getFields()[rowIndex];
 					if (field.getType() == float.class) {
 						field.setFloat(obj, Float.parseFloat("" + aValue));
 					} else if (field.getType() == int.class) {

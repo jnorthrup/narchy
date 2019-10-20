@@ -100,20 +100,20 @@ public class HaiQ extends Agent {
             reward = 0;
 
 
-        var action = decide ? nextAction(state) : -1;
+        int action = decide ? nextAction(state) : -1;
 
-        var lastState = this.lastState;
+        int lastState = this.lastState;
 
-        var alpha = Alpha.floatValue();
+        float alpha = Alpha.floatValue();
         double deltaSum = 0;
         for (int lastAction = 0, actionFeedbackLength = actionFeedback.length; lastAction < actionFeedbackLength; lastAction++) {
             double f = actionFeedback[lastAction];
-            var ff = Math.abs(f);
+            double ff = Math.abs(f);
             if (ff > Float.MIN_NORMAL) {
                 double lastQ = q[lastState][lastAction];
-                var delta = reward + f * ((Gamma.floatValue() * q[state][action]) - lastQ);
+                double delta = reward + f * ((Gamma.floatValue() * q[state][action]) - lastQ);
                 deltaSum += delta;
-                var nextQ = lastQ + alpha * delta;
+                double nextQ = lastQ + alpha * delta;
                 q[state][action] = (float) nextQ;
                 et[lastState][lastAction] += f * alpha;
             }
@@ -148,18 +148,18 @@ public class HaiQ extends Agent {
 
     private void update(float deltaQ, float alpha) {
 
-        var q = this.q;
-        var et = this.et;
+        float[][] q = this.q;
+        float[][] et = this.et;
 
-        var alphaDelta = alpha * deltaQ;
-        var gammaLambda = Gamma.floatValue() * Lambda.floatValue();
+        float alphaDelta = alpha * deltaQ;
+        float gammaLambda = Gamma.floatValue() * Lambda.floatValue();
 
 
-        for (var i = 0; i < inputs; i++) {
-            var eti = et[i];
-            var qi = q[i];
+        for (int i = 0; i < inputs; i++) {
+            float[] eti = et[i];
+            float[] qi = q[i];
 
-            for (var k = 0; k < actions; k++) {
+            for (int k = 0; k < actions; k++) {
                 qi[k] += alphaDelta * eti[k];
                 eti[k] *= gammaLambda;
             }

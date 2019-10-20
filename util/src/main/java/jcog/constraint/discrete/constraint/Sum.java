@@ -36,7 +36,7 @@ public class Sum extends Propagator {
     @Override
     public boolean setup() {
         sum.watchBounds(this);
-        for (var i = 0; i < assigned.length; i++) {
+        for (int i = 0; i < assigned.length; i++) {
             assigned[i].watchBounds(this);
         }
         return propagate();
@@ -45,27 +45,27 @@ public class Sum extends Propagator {
     @Override
     public boolean propagate() {
 
-        var nAssigned = nAssignedT.getValue();
-        var sumAssigned = sumAssignedT.getValue();
+        int nAssigned = nAssignedT.getValue();
+        int sumAssigned = sumAssignedT.getValue();
 
 
-        var reduce = true;
+        boolean reduce = true;
         while (reduce) {
             reduce = false;
 
-            var sumTermsMin = sumAssigned;
-            var sumTermsMax = sumAssigned;
-            var maxDiff = 0;
+            int sumTermsMin = sumAssigned;
+            int sumTermsMax = sumAssigned;
+            int maxDiff = 0;
 
             
             
-            for (var i = nAssigned; i < assigned.length; i++) {
-                var term = assigned[i];
-                var min = term.min();
-                var max = term.max();
+            for (int i = nAssigned; i < assigned.length; i++) {
+                IntVar term = assigned[i];
+                int min = term.min();
+                int max = term.max();
                 sumTermsMin += min;
                 sumTermsMax += max;
-                var diff = max - min;
+                int diff = max - min;
                 if (diff == 0) {
                     sumAssigned += min;
                     
@@ -86,14 +86,14 @@ public class Sum extends Propagator {
                 return false;
 
 
-            var sumMax = sum.max();
-            var sumMin = sum.min();
+            int sumMax = sum.max();
+            int sumMin = sum.min();
 
             if (sumTermsMax - maxDiff < sumMin) {
-                for (var i = nAssigned; i < assigned.length; i++) {
-                    var term = assigned[i];
-                    var oldMin = term.min();
-                    var newMin = sumMin - sumTermsMax + term.max();
+                for (int i = nAssigned; i < assigned.length; i++) {
+                    IntVar term = assigned[i];
+                    int oldMin = term.min();
+                    int newMin = sumMin - sumTermsMax + term.max();
                     if (newMin > oldMin) {
                         if (!term.updateMin(newMin))
                             return false;
@@ -103,10 +103,10 @@ public class Sum extends Propagator {
             }
 
             if (sumTermsMin - maxDiff > sumMax) {
-                for (var i = nAssigned; i < assigned.length; i++) {
-                    var term = assigned[i];
-                    var oldMax = term.max();
-                    var newMax = sumMax - sumTermsMin + term.min();
+                for (int i = nAssigned; i < assigned.length; i++) {
+                    IntVar term = assigned[i];
+                    int oldMax = term.max();
+                    int newMax = sumMax - sumTermsMin + term.min();
                     if (newMax < oldMax) {
                         if (!term.updateMax(newMax))
                             return false;

@@ -81,10 +81,10 @@ public class AABB {
      * @param aabb the object to copy from
      */
     public final void set(AABB aabb) {
-        var v = aabb.lowerBound;
+        v2 v = aabb.lowerBound;
         lowerBound.x = v.x;
         lowerBound.y = v.y;
-        var v1 = aabb.upperBound;
+        v2 v1 = aabb.upperBound;
         upperBound.x = v1.x;
         upperBound.y = v1.y;
     }
@@ -93,11 +93,11 @@ public class AABB {
      * Verify that the bounds are sorted
      */
     public final boolean isValid() {
-        var dx = upperBound.x - lowerBound.x;
+        float dx = upperBound.x - lowerBound.x;
         if (dx < 0f) {
             return false;
         }
-        var dy = upperBound.y - lowerBound.y;
+        float dy = upperBound.y - lowerBound.y;
         if (dy < 0) {
             return false;
         }
@@ -211,19 +211,19 @@ public class AABB {
     private boolean raycast(RayCastOutput output, RayCastInput input,
                             IWorldPool argPool) {
 
-        var p = argPool.popVec2();
-        var d = argPool.popVec2();
-        var absD = argPool.popVec2();
-        var normal = argPool.popVec2();
+        v2 p = argPool.popVec2();
+        v2 d = argPool.popVec2();
+        v2 absD = argPool.popVec2();
+        v2 normal = argPool.popVec2();
 
                                 p.set(input.p1);
                                 d.set(input.p2).subbed(input.p1);
                                 v2.absToOut(d, absD);
 
 
-        var tmax = Float.MAX_VALUE;
-        var tmin = -Float.MAX_VALUE;
-        var result = true;
+        float tmax = Float.MAX_VALUE;
+        float tmin = -Float.MAX_VALUE;
+        boolean result = true;
         if (absD.x < Settings.EPSILON) {
 
             if (p.x < lowerBound.x || upperBound.x < p.x) {
@@ -231,15 +231,15 @@ public class AABB {
                 result = false;
             }
                                 } else {
-            var inv_d = 1.0f / d.x;
-            var t1 = (lowerBound.x - p.x) * inv_d;
-            var t2 = (upperBound.x - p.x) * inv_d;
+            float inv_d = 1.0f / d.x;
+            float t1 = (lowerBound.x - p.x) * inv_d;
+            float t2 = (upperBound.x - p.x) * inv_d;
 
 
-            var s = -1.0f;
+            float s = -1.0f;
 
                                     if (t1 > t2) {
-                                        var temp = t1;
+                                        float temp = t1;
                                         t1 = t2;
                                         t2 = temp;
                                         s = 1.0f;
@@ -268,15 +268,15 @@ public class AABB {
                     result = false;
                 }
             } else {
-                var inv_d = 1.0f / d.y;
-                var t1 = (lowerBound.y - p.y) * inv_d;
-                var t2 = (upperBound.y - p.y) * inv_d;
+                float inv_d = 1.0f / d.y;
+                float t1 = (lowerBound.y - p.y) * inv_d;
+                float t2 = (upperBound.y - p.y) * inv_d;
 
 
-                var s = -1.0f;
+                float s = -1.0f;
 
                 if (t1 > t2) {
-                    var temp = t1;
+                    float temp = t1;
                     t1 = t2;
                     t2 = temp;
                     s = 1.0f;

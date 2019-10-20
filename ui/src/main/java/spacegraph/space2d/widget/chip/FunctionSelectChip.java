@@ -23,13 +23,13 @@ public class FunctionSelectChip<X,Y> extends AbstractFunctionChip<X,Y> {
 
 
         List<ToggleButton> fb = new FasterList(m.size());
-        for (var entry : ff.entrySet()) {
-            var n = entry.getKey();
-            var value = entry.getValue();
+        for (Map.Entry<String, Function<X, Y>> entry : ff.entrySet()) {
+            String n = entry.getKey();
+            Function<X, Y> value = entry.getValue();
             fb.add(new CheckBox(n).on(() -> FunctionSelectChip.this.f = value));
         }
 
-        var selector = new ButtonSet(ButtonSet.Mode.One, fb);
+        ButtonSet selector = new ButtonSet(ButtonSet.Mode.One, fb);
 
         set(in, selector, out);
     }

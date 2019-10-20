@@ -39,29 +39,29 @@ public class MineCraft4k extends JFrame implements Runnable, KeyListener, MouseL
 
 	public void run() {
 		try {
-			var rand = new Random();
-			var localRandom = new Random();
-			var localBufferedImage = new BufferedImage(214, 120, 1);
-			var arrayOfInt1 = ((DataBufferInt)localBufferedImage.getRaster().getDataBuffer()).getData();
+            Random rand = new Random();
+            Random localRandom = new Random();
+            BufferedImage localBufferedImage = new BufferedImage(214, 120, 1);
+            int[] arrayOfInt1 = ((DataBufferInt)localBufferedImage.getRaster().getDataBuffer()).getData();
             localRandom.setSeed((long)rand.nextInt(50) + 1L);
 
-			var arrayOfInt2 = new int[10];
-			var count = 0;
-            for (var i = 0; i < 262144; i++) {
-				var i12 = i / 64 % 64 > 32 + localRandom.nextInt(8) ? localRandom.nextInt(8) + 1 : 0;
+            int[] arrayOfInt2 = new int[10];
+            int count = 0;
+            for (int i = 0; i < 262144; i++) {
+                int i12 = i / 64 % 64 > 32 + localRandom.nextInt(8) ? localRandom.nextInt(8) + 1 : 0;
                 if (arrayOfInt2.length == count) arrayOfInt2 = Arrays.copyOf(arrayOfInt2, count * 2);
                 arrayOfInt2[count++] = i12;
             }
             arrayOfInt2 = Arrays.copyOfRange(arrayOfInt2, 0, count);
 
-			var arrayOfInt3 = new int[12288];
+            int[] arrayOfInt3 = new int[12288];
 
-			for(var j = 1; j < 16; ++j) {
-				var k = 255 - localRandom.nextInt(96);
+			for(int j = 1; j < 16; ++j) {
+                int k = 255 - localRandom.nextInt(96);
 
-				for(var m = 0; m < 48; ++m) {
-					for(var n = 0; n < 16; ++n) {
-						var i1 = 9858122;
+				for(int m = 0; m < 48; ++m) {
+					for(int n = 0; n < 16; ++n) {
+                        int i1 = 9858122;
 						if (j == 4) {
 							i1 = 8355711;
 						}
@@ -130,24 +130,24 @@ public class MineCraft4k extends JFrame implements Runnable, KeyListener, MouseL
 				}
 			}
 
-			var f1 = 96.5F;
-			var f2 = 65.0F;
-			var f3 = 96.5F;
-			var f4 = 0.0F;
-			var f5 = 0.0F;
-			var f6 = 0.0F;
-			var l = System.currentTimeMillis();
-			var i4 = -1;
-			var i5 = 0;
-			var f7 = 0.0F;
-			var f8 = 0.0F;
+            float f1 = 96.5F;
+            float f2 = 65.0F;
+            float f3 = 96.5F;
+            float f4 = 0.0F;
+            float f5 = 0.0F;
+            float f6 = 0.0F;
+            long l = System.currentTimeMillis();
+            int i4 = -1;
+            int i5 = 0;
+            float f7 = 0.0F;
+            float f8 = 0.0F;
 
 			label332:
 			while(true) {
-				var f9 = (float)Math.sin((double)f7);
-				var f10 = (float)Math.cos((double)f7);
-				var f11 = (float)Math.sin((double)f8);
-				var f12 = (float)Math.cos((double)f8);
+                float f9 = (float)Math.sin((double)f7);
+                float f10 = (float)Math.cos((double)f7);
+                float f11 = (float)Math.sin((double)f8);
+                float f12 = (float)Math.cos((double)f8);
 
 				while(true) {
 					while(true) {
@@ -195,13 +195,13 @@ public class MineCraft4k extends JFrame implements Runnable, KeyListener, MouseL
 
 								for(i8 = 0; i8 < 3; ++i8) {
 									f16 = f1 + f4 * (float)((i8 + 0) % 3 / 2);
-									var f17 = f2 + f5 * (float)((i8 + 1) % 3 / 2);
+                                    float f17 = f2 + f5 * (float)((i8 + 1) % 3 / 2);
 									f18 = f3 + f6 * (float)((i8 + 2) % 3 / 2);
 
 									for(i10 = 0; i10 < 12; ++i10) {
-										var i13 = (int)(f16 + (float)(i10 >> 0 & 1) * 0.6F - 0.3F) - 64;
-										var i14 = (int)(f17 + (float)((i10 >> 2) - 1) * 0.8F + 0.65F) - 64;
-										var i15 = (int)(f18 + (float)(i10 >> 1 & 1) * 0.6F - 0.3F) - 64;
+                                        int i13 = (int)(f16 + (float)(i10 >> 0 & 1) * 0.6F - 0.3F) - 64;
+                                        int i14 = (int)(f17 + (float)((i10 >> 2) - 1) * 0.8F + 0.65F) - 64;
+                                        int i15 = (int)(f18 + (float)(i10 >> 1 & 1) * 0.6F - 0.3F) - 64;
 										if (i13 < 0 || i14 < 0 || i15 < 0 || i13 >= 64 || i14 >= 64 || i15 >= 64 || arrayOfInt2[i13 + i14 * 64 + i15 * 4096] > 0) {
 											continue label263;
 										}
@@ -242,20 +242,20 @@ public class MineCraft4k extends JFrame implements Runnable, KeyListener, MouseL
 								f18 = (float)(i9 - 107) / 90.0F;
 
 								for(i11 = 0; i11 < 120; ++i11) {
-									var f20 = (float)(i11 - 60) / 90.0F;
-									var f21 = 1.0F;
-									var f22 = f21 * f12 + f20 * f11;
-									var f23 = f20 * f12 - f21 * f11;
-									var f24 = f18 * f10 + f22 * f9;
-									var f25 = f22 * f10 - f18 * f9;
-									var i16 = 230;
-									var i17 = 255;
-									var d = 20.0D;
-									var f26 = 5.0F;
+                                    float f20 = (float)(i11 - 60) / 90.0F;
+                                    float f21 = 1.0F;
+                                    float f22 = f21 * f12 + f20 * f11;
+                                    float f23 = f20 * f12 - f21 * f11;
+                                    float f24 = f18 * f10 + f22 * f9;
+                                    float f25 = f22 * f10 - f18 * f9;
+                                    int i16 = 230;
+                                    int i17 = 255;
+                                    double d = 20.0D;
+                                    float f26 = 5.0F;
 
 									int i18;
 									for(i18 = 0; i18 < 3; ++i18) {
-										var f27 = f24;
+                                        float f27 = f24;
 										if (i18 == 1) {
 											f27 = f23;
 										}
@@ -264,8 +264,8 @@ public class MineCraft4k extends JFrame implements Runnable, KeyListener, MouseL
 											f27 = f25;
 										}
 
-										var f28 = 1.0F / (f27 < 0.0F ? -f27 : f27);
-										var f32 = f1 - (float)((int)f1);
+                                        float f28 = 1.0F / (f27 < 0.0F ? -f27 : f27);
+                                        float f32 = f1 - (float)((int)f1);
 										if (i18 == 1) {
 											f32 = f2 - (float)((int)f2);
 										}
@@ -278,13 +278,13 @@ public class MineCraft4k extends JFrame implements Runnable, KeyListener, MouseL
 											f32 = 1.0F - f32;
 										}
 
-										var f33 = f28 * f32;
-										var f29 = f24 * f28;
-										var f34 = f1 + f29 * f32;
-										var f30 = f23 * f28;
-										var f35 = f2 + f30 * f32;
-										var f31 = f25 * f28;
-										var f36 = f3 + f31 * f32;
+                                        float f33 = f28 * f32;
+                                        float f29 = f24 * f28;
+                                        float f34 = f1 + f29 * f32;
+                                        float f30 = f23 * f28;
+                                        float f35 = f2 + f30 * f32;
+                                        float f31 = f25 * f28;
+                                        float f36 = f3 + f31 * f32;
 										if (f27 < 0.0F) {
 											if (i18 == 0) {
 												--f34;
@@ -300,18 +300,18 @@ public class MineCraft4k extends JFrame implements Runnable, KeyListener, MouseL
 										}
 
 										while((double)f33 < d) {
-											var i21 = (int)f34 - 64;
-											var i22 = (int)f35 - 64;
-											var i23 = (int)f36 - 64;
+                                            int i21 = (int)f34 - 64;
+                                            int i22 = (int)f35 - 64;
+                                            int i23 = (int)f36 - 64;
 											if (i21 < 0 || i22 < 0 || i23 < 0 || i21 >= 64 || i22 >= 64 || i23 >= 64) {
 												break;
 											}
 
-											var i24 = i21 + i22 * 64 + i23 * 4096;
-											var i25 = arrayOfInt2[i24];
+                                            int i24 = i21 + i22 * 64 + i23 * 4096;
+                                            int i25 = arrayOfInt2[i24];
 											if (i25 > 0) {
-												var i6 = (int)((f34 + f36) * 16.0F) & 15;
-												var i7 = ((int)(f35 * 16.0F) & 15) + 16;
+                                                int i6 = (int)((f34 + f36) * 16.0F) & 15;
+                                                int i7 = ((int)(f35 * 16.0F) & 15) + 16;
 												if (i18 == 1) {
 													i6 = (int)(f34 * 16.0F) & 15;
 													i7 = (int)(f36 * 16.0F) & 15;
@@ -320,7 +320,7 @@ public class MineCraft4k extends JFrame implements Runnable, KeyListener, MouseL
 													}
 												}
 
-												var i26 = 16777215;
+                                                int i26 = 16777215;
 												if (i24 != i4 || i6 > 0 && i7 % 16 > 0 && i6 < 15 && i7 % 16 < 15) {
 													i26 = arrayOfInt3[i6 + i7 * 16 + i25 * 256 * 3];
 												}
@@ -352,8 +352,8 @@ public class MineCraft4k extends JFrame implements Runnable, KeyListener, MouseL
 									}
 
 									i18 = (i16 >> 16 & 255) * i17 / 255;
-									var i19 = (i16 >> 8 & 255) * i17 / 255;
-									var i20 = (i16 & 255) * i17 / 255;
+                                    int i19 = (i16 >> 8 & 255) * i17 / 255;
+                                    int i20 = (i16 & 255) * i17 / 255;
 									arrayOfInt1[i9 + i11 * 214] = i18 << 16 | i19 << 8 | i20;
 								}
 							}
@@ -385,7 +385,7 @@ public class MineCraft4k extends JFrame implements Runnable, KeyListener, MouseL
 
 
 	public boolean handleEvent(int eventID, int key, int modifiers, int x, int y) {
-		var i = 0;
+        int i = 0;
 		switch(eventID) {
 			case 401:
 				i = 1;

@@ -27,10 +27,10 @@ public abstract class Recipe implements ListItem {
     }
 
     public void checkCanCraft(Player player) {
-        for (var i = 0; i < costs.size(); i++) {
-            var item = costs.get(i);
+        for (int i = 0; i < costs.size(); i++) {
+            Item item = costs.get(i);
             if (item instanceof ResourceItem) {
-                var ri = (ResourceItem) item;
+                ResourceItem ri = (ResourceItem) item;
                 if (!player.inventory.hasResources(ri.resource, ri.count)) {
                     canCraft = false;
                     return;
@@ -43,17 +43,17 @@ public abstract class Recipe implements ListItem {
     @Override
     public void renderInventory(Screen screen, int x, int y) {
         screen.render(x, y, resultTemplate.getSprite(), resultTemplate.getColor(), 0);
-        var textColor = canCraft ? Color.get(-1, 555, 555, 555) : Color.get(-1, 222, 222, 222);
+        int textColor = canCraft ? Color.get(-1, 555, 555, 555) : Color.get(-1, 222, 222, 222);
         Font.draw(resultTemplate.getName(), screen, x + 8, y, textColor);
     }
 
     public abstract void craft(Player player);
 
     public void deductCost(Player player) {
-        for (var i = 0; i < costs.size(); i++) {
-            var item = costs.get(i);
+        for (int i = 0; i < costs.size(); i++) {
+            Item item = costs.get(i);
             if (item instanceof ResourceItem) {
-                var ri = (ResourceItem) item;
+                ResourceItem ri = (ResourceItem) item;
                 player.inventory.removeResource(ri.resource, ri.count);
             }
         }

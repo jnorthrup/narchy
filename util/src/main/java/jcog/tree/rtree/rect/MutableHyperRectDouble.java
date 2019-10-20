@@ -25,14 +25,14 @@ public class MutableHyperRectDouble extends HyperRectDouble {
     }
 
     public HyperRectDouble mbrSelf(double[] b) {
-        var minA = min.coord;
-        var dim = minA.length;
+        double[] minA = min.coord;
+        int dim = minA.length;
         if (b.length!=dim)
             throw new ArrayIndexOutOfBoundsException();
 
-        var maxA = max.coord;
-        for (var i = 0; i < dim; i++) {
-            var bb = b[i];
+        double[] maxA = max.coord;
+        for (int i = 0; i < dim; i++) {
+            double bb = b[i];
             minA[i] = Math.min(minA[i], bb);
             maxA[i] = Math.max(maxA[i], bb);
         }
@@ -42,15 +42,15 @@ public class MutableHyperRectDouble extends HyperRectDouble {
     public HyperRectDouble mbrSelf(HyperRectDouble x) {
 
 
-        var minA = min.coord;
-        var minB = x.min.coord;
-        var dim = minA.length;
+        double[] minA = min.coord;
+        double[] minB = x.min.coord;
+        int dim = minA.length;
         if (minB.length!=dim)
             throw new ArrayIndexOutOfBoundsException();
 
-        var maxA = max.coord;
-        var maxB = x.max.coord;
-        for (var i = 0; i < dim; i++) {
+        double[] maxA = max.coord;
+        double[] maxB = x.max.coord;
+        for (int i = 0; i < dim; i++) {
             minA[i] = Math.min(minA[i], minB[i]);
             maxA[i] = Math.max(maxA[i], maxB[i]);
         }
@@ -59,9 +59,9 @@ public class MutableHyperRectDouble extends HyperRectDouble {
 
     /** extends the boundary uniformly across all dimensions by a constant amount (adds a margin) */
     public void grow(double distance) {
-        var dim = dim();
+        int dim = dim();
         double[] minA = min.coord, maxA = max.coord;
-        for (var i = 0; i < dim; i++) {
+        for (int i = 0; i < dim; i++) {
             minA[i] -= distance;
             maxA[i] += distance;
         }
@@ -73,10 +73,10 @@ public class MutableHyperRectDouble extends HyperRectDouble {
     }
 
     public void growPct(double pct) {
-        var dim = dim();
+        int dim = dim();
         double[] minA = min.coord, maxA = max.coord;
-        for (var i = 0; i < dim; i++) {
-            var r = pct * range(i);
+        for (int i = 0; i < dim; i++) {
+            double r = pct * range(i);
             minA[i] -= r;
             maxA[i] += r;
         }
@@ -84,9 +84,9 @@ public class MutableHyperRectDouble extends HyperRectDouble {
     }
 
     public MutableHyperRectDouble lerp(HyperRectDouble h, float rate) {
-        var dim = dim();
+        int dim = dim();
 
-        for (var i = 0; i < dim; i++) {
+        for (int i = 0; i < dim; i++) {
             min.coord[i] = Util.lerp(rate, min.coord[i], h.min.coord[i]);
             max.coord[i] = Util.lerp(rate, max.coord[i], h.max.coord[i]);
         }

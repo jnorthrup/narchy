@@ -43,17 +43,17 @@ public class SlidingDFT {
         fftSizeP2 = fftSize + 2;
         fftBufD = new float[numChannels][fftSizeP2];
 
-        var bins = fftSize / 2;
+        int bins = fftSize / 2;
         cos = new float[bins + 1];
         sin = new float[bins + 1];
         timeBuf = new float[numChannels][fftSize];
         timeBufIdx = new int[numChannels];
 
 
-        var d1 = (Math.PI * 2 / fftSize);
-        var binsH = bins / 2;
+        double d1 = (Math.PI * 2 / fftSize);
+        int binsH = bins / 2;
         for (int bin = 0, j = bins, k = binsH, m = binsH; bin < binsH; bin++, j--, k--, m++) {
-            var d2 = (float) Math.cos(d1);
+            float d2 = (float) Math.cos(d1);
             cos[bin] = d2;
             cos[j] = -d2;
             sin[k] = d2;
@@ -69,14 +69,14 @@ public class SlidingDFT {
     public void nextFreq(float[] inBuf, int chan, float[] fftBuf) {
         next(inBuf, 0, inBuf.length, chan, null);
 
-        var f = fftBufD[chan];
-        var n = (f.length-2);
+        float[] f = fftBufD[chan];
+        int n = (f.length-2);
         assert(fftBuf.length >= n/2);
-        var k = 0;
-        for (var i = 2; i < f.length; ) {
-            var real = f[i++];
-            var imag = f[i++];
-            var amp = real*real + imag*imag;
+        int k = 0;
+        for (int i = 2; i < f.length; ) {
+            float real = f[i++];
+            float imag = f[i++];
+            float amp = real*real + imag*imag;
             if (amp!=amp)
                 amp = 0; //HACK why
 
@@ -90,27 +90,27 @@ public class SlidingDFT {
         if (inLen == 0 || inBuf.length == 0)
             return;
 
-        var fftBufDC = fftBufD[chan];
-        var timeBufC = timeBuf[chan];
-        var timeBufIdxC = timeBufIdx[chan];
+        float[] fftBufDC = fftBufD[chan];
+        float[] timeBufC = timeBuf[chan];
+        int timeBufIdxC = timeBufIdx[chan];
 
 
         for (int i = 0, j = inOff; i < inLen; i++, j++) {
-            var f1 = inBuf[j];
+            float f1 = inBuf[j];
 
 //            if (f1!=f1)
 //                throw new NumberException("NaN", f1); //TEMPORARY
 
-            var delta = f1 - timeBufC[timeBufIdxC];
+            float delta = f1 - timeBufC[timeBufIdxC];
 
             timeBufC[timeBufIdxC] = f1;
             for (int k = 0, m = 0; m < fftSizeP2; k++) {
 
-                var re1 = fftBufDC[m] + ((k & 1) == 0 ? +1 : -1) * delta;
-                var im1 = fftBufDC[m + 1];
+                float re1 = fftBufDC[m] + ((k & 1) == 0 ? +1 : -1) * delta;
+                float im1 = fftBufDC[m + 1];
 
-                var re2 = cos[k];
-                var im2 = sin[k];
+                float re2 = cos[k];
+                float im2 = sin[k];
 
                 fftBufDC[m++] = re1 * re2 - im1 * im2;
                 fftBufDC[m++] = re1 * im2 + re2 * im1;

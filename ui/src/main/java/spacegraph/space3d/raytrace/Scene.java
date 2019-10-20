@@ -24,16 +24,16 @@ final class Scene {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        var line = Utils.nextLineOrEmpty(scanner);
+        String line = Utils.nextLineOrEmpty(scanner);
         while (!line.isEmpty()) {
             switch (line) {
                 case "camera:": {
-                    var position = new vv3(0, 0, 0);
-                    var direction = new vv3(1, 0, 0);
+                    vv3 position = new vv3(0, 0, 0);
+                    vv3 direction = new vv3(1, 0, 0);
                     double fov = 90;
                     double size = 0;
                     while (Utils.isIndented(line = Utils.nextLineOrEmpty(scanner))) {
-                        var s = new Scanner(line);
+                        Scanner s = new Scanner(line);
                         switch (s.next()) {
                             case "position:":
                                 position = Utils.readVector3(s);
@@ -52,12 +52,12 @@ final class Scene {
                     camera = new Camera(position, direction, fov, size);
                 }
                 case "cube:": {
-                    var position = new vv3(0, 0, 0);
+                    vv3 position = new vv3(0, 0, 0);
                     double sideLength = 1;
                     Entity.Surface surface = null;
-                    var texture = "";
+                    String texture = "";
                     while (Utils.isIndented(line = Utils.nextLineOrEmpty(scanner))) {
-                        var s = new Scanner(line);
+                        Scanner s = new Scanner(line);
                         switch (s.next()) {
                             case "position:":
                                 position = Utils.readVector3(s);
@@ -77,12 +77,12 @@ final class Scene {
                     break;
                 }
                 case "sphere:": {
-                    var position = new vv3(0, 0, 0);
+                    vv3 position = new vv3(0, 0, 0);
                     double radius = 1;
                     Entity.Surface surface = null;
-                    var texture = "";
+                    String texture = "";
                     while (Utils.isIndented(line = Utils.nextLineOrEmpty(scanner))) {
-                        var s = new Scanner(line);
+                        Scanner s = new Scanner(line);
                         switch (s.next()) {
                             case "position:":
                                 position = Utils.readVector3(s);
@@ -102,10 +102,10 @@ final class Scene {
                     break;
                 }
                 case "light:": {
-                    var position = new vv3(0, 0, 0);
-                    var color = 0xffffff;
+                    vv3 position = new vv3(0, 0, 0);
+                    int color = 0xffffff;
                     while (Utils.isIndented(line = Utils.nextLineOrEmpty(scanner))) {
-                        var s = new Scanner(line);
+                        Scanner s = new Scanner(line);
                         switch (s.next()) {
                             case "position:":
                                 position = Utils.readVector3(s);
@@ -124,17 +124,17 @@ final class Scene {
 
 
     private Collision castRay(Ray3 ray) {
-        var closestCollisionDistanceSquared = Double.POSITIVE_INFINITY;
+        double closestCollisionDistanceSquared = Double.POSITIVE_INFINITY;
         Entity closestEntity = null;
         Ray3 closestNormal = null;
         for (int i = 0, entitiesSize = entities.size(); i < entitiesSize; i++) {
-            var entity = entities.get(i);
+            Entity entity = entities.get(i);
 
-            var normal = entity.collide(ray);
+            Ray3 normal = entity.collide(ray);
             if (normal == null)
                 continue;
 
-            var distanceSquared = normal.position.distanceSquared(ray.position);
+            double distanceSquared = normal.position.distanceSquared(ray.position);
             if (distanceSquared < closestCollisionDistanceSquared) {
                 closestEntity = entity;
                 closestNormal = normal;
@@ -146,21 +146,21 @@ final class Scene {
 
     int rayColor(Ray3 ray) {
         Collision collision;
-        var reflections = 0;
+        int reflections = 0;
         do {
             collision = castRay(ray);
             if (collision == null)
                 return 0x000000;
 
-            var surface = collision.entity.surface;
+            Entity.Surface surface = collision.entity.surface;
             if (surface == Entity.Surface.Transparent) {
 
 
-                var tangent = collision.normal.direction.cross(collision.normal.direction.cross(ray.direction)).normalizeThis();
-                var nProj = -ray.direction.dot(collision.normal.direction);
+                vv3 tangent = collision.normal.direction.cross(collision.normal.direction.cross(ray.direction)).normalizeThis();
+                double nProj = -ray.direction.dot(collision.normal.direction);
                 ray.direction.scaleThis(1 / nProj);
-                var tProj = ray.direction.dot(tangent);
-                var r = 1.5;
+                double tProj = ray.direction.dot(tangent);
+                double r = 1.5;
                 ray = new Ray3(
                         collision.normal.position.minus(collision.normal.direction.scale(0.001)),
                         collision.normal.direction.scale(-1).add(tangent.scale(tProj / r)).normalizeThis()
@@ -198,13 +198,13 @@ final class Scene {
         double intensityR = 0;
         double intensityG = 0;
         double intensityB = 0;
-        for (var light : lights) {
-            var lightVector = light.position.minus(collision.normal.position);
-            var lightVectorLenSq = lightVector.lengthSquared();
-            var lightDirection = lightVector.normalizeThis();
-            var c = castRay(new Ray3(collision.normal.position, lightDirection));
+        for (Light light : lights) {
+            vv3 lightVector = light.position.minus(collision.normal.position);
+            double lightVectorLenSq = lightVector.lengthSquared();
+            vv3 lightDirection = lightVector.normalizeThis();
+            Collision c = castRay(new Ray3(collision.normal.position, lightDirection));
             if (c == null || c.normal.position.minus(collision.normal.position).lengthSquared() > lightVectorLenSq || c.entity.surface == Entity.Surface.Transparent) {
-                var intensity = Math.abs(collision.normal.direction.dot(lightDirection)) / lightVectorLenSq;
+                double intensity = Math.abs(collision.normal.direction.dot(lightDirection)) / lightVectorLenSq;
                 intensityR += (double) (light.color >> 16) / 255 * intensity;
                 intensityG += (double) ((light.color >> 8) & 0xff) / 255 * intensity;
                 intensityB += (double) (light.color & 0xff) / 255 * intensity;
@@ -222,11 +222,11 @@ final class Scene {
         if (collision.entity.texture != null && collision.entity.surface == Entity.Surface.Diffuse) {
 
 
-            var textureColor = -1;
+            int textureColor = -1;
             if (collision.entity instanceof Entity.Cube) {
-                var cube = (Entity.Cube) collision.entity;
-                var fp = collision.normal.position.minus(cube.position);
-                var afp = new vv3(Math.abs(fp.x), Math.abs(fp.y), Math.abs(fp.z));
+                Entity.Cube cube = (Entity.Cube) collision.entity;
+                vv3 fp = collision.normal.position.minus(cube.position);
+                vv3 afp = new vv3(Math.abs(fp.x), Math.abs(fp.y), Math.abs(fp.z));
                 vv3 axis1 = null;
                 vv3 axis2 = null;
                 if (afp.x < afp.z && afp.y < afp.z) {
@@ -239,17 +239,17 @@ final class Scene {
                     axis1 = vv3.Y_AXIS;
                     axis2 = vv3.Z_AXIS;
                 }
-                var x = 5 * (fp.dot(axis1) / cube.sideLength + 0.5) % 1;
-                var y = 5 * (fp.dot(axis2) / cube.sideLength + 0.5) % 1;
+                double x = 5 * (fp.dot(axis1) / cube.sideLength + 0.5) % 1;
+                double y = 5 * (fp.dot(axis2) / cube.sideLength + 0.5) % 1;
                 textureColor = cube.texture.getRGB(
                         (int) (x * cube.texture.getWidth()),
                         (int) (y * cube.texture.getHeight())
                 );
             } else if (collision.entity instanceof Entity.Sphere) {
-                var sphere = (Entity.Sphere) collision.entity;
-                var rp = collision.normal.position.minus(sphere.position);
-                var x = Math.atan2(rp.y, rp.x) / (2 * Math.PI) + 0.5;
-                var y = Math.asin(rp.z / rp.length()) / Math.PI + 0.5;
+                Entity.Sphere sphere = (Entity.Sphere) collision.entity;
+                vv3 rp = collision.normal.position.minus(sphere.position);
+                double x = Math.atan2(rp.y, rp.x) / (2 * Math.PI) + 0.5;
+                double y = Math.asin(rp.z / rp.length()) / Math.PI + 0.5;
                 textureColor = sphere.texture.getRGB(
                         (int) (x * sphere.texture.getWidth()),
                         (int) ((1 - y) * sphere.texture.getHeight())
@@ -261,9 +261,9 @@ final class Scene {
                 intensityB *= (double) (textureColor & 0xff) / 255;
             }
         }
-        var r = (int) (intensityR * 256);
-        var g = (int) (intensityG * 256);
-        var b = (int) (intensityB * 256);
+        int r = (int) (intensityR * 256);
+        int g = (int) (intensityG * 256);
+        int b = (int) (intensityB * 256);
         if (r > 255) {
             r = 255;
         }
@@ -309,20 +309,20 @@ final class Scene {
         }
 
         static vv3 readVector3(Scanner scanner) {
-            var str = scanner.nextLine().trim();
+            String str = scanner.nextLine().trim();
             if (str.charAt(0) != '(' || str.charAt(str.length() - 1) != ')') {
                 throw new RuntimeException("Coordinates must be parenthesized!");
             }
             str = str.substring(1, str.length() - 1);
-            var coords = str.split(",");
+            String[] coords = str.split(",");
             if (coords.length != 3) {
                 throw new RuntimeException("A coordinates must have exactly 3 components!");
             }
-            for (var i = 0; i < coords.length; i++) {
+            for (int i = 0; i < coords.length; i++) {
                 coords[i] = coords[i].trim();
             }
-            var parsedCoords = new double[coords.length];
-            for (var i = 0; i < parsedCoords.length; i++) {
+            double[] parsedCoords = new double[coords.length];
+            for (int i = 0; i < parsedCoords.length; i++) {
                 try {
                     parsedCoords[i] = Double.parseDouble(coords[i]);
                 } catch (Exception e) {

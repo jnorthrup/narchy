@@ -50,7 +50,7 @@ public class EvolveGrammar {
         }
 
 
-        var configuration = Configurator.configureFile(args[0]);
+        Configuration configuration = Configurator.configureFile(args[0]);
         
 
 
@@ -67,11 +67,11 @@ public class EvolveGrammar {
     public static Results run(String message, Configuration configuration) throws Exception {
 
 
-        var results = new Results(configuration);
+        Results results = new Results(configuration);
         results.setMachineHardwareSpecifications(Utils.cpuInfo());
 
-        var strategy = configuration.getStrategy();
-        var startTime = System.currentTimeMillis();
+        ExecutionStrategy strategy = configuration.getStrategy();
+        long startTime = System.currentTimeMillis();
 
         strategy.execute(configuration,
                 new CoolTextualExecutionListener(message, configuration, results));

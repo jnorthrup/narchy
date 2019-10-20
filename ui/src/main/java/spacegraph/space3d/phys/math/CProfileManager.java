@@ -86,7 +86,7 @@ public class CProfileManager {
 	}
 
 	public static float getTimeSinceReset() {
-		var time = BulletStats.profileGetTicks();
+        long time = BulletStats.profileGetTicks();
 		time -= resetTime;
 		return time / BulletStats.profileGetTickRate();
 	}

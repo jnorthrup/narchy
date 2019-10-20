@@ -35,7 +35,7 @@ public abstract class AbstractExecutionStrategy implements ExecutionStrategy{
     private static final Logger LOG = Logger.getLogger(AbstractExecutionStrategy.class.getName());
 
     protected static Class<? extends RunStrategy> getStrategy(Map<String, String> parameters) {
-        var paramValue = parameters.get(RUN_STRATEGY_KEY);
+        String paramValue = parameters.get(RUN_STRATEGY_KEY);
         Class<? extends RunStrategy> strategyClass;
         try{
             strategyClass = Class.forName(paramValue).asSubclass(RunStrategy.class);

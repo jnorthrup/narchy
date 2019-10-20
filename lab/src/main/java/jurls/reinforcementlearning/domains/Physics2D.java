@@ -29,22 +29,22 @@ public class Physics2D {
     public void step(double delta) {
 
 
-        var numConnections = connections.size();
-        for (var i = 0; i < numConnections; i++) {
-            var c = connections.get(i);
-            var dx = c.p1.x - c.p2.x;
-            var dy = c.p1.y - c.p2.y;
-            var l = Math.sqrt(dx * dx + dy * dy);
-            var dl = c.length - l;
+        int numConnections = connections.size();
+        for (int i = 0; i < numConnections; i++) {
+            Connection c = connections.get(i);
+            double dx = c.p1.x - c.p2.x;
+            double dy = c.p1.y - c.p2.y;
+            double l = Math.sqrt(dx * dx + dy * dy);
+            double dl = c.length - l;
             c.p1.vx += delta * w * dl * dx / l;
             c.p1.vy += delta * w * dl * dy / l;
             c.p2.vx -= delta * w * dl * dx / l;
             c.p2.vy -= delta * w * dl * dy / l;
         }
 
-        var numPoints = points.size();
-        for (var i = 0; i < numPoints; i++) {
-            var p = points.get(i);
+        int numPoints = points.size();
+        for (int i = 0; i < numPoints; i++) {
+            Point p = points.get(i);
 
             p.vy += delta * gravity;
 

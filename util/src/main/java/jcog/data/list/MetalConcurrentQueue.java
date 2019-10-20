@@ -73,13 +73,13 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
 
     public void forEach(Consumer<? super X> each) {
 
-        var h = head();
-        var s = tail() - h;
+        int h = head();
+        int s = tail() - h;
         if (s > 0) {
-            var c = length();
+            int c = length();
             h = i(h, c);
             while(true) {
-                var next = getFast(h);
+                X next = getFast(h);
                 if (next != null)
                     each.accept(next);
                 /*else
@@ -130,20 +130,20 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
 
 
     public boolean offer(X x) {
-        var spin = 0;
+        int spin = 0;
 
-        var cap = capacity();
+        int cap = capacity();
         while (true) {
-            var tail = this.tail.get();
+            int tail = this.tail.get();
             // never offer onto the slot that is currently being polled off
 
             // will this sequence exceed the capacity
-            var h = head.get();
+            int h = head.get();
             if (cap > tail - h) {
                 // does the sequence still have the expected
                 // value
 
-                var it = i(tail, cap);
+                int it = i(tail, cap);
 
                 if (canTake(tail, 1)) {
 
@@ -184,22 +184,22 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
     }
 
     public X poll(int retries) {
-        var spin = 0;
-        var cap = capacity();
+        int spin = 0;
+        int cap = capacity();
         do {
-            var head = this.head.get();
+            int head = this.head.get();
             // is there data for us to poll
-            var tail = this.tail.get();
-            var s = tail - head;
+            int tail = this.tail.get();
+            int s = tail - head;
             if (s <= 0)
                 return null; //empty
 
-            var ih = i(head, cap);
+            int ih = i(head, cap);
 
             // check if we can update the sequence
             if (canPut(head, 1)) {
 
-                var pollObj = getAndSetFast(ih, null);
+                X pollObj = getAndSetFast(ih, null);
 
                 put(head, 1);
 
@@ -248,7 +248,7 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
 
     public final X last(int beforeEnd) {
         int tail = tail(), head = head();
-        var i = size(tail, head) - beforeEnd - 1;
+        int i = size(tail, head) - beforeEnd - 1;
         return i >= 0 ? peek(head,i) : null;
     }
 
@@ -263,7 +263,7 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
 
     public int remove(FasterList<X> x, int maxElements, int retries) {
         if (maxElements == 1) {
-            var xx = poll(retries);
+            X xx = poll(retries);
             if (xx == null)
                 return 0;
             else {
@@ -271,11 +271,11 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
                 return 1;
             }
         } else {
-            var initialSize = x.size();
+            int initialSize = x.size();
             int[] i = {initialSize};
-            var a = x.array();
-            var tryToGet = Math.min(a.length - initialSize, maxElements);
-            var drained = clear(y -> a[i[0]++] = y, tryToGet, retries);
+            X[] a = x.array();
+            int tryToGet = Math.min(a.length - initialSize, maxElements);
+            int drained = clear(y -> a[i[0]++] = y, tryToGet, retries);
             x.setSize(drained);
             return drained;
         }
@@ -360,26 +360,26 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
     public int clear(Consumer<X> each, int limit, int retries) {
         assert(limit > 0);
 
-        var cap = capacity();
+        int cap = capacity();
 
-        var spin = 0;
-        var k = 0;
+        int spin = 0;
+        int k = 0;
         main: while (true) {
-            var head = this.head.get(); // prepare to qualify?
+            int head = this.head.get(); // prepare to qualify?
             // is there data for us to poll
             // we must take a difference in values here to guard against integer overflow
-            var tail = this.tail.get();
-            var s = tail - head;
+            int tail = this.tail.get();
+            int s = tail - head;
             if (s <= 0)
                 return k; //empty
 
-            var ih = i(head, cap);
+            int ih = i(head, cap);
 
             while (head < tail) {
 
                 if (canPut(head, 1)) {
                     //get, nullify, and advance
-                    var next = getAndSetFast(ih, null);
+                    X next = getAndSetFast(ih, null);
                     put(head, 1);
 
                     //callback
@@ -478,11 +478,17 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
 
 
     public final boolean contains(Object o) {
-        var s = size();
+        int s = size();
         if (s > 0) {
             //TODO use fast iteration method
-            var h = head();
-            return IntStream.range(0, s).mapToObj(i -> peek(h, i)).anyMatch(b -> b != null && b.equals(o));
+            int h = head();
+            for (int i = 0; i < s; i++) {
+                X b = peek(h, i);
+                if (b != null && b.equals(o)) {
+                    return true;
+                }
+            }
+            return false;
         }
         return false;
     }

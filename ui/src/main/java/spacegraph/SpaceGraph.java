@@ -39,11 +39,11 @@ $ jshell --startup startups/custom-startup
      */
     public static JoglDisplay window(Object o, int w, int h) {
         if (o instanceof JoglDisplay) {
-            var s = (JoglDisplay) o;
+            JoglDisplay s = (JoglDisplay) o;
             s.video.show(w, h);
             return s;
         } else if (o instanceof Spatial) {
-            var win = new SpaceGraph3D(((Spatial) o));
+            SpaceGraph3D win = new SpaceGraph3D(((Spatial) o));
             win.video.show(w, h);
             return win;
         } else if (o instanceof Surface) {

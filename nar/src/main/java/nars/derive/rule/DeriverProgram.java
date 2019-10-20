@@ -15,7 +15,9 @@ import nars.term.control.PREDICATE;
 import nars.term.control.SWITCH;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -46,7 +48,13 @@ public class DeriverProgram {
 
         this.branch = actions; assert (actions.length > 0);
 
-        this.cause = Arrays.stream(actions).flatMap(b -> Stream.of(b.why)).toArray(Cause[]::new);
+        List<RuleCause> list = new ArrayList<>();
+        for (How b : actions) {
+            for (RuleCause ruleCause : Arrays.asList(b.why)) {
+                list.add(ruleCause);
+            }
+        }
+        this.cause = list.toArray(new Cause[0]);
 
         this.pre = pre;
     }
@@ -71,22 +79,22 @@ public class DeriverProgram {
 
         if (x instanceof DeriverProgram) {
 
-            var r = (DeriverProgram) x;
+            DeriverProgram r = (DeriverProgram) x;
             r.print(out, indent);
 
         } else if (x instanceof Forkable) {
 
-            var b = (Forkable)x;
+            Forkable b = (Forkable)x;
 
             out.println(b.getClass().getSimpleName().toLowerCase() + " {");
-            for (var c : b.can) {
+            for (short c : b.can) {
                 print(branch[c], out, indent+2);
             }
             Texts.indent(indent);out.println("}");
 
 
         } else if (x instanceof How) {
-            var a = (How)x;
+            How a = (How)x;
 
             out.println(a.why.id + " ==> {");
             Object aa;
@@ -104,7 +112,7 @@ public class DeriverProgram {
 
         } else if (x instanceof AND) {
             out.println("and {");
-            var ac = (AND) x;
+            AND ac = (AND) x;
             ac.subStream().forEach(b->
                 print(b, out, indent + 2)
             );
@@ -125,16 +133,16 @@ public class DeriverProgram {
         } */ else if (x instanceof FORK) {
 
             out.println("fork {");
-            for (var b : ((FORK) x).branch)
+            for (PREDICATE b : ((FORK) x).branch)
                 print(b, out, indent + 2);
             Texts.indent(indent);
             out.println("}");
 
         } else if (x instanceof SWITCH) {
-            var sw = (SWITCH) x;
+            SWITCH sw = (SWITCH) x;
             out.println("switch(op(" + (sw.taskOrBelief ? "task" : "belief") + ")) {");
-            var i = -1;
-            for (var b : sw.swtch) {
+            int i = -1;
+            for (PREDICATE b : sw.swtch) {
                 i++;
                 if (b == null) continue;
 

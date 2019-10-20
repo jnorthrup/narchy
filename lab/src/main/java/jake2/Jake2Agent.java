@@ -74,7 +74,7 @@ public class Jake2Agent extends GameX implements Runnable {
 
         protected synchronized void update() {
 
-            var p = PlayerView.current_player;
+            edict_t p = PlayerView.current_player;
             if (player == null || player!=p) {
                 if (p==null)
                     return;
@@ -113,7 +113,7 @@ public class Jake2Agent extends GameX implements Runnable {
 
             angle = p.angle;
 
-            var v = p.velocity;
+            float[] v = p.velocity;
             velX = v[0];
             velY = v[1];
             velZ = v[2];
@@ -143,9 +143,9 @@ public class Jake2Agent extends GameX implements Runnable {
         rgb = new GLScreenShot(true);
         depth = new GLScreenShot(false);
 
-        var py = 48;
-        var px = 64;
-        var rgbVision = new PixelBag(
+        int py = 48;
+        int px = 64;
+        PixelBag rgbVision = new PixelBag(
                 new BrightnessNormalize(
                         new ImageFlip(false, true, new ScaledBitmap2D(rgb, px, py))
                 ), px, py);
@@ -156,9 +156,9 @@ public class Jake2Agent extends GameX implements Runnable {
         )));
 
 
-        var aeStates = 16;
-        var nx = 8;
-        var rgbAE = new AutoclassifiedBitmap($.the("gray"), rgbVision, nx, nx, aeStates, this);
+        int aeStates = 16;
+        int nx = 8;
+        AutoclassifiedBitmap rgbAE = new AutoclassifiedBitmap($.the("gray"), rgbVision, nx, nx, aeStates, this);
         rgbAE.alpha(0.03f);
         rgbAE.noise.set(0.05f);
 
@@ -167,10 +167,10 @@ public class Jake2Agent extends GameX implements Runnable {
         //SpaceGraph.(column(visionView, camAE.newChart()), 500, 500);
 //        }
 
-        var rgbView = new BitmapMatrixView(rgbVision);
+        BitmapMatrixView rgbView = new BitmapMatrixView(rgbVision);
         onFrame(rgbView::updateIfShowing);
 
-        var depthView = new BitmapMatrixView(depthVision.src);
+        BitmapMatrixView depthView = new BitmapMatrixView(depthVision.src);
         onFrame(depthView::updateIfShowing);
 
         SpaceGraph.window(grid(rgbView, rgbAE.newChart(), depthView ), 500, 500);
@@ -178,7 +178,7 @@ public class Jake2Agent extends GameX implements Runnable {
         hear = new FreqVectorSensor(nar, new CircularFloatBuffer(8*1024),
                 512, 16, f->$.inh($.the(f), "hear"));
         addSensor(hear);
-        var hearView = new WaveBitmap(hear.buf, 300, 64);
+        WaveBitmap hearView = new WaveBitmap(hear.buf, 300, 64);
         onFrame(hearView::update);
         SpaceGraph.window(grid(new VectorSensorChart(hear, this).withControls(),
                 //spectrogram(hear.buf, 0.1f,512, 16),
@@ -274,21 +274,21 @@ public class Jake2Agent extends GameX implements Runnable {
                 rgb.update(g);
                 depth.update(g);
 
-                var b = SND_JAVA.dma.buffer;
+                byte[] b = SND_JAVA.dma.buffer;
                 if (b == null)
                     return;
-                var sample = SND_JAVA.SNDDMA_GetDMAPos();
+                int sample = SND_JAVA.SNDDMA_GetDMAPos();
                 if (sample != lastSamplePos) {
 
 
                     //System.out.println(sample + " " + SND_MIX.paintedtime);
 
-                    var samples = 1024;
+                    int samples = 1024;
                     if (hear.buf.available() < samples * 2)
                         hear.buf.skip(samples * 2);
 
-                    var from = (sample - samples * 4) % b.length;
-                    var to = (sample - samples * 2) % b.length;
+                    int from = (sample - samples * 4) % b.length;
+                    int to = (sample - samples * 2) % b.length;
 
                     while (from < 0) from += b.length;
                     while (to < 0) to += b.length;

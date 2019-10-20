@@ -86,7 +86,7 @@ public class ConceptSurface extends TabMenu {
 //                    );
 //                }
         );
-        var c = n.conceptualizeDynamic(x);
+        Concept c = n.conceptualizeDynamic(x);
         if (c instanceof PermanentConcept) {
             m = new HashMap(m);
             m.put(c.getClass().getSimpleName(), ()-> new ObjectSurface(c));

@@ -48,10 +48,10 @@ public class Version {
             if (argv.length == 0) {
                 System.out.println(version);
             } else {
-                var filename = argv[0];
+                String filename = argv[0];
                 System.out.println("Writing version information to: "
                         + filename);
-                var file = new PrintWriter(new FileOutputStream(
+                PrintWriter file = new PrintWriter(new FileOutputStream(
                         filename), true);
 
                 file.println("product.version=" + version);

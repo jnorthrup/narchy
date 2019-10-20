@@ -54,7 +54,7 @@ public class DefaultTaskCondition extends TaskCondition {
 			freqMax = 1f - freqMax;
 			freqMin = 1f - freqMin;
 			if (freqMin > freqMax) {
-				var f = freqMin;
+                float f = freqMin;
 				freqMin = freqMax;
 				freqMax = f;
 			}
@@ -78,13 +78,13 @@ public class DefaultTaskCondition extends TaskCondition {
 		super.log(label, successCondition, logger);
 
 		if (logger.isInfoEnabled()) {
-			var sb = new StringBuilder((1 + (similar != null ? similar.size() : 0)) * 2048);
+            StringBuilder sb = new StringBuilder((1 + (similar != null ? similar.size() : 0)) * 2048);
 			if (firstMatch != null) {
 				sb.append("Exact match:\n");
 				log(firstMatch, sb);
 			} else if (similar != null && !similar.isEmpty()) {
 				sb.append("Similar matches:\n");
-				for (var s : similar)
+				for (Task s : similar)
 					log(s, sb);
 			}
 			logger.info(sb.toString());
@@ -106,11 +106,11 @@ public class DefaultTaskCondition extends TaskCondition {
 	@Override
 	public boolean matches(@Nullable Task t) {
 
-		var punc = this.punc;
+        byte punc = this.punc;
 		if (t.punc() == punc) {
 			if (occurrenceTimeMatches(t) && creationTimeMatches()) {
 				if (((punc != Op.BELIEF) && (punc != Op.GOAL)) || truthMatches(t)) {
-					var tt = t.term();
+                    Term tt = t.term();
 					if (tt.equals(this.term)) {
 						firstMatch = t;
 						return true;
@@ -132,7 +132,7 @@ public class DefaultTaskCondition extends TaskCondition {
 	}
 
 	private boolean creationTimeMatches() {
-		var now = nar.time();
+        long now = nar.time();
 		return now >= creationStart && now <= creationEnd;
 	}
 
@@ -142,11 +142,11 @@ public class DefaultTaskCondition extends TaskCondition {
 
 	private boolean truthMatches(Truthed tt) {
 
-		var co = tt.conf();
+        float co = tt.conf();
 		if ((co > confMax) || (co < confMin))
 			return false;
 
-		var fr = tt.freq();
+        float fr = tt.freq();
 		return (fr <= freqMax && fr >= freqMin);
 
 	}
@@ -154,7 +154,7 @@ public class DefaultTaskCondition extends TaskCondition {
 	@Override
 	protected float value(Task task, float worstDiffNeg) {
 
-		var worstDiff = -worstDiffNeg;
+        float worstDiff = -worstDiffNeg;
 
 		float difference = 0;
 		if (task.punc() != punc)
@@ -162,23 +162,23 @@ public class DefaultTaskCondition extends TaskCondition {
 		if (difference >= worstDiff)
 			return NaN;
 
-		var tterm = task.term();
+        Term tterm = task.term();
 		difference +=
 			100 * termDistance(tterm, term, worstDiff);
 		if (difference >= worstDiff)
 			return NaN;
 
 		if (task.isBeliefOrGoal()) {
-			var f = task.freq();
-			var freqDiff = Math.min(
+            float f = task.freq();
+            float freqDiff = Math.min(
 				Math.abs(f - freqMin),
 				Math.abs(f - freqMax));
 			difference += 10 * freqDiff;
 			if (difference >= worstDiff)
 				return NaN;
 
-			var c = task.conf();
-			var confDiff = Math.min(
+            float c = task.conf();
+            float confDiff = Math.min(
 				Math.abs(c - confMin),
 				Math.abs(c - confMax));
 			difference += 1 * confDiff;

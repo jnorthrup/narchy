@@ -42,7 +42,7 @@ public class PremiseRule extends ProxyTerm  {
 
     /** instance a list of conditions */
     FasterList<PREDICATE<PreDerivation>> conditions(short i) {
-        var pre = new FasterList<PREDICATE<PreDerivation>>(this.condition.length + 1);
+        FasterList<PREDICATE<PreDerivation>> pre = new FasterList<PREDICATE<PreDerivation>>(this.condition.length + 1);
         pre.addAll(this.condition);
         pre.add(new Forkable(/* branch ID */  i));
         return pre;

@@ -51,10 +51,10 @@ public class PeriodMeter extends FunctionMeter<Double> {
     }
 
     public void hit(int n) {
-        var now = now();
+        long now = now();
         if (prev == prev) {
-            var dt = now - prev;
-            for (var i = 0; i < n; i++)
+            long dt = now - prev;
+            for (int i = 0; i < n; i++)
                 hitNano(dt);
         }
         prev = now;

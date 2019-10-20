@@ -21,23 +21,23 @@ public class Unit {
 
     private static Consumer<Unit[]> vectorUpdateAction(Consumer<Unit> updateAction) {
         return (units) -> {
-            for (var unit : units)
+            for (Unit unit : units)
                 updateAction.accept(unit);
         };
     }
 
     static Consumer<Unit[][]> tensor2UpdateAction(Consumer<Unit> updateAction) {
-        var vectorUpdateAction = vectorUpdateAction(updateAction);
+        Consumer<Unit[]> vectorUpdateAction = vectorUpdateAction(updateAction);
         return (units) -> {
-            for (var unit : units)
+            for (Unit[] unit : units)
                 vectorUpdateAction.accept(unit);
         };
     }
 
     static Consumer<Unit[][][]> tensor3UpdateAction(Consumer<Unit> updateAction) {
-        var tensor2UpdateAction = tensor2UpdateAction(updateAction);
+        Consumer<Unit[][]> tensor2UpdateAction = tensor2UpdateAction(updateAction);
         return (units) -> {
-            for (var unit : units)
+            for (Unit[][] unit : units)
                 tensor2UpdateAction.accept(unit);
         };
     }

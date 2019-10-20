@@ -29,8 +29,8 @@ import static nars.Op.NEG;
 
     @Override
     default @Nullable Term normalize(byte varOffset) {
-        var x = sub();
-        var y = x instanceof Variable ? ((Variable) x).normalizedVariable((byte) (varOffset + 1)) : x.normalize(varOffset);
+        Term x = sub();
+        Term y = x instanceof Variable ? ((Variable) x).normalizedVariable((byte) (varOffset + 1)) : x.normalize(varOffset);
         return y != x ? y.neg() : this;
     }
 

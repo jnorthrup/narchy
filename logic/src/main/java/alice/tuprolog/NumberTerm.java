@@ -353,7 +353,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
             t = t.term();
             if (this == t) return true;
             if (t instanceof NumberTerm) {
-                var n = (NumberTerm) t;
+                NumberTerm n = (NumberTerm) t;
                 return n.isInteger() && value == n.intValue();
             } else
                 return false;
@@ -578,7 +578,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
         public boolean isEqual(Term t) {
             t = t.term();
             if (t instanceof NumberTerm) {
-                var n = (NumberTerm) t;
+                NumberTerm n = (NumberTerm) t;
                 if (!n.isReal())
                     return false;
                 return value == n.doubleValue();

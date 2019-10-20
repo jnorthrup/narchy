@@ -30,15 +30,15 @@ public class Buffer {
 
         synchronized (this) {
 
-            var l = lines.size();
+            int l = lines.size();
             if (l > 0) {
-                for (var line : lines) {
+                for (BufferLine line : lines) {
                     observer.removeLine(line);
                 }
                 lines.clear();
             }
 
-            var bl = new BufferLine();
+            BufferLine bl = new BufferLine();
             lines.add(bl);
             observer.addLine(bl);
 
@@ -56,8 +56,8 @@ public class Buffer {
     }
 
     @Deprecated private void update() {
-        var bound = lines.size();
-        for (var i = 0; i < bound; i++) {
+        int bound = lines.size();
+        for (int i = 0; i < bound; i++) {
             lines.get(i).updatePosition(i);
         }
         observer.update(this);
@@ -74,9 +74,9 @@ public class Buffer {
                 break;
             default:
                 if (string.contains("\n")) {
-                    var values = string.split("\n");
+                    String[] values = string.split("\n");
                     synchronized(this) {
-                        for (var x : values) {
+                        for (String x : values) {
                             insertChars(x, false);
                             insertEnter(false);
                         }
@@ -101,12 +101,12 @@ public class Buffer {
     }
 
     public void insertChars(CharSequence string, boolean update) {
-        var n = string.length();
+        int n = string.length();
         if (n > 0) {
             synchronized (this) {
-                var line = currentLine();
-                var colStart = currentCursor.getCol();
-                for (var i = 0; i < n; i++) {
+                BufferLine line = currentLine();
+                int colStart = currentCursor.getCol();
+                for (int i = 0; i < n; i++) {
                     line.insertChar(string.charAt(i), colStart + i);
                 }
                 currentCursor.incCol(n);
@@ -118,11 +118,11 @@ public class Buffer {
 
     public void insertEnter(boolean update) {
         synchronized (this) {
-            var currentRow = currentLine();
+            BufferLine currentRow = currentLine();
 
-            var nextLineChars = currentRow.splitReturn(currentCursor.getCol());
+            List<BufferChar> nextLineChars = currentRow.splitReturn(currentCursor.getCol());
 
-            var nextLine = new BufferLine();
+            BufferLine nextLine = new BufferLine();
             lines.add(currentCursor.getRow() + 1, nextLine);
             observer.addLine(nextLine);
             currentCursor.setCol(0);
@@ -138,7 +138,7 @@ public class Buffer {
             int[] k = {0};
             //nlc.add(c);
             //observer.moveChar(currentLine, nextLine, c);
-            for (var c : nextLineChars) {
+            for (BufferChar c : nextLineChars) {
                 nextLine.insertChar(k[0]++, c);
             }
 
@@ -204,7 +204,7 @@ public class Buffer {
 
     @Override
     public String toString() {
-        var buf = text() +
+        String buf = text() +
                 String.format("Caret:[%d,%d]", currentCursor.getCol(), currentCursor.getRow());
         return buf;
     }
@@ -230,12 +230,12 @@ public class Buffer {
                 } else {
                     isLineEnd();
                     if (!isBufferLast()) {
-                        var currentLine = currentLine();
-                        var removedLine = lines.remove(currentCursor.getRow() + 1);
+                        BufferLine currentLine = currentLine();
+                        BufferLine removedLine = lines.remove(currentCursor.getRow() + 1);
                         currentLine.join(removedLine);
                         //TODO fix where characters are appended here. to not use moveChar() then remove that method
                         //see splitReturn() for similarity
-                        for (var c : removedLine.getChars()) {
+                        for (BufferChar c : removedLine.getChars()) {
                             observer.moveChar(removedLine, currentLine, c);
                         }
                         observer.removeLine(removedLine);
@@ -259,7 +259,7 @@ public class Buffer {
 
     public void back() {
         if (isLineStart()) {
-            var isDocHead = isBufferHead();
+            boolean isDocHead = isBufferHead();
             previous();
             if (!isDocHead) {
                 last();
@@ -271,7 +271,7 @@ public class Buffer {
 
     public void forward() {
         if (isLineEnd()) {
-            var isDocLast = isBufferLast();
+            boolean isDocLast = isBufferLast();
             next();
             if (!isDocLast) {
                 head();
@@ -326,8 +326,8 @@ public class Buffer {
 
     public boolean isLineEnd() {
 
-        var ll = currentLine().length();
-        var cc = currentCursor.getCol();
+        int ll = currentLine().length();
+        int cc = currentCursor.getCol();
         if (cc > ll) {
             currentCursor.setCol(ll);
             cc = ll;
@@ -342,13 +342,13 @@ public class Buffer {
     }
 
     public String copy() {
-        var buf = new StringBuilder();
+        StringBuilder buf = new StringBuilder();
         if (mark.compareTo(currentCursor) == 0) {
             return buf.toString();
         }
 
-        var head = mark;
-        var tail = currentCursor;
+        CursorPosition head = mark;
+        CursorPosition tail = currentCursor;
         if (mark.compareTo(currentCursor) > 0) {
             head = currentCursor;
             tail = mark;
@@ -359,7 +359,7 @@ public class Buffer {
         } else {
             buf.append(lines.get(head.getRow()).toLineString().substring(head.getCol()));
             if (tail.getRow() - head.getRow() > 1) {
-                for (var i = head.getRow() + 1; i < tail.getRow(); i++) {
+                for (int i = head.getRow() + 1; i < tail.getRow(); i++) {
                     buf.append('\n');
                     buf.append(lines.get(i).toLineString());
                 }
@@ -375,7 +375,7 @@ public class Buffer {
             return;
         }
         if (mark.compareTo(currentCursor) > 0) {
-            var tmp = mark;
+            CursorPosition tmp = mark;
             mark = currentCursor;
             currentCursor = tmp;
         }

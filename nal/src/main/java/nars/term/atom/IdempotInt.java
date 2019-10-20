@@ -21,10 +21,10 @@ public final class IdempotInt extends Atomic implements Idempotent {
 	private static final IdempotInt[] neg = new IdempotInt[INT_CACHE_SIZE];
 
 	static {
-		for (var i = 0; i < pos.length; i++) {
+		for (int i = 0; i < pos.length; i++) {
 			pos[i] = new IdempotInt(i);
 		}
-		for (var i = 1; i < neg.length; i++) {
+		for (int i = 1; i < neg.length; i++) {
 			neg[i] = new IdempotInt(-i);
 		}
 	}
@@ -46,7 +46,7 @@ public final class IdempotInt extends Atomic implements Idempotent {
 	private IdempotInt(int i) {
 		this.i = i;
 
-		var intLen = IntCoding.variableByteLengthOfZigZagInt(i); //1 to 4 bytes
+        int intLen = IntCoding.variableByteLengthOfZigZagInt(i); //1 to 4 bytes
 		this.bytesCached = new byte[1 + intLen];
 		bytesCached[0] = Op.INT.id;
 		IntCoding.encodeZigZagVariableInt(i, bytesCached, 1);

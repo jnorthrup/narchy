@@ -30,7 +30,7 @@ public abstract class AbstractTaskView<X> extends MutableUnitContainer implement
 
 		rate = 1f/capacity;
 
-		var _bag = new PLinkArrayBag<X>(merge, capacity);
+        PLinkArrayBag<X> _bag = new PLinkArrayBag<X>(merge, capacity);
 		bag = new SimpleBufferedBag<>(_bag);
 
 		scroll = new ScrollXY<>(new ArrayBagGridModel<>(_bag), this);

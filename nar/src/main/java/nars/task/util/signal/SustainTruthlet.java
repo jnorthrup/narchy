@@ -50,7 +50,7 @@ public class SustainTruthlet extends ProxyTruthlet<RangeTruthlet> {
 
         super.truth(w, freqEvi);
         if (dist > 0) {
-            var f = freqEvi[0];
+            float f = freqEvi[0];
             if (f == f)
                 freqEvi[1] = (float) NAL.evi(freqEvi[1], dist, /* dur */ dur());
         }

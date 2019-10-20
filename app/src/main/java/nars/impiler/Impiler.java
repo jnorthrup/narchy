@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import static java.util.Optional.ofNullable;
@@ -80,19 +81,21 @@ public class Impiler {
      * creates graph snapshot
      */
     private static AdjGraph<Term, Task> graph(Iterable<? extends Concept> concepts) {
-        var g = new AdjGraph<Term, Task>(true);
+        AdjGraph<Term, Task> g = new AdjGraph<Term, Task>(true);
 
 
         Streams.stream(concepts)
                 .map(c -> node(c, false))
                 .filter(Objects::nonNull)
-                .forEach(m -> m.edges(false, true).forEach(e -> {
-                    var s = e.from().id();
-                    g.addNode(s);
-                    var t = e.to().id();
-                    g.addNode(t);
-                    g.setEdge(s, t, e.id());
-                }));
+                .forEach(m -> {
+                    for (FromTo<Node<Term, Task>, Task> e : m.edges(false, true)) {
+                        Term s = e.from().id();
+                        g.addNode(s);
+                        Term t = e.to().id();
+                        g.addNode(t);
+                        g.setEdge(s, t, e.id());
+                    }
+                });
         return g;        //unstreamable monster
 
 
@@ -111,7 +114,7 @@ public class Impiler {
      * try to add/update a task in the graph
      */
     public static boolean impile(Task i, NAR n) {
-        var result = false;
+        boolean result = false;
         if (i.isBelief() && filter(i.term())) {
             _impile(i, n);
             result = true;
@@ -120,19 +123,19 @@ public class Impiler {
     }
 
     private static void _impile(Task t, NAR nar) {
-        var i = t.term();
-        var ii = i.subterms();
+        Term i = t.term();
+        Subterms ii = i.subterms();
 
 
         Term subj = ii.sub(0).concept(), pred = ii.sub(1).concept();
         if (!subj.equals(pred)) {
 
 
-            var sc =
+            Concept sc =
                     nar.conceptualize(subj.unneg());
 
             if (sc != null) {
-                var pc =
+                Concept pc =
                         nar.conceptualize(pred);
 
                 if (pc != null) {
@@ -155,7 +158,7 @@ public class Impiler {
     static class ImpilerDeducer {
 
         ImpilerDeducer(NAR n) {
-            var in = n.newChannel(this);
+            CauseChannel<Task> in = n.newChannel(this);
         }
 
 
@@ -169,11 +172,11 @@ public class Impiler {
 
         static float deduce(Task task, What what, boolean forward) {
             float res;
-            var target = task.term();
+            Term target = task.term();
 
-            var x = new ImpilerDeduction(what.nar);
+            ImpilerDeduction x = new ImpilerDeduction(what.nar);
 
-            var result = x.get(target, task.isEternal() ? what.time() : task.start(), forward);
+            List<Task> result = x.get(target, task.isEternal() ? what.time() : task.start(), forward);
             if (result.isEmpty()) res = 0;
             else {
                 what.acceptAll(result);
@@ -228,9 +231,9 @@ public class Impiler {
         public Iterable<FromTo<Node<Term, Task>, Task>> edges(boolean in, boolean out) {
             assert (in ^ out);
             return tasks.isEmpty() ? Collections.EMPTY_LIST : Iterables.filter(Iterables.transform(tasks, (tLink) -> {
-                var td = tLink.direction;
+                boolean td = tLink.direction;
                 if ((out && td) || (in && !td)) {
-                    var tt = tLink.get();
+                    Task tt = tLink.get();
 
 
                     Node otherNode = node(tLink.target, false);

@@ -22,7 +22,7 @@ public class QueueWheelModel extends WheelModel {
 		super(wheels, resolution);
 		assert (wheels > 1);
 		q = new Queue[wheels];
-		for (var i = 0; i < wheels; i++)
+		for (int i = 0; i < wheels; i++)
 			q[i] = queueBuilder.get();
 	}
 
@@ -33,7 +33,7 @@ public class QueueWheelModel extends WheelModel {
 		//TODO if n=2 and the previous or next queue is empty try moving one of the items there. this will distribute items across wheels so each has an ideal 0 or 1 size
 
 		int n = 0, limit = Integer.MAX_VALUE;
-		var q = this.q[c];
+        Queue<TimedFuture> q = this.q[c];
 
 		TimedFuture r;
 		while ((r = q.poll()) != null) {
@@ -72,8 +72,8 @@ public class QueueWheelModel extends WheelModel {
 	@Override
 	public boolean reschedule(int wheel, TimedFuture r) {
 
-		var q = this.q;
-		var remain = q.length - 1;
+        Queue<TimedFuture>[] q = this.q;
+        int remain = q.length - 1;
 		do {
 			if (q[wheel].offer(r))
 				return true;
@@ -90,7 +90,12 @@ public class QueueWheelModel extends WheelModel {
 
 	@Override
 	public boolean isEmpty() {
-		return Arrays.stream(q).allMatch(Collection::isEmpty);
+		for (Queue<TimedFuture> timedFutures : q) {
+			if (!timedFutures.isEmpty()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 

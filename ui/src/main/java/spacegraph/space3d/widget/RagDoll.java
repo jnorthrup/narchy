@@ -129,7 +129,7 @@ public class RagDoll  {
 
         stack.pushCommonMath();
 
-        var tmpTrans = stack.transforms.get();
+        Transform tmpTrans = stack.transforms.get();
 
         
         shapes[BodyPart.BODYPART_PELVIS.ordinal()] = new CapsuleShape(scale_ragdoll * 0.15f, scale_ragdoll * 0.20f);
@@ -145,11 +145,11 @@ public class RagDoll  {
         shapes[BodyPart.BODYPART_RIGHT_LOWER_ARM.ordinal()] = new CapsuleShape(scale_ragdoll * 0.04f, scale_ragdoll * 0.25f);
 
 
-        var offset = stack.transforms.get();
+        Transform offset = stack.transforms.get();
         offset.setIdentity();
         offset.set(positionOffset);
 
-        var transform = stack.transforms.get();
+        Transform transform = stack.transforms.get();
         transform.setIdentity();
         transform.set(0f, scale_ragdoll * 1f, 0f);
         tmpTrans.mul(offset, transform);
@@ -163,7 +163,7 @@ public class RagDoll  {
         transform.setIdentity();
         transform.set(0f, scale_ragdoll * 1.6f, 0f);
         tmpTrans.mul(offset, transform);
-        var head = bodies[BodyPart.BODYPART_HEAD.ordinal()] =
+        Body3D head = bodies[BodyPart.BODYPART_HEAD.ordinal()] =
                 localCreateRigidBody(1f, tmpTrans, shapes[BodyPart.BODYPART_HEAD.ordinal()]);
 
 
@@ -249,8 +249,8 @@ public class RagDoll  {
 
         localB.set(0f, -0.14f * scale_ragdoll, 0f);
 
-        var useLinearReferenceFrameA = true;
-        var joint6DOF = new Generic6DofConstraint(bodies[BodyPart.BODYPART_SPINE.ordinal()], bodies[BodyPart.BODYPART_HEAD.ordinal()], localA, localB, useLinearReferenceFrameA);
+        boolean useLinearReferenceFrameA = true;
+        Generic6DofConstraint joint6DOF = new Generic6DofConstraint(bodies[BodyPart.BODYPART_SPINE.ordinal()], bodies[BodyPart.BODYPART_HEAD.ordinal()], localA, localB, useLinearReferenceFrameA);
 
         
         
@@ -474,7 +474,7 @@ public class RagDoll  {
     private static Body3D localCreateRigidBody(float mass, Transform startTransform, CollisionShape shape) {
 
 
-        var body = Dynamics3D.newBody(mass, shape, startTransform, +1, -1);
+        Body3D body = Dynamics3D.newBody(mass, shape, startTransform, +1, -1);
 
             body.setCenterOfMassTransform(startTransform);
 

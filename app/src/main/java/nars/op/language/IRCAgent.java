@@ -154,7 +154,7 @@ public class IRCAgent extends IRC {
 
 
     void hear(String text, String src) {
-        var hearTwenglish = false;
+        boolean hearTwenglish = false;
         NARHear.hear(nar, text, src, hearTwenglish ? wordDelayMS : -1);
     }
 
@@ -167,21 +167,21 @@ public class IRCAgent extends IRC {
     public void onGenericMessage(GenericMessageEvent event) {
 
         if (event instanceof MessageEvent) {
-            var pevent = (MessageEvent) event;
+            MessageEvent pevent = (MessageEvent) event;
 
             if (pevent.getUser().equals(irc.getUserBot())) {
                 return; 
             }
 
-            var msg = pevent.getMessage().trim();
+            String msg = pevent.getMessage().trim();
 
             //        if (channel.equals("unknown")) return;
             if (msg.startsWith("//"))
                 return; //comment or previous output
 
 
-            var src = pevent.getUser().getNick();
-            var channel = pevent.getChannel().getName();
+            String src = pevent.getUser().getNick();
+            String channel = pevent.getChannel().getName();
 
             try {
 
@@ -203,8 +203,8 @@ public class IRCAgent extends IRC {
     public static void main(String[] args) {
 
 
-        var durFPS = 1f;
-        var n = new NARS.DefaultNAR(8, true)
+        float durFPS = 1f;
+        NAR n = new NARS.DefaultNAR(8, true)
                 .exe(new WorkerExec(4))
                 .time(new RealTime.MS(false).durFPS(durFPS)).get();
 
@@ -212,7 +212,7 @@ public class IRCAgent extends IRC {
         n.termVolMax.set(24);
 
 
-        var bot = new IRCAgent(n,
+        IRCAgent bot = new IRCAgent(n,
                 "experiment1", "irc.freenode.net",
 
                 "#nars"

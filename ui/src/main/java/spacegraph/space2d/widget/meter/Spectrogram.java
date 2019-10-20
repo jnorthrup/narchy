@@ -37,12 +37,12 @@ public class Spectrogram extends RingContainer<BitmapMatrixView> implements Bitm
 
 
     @Override protected void reallocate(BitmapMatrixView[] x) {
-        var n = this.N.getAsInt();
+        int n = this.N.getAsInt();
         // {
         //        //|| xy[0]==null  (xy[0].w * xy[0].h) != n
         //    }
-        for (var i = 0; i < x.length; i++) {
-            var yi = this.x[i];
+        for (int i = 0; i < x.length; i++) {
+            BitmapMatrixView yi = this.x[i];
             if (yi!=null && yi.w * yi.h == n)
                 continue;
 
@@ -52,7 +52,7 @@ public class Spectrogram extends RingContainer<BitmapMatrixView> implements Bitm
             } else {
                 W = n; H = 1;
             }
-            var r = new BitmapMatrixView(W, H, this);
+            BitmapMatrixView r = new BitmapMatrixView(W, H, this);
             r.cellTouch(false);
             r.pos(RectFloat.Unit);
             r.start(this);

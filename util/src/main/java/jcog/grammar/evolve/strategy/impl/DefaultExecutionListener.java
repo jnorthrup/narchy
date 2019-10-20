@@ -45,7 +45,7 @@ public class DefaultExecutionListener implements ExecutionListener,ExecutionList
 
     @Override
     public void evolutionComplete(RunStrategy strategy, int generation, Collection<Ranking> population) {
-        var jobId = strategy.getConfiguration().getJobId();
+        int jobId = strategy.getConfiguration().getJobId();
 
 
 
@@ -58,7 +58,7 @@ public class DefaultExecutionListener implements ExecutionListener,ExecutionList
 
     @Override
     public void evolutionStarted(RunStrategy strategy) {
-        var jobId = strategy.getConfiguration().getJobId();
+        int jobId = strategy.getConfiguration().getJobId();
     }
 
     @Override
@@ -75,7 +75,7 @@ public class DefaultExecutionListener implements ExecutionListener,ExecutionList
 
     @Override
     public void evolutionFailed(RunStrategy strategy, TreeEvaluationException cause) {
-        var jobId = strategy.getConfiguration().getJobId();
+        int jobId = strategy.getConfiguration().getJobId();
         try {
 
         } catch (Exception ex) {

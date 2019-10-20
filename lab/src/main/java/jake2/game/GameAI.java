@@ -56,7 +56,7 @@ public class GameAI {
 
     public static boolean FacingIdeal(edict_t self) {
 
-        var delta = Math3D.anglemod(self.s.angles[Defines.YAW] - self.ideal_yaw);
+        float delta = Math3D.anglemod(self.s.angles[Defines.YAW] - self.ideal_yaw);
         return !(delta > 45 && delta < 315);
     }
 
@@ -157,7 +157,7 @@ public class GameAI {
         enemy_vis = false;
 
 
-        var hesDeadJim = false;
+        boolean hesDeadJim = false;
         if ((null == self.enemy) || (!self.enemy.inuse)) {
             hesDeadJim = true;
         } else if ((self.monsterinfo.aiflags & Defines.AI_MEDIC) != 0) {
@@ -271,12 +271,12 @@ public class GameAI {
         else
             start = GameBase.level.sight_client.index;
 
-        var check = start;
+        int check = start;
         while (true) {
             check++;
             if (check > GameBase.game.maxclients)
                 check = 1;
-            var ent = GameBase.g_edicts[check];
+            edict_t ent = GameBase.g_edicts[check];
 
             if (ent.inuse && ent.health > 0
                     && (ent.flags & Defines.FL_NOTARGET) == 0) {
@@ -626,11 +626,11 @@ public class GameAI {
                 return;
             }
 
-            var save = self.goalentity;
-            var tempgoal = GameUtil.G_Spawn();
+            edict_t save = self.goalentity;
+            edict_t tempgoal = GameUtil.G_Spawn();
             self.goalentity = tempgoal;
 
-            var new1 = false;
+            boolean new1 = false;
 
             if (0 == (self.monsterinfo.aiflags & Defines.AI_LOST_SIGHT)) {
                 
@@ -683,7 +683,7 @@ public class GameAI {
             }
 
             Math3D.VectorSubtract(self.s.origin, self.monsterinfo.last_sighting, v);
-            var d1 = Math3D.VectorLength(v);
+            float d1 = Math3D.VectorLength(v);
             if (d1 <= dist) {
                 self.monsterinfo.aiflags |= Defines.AI_PURSUE_NEXT;
                 dist = d1;
@@ -694,14 +694,14 @@ public class GameAI {
             if (new1) {
 
 
-                var tr = game_import_t.trace(self.s.origin, self.mins, self.maxs,
+                trace_t tr = game_import_t.trace(self.s.origin, self.mins, self.maxs,
                         self.monsterinfo.last_sighting, self,
                         Defines.MASK_PLAYERSOLID);
                 if (tr.fraction < 1) {
                     Math3D.VectorSubtract(self.goalentity.s.origin, self.s.origin, v);
                     d1 = Math3D.VectorLength(v);
-                    var center = tr.fraction;
-                    var d2 = d1 * ((center + 1) / 2);
+                    float center = tr.fraction;
+                    float d2 = d1 * ((center + 1) / 2);
                     self.s.angles[Defines.YAW] = self.ideal_yaw = Math3D.vectoyaw(v);
                     float[] v_right = {0, 0, 0};
                     float[] v_forward = {0, 0, 0};
@@ -712,7 +712,7 @@ public class GameAI {
                     Math3D.G_ProjectSource(self.s.origin, v, v_forward, v_right, left_target);
                     tr = game_import_t.trace(self.s.origin, self.mins, self.maxs,
                             left_target, self, Defines.MASK_PLAYERSOLID);
-                    var left = tr.fraction;
+                    float left = tr.fraction;
 
                     Math3D.VectorSet(v, d2, 16, 0);
                     float[] right_target = {0, 0, 0};
@@ -720,7 +720,7 @@ public class GameAI {
                             v_right, right_target);
                     tr = game_import_t.trace(self.s.origin, self.mins, self.maxs,
                             right_target, self, Defines.MASK_PLAYERSOLID);
-                    var right = tr.fraction;
+                    float right = tr.fraction;
 
                     center = (d1 * center) / d2;
                     if (left >= center && left > right) {

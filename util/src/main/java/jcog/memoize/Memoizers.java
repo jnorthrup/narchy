@@ -37,7 +37,7 @@ public class Memoizers {
     }
 
     protected void print() {
-        for (var m : memoize)
+        for (MemoizationStatistics m : memoize)
             m.print();
     }
 
@@ -54,7 +54,7 @@ public class Memoizers {
     public <X, Y, M extends Memoize<X,Y>> Function<X, Y> add(String id, M m) {
         synchronized (memoize) {
             //HACK just use a map
-            for (var ii : memoize) {
+            for (MemoizationStatistics ii : memoize) {
                 if (ii.name.equals(id))
                     return ((M) ii.memoize);
             }
@@ -71,7 +71,7 @@ public class Memoizers {
     }
 
     public <X extends ByteKeyExternal, Y> ByteHijackMemoize<X, Y> memoizeByte(String id, int capacity, Function<X, Y> computation) {
-        var c = new ByteHijackMemoize<X, Y>(computation, capacity, DEFAULT_HIJACK_REPROBES, false);
+        ByteHijackMemoize<X, Y> c = new ByteHijackMemoize<X, Y>(computation, capacity, DEFAULT_HIJACK_REPROBES, false);
         add(id, c);
         return c;
 
@@ -90,7 +90,7 @@ public class Memoizers {
         }
 
         public void print() {
-            var m = memoize.get();
+            Memoize m = memoize.get();
             if (m!=null)
                 System.out.println(name + '\n' + m.summary() + '\n');
 //            else

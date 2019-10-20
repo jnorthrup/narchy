@@ -82,7 +82,7 @@ public class AffinityExecutor implements Executor {
 
             try {
                 if (tryPin) {
-                    try (var lock = AffinityLock.acquireCore()) {
+                    try (AffinityLock lock = AffinityLock.acquireCore()) {
                         run.run();
                     } catch (Exception e) {
 //                        logger.warn("Could not acquire affinity lock; executing normally: {} ", e.getMessage());
@@ -115,7 +115,7 @@ public class AffinityExecutor implements Executor {
 
         running.release(1);
 
-        var t = ((AffinityThread)thread).run;
+        Runnable t = ((AffinityThread)thread).run;
         if (t instanceof Off) {
 
             ((Off) t).close();
@@ -139,9 +139,9 @@ public class AffinityExecutor implements Executor {
 
         FasterList<R> l = new FasterList(count);
 
-        for (var i = 0; i < count; i++) {
-            var w = workerBuilder.get();
-            var at = new AffinityThread(
+        for (int i = 0; i < count; i++) {
+            R w = workerBuilder.get();
+            AffinityThread at = new AffinityThread(
                     id + '_' + serial.getAndIncrement(),
                     w,
                     tryPin);
@@ -153,7 +153,7 @@ public class AffinityExecutor implements Executor {
 
     protected void add(AffinityThread at) {
 
-        var ready = running.tryAcquire();
+        boolean ready = running.tryAcquire();
         if (!ready)
             throw new WTF();
         threads.add(at);
@@ -164,12 +164,12 @@ public class AffinityExecutor implements Executor {
     }
 
     private String dumpThreadInfo() {
-        var sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
-        var threadMXBean = ManagementFactory.getThreadMXBean();
+        ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
 
-        for (var t : threads) {
-            var threadInfo = threadMXBean.getThreadInfo(t.getId());
+        for (Thread t : threads) {
+            ThreadInfo threadInfo = threadMXBean.getThreadInfo(t.getId());
             sb.append('{');
             sb.append("name=").append(t.getName()).append(',');
             sb.append("id=").append(t.getId()).append(',');

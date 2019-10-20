@@ -125,14 +125,14 @@ public class BvhTriangleMeshShape extends TriangleMeshShape {
 	}
 
 	public void performRaycast(TriangleCallback callback, v3 raySource, v3 rayTarget) {
-		var myNodeCallback = new MyNodeOverlapCallback(callback, meshInterface);
+        MyNodeOverlapCallback myNodeCallback = new MyNodeOverlapCallback(callback, meshInterface);
 
 		bvh.reportRayOverlappingNodex(myNodeCallback, raySource, rayTarget);
 
 	}
 
 	public void performConvexcast(TriangleCallback callback, v3 raySource, v3 rayTarget, v3 aabbMin, v3 aabbMax) {
-		var myNodeCallback = new MyNodeOverlapCallback(callback, meshInterface);
+        MyNodeOverlapCallback myNodeCallback = new MyNodeOverlapCallback(callback, meshInterface);
 
 		bvh.reportBoxCastOverlappingNodex(myNodeCallback, raySource, rayTarget, aabbMin, aabbMax);
 	}
@@ -144,7 +144,7 @@ public class BvhTriangleMeshShape extends TriangleMeshShape {
 	public void processAllTriangles(TriangleCallback callback, v3 aabbMin, v3 aabbMax) {
 
 
-		var myNodeCallback = new MyNodeOverlapCallback(callback, meshInterface);
+        MyNodeOverlapCallback myNodeCallback = new MyNodeOverlapCallback(callback, meshInterface);
 
 		bvh.reportAabbOverlappingNodex(myNodeCallback, aabbMin, aabbMax);
 		
@@ -175,7 +175,7 @@ public class BvhTriangleMeshShape extends TriangleMeshShape {
 
 	@Override
 	public void setLocalScaling(v3 scaling) {
-		var tmp = new v3();
+        v3 tmp = new v3();
 		tmp.sub(getLocalScaling(new v3()), scaling);
 
 		if (tmp.lengthSquared() > BulletGlobals.SIMD_EPSILON) {
@@ -200,7 +200,7 @@ public class BvhTriangleMeshShape extends TriangleMeshShape {
 	}
 
 	public void setOptimizedBvh(OptimizedBvh bvh) {
-		var scaling = new v3();
+        v3 scaling = new v3();
 		scaling.set(1f, 1f, 1f);
 		setOptimizedBvh(bvh, scaling);
 	}
@@ -213,7 +213,7 @@ public class BvhTriangleMeshShape extends TriangleMeshShape {
 		ownsBvh = false;
 
 
-		var tmp = new v3();
+        v3 tmp = new v3();
 		tmp.sub(getLocalScaling(new v3()), scaling);
 
 		if (tmp.lengthSquared() > BulletGlobals.SIMD_EPSILON) {
@@ -240,9 +240,9 @@ public class BvhTriangleMeshShape extends TriangleMeshShape {
 		
 		@Override
         public void processNode(int nodeSubPart, int nodeTriangleIndex) {
-			var data = meshInterface.getLockedReadOnlyVertexIndexBase(nodeSubPart);
+            VertexData data = meshInterface.getLockedReadOnlyVertexIndexBase(nodeSubPart);
 
-			var meshScaling = meshInterface.getScaling(new v3());
+            v3 meshScaling = meshInterface.getScaling(new v3());
 
 			data.getTriangle(nodeTriangleIndex*3, meshScaling, triangle);
 

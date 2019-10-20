@@ -186,8 +186,8 @@ public enum Keyboard { ;
 
     /** from: https://github.com/JogAmp/jogl/blob/master/src/newt/classes/jogamp/newt/awt/event/AWTNewtEventFactory.java */
     public static int newtKeyCode2AWTKeyCode(short newtKeyCode) {
-        var result = -1;
-        var defAwtKeyCode = 0xFFFF & newtKeyCode;
+        int result = -1;
+        int defAwtKeyCode = 0xFFFF & newtKeyCode;
         switch (newtKeyCode) {
             case com.jogamp.newt.event.KeyEvent.VK_HOME:
                 result = java.awt.event.KeyEvent.VK_HOME;

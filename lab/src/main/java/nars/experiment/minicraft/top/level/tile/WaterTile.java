@@ -19,19 +19,19 @@ public class WaterTile extends Tile {
     @Override
     public void render(Screen screen, Level level, int x, int y) {
         wRandom.setSeed((tickCount + (x / 2 - y) * 4311) / 10 * 54687121l + x * 3271612l + y * 3412987161l);
-        var col = Color.get(005, 005, 115, 115);
-        var transitionColor1 = Color.get(3, 005, level.dirtColor - 111, level.dirtColor);
-        var transitionColor2 = Color.get(3, 005, level.sandColor - 110, level.sandColor);
+        int col = Color.get(005, 005, 115, 115);
+        int transitionColor1 = Color.get(3, 005, level.dirtColor - 111, level.dirtColor);
+        int transitionColor2 = Color.get(3, 005, level.sandColor - 110, level.sandColor);
 
-        var u = !level.getTile(x, y - 1).connectsToWater;
-        var d = !level.getTile(x, y + 1).connectsToWater;
-        var l = !level.getTile(x - 1, y).connectsToWater;
-        var r = !level.getTile(x + 1, y).connectsToWater;
+        boolean u = !level.getTile(x, y - 1).connectsToWater;
+        boolean d = !level.getTile(x, y + 1).connectsToWater;
+        boolean l = !level.getTile(x - 1, y).connectsToWater;
+        boolean r = !level.getTile(x + 1, y).connectsToWater;
 
-        var su = u && level.getTile(x, y - 1).connectsToSand;
-        var sd = d && level.getTile(x, y + 1).connectsToSand;
-        var sl = l && level.getTile(x - 1, y).connectsToSand;
-        var sr = r && level.getTile(x + 1, y).connectsToSand;
+        boolean su = u && level.getTile(x, y - 1).connectsToSand;
+        boolean sd = d && level.getTile(x, y + 1).connectsToSand;
+        boolean sl = l && level.getTile(x - 1, y).connectsToSand;
+        boolean sr = r && level.getTile(x + 1, y).connectsToSand;
 
         if (!u && !l) {
             screen.render(x * 16 + 0, y * 16 + 0, wRandom.nextInt(4), col, wRandom.nextInt(4));
@@ -60,8 +60,8 @@ public class WaterTile extends Tile {
 
     @Override
     public void tick(Level level, int xt, int yt) {
-        var xn = xt;
-        var yn = yt;
+        int xn = xt;
+        int yn = yt;
 
         if (random.nextBoolean())
             xn += random.nextInt(2) * 2 - 1;

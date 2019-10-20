@@ -47,8 +47,8 @@ public class StringSynth {
                 9.0 / 7, 21.0 / 16, 4.0 / 3, 27.0 / 20, 11.0 / 8, 7.0 / 5, 10.0 / 7, 16.0 / 11, 40.0 / 27, 3.0 / 2, 32.0 / 21, 14.0 / 9, 11.0 / 7, 8.0 / 5, 18.0 / 11, 5.0 / 3,
                 27.0 / 16, 12.0 / 7, 7.0 / 4, 16.0 / 9, 9.0 / 5, 20.0 / 11, 11.0 / 6, 15.0 / 8, 40.0 / 21, 64.0 / 33, 160.0 / 81};
 
-        for (var i = 0; i < keyboardSize; i++) {
-            var F = indexToET(i, 35, 12);
+        for (int i = 0; i < keyboardSize; i++) {
+            double F = indexToET(i, 35, 12);
             strings[i] =
                     //new SquareVolumeWave(F);
                     new GuitarString(F);
@@ -59,18 +59,18 @@ public class StringSynth {
     }
 
     public void keyPressed(KeyEvent e) {
-        var index = keycodes.indexOf(e.getKeyCode());
+        int index = keycodes.indexOf(e.getKeyCode());
         if (index == 3 && e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
             index = 47;
         }
         if (index != -1) {
             keyPress(index, false);
         } else if (e.getKeyCode() == KeyEvent.VK_UP) {
-            for (var x : strings) {
+            for (KarplusStrongString x : strings) {
                 x.increaseVolume();
             }
         } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-            for (var x : strings) {
+            for (KarplusStrongString x : strings) {
                 x.decreaseVolume();
             }
         } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
@@ -86,7 +86,7 @@ public class StringSynth {
     }
 
     public void keyPress(int stringIndex, boolean hold) {
-        var string = strings[stringIndex + alt];
+        KarplusStrongString string = strings[stringIndex + alt];
 //        int status = string.status();
 //        if (status == 3 || (status == 0 && hold)) {
 //            string.setStatus(2);
@@ -100,7 +100,7 @@ public class StringSynth {
     }
 
     public void keyReleased(KeyEvent e) {
-        var index = keycodes.indexOf(e.getKeyCode());
+        int index = keycodes.indexOf(e.getKeyCode());
         if (index == 3 && e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
             index = 47;
         }
@@ -127,7 +127,7 @@ public class StringSynth {
     }
 
     public void holdKeys() {
-        for (var x : strings) {
+        for (KarplusStrongString x : strings) {
             if (x.status() == -1) {
                 x.setStatus(-2);
             }
@@ -135,7 +135,7 @@ public class StringSynth {
     }
 
     public void releaseHeld() {
-        for (var x : strings) {
+        for (KarplusStrongString x : strings) {
             if (x.status() == -2 || x.status() == 3) {
                 x.setStatus(0);
                 x.release();
@@ -164,8 +164,8 @@ public class StringSynth {
 
     // assumes base is in lowest octave
     private static double indexToGenerator(int index, int indexOfBase, double generator) {
-        var note = (index + 12 - indexOfBase) % 12;
-        var fifths = 0;
+        int note = (index + 12 - indexOfBase) % 12;
+        int fifths = 0;
         while (note != 0) {
             note = (note - 7) % 12;
             fifths++;
@@ -173,16 +173,16 @@ public class StringSynth {
         if (fifths >= 7) {
             fifths -= 12;
         }
-        var frequency = base * Math.pow(generator, fifths);
+        double frequency = base * Math.pow(generator, fifths);
         frequency = normalize(base, frequency);
-        var octaves = Math.floorDiv(index - indexOfBase, 12);
+        int octaves = Math.floorDiv(index - indexOfBase, 12);
         return frequency * Math.pow(2.0, octaves);
     }
 
     private static double indexToCustom(int index, int indexOfBase, double[] ratios) {
-        var octaveSize = ratios.length;
-        var note = (index + octaveSize - indexOfBase) % octaveSize;
-        var octaves = Math.floorDiv(index - indexOfBase, octaveSize);
+        int octaveSize = ratios.length;
+        int note = (index + octaveSize - indexOfBase) % octaveSize;
+        int octaves = Math.floorDiv(index - indexOfBase, octaveSize);
         return base * ratios[note] * Math.pow(2.0, octaves);
     }
 
@@ -192,11 +192,11 @@ public class StringSynth {
 
         //EchoFilter echo = new spacegraph.audio.filter.EchoFilter(0.75, 10, 44100);
 
-        var h = new StringSynth();
+        StringSynth h = new StringSynth();
 
         while (true) {
 
-            var sample = h.next();
+            double sample = h.next();
 
             /* play the sample on standard audio */
 
@@ -210,7 +210,7 @@ public class StringSynth {
     }
 
     public void next(float[] target) {
-        for (var i = 0; i < target.length; ) {
+        for (int i = 0; i < target.length; ) {
             target[i++] = (float) next();
         }
     }
@@ -226,10 +226,10 @@ public class StringSynth {
 
     public double next() {
 
-        var sample = 0.0;
+        double sample = 0.0;
 
-        for (var x : strings) {
-            var xs = x.status();
+        for (KarplusStrongString x : strings) {
+            int xs = x.status();
             if (xs == 1 || xs == 2) {
                 x.pluck();
                 x.setStatus(-1 * xs);

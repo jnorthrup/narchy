@@ -698,13 +698,13 @@ public enum ArrayUtil {
         if (array == null) return null;
         if (startIndexInclusive < 0) startIndexInclusive = 0;
         if (endIndexExclusive > array.length) endIndexExclusive = array.length;
-        var newSize = endIndexExclusive - startIndexInclusive;
-        var type = array.getClass().getComponentType();
+        int newSize = endIndexExclusive - startIndexInclusive;
+        Class<?> type = array.getClass().getComponentType();
         if (newSize <= 0) {
-            @SuppressWarnings("unchecked") var emptyArray = (T[]) Array.newInstance(type, 0);
+            @SuppressWarnings("unchecked") T[] emptyArray = (T[]) Array.newInstance(type, 0);
             return emptyArray;
         }
-        @SuppressWarnings("unchecked") var subarray = (T[]) Array.newInstance(type, newSize);
+        @SuppressWarnings("unchecked") T[] subarray = (T[]) Array.newInstance(type, newSize);
         System.arraycopy(array, startIndexInclusive, subarray, 0, newSize);
         return subarray;
     }
@@ -713,10 +713,10 @@ public enum ArrayUtil {
         if (array == null) return null;
         if (startIndexInclusive < 0) startIndexInclusive = 0;
         if (endIndexExclusive > array.length) endIndexExclusive = array.length;
-        var newSize = endIndexExclusive - startIndexInclusive;
-        var type = array.getClass().getComponentType();
+        int newSize = endIndexExclusive - startIndexInclusive;
+        Class<?> type = array.getClass().getComponentType();
         if (newSize <= 0) return builder.apply(0);
-        @SuppressWarnings("unchecked") var subarray = builder.apply(newSize);
+        @SuppressWarnings("unchecked") T[] subarray = builder.apply(newSize);
         System.arraycopy(array, startIndexInclusive, subarray, 0, newSize);
         return subarray;
     }
@@ -745,10 +745,10 @@ public enum ArrayUtil {
         if (array == null) return null;
         if (startIndexInclusive < 0) startIndexInclusive = 0;
         if (endIndexExclusive > array.length) endIndexExclusive = array.length;
-        var newSize = endIndexExclusive - startIndexInclusive;
+        int newSize = endIndexExclusive - startIndexInclusive;
         if (newSize <= 0) return EMPTY_LONG_ARRAY;
 
-        var subarray = new long[newSize];
+        long[] subarray = new long[newSize];
         System.arraycopy(array, startIndexInclusive, subarray, 0, newSize);
         return subarray;
     }
@@ -777,10 +777,10 @@ public enum ArrayUtil {
         if (array == null) return null;
         if (startIndexInclusive < 0) startIndexInclusive = 0;
         if (endIndexExclusive > array.length) endIndexExclusive = array.length;
-        var newSize = endIndexExclusive - startIndexInclusive;
+        int newSize = endIndexExclusive - startIndexInclusive;
         if (newSize <= 0) return EMPTY_INT_ARRAY;
 
-        var subarray = new int[newSize];
+        int[] subarray = new int[newSize];
         System.arraycopy(array, startIndexInclusive, subarray, 0, newSize);
         return subarray;
     }
@@ -809,10 +809,10 @@ public enum ArrayUtil {
         if (array == null) return null;
         if (startIndexInclusive < 0) startIndexInclusive = 0;
         if (endIndexExclusive > array.length) endIndexExclusive = array.length;
-        var newSize = endIndexExclusive - startIndexInclusive;
+        int newSize = endIndexExclusive - startIndexInclusive;
         if (newSize <= 0) return EMPTY_SHORT_ARRAY;
 
-        var subarray = new short[newSize];
+        short[] subarray = new short[newSize];
         System.arraycopy(array, startIndexInclusive, subarray, 0, newSize);
         return subarray;
     }
@@ -841,10 +841,10 @@ public enum ArrayUtil {
         if (array == null) return null;
         if (startIndexInclusive < 0) startIndexInclusive = 0;
         if (endIndexExclusive > array.length) endIndexExclusive = array.length;
-        var newSize = endIndexExclusive - startIndexInclusive;
+        int newSize = endIndexExclusive - startIndexInclusive;
         if (newSize <= 0) return EMPTY_CHAR_ARRAY;
 
-        var subarray = new char[newSize];
+        char[] subarray = new char[newSize];
         System.arraycopy(array, startIndexInclusive, subarray, 0, newSize);
         return subarray;
     }
@@ -873,10 +873,10 @@ public enum ArrayUtil {
         if (array == null) return null;
         if (startIndexInclusive < 0) startIndexInclusive = 0;
         if (endIndexExclusive > array.length) endIndexExclusive = array.length;
-        var newSize = endIndexExclusive - startIndexInclusive;
+        int newSize = endIndexExclusive - startIndexInclusive;
         if (newSize <= 0) return EMPTY_BYTE_ARRAY;
 
-        var subarray = new byte[newSize];
+        byte[] subarray = new byte[newSize];
         System.arraycopy(array, startIndexInclusive, subarray, 0, newSize);
         return subarray;
     }
@@ -905,10 +905,10 @@ public enum ArrayUtil {
         if (array == null) return null;
         if (startIndexInclusive < 0) startIndexInclusive = 0;
         if (endIndexExclusive > array.length) endIndexExclusive = array.length;
-        var newSize = endIndexExclusive - startIndexInclusive;
+        int newSize = endIndexExclusive - startIndexInclusive;
         if (newSize <= 0) return EMPTY_DOUBLE_ARRAY;
 
-        var subarray = new double[newSize];
+        double[] subarray = new double[newSize];
         System.arraycopy(array, startIndexInclusive, subarray, 0, newSize);
         return subarray;
     }
@@ -937,10 +937,10 @@ public enum ArrayUtil {
         if (array == null) return null;
         if (startIndexInclusive < 0) startIndexInclusive = 0;
         if (endIndexExclusive > array.length) endIndexExclusive = array.length;
-        var newSize = endIndexExclusive - startIndexInclusive;
+        int newSize = endIndexExclusive - startIndexInclusive;
         if (newSize <= 0) return EMPTY_FLOAT_ARRAY;
 
-        var subarray = new float[newSize];
+        float[] subarray = new float[newSize];
         System.arraycopy(array, startIndexInclusive, subarray, 0, newSize);
         return subarray;
     }
@@ -969,10 +969,10 @@ public enum ArrayUtil {
         if (array == null) return null;
         if (startIndexInclusive < 0) startIndexInclusive = 0;
         if (endIndexExclusive > array.length) endIndexExclusive = array.length;
-        var newSize = endIndexExclusive - startIndexInclusive;
+        int newSize = endIndexExclusive - startIndexInclusive;
         if (newSize <= 0) return EMPTY_BOOLEAN_ARRAY;
 
-        var subarray = new boolean[newSize];
+        boolean[] subarray = new boolean[newSize];
         System.arraycopy(array, startIndexInclusive, subarray, 0, newSize);
         return subarray;
     }
@@ -1050,13 +1050,13 @@ public enum ArrayUtil {
      * @param a the array to reverse, may be {@code null}
      */
     public static void reverse(int[] a) {
-        var l = a.length;
+        int l = a.length;
         switch (l) {
             case 0:
             case 1:
                 break;
             case 2: {
-                var i = a[0];
+                int i = a[0];
                 a[0] = a[1];
                 a[1] = i;
                 break;
@@ -1156,10 +1156,10 @@ public enum ArrayUtil {
      */
     public static void reverse(boolean[] array, int startIndexInclusive, int endIndexExclusive) {
         if (array == null) return;
-        var i = Math.max(startIndexInclusive, 0);
-        var j = Math.min(array.length, endIndexExclusive) - 1;
+        int i = Math.max(startIndexInclusive, 0);
+        int j = Math.min(array.length, endIndexExclusive) - 1;
         while (j > i) {
-            var tmp = array[j];
+            boolean tmp = array[j];
             array[j] = array[i];
             array[i] = tmp;
             j--;
@@ -1183,10 +1183,10 @@ public enum ArrayUtil {
      */
     public static void reverse(byte[] array, int startIndexInclusive, int endIndexExclusive) {
         if (array == null) return;
-        var i = Math.max(startIndexInclusive, 0);
-        var j = Math.min(array.length, endIndexExclusive) - 1;
+        int i = Math.max(startIndexInclusive, 0);
+        int j = Math.min(array.length, endIndexExclusive) - 1;
         while (j > i) {
-            var tmp = array[j];
+            byte tmp = array[j];
             array[j] = array[i];
             array[i] = tmp;
             j--;
@@ -1210,10 +1210,10 @@ public enum ArrayUtil {
      */
     public static void reverse(char[] array, int startIndexInclusive, int endIndexExclusive) {
         if (array == null) return;
-        var i = Math.max(startIndexInclusive, 0);
-        var j = Math.min(array.length, endIndexExclusive) - 1;
+        int i = Math.max(startIndexInclusive, 0);
+        int j = Math.min(array.length, endIndexExclusive) - 1;
         while (j > i) {
-            var tmp = array[j];
+            char tmp = array[j];
             array[j] = array[i];
             array[i] = tmp;
             j--;
@@ -1237,10 +1237,10 @@ public enum ArrayUtil {
      */
     public static void reverse(double[] array, int startIndexInclusive, int endIndexExclusive) {
         if (array == null) return;
-        var i = Math.max(startIndexInclusive, 0);
-        var j = Math.min(array.length, endIndexExclusive) - 1;
+        int i = Math.max(startIndexInclusive, 0);
+        int j = Math.min(array.length, endIndexExclusive) - 1;
         while (j > i) {
-            var tmp = array[j];
+            double tmp = array[j];
             array[j] = array[i];
             array[i] = tmp;
             j--;
@@ -1264,10 +1264,10 @@ public enum ArrayUtil {
      */
     public static void reverse(float[] array, int startIndexInclusive, int endIndexExclusive) {
         if (array == null) return;
-        var i = Math.max(startIndexInclusive, 0);
-        var j = Math.min(array.length, endIndexExclusive) - 1;
+        int i = Math.max(startIndexInclusive, 0);
+        int j = Math.min(array.length, endIndexExclusive) - 1;
         while (j > i) {
-            var tmp = array[j];
+            float tmp = array[j];
             array[j] = array[i];
             array[i] = tmp;
             j--;
@@ -1291,10 +1291,10 @@ public enum ArrayUtil {
      */
     public static void reverse(int[] array, int startIndexInclusive, int endIndexExclusive) {
         if (array == null || array.length <= 1 || (endIndexExclusive - startIndexInclusive <= 1)) return;
-        var i = Math.max(startIndexInclusive, 0);
-        var j = Math.min(array.length, endIndexExclusive) - 1;
+        int i = Math.max(startIndexInclusive, 0);
+        int j = Math.min(array.length, endIndexExclusive) - 1;
         while (j > i) {
-            var tmp = array[j];
+            int tmp = array[j];
             array[j--] = array[i];
             array[i++] = tmp;
         }
@@ -1316,10 +1316,10 @@ public enum ArrayUtil {
      */
     public static void reverse(long[] array, int startIndexInclusive, int endIndexExclusive) {
         if (array == null) return;
-        var i = Math.max(startIndexInclusive, 0);
-        var j = Math.min(array.length, endIndexExclusive) - 1;
+        int i = Math.max(startIndexInclusive, 0);
+        int j = Math.min(array.length, endIndexExclusive) - 1;
         while (j > i) {
-            var tmp = array[j];
+            long tmp = array[j];
             array[j] = array[i];
             array[i] = tmp;
             j--;
@@ -1343,10 +1343,10 @@ public enum ArrayUtil {
      */
     public static void reverse(Object[] array, int startIndexInclusive, int endIndexExclusive) {
         if (array == null) return;
-        var i = Math.max(startIndexInclusive, 0);
-        var j = Math.min(array.length, endIndexExclusive) - 1;
+        int i = Math.max(startIndexInclusive, 0);
+        int j = Math.min(array.length, endIndexExclusive) - 1;
         while (j > i) {
-            var tmp = array[j];
+            Object tmp = array[j];
             array[j] = array[i];
             array[i] = tmp;
             j--;
@@ -1370,10 +1370,10 @@ public enum ArrayUtil {
      */
     public static void reverse(short[] array, int startIndexInclusive, int endIndexExclusive) {
         if (array == null) return;
-        var i = Math.max(startIndexInclusive, 0);
-        var j = Math.min(array.length, endIndexExclusive) - 1;
+        int i = Math.max(startIndexInclusive, 0);
+        int j = Math.min(array.length, endIndexExclusive) - 1;
         while (j > i) {
-            var tmp = array[j];
+            short tmp = array[j];
             array[j] = array[i];
             array[i] = tmp;
             j--;
@@ -1410,8 +1410,8 @@ public enum ArrayUtil {
         if (offset1 < 0) offset1 = 0;
         if (offset2 < 0) offset2 = 0;
         len = Math.min(Math.min(len, array.length - offset1), array.length - offset2);
-        for (var i = 0; i < len; i++, offset1++, offset2++) {
-            var aux = array[offset1];
+        for (int i = 0; i < len; i++, offset1++, offset2++) {
+            boolean aux = array[offset1];
             array[offset1] = array[offset2];
             array[offset2] = aux;
         }
@@ -1444,12 +1444,12 @@ public enum ArrayUtil {
     public static void swap(byte[] array, int offset1, int offset2, int len) {
         if (len == 1) swapByte(array, offset1, offset2);
         else {
-            var alen = array.length;
+            int alen = array.length;
             if (alen <= 1 || offset1 >= alen || offset2 >= alen) return;
             if (offset1 < 0) offset1 = 0;
             if (offset2 < 0) offset2 = 0;
             len = Math.min(Math.min(len, alen - offset1), alen - offset2);
-            for (var i = 0; i < len; i++, offset1++, offset2++)
+            for (int i = 0; i < len; i++, offset1++, offset2++)
                 swapByte(array, offset1, offset2);
         }
     }
@@ -1457,7 +1457,7 @@ public enum ArrayUtil {
     public static void swapByte(byte[] array, int offset1, int offset2) {
         if (offset1 == offset2)
             return;
-        var aux = array[offset1];
+        byte aux = array[offset1];
         array[offset1] = array[offset2];
         array[offset2] = aux;
     }
@@ -1465,7 +1465,7 @@ public enum ArrayUtil {
     public static void swapLong(long[] array, int offset1, int offset2) {
         if (offset1 == offset2)
             return;
-        var aux = array[offset1];
+        long aux = array[offset1];
         array[offset1] = array[offset2];
         array[offset2] = aux;
     }
@@ -1473,7 +1473,7 @@ public enum ArrayUtil {
     public static void swapInt(int[] array, int offset1, int offset2) {
         if (offset1 == offset2)
             return;
-        var aux = array[offset1];
+        int aux = array[offset1];
         array[offset1] = array[offset2];
         array[offset2] = aux;
     }
@@ -1481,7 +1481,7 @@ public enum ArrayUtil {
     public static void swapDouble(double[] array, int offset1, int offset2) {
         if (offset1 == offset2)
             return;
-        var aux = array[offset1];
+        double aux = array[offset1];
         array[offset1] = array[offset2];
         array[offset2] = aux;
     }
@@ -1489,7 +1489,7 @@ public enum ArrayUtil {
     public static void swapFloat(float[] array, int offset1, int offset2) {
         if (offset1 == offset2)
             return;
-        var aux = array[offset1];
+        float aux = array[offset1];
         array[offset1] = array[offset2];
         array[offset2] = aux;
     }
@@ -1497,7 +1497,7 @@ public enum ArrayUtil {
     public static void swapBool(boolean[] array, int offset1, int offset2) {
         if (offset1 == offset2)
             return;
-        var aux = array[offset1];
+        boolean aux = array[offset1];
         array[offset1] = array[offset2];
         array[offset2] = aux;
     }
@@ -1505,7 +1505,7 @@ public enum ArrayUtil {
     public static void swapObj(Object[] o, int a, int b) {
         if (a == b)
             return;
-        var aux = o[a];
+        Object aux = o[a];
         o[a] = o[b];
         o[b] = aux;
     }
@@ -1513,11 +1513,11 @@ public enum ArrayUtil {
     public static void swapObjFloat(Object[] o, float[] f, int a, int b) {
         if (a == b) return;
 
-        var ox = o[a];
+        Object ox = o[a];
         o[a] = o[b];
         o[b] = ox;
 
-        var fx = f[a];
+        float fx = f[a];
         f[a] = f[b];
         f[b] = fx;
     }
@@ -1525,11 +1525,11 @@ public enum ArrayUtil {
     public static void swapObjShort(Object[] o, short[] f, int a, int b) {
         if (a == b) return;
 
-        var ox = o[a];
+        Object ox = o[a];
         o[a] = o[b];
         o[b] = ox;
 
-        var fx = f[a];
+        short fx = f[a];
         f[a] = f[b];
         f[b] = fx;
     }
@@ -1537,18 +1537,18 @@ public enum ArrayUtil {
     public static void swapObjInt(Object[] o, int[] f, int a, int b) {
         if (a == b) return;
 
-        var ox = o[a];
+        Object ox = o[a];
         o[a] = o[b];
         o[b] = ox;
 
-        var fx = f[a];
+        int fx = f[a];
         f[a] = f[b];
         f[b] = fx;
     }
 
     static void swapShort(short[] array, int offset1, int offset2) {
         if (offset1 != offset2) {
-            var aux = array[offset1];
+            short aux = array[offset1];
             array[offset1] = array[offset2];
             array[offset2] = aux;
         }
@@ -1581,12 +1581,12 @@ public enum ArrayUtil {
     public static void swap(long[] array, int offset1, int offset2, int len) {
         if (len == 1) swapLong(array, offset1, offset2);
         else {
-            var alen = array.length;
+            int alen = array.length;
             if (alen <= 1 || offset1 >= alen || offset2 >= alen) return;
             if (offset1 < 0) offset1 = 0;
             if (offset2 < 0) offset2 = 0;
             len = Math.min(Math.min(len, alen - offset1), alen - offset2);
-            for (var i = 0; i < len; i++, offset1++, offset2++)
+            for (int i = 0; i < len; i++, offset1++, offset2++)
                 swapLong(array, offset1, offset2);
         }
     }
@@ -1594,12 +1594,12 @@ public enum ArrayUtil {
     public static void swap(int[] array, int offset1, int offset2, int len) {
         if (len == 1) swapInt(array, offset1, offset2);
         else {
-            var alen = array.length;
+            int alen = array.length;
             if (alen <= 1 || offset1 >= alen || offset2 >= alen) return;
             if (offset1 < 0) offset1 = 0;
             if (offset2 < 0) offset2 = 0;
             len = Math.min(Math.min(len, alen - offset1), alen - offset2);
-            for (var i = 0; i < len; i++, offset1++, offset2++)
+            for (int i = 0; i < len; i++, offset1++, offset2++)
                 swapInt(array, offset1, offset2);
         }
     }
@@ -1607,12 +1607,12 @@ public enum ArrayUtil {
     public static void swap(short[] array, int offset1, int offset2, int len) {
         if (len == 1) swapShort(array, offset1, offset2);
         else {
-            var alen = array.length;
+            int alen = array.length;
             if (alen <= 1 || offset1 >= alen || offset2 >= alen) return;
             if (offset1 < 0) offset1 = 0;
             if (offset2 < 0) offset2 = 0;
             len = Math.min(Math.min(len, alen - offset1), alen - offset2);
-            for (var i = 0; i < len; i++, offset1++, offset2++)
+            for (int i = 0; i < len; i++, offset1++, offset2++)
                 swapShort(array, offset1, offset2);
         }
     }
@@ -1646,8 +1646,8 @@ public enum ArrayUtil {
         if (offset1 < 0) offset1 = 0;
         if (offset2 < 0) offset2 = 0;
         len = Math.min(Math.min(len, array.length - offset1), array.length - offset2);
-        for (var i = 0; i < len; i++, offset1++, offset2++) {
-            var aux = array[offset1];
+        for (int i = 0; i < len; i++, offset1++, offset2++) {
+            char aux = array[offset1];
             array[offset1] = array[offset2];
             array[offset2] = aux;
         }
@@ -1682,8 +1682,8 @@ public enum ArrayUtil {
         if (offset1 < 0) offset1 = 0;
         if (offset2 < 0) offset2 = 0;
         len = Math.min(Math.min(len, array.length - offset1), array.length - offset2);
-        for (var i = 0; i < len; i++, offset1++, offset2++) {
-            var aux = array[offset1];
+        for (int i = 0; i < len; i++, offset1++, offset2++) {
+            double aux = array[offset1];
             array[offset1] = array[offset2];
             array[offset2] = aux;
         }
@@ -1718,8 +1718,8 @@ public enum ArrayUtil {
         if (offset1 < 0) offset1 = 0;
         if (offset2 < 0) offset2 = 0;
         len = Math.min(Math.min(len, array.length - offset1), array.length - offset2);
-        for (var i = 0; i < len; i++, offset1++, offset2++) {
-            var aux = array[offset1];
+        for (int i = 0; i < len; i++, offset1++, offset2++) {
+            float aux = array[offset1];
             array[offset1] = array[offset2];
             array[offset2] = aux;
         }
@@ -1753,12 +1753,12 @@ public enum ArrayUtil {
     public static void swap(Object[] array, int offset1, int offset2, int len) {
         if (len == 1) swapObj(array, offset1, offset2);
         else {
-            var alen = array.length;
+            int alen = array.length;
             if (alen <= 1 || offset1 >= alen || offset2 >= alen) return;
             if (offset1 < 0) offset1 = 0;
             if (offset2 < 0) offset2 = 0;
             len = Math.min(Math.min(len, alen - offset1), alen - offset2);
-            for (var i = 0; i < len; i++, offset1++, offset2++)
+            for (int i = 0; i < len; i++, offset1++, offset2++)
                 swapObj(array, offset1, offset2);
         }
     }
@@ -1917,14 +1917,14 @@ public enum ArrayUtil {
         if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) return;
         if (startIndexInclusive < 0) startIndexInclusive = 0;
         if (endIndexExclusive >= array.length) endIndexExclusive = array.length;
-        var n = endIndexExclusive - startIndexInclusive;
+        int n = endIndexExclusive - startIndexInclusive;
         if (n <= 1) return;
         offset %= n;
         if (offset < 0) offset += n;
 
 
         while (n > 1 && offset > 0) {
-            var n_offset = n - offset;
+            int n_offset = n - offset;
 
             if (offset > n_offset) {
                 swap(array, startIndexInclusive, startIndexInclusive + n - n_offset, n_offset);
@@ -1960,14 +1960,14 @@ public enum ArrayUtil {
         if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) return;
         if (startIndexInclusive < 0) startIndexInclusive = 0;
         if (endIndexExclusive >= array.length) endIndexExclusive = array.length;
-        var n = endIndexExclusive - startIndexInclusive;
+        int n = endIndexExclusive - startIndexInclusive;
         if (n <= 1) return;
         offset %= n;
         if (offset < 0) offset += n;
 
 
         while (n > 1 && offset > 0) {
-            var n_offset = n - offset;
+            int n_offset = n - offset;
 
             if (offset > n_offset) {
                 swap(array, startIndexInclusive, startIndexInclusive + n - n_offset, n_offset);
@@ -2003,14 +2003,14 @@ public enum ArrayUtil {
         if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) return;
         if (startIndexInclusive < 0) startIndexInclusive = 0;
         if (endIndexExclusive >= array.length) endIndexExclusive = array.length;
-        var n = endIndexExclusive - startIndexInclusive;
+        int n = endIndexExclusive - startIndexInclusive;
         if (n <= 1) return;
         offset %= n;
         if (offset < 0) offset += n;
 
 
         while (n > 1 && offset > 0) {
-            var n_offset = n - offset;
+            int n_offset = n - offset;
 
             if (offset > n_offset) {
                 swap(array, startIndexInclusive, startIndexInclusive + n - n_offset, n_offset);
@@ -2046,14 +2046,14 @@ public enum ArrayUtil {
         if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) return;
         if (startIndexInclusive < 0) startIndexInclusive = 0;
         if (endIndexExclusive >= array.length) endIndexExclusive = array.length;
-        var n = endIndexExclusive - startIndexInclusive;
+        int n = endIndexExclusive - startIndexInclusive;
         if (n <= 1) return;
         offset %= n;
         if (offset < 0) offset += n;
 
 
         while (n > 1 && offset > 0) {
-            var n_offset = n - offset;
+            int n_offset = n - offset;
 
             if (offset > n_offset) {
                 swap(array, startIndexInclusive, startIndexInclusive + n - n_offset, n_offset);
@@ -2089,14 +2089,14 @@ public enum ArrayUtil {
         if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) return;
         if (startIndexInclusive < 0) startIndexInclusive = 0;
         if (endIndexExclusive >= array.length) endIndexExclusive = array.length;
-        var n = endIndexExclusive - startIndexInclusive;
+        int n = endIndexExclusive - startIndexInclusive;
         if (n <= 1) return;
         offset %= n;
         if (offset < 0) offset += n;
 
 
         while (n > 1 && offset > 0) {
-            var n_offset = n - offset;
+            int n_offset = n - offset;
 
             if (offset > n_offset) {
                 swap(array, startIndexInclusive, startIndexInclusive + n - n_offset, n_offset);
@@ -2132,14 +2132,14 @@ public enum ArrayUtil {
         if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) return;
         if (startIndexInclusive < 0) startIndexInclusive = 0;
         if (endIndexExclusive >= array.length) endIndexExclusive = array.length;
-        var n = endIndexExclusive - startIndexInclusive;
+        int n = endIndexExclusive - startIndexInclusive;
         if (n <= 1) return;
         offset %= n;
         if (offset < 0) offset += n;
 
 
         while (n > 1 && offset > 0) {
-            var n_offset = n - offset;
+            int n_offset = n - offset;
 
             if (offset > n_offset) {
                 swap(array, startIndexInclusive, startIndexInclusive + n - n_offset, n_offset);
@@ -2176,14 +2176,14 @@ public enum ArrayUtil {
         if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) return;
         if (startIndexInclusive < 0) startIndexInclusive = 0;
         if (endIndexExclusive >= array.length) endIndexExclusive = array.length;
-        var n = endIndexExclusive - startIndexInclusive;
+        int n = endIndexExclusive - startIndexInclusive;
         if (n <= 1) return;
         offset %= n;
         if (offset < 0) offset += n;
 
 
         while (n > 1 && offset > 0) {
-            var n_offset = n - offset;
+            int n_offset = n - offset;
 
             if (offset > n_offset) {
                 swap(array, startIndexInclusive, startIndexInclusive + n - n_offset, n_offset);
@@ -2220,14 +2220,14 @@ public enum ArrayUtil {
         if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) return;
         if (startIndexInclusive < 0) startIndexInclusive = 0;
         if (endIndexExclusive >= array.length) endIndexExclusive = array.length;
-        var n = endIndexExclusive - startIndexInclusive;
+        int n = endIndexExclusive - startIndexInclusive;
         if (n <= 1) return;
         offset %= n;
         if (offset < 0) offset += n;
 
 
         while (n > 1 && offset > 0) {
-            var n_offset = n - offset;
+            int n_offset = n - offset;
 
             if (offset > n_offset) {
                 swap(array, startIndexInclusive, startIndexInclusive + n - n_offset, n_offset);
@@ -2264,14 +2264,14 @@ public enum ArrayUtil {
         if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) return;
         if (startIndexInclusive < 0) startIndexInclusive = 0;
         if (endIndexExclusive >= array.length) endIndexExclusive = array.length;
-        var n = endIndexExclusive - startIndexInclusive;
+        int n = endIndexExclusive - startIndexInclusive;
         if (n <= 1) return;
         offset %= n;
         if (offset < 0) offset += n;
 
 
         while (n > 1 && offset > 0) {
-            var n_offset = n - offset;
+            int n_offset = n - offset;
 
             if (offset > n_offset) {
                 swap(array, startIndexInclusive, startIndexInclusive + n - n_offset, n_offset);
@@ -2320,9 +2320,19 @@ public enum ArrayUtil {
 
         if (startIndex < 0) startIndex = 0;
         if (objectToFind == null) {
-            return IntStream.range(startIndex, array.length).filter(i -> array[i] == null).findFirst().orElse(INDEX_NOT_FOUND);
+            for (int i = startIndex; i < array.length; i++) {
+                if (array[i] == null) {
+                    return i;
+                }
+            }
+            return INDEX_NOT_FOUND;
         } else {
-            return IntStream.range(startIndex, array.length).filter(i -> objectToFind.equals(array[i])).findFirst().orElse(INDEX_NOT_FOUND);
+            for (int i = startIndex; i < array.length; i++) {
+                if (objectToFind.equals(array[i])) {
+                    return i;
+                }
+            }
+            return INDEX_NOT_FOUND;
         }
     }
 
@@ -2334,7 +2344,12 @@ public enum ArrayUtil {
 //        if (startIndex < 0)
 //            startIndex = 0;
 
-        return IntStream.range(startIndex, array.length).filter(i -> test.test(array[i])).findFirst().orElse(INDEX_NOT_FOUND);
+        for (int i = startIndex; i < array.length; i++) {
+            if (test.test(array[i])) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
 
     }
 
@@ -2421,7 +2436,12 @@ public enum ArrayUtil {
     public static int indexOf(long[] array, long valueToFind, int startIndex) {
         if (array == null) return INDEX_NOT_FOUND;
         if (startIndex < 0) startIndex = 0;
-        return IntStream.range(startIndex, array.length).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        for (int i = startIndex; i < array.length; i++) {
+            if (valueToFind == array[i]) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
     }
 
     /**
@@ -2503,7 +2523,12 @@ public enum ArrayUtil {
     public static int indexOf(int[] array, int valueToFind, int startIndex) {
         if (array == null) return INDEX_NOT_FOUND;
         if (startIndex < 0) startIndex = 0;
-        return IntStream.range(startIndex, array.length).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        for (int i = startIndex; i < array.length; i++) {
+            if (valueToFind == array[i]) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
     }
 
     /**
@@ -2511,7 +2536,12 @@ public enum ArrayUtil {
      * returns first matching index, though others could exist
      */
     public static int indexOfInstance(Object[] xx, Object y) {
-        return IntStream.range(0, xx.length).filter(i -> y == xx[i]).findFirst().orElse(-1);
+        for (int i = 0; i < xx.length; i++) {
+            if (y == xx[i]) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     /**
@@ -2592,7 +2622,12 @@ public enum ArrayUtil {
      */
     public static int indexOf(short[] array, short valueToFind, int startIndex) {
         if (array == null) return INDEX_NOT_FOUND;
-        return IntStream.range(startIndex, array.length).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        for (int i = startIndex; i < array.length; i++) {
+            if (valueToFind == array[i]) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
     }
 
     /**
@@ -2676,7 +2711,12 @@ public enum ArrayUtil {
     public static int indexOf(char[] array, char valueToFind, int startIndex) {
         if (array == null) return INDEX_NOT_FOUND;
         if (startIndex < 0) startIndex = 0;
-        return IntStream.range(startIndex, array.length).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        for (int i = startIndex; i < array.length; i++) {
+            if (valueToFind == array[i]) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
     }
 
     /**
@@ -2762,7 +2802,12 @@ public enum ArrayUtil {
 //        if (array != null) {
 //            if (startIndex < 0)
 //                startIndex = 0;
-        return IntStream.range(startIndex, endIndex).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        for (int i = startIndex; i < endIndex; i++) {
+            if (valueToFind == array[i]) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
         //        }
     }
 
@@ -2866,7 +2911,12 @@ public enum ArrayUtil {
     public static int indexOf(double[] array, double valueToFind, int startIndex) {
         if (array.length == 0) return INDEX_NOT_FOUND;
         if (startIndex < 0) startIndex = 0;
-        return IntStream.range(startIndex, array.length).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        for (int i = startIndex; i < array.length; i++) {
+            if (valueToFind == array[i]) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
     }
 
     /**
@@ -2889,9 +2939,14 @@ public enum ArrayUtil {
     public static int indexOf(double[] array, double valueToFind, int startIndex, double tolerance) {
         if (array.length == 0) return INDEX_NOT_FOUND;
         if (startIndex < 0) startIndex = 0;
-        var min = valueToFind - tolerance;
-        var max = valueToFind + tolerance;
-        return IntStream.range(startIndex, array.length).filter(i -> array[i] >= min && array[i] <= max).findFirst().orElse(INDEX_NOT_FOUND);
+        double min = valueToFind - tolerance;
+        double max = valueToFind + tolerance;
+        for (int i = startIndex; i < array.length; i++) {
+            if (array[i] >= min && array[i] <= max) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
     }
 
     /**
@@ -2967,8 +3022,8 @@ public enum ArrayUtil {
         if (array.length == 0) return INDEX_NOT_FOUND;
         if (startIndex < 0) return INDEX_NOT_FOUND;
         if (startIndex >= array.length) startIndex = array.length - 1;
-        var min = valueToFind - tolerance;
-        var max = valueToFind + tolerance;
+        double min = valueToFind - tolerance;
+        double max = valueToFind + tolerance;
         return IntStream.iterate(startIndex, i -> i >= 0, i -> i - 1).filter(i -> array[i] >= min && array[i] <= max).findFirst().orElse(INDEX_NOT_FOUND);
     }
 
@@ -3033,7 +3088,12 @@ public enum ArrayUtil {
     public static int indexOf(float[] array, float valueToFind, int startIndex) {
         if (array.length == 0) return INDEX_NOT_FOUND;
         if (startIndex < 0) startIndex = 0;
-        return IntStream.range(startIndex, array.length).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        for (int i = startIndex; i < array.length; i++) {
+            if (valueToFind == array[i]) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
     }
 
     /**
@@ -3116,7 +3176,12 @@ public enum ArrayUtil {
     public static int indexOf(boolean[] array, boolean valueToFind, int startIndex) {
         if (array.length == 0) return INDEX_NOT_FOUND;
         if (startIndex < 0) startIndex = 0;
-        return IntStream.range(startIndex, array.length).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        for (int i = startIndex; i < array.length; i++) {
+            if (valueToFind == array[i]) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
     }
 
     /**
@@ -3180,8 +3245,8 @@ public enum ArrayUtil {
     public static char[] toPrimitive(Character[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_CHAR_ARRAY;
-        var result = new char[array.length];
-        for (var i = 0; i < array.length; i++) result[i] = array[i];
+        char[] result = new char[array.length];
+        for (int i = 0; i < array.length; i++) result[i] = array[i];
         return result;
     }
 
@@ -3197,9 +3262,9 @@ public enum ArrayUtil {
     public static char[] toPrimitive(Character[] array, char valueForNull) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_CHAR_ARRAY;
-        var result = new char[array.length];
-        for (var i = 0; i < array.length; i++) {
-            var b = array[i];
+        char[] result = new char[array.length];
+        for (int i = 0; i < array.length; i++) {
+            Character b = array[i];
             result[i] = (Optional.ofNullable(b).orElse(valueForNull));
         }
         return result;
@@ -3216,7 +3281,12 @@ public enum ArrayUtil {
     public static Character[] toObject(char[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_CHARACTER_OBJECT_ARRAY;
-        return IntStream.range(0, array.length).mapToObj(i -> array[i]).toArray(Character[]::new);
+        List<Character> list = new ArrayList<>();
+        for (int i = 0; i < array.length; i++) {
+            Character character = array[i];
+            list.add(character);
+        }
+        return list.toArray(new Character[0]);
     }
 
     /**
@@ -3231,9 +3301,9 @@ public enum ArrayUtil {
     public static long[] toPrimitive(Long[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_LONG_ARRAY;
-        var result = new long[10];
-        var count = 0;
-        for (var aLong : array) {
+        long[] result = new long[10];
+        int count = 0;
+        for (Long aLong : array) {
             if (result.length == count) result = Arrays.copyOf(result, count * 2);
             long l = aLong;
             result[count++] = l;
@@ -3254,9 +3324,9 @@ public enum ArrayUtil {
     public static long[] toPrimitive(Long[] array, long valueForNull) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_LONG_ARRAY;
-        var result = new long[array.length];
-        for (var i = 0; i < array.length; i++) {
-            var b = array[i];
+        long[] result = new long[array.length];
+        for (int i = 0; i < array.length; i++) {
+            Long b = array[i];
             result[i] = (Optional.ofNullable(b).orElse(valueForNull));
         }
         return result;
@@ -3273,7 +3343,12 @@ public enum ArrayUtil {
     public static Long[] toObject(long[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_LONG_OBJECT_ARRAY;
-        return Arrays.stream(array).boxed().toArray(Long[]::new);
+        List<Long> list = new ArrayList<>();
+        for (long l : array) {
+            Long aLong = l;
+            list.add(aLong);
+        }
+        return list.toArray(new Long[0]);
     }
 
     /**
@@ -3288,9 +3363,9 @@ public enum ArrayUtil {
     public static int[] toPrimitive(Integer[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_INT_ARRAY;
-        var result = new int[10];
-        var count = 0;
-        for (var integer : array) {
+        int[] result = new int[10];
+        int count = 0;
+        for (Integer integer : array) {
             if (result.length == count) result = Arrays.copyOf(result, count * 2);
             int i = integer;
             result[count++] = i;
@@ -3311,9 +3386,9 @@ public enum ArrayUtil {
     public static int[] toPrimitive(Integer[] array, int valueForNull) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_INT_ARRAY;
-        var result = new int[array.length];
-        for (var i = 0; i < array.length; i++) {
-            var b = array[i];
+        int[] result = new int[array.length];
+        for (int i = 0; i < array.length; i++) {
+            Integer b = array[i];
             result[i] = (Optional.ofNullable(b).orElse(valueForNull));
         }
         return result;
@@ -3330,7 +3405,12 @@ public enum ArrayUtil {
     public static Integer[] toObject(int[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_INTEGER_OBJECT_ARRAY;
-        return Arrays.stream(array).boxed().toArray(Integer[]::new);
+        List<Integer> list = new ArrayList<>();
+        for (int i : array) {
+            Integer integer = i;
+            list.add(integer);
+        }
+        return list.toArray(new Integer[0]);
     }
 
     /**
@@ -3345,8 +3425,8 @@ public enum ArrayUtil {
     public static short[] toPrimitive(Short[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_SHORT_ARRAY;
-        var result = new short[array.length];
-        for (var i = 0; i < array.length; i++) result[i] = array[i];
+        short[] result = new short[array.length];
+        for (int i = 0; i < array.length; i++) result[i] = array[i];
         return result;
     }
 
@@ -3362,9 +3442,9 @@ public enum ArrayUtil {
     public static short[] toPrimitive(Short[] array, short valueForNull) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_SHORT_ARRAY;
-        var result = new short[array.length];
-        for (var i = 0; i < array.length; i++) {
-            var b = array[i];
+        short[] result = new short[array.length];
+        for (int i = 0; i < array.length; i++) {
+            Short b = array[i];
             result[i] = (Optional.ofNullable(b).orElse(valueForNull));
         }
         return result;
@@ -3381,7 +3461,12 @@ public enum ArrayUtil {
     public static Short[] toObject(short[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_SHORT_OBJECT_ARRAY;
-        return IntStream.range(0, array.length).mapToObj(i -> array[i]).toArray(Short[]::new);
+        List<Short> list = new ArrayList<>();
+        for (int i = 0; i < array.length; i++) {
+            Short aShort = array[i];
+            list.add(aShort);
+        }
+        return list.toArray(new Short[0]);
     }
 
     /**
@@ -3396,8 +3481,8 @@ public enum ArrayUtil {
     public static byte[] toPrimitive(Byte[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_BYTE_ARRAY;
-        var result = new byte[array.length];
-        for (var i = 0; i < array.length; i++) result[i] = array[i];
+        byte[] result = new byte[array.length];
+        for (int i = 0; i < array.length; i++) result[i] = array[i];
         return result;
     }
 
@@ -3415,9 +3500,9 @@ public enum ArrayUtil {
         if (array == null) res = null;
         else if (array.length == 0) res = EMPTY_BYTE_ARRAY;
         else {
-            var result = new byte[array.length];
-            for (var i = 0; i < array.length; i++) {
-                var b = array[i];
+            byte[] result = new byte[array.length];
+            for (int i = 0; i < array.length; i++) {
+                Byte b = array[i];
                 result[i] = (b == null ? valueForNull : b);
             }
             res = result;
@@ -3436,7 +3521,12 @@ public enum ArrayUtil {
     public static Byte[] toObject(byte[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_BYTE_OBJECT_ARRAY;
-        return IntStream.range(0, array.length).mapToObj(i -> array[i]).toArray(Byte[]::new);
+        List<Byte> list = new ArrayList<>();
+        for (int i = 0; i < array.length; i++) {
+            Byte aByte = array[i];
+            list.add(aByte);
+        }
+        return list.toArray(new Byte[0]);
     }
 
     /**
@@ -3453,9 +3543,9 @@ public enum ArrayUtil {
         if (array == null) res = null;
         else if (array.length == 0) res = EMPTY_DOUBLE_ARRAY;
         else {
-            var arr = new double[10];
-            var count = 0;
-            for (var aDouble : array) {
+            double[] arr = new double[10];
+            int count = 0;
+            for (Double aDouble : array) {
                 if (arr.length == count) arr = Arrays.copyOf(arr, count * 2);
                 double v = aDouble;
                 arr[count++] = v;
@@ -3478,9 +3568,9 @@ public enum ArrayUtil {
     public static double[] toPrimitive(Double[] array, double valueForNull) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_DOUBLE_ARRAY;
-        var result = new double[array.length];
-        for (var i = 0; i < array.length; i++) {
-            var b = array[i];
+        double[] result = new double[array.length];
+        for (int i = 0; i < array.length; i++) {
+            Double b = array[i];
             result[i] = (Optional.ofNullable(b).orElse(valueForNull));
         }
         return result;
@@ -3497,7 +3587,12 @@ public enum ArrayUtil {
     public static Double[] toObject(double[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_DOUBLE_OBJECT_ARRAY;
-        return Arrays.stream(array).boxed().toArray(Double[]::new);
+        List<Double> list = new ArrayList<>();
+        for (double v : array) {
+            Double aDouble = v;
+            list.add(aDouble);
+        }
+        return list.toArray(new Double[0]);
     }
 
     /**
@@ -3512,8 +3607,8 @@ public enum ArrayUtil {
     public static float[] toPrimitive(Float[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_FLOAT_ARRAY;
-        var result = new float[array.length];
-        for (var i = 0; i < array.length; i++) result[i] = array[i];
+        float[] result = new float[array.length];
+        for (int i = 0; i < array.length; i++) result[i] = array[i];
         return result;
     }
 
@@ -3529,9 +3624,9 @@ public enum ArrayUtil {
     public static float[] toPrimitive(Float[] array, float valueForNull) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_FLOAT_ARRAY;
-        var result = new float[array.length];
-        for (var i = 0; i < array.length; i++) {
-            var b = array[i];
+        float[] result = new float[array.length];
+        for (int i = 0; i < array.length; i++) {
+            Float b = array[i];
             result[i] = (Optional.ofNullable(b).orElse(valueForNull));
         }
         return result;
@@ -3548,7 +3643,12 @@ public enum ArrayUtil {
     public static Float[] toObject(float[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_FLOAT_OBJECT_ARRAY;
-        return IntStream.range(0, array.length).mapToObj(i -> array[i]).toArray(Float[]::new);
+        List<Float> list = new ArrayList<>();
+        for (int i = 0; i < array.length; i++) {
+            Float aFloat = array[i];
+            list.add(aFloat);
+        }
+        return list.toArray(new Float[0]);
     }
 
     /**
@@ -3563,8 +3663,8 @@ public enum ArrayUtil {
     public static boolean[] toPrimitive(Boolean[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_BOOLEAN_ARRAY;
-        var result = new boolean[array.length];
-        for (var i = 0; i < array.length; i++) result[i] = array[i];
+        boolean[] result = new boolean[array.length];
+        for (int i = 0; i < array.length; i++) result[i] = array[i];
         return result;
     }
 
@@ -3580,9 +3680,9 @@ public enum ArrayUtil {
     public static boolean[] toPrimitive(Boolean[] array, boolean valueForNull) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_BOOLEAN_ARRAY;
-        var result = new boolean[array.length];
-        for (var i = 0; i < array.length; i++) {
-            var b = array[i];
+        boolean[] result = new boolean[array.length];
+        for (int i = 0; i < array.length; i++) {
+            Boolean b = array[i];
             result[i] = (Optional.ofNullable(b).orElse(valueForNull));
         }
         return result;
@@ -3599,7 +3699,12 @@ public enum ArrayUtil {
     public static Boolean[] toObject(boolean[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_BOOLEAN_OBJECT_ARRAY;
-        return IntStream.range(0, array.length).mapToObj(i -> (array[i] ? Boolean.TRUE : Boolean.FALSE)).toArray(Boolean[]::new);
+        List<Boolean> list = new ArrayList<>();
+        for (int i = 0; i < array.length; i++) {
+            Boolean aBoolean = (array[i] ? Boolean.TRUE : Boolean.FALSE);
+            list.add(aBoolean);
+        }
+        return list.toArray(new Boolean[0]);
     }
 
     /**
@@ -3630,8 +3735,8 @@ public enum ArrayUtil {
     public static <T> T[] addAll(T[] array1, T... array2) {
         if (array1 == null) return clone(array2);
         if (array2 == null) return clone(array1);
-        var type1 = array1.getClass().getComponentType();
-        @SuppressWarnings("unchecked") var joinedArray = (T[]) Array.newInstance(type1, array1.length + array2.length);
+        Class<?> type1 = array1.getClass().getComponentType();
+        @SuppressWarnings("unchecked") T[] joinedArray = (T[]) Array.newInstance(type1, array1.length + array2.length);
         System.arraycopy(array1, 0, joinedArray, 0, array1.length);
         try {
             System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
@@ -3642,7 +3747,7 @@ public enum ArrayUtil {
              * - it would be a wasted check most of the time
              * - safer, in case check turns out to be too strict
              */
-            var type2 = array2.getClass().getComponentType();
+            Class<?> type2 = array2.getClass().getComponentType();
             if (!type1.isAssignableFrom(type2))
                 throw new IllegalArgumentException("Cannot store " + type2.getName() + " in an array of "
                         + type1.getName(), ase);
@@ -3671,7 +3776,7 @@ public enum ArrayUtil {
     public static boolean[] addAll(boolean[] array1, boolean... array2) {
         if (array1 == null) return clone(array2);
         if (array2 == null) return clone(array1);
-        var joinedArray = new boolean[array1.length + array2.length];
+        boolean[] joinedArray = new boolean[array1.length + array2.length];
         System.arraycopy(array1, 0, joinedArray, 0, array1.length);
         System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
         return joinedArray;
@@ -3697,7 +3802,7 @@ public enum ArrayUtil {
     public static char[] addAll(char[] array1, char... array2) {
         if (array1 == null) return clone(array2);
         if (array2 == null) return clone(array1);
-        var joinedArray = new char[array1.length + array2.length];
+        char[] joinedArray = new char[array1.length + array2.length];
         System.arraycopy(array1, 0, joinedArray, 0, array1.length);
         System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
         return joinedArray;
@@ -3723,7 +3828,7 @@ public enum ArrayUtil {
     public static byte[] addAll(byte[] array1, byte... array2) {
         if (array1 == null) return clone(array2);
         if (array2 == null) return clone(array1);
-        var joinedArray = new byte[array1.length + array2.length];
+        byte[] joinedArray = new byte[array1.length + array2.length];
         System.arraycopy(array1, 0, joinedArray, 0, array1.length);
         System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
         return joinedArray;
@@ -3749,7 +3854,7 @@ public enum ArrayUtil {
     public static short[] addAll(short[] array1, short... array2) {
         if (array1 == null) return clone(array2);
         if (array2 == null) return clone(array1);
-        var joinedArray = new short[array1.length + array2.length];
+        short[] joinedArray = new short[array1.length + array2.length];
         System.arraycopy(array1, 0, joinedArray, 0, array1.length);
         System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
         return joinedArray;
@@ -3775,7 +3880,7 @@ public enum ArrayUtil {
     public static int[] addAll(int[] array1, int... array2) {
         if (array1 == null) return clone(array2);
         if (array2 == null) return clone(array1);
-        var joinedArray = new int[array1.length + array2.length];
+        int[] joinedArray = new int[array1.length + array2.length];
         System.arraycopy(array1, 0, joinedArray, 0, array1.length);
         System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
         return joinedArray;
@@ -3801,7 +3906,7 @@ public enum ArrayUtil {
     public static long[] addAll(long[] array1, long... array2) {
         if (array1 == null) return clone(array2);
         if (array2 == null) return clone(array1);
-        var joinedArray = new long[array1.length + array2.length];
+        long[] joinedArray = new long[array1.length + array2.length];
         System.arraycopy(array1, 0, joinedArray, 0, array1.length);
         System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
         return joinedArray;
@@ -3827,7 +3932,7 @@ public enum ArrayUtil {
     public static float[] addAll(float[] array1, float... array2) {
         if (array1 == null) return clone(array2);
         if (array2 == null) return clone(array1);
-        var joinedArray = new float[array1.length + array2.length];
+        float[] joinedArray = new float[array1.length + array2.length];
         System.arraycopy(array1, 0, joinedArray, 0, array1.length);
         System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
         return joinedArray;
@@ -3853,7 +3958,7 @@ public enum ArrayUtil {
     public static double[] addAll(double[] array1, double... array2) {
         if (array1 == null) return clone(array2);
         if (array2 == null) return clone(array1);
-        var joinedArray = new double[array1.length + array2.length];
+        double[] joinedArray = new double[array1.length + array2.length];
         System.arraycopy(array1, 0, joinedArray, 0, array1.length);
         System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
         return joinedArray;
@@ -3893,7 +3998,7 @@ public enum ArrayUtil {
         if (array != null) type = array.getClass().getComponentType();
         else if (element != null) type = element.getClass();
         else throw new IllegalArgumentException("Arguments cannot both be null");
-        @SuppressWarnings("unchecked") var newArray = (T[]) copyArrayGrow1(array, type);
+        @SuppressWarnings("unchecked") T[] newArray = (T[]) copyArrayGrow1(array, type);
         newArray[newArray.length - 1] = element;
         return newArray;
     }
@@ -3920,7 +4025,7 @@ public enum ArrayUtil {
      * @since 2.1
      */
     public static boolean[] add(boolean[] array, boolean element) {
-        var newArray = (boolean[]) copyArrayGrow1(array, Boolean.TYPE);
+        boolean[] newArray = (boolean[]) copyArrayGrow1(array, Boolean.TYPE);
         newArray[newArray.length - 1] = element;
         return newArray;
     }
@@ -3947,7 +4052,7 @@ public enum ArrayUtil {
      * @since 2.1
      */
     public static byte[] add(byte[] array, byte element) {
-        var newArray = copyArrayGrow1(array);
+        byte[] newArray = copyArrayGrow1(array);
         newArray[newArray.length - 1] = element;
         return newArray;
     }
@@ -3974,7 +4079,7 @@ public enum ArrayUtil {
      * @since 2.1
      */
     public static char[] add(char[] array, char element) {
-        var newArray = (char[]) copyArrayGrow1(array, Character.TYPE);
+        char[] newArray = (char[]) copyArrayGrow1(array, Character.TYPE);
         newArray[newArray.length - 1] = element;
         return newArray;
     }
@@ -4001,7 +4106,7 @@ public enum ArrayUtil {
      * @since 2.1
      */
     public static double[] add(double[] array, double element) {
-        var newArray = (double[]) copyArrayGrow1(array, Double.TYPE);
+        double[] newArray = (double[]) copyArrayGrow1(array, Double.TYPE);
         newArray[newArray.length - 1] = element;
         return newArray;
     }
@@ -4028,7 +4133,7 @@ public enum ArrayUtil {
      * @since 2.1
      */
     public static float[] add(float[] array, float element) {
-        var newArray = (float[]) copyArrayGrow1(array, Float.TYPE);
+        float[] newArray = (float[]) copyArrayGrow1(array, Float.TYPE);
         newArray[newArray.length - 1] = element;
         return newArray;
     }
@@ -4055,7 +4160,7 @@ public enum ArrayUtil {
      * @since 2.1
      */
     public static int[] add(int[] array, int element) {
-        var newArray = copyArrayGrow1(array);
+        int[] newArray = copyArrayGrow1(array);
         newArray[newArray.length - 1] = element;
         return newArray;
     }
@@ -4082,7 +4187,7 @@ public enum ArrayUtil {
      * @since 2.1
      */
     public static long[] add(long[] array, long element) {
-        var newArray = copyArrayGrow1(array);
+        long[] newArray = copyArrayGrow1(array);
         newArray[newArray.length - 1] = element;
         return newArray;
     }
@@ -4109,13 +4214,13 @@ public enum ArrayUtil {
      * @since 2.1
      */
     public static short[] add(short[] array, short element) {
-        var newArray = copyArrayGrow1(array);
+        short[] newArray = copyArrayGrow1(array);
         newArray[newArray.length - 1] = element;
         return newArray;
     }
 
     public static short[] prepend(short[] array, short element) {
-        var newArray = new short[array.length + 1];
+        short[] newArray = new short[array.length + 1];
         newArray[0] = element;
         System.arraycopy(array, 0, newArray, 1, array.length);
         return newArray;
@@ -4132,8 +4237,8 @@ public enum ArrayUtil {
      */
     private static Object copyArrayGrow1(Object array, Class<?> newArrayComponentType) {
         if (array != null) {
-            var arrayLength = Array.getLength(array);
-            var newArray = Array.newInstance(array.getClass().getComponentType(), arrayLength + 1);
+            int arrayLength = Array.getLength(array);
+            Object newArray = Array.newInstance(array.getClass().getComponentType(), arrayLength + 1);
             System.arraycopy(array, 0, newArray, 0, arrayLength);
             return newArray;
         }
@@ -4194,7 +4299,7 @@ public enum ArrayUtil {
         if (array != null) clss = array.getClass().getComponentType();
         else if (element != null) clss = element.getClass();
         else throw new IllegalArgumentException("Array and element cannot both be null");
-        @SuppressWarnings("unchecked") var newArray = (T[]) add(array, index, element, clss);
+        @SuppressWarnings("unchecked") T[] newArray = (T[]) add(array, index, element, clss);
         return newArray;
     }
 
@@ -4492,13 +4597,13 @@ public enum ArrayUtil {
     private static Object add(Object array, int index, Object element, Class<?> clss) {
         if (array == null) {
             if (index != 0) throw new IndexOutOfBoundsException("Index: " + index + ", Length: 0");
-            var joinedArray = Array.newInstance(clss, 1);
+            Object joinedArray = Array.newInstance(clss, 1);
             Array.set(joinedArray, 0, element);
             return joinedArray;
         }
-        var length = Array.getLength(array);
+        int length = Array.getLength(array);
         if (index > length || index < 0) throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + length);
-        var result = Array.newInstance(clss, length + 1);
+        Object result = Array.newInstance(clss, length + 1);
         System.arraycopy(array, 0, result, 0, index);
         Array.set(result, index, element);
         if (index < length) System.arraycopy(array, index, result, index + 1, length - index);
@@ -4507,8 +4612,8 @@ public enum ArrayUtil {
 
 
     public static <X> X[] prepend(X element, X[] x) {
-        var len = x.length;
-        var y = Arrays.copyOf(x, len + 1);
+        int len = x.length;
+        X[] y = Arrays.copyOf(x, len + 1);
         y[0] = element;
         System.arraycopy(x, 0, y, 1, len);
         return y;
@@ -4575,7 +4680,7 @@ public enum ArrayUtil {
      * @since 2.1
      */
     public static <T> T[] removeElement(T[] array, Object element) {
-        var index = indexOf(array, element);
+        int index = indexOf(array, element);
         return index == INDEX_NOT_FOUND ? clone(array) : remove(array, index);
     }
 
@@ -4637,7 +4742,7 @@ public enum ArrayUtil {
      * @since 2.1
      */
     public static boolean[] removeElement(boolean[] array, boolean element) {
-        var index = indexOf(array, element);
+        int index = indexOf(array, element);
         if (index == INDEX_NOT_FOUND) return clone(array);
         return remove(array, index);
     }
@@ -4700,7 +4805,7 @@ public enum ArrayUtil {
      * @since 2.1
      */
     public static byte[] removeElement(byte[] array, byte element) {
-        var index = indexOf(array, element);
+        int index = indexOf(array, element);
         if (index == INDEX_NOT_FOUND) return clone(array);
         return remove(array, index);
     }
@@ -4763,7 +4868,7 @@ public enum ArrayUtil {
      * @since 2.1
      */
     public static char[] removeElement(char[] array, char element) {
-        var index = indexOf(array, element);
+        int index = indexOf(array, element);
         if (index == INDEX_NOT_FOUND) return clone(array);
         return remove(array, index);
     }
@@ -4826,7 +4931,7 @@ public enum ArrayUtil {
      * @since 2.1
      */
     public static double[] removeElement(double[] array, double element) {
-        var index = indexOf(array, element);
+        int index = indexOf(array, element);
         if (index == INDEX_NOT_FOUND) return clone(array);
         return remove(array, index);
     }
@@ -4889,7 +4994,7 @@ public enum ArrayUtil {
      * @since 2.1
      */
     public static float[] removeElement(float[] array, float element) {
-        var index = indexOf(array, element);
+        int index = indexOf(array, element);
         if (index == INDEX_NOT_FOUND) return clone(array);
         return remove(array, index);
     }
@@ -4952,7 +5057,7 @@ public enum ArrayUtil {
      * @since 2.1
      */
     public static int[] removeElement(int[] array, int element) {
-        var index = indexOf(array, element);
+        int index = indexOf(array, element);
         if (index == INDEX_NOT_FOUND) return clone(array);
         return remove(array, index);
     }
@@ -5015,7 +5120,7 @@ public enum ArrayUtil {
      * @since 2.1
      */
     public static long[] removeElement(long[] array, long element) {
-        var index = indexOf(array, element);
+        int index = indexOf(array, element);
         if (index == INDEX_NOT_FOUND) return clone(array);
         return remove(array, index);
     }
@@ -5078,7 +5183,7 @@ public enum ArrayUtil {
      * @since 2.1
      */
     public static short[] removeElement(short[] array, short element) {
-        var index = indexOf(array, element);
+        int index = indexOf(array, element);
         if (index == INDEX_NOT_FOUND) return clone(array);
         return remove(array, index);
     }
@@ -5105,11 +5210,11 @@ public enum ArrayUtil {
      * @since 2.1
      */
     private static Object remove(Object array, int index) {
-        var length = getLength(array);
+        int length = getLength(array);
         if (index < 0 || index >= length)
             throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + length);
 
-        var result = Array.newInstance(array.getClass().getComponentType(), length - 1);
+        Object result = Array.newInstance(array.getClass().getComponentType(), length - 1);
         System.arraycopy(array, 0, result, 0, index);
         if (index < length - 1) System.arraycopy(array, index + 1, result, index, length - index - 1);
 
@@ -5117,8 +5222,8 @@ public enum ArrayUtil {
     }
 
     public static <X> X[] remove(X[] input, IntFunction<X[]> outputter, int index) {
-        var length = input.length;
-        var output = outputter.apply(length - 1);
+        int length = input.length;
+        X[] output = outputter.apply(length - 1);
         System.arraycopy(input, 0, output, 0, index);
         if (index < length - 1) System.arraycopy(input, index + 1, output, index, length - index - 1);
         return output;
@@ -5187,21 +5292,21 @@ public enum ArrayUtil {
     public static <T> T[] removeElements(T[] array, T... values) {
         if (array.length == 0 || values.length == 0) return clone(array);
         Map<T, MutableInt> occurrences = new HashMap<>(values.length);
-        for (var v : values) {
-            var count = occurrences.get(v);
+        for (T v : values) {
+            MutableInt count = occurrences.get(v);
             if (count == null) occurrences.put(v, new MutableInt(1));
             else count.increment();
         }
-        var toRemove = new BitSet();
-        for (var i = 0; i < array.length; i++) {
-            var key = array[i];
-            var count = occurrences.get(key);
+        BitSet toRemove = new BitSet();
+        for (int i = 0; i < array.length; i++) {
+            T key = array[i];
+            MutableInt count = occurrences.get(key);
             if (count != null) {
                 if (count.decrementAndGet() == 0) occurrences.remove(key);
                 toRemove.set(i);
             }
         }
-        @SuppressWarnings("unchecked") var result = (T[]) removeAll(array, toRemove);
+        @SuppressWarnings("unchecked") T[] result = (T[]) removeAll(array, toRemove);
         return result;
     }
 
@@ -5235,16 +5340,16 @@ public enum ArrayUtil {
     public static byte[] removeElements(byte[] array, byte... values) {
         if (array.length == 0 || values.length == 0) return clone(array);
         Map<Byte, MutableInt> occurrences = new HashMap<>(values.length);
-        for (var v : values) {
+        for (byte v : values) {
             Byte boxed = v;
-            var count = occurrences.get(boxed);
+            MutableInt count = occurrences.get(boxed);
             if (count == null) occurrences.put(boxed, new MutableInt(1));
             else count.increment();
         }
-        var toRemove = new BitSet();
-        for (var i = 0; i < array.length; i++) {
-            var key = array[i];
-            var count = occurrences.get(key);
+        BitSet toRemove = new BitSet();
+        for (int i = 0; i < array.length; i++) {
+            byte key = array[i];
+            MutableInt count = occurrences.get(key);
             if (count != null) {
                 if (count.decrementAndGet() == 0) occurrences.remove(key);
                 toRemove.set(i);
@@ -5316,16 +5421,16 @@ public enum ArrayUtil {
     public static short[] removeElements(short[] array, short... values) {
         if (array.length == 0 || values.length == 0) return clone(array);
         Map<Short, MutableInt> occurrences = new HashMap<>(values.length);
-        for (var v : values) {
+        for (short v : values) {
             Short boxed = v;
-            var count = occurrences.get(boxed);
+            MutableInt count = occurrences.get(boxed);
             if (count == null) occurrences.put(boxed, new MutableInt(1));
             else count.increment();
         }
-        var toRemove = new BitSet();
-        for (var i = 0; i < array.length; i++) {
-            var key = array[i];
-            var count = occurrences.get(key);
+        BitSet toRemove = new BitSet();
+        for (int i = 0; i < array.length; i++) {
+            short key = array[i];
+            MutableInt count = occurrences.get(key);
             if (count != null) {
                 if (count.decrementAndGet() == 0) occurrences.remove(key);
                 toRemove.set(i);
@@ -5364,16 +5469,16 @@ public enum ArrayUtil {
     public static int[] removeElements(int[] array, int... values) {
         if (array.length == 0 || values.length == 0) return clone(array);
         Map<Integer, MutableInt> occurrences = new HashMap<>(values.length);
-        for (var v : values) {
+        for (int v : values) {
             Integer boxed = v;
-            var count = occurrences.get(boxed);
+            MutableInt count = occurrences.get(boxed);
             if (count == null) occurrences.put(boxed, new MutableInt(1));
             else count.increment();
         }
-        var toRemove = new BitSet();
-        for (var i = 0; i < array.length; i++) {
-            var key = array[i];
-            var count = occurrences.get(key);
+        BitSet toRemove = new BitSet();
+        for (int i = 0; i < array.length; i++) {
+            int key = array[i];
+            MutableInt count = occurrences.get(key);
             if (count != null) {
                 if (count.decrementAndGet() == 0) occurrences.remove(key);
                 toRemove.set(i);
@@ -5412,16 +5517,16 @@ public enum ArrayUtil {
     public static char[] removeElements(char[] array, char... values) {
         if (array.length == 0 || values.length == 0) return clone(array);
         Map<Character, MutableInt> occurrences = new HashMap<>(values.length);
-        for (var v : values) {
+        for (char v : values) {
             Character boxed = v;
-            var count = occurrences.get(boxed);
+            MutableInt count = occurrences.get(boxed);
             if (count == null) occurrences.put(boxed, new MutableInt(1));
             else count.increment();
         }
-        var toRemove = new BitSet();
-        for (var i = 0; i < array.length; i++) {
-            var key = array[i];
-            var count = occurrences.get(key);
+        BitSet toRemove = new BitSet();
+        for (int i = 0; i < array.length; i++) {
+            char key = array[i];
+            MutableInt count = occurrences.get(key);
             if (count != null) {
                 if (count.decrementAndGet() == 0) occurrences.remove(key);
                 toRemove.set(i);
@@ -5460,16 +5565,16 @@ public enum ArrayUtil {
     public static long[] removeElements(long[] array, long... values) {
         if (array.length == 0 || values.length == 0) return clone(array);
         Map<Long, MutableInt> occurrences = new HashMap<>(values.length);
-        for (var v : values) {
+        for (long v : values) {
             Long boxed = v;
-            var count = occurrences.get(boxed);
+            MutableInt count = occurrences.get(boxed);
             if (count == null) occurrences.put(boxed, new MutableInt(1));
             else count.increment();
         }
-        var toRemove = new BitSet();
-        for (var i = 0; i < array.length; i++) {
-            var key = array[i];
-            var count = occurrences.get(key);
+        BitSet toRemove = new BitSet();
+        for (int i = 0; i < array.length; i++) {
+            long key = array[i];
+            MutableInt count = occurrences.get(key);
             if (count != null) {
                 if (count.decrementAndGet() == 0) occurrences.remove(key);
                 toRemove.set(i);
@@ -5508,16 +5613,16 @@ public enum ArrayUtil {
     public static float[] removeElements(float[] array, float... values) {
         if (array.length == 0 || values.length == 0) return clone(array);
         Map<Float, MutableInt> occurrences = new HashMap<>(values.length);
-        for (var v : values) {
+        for (float v : values) {
             Float boxed = v;
-            var count = occurrences.get(boxed);
+            MutableInt count = occurrences.get(boxed);
             if (count == null) occurrences.put(boxed, new MutableInt(1));
             else count.increment();
         }
-        var toRemove = new BitSet();
-        for (var i = 0; i < array.length; i++) {
-            var key = array[i];
-            var count = occurrences.get(key);
+        BitSet toRemove = new BitSet();
+        for (int i = 0; i < array.length; i++) {
+            float key = array[i];
+            MutableInt count = occurrences.get(key);
             if (count != null) {
                 if (count.decrementAndGet() == 0) occurrences.remove(key);
                 toRemove.set(i);
@@ -5556,16 +5661,16 @@ public enum ArrayUtil {
     public static double[] removeElements(double[] array, double... values) {
         if (array.length == 0 || values.length == 0) return clone(array);
         Map<Double, MutableInt> occurrences = new HashMap<>(values.length);
-        for (var v : values) {
+        for (double v : values) {
             Double boxed = v;
-            var count = occurrences.get(boxed);
+            MutableInt count = occurrences.get(boxed);
             if (count == null) occurrences.put(boxed, new MutableInt(1));
             else count.increment();
         }
-        var toRemove = new BitSet();
-        for (var i = 0; i < array.length; i++) {
-            var key = array[i];
-            var count = occurrences.get(key);
+        BitSet toRemove = new BitSet();
+        for (int i = 0; i < array.length; i++) {
+            double key = array[i];
+            MutableInt count = occurrences.get(key);
             if (count != null) {
                 if (count.decrementAndGet() == 0) occurrences.remove(key);
                 toRemove.set(i);
@@ -5604,16 +5709,16 @@ public enum ArrayUtil {
     public static boolean[] removeElements(boolean[] array, boolean... values) {
         if (array.length == 0 || values.length == 0) return clone(array);
         Map<Boolean, MutableInt> occurrences = new HashMap<>(2);
-        for (var v : values) {
+        for (boolean v : values) {
             Boolean boxed = v;
-            var count = occurrences.get(boxed);
+            MutableInt count = occurrences.get(boxed);
             if (count == null) occurrences.put(boxed, new MutableInt(1));
             else count.increment();
         }
-        var toRemove = new BitSet();
-        for (var i = 0; i < array.length; i++) {
-            var key = array[i];
-            var count = occurrences.get(key);
+        BitSet toRemove = new BitSet();
+        for (int i = 0; i < array.length; i++) {
+            boolean key = array[i];
+            MutableInt count = occurrences.get(key);
             if (count != null) {
                 if (count.decrementAndGet() == 0) occurrences.remove(key);
                 toRemove.set(i);
@@ -5633,20 +5738,20 @@ public enum ArrayUtil {
 
     @Deprecated
     static Object removeAll(Object array, int... indices) {
-        var length = getLength(array);
+        int length = getLength(array);
         if (length == 0)
             return array;
 
-        var clonedIndices = clone(indices);
+        int[] clonedIndices = clone(indices);
         Arrays.sort(clonedIndices);
 
 
-        var diff = 0;
+        int diff = 0;
         {
-            var i = clonedIndices.length;
-            var prevIndex = length;
+            int i = clonedIndices.length;
+            int prevIndex = length;
             while (--i >= 0) {
-                var index = clonedIndices[i];
+                int index = clonedIndices[i];
                 if (index < 0 || index >= length)
                     throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + length);
                 if (index >= prevIndex) continue;
@@ -5656,14 +5761,14 @@ public enum ArrayUtil {
         }
 
 
-        var result = Array.newInstance(array.getClass().getComponentType(), length - diff);
+        Object result = Array.newInstance(array.getClass().getComponentType(), length - diff);
         if (diff < length) {
-            var end = length;
-            var dest = length - diff;
-            for (var i = clonedIndices.length - 1; i >= 0; i--) {
-                var index = clonedIndices[i];
+            int end = length;
+            int dest = length - diff;
+            for (int i = clonedIndices.length - 1; i >= 0; i--) {
+                int index = clonedIndices[i];
                 if (end - index > 1) {
-                    var cp = end - index - 1;
+                    int cp = end - index - 1;
                     dest -= cp;
                     System.arraycopy(array, index + 1, result, dest, cp);
 
@@ -5718,13 +5823,13 @@ public enum ArrayUtil {
      */
 
     static Object removeAll(Object array, BitSet indices) {
-        var srcLength = ArrayUtil.getLength(array);
+        int srcLength = ArrayUtil.getLength(array);
 
 
-        var removals = indices.cardinality();
-        var result = Array.newInstance(array.getClass().getComponentType(), srcLength - removals);
-        var srcIndex = 0;
-        var destIndex = 0;
+        int removals = indices.cardinality();
+        Object result = Array.newInstance(array.getClass().getComponentType(), srcLength - removals);
+        int srcIndex = 0;
+        int destIndex = 0;
         int count;
         int set;
         while ((set = indices.nextSetBit(srcIndex)) != -1) {
@@ -5741,20 +5846,20 @@ public enum ArrayUtil {
     }
 
     public static byte[] removeAll(byte[] x, MetalBitSet indices) {
-        var toRemove = indices.cardinality();
-        var srcLength = x.length;
+        int toRemove = indices.cardinality();
+        int srcLength = x.length;
         if (toRemove == 0)
             return x;
-        var remain = srcLength - toRemove;
+        int remain = srcLength - toRemove;
         switch (remain) {
             case 0:
                 return ArrayUtil.EMPTY_BYTE_ARRAY;
             case 1:
                 return new byte[]{x[indices.next(false, 0, srcLength)]};
             default:
-                var y = new byte[remain];
-                var j = 0;
-                for (var i = 0; i < srcLength; i++)
+                byte[] y = new byte[remain];
+                int j = 0;
+                for (int i = 0; i < srcLength; i++)
                     if (!indices.get(i))
                         y[j++] = x[i];
                 return y;
@@ -5766,7 +5871,7 @@ public enum ArrayUtil {
     }
 
     public static <X> X[] removeAll(X[] x, MetalBitSet indices, boolean iff) {
-        var toRemove = indices.cardinality();
+        int toRemove = indices.cardinality();
         if (toRemove == 0)
             return x;
         int srcLength = x.length, remain = srcLength - toRemove;
@@ -5774,14 +5879,14 @@ public enum ArrayUtil {
             case 0:
                 return (X[]) ArrayUtil.EMPTY_OBJECT_ARRAY;
             case 1: {
-                var y = Arrays.copyOf(x, 1);
+                X[] y = Arrays.copyOf(x, 1);
                 y[0] = x[indices.next(iff, 0, srcLength)];
                 return y;
             }
             default: {
-                var y = Arrays.copyOf(x, remain);
-                var j = 0;
-                for (var i = 0; i < srcLength; i++)
+                X[] y = Arrays.copyOf(x, remain);
+                int j = 0;
+                for (int i = 0; i < srcLength; i++)
                     if (iff == indices.get(i))
                         y[j++] = x[i];
                 return y;
@@ -5790,20 +5895,20 @@ public enum ArrayUtil {
     }
 
     public static int[] removeAll(int[] x, MetalBitSet indices) {
-        var toRemove = indices.cardinality();
-        var srcLength = x.length;
+        int toRemove = indices.cardinality();
+        int srcLength = x.length;
         if (toRemove == 0)
             return x;
-        var remain = srcLength - toRemove;
+        int remain = srcLength - toRemove;
         switch (remain) {
             case 0:
                 return ArrayUtil.EMPTY_INT_ARRAY;
             case 1:
                 return new int[]{x[indices.next(false, 0, srcLength)]};
             default:
-                var y = new int[remain];
-                var j = 0;
-                for (var i = 0; i < srcLength; i++)
+                int[] y = new int[remain];
+                int j = 0;
+                for (int i = 0; i < srcLength; i++)
                     if (!indices.get(i))
                         y[j++] = x[i];
                 return y;
@@ -5837,10 +5942,10 @@ public enum ArrayUtil {
 
         if (array == null || array.length < 2) return true;
 
-        var previous = array[0];
-        var n = array.length;
-        for (var i = 1; i < n; i++) {
-            var current = array[i];
+        T previous = array[0];
+        int n = array.length;
+        for (int i = 1; i < n; i++) {
+            T current = array[i];
             if (comparator.compare(previous, current) > 0) return false;
 
             previous = current;
@@ -5858,10 +5963,10 @@ public enum ArrayUtil {
     public static boolean isSorted(double[] array) {
         if (array == null || array.length < 2) return true;
 
-        var previous = array[0];
-        var n = array.length;
-        for (var i = 1; i < n; i++) {
-            var current = array[i];
+        double previous = array[0];
+        int n = array.length;
+        for (int i = 1; i < n; i++) {
+            double current = array[i];
             if (previous > current)
                 return false;
             previous = current;
@@ -5880,10 +5985,10 @@ public enum ArrayUtil {
         if (array == null || array.length < 2)
             return true;
 
-        var n = array.length;
-        var previous = array[0];
-        for (var i = 1; i < n; i++) {
-            var current = array[i];
+        int n = array.length;
+        float previous = array[0];
+        for (int i = 1; i < n; i++) {
+            float current = array[i];
             if (previous > current)
                 return false;
             previous = current;
@@ -5895,10 +6000,10 @@ public enum ArrayUtil {
         if (array == null || array.length < 2)
             return true;
 
-        var n = array.length;
-        var previous = array[0];
-        for (var i = 1; i < n; i++) {
-            var current = array[i];
+        int n = array.length;
+        long previous = array[0];
+        for (int i = 1; i < n; i++) {
+            long current = array[i];
             if (previous > current)
                 return false;
             previous = current;
@@ -5933,7 +6038,7 @@ public enum ArrayUtil {
                 if (array[1] == element) return new byte[]{array[0]};
                 break;
             default:
-                var index = indexOf(array, element);
+                int index = indexOf(array, element);
                 if (index != -1)
                     return remove(array, index);
                 break;
@@ -5945,8 +6050,13 @@ public enum ArrayUtil {
     public static <T> T[] removeNulls(T[] array) {
         if (array.length == 0)
             return array;
-        var count = Arrays.stream(array).filter(Objects::isNull).count();
-        var nulls = (int) count;
+        long count = 0L;
+        for (T t : array) {
+            if (t == null) {
+                count++;
+            }
+        }
+        int nulls = (int) count;
         if (nulls == 0)
             return array;
         else
@@ -5954,11 +6064,11 @@ public enum ArrayUtil {
     }
 
     public static @NotNull <T> T[] removeNulls(T[] array, int nulls) {
-        var s = array.length - nulls;
-        var a = Arrays.copyOf(array, s);
+        int s = array.length - nulls;
+        T[] a = Arrays.copyOf(array, s);
         if (s > 0) {
-            var j = 0;
-            for (var x : array)
+            int j = 0;
+            for (T x : array)
                 if (x != null)
                     a[j++] = x;
         }
@@ -5980,7 +6090,12 @@ public enum ArrayUtil {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_STRING_ARRAY;
 
-        return Arrays.stream(array).map(Object::toString).toArray(String[]::new);
+        List<String> list = new ArrayList<>();
+        for (Object o : array) {
+            String toString = o.toString();
+            list.add(toString);
+        }
+        return list.toArray(new String[0]);
     }
 
     /**
@@ -5998,9 +6113,9 @@ public enum ArrayUtil {
         if (null == array) return null;
         if (array.length == 0) return EMPTY_STRING_ARRAY;
 
-        var result = new String[array.length];
-        for (var i = 0; i < array.length; i++) {
-            var object = array[i];
+        String[] result = new String[array.length];
+        for (int i = 0; i < array.length; i++) {
+            Object object = array[i];
             result[i] = (object == null ? valueForNullElements : object.toString());
         }
 
@@ -6032,7 +6147,7 @@ public enum ArrayUtil {
         if (index < 0 || index > array.length)
             throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + array.length);
 
-        var result = new boolean[array.length + values.length];
+        boolean[] result = new boolean[array.length + values.length];
 
         System.arraycopy(values, 0, result, index, values.length);
         if (index > 0) System.arraycopy(array, 0, result, 0, index);
@@ -6065,7 +6180,7 @@ public enum ArrayUtil {
         if (index < 0 || index > array.length)
             throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + array.length);
 
-        var result = new byte[array.length + values.length];
+        byte[] result = new byte[array.length + values.length];
 
         System.arraycopy(values, 0, result, index, values.length);
         if (index > 0) System.arraycopy(array, 0, result, 0, index);
@@ -6098,7 +6213,7 @@ public enum ArrayUtil {
         if (index < 0 || index > array.length)
             throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + array.length);
 
-        var result = new char[array.length + values.length];
+        char[] result = new char[array.length + values.length];
 
         System.arraycopy(values, 0, result, index, values.length);
         if (index > 0) System.arraycopy(array, 0, result, 0, index);
@@ -6131,7 +6246,7 @@ public enum ArrayUtil {
         if (index < 0 || index > array.length)
             throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + array.length);
 
-        var result = new double[array.length + values.length];
+        double[] result = new double[array.length + values.length];
 
         System.arraycopy(values, 0, result, index, values.length);
         if (index > 0) System.arraycopy(array, 0, result, 0, index);
@@ -6164,7 +6279,7 @@ public enum ArrayUtil {
         if (index < 0 || index > array.length)
             throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + array.length);
 
-        var result = new float[array.length + values.length];
+        float[] result = new float[array.length + values.length];
 
         System.arraycopy(values, 0, result, index, values.length);
         if (index > 0) System.arraycopy(array, 0, result, 0, index);
@@ -6197,7 +6312,7 @@ public enum ArrayUtil {
         if (index < 0 || index > array.length)
             throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + array.length);
 
-        var result = new int[array.length + values.length];
+        int[] result = new int[array.length + values.length];
 
         System.arraycopy(values, 0, result, index, values.length);
         if (index > 0) System.arraycopy(array, 0, result, 0, index);
@@ -6230,7 +6345,7 @@ public enum ArrayUtil {
         if (index < 0 || index > array.length)
             throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + array.length);
 
-        var result = new long[array.length + values.length];
+        long[] result = new long[array.length + values.length];
 
         System.arraycopy(values, 0, result, index, values.length);
         if (index > 0) System.arraycopy(array, 0, result, 0, index);
@@ -6263,7 +6378,7 @@ public enum ArrayUtil {
         if (index < 0 || index > array.length)
             throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + array.length);
 
-        var result = new short[array.length + values.length];
+        short[] result = new short[array.length + values.length];
 
         System.arraycopy(values, 0, result, index, values.length);
         if (index > 0) System.arraycopy(array, 0, result, 0, index);
@@ -6314,7 +6429,7 @@ public enum ArrayUtil {
         //final Class<?> type = array.getClass().getComponentType();
         @SuppressWarnings("unchecked")
         //T[]) Array.newInstance(type,
-                var result = Arrays.copyOf(array, array.length + values.length);
+                T[] result = Arrays.copyOf(array, array.length + values.length);
 
         System.arraycopy(values, 0, result, index, values.length);
 
@@ -6336,7 +6451,7 @@ public enum ArrayUtil {
      * @since 3.6
      */
     public static void shuffle(Object[] array, Random random) {
-        for (var i = array.length; i > 1; i--)
+        for (int i = array.length; i > 1; i--)
             swapObj(array, i - 1, random.nextInt(i));
     }
 
@@ -6344,17 +6459,17 @@ public enum ArrayUtil {
      * from,to is an inclusive range which is non-standard wrt the other shuffle methods
      */
     public static void shuffle(int from, int to, Random random, IntIntProcedure swapper) {
-        var range = 1 + (to - from);
-        for (var i = to; i > from; i--) {
-            var a = i - 1;
-            var b = random.nextInt(range) + from;
+        int range = 1 + (to - from);
+        for (int i = to; i > from; i--) {
+            int a = i - 1;
+            int b = random.nextInt(range) + from;
             if (a != b)
                 swapper.value(a, b);
         }
     }
 
     public static void shuffle(Object[] array, Rand random) {
-        for (var i = array.length; i > 1; i--)
+        for (int i = array.length; i > 1; i--)
             swapObj(array, i - 1, random.nextInt(i));
     }
 
@@ -6367,7 +6482,7 @@ public enum ArrayUtil {
      * @since 3.6
      */
     public static void shuffle(boolean[] array, Random random) {
-        for (var i = array.length; i > 1; i--)
+        for (int i = array.length; i > 1; i--)
             swapBool(array, i - 1, random.nextInt(i));
     }
 
@@ -6380,7 +6495,7 @@ public enum ArrayUtil {
      * @since 3.6
      */
     public static void shuffle(byte[] array, Random random) {
-        for (var i = array.length; i > 1; i--)
+        for (int i = array.length; i > 1; i--)
             swapByte(array, i - 1, random.nextInt(i));
     }
 
@@ -6393,7 +6508,7 @@ public enum ArrayUtil {
      * @since 3.6
      */
     public static void shuffle(char[] array, Random random) {
-        for (var i = array.length; i > 1; i--)
+        for (int i = array.length; i > 1; i--)
             swap(array, i - 1, random.nextInt(i), 1);
     }
 
@@ -6406,7 +6521,7 @@ public enum ArrayUtil {
      * @since 3.6
      */
     public static void shuffle(short[] array, Random random) {
-        for (var i = array.length; i > 1; i--)
+        for (int i = array.length; i > 1; i--)
             swapShort(array, i - 1, random.nextInt(i));
     }
 
@@ -6419,7 +6534,7 @@ public enum ArrayUtil {
      * @since 3.6
      */
     public static void shuffle(long[] array, Random random) {
-        for (var i = array.length; i > 1; i--)
+        for (int i = array.length; i > 1; i--)
             swapLong(array, i - 1, random.nextInt(i));
     }
 
@@ -6432,7 +6547,7 @@ public enum ArrayUtil {
      * @since 3.6
      */
     public static void shuffle(float[] array, Random random) {
-        for (var i = array.length; i > 1; i--)
+        for (int i = array.length; i > 1; i--)
             swapFloat(array, i - 1, random.nextInt(i));
     }
 
@@ -6445,7 +6560,7 @@ public enum ArrayUtil {
      * @since 3.6
      */
     public static void shuffle(double[] array, Random random) {
-        for (var i = array.length; i > 1; i--)
+        for (int i = array.length; i > 1; i--)
             swapDouble(array, i - 1, random.nextInt(i));
     }
 
@@ -6508,12 +6623,12 @@ public enum ArrayUtil {
             firstCut = upperBound(from, mid, secondCut, comp);
         }
 
-        var first2 = firstCut;
-        var middle2 = mid;
-        var last2 = secondCut;
+        int first2 = firstCut;
+        int middle2 = mid;
+        int last2 = secondCut;
         if (middle2 != first2 && middle2 != last2) {
-            var first1 = first2;
-            var last1 = middle2;
+            int first1 = first2;
+            int last1 = middle2;
             while (first1 < --last1)
                 swapper.value(first1++, last1);
             first1 = middle2;
@@ -6545,10 +6660,10 @@ public enum ArrayUtil {
      */
     private static int lowerBound(int mid, int to, int firstCut, IntComparator comp) {
 
-        var len = to - mid;
+        int len = to - mid;
         while (len > 0) {
-            var half = len / 2;
-            var middle = mid + half;
+            int half = len / 2;
+            int middle = mid + half;
             if (comp.compare(middle, firstCut) < 0) {
                 mid = middle + 1;
                 len -= half + 1;
@@ -6579,17 +6694,17 @@ public enum ArrayUtil {
          * arrays. A non-inplace mergesort would perhaps be faster in most cases, but would require
          * non-intuitive delegate objects...
          */
-        var length = to - from;
+        int length = to - from;
 
 
         if (length < QuickSort.SMALL) {
-            for (var i = from; i < to; i++)
-                for (var j = i; j > from && (c.compare(j - 1, j) > 0); j--) swapper.value(j, j - 1);
+            for (int i = from; i < to; i++)
+                for (int j = i; j > from && (c.compare(j - 1, j) > 0); j--) swapper.value(j, j - 1);
             return;
         }
 
 
-        var mid = (from + to) >>> 1;
+        int mid = (from + to) >>> 1;
         mergeSort(from, mid, c, swapper);
         mergeSort(mid, to, c, swapper);
 
@@ -6614,10 +6729,10 @@ public enum ArrayUtil {
      */
     private static int upperBound(int from, int mid, int secondCut, IntComparator comp) {
 
-        var len = mid - from;
+        int len = mid - from;
         while (len > 0) {
-            var half = len / 2;
-            var middle = from + half;
+            int half = len / 2;
+            int middle = from + half;
             if (comp.compare(secondCut, middle) < 0) len = half;
             else {
                 from = middle + 1;
@@ -6633,12 +6748,12 @@ public enum ArrayUtil {
     }
 
     public static void shuffle(int[] array, int len, Random random) {
-        for (var i = len; i > 1; i--)
+        for (int i = len; i > 1; i--)
             swapInt(array, i - 1, random.nextInt(i));
     }
 
     public static void shuffle(byte[] array, int len, Random random) {
-        for (var i = len; i > 1; i--)
+        for (int i = len; i > 1; i--)
             swapByte(array, i - 1, random.nextInt(i));
     }
 
@@ -6667,15 +6782,15 @@ public enum ArrayUtil {
     }
 
     public static int nextIndexOf(byte[] array, int startingAt, int endingAt, byte[] target, int targetFrom, int targetTo) {
-        var targetLen = targetTo - targetFrom;
+        int targetLen = targetTo - targetFrom;
         assert (targetLen > 0);
 
         if (endingAt - startingAt < targetLen)
             return -1;
 
         outer:
-        for (var i = startingAt; i < endingAt - targetLen + 1; i++) {
-            for (var j = 0; j < targetLen; j++) if (array[i + j] != target[targetFrom + j]) continue outer;
+        for (int i = startingAt; i < endingAt - targetLen + 1; i++) {
+            for (int j = 0; j < targetLen; j++) if (array[i + j] != target[targetFrom + j]) continue outer;
             return i;
         }
         return -1;
@@ -6715,8 +6830,8 @@ public enum ArrayUtil {
      * simple byte[] interner for low-count elements
      */
     public static byte[] intern(byte[] map) {
-        var result = map;
-        var finished = false;
+        byte[] result = map;
+        boolean finished = false;
         switch (map.length) {
             case 0:
                 result = ArrayUtil.EMPTY_BYTE_ARRAY;
@@ -6859,16 +6974,21 @@ public enum ArrayUtil {
     public static boolean equalsIdentity(Object[] x, Object[] y) {
         if (Arrays.equals(x, y)) return true;
         if (x.length != y.length) return false;
-        return IntStream.range(0, x.length).noneMatch(i -> x[i] != y[i]);
+        for (int i = 0; i < x.length; i++) {
+            if (x[i] != y[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static short[] toShort(int[] x) {
         if (x.length == 0)
             return EMPTY_SHORT_ARRAY;
 
-        var s = new short[x.length];
-        var i = 0;
-        for (var xx : x) {
+        short[] s = new short[x.length];
+        int i = 0;
+        for (int xx : x) {
             assert (xx <= Short.MAX_VALUE && xx >= Short.MIN_VALUE);
             s[i++] = (short) xx;
         }
@@ -6883,10 +7003,15 @@ public enum ArrayUtil {
      * doesnt do null tests
      */
     public static boolean equalArraysDirect(Object[] a, Object[] b) {
-        var len = a.length;
+        int len = a.length;
         if (b.length != len)
             return false;
 
-        return IntStream.range(0, len).allMatch(i -> a[i].equals(b[i]));
+        for (int i = 0; i < len; i++) {
+            if (!a[i].equals(b[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 }

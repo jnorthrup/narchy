@@ -68,9 +68,9 @@ public class TarInputStream extends FilterInputStream {
 	 */
 	@Override
 	public int read() throws IOException {
-		var buf = new byte[1];
+        byte[] buf = new byte[1];
 
-		var res = this.read(buf, 0, 1);
+        int res = this.read(buf, 0, 1);
 
 		if (res != -1) {
 			return 0xFF & buf[0];
@@ -89,7 +89,7 @@ public class TarInputStream extends FilterInputStream {
 	@Override
 	public int read(byte[] b, int off, int len) throws IOException {
 		if (currentEntry != null) {
-			var currentEntrySize = currentEntry.getSize();
+            long currentEntrySize = currentEntry.getSize();
 			if (currentFileSize == currentEntrySize) {
 				return -1;
 			} else if ((currentEntrySize - currentFileSize) < len) {
@@ -97,7 +97,7 @@ public class TarInputStream extends FilterInputStream {
 			}
 		}
 
-		var br = super.read(b, off, len);
+        int br = super.read(b, off, len);
 
 		if (br != -1) {
 			if (currentEntry != null) {
@@ -112,11 +112,11 @@ public class TarInputStream extends FilterInputStream {
 
 	@Override
 	public byte[] readAllBytes() throws IOException {
-		var eSize = currentEntry.getSize();
+        long eSize = currentEntry.getSize();
 		if (eSize > Integer.MAX_VALUE)
 			throw new UnsupportedOperationException();
-		var b = new byte[(int)eSize];
-		var len = read(b, 0, b.length);
+        byte[] b = new byte[(int)eSize];
+        int len = read(b, 0, b.length);
 		if (len!=b.length)
 			throw new IOException("incomplete read");
 		return b;
@@ -131,13 +131,13 @@ public class TarInputStream extends FilterInputStream {
 	public TarEntry getNextEntry() throws IOException {
 		closeCurrentEntry();
 
-		var header = new byte[TarConstants.HEADER_BLOCK];
-		var theader = new byte[TarConstants.HEADER_BLOCK];
-		var tr = 0;
+        byte[] header = new byte[TarConstants.HEADER_BLOCK];
+        byte[] theader = new byte[TarConstants.HEADER_BLOCK];
+        int tr = 0;
 
 		
 		while (tr < TarConstants.HEADER_BLOCK) {
-			var res = read(theader, 0, TarConstants.HEADER_BLOCK - tr);
+            int res = read(theader, 0, TarConstants.HEADER_BLOCK - tr);
 
 			if (res < 0) {
 				break;
@@ -148,8 +148,8 @@ public class TarInputStream extends FilterInputStream {
 		}
 
 
-		var eof = true;
-		for (var b : header) {
+        boolean eof = true;
+		for (byte b : header) {
 			if (b != 0) {
 				eof = false;
 				break;
@@ -177,14 +177,14 @@ public class TarInputStream extends FilterInputStream {
 	 * @throws IOException
 	 */
 	private TarEntry closeCurrentEntry() throws IOException {
-		var currentEntry = this.currentEntry;
+        TarEntry currentEntry = this.currentEntry;
 		if (currentEntry != null) {
-			var currentEntrySize = currentEntry.getSize();
+            long currentEntrySize = currentEntry.getSize();
 			if (currentEntrySize > currentFileSize) {
 				
 				long bs = 0;
 				while (bs < currentEntrySize - currentFileSize) {
-					var res = skip(currentEntrySize - currentFileSize - bs);
+                    long res = skip(currentEntrySize - currentFileSize - bs);
 
 					if (res == 0 && currentEntrySize - currentFileSize > 0) {
 						
@@ -211,12 +211,12 @@ public class TarInputStream extends FilterInputStream {
 	 */
 	private void skipPad() throws IOException {
 		if (bytesRead > 0) {
-			var extra = (int) (bytesRead % TarConstants.DATA_BLOCK);
+            int extra = (int) (bytesRead % TarConstants.DATA_BLOCK);
 
 			if (extra > 0) {
 				long bs = 0;
 				while (bs < TarConstants.DATA_BLOCK - extra) {
-					var res = skip(TarConstants.DATA_BLOCK - extra - bs);
+                    long res = skip(TarConstants.DATA_BLOCK - extra - bs);
 					bs += res;
 				}
 			}
@@ -233,7 +233,7 @@ public class TarInputStream extends FilterInputStream {
 		if (defaultSkip) {
 
 
-			var bs = super.skip(n);
+            long bs = super.skip(n);
 			bytesRead += bs;
 
 			return bs;
@@ -243,11 +243,11 @@ public class TarInputStream extends FilterInputStream {
 			return 0;
 		}
 
-		var left = n;
-		var sBuff = new byte[SKIP_BUFFER_SIZE];
+        long left = n;
+        byte[] sBuff = new byte[SKIP_BUFFER_SIZE];
 
 		while (left > 0) {
-			var res = read(sBuff, 0, (int) (left < SKIP_BUFFER_SIZE ? left : SKIP_BUFFER_SIZE));
+            int res = read(sBuff, 0, (int) (left < SKIP_BUFFER_SIZE ? left : SKIP_BUFFER_SIZE));
 			if (res < 0) {
 				break;
 			}

@@ -18,7 +18,7 @@ public final class ShortBuffer {
     }
 
     public final short[] toArray(boolean clone) {
-        var size = this.size;
+        int size = this.size;
         if (size == 0)
             return ArrayUtil.EMPTY_SHORT_ARRAY;
         else if (!clone && size == items.length)

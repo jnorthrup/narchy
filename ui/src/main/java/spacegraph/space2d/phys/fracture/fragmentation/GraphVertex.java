@@ -49,7 +49,7 @@ class GraphVertex {
     @Override
     public boolean equals(Object o) {
         if (o instanceof v2) {
-            var o2 = (v2) o;
+            v2 o2 = (v2) o;
             return value == o2;
         }
         return false;

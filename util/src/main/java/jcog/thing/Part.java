@@ -56,7 +56,7 @@ public abstract class Part<T>  {
 
     @Override
     public String toString() {
-        var nameString = getClass().getName();
+        String nameString = getClass().getName();
 
         if (nameString.startsWith("jcog.") || nameString.startsWith("nars.")) //HACK
             nameString = getClass().getSimpleName();

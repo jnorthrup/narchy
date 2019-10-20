@@ -25,10 +25,10 @@ public class VpTree<StorageType> {
 	public void search(DataPoint target, int k, List<DataPoint> results, List<Double> distances) {
 
 
-		var heap = new PriorityQueue<HeapItem>(k, (o1, o2) -> -1 * o1.compareTo(o2));
+        PriorityQueue<HeapItem> heap = new PriorityQueue<HeapItem>(k, (o1, o2) -> -1 * o1.compareTo(o2));
 
 
-		var tau = Double.MAX_VALUE;
+        double tau = Double.MAX_VALUE;
         
         
        _root.search(_root, target, k, heap, tau);
@@ -55,17 +55,17 @@ public class VpTree<StorageType> {
 		}
 
 
-		var node = createNode();
+        Node node = createNode();
 		node.index = lower;
 
 		if (upper - lower > 1) {
 
 
-			var i = (int) (ThreadLocalRandom.current().nextDouble() * (upper - lower - 1)) + lower;
+            int i = (int) (ThreadLocalRandom.current().nextDouble() * (upper - lower - 1)) + lower;
 			swap(_items, lower, i);
 
 
-			var median = (upper + lower) / 2;
+            int median = (upper + lower) / 2;
 			nth_element(_items, lower + 1,	median,	upper, new DistanceComparator(_items[lower],distance));
 
 			
@@ -92,14 +92,14 @@ public class VpTree<StorageType> {
 	
 	static void nth_element(DataPoint [] array, int low, int mid, int high,
 							Comparator<DataPoint> distanceComparator) {
-		var tmp = new DataPoint[high-low];
+        DataPoint[] tmp = new DataPoint[high-low];
         System.arraycopy(array, low, tmp, 0, tmp.length);
 		Arrays.sort(tmp, distanceComparator);
         System.arraycopy(tmp, 0, array, low, tmp.length);
 	}
 	
 	static void nth_element(int [] array, int low, int mid, int high) {
-		var tmp = new int[high-low];
+        int[] tmp = new int[high-low];
         System.arraycopy(array, low, tmp, 0, tmp.length);
 		Arrays.sort(tmp);
         System.arraycopy(tmp, 0, array, low, tmp.length);
@@ -113,7 +113,7 @@ public class VpTree<StorageType> {
 	}
 	
 	private static void swap(DataPoint[] items, int idx1, int idx2) {
-		var dp = items[idx1];
+        DataPoint dp = items[idx1];
 		items[idx1] = items[idx2];
 		items[idx2] = dp;
 	}
@@ -169,7 +169,7 @@ public class VpTree<StorageType> {
 			if(node == null) return _tau;
 
 
-			var dist = distance(_items[node.index], target);
+            double dist = distance(_items[node.index], target);
 
 			
 			if(dist < _tau) {

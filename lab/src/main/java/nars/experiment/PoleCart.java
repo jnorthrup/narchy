@@ -66,11 +66,11 @@ public class PoleCart extends GameX {
 	private float speed = 1;
 
 	public static void main(String[] arg) {
-		var instances = 1;
-		var threadsEach = 4;
-		for (var i = 0; i < instances; i++)
+        int instances = 1;
+        int threadsEach = 4;
+		for (int i = 0; i < instances; i++)
 			Companion.runRTNet(threadsEach, fps * 2, 8, n -> {
-				var p = new PoleCart(
+                PoleCart p = new PoleCart(
 						instances > 1 ?
 							$.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()) :
 							$.the(PoleCart.class.getSimpleName()), n);
@@ -80,7 +80,7 @@ public class PoleCart extends GameX {
 
 					if (beliefPredict) {
 						Exe.runLater(()->{
-							var what = p.what();
+                            What what = p.what();
 						what.nar = n; //HACK
 						new BeliefPredict(
 							predicting,
@@ -101,8 +101,8 @@ public class PoleCart extends GameX {
 							//Impiler.impile(what);
 
 							for (Concept a : p.actions()) {
-								var d = new ImpilerDeduction(n);
-								@Nullable var dd = d.estimator(false, a.term());
+                                ImpilerDeduction d = new ImpilerDeduction(n);
+								@Nullable LongToObjectFunction<Truth> dd = d.estimator(false, a.term());
 								if (dd != null)
 									a.meta("impiler", (Object) dd);
 
@@ -110,13 +110,13 @@ public class PoleCart extends GameX {
 						}).setFPS(1f);
 						n.onDur(() -> {
 							double dur = n.dur() * 3;
-							var now = n.time();
+                            long now = n.time();
 							for (Concept a : p.actions()) {
 								LongToObjectFunction<Truth> dd = a.meta("impiler");
 								if (dd != null) {
-									for (var pp = 1; pp < 4; pp++) {
-										var w = Math.round(now + (2 + pp) * dur);
-										var x = dd.apply(w);
+									for (int pp = 1; pp < 4; pp++) {
+                                        long w = Math.round(now + (2 + pp) * dur);
+                                        Truth x = dd.apply(w);
 										if (x != null) {
 											//System.out.println(a.term() + "\t" + x);
 											n.want(n.priDefault(GOAL), a.term(), Math.round(w - dur), w, x.freq(), x.conf()); //HACK
@@ -129,7 +129,7 @@ public class PoleCart extends GameX {
 
 					if (rl) {
 
-						var bb = new RLBooster(false, p, 2, 3, (ii, o) ->
+                        RLBooster bb = new RLBooster(false, p, 2, 3, (ii, o) ->
 							//new HaiQae(i, 12, o).alpha(0.01f).gamma(0.9f).lambda(0.9f),
 							new DQN3(ii, o, Map.of(
 
@@ -260,7 +260,7 @@ public class PoleCart extends GameX {
 			@Override
 			public void update(Graphics g) {
 				action = -actionLeft + actionRight;
-				var d = panel.getSize();
+                Dimension d = panel.getSize();
 
 
 				if (offGraphics == null
@@ -272,25 +272,25 @@ public class PoleCart extends GameX {
 				}
 
 
-				var clearRate = 0.5f;
+                float clearRate = 0.5f;
 				offGraphics.setColor(new Color(0, 0, 0, clearRate));
 				offGraphics.fillRect(0, 0, d.width, d.height);
 
 
 				double[] xs = {-2.5, 2.5, 2.5, 2.3, 2.3, -2.3, -2.3, -2.5};
 				double[] ys = {-0.4, -0.4, 0., 0., -0.2, -0.2, 0, 0};
-				var pixxs = new int[8];
-				var pixys = new int[8];
-				for (var i = 0; i < 8; i++) {
+                int[] pixxs = new int[8];
+                int[] pixys = new int[8];
+				for (int i = 0; i < 8; i++) {
 					pixxs[i] = pixX(d, xs[i]);
 					pixys[i] = pixY(d, ys[i]);
 				}
-				var trackColor = Color.GRAY;
+                Color trackColor = Color.GRAY;
 				offGraphics.setColor(trackColor);
 				offGraphics.fillPolygon(pixxs, pixys, 8);
 
 
-				var cartColor = Color.ORANGE;
+                Color cartColor = Color.ORANGE;
 				offGraphics.setColor(cartColor);
 				offGraphics.fillRect(pixX(d, pos - 0.2), pixY(d, 0), pixDX(d, 0.4), pixDY(d, -0.2));
 
@@ -303,13 +303,13 @@ public class PoleCart extends GameX {
 
 
 				if (action != 0) {
-					var signAction = action > 0 ? 1 : action < 0 ? -1 : 0;
-					var tipx = pixX(d, pos + 0.2 *
+                    int signAction = action > 0 ? 1 : action < 0 ? -1 : 0;
+                    int tipx = pixX(d, pos + 0.2 *
 						//signAction
 						action
 					);
-					var arrowColor = new Color(0.25f, 0.5f + Util.tanhFast(Math.abs((float) action)) / 2f, 0.25f);
-					var tipy = pixY(d, -0.1);
+                    Color arrowColor = new Color(0.25f, 0.5f + Util.tanhFast(Math.abs((float) action)) / 2f, 0.25f);
+                    int tipy = pixY(d, -0.1);
 					offGraphics.setColor(arrowColor);
 					offGraphics.drawLine(pixX(d, pos), pixY(d, -0.1), tipx, tipy);
 					offGraphics.drawLine(tipx, tipy, tipx - 4 * signAction, tipy + 4);
@@ -325,7 +325,7 @@ public class PoleCart extends GameX {
 		};
 
 
-		var f = new JFrame();
+        JFrame f = new JFrame();
 		f.setContentPane(panel);
 		f.setSize(800, 300);
 		f.setVisible(true);
@@ -352,7 +352,7 @@ public class PoleCart extends GameX {
 		});
 
 
-		var r = rewardNormalized("balanced", -1, +1, this::update);
+        Reward r = rewardNormalized("balanced", -1, +1, this::update);
 
 		Exe.runLater(() ->
 			window(NARui.beliefCharts(nar, sensors.stream()
@@ -362,9 +362,9 @@ public class PoleCart extends GameX {
 	}
 
 	public void initBipolar() {
-		final var SPEED = 1f;
-		var F = actionBipolarFrequencyDifferential(id, false, x -> {
-			var a =
+		final float SPEED = 1f;
+        BiPolarAction F = actionBipolarFrequencyDifferential(id, false, x -> {
+            float a =
 				x * SPEED;
 			//(x * x * x) * SPEED;
 			actionLeft = a < 0 ? -a : 0;
@@ -379,7 +379,7 @@ public class PoleCart extends GameX {
 	}
 
 	public void initUnipolar() {
-		var L = actionUnipolar(
+        GoalActionConcept L = actionUnipolar(
 			//$.funcImg("mx", id, $.the(-1))
 			$.inh(id, "L"), a -> {
 				if (!manualOverride) {
@@ -388,7 +388,7 @@ public class PoleCart extends GameX {
 				}
 				return a > 0.5f ? a : 0;
 			});
-		var R = actionUnipolar(
+        GoalActionConcept R = actionUnipolar(
 			//$.funcImg("mx", id, $.the(+1))
 			$.inh(id, "R"), a -> {
 				if (!manualOverride) {
@@ -404,21 +404,21 @@ public class PoleCart extends GameX {
 	protected float update() {
 
 
-		var force = forceMag * action;
+        double force = forceMag * action;
 
-		var sinangle = Math.sin(angle);
-		var cosangle = Math.cos(angle);
-		var angleDotSq = angleDot * angleDot;
-		var common = (force + poleMassLength * angleDotSq * sinangle
+        double sinangle = Math.sin(angle);
+        double cosangle = Math.cos(angle);
+        double angleDotSq = angleDot * angleDot;
+        double common = (force + poleMassLength * angleDotSq * sinangle
 			- fricCart * (posDot < 0 ? -1 : 0)) / totalMass;
 
-		var angleDDot = (gravity * sinangle - cosangle * common
+        double angleDDot = (gravity * sinangle - cosangle * common
 			- fricPole * angleDot / poleMassLength) /
 			(halfPole * (fourthirds - poleMass * cosangle * cosangle /
 				totalMass));
 
 
-		var tau = this.tau.floatValue();
+        float tau = this.tau.floatValue();
 		pos += posDot * tau;
 
 
@@ -432,7 +432,7 @@ public class PoleCart extends GameX {
 
 		}
 
-		var posDDot = common - poleMassLength * angleDDot * cosangle /
+        double posDDot = common - poleMassLength * angleDDot * cosangle /
 				totalMass;
 		posDot += posDDot * tau;
 		posDot = Math.min(+velMax, Math.max(-velMax, posDot));
@@ -448,7 +448,7 @@ public class PoleCart extends GameX {
 			SwingUtilities.invokeLater(panel::repaint);
 
 
-		var rewardLinear = (float) Math.cos(angle);
+        float rewardLinear = (float) Math.cos(angle);
 		return rewardLinear;
 		//return rewardLinear * rewardLinear * rewardLinear;
 

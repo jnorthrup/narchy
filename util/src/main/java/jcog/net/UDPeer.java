@@ -152,7 +152,7 @@ public class UDPeer extends UDP {
 
             @Override
             public float pri(UDPeer.UDProfile key) {
-                var latency = key.latency();
+                long latency = key.latency();
                 return 1f / (1f + Util.sqr(latency / 100f));
             }
 
@@ -192,8 +192,8 @@ public class UDPeer extends UDP {
     }
 
     public static byte[] bytes(InetSocketAddress addr) {
-        var x = new byte[ADDRESS_BYTES];
-        var port = addr.getPort();
+        byte[] x = new byte[ADDRESS_BYTES];
+        int port = addr.getPort();
         x[0] = (byte) ((port >> 8) & 0xff);
         x[1] = (byte) (port & 0xff);
         ipv6(addr.getAddress().getAddress(), x, 2);
@@ -225,7 +225,7 @@ public class UDPeer extends UDP {
             if (onlyIfNotSeen && seen(o, pri))
                 return 0;
 
-            var bytes = o.arrayCompactDirect();
+            byte[] bytes = o.arrayCompactDirect();
 
             int[] remain = {Math.round(them.size() * pri)};
             them.sample(rng, (Predicate<UDProfile>) ((to) -> {
@@ -279,8 +279,8 @@ public class UDPeer extends UDP {
     }
 
     public int tellSome(byte cmd, byte[] msg, int ttl, boolean onlyIfNotSeen) {
-        var x = new Msg(cmd, (byte) ttl, me, null, msg);
-        var y = tellSome(x, 1f, onlyIfNotSeen);
+        Msg x = new Msg(cmd, (byte) ttl, me, null, msg);
+        int y = tellSome(x, 1f, onlyIfNotSeen);
         seen(x, 1f);
         return y;
     }
@@ -294,17 +294,17 @@ public class UDPeer extends UDP {
     }
 
     public int tellSome(byte cmd, Object msg, int ttl, boolean onlyIfNotSeen) throws JsonProcessingException {
-        var b = Util.toBytes(msg, Object.class);
+        byte[] b = Util.toBytes(msg, Object.class);
         return tellSome(cmd, b, ttl, onlyIfNotSeen);
     }
 
     public int tellSome(JsonNode msg, int ttl, boolean onlyIfNotSeen) throws JsonProcessingException {
-        var b = Util.toBytes(msg, JsonNode.class);
+        byte[] b = Util.toBytes(msg, JsonNode.class);
         return tellSome(b, ttl, onlyIfNotSeen);
     }
 
     public void send(byte cmd, Object o, InetSocketAddress to) throws JsonProcessingException {
-        var payload = Util.toBytes(o, Object.class);
+        byte[] payload = Util.toBytes(o, Object.class);
         send(new UDPeer.Msg(cmd, (byte) 1, me, addr, payload), to);
     }
 
@@ -357,11 +357,11 @@ public class UDPeer extends UDP {
     @Override
     protected void in(InetSocketAddress p, byte[] data, int len) {
 
-        var m = new Msg(data, len);
+        Msg m = new Msg(data, len);
         if (/*m == null || */m.id() == me)
             return;
 
-        var seen = seen(m, 1f);
+        boolean seen = seen(m, 1f);
         if (seen)
             return;
 
@@ -370,21 +370,21 @@ public class UDPeer extends UDP {
 //            return;
 
         if (m.port() == 0) {
-            var msgOriginBytes = bytes(p);
+            byte[] msgOriginBytes = bytes(p);
             if (!m.originEquals(msgOriginBytes))
                 m = m.clone(msgOriginBytes);
         }
 
         //m.compact(inputArray, false);
 
-        var now = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
 
-        @Nullable var from = them.get(m.id());
+        @Nullable UDProfile from = them.get(m.id());
         if (from!=null)
             from.lastMessage = now;
 
 
-        var cmd = m.cmd();
+        byte cmd = m.cmd();
         switch (cmd) {
             case 'p':
                 from = onPong(p, m, from, now);
@@ -429,7 +429,7 @@ public class UDPeer extends UDP {
                 ping(p);
         }
 
-        var live = m.live();
+        boolean live = m.live();
         if (live && share(m,from))
             tellSome(m, 1f, false /* did a test locally already */);
     }
@@ -448,8 +448,8 @@ public class UDPeer extends UDP {
     }
 
     private RecycledSummaryStatistics latencyAvg() {
-        var r = new RecycledSummaryStatistics();
-        for (var x : them) {
+        RecycledSummaryStatistics r = new RecycledSummaryStatistics();
+        for (UDProfile x : them) {
             r.accept(x.latency());
         }
         return r;
@@ -497,8 +497,8 @@ public class UDPeer extends UDP {
 
     private @Nullable UDProfile onPong(InetSocketAddress p, Msg m, @Nullable UDProfile connected, long now) {
 
-        var sent = m.dataLong(0);
-        var latencyMS = now - sent;
+        long sent = m.dataLong(0);
+        long latencyMS = now - sent;
 
         //if (logger.isDebugEnabled())
         logger.info("{} pong {} from {} ({})", name(), m, connected, Texts.timeStr(1E6 * latencyMS));
@@ -506,7 +506,7 @@ public class UDPeer extends UDP {
         if (connected != null) {
             connected.onPing(latencyMS);
         } else {
-            var pinger = m.dataInt(8, UNKNOWN_ID);
+            int pinger = m.dataInt(8, UNKNOWN_ID);
             if (pinger == me) {
                 connected = them.put(new UDProfile(m.id(), p, latencyMS));
             }
@@ -515,7 +515,7 @@ public class UDPeer extends UDP {
     }
 
     private void sendPong(InetSocketAddress from, Msg ping) {
-        var m =
+        Msg m =
                 new Msg(PONG.id, (byte) 1, me, from,
                         ArrayUtil.addAll(
                                 Longs.toByteArray(ping.dataLong(0)),
@@ -693,9 +693,9 @@ public class UDPeer extends UDP {
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
-            var m = (Msg) obj;
+            Msg m = (Msg) obj;
             if (hash == m.hash) {
-                var len = this.len;
+                int len = this.len;
                 return m.len == len && Arrays.equals(m.bytes, 1, len, bytes, 1, len);
             }
             return false;
@@ -736,7 +736,7 @@ public class UDPeer extends UDP {
          * clones a new copy with different command
          */
         public Msg clone(byte newCmd) {
-            var b = Arrays.copyOf(bytes, len);
+            byte[] b = Arrays.copyOf(bytes, len);
             b[CMD_BYTE] = newCmd;
             return new Msg(b);
         }
@@ -746,7 +746,7 @@ public class UDPeer extends UDP {
         }
 
         public Msg clone(byte newCmd, @Nullable byte[] newOrigin) {
-            var b = Arrays.copyOf(bytes, len);
+            byte[] b = Arrays.copyOf(bytes, len);
             b[CMD_BYTE] = newCmd;
 
             if (newOrigin != null) {
@@ -758,7 +758,7 @@ public class UDPeer extends UDP {
         }
 
         public Msg clone(byte newCmd, int id, @Nullable byte[] newOrigin) {
-            var b = Arrays.copyOf(bytes, len);
+            byte[] b = Arrays.copyOf(bytes, len);
             b[CMD_BYTE] = newCmd;
 
             System.arraycopy(Ints.toByteArray(id), 0, b, ID_BYTE, 4);
@@ -784,7 +784,7 @@ public class UDPeer extends UDP {
         }
 
         public int id() {
-            var b = bytes;
+            byte[] b = bytes;
             return Ints.fromBytes(
                     b[ID_BYTE], b[ID_BYTE + 1], b[ID_BYTE + 2], b[ID_BYTE + 3]
             );
@@ -794,7 +794,7 @@ public class UDPeer extends UDP {
          * the payload as a long
          */
         long dataLong(int offset) {
-            var b = this.bytes;
+            byte[] b = this.bytes;
             offset += DATA_START_BYTE;
             if (b.length < offset + 8)
                 throw new RuntimeException("missing 64-bit payload");
@@ -806,7 +806,7 @@ public class UDPeer extends UDP {
         }
 
         int dataInt(int offset, int ifMissing) {
-            var b = this.bytes;
+            byte[] b = this.bytes;
             offset += DATA_START_BYTE;
             if (b.length < offset + 4)
                 return ifMissing;
@@ -818,15 +818,15 @@ public class UDPeer extends UDP {
 
 
         boolean originEquals(byte[] addrBytes) {
-            var addrLen = addrBytes.length;
+            int addrLen = addrBytes.length;
             return Arrays.equals(bytes, PORT_BYTE, PORT_BYTE + addrLen, addrBytes, 0, addrLen);
         }
 
 
         public @Nullable InetSocketAddress origin() {
-            var port = this.port();
+            int port = this.port();
             try {
-                var aa = InetAddress.getByAddress(Arrays.copyOfRange(bytes, ORIGIN_BYTE, ORIGIN_BYTE + 16));
+                InetAddress aa = InetAddress.getByAddress(Arrays.copyOfRange(bytes, ORIGIN_BYTE, ORIGIN_BYTE + 16));
                 return new InetSocketAddress(aa, port);
             } catch (UnknownHostException e) {
                 return null;
@@ -835,8 +835,8 @@ public class UDPeer extends UDP {
         }
 
         public int port() {
-            var firstByte = (0x000000FF & ((int) bytes[PORT_BYTE]));
-            var secondByte = (0x000000FF & ((int) bytes[PORT_BYTE + 1]));
+            int firstByte = (0x000000FF & ((int) bytes[PORT_BYTE]));
+            int secondByte = (0x000000FF & ((int) bytes[PORT_BYTE + 1]));
             return (char) (firstByte << 8 | secondByte);
 
         }

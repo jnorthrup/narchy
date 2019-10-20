@@ -21,9 +21,9 @@ public class Product implements DiffableFunctionSource {
 
     @Override
     public String valueToSource(SourceEnvironment se) {
-        var av = a.valueToSource(se);
-        var bv = b.valueToSource(se);
-        var y = se.allocateVariable();
+        String av = a.valueToSource(se);
+        String bv = b.valueToSource(se);
+        String y = se.allocateVariable();
 
         se.assign(y).append(av).append(" * ").append(bv).append(";").nl();
 
@@ -32,11 +32,11 @@ public class Product implements DiffableFunctionSource {
 
     @Override
     public String partialDeriveToSource(SourceEnvironment se) {
-        var av = a.valueToSource(se);
-        var adv = a.partialDeriveToSource(se);
-        var bv = b.valueToSource(se);
-        var bdv = b.partialDeriveToSource(se);
-        var y = se.allocateVariable();
+        String av = a.valueToSource(se);
+        String adv = a.partialDeriveToSource(se);
+        String bv = b.valueToSource(se);
+        String bdv = b.partialDeriveToSource(se);
+        String y = se.allocateVariable();
 
         se.assign(y).append(av).append(" * ").append(bdv).
                 append(" + ").append(adv).append(" * ").append(bv).

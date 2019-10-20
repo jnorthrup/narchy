@@ -74,7 +74,7 @@ public class QuantizedBvhNodes implements Serializable {
 	}
 	
 	public void resize(int num) {
-		var oldBuf = buf;
+        int[] oldBuf = buf;
 		
 		buf = new int[num*STRIDE];
 		if (oldBuf != null) {
@@ -89,8 +89,8 @@ public class QuantizedBvhNodes implements Serializable {
 	public void set(int destId, QuantizedBvhNodes srcNodes, int srcId) {
 
 
-		var buf = this.buf;
-		var srcBuf = srcNodes.buf;
+        int[] buf = this.buf;
+        int[] srcBuf = srcNodes.buf;
 		
 		buf[destId * STRIDE] = srcBuf[srcId * STRIDE];
 		buf[destId*STRIDE+1] = srcBuf[srcId*STRIDE+1];
@@ -102,12 +102,12 @@ public class QuantizedBvhNodes implements Serializable {
 		assert (STRIDE == 4);
 
 
-		var buf = this.buf;
+        int[] buf = this.buf;
 
-		var temp0 = buf[id1 * STRIDE];
-		var temp1 = buf[id1*STRIDE+1];
-		var temp2 = buf[id1*STRIDE+2];
-		var temp3 = buf[id1*STRIDE+3];
+        int temp0 = buf[id1 * STRIDE];
+        int temp1 = buf[id1*STRIDE+1];
+        int temp2 = buf[id1*STRIDE+2];
+        int temp3 = buf[id1*STRIDE+3];
 		
 		buf[id1 * STRIDE] = buf[id2 * STRIDE];
 		buf[id1*STRIDE+1] = buf[id2*STRIDE+1];

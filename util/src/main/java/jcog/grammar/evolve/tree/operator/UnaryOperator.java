@@ -64,7 +64,7 @@ public abstract class UnaryOperator extends ParentNode {
 
     @Override
     public Node cloneTree() {
-        var bop = buildCopy();
+        UnaryOperator bop = buildCopy();
 
         if (!isEmpty()) {
             cloneChild(get(0), bop);

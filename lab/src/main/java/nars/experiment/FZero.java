@@ -53,7 +53,7 @@ public class FZero extends GameX {
         GameX.Companion.initFn(fps*2, n -> {
 
 
-            var f = new FZero($.the("fz"), n);
+            FZero f = new FZero($.the("fz"), n);
             n.add(f);
             return f;
 
@@ -85,7 +85,7 @@ public class FZero extends GameX {
 //        Param.DEBUG_EXTRA = true;
 
 
-        var vision = new ScaledBitmap2D(()->fz.image,
+        ScaledBitmap2D vision = new ScaledBitmap2D(()->fz.image,
                 24, 20
         ).crop(0, 0.23f, 1f, 1f);
 
@@ -105,8 +105,8 @@ public class FZero extends GameX {
 
 
         //        {
-        var nx = 4;
-        var camAE = new AutoclassifiedBitmap(
+        int nx = 4;
+        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap(
                     $.p(id,$.the("cam")), vision, nx, nx, (subX, subY) -> new float[]{/*cc.X, cc.Y*/}, 12, this);
             camAE.alpha(0.01f);
             camAE.noise.set(0.0f);
@@ -114,7 +114,7 @@ public class FZero extends GameX {
             //SpaceGraph.(column(visionView, camAE.newChart()), 500, 500);
 //        }
 
-        var visionView = new BitmapMatrixView(vision);
+        BitmapMatrixView visionView = new BitmapMatrixView(vision);
         onFrame(visionView::updateIfShowing);
         window(grid(visionView,
                 camAE.newChart()
@@ -155,7 +155,7 @@ public class FZero extends GameX {
 //                400, 400);
 
 
-        var r = 0.02f;
+        float r = 0.02f;
         senseNumberBi($.funcImg("vel", $$("x")), () -> (float) fz.vehicleMetrics[0][7]).resolution(r);
         senseNumberBi($.funcImg("vel", $$("y")), () -> (float) fz.vehicleMetrics[0][8]).resolution(r);
 
@@ -163,8 +163,8 @@ public class FZero extends GameX {
         senseNumberDifferenceBi($.p(id,$.the("d"), $.the("ang")), () -> (float) fz.playerAngle).resolution(r);
 
 
-        var angles = 8;
-        var ang = senseAngle(angles, Atomic.the("ang"), ()->(float)fz.playerAngle,
+        int angles = 8;
+        DigitizedScalar ang = senseAngle(angles, Atomic.the("ang"), ()->(float)fz.playerAngle,
                 a->$.inh(id, $.p($.the("ang"), $.the(a))));
         ang.resolution(r);
 //        window(new VectorSensorView(ang,1, angles, this).withControls(), 400, 400);
@@ -200,8 +200,8 @@ public class FZero extends GameX {
 
         onFrame(()-> {
 
-            var distance = fz.vehicleMetrics[0][1];
-            var deltaDistance = (distance - lastDistance);
+            double distance = fz.vehicleMetrics[0][1];
+            double deltaDistance = (distance - lastDistance);
 
 
             lastDistance = distance;
@@ -216,7 +216,7 @@ public class FZero extends GameX {
 
 //        float r = (deltaDistance > 0) ? (float) (deltaDistance / (fps * 0.2)) : -1f;
 
-            var damage = (float) (FZeroGame.FULL_POWER - fz.power) / FZeroGame.FULL_POWER;
+            float damage = (float) (FZeroGame.FULL_POWER - fz.power) / FZeroGame.FULL_POWER;
             fz.power = Math.max(FZeroGame.FULL_POWER * 0.5f, Math.min(FZeroGame.FULL_POWER, fz.power * 1.15f));
 
         });
@@ -230,11 +230,11 @@ public class FZero extends GameX {
 //            //return Util.equals(damage, 0, 0.01f) ? Float.NaN : 0; //Math.max(0, 1 - damage);
 //            return Util.equals(damage, 0, 0.01f) ? 1 : 0;
 //        });
-        var race = rewardNormalized("race", -1, +1, (() -> Util.clamp(progress * 0.5f, -1, +1)));
+        Reward race = rewardNormalized("race", -1, +1, (() -> Util.clamp(progress * 0.5f, -1, +1)));
         //race.resolution().set(0.1f);
 
-        var f = new FloatAveragedWindow(64, 0.25f, 0).mode(FloatAveragedWindow.Mode.Mean);
-        var race2 = rewardNormalized("RaceRace", -1, +1, (() -> f.valueOf(Util.clamp(progress * 0.5f, -1, +1))));
+        FloatAveragedWindow f = new FloatAveragedWindow(64, 0.25f, 0).mode(FloatAveragedWindow.Mode.Mean);
+        Reward race2 = rewardNormalized("RaceRace", -1, +1, (() -> f.valueOf(Util.clamp(progress * 0.5f, -1, +1))));
         //race2.resolution().set(0.1f);
 
 //        rewardNormalized("efficient", 0, +1, (() -> {
@@ -258,12 +258,12 @@ public class FZero extends GameX {
 
 
     private void actionSwitch() {
-        var s = new SwitchAction(nar, (a) -> {
+        SwitchAction s = new SwitchAction(nar, (a) -> {
 
 
             fz.rotVel = 0.1f;
 
-            var conf = 0.05f;
+            float conf = 0.05f;
             switch (a) {
                 case 0: {
                     fz.thrust = true;
@@ -345,10 +345,10 @@ public class FZero extends GameX {
     }
 
     private void addBrake() {
-        var bias = $.t(0, 0.001f);
-        var slow = actionUnipolar($.inh(id, "slow"), (x) -> {
+        PreciseTruth bias = $.t(0, 0.001f);
+        GoalActionConcept slow = actionUnipolar($.inh(id, "slow"), (x) -> {
             if (x >= 0.5f) {
-                var decay = 1 - ((x - 0.5f) * 2);
+                float decay = 1 - ((x - 0.5f) * 2);
                 fz.vehicleMetrics[0][6] *= decay;
                 fz.rotVel *= decay;
                 return x;
@@ -363,19 +363,19 @@ public class FZero extends GameX {
     private void addTankContinuous() {
 
 
-        var powerScale = 0.1f;
-        var rotSpeed = 1.0f;
-        var left = new float[1];
-        var right = new float[1];
+        float powerScale = 0.1f;
+        float rotSpeed = 1.0f;
+        float[] left = new float[1];
+        float[] right = new float[1];
         float fwdSpeed = 75;
 
-        var TANK = Atomic.atom("tank");
+        Atom TANK = Atomic.atom("tank");
 
 
-        var l = actionUnipolar($.inh(id, $.p(TANK,NEG)), (_x) -> {
-            var x = _x;
+        GoalActionConcept l = actionUnipolar($.inh(id, $.p(TANK,NEG)), (_x) -> {
+            float x = _x;
             if (x!=x || x < 0.5f) return 0;  x -= 0.5f; x*=2;
-            var power = x * powerScale;
+            float power = x * powerScale;
             left[0] = power;
             //noinspection NonAtomicOperationOnVolatileField
             fz.playerAngle += power * rotSpeed;
@@ -384,10 +384,10 @@ public class FZero extends GameX {
             return _x;
         });
 
-        var r = actionUnipolar($.inh(id, $.p(TANK,POS)), (_x) -> {
-            var x = _x;
+        GoalActionConcept r = actionUnipolar($.inh(id, $.p(TANK,POS)), (_x) -> {
+            float x = _x;
             if (x!=x || x < 0.5f) return 0;  x -= 0.5f; x*=2;
-            var power = x * powerScale;
+            float power = x * powerScale;
             right[0] = power;
             fz.playerAngle += -power * rotSpeed;
             fz.vehicleMetrics[0][6] += (left[0] + right[0]) * fwdSpeed;
@@ -405,7 +405,7 @@ public class FZero extends GameX {
     }
 
     public BiPolarAction initBipolarRotateRelative(boolean fair, float rotFactor) {
-        var rotSpeed = 0.25f * rotFactor;
+        float rotSpeed = 0.25f * rotFactor;
 //        final float[] _r = {0};
         //final MiniPID rotFilter = new MiniPID(0.35f, 0.3, 0.2f);
         return actionBipolarFrequencyDifferential((Term)$.inh(id, $.p("turn", $.varQuery(1))), fair, (r0) -> {
@@ -425,7 +425,7 @@ public class FZero extends GameX {
         //final MiniPID rotFilter = new MiniPID(0.3f, 0.3, 0.4f);
         //final FloatAveraged lp = new FloatAveraged(0.5f);
 
-        var inputThresh = 0f;
+        float inputThresh = 0f;
         float curve = //curve exponent
                 1;
         //3;
@@ -441,7 +441,7 @@ public class FZero extends GameX {
 
             return dHeading;
         };
-        var A = actionBipolarFrequencyDifferential(
+        BiPolarAction A = actionBipolarFrequencyDifferential(
                 //$.func("rotate", id),
                 //pn -> CONJ.the(XTERNAL, $.the("rotate"), $.func("rotate", id).negIf(!pn) ),
                 //pn -> CONJ.the(XTERNAL, $.func("rotate", id),
@@ -459,7 +459,7 @@ public class FZero extends GameX {
 
     public void initBipolarRotateAbsolute(boolean fair) {
 
-        var rotFilter = new MiniPID(0.1f, 0.1, 0.1f); //LP filter
+        MiniPID rotFilter = new MiniPID(0.1f, 0.1, 0.1f); //LP filter
         FloatToFloatFunction x = (heading) -> {
 
             fz.playerAngle = (float) rotFilter.out(fz.playerAngle, heading * Math.PI * 2);
@@ -477,14 +477,14 @@ public class FZero extends GameX {
 
         //return actionHemipolar($.inh(id,$$("fwd")) /* $.func("vel", id, $.the("move"))*/, (a0) -> {
         actionUnipolar($.inh(id,$$("fwd")) /* $.func("vel", id, $.the("move"))*/, true, (x) -> Float.NaN /*0.5f*/, (a0) -> {
-            var a =
+            float a =
                     //_a[0] = (float) fwdFilter.out(_a[0], a0);
                     a0;
 
-            var thresh = nar.freqResolution.floatValue();
+            float thresh = nar.freqResolution.floatValue();
             if (a > 0.5f + thresh) {
                 //float thrust = /*+=*/ (2 * (a - 0.5f)) * (fwdFactor * fwdSpeed);
-                var thrust = fwdFactor * fwdSpeed;
+                float thrust = fwdFactor * fwdSpeed;
                 fz.vehicleMetrics[0][6] = thrust;
                 return a0;
             } else if (a < 0.5f - thresh) {
@@ -559,19 +559,19 @@ public class FZero extends GameX {
             powerOvalY[0] = -96;
 
 
-            for (var spriteIndex = 0; spriteIndex < 10; spriteIndex++) {
+            for (int spriteIndex = 0; spriteIndex < 10; spriteIndex++) {
                 vehicleSprites[spriteIndex] = new BufferedImage(
                         64, 32, BufferedImage.TYPE_INT_ARGB_PRE);
                 for (int y = 0, k = 0; y < 32; y++) {
-                    for (var x = 0; x < 64; x++, k++) {
+                    for (int x = 0; x < 64; x++, k++) {
                         double dx = (x - 32.0) / 2, dy = y - 26;
-                        var dist1 = dx * dx + dy * dy;
+                        double dist1 = dx * dx + dy * dy;
                         dx = (x - 31.5) / 2;
                         dy = y - 15.5;
-                        var dist2 = dx * dx + dy * dy;
+                        double dist2 = dx * dx + dy * dy;
                         dy = y - 17.5;
                         dx = x - 32;
-                        var dist3 = dx * dx + dy * dy;
+                        double dist3 = dx * dx + dy * dy;
                         if (Math.abs(dist3 - 320) <= 24 || Math.abs(dist3 - 480) <= 24) {
                             vehicleSpriteData[k] = C(
                                     Math.PI * spriteIndex / 1.9,
@@ -587,18 +587,18 @@ public class FZero extends GameX {
                         }
                     }
                 }
-                for (var x = 14; x < 49; x++) {
-                    for (var y = 21; y < 27; y++) {
+                for (int x = 14; x < 49; x++) {
+                    for (int y = 21; y < 27; y++) {
                         vehicleSpriteData[(y << 6) | x] = y == 21 || y == 26 || (x & 1) == 0
                                 ? 0xFFCCCCCC : 0xFF000000;
                     }
                 }
-                for (var y = 0; y < 16; y++) {
-                    for (var x = 0; x < 16; x++) {
-                        var dx = x - 7.5;
-                        var dy = y - 7.5;
-                        var dy2 = dy / 1.5;
-                        var dist = dx * dx + dy * dy;
+                for (int y = 0; y < 16; y++) {
+                    for (int x = 0; x < 16; x++) {
+                        double dx = x - 7.5;
+                        double dy = y - 7.5;
+                        double dy2 = dy / 1.5;
+                        double dist = dx * dx + dy * dy;
                         if (dx * dx + dy2 * dy2 < 64) {
                             dy = y - 4;
                             vehicleSpriteData[(y << 6) | (x + 24)] = C(
@@ -622,37 +622,37 @@ public class FZero extends GameX {
             }
 
 
-            for (var y = 0; y < 512; y++) {
-                for (var x = 0; x < 512; x++) {
+            for (int y = 0; y < 512; y++) {
+                for (int x = 0; x < 512; x++) {
                     raceTrack[y][x] = -1;
                 }
             }
 
-            for (var y = 0; y < 128; y++) {
-                for (var x = 246; x < 261; x++) {
+            for (int y = 0; y < 128; y++) {
+                for (int x = 246; x < 261; x++) {
                     raceTrack[y][x] = 0;
                 }
             }
 
-            for (var y = 32; y < 96; y++) {
-                for (var x = 239; x < 246; x++) {
+            for (int y = 32; y < 96; y++) {
+                for (int x = 239; x < 246; x++) {
                     raceTrack[y][x] = (byte) ((x < 244 && y > 33 && y < 94) ? 2 : 0);
                 }
             }
 
-            for (var y = 128; y < 512; y++) {
-                for (var x = 243; x < 264; x++) {
-                    var angle = y * Math.PI / 64;
+            for (int y = 128; y < 512; y++) {
+                for (int x = 243; x < 264; x++) {
+                    double angle = y * Math.PI / 64;
                     raceTrack[y][x + (int) ((8 * Math.cos(angle) + 24) * Math.sin(angle))]
                             = 0;
                 }
             }
 
-            for (var y = 0; y < 512; y++) {
-                for (var x = 0; x < 512; x++) {
+            for (int y = 0; y < 512; y++) {
+                for (int x = 0; x < 512; x++) {
                     if (raceTrack[y][x] >= 0) {
-                        for (var i = -1; i < 2; i++) {
-                            for (var j = -1; j < 2; j++) {
+                        for (int i = -1; i < 2; i++) {
+                            for (int j = -1; j < 2; j++) {
                                 if (raceTrack[0x1FF & (i + y)][0x1FF & (j + x)] == -1) {
                                     raceTrack[y][x] = 1;
                                     break;
@@ -664,16 +664,16 @@ public class FZero extends GameX {
             }
 
 
-            for (var y = 0; y < 32; y++) {
-                for (var x = 0; x < 32; x++) {
-                    var dx = 15.5 - x;
-                    var dy = 15.5 - y;
+            for (int y = 0; y < 32; y++) {
+                for (int x = 0; x < 32; x++) {
+                    double dx = 15.5 - x;
+                    double dy = 15.5 - y;
                     bitmaps[0][y][x] = 0xFF98A8A8;
                     bitmaps[4][y][x] = 0xFF90A0A0;
                     bitmaps[5][y][x]
                             = (((x >> 3) + (y >> 3)) & 1) == 0 ? 0xFF000000 : 0xFFFFFFFF;
                     bitmaps[2][y][x] = C(4.5, Math.abs(dy) / 16, 1);
-                    var dist = Math.sqrt(dx * dx + dy * dy);
+                    double dist = Math.sqrt(dx * dx + dy * dy);
                     if (dist < 16) {
                         bitmaps[3][y][x] = 0xFFFFFFFF;
                         bitmaps[1][y][x] = C(5.3, dist / 16, 1 + dist / 256);
@@ -684,9 +684,9 @@ public class FZero extends GameX {
             }
 
 
-            for (var y = 0; y < 192; y++) {
-                for (var x = 0; x < 320; x++) {
-                    var k = (GROUND_Y - VIEWER_Y) / (48 + y - VIEWER_Y);
+            for (int y = 0; y < 192; y++) {
+                for (int x = 0; x < 320; x++) {
+                    double k = (GROUND_Y - VIEWER_Y) / (48 + y - VIEWER_Y);
                     projectionMap[y][x][0] = (int) (k * (x - VIEWER_X) + VIEWER_X);
                     projectionMap[y][x][1] = (int) (VIEWER_Z * (1 - k));
                 }
@@ -727,15 +727,15 @@ public class FZero extends GameX {
             if (paused > 0) {
                 paused--;
                 if (paused == 0) {
-                    for (var i = 0; i < 10; i++) {
-                        for (var j = 0; j < 9; j++) {
+                    for (int i = 0; i < 10; i++) {
+                        for (int j = 0; j < 9; j++) {
                             vehicleMetrics[i][j] = 0;
                         }
                     }
-                    for (var i = 0; i < 4; i++) {
+                    for (int i = 0; i < 4; i++) {
                         vehicleMetrics[i][0] = 7984 + i * 80;
                     }
-                    for (var i = 4; i < 10; i += 3) {
+                    for (int i = 4; i < 10; i += 3) {
                         vehicleMetrics[i][0] = 7984;
                         vehicleMetrics[i][1] = 16384 * (i - 3);
                         vehicleMetrics[i + 1][0] = 8144;
@@ -752,7 +752,7 @@ public class FZero extends GameX {
 
 
                 rank = 1;
-                for (var i = 1; i < 4; i++) {
+                for (int i = 1; i < 4; i++) {
                     if (vehicleMetrics[0][1] < vehicleMetrics[i][1]) {
                         rank++;
                     }
@@ -769,8 +769,8 @@ public class FZero extends GameX {
 
 
                 if (playing) {
-                    var L = left || K[KeyEvent.VK_LEFT];
-                    var R = right || K[KeyEvent.VK_RIGHT];
+                    boolean L = left || K[KeyEvent.VK_LEFT];
+                    boolean R = right || K[KeyEvent.VK_RIGHT];
                     if (L && !R) {
                         playerAngle += rotVel;
                     }
@@ -794,26 +794,26 @@ public class FZero extends GameX {
 
                 if (playing) {
                     // compute computer-controlled-vehicles velocities
-                    for (var i = 1; i < 10; i++) {
+                    for (int i = 1; i < 10; i++) {
                         if ((i < 4 && vehicleMetrics[i][6] < 20.5)
                                 || vehicleMetrics[i][6] < 10) {
                             vehicleMetrics[i][6] += 0.2 + i * 0.2;
                         }
-                        var targetZ = 11 + vehicleMetrics[i][1];
+                        double targetZ = 11 + vehicleMetrics[i][1];
                         double targetX = 7984 + (i & 0x03) * 80;
                         if (i >= 4) {
                             targetX += 32;
                         }
 
-                        var tz = (targetZ / 32) % 512;
+                        double tz = (targetZ / 32) % 512;
                         if (tz >= 128) {
-                            var angle = tz * Math.PI / 64;
+                            double angle = tz * Math.PI / 64;
                             targetX += ((8 * Math.cos(angle) + 24) * Math.sin(angle)) * 32;
                         }
 
-                        var vx = targetX - vehicleMetrics[i][0];
-                        var vz = targetZ - vehicleMetrics[i][1];
-                        var mag = Math.sqrt(vx * vx + vz * vz);
+                        double vx = targetX - vehicleMetrics[i][0];
+                        double vz = targetZ - vehicleMetrics[i][1];
+                        double mag = Math.sqrt(vx * vx + vz * vz);
                         vehicleMetrics[i][7]
                                 = vehicleMetrics[i][2] + vehicleMetrics[i][6] * vx / mag;
                         vehicleMetrics[i][8]
@@ -825,7 +825,7 @@ public class FZero extends GameX {
                     if (raceTrack[0x1FF & (((int) vehicleMetrics[0][1]) >> 5)]
                             [0x1FF & (((int) vehicleMetrics[0][0]) >> 5)] == 2) {
                         onPowerBar = true;
-                        for (var i = 0; i < 2; i++) {
+                        for (int i = 0; i < 2; i++) {
                             powerOvalY[i] += 16;
                             if (powerOvalY[i] >= 192) {
                                 powerOvalY[i] = -32;
@@ -842,23 +842,23 @@ public class FZero extends GameX {
                             + vehicleMetrics[0][6] * cos;
 
                     // vehicle hitting something?
-                    for (var j = 0; j < 10; j++) {
+                    for (int j = 0; j < 10; j++) {
 
                         // vehicle hitting another vehicle?
-                        for (var i = 0; i < 10; i++) {
+                        for (int i = 0; i < 10; i++) {
                             if (i != j) {
-                                var normalX = (vehicleMetrics[j][0]
+                                double normalX = (vehicleMetrics[j][0]
                                         - vehicleMetrics[i][0]) / 2;
-                                var normalZ = vehicleMetrics[j][1]
+                                double normalZ = vehicleMetrics[j][1]
                                         - vehicleMetrics[i][1];
-                                var dist2 = normalX * normalX + normalZ * normalZ;
+                                double dist2 = normalX * normalX + normalZ * normalZ;
                                 if (dist2 < 1200) {
-                                    var dotProduct = normalX * vehicleMetrics[0][7]
+                                    double dotProduct = normalX * vehicleMetrics[0][7]
                                             + normalZ * vehicleMetrics[0][8];
                                     if (dotProduct < 0) {
 
 
-                                        var ratio = 2 * dotProduct / dist2;
+                                        double ratio = 2 * dotProduct / dist2;
                                         vehicleMetrics[j][7] = vehicleMetrics[j][2]
                                                 = vehicleMetrics[0][7] - normalX * ratio;
                                         vehicleMetrics[j][8] = vehicleMetrics[j][3]
@@ -879,21 +879,21 @@ public class FZero extends GameX {
                         }
 
                         // vehicle hitting a wall?
-                        var vehicleX = ((int) vehicleMetrics[j][0]) >> 5;
-                        var vehicleZ = ((int) vehicleMetrics[j][1]) >> 5;
-                        for (var z = -2; z <= 2; z++) {
-                            for (var x = -2; x <= 2; x++) {
+                        int vehicleX = ((int) vehicleMetrics[j][0]) >> 5;
+                        int vehicleZ = ((int) vehicleMetrics[j][1]) >> 5;
+                        for (int z = -2; z <= 2; z++) {
+                            for (int x = -2; x <= 2; x++) {
                                 if (Math.abs(raceTrack[0x1FF & (z + vehicleZ)][0x1FF & (x + vehicleX)]) == 1) {
-                                    var normalX = vehicleMetrics[j][0]
+                                    double normalX = vehicleMetrics[j][0]
                                             - (((x + vehicleX) << 5) + 16);
-                                    var normalZ = vehicleMetrics[j][1]
+                                    double normalZ = vehicleMetrics[j][1]
                                             - (((z + vehicleZ) << 5) + 16);
-                                    var dist2 = normalX * normalX + normalZ * normalZ;
+                                    double dist2 = normalX * normalX + normalZ * normalZ;
                                     if (dist2 < 2304) {
-                                        var dotProduct = normalX * vehicleMetrics[j][7]
+                                        double dotProduct = normalX * vehicleMetrics[j][7]
                                                 + normalZ * vehicleMetrics[j][8];
                                         if (dotProduct < 0) {
-                                            var ratio = 2.0 * dotProduct / dist2;
+                                            double ratio = 2.0 * dotProduct / dist2;
                                             vehicleMetrics[j][7] = vehicleMetrics[j][2]
                                                     = vehicleMetrics[0][7] - normalX * ratio;
                                             vehicleMetrics[j][8] = vehicleMetrics[j][3]
@@ -909,7 +909,7 @@ public class FZero extends GameX {
                             }
                         }
 
-                        var velocityMag = vehicleMetrics[j][7] * vehicleMetrics[j][7]
+                        double velocityMag = vehicleMetrics[j][7] * vehicleMetrics[j][7]
                                 + vehicleMetrics[j][8] * vehicleMetrics[j][8];
                         double velocityMaxMag = j == 0 ? 400 : 420;
                         if (velocityMag > velocityMaxMag) {
@@ -935,9 +935,9 @@ public class FZero extends GameX {
             double skyRed = 0x65;
             double skyGreen = 0x91;
             for (int y = 0, k = 0; y < 48; y++) {
-                var skyColor = 0xFF000000
+                int skyColor = 0xFF000000
                         | (((int) skyRed) << 16) | (((int) skyGreen) << 8) | 0xF2;
-                for (var x = 0; x < 320; x++, k++) {
+                for (int x = 0; x < 320; x++, k++) {
                     screenBuffer[k] = skyColor;
                 }
                 skyRed += 1.75;
@@ -946,13 +946,13 @@ public class FZero extends GameX {
 
 
             for (int y = 0, k = 15360; y < 192; y++) {
-                for (var x = 0; x < 320; x++, k++) {
-                    var X = projectionMap[y][x][0] - VIEWER_X;
+                for (int x = 0; x < 320; x++, k++) {
+                    double X = projectionMap[y][x][0] - VIEWER_X;
                     double Z = projectionMap[y][x][1];
-                    var xr = (int) (X * cos - Z * sin + vehicleMetrics[0][0]);
-                    var zr = (int) (X * sin + Z * cos + vehicleMetrics[0][1]);
+                    int xr = (int) (X * cos - Z * sin + vehicleMetrics[0][0]);
+                    int zr = (int) (X * sin + Z * cos + vehicleMetrics[0][1]);
 
-                    var z = 0x1FF & (zr >> 5);
+                    int z = 0x1FF & (zr >> 5);
                     int tileIndex = raceTrack[z][0x1FF & (xr >> 5)];
                     if (hitWallCount > 0 && tileIndex == 1) {
                         tileIndex = 3;
@@ -973,23 +973,23 @@ public class FZero extends GameX {
             image.setRGB(0, 0, 320, 240, screenBuffer, 0, 320);
 
 
-            for (var i = 0; i < 10; i++) {
-                var X = vehicleMetrics[i][0] - vehicleMetrics[0][0];
-                var Z = vehicleMetrics[i][1] - vehicleMetrics[0][1];
+            for (int i = 0; i < 10; i++) {
+                double X = vehicleMetrics[i][0] - vehicleMetrics[0][0];
+                double Z = vehicleMetrics[i][1] - vehicleMetrics[0][1];
                 vehicleMetrics[i][4] = X * cos + Z * sin;
                 vehicleMetrics[i][5] = (int) (Z * cos - X * sin);
             }
-            for (var z = 1200; z > -127; z--) {
-                for (var i = 0; i < 10; i++) {
+            for (int z = 1200; z > -127; z--) {
+                for (int i = 0; i < 10; i++) {
                     if (z == vehicleMetrics[i][5]) {
-                        var k = VIEWER_Z / (VIEWER_Z - z);
-                        var upperLeftX
+                        double k = VIEWER_Z / (VIEWER_Z - z);
+                        double upperLeftX
                                 = k * (vehicleMetrics[i][4] - 32) + VIEWER_X;
-                        var upperLeftY
+                        double upperLeftY
                                 = k * (GROUND_Y - 32 - VIEWER_Y) + VIEWER_Y;
-                        var lowerRightX
+                        double lowerRightX
                                 = k * (vehicleMetrics[i][4] + 32) + VIEWER_X;
-                        var lowerRightY
+                        double lowerRightY
                                 = k * (GROUND_Y - VIEWER_Y) + VIEWER_Y;
                         imageGraphics.drawImage(vehicleSprites[i],
                                 (int) upperLeftX, (int) upperLeftY,
@@ -1009,7 +1009,7 @@ public class FZero extends GameX {
 
             if (onPowerBar) {
                 imageGraphics.setColor(Color.GREEN);
-                for (var i = 0; i < 2; i++) {
+                for (int i = 0; i < 2; i++) {
                     imageGraphics.fillOval(96, powerOvalY[i], 128, 32);
                 }
             }
@@ -1018,20 +1018,20 @@ public class FZero extends GameX {
             if (power <= 0 || (vehicleMetrics[0][1] >= 81984 && rank > 3)) {
 
                 imageGraphics.setFont(largeFont);
-                var failString = "FAIL";
-                var width = imageGraphics.getFontMetrics().stringWidth(failString);
+                String failString = "FAIL";
+                int width = imageGraphics.getFontMetrics().stringWidth(failString);
                 imageGraphics.setColor(darkColor);
-                var x = (320 - width) / 2;
+                int x = (320 - width) / 2;
                 imageGraphics.fillRect(x, 65, width + 5, 90);
                 imageGraphics.setColor(Color.RED);
                 imageGraphics.drawString(failString, x, 145);
             } else if (vehicleMetrics[0][1] >= 81984) {
 
-                var rankString = Integer.toString(rank);
+                String rankString = Integer.toString(rank);
                 imageGraphics.setFont(largeFont);
-                var width = imageGraphics.getFontMetrics().stringWidth(rankString);
+                int width = imageGraphics.getFontMetrics().stringWidth(rankString);
                 imageGraphics.setColor(darkColor);
-                var x = (320 - width) / 2;
+                int x = (320 - width) / 2;
                 imageGraphics.fillRect(x - 5, 65, width + 15, 90);
                 imageGraphics.setColor((wiresBitmapIndex & 4) == 0
                         ? Color.WHITE : Color.GREEN);
@@ -1043,7 +1043,7 @@ public class FZero extends GameX {
                 imageGraphics.drawString(Integer.toString(rank), 16, 32);
             }
 
-            var panelGraphics = panel.getGraphics();
+            Graphics panelGraphics = panel.getGraphics();
             if (panelGraphics != null) {
                 panelGraphics.drawImage(image, 0, 0, 640, 480, null);
                 panelGraphics.dispose();

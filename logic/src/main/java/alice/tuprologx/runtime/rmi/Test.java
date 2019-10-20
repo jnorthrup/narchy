@@ -20,11 +20,11 @@ public class Test
                 LocateRegistry.createRegistry(1099);
             } catch (Exception ex){
             }
-            var rmiName="rmi://"+args[0]+"/prolog";
-            var engine =
+            String rmiName="rmi://"+args[0]+"/prolog";
+            Prolog engine =
                 (alice.tuprologx.runtime.rmi.Prolog)Naming.lookup(rmiName);
 
-            var info=engine.solve(args[1]);
+            Solution info=engine.solve(args[1]);
             if (info.isSuccess())
                 System.out.println("yes: "+info.getSolution());
             else

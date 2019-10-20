@@ -36,14 +36,14 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
         if (q.isEmpty())
             return true;
 
-        var ls = l.start();
+        long ls = l.start();
         if (ls == ETERNAL)
             return false;
 
-        var le = l.end();
+        long le = l.end();
 
-        var head = q.head();
-        var mid = indexNear(head, (ls + le) / 2);
+        int head = q.head();
+        int mid = indexNear(head, (ls + le) / 2);
         if (mid != -1) {
             Task t = q.peek(head, mid);
             if (t != null && t.intersects(l))
@@ -70,7 +70,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
 
     @Override
     protected @Nullable T pop() {
-        var t = q.poll();
+        T t = q.poll();
         if (t!=null)
             t.delete();
 
@@ -82,7 +82,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
      * binary search
      */
     public int indexNear(int head, long when) {
-        var s = size();
+        int s = size();
         switch (s) {
             case 0:
                 return -1;
@@ -98,12 +98,12 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
                 else return ThreadLocalRandom.current().nextBoolean() ? 0 : 1;
             }
             default: {
-                var len = q.length();
+                int len = q.length();
                 int low = 0, high = s - 1, mid = -1;
                 while (low <= high) {
 
                     mid = (low + (high + 1)) / 2;
-                    var midVal = q.peek(head, mid, len);
+                    T midVal = q.peek(head, mid, len);
                     if (midVal == null) {
                         low = mid + 1; ///oops ?
                         continue;
@@ -169,11 +169,11 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
 
 
 //        /*if (exactRange)*/ {
-        var s = start();
+        long s = start();
         if (s == TIMELESS)
             return true; //nothing
 
-        var e = end();
+        long e = end();
         if (e == TIMELESS)
             e = s; //HACK
 //
@@ -190,23 +190,23 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
                 return true; //nothing
         }
 
-        var len = q.length();
-        var head = q.head();
+        int len = q.length();
+        int head = q.head();
 
         if (minT != ETERNAL && minT != TIMELESS) {
-            var T = (minT+maxT)/2;
+            long T = (minT+maxT)/2;
 
-            var center = indexNear(head, T);
+            int center = indexNear(head, T);
 
-            var size = this.size();
-            var r = 0;
+            int size = this.size();
+            int r = 0;
 
             long lastLow = Long.MAX_VALUE, lastHigh = Long.MIN_VALUE;
             boolean increase = true, decrease = true;
             do {
 
                 T v = null;
-                var vm = TIMELESS;
+                long vm = TIMELESS;
 
                 if (increase) {
                     v = q.peek(head, center + r, len);
@@ -223,7 +223,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
 
                 r++;
 
-                var um = TIMELESS;
+                long um = TIMELESS;
                 T u = null;
                 if (decrease) {
                     u = q.peek(head, center - r, len);
@@ -249,7 +249,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
                 if (u!=null && v!=null) {
                     //swap to the closest one to try first because it may be the last
                     if (Math.abs(T - vm) < Math.abs(T - um)) {
-                        var uv = u;
+                        T uv = u;
                         u = v;
                         v = uv;
                     }
@@ -313,13 +313,13 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
 
     @Override
     public long start() {
-        var x = first(); //TODO check whether head/tail
+        T x = first(); //TODO check whether head/tail
         return x != null ? x.start() : TIMELESS;
     }
 
     @Override
     public long end() {
-        var x = last(); //TODO check whether head/tail
+        T x = last(); //TODO check whether head/tail
         return x != null ? x.end() : TIMELESS;
     }
 

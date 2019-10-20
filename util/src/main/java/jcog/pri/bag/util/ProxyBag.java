@@ -48,7 +48,7 @@ public class ProxyBag<X,Y> extends Bag<X,Y> {
 
     @Override
     public void forEach(Consumer<? super Y> action) {
-        for (var y : bag) {
+        for (Y y : bag) {
             action.accept(y);
         }
     }

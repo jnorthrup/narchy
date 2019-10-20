@@ -16,6 +16,7 @@ import spacegraph.space2d.widget.port.FloatRangePort;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.textedit.TextEdit;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -34,7 +35,14 @@ public class ObjectSurface2 extends MutableUnitContainer {
         DefaultBuilder.addEdge(from, builder, Surface.class);
     }
     {
-        build(List.class, (List<Object> x) -> new Gridding(x.stream().map(this::build).toArray(Surface[]::new)));
+        build(List.class, (List<Object> x) -> {
+            List<Surface> list = new ArrayList<>();
+            for (Object o : x) {
+                Surface build = build(o);
+                list.add(build);
+            }
+            return new Gridding(list.toArray(new Surface[0]));
+        });
         build(String.class, VectorLabel::new);
         build(FloatRange.class, FloatRangePort::new);
         build(FloatRange.class, x -> new VectorLabel(x.toString()));
@@ -54,7 +62,7 @@ public class ObjectSurface2 extends MutableUnitContainer {
     }
 
     public void set(Object x) {
-        var y = build(x);
+        Surface y = build(x);
         set(y);
     }
 
@@ -69,7 +77,7 @@ public class ObjectSurface2 extends MutableUnitContainer {
                 y = xy.get(0).apply(x);
                 break;
             default:
-                var xyz = the.applicable(AnyOf.class, Surface.class); //warning, could recurse
+                List<Function<AnyOf, Surface>> xyz = the.applicable(AnyOf.class, Surface.class); //warning, could recurse
                 assert(xyz.size()==1): "multiple materializations of " + AnyOf.class;
                 y = xyz.get(0).apply(new AnyOf(x, xy));
                 break;
@@ -139,10 +147,10 @@ public class ObjectSurface2 extends MutableUnitContainer {
         @Override
         public X get() {
             clear();
-            var xx = how.get();
+            X[] xx = how.get();
             if (xx.length == 0)
                 return null;
-            for (var x : xx)
+            for (X x : xx)
                 add(x);
             return (X) top();
         }
@@ -171,7 +179,7 @@ public class ObjectSurface2 extends MutableUnitContainer {
 
         @Override
         public X get() {
-            var c = this.which;
+            int c = this.which;
             return c >=0 ? way[c].get() : null;
         }
     }

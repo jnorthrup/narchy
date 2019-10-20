@@ -62,7 +62,7 @@ public abstract class JoglDummyDriver extends DummyGL implements GLDriver {
         if(null == newtWin) {
             newtWin = new NEWTWin();
         }
-        var res = newtWin.setMode(glp, dim, mode, fullscreen, getName());
+        int res = newtWin.setMode(glp, dim, mode, fullscreen, getName());
         if( Base.rserr_ok == res ) {
             init(0, 0);
             

@@ -53,16 +53,16 @@ public class MarkovSampler<T> {
         List<T> phrase = new FasterList<>();
 
 
-        var s = 0;
+        int s = 0;
         while (current != null && current != model.END) {
 
 
-            var cd = current.data;
+            List<T> cd = current.data;
 
             if (maxLen != -1 && (s + cd.size() >= maxLen)) {
 
                 
-                for (var i = 0; i < maxLen - s; i++) {
+                for (int i = 0; i < maxLen - s; i++) {
                     phrase.add(cd.get(i));
                     s++;
                 }
@@ -150,7 +150,7 @@ public class MarkovSampler<T> {
             }
         }
 
-        var returnValue = current.get(tupleIndex);
+        T returnValue = current.get(tupleIndex);
 
         tupleIndex++;
         chainSize++;

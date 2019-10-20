@@ -20,10 +20,10 @@ public class TermRadixTree<X> extends MyRadixTree<X> {
      */
     public static AbstractBytes termByVolume(Term x) {
 
-        var vol = x.volume();
+        int vol = x.volume();
 
         //TermBytes y = new TermBytes(vol * 4 + 64 /* ESTIMATE */);
-		try (var y = RecycledDynBytes.get()) {
+		try (RecycledDynBytes y = RecycledDynBytes.get()) {
 
             y.writeShort(vol);
 

@@ -102,7 +102,7 @@ public enum LongArrays {
      */
     public static long[] ensureCapacity(long[] array, int length) {
         if (length > array.length) {
-            var t =
+            long[] t =
                     new long[length];
             System.arraycopy(array, 0, t, 0, array.length);
             return t;
@@ -122,7 +122,7 @@ public enum LongArrays {
      */
     public static long[] ensureCapacity(long[] array, int length, int preserve) {
         if (length > array.length) {
-            var t =
+            long[] t =
                     new long[length];
             System.arraycopy(array, 0, t, 0, preserve);
             return t;
@@ -148,8 +148,8 @@ public enum LongArrays {
      */
     public static long[] grow(long[] array, int length) {
         if (length > array.length) {
-            var newLength = (int) Math.min(Math.max((ONEOVERPHI * array.length) >>> 16, length), Integer.MAX_VALUE);
-            var t =
+            int newLength = (int) Math.min(Math.max((ONEOVERPHI * array.length) >>> 16, length), Integer.MAX_VALUE);
+            long[] t =
                     new long[newLength];
             System.arraycopy(array, 0, t, 0, array.length);
             return t;
@@ -176,8 +176,8 @@ public enum LongArrays {
      */
     public static long[] grow(long[] array, int length, int preserve) {
         if (length > array.length) {
-            var newLength = (int) Math.min(Math.max((ONEOVERPHI * array.length) >>> 16, length), Integer.MAX_VALUE);
-            var t =
+            int newLength = (int) Math.min(Math.max((ONEOVERPHI * array.length) >>> 16, length), Integer.MAX_VALUE);
+            long[] t =
                     new long[newLength];
             System.arraycopy(array, 0, t, 0, preserve);
             return t;
@@ -197,7 +197,7 @@ public enum LongArrays {
      */
     public static long[] trim(long[] array, int length) {
         if (length >= array.length) return array;
-        var t =
+        long[] t =
                 length == 0 ? EMPTY_ARRAY : new long[length];
         System.arraycopy(array, 0, t, 0, length);
         return t;
@@ -232,7 +232,7 @@ public enum LongArrays {
      */
     public static long[] copy(long[] array, int offset, int length) {
         ensureOffsetLength(array, offset, length);
-        var a =
+        long[] a =
                 length == 0 ? EMPTY_ARRAY : new long[length];
         System.arraycopy(array, offset, a, 0, length);
         return a;
@@ -258,7 +258,7 @@ public enum LongArrays {
      * @param value the new value for all elements of the array.
      */
     public static void fill(long[] array, long value) {
-        var i = array.length;
+        int i = array.length;
         while (i-- != 0) array[i] = value;
     }
 
@@ -277,7 +277,7 @@ public enum LongArrays {
     public static void fill(long[] array, int from, int to, long value) {
         ensureFromTo(array, from, to);
         if (from == 0) while (to-- != 0) array[to] = value;
-        else for (var i = from; i < to; i++) array[i] = value;
+        else for (int i = from; i < to; i++) array[i] = value;
     }
 
     /**
@@ -291,7 +291,7 @@ public enum LongArrays {
      * @return true if the two arrays are of the same length, and their elements are equal.
      */
     public static boolean equals(long[] a1, long[] a2) {
-        var i = a1.length;
+        int i = a1.length;
         if (i != a2.length) return false;
         while (i-- != 0) if (!((a1[i]) == (a2[i]))) return false;
         return true;
@@ -334,19 +334,19 @@ public enum LongArrays {
     private static final int MEDIUM = 40;
 
     private static void swap(long[] x, int a, int b) {
-        var t = x[a];
+        long t = x[a];
         x[a] = x[b];
         x[b] = t;
     }
 
     private static void vecSwap(long[] x, int a, int b, int n) {
-        for (var i = 0; i < n; i++, a++, b++) swap(x, a, b);
+        for (int i = 0; i < n; i++, a++, b++) swap(x, a, b);
     }
 
     private static int med3(long[] x, int a, int b, int c, LongComparator comp) {
-        var ab = comp.compare(x[a], x[b]);
-        var ac = comp.compare(x[a], x[c]);
-        var bc = comp.compare(x[b], x[c]);
+        int ab = comp.compare(x[a], x[b]);
+        int ac = comp.compare(x[a], x[c]);
+        int bc = comp.compare(x[b], x[c]);
         return (ab < 0 ?
                 (bc < 0 ? b : ac < 0 ? c : a) :
                 (bc > 0 ? b : ac > 0 ? c : a));
@@ -366,30 +366,30 @@ public enum LongArrays {
      * @param comp the comparator to determine the sorting order.
      */
     public static void quickSort(long[] x, int from, int to, LongComparator comp) {
-        var len = to - from;
+        int len = to - from;
         
         if (len < SMALL) {
-            for (var i = from; i < to; i++)
-                for (var j = i; j > from && comp.compare(x[j - 1], x[j]) > 0; j--) swap(x, j, j - 1);
+            for (int i = from; i < to; i++)
+                for (int j = i; j > from && comp.compare(x[j - 1], x[j]) > 0; j--) swap(x, j, j - 1);
             return;
         }
 
-        var m = from + len / 2;
+        int m = from + len / 2;
         if (len > SMALL) {
-            var l = from;
-            var n = to - 1;
+            int l = from;
+            int n = to - 1;
             if (len > MEDIUM) {
-                var s = len / 8;
+                int s = len / 8;
                 l = med3(x, l, l + s, l + 2 * s, comp);
                 m = med3(x, m - s, m, m + s, comp);
                 n = med3(x, n - 2 * s, n - s, n, comp);
             }
             m = med3(x, l, m, n, comp); 
         }
-        var v = x[m];
+        long v = x[m];
 
-        var c = to - 1;
-        var a = from;
+        int c = to - 1;
+        int a = from;
         int b = a, d = c;
         while (true) {
             int comparison;
@@ -405,9 +405,9 @@ public enum LongArrays {
             swap(x, b++, c--);
         }
 
-        var s = Math.min(a - from, b - a);
+        int s = Math.min(a - from, b - a);
         vecSwap(x, from, b - s, s);
-        var n = to;
+        int n = to;
         s = Math.min(d - c, n - d - 1);
         vecSwap(x, b, n - s, s);
         
@@ -432,9 +432,9 @@ public enum LongArrays {
 
     @SuppressWarnings("unchecked")
     private static int med3(long[] x, int a, int b, int c) {
-        var ab = (Long.compare(x[a], x[b]));
-        var ac = (Long.compare(x[a], x[c]));
-        var bc = (Long.compare(x[b], x[c]));
+        int ab = (Long.compare(x[a], x[b]));
+        int ac = (Long.compare(x[a], x[c]));
+        int bc = (Long.compare(x[b], x[c]));
         return (ab < 0 ?
                 (bc < 0 ? b : ac < 0 ? c : a) :
                 (bc > 0 ? b : ac > 0 ? c : a));
@@ -453,30 +453,30 @@ public enum LongArrays {
      */
     @SuppressWarnings("unchecked")
     public static void quickSort(long[] x, int from, int to) {
-        var len = to - from;
+        int len = to - from;
         
         if (len < SMALL) {
-            for (var i = from; i < to; i++)
-                for (var j = i; j > from && ((x[j]) < (x[j - 1])); j--) swap(x, j, j - 1);
+            for (int i = from; i < to; i++)
+                for (int j = i; j > from && ((x[j]) < (x[j - 1])); j--) swap(x, j, j - 1);
             return;
         }
 
-        var m = from + len / 2;
+        int m = from + len / 2;
         if (len > SMALL) {
-            var l = from;
-            var n = to - 1;
+            int l = from;
+            int n = to - 1;
             if (len > MEDIUM) {
-                var s = len / 8;
+                int s = len / 8;
                 l = med3(x, l, l + s, l + 2 * s);
                 m = med3(x, m - s, m, m + s);
                 n = med3(x, n - 2 * s, n - s, n);
             }
             m = med3(x, l, m, n); 
         }
-        var v = x[m];
+        long v = x[m];
 
-        var c = to - 1;
-        var a = from;
+        int c = to - 1;
+        int a = from;
         int b = a, d = c;
         while (true) {
             int comparison;
@@ -492,9 +492,9 @@ public enum LongArrays {
             swap(x, b++, c--);
         }
 
-        var s = Math.min(a - from, b - a);
+        int s = Math.min(a - from, b - a);
         vecSwap(x, from, b - s, s);
-        var n = to;
+        int n = to;
         s = Math.min(d - c, n - d - 1);
         vecSwap(x, b, n - s, s);
         
@@ -528,16 +528,16 @@ public enum LongArrays {
      */
     @SuppressWarnings("unchecked")
     public static void mergeSort(long[] a, int from, int to, long[] supp) {
-        var len = to - from;
+        int len = to - from;
         
         if (len < SMALL) {
-            for (var i = from; i < to; i++)
-                for (var j = i; j > from && ((a[j]) < (a[j - 1])); j--)
+            for (int i = from; i < to; i++)
+                for (int j = i; j > from && ((a[j]) < (a[j - 1])); j--)
                     swap(a, j, j - 1);
             return;
         }
 
-        var mid = (from + to) >>> 1;
+        int mid = (from + to) >>> 1;
         mergeSort(supp, from, mid, a);
         mergeSort(supp, mid, to, a);
         
@@ -593,16 +593,16 @@ public enum LongArrays {
      */
     @SuppressWarnings("unchecked")
     public static void mergeSort(long[] a, int from, int to, LongComparator comp, long[] supp) {
-        var len = to - from;
+        int len = to - from;
         
         if (len < SMALL) {
-            for (var i = from; i < to; i++)
-                for (var j = i; j > from && comp.compare(a[j - 1], a[j]) > 0; j--)
+            for (int i = from; i < to; i++)
+                for (int j = i; j > from && comp.compare(a[j - 1], a[j]) > 0; j--)
                     swap(a, j, j - 1);
             return;
         }
 
-        var mid = (from + to) >>> 1;
+        int mid = (from + to) >>> 1;
         mergeSort(supp, from, mid, comp, a);
         mergeSort(supp, mid, to, comp, a);
         
@@ -670,8 +670,8 @@ public enum LongArrays {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static int binarySearch(long[] a, int from, int to, long key) {
         while (from <= to) {
-            var mid = (from + to) >>> 1;
-            var midVal = a[mid];
+            int mid = (from + to) >>> 1;
+            long midVal = a[mid];
             if (midVal < key) from = mid + 1;
             else if (midVal > key) to = mid - 1;
             else return mid;
@@ -724,9 +724,9 @@ public enum LongArrays {
      */
     public static int binarySearch(long[] a, int from, int to, long key, LongComparator c) {
         while (from <= to) {
-            var mid = (from + to) >>> 1;
-            var midVal = a[mid];
-            var cmp = c.compare(midVal, key);
+            int mid = (from + to) >>> 1;
+            long midVal = a[mid];
+            int cmp = c.compare(midVal, key);
             if (cmp < 0) from = mid + 1;
             else if (cmp > 0) to = mid - 1;
             else return mid; 

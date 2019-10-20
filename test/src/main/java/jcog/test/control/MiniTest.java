@@ -20,7 +20,7 @@ public abstract class MiniTest extends Game {
 //                statPrint.run();
 //                nar.stats(System.out);
 
-            var yy = myReward();
+            float yy = myReward();
 
             rewardSum += yy;
             dex.addValue(dexterity());

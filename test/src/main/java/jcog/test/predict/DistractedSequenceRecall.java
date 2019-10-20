@@ -21,37 +21,37 @@ public class DistractedSequenceRecall extends AbstractTraining {
 	protected void interact(Consumer<ExpectedVsActual> experience) {
 
 
-		for (var i = 0; i < this.batches; i++) {
+		for (int i = 0; i < this.batches; i++) {
 
 
-			var target1 = random.nextInt(outputs);
-			var target2 = random.nextInt(outputs);
-			var seq = new int[10];
-			var count = 0;
-			var bound = length;
-            for (var t1 = 0; t1 < bound; t1++) {
-				var i1 = random.nextInt(outputs) + outputs;
+            int target1 = random.nextInt(outputs);
+            int target2 = random.nextInt(outputs);
+            int[] seq = new int[10];
+            int count = 0;
+            int bound = length;
+            for (int t1 = 0; t1 < bound; t1++) {
+                int i1 = random.nextInt(outputs) + outputs;
                 if (seq.length == count) seq = Arrays.copyOf(seq, count * 2);
                 seq[count++] = i1;
             }
             seq = Arrays.copyOfRange(seq, 0, count);
-			var loc1 = random.nextInt(length);
-			var loc2 = random.nextInt(length);
+            int loc1 = random.nextInt(length);
+            int loc2 = random.nextInt(length);
 			while (loc1 == loc2)
 				loc2 = random.nextInt(length);
 			if (loc1 > loc2) {
-				var temp = loc1;
+                int temp = loc1;
 				loc1 = loc2;
 				loc2 = temp;
 			}
 			seq[loc1] = target1;
 			seq[loc2] = target2;
 
-			for (var t = 0; t < seq.length; t++) {
-				var input = new double[inputs];
+			for (int t = 0; t < seq.length; t++) {
+                double[] input = new double[inputs];
 				input[seq[t]] = 1.0;
 
-				var inter = new ExpectedVsActual();
+                ExpectedVsActual inter = new ExpectedVsActual();
 
 
 				inter.actual = input;
@@ -60,15 +60,15 @@ public class DistractedSequenceRecall extends AbstractTraining {
 			}
 
 
-			var input1 = new double[inputs];
+            double[] input1 = new double[inputs];
 			input1[8] = 1.0;
-			var target_output1 = new double[outputs];
+            double[] target_output1 = new double[outputs];
 			target_output1[target1] = 1.0;
 			experience.accept( ExpectedVsActual.the(input1, target_output1) );
 
-			var input2 = new double[inputs];
+            double[] input2 = new double[inputs];
 			input2[9] = 1.0;
-			var target_output2 = new double[outputs];
+            double[] target_output2 = new double[outputs];
 			target_output2[target2] = 1.0;
 			experience.accept( ExpectedVsActual.the(input2, target_output2) );
 

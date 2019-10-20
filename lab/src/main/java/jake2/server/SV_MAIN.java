@@ -41,7 +41,7 @@ public class SV_MAIN {
                                                                             
                                                                             
     static {
-        for (var i = 0; i < Defines.MAX_MASTERS; i++) {
+        for (int i = 0; i < Defines.MAX_MASTERS; i++) {
             master_adr[i] = new netadr_t();
         }
     }
@@ -129,16 +129,16 @@ public class SV_MAIN {
      */
     public static String SV_StatusString() {
 
-        var status = Cvar.Serverinfo() + '\n';
+        String status = Cvar.Serverinfo() + '\n';
 
-        for (var i = 0; i < SV_MAIN.maxclients.value; i++) {
-            var cl = SV_INIT.svs.clients[i];
+        for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+            client_t cl = SV_INIT.svs.clients[i];
             if (cl.state == Defines.cs_connected
                     || cl.state == Defines.cs_spawned) {
-                var player = String.valueOf(cl.edict.client.ps.stats[Defines.STAT_FRAGS]) + ' ' + cl.ping + '"' + cl.name + "\"\n";
+                String player = String.valueOf(cl.edict.client.ps.stats[Defines.STAT_FRAGS]) + ' ' + cl.ping + '"' + cl.name + "\"\n";
 
-                var playerLength = player.length();
-                var statusLength = status.length();
+                int playerLength = player.length();
+                int statusLength = status.length();
 
                 if (statusLength + playerLength >= 1024)
                     break; 
@@ -175,14 +175,14 @@ public class SV_MAIN {
         if (SV_MAIN.maxclients.value == 1)
             return;
 
-        var version = Lib.atoi(Cmd.Argv(1));
+        int version = Lib.atoi(Cmd.Argv(1));
 
         String string;
         if (version != Defines.PROTOCOL_VERSION)
             string = SV_MAIN.hostname.string + ": wrong version\n";
         else {
-            var count = 0;
-            for (var i = 0; i < SV_MAIN.maxclients.value; i++)
+            int count = 0;
+            for (int i = 0; i < SV_MAIN.maxclients.value; i++)
                 if (SV_INIT.svs.clients[i].state >= Defines.cs_connected)
                     count++;
 
@@ -210,8 +210,8 @@ public class SV_MAIN {
     public static void SVC_GetChallenge() {
         int i;
 
-        var oldest = 0;
-        var oldestTime = 0x7fffffff;
+        int oldest = 0;
+        int oldestTime = 0x7fffffff;
 
         
         for (i = 0; i < Defines.MAX_CHALLENGES; i++) {
@@ -242,11 +242,11 @@ public class SV_MAIN {
      */
     public static void SVC_DirectConnect() {
 
-        var adr = Globals.net_from;
+        netadr_t adr = Globals.net_from;
 
         Com.DPrintf("SVC_DirectConnect ()\n");
 
-        var version = Lib.atoi(Cmd.Argv(1));
+        int version = Lib.atoi(Cmd.Argv(1));
         if (version != Defines.PROTOCOL_VERSION) {
             Netchan.OutOfBandPrint(Defines.NS_SERVER, adr,
                     "print\nServer is version " + Globals.VERSION + '\n');
@@ -254,9 +254,9 @@ public class SV_MAIN {
             return;
         }
 
-        var qport = Lib.atoi(Cmd.Argv(2));
-        var challenge = Lib.atoi(Cmd.Argv(3));
-        var userinfo = Cmd.Argv(4);
+        int qport = Lib.atoi(Cmd.Argv(2));
+        int challenge = Lib.atoi(Cmd.Argv(3));
+        String userinfo = Cmd.Argv(4);
 
 
         userinfo = Info.Info_SetValueForKey(userinfo, "ip", NET.AdrToString(Globals.net_from));
@@ -314,7 +314,7 @@ public class SV_MAIN {
         }
 
 
-        var index = -1;
+        int index = -1;
         for (i = 0; i < SV_MAIN.maxclients.value; i++) {
             cl = SV_INIT.svs.clients[i];
             if (cl.state == Defines.cs_free) {
@@ -342,9 +342,9 @@ public class SV_MAIN {
 
         SV_MAIN.sv_client = SV_INIT.svs.clients[i];
 
-        var edictnum = i + 1;
+        int edictnum = i + 1;
 
-        var ent = GameBase.g_edicts[edictnum];
+        edict_t ent = GameBase.g_edicts[edictnum];
         SV_INIT.svs.clients[i].edict = ent;
         
         
@@ -407,9 +407,9 @@ public class SV_MAIN {
      */
     public static void SVC_RemoteCommand() {
 
-        var i = Rcon_Validate();
+        int i = Rcon_Validate();
 
-        var msg = Lib.CtoJava(Globals.net_message.data, 4, 1024);
+        String msg = Lib.CtoJava(Globals.net_message.data, 4, 1024);
 
         if (i == 0)
             Com.Printf("Bad rcon from " + NET.AdrToString(Globals.net_from)
@@ -429,7 +429,7 @@ public class SV_MAIN {
         if (0 == Rcon_Validate()) {
             Com.Printf("Bad rcon_password.\n");
         } else {
-            var remaining = "";
+            String remaining = "";
 
             for (i = 2; i < Cmd.Argc(); i++) {
                 remaining += Cmd.Argv(i);
@@ -452,11 +452,11 @@ public class SV_MAIN {
         MSG.BeginReading(Globals.net_message);
         MSG.ReadLong(Globals.net_message);
 
-        var s = MSG.ReadStringLine(Globals.net_message);
+        String s = MSG.ReadStringLine(Globals.net_message);
 
         Cmd.TokenizeString(s.toCharArray(), false);
 
-        var c = Cmd.Argv(0);
+        String c = Cmd.Argv(0);
         
         
         
@@ -489,14 +489,14 @@ public class SV_MAIN {
      */
     public static void SV_CalcPings() {
 
-        for (var i = 0; i < SV_MAIN.maxclients.value; i++) {
-            var cl = SV_INIT.svs.clients[i];
+        for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+            client_t cl = SV_INIT.svs.clients[i];
             if (cl.state != Defines.cs_spawned)
                 continue;
 
-            var total = 0;
-            var count = 0;
-            for (var j = 0; j < Defines.LATENCY_COUNTS; j++) {
+            int total = 0;
+            int count = 0;
+            for (int j = 0; j < Defines.LATENCY_COUNTS; j++) {
                 if (cl.frame_latency[j] > 0) {
                     count++;
                     total += cl.frame_latency[j];
@@ -521,8 +521,8 @@ public class SV_MAIN {
         if ((SV_INIT.sv.framenum & 15) != 0)
             return;
 
-        for (var i = 0; i < SV_MAIN.maxclients.value; i++) {
-            var cl = SV_INIT.svs.clients[i];
+        for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+            client_t cl = SV_INIT.svs.clients[i];
             if (cl.state == Defines.cs_free)
                 continue;
 
@@ -534,13 +534,19 @@ public class SV_MAIN {
      * Reads packets from the network or loopback.
      */
     public static void SV_ReadPackets() {
-        var qport = 0;
+        int qport = 0;
 
         while (NET.GetPacket(Defines.NS_SERVER, Globals.net_from,
                 Globals.net_message)) {
 
 
-            var b = IntStream.of(0, 1, 2, 3).noneMatch(v -> (Globals.net_message.data[v] != -1));
+            boolean b = true;
+            for (int v : new int[]{0, 1, 2, 3}) {
+                if ((Globals.net_message.data[v] != -1)) {
+                    b = false;
+                    break;
+                }
+            }
             if (b) {
                 SV_ConnectionlessPacket();
                 continue;
@@ -556,7 +562,7 @@ public class SV_MAIN {
 
             int i;
             for (i = 0; i < SV_MAIN.maxclients.value; i++) {
-                var cl = SV_INIT.svs.clients[i];
+                client_t cl = SV_INIT.svs.clients[i];
                 if (cl.state == Defines.cs_free)
                     continue;
                 if (!NET.CompareBaseAdr(Globals.net_from,
@@ -595,11 +601,11 @@ public class SV_MAIN {
      */
     public static void SV_CheckTimeouts() {
 
-        var droppoint = (int) (SV_INIT.svs.realtime - 1000 * SV_MAIN.timeout.value);
-        var zombiepoint = (int) (SV_INIT.svs.realtime - 1000 * SV_MAIN.zombietime.value);
+        int droppoint = (int) (SV_INIT.svs.realtime - 1000 * SV_MAIN.timeout.value);
+        int zombiepoint = (int) (SV_INIT.svs.realtime - 1000 * SV_MAIN.zombietime.value);
 
-        for (var i = 0; i < SV_MAIN.maxclients.value; i++) {
-            var cl = SV_INIT.svs.clients[i];
+        for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+            client_t cl = SV_INIT.svs.clients[i];
 
             if (cl.lastmessage > SV_INIT.svs.realtime)
                 cl.lastmessage = SV_INIT.svs.realtime;
@@ -626,8 +632,8 @@ public class SV_MAIN {
      */
     public static void SV_PrepWorldFrame() {
 
-        for (var i = 0; i < GameBase.num_edicts; i++) {
-            var ent = GameBase.g_edicts[i];
+        for (int i = 0; i < GameBase.num_edicts; i++) {
+            edict_t ent = GameBase.g_edicts[i];
 
             ent.s.event = 0;
         }
@@ -745,10 +751,10 @@ public class SV_MAIN {
         SV_INIT.svs.last_heartbeat = SV_INIT.svs.realtime;
 
 
-        var string = SV_StatusString();
+        String string = SV_StatusString();
 
         
-        for (var i = 0; i < Defines.MAX_MASTERS; i++)
+        for (int i = 0; i < Defines.MAX_MASTERS; i++)
             if (SV_MAIN.master_adr[i].port != 0) {
                 Com.Printf("Sending heartbeat to "
                         + NET.AdrToString(SV_MAIN.master_adr[i]) + '\n');
@@ -772,7 +778,7 @@ public class SV_MAIN {
             return; 
 
         
-        for (var i = 0; i < Defines.MAX_MASTERS; i++)
+        for (int i = 0; i < Defines.MAX_MASTERS; i++)
             if (SV_MAIN.master_adr[i].port != 0) {
                 if (i > 0)
                     Com.Printf("Sending heartbeat to "
@@ -796,9 +802,9 @@ public class SV_MAIN {
         cl.name = Info.Info_ValueForKey(cl.userinfo, "name");
 
 
-        var val = Info.Info_ValueForKey(cl.userinfo, "rate");
+        String val = Info.Info_ValueForKey(cl.userinfo, "rate");
         if (val.length() > 0) {
-            var i = Lib.atoi(val);
+            int i = Lib.atoi(val);
             cl.rate = i;
             if (cl.rate < 100)
                 cl.rate = 100;

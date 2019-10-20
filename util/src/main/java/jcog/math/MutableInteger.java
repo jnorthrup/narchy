@@ -76,7 +76,7 @@ public class MutableInteger extends NumberX implements Comparable, IntSupplier, 
      * @return
      */
     public IntRange set(int value) {
-        var v = this.value;
+        int v = this.value;
         if (v != value) {
             this.value = value;
             changed();
@@ -283,7 +283,7 @@ public class MutableInteger extends NumberX implements Comparable, IntSupplier, 
     }
 
     public final int getAndSet(int x) {
-        var p = this.value;
+        int p = this.value;
         set(x);
         return p;
     }

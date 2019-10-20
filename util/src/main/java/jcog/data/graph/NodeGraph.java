@@ -79,7 +79,7 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
 
 
     public boolean bfs(Iterable<?> roots, Search<N, E> search) {
-        var c = nodeCount();
+        int c = nodeCount();
         switch (c) {
             case 0:
             case 1:
@@ -172,16 +172,16 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
 
         @Override
         public Iterable<FromTo<Node<N, E>, E>> edges(boolean in, boolean out) {
-            var ie = !in || this.in.isEmpty();
-            var oe = !out || this.out.isEmpty();
+            boolean ie = !in || this.in.isEmpty();
+            boolean oe = !out || this.out.isEmpty();
             if (ie && oe) return Util.emptyIterable;
             else if (ie) return this.out;
             else if (oe) return this.in;
             else return Iterables.concat(this.out, this.in);
         }
         @Override public Iterator<FromTo<Node<N,E>,E>> edgeIterator(boolean in, boolean out) {
-            var ie = !in || this.in.isEmpty();
-            var oe = !out || this.out.isEmpty();
+            boolean ie = !in || this.in.isEmpty();
+            boolean oe = !out || this.out.isEmpty();
             if (ie && oe) return Util.emptyIterator;
             else if (ie) return this.out.iterator();
             else if (oe) return this.in.iterator();
@@ -212,7 +212,7 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
 
         @SafeVarargs
         final Collection<FromTo<Node<N, E>, E>> newEdgeCollection(FromTo<Node<N, E>, E>... ff) {
-            var c = newEdgeCollection(ff.length);
+            Collection<FromTo<Node<N, E>, E>> c = newEdgeCollection(ff.length);
 			Collections.addAll(c, ff);
             return c;
         }
@@ -228,14 +228,14 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
 
         private boolean addSet(FromTo<Node<N, E>, E> e, boolean inOrOut) {
             boolean result;
-            var s = inOrOut ? in : out;
+            Collection<FromTo<Node<N, E>, E>> s = inOrOut ? in : out;
             if (s == Collections.EMPTY_LIST) {
                 //out = newEdgeCollection();
                 s = ArrayUnenforcedSortedSet.the(e);
                 result = true;
             } else {
                 if (s instanceof ArrayUnenforcedSortedSet) {
-                    var x = ((ArrayUnenforcedSortedSet<FromTo<Node<N, E>, E>>)s).get(0);
+                    FromTo<Node<N, E>, E> x = ((ArrayUnenforcedSortedSet<FromTo<Node<N, E>, E>>)s).get(0);
                     assert(x!=null);
                     if (!e.equals(x)) {
                         s = newEdgeCollection(x,e);
@@ -262,19 +262,19 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
         }
 
         public void removeIn(Node<N, E> src) {
-            for (var nodeEFromTo : edges(true, false, e -> e.to() == src, null)) {
+            for (FromTo<Node<N, E>, E> nodeEFromTo : edges(true, false, e -> e.to() == src, null)) {
                 removeSet(nodeEFromTo, true);
             }
         }
 
         public void removeOut(Node<N, E> target) {
-            for (var nodeEFromTo : edges(false, true, e -> e.to() == target, null)) {
+            for (FromTo<Node<N, E>, E> nodeEFromTo : edges(false, true, e -> e.to() == target, null)) {
                 removeSet(nodeEFromTo, false);
             }
         }
 
         private boolean removeSet(FromTo<Node<N,E>,E> e, boolean inOrOut) {
-            var s = inOrOut ? in : out;
+            Collection<FromTo<Node<N, E>, E>> s = inOrOut ? in : out;
             if (s == Collections.EMPTY_LIST)
                 return false;
 

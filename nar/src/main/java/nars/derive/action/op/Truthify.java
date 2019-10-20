@@ -78,14 +78,14 @@ public class Truthify extends AbstractPred<Derivation> {
     public static Truthify the(PuncMap punc, TruthFunction beliefTruthOp, TruthFunction goalTruthOp, Occurrify.OccurrenceSolver time) {
 
 
-        var args = new FasterList<Term>(4);
+        FasterList<Term> args = new FasterList<Term>(4);
 
         args.add(punc);
 
-        var beliefLabel = beliefTruthOp != null ? beliefTruthOp.toString() : null;
+        String beliefLabel = beliefTruthOp != null ? beliefTruthOp.toString() : null;
         args.add(beliefLabel != null ? Atomic.the(beliefLabel) : Op.EmptyProduct);
 
-        var goalLabel = goalTruthOp != null ? goalTruthOp.toString() : null;
+        String goalLabel = goalTruthOp != null ? goalTruthOp.toString() : null;
         args.add(goalLabel != null ? Atomic.the(goalLabel) : Op.EmptyProduct);
 
         args.add(time.term);
@@ -104,18 +104,18 @@ public class Truthify extends AbstractPred<Derivation> {
     @Override
     public final boolean test(Derivation d) {
 
-        var tf = time.filter();
+        Predicate<Derivation> tf = time.filter();
         if (tf!=null && !tf.test(d))
             return false;
 
         boolean single;
-        var punc = this.punc.get(d.taskPunc);
+        byte punc = this.punc.get(d.taskPunc);
         switch (punc) {
             case BELIEF:
             case GOAL:
                 single = (punc == BELIEF ? beliefMode : goalMode) == 1;
 
-                var overlapping = (single ? d.overlapSingle : d.overlapDouble);
+                boolean overlapping = (single ? d.overlapSingle : d.overlapDouble);
                 if (overlapping && !(punc == BELIEF ? beliefOverlap : goalOverlap))
                     return false;
 
@@ -130,13 +130,13 @@ public class Truthify extends AbstractPred<Derivation> {
                         return false; //double but beliefTruth not defined
                 }
 
-                var f = punc == BELIEF ? belief : goal;
+                TruthFunction f = punc == BELIEF ? belief : goal;
 
-                var taskTruth = d.taskTruth;
+                MutableTruth taskTruth = d.taskTruth;
                 if (!taskTruth.is())
                     taskTruth = null;
 
-                var ff = f.apply(taskTruth, beliefTruth, d.confMin, d.nar);
+                Truth ff = f.apply(taskTruth, beliefTruth, d.confMin, d.nar);
                 if (!d.truth.set(ff).is())
                     return false;
 

@@ -66,21 +66,21 @@ public class R extends Applet implements Runnable {
 		 * 9 = double block free
 		 */
 
-		var iBackground = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB_PRE);
-		var g = iBackground.createGraphics();
+        BufferedImage iBackground = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB_PRE);
+        Graphics2D g = iBackground.createGraphics();
 		try {
 			g.drawImage(ImageIO.read(R.class.getResource("c.gif")), 0, 0, 128, 128, 0, 0, 32, 32, null);
 		} catch (Exception e1) {
 		}
 
-		var screenBackground = new BufferedImage(320,480,BufferedImage.TYPE_INT_RGB);
-		var gBack = screenBackground.createGraphics();
+        BufferedImage screenBackground = new BufferedImage(320,480,BufferedImage.TYPE_INT_RGB);
+        Graphics2D gBack = screenBackground.createGraphics();
 
 
-		var screen = new BufferedImage(320,480,BufferedImage.TYPE_INT_RGB);
+        BufferedImage screen = new BufferedImage(320,480,BufferedImage.TYPE_INT_RGB);
 		g = screen.createGraphics();
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		var appletGraphics = (Graphics2D)getGraphics();
+        Graphics2D appletGraphics = (Graphics2D)getGraphics();
 
 		/**
 		 * 0 = from up to down
@@ -88,32 +88,32 @@ public class R extends Applet implements Runnable {
 		 * 2 = from down to up
 		 * 3 = from left to right
 		 */
-		var level = new int[16][12];
+        int[][] level = new int[16][12];
 		level[1][1] = -1;
-		var bChange = false;
-		var bFall = true;
-		var bDeath = false;
-		var bPlayerFall = false;
+        boolean bChange = false;
+        boolean bFall = true;
+        boolean bDeath = false;
+        boolean bPlayerFall = false;
 
 
-		var lastTime = System.nanoTime();
+        long lastTime = System.nanoTime();
 		long think = 0;
 
 
-		var levelBlocks = new int[32][12];
-		var levelObjects = new int[16][12];
-		var breath = 0;
-		var gravity = 0;
-		var curLevel = 0;
-		var steps = 0;
-		var silver = 0;
-		var gold = 0;
-		var state = 0;
-		var y = 0;
-		var x = 0;
-		var j = 0;
-		var i = 0;
-		final var LEVELS = "1113000000" +
+        int[][] levelBlocks = new int[32][12];
+        int[][] levelObjects = new int[16][12];
+        int breath = 0;
+        int gravity = 0;
+        int curLevel = 0;
+        int steps = 0;
+        int silver = 0;
+        int gold = 0;
+        int state = 0;
+        int y = 0;
+        int x = 0;
+        int j = 0;
+        int i = 0;
+		final String LEVELS = "1113000000" +
 				"1111110311" +
 				"1101110111" +
 				"1011110011" +
@@ -281,10 +281,10 @@ public class R extends Applet implements Runnable {
 				"3111199111" +
 				"8911110189" +
 				"99111101991525";
-		var s = "";
+        String s = "";
 		while (true) {
-			var now = System.nanoTime();
-			var delta = now - lastTime;
+            long now = System.nanoTime();
+            long delta = now - lastTime;
 			think += delta;
 			
 			
@@ -500,7 +500,7 @@ public class R extends Applet implements Runnable {
 									bPlayerFall = bFall = false;
 									breath = 100;
 									bFall = false;
-									var bWin = true;
+                                    boolean bWin = true;
 									for (y = 1; y < 15; y += 1) {
 										for (x = 1; x < 11; x += 1) {
 											if (levelObjects[y][x] == 3) {
@@ -598,7 +598,7 @@ public class R extends Applet implements Runnable {
 
 			lastTime = now;
 
-			var oldAffineTransform = g.getTransform();
+            AffineTransform oldAffineTransform = g.getTransform();
 
 			
 			
@@ -711,11 +711,11 @@ public class R extends Applet implements Runnable {
 	@Override
     public void processEvent(AWTEvent e) {
 		if ((e.getID() == KeyEvent.KEY_PRESSED) || (e.getID() == KeyEvent.KEY_RELEASED)) {
-			var bSet = false;
+            boolean bSet = false;
 			if (e.getID() == KeyEvent.KEY_PRESSED) {
 				bSet = true;
 			}
-			var event = (KeyEvent) e;
+            KeyEvent event = (KeyEvent) e;
 			if (event.getKeyCode() == KeyEvent.VK_LEFT) {
 				left = bSet;
 			}

@@ -79,11 +79,11 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
         /** TODO refine this could be more accurate in how it distributes the fraction */
         public void add(int value, float weight, int superSampling) {
             mass += weight;
-            var dw = weight / superSampling;
-            var width = 1f; // <= 1
-            var v = value - width/2f;
-            var dv = width / (superSampling-1);
-            for (var i = 0; i < superSampling; v += (++i) * dv)  {
+            float dw = weight / superSampling;
+            float width = 1f; // <= 1
+            float v = value - width/2f;
+            float dv = width / (superSampling-1);
+            for (int i = 0; i < superSampling; v += (++i) * dv)  {
                 buffer[bin(v)] += dw;
             }
         }
@@ -123,13 +123,13 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
 
     /** TODO use the rng to generate one 64-bit or one 32-bit integer and use half of its bits for each random value needed */
     public float sample(/*FloatSupplier uniformRng*/ Random rng) {
-        var rangeMax = this.hi;
-        var rangeMin = Math.min(rangeMax, this.lo); //incase updated while reading, maintains min <= max
-        var rangeDelta = (rangeMax - rangeMin);
+        float rangeMax = this.hi;
+        float rangeMin = Math.min(rangeMax, this.lo); //incase updated while reading, maintains min <= max
+        float rangeDelta = (rangeMax - rangeMin);
 
         float mass = 0;
         boolean flat;
-        var bins = data.volume();
+        int bins = data.volume();
         if (bins < 2 || rangeDelta <= 1f) {
             flat = true;
         } else {
@@ -138,7 +138,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
         }
 
 
-        var u = rng.nextFloat();
+        float u = rng.nextFloat();
         if (flat)
             return rangeMin + u * (0.5f+rangeDelta); //flat, choose uniform random
 
@@ -153,12 +153,12 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
             direction = false; //downward
             u = 1 - u;
         }
-        var m = u * mass;
+        float m = u * mass;
 
-        var data = this.data;
-        var B = Float.MAX_VALUE;
-        for (var b = 0; b < bins;) {
-            var db = data.getAt(direction ? b : (bins - 1 - b));
+        WritableTensor data = this.data;
+        float B = Float.MAX_VALUE;
+        for (int b = 0; b < bins;) {
+            float db = data.getAt(direction ? b : (bins - 1 - b));
             if (db > m) {
                 B = b + m / db; //current bin plus fraction traversed
                 break;
@@ -168,7 +168,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
             }
         }
 
-        var p = Math.min(bins-1, B) / (bins-1);
+        float p = Math.min(bins-1, B) / (bins-1);
 
         return (direction ? p : 1-p) * rangeDelta + rangeMin;
     }

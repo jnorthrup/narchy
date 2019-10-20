@@ -36,7 +36,7 @@ public class BasicTokenizer implements Tokenizer {
     @Override
     public List<String> tokenize(String string){
         List<String> tokensList = new LinkedList<>();
-        var matcher = pattern.matcher(string);
+        Matcher matcher = pattern.matcher(string);
         while (matcher.find()) {
             tokensList.add(matcher.group());
         }

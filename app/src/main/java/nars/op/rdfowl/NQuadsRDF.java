@@ -56,14 +56,14 @@ public abstract class NQuadsRDF {
 
 
     public static void input(@NotNull NAR nar, String input) {
-        var p = new NxParser();
+        NxParser p = new NxParser();
         p.parse(Collections.singleton(input));
         input(nar, p);
     }
 
     public static void input(@NotNull NAR nar, @NotNull InputStream input) {
 
-        var p = new NxParser();
+        NxParser p = new NxParser();
         p.parse(input);
         input(nar, p);
         
@@ -86,7 +86,7 @@ public abstract class NQuadsRDF {
 
     public static Stream<Node[]> stream(@NotNull InputStream input) {
 
-        var p = new NxParser();
+        NxParser p = new NxParser();
         p.parse(input);
         return stream(p);
     }
@@ -194,16 +194,16 @@ public abstract class NQuadsRDF {
 
     
     public static Atomic resource(@NotNull Node n) {
-        var s = n.getLabel();
+        String s = n.getLabel();
         
         
 
         if (s.contains("#")) {
-            var a = s.split("#");
+            String[] a = s.split("#");
             
             s = a[1];
         } else {
-            var a = s.split("/");
+            String[] a = s.split("/");
             if (a.length == 0) return null;
             s = a[a.length - 1];
         }
@@ -237,7 +237,7 @@ public abstract class NQuadsRDF {
 
 
     public static Term atom(@NotNull String uri) {
-        var lastSlash = uri.lastIndexOf('/');
+        int lastSlash = uri.lastIndexOf('/');
         if (lastSlash != -1)
             uri = uri.substring(lastSlash + 1);
 
@@ -304,8 +304,8 @@ public abstract class NQuadsRDF {
 
 
     static @Nullable Term subjObjInh(Term subject, char subjType, char objType, boolean reverse) {
-        var a = reverse ? "subj" : "obj";
-        var b = reverse ? "obj" : "subj";
+        String a = reverse ? "subj" : "obj";
+        String b = reverse ? "obj" : "subj";
         return inh(
                 p(v(subjType, a), v(objType, b)),
                 subject);
@@ -328,10 +328,10 @@ public abstract class NQuadsRDF {
             return null;
 
         try {
-            var term = /*$.inst*/ $.inh($.p(subject, object), predicate);
+            Term term = /*$.inst*/ $.inh($.p(subject, object), predicate);
             if (term == null)
                 throw new NullPointerException();
-            var t = new TaskBuilder(term, BELIEF, $.t(1f, nar.confDefault(BELIEF))).apply(nar);
+            Task t = new TaskBuilder(term, BELIEF, $.t(1f, nar.confDefault(BELIEF))).apply(nar);
             return t;
         } catch (Exception e) {
             logger.error("rdf({}) to task: {}", new Term[]{subject, object, predicate}, e);
@@ -488,8 +488,8 @@ public abstract class NQuadsRDF {
      * @return the formatted QName for the tag.
      */
     private static @NotNull String formatTag(@NotNull QName qname) {
-        var prefix = qname.getPrefix();
-        var suffix = qname.getLocalPart();
+        String prefix = qname.getPrefix();
+        String suffix = qname.getLocalPart();
 
         suffix = suffix.replace("http://dbpedia.org/ontology/", "");
 
@@ -505,9 +505,9 @@ public abstract class NQuadsRDF {
      * @return the "english" name.
      */
     private static String getEnglishName(@NotNull String name) {
-        var englishNameBuilder = new StringBuilder();
-        var namechars = name.toCharArray();
-        for (var i = 0; i < namechars.length; i++) {
+        StringBuilder englishNameBuilder = new StringBuilder();
+        char[] namechars = name.toCharArray();
+        for (int i = 0; i < namechars.length; i++) {
             if (i > 0 && Character.isUpperCase(namechars[i])
                     && Character.isLowerCase(namechars[i - 1])) {
                 englishNameBuilder.append(' ');

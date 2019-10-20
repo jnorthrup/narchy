@@ -36,19 +36,19 @@ class DynamicImplTruth extends AbstractDynamicTruth {
      *     B, A, --is(B,"==>") |-          polarizeBelief((polarizeTask(B) ==> A)), (Belief:AbductionDepolarized, Time:TaskRelative)
      */
     @Override  public Truth truth(DynTaskify d) {
-        var subjTruth = d.get(0).truth();
+        Truth subjTruth = d.get(0).truth();
         if (!d.componentPolarity.get(0)) {
             subjTruth = subjTruth.neg();
         }
         assert(d.componentPolarity.get(1));
 
-        var predTruth = d.get(1).truth();
+        Truth predTruth = d.get(1).truth();
         return NALTruth.Abduction.apply(subjTruth, predTruth, Float.MIN_NORMAL, null);
     }
 
     @Override
     public Task subTask(TaskConcept subConcept, Term subTerm, long subStart, long subEnd, Predicate<Task> filter, DynTaskify d) {
-        var currentComponent = d.size();
+        int currentComponent = d.size();
         if (currentComponent == 0) {
 
             //use a wrapper filter to try to provide a task matching the target polarity first.
@@ -56,9 +56,9 @@ class DynamicImplTruth extends AbstractDynamicTruth {
 
             //assert(NAL.DYN_TASK_MATCH_MODE==1): "match mode (not sampled) highly recommended";
 
-            var specificFilter = Answer.filter(
+            Predicate<Task> specificFilter = Answer.filter(
                 !(subTerm instanceof Neg) ? POSITIVE_FILTER : NEGATIVE_FILTER, filter);
-            var specific = super.subTask(subConcept, subTerm, subStart, subEnd, specificFilter, d);
+            Task specific = super.subTask(subConcept, subTerm, subStart, subEnd, specificFilter, d);
             if (specific!=null)
                 return specific;
         }
@@ -74,7 +74,7 @@ class DynamicImplTruth extends AbstractDynamicTruth {
         ///TODO ensure non-collapsing dt if collapse imminent
 
         if (start == end && start!=ETERNAL) {
-            var sdt = superterm.dt(); if (sdt == DTERNAL) sdt = 0;
+            int sdt = superterm.dt(); if (sdt == DTERNAL) sdt = 0;
             if (sdt != XTERNAL) {
 
                 sdt += subj.eventRange();
@@ -103,7 +103,7 @@ class DynamicImplTruth extends AbstractDynamicTruth {
 //                     break;
 //                 }
 //                 case 1: {
-            var mid = (start + end) / 2;
+            long mid = (start + end) / 2;
             if (start <= end) {
                 as = start;
                 ae = mid;
@@ -142,7 +142,7 @@ class DynamicImplTruth extends AbstractDynamicTruth {
     @Override
     public Term reconstruct(Compound superterm, long start, long end, DynTaskify d) {
         Task subj = d.get(0), pred = d.get(1);
-        var dt = (subj.isEternal() || pred.isEternal()) ? 0 : Tense.occToDT(pred.start() - subj.start() - subj.term().eventRange());
+        int dt = (subj.isEternal() || pred.isEternal()) ? 0 : Tense.occToDT(pred.start() - subj.start() - subj.term().eventRange());
         return IMPL.the(dt,
                 subj.term().negIf(!d.componentPolarity.get(0)), pred.term());
     }

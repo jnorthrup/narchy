@@ -166,7 +166,7 @@ public final class Ansi {
       case ERROR:
         return asHighlightedFailureText(text);
       default:
-        var message = String.format("Unexpected SeverityLevel; cannot highlight '%s'!", level);
+          String message = String.format("Unexpected SeverityLevel; cannot highlight '%s'!", level);
         throw new IllegalArgumentException(message);
     }
   }
@@ -217,7 +217,7 @@ public final class Ansi {
     }
 
 
-    var firstNonTab = indexOfFirstNonTab(text);
+      int firstNonTab = indexOfFirstNonTab(text);
     if (firstNonTab == -1) {
       return color + text + RESET;
     }
@@ -226,6 +226,12 @@ public final class Ansi {
 
   /** @return the index of the first character that's not a tab, or -1 if none is found. */
   private static int indexOfFirstNonTab(String s) {
-    return IntStream.range(1, s.length()).filter(i -> s.charAt(i) != '\t').findFirst().orElse(-1);
+    int bound = s.length();
+    for (int i = 1; i < bound; i++) {
+      if (s.charAt(i) != '\t') {
+        return i;
+      }
+    }
+    return -1;
   }
 }

@@ -18,7 +18,7 @@ public class NARVideo extends NARPart {
         super(nar);
 
         //TODO better, with hotplug-able device selector
-        for (var w : Webcam.getWebcams()) {
+        for (Webcam w : Webcam.getWebcams()) {
             nar.add(new Video(nar, w));
         }
     }

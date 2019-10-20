@@ -165,13 +165,13 @@ public class CPG {
 
     public static void main(String[] args) {
         AtomicFloat nextInput = new AtomicFloat(), nextOutput = new AtomicFloat();
-        var p = new Plot2D(4200, Plot2D.Line)
+        Plot2D p = new Plot2D(4200, Plot2D.Line)
                 .add("input", nextInput::floatValue)
                 .add("output", nextOutput::floatValue)
                 ;
 
-        var n = new MatsuokaNeuron();
-        for (var i = 0; i < 4200; i++) {
+        MatsuokaNeuron n = new MatsuokaNeuron();
+        for (int i = 0; i < 4200; i++) {
             nextInput.set(
                     //i < 600 ? (float) Math.sin(Math.cos(i/40f) / 4f) : -1
                     (float) Math.sin(i / (i < 2200 ?  4f : 10f))*0.5f

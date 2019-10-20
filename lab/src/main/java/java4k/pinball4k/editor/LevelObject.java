@@ -85,10 +85,10 @@ public abstract class LevelObject implements Comparator<LevelObject> {
 	 * @return the fields
 	 */
 	protected Field[] getFields(String... names) {
-		var fields = new Field[names.length];
+        Field[] fields = new Field[names.length];
 		try {
 			Class cls = getClass();
-			for (var i = 0; i<names.length; i++) {
+			for (int i = 0; i<names.length; i++) {
 				fields[i] = cls.getField(names[i]);
 			}
 		} catch (NoSuchFieldException e) {
@@ -99,7 +99,7 @@ public abstract class LevelObject implements Comparator<LevelObject> {
 	}
 	
 	public int getSortValue() {
-		var value = 0;
+        int value = 0;
 		value |= isDropDown ? (1 << 0) : 0;
 		value |= isRollOver ? (1 << 1) : 0;
 		value |= isGate     ? (1 << 2) : 0;

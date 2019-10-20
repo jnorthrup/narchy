@@ -71,7 +71,7 @@ public class TruthWave {
         clear();
         this.table = b;
         this.start = minT; this.end = maxT;
-        var s = b.taskCount();
+        int s = b.taskCount();
         if (s == 0) {
             return;
         }
@@ -79,28 +79,28 @@ public class TruthWave {
 
         size(s);
 
-        var t = this.truth;
+        float[] t = this.truth;
 
         int[] size = {0};
 
         //long[] st = new long[]{Long.MAX_VALUE}, en = new long[]{Long.MIN_VALUE};
         b.forEachTask(minT, maxT, x -> {
-            var ss = size[0];
+            int ss = size[0];
             if (ss >= s) {
                 if (NAL.DEBUG)
                     throw new WTF("truthwave capacity exceeded");
                 return;
             }
 
-            var xs = x.start();
+            long xs = x.start();
 
             if (xs > maxT)
                 return; //OOB
-            var xe = x.end();
+            long xe = x.end();
             if (xe < minT)
                 return; //OOB
 
-            var j = (size[0]++) * ENTRY_SIZE;
+            int j = (size[0]++) * ENTRY_SIZE;
             load(t, j, minT, maxT, xs, xe, x);
 
 //            if (xs < st[0]) st[0] = xs;
@@ -130,7 +130,7 @@ public class TruthWave {
 
     private void size(int s) {
 
-        var c = capacity();
+        int c = capacity();
 
         if (c < s)
             resize(s);
@@ -164,19 +164,19 @@ public class TruthWave {
         }
 
 
-        var data = this.truth;
-        var j = 0;
-        var a = Answer.taskStrength(true, answerDetail, start, end, term, null, nar)
+        float[] data = this.truth;
+        int j = 0;
+        Answer a = Answer.taskStrength(true, answerDetail, start, end, term, null, nar)
                 .dur(dur);
-        var tries = Math.round(answerDetail * NAL.ANSWER_TRYING);
+        int tries = Math.round(answerDetail * NAL.ANSWER_TRYING);
 
-        for (var i = 0; i < points; i++) {
-            var t = tStart + i * dt;
-            var s = Math.round(t - dt/2);
-            var e = Math.round(t + dt/2);
-            var tr = a.clear(tries).time(s, e).match(table).truth();
+        for (int i = 0; i < points; i++) {
+            double t = tStart + i * dt;
+            long s = Math.round(t - dt/2);
+            long e = Math.round(t + dt/2);
+            Truth tr = a.clear(tries).time(s, e).match(table).truth();
             if (tr!=null) {
-                var mid = (s + e) / 2;
+                long mid = (s + e) / 2;
                 load(data, (j++) * ENTRY_SIZE,
                         minT, maxT,
                         mid, mid,
@@ -220,18 +220,18 @@ public class TruthWave {
     }
 
     public final void forEach(TruthWaveVisitor v) {
-        var n = this.size;
-        var t = this.truth;
-        var j = 0;
-        var start = this.start;
+        int n = this.size;
+        float[] t = this.truth;
+        int j = 0;
+        long start = this.start;
         double totalRange = this.end-this.start;
-        for (var i = 0; i < n; i++) {
-            var s = t[j++];
-            var e = t[j++];
-            var f = t[j++];
-            var c = t[j++];
-            var S = start + Math.round(totalRange * s);
-            var E = start + Math.round(totalRange * e);
+        for (int i = 0; i < n; i++) {
+            float s = t[j++];
+            float e = t[j++];
+            float f = t[j++];
+            float c = t[j++];
+            long S = start + Math.round(totalRange * s);
+            long E = start + Math.round(totalRange * e);
             v.onTruth(f, c, S, E);
         }
     }

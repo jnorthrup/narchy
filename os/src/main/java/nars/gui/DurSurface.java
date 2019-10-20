@@ -77,7 +77,7 @@ public abstract class DurSurface<S extends Surface> extends UnitContainer<S> {
 //            }
 
             if (busy.compareAndSet(false,true)) {
-                var start = System.nanoTime();
+                long start = System.nanoTime();
                 try {
                     if (nextUpdate >= start) {
                         update();

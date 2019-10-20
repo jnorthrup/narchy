@@ -86,14 +86,14 @@ public class Rot  {
 
     
     public Rot clone() {
-        var copy = new Rot();
+        Rot copy = new Rot();
         copy.s = s;
         copy.c = c;
         return copy;
     }
 
     static void mul(Rot q, Rot r, Rot out) {
-        var tempc = q.c * r.c - q.s * r.s;
+        float tempc = q.c * r.c - q.s * r.s;
         out.s = q.s * r.c + q.c * r.s;
         out.c = tempc;
     }
@@ -110,7 +110,7 @@ public class Rot  {
     }
 
     public static void mulTrans(Rot q, Rot r, Rot out) {
-        var tempc = q.c * r.c + q.s * r.s;
+        float tempc = q.c * r.c + q.s * r.s;
         out.s = q.c * r.s - q.s * r.c;
         out.c = tempc;
     }
@@ -125,7 +125,7 @@ public class Rot  {
     }
 
     public static void mulToOut(Rot q, v2 v, v2 out) {
-        var tempy = q.s * v.x + q.c * v.y;
+        float tempy = q.s * v.x + q.c * v.y;
         out.x = q.c * v.x - q.s * v.y;
         out.y = tempy;
     }
@@ -136,7 +136,7 @@ public class Rot  {
     }
 
     public static void mulTrans(Rot q, v2 v, v2 out) {
-        var tempy = -q.s * v.x + q.c * v.y;
+        float tempy = -q.s * v.x + q.c * v.y;
         out.x = q.c * v.x + q.s * v.y;
         out.y = tempy;
     }

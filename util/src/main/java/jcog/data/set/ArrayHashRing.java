@@ -13,7 +13,7 @@ public class ArrayHashRing<X> extends ArrayHashSet<X> {
 
     public ArrayHashRing<X> capacity(int capacity) {
         if (this.capacity!=capacity && size() > capacity) {
-            var toRemove = size() - capacity;
+            int toRemove = size() - capacity;
             pop(toRemove);
         }
         this.capacity = capacity;
@@ -28,9 +28,9 @@ public class ArrayHashRing<X> extends ArrayHashSet<X> {
 
     public void pop(int n) {
         if (n > 0) {
-            for (var i = 0; i < n; i++) {
-                var x = list.remove(0);
-                var removed = set.remove(x);
+            for (int i = 0; i < n; i++) {
+                X x = list.remove(0);
+                boolean removed = set.remove(x);
                 assert (removed) : "tried to remove " + x + " but couldnt";
             }
         }

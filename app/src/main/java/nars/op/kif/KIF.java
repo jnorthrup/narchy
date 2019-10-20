@@ -30,6 +30,7 @@ import nars.op.Equal;
 import nars.op.MathFunc;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.atom.IdempotentBool;
 import nars.term.atom.IdempotInt;
 import org.eclipse.collections.api.block.function.Function;
@@ -140,12 +141,12 @@ public class KIF implements Iterable<Task> {
     public static Term impl(Term a, Term b, boolean implOrEquiv) {
 
 
-        var tmp = IMPL.the(a, b);
+        Term tmp = IMPL.the(a, b);
         if (tmp.unneg().op() != IMPL) {
             logger.warn("un-impl: {} ==> {} ", a, b);
             return IdempotentBool.Null;
         }
-        var negated = tmp.op() == NEG;
+        boolean negated = tmp.op() == NEG;
 
         tmp = tmp.unneg();
         a = tmp.sub(0);
@@ -166,10 +167,10 @@ public class KIF implements Iterable<Task> {
 
         Map<Term, Term> remap = new HashMap<>();
 
-        var common = _aVars.intersect(_bVars);
+        MutableSet<Term> common = _aVars.intersect(_bVars);
         if (!common.isEmpty()) {
             common.forEach(t -> {
-                var u = $.v(
+                nars.term.Variable u = $.v(
                         Op.VAR_INDEP,
 
 
@@ -179,10 +180,10 @@ public class KIF implements Iterable<Task> {
             });
         }
         for (MutableSet<Term> ab : new MutableSet[]{_aVars, _bVars}) {
-            for (var aa : ab) {
+            for (Term aa : ab) {
                 if (aa.op() == VAR_INDEP && !common.contains(aa)) {
-                    var str = aa.toString().substring(1);
-                    var bb = $.v(VAR_DEP, str);
+                    String str = aa.toString().substring(1);
+                    nars.term.Variable bb = $.v(VAR_DEP, str);
                     if (!remap.containsKey(bb))
                         remap.put(aa, bb);
                 }
@@ -216,12 +217,12 @@ public class KIF implements Iterable<Task> {
     }
 
     private void process() {
-        var kb = KBmanager.manager.addKB("preprocess");
+        KB kb = KBmanager.manager.addKB("preprocess");
 
-        for (var xx : kif.formulaMap.values()) {
-            for (var x : FormulaPreprocessor.preProcess(xx, false, kb)) {
+        for (Formula xx : kif.formulaMap.values()) {
+            for (Formula x : FormulaPreprocessor.preProcess(xx, false, kb)) {
                 try {
-                    var y = formulaToTerm(x, 0);
+                    Term y = formulaToTerm(x, 0);
                     if (y != null) {
                         assertions.add(y);
                     }
@@ -233,27 +234,27 @@ public class KIF implements Iterable<Task> {
         }
 
 
-        for (var entry : fn.entrySet()) {
-            var f = entry.getKey();
-            var s = entry.getValue();
-            var ds = s.domain.isEmpty() ? 0 : s.domain.keySet().max();
-            var vt = Util.map(0, ds, Term[]::new, i -> $.varDep(1 + i));
+        for (Map.Entry<Term, FnDef> entry : fn.entrySet()) {
+            Term f = entry.getKey();
+            FnDef s = entry.getValue();
+            int ds = s.domain.isEmpty() ? 0 : s.domain.keySet().max();
+            Term[] vt = Util.map(0, ds, Term[]::new, i -> $.varDep(1 + i));
             Term v = null;
             if (s.range != null) {
                 v = $.varDep("R");
                 vt = ArrayUtil.add(vt, v);
             }
             int[] k = {1};
-            var typeConds = Util.map(0, ds, Term[]::new, i ->
+            Term[] typeConds = Util.map(0, ds, Term[]::new, i ->
                     INH.the($.varDep(1 + i),
                             s.domain.getIfAbsent(1 + i, () -> $.varDep(k[0]++))));
             if (s.range != null) {
                 typeConds = ArrayUtil.add(typeConds, INH.the(v, s.range));
             }
-            var types = CONJ.the(
+            Term types = CONJ.the(
                     typeConds
             );
-            var fxy = impl(INH.the($.p(vt), f), types, true);
+            Term fxy = impl(INH.the($.p(vt), f), types, true);
             if (fxy != null) {
                 if (fxy instanceof IdempotentBool) {
                     logger.error("bad function {} {} {}", f, s.domain, s.range);
@@ -268,17 +269,17 @@ public class KIF implements Iterable<Task> {
 
             assertions.removeIf(belief -> {
                 if (belief.op() == INH) {
-                    var fn = belief.sub(1);
+                    Term fn = belief.sub(1);
                     if (symmetricRelations.contains(fn)) {
 
-                        var ab = belief.sub(0);
+                        Term ab = belief.sub(0);
                         if (ab.op() != PROD) {
                             return false;
                         }
                         assert (ab.subs() == 2);
-                        var a = ab.sub(0);
-                        var b = ab.sub(1);
-                        var symmetric = INH.the(CONJ.the(PROD.the(a, b), PROD.the(b, a)), fn);
+                        Term a = ab.sub(0);
+                        Term b = ab.sub(1);
+                        Term symmetric = INH.the(CONJ.the(PROD.the(a, b), PROD.the(b, a)), fn);
 
                         assertions.add(symmetric);
                         return true;
@@ -292,7 +293,7 @@ public class KIF implements Iterable<Task> {
             if (b.hasAny(BOOL)) {
                 return true;
             }
-            var bb = b.unneg().normalize();
+            Term bb = b.unneg().normalize();
             if (!Task.validTaskTerm(bb.unneg(), BELIEF, true)) {
                 logger.error("invalid task target: {}\n\t{}", b, bb);
                 return true;
@@ -309,7 +310,7 @@ public class KIF implements Iterable<Task> {
         Term result = null;
 
 
-        var l = x.listLength();
+        int l = x.listLength();
         switch (l) {
             case -1:
 
@@ -323,8 +324,16 @@ public class KIF implements Iterable<Task> {
                 if (l == 0) {
                     throw new WTF();
                 }
-                var sargs = IntStream.range(1, l).mapToObj(x::getArgument).collect(Collectors.toList());
-                var args = sargs.stream().map(sarg -> formulaToTerm(sarg, level + 1)).collect(Collectors.toList());
+                List<String> sargs = new ArrayList<>();
+                for (int i = 1; i < l; i++) {
+                    String argument = x.getArgument(i);
+                    sargs.add(argument);
+                }
+                List<Term> args = new ArrayList<>();
+                for (String sarg : sargs) {
+                    Term formulaToTerm = formulaToTerm(sarg, level + 1);
+                    args.add(formulaToTerm);
+                }
                 if (args.contains(null)) {
                     result = IdempotentBool.Null;
                 } else if (args.isEmpty()) {
@@ -348,11 +357,11 @@ public class KIF implements Iterable<Task> {
                  'forall':types.ForAllLink,
                  'causes':types.PredictiveImplicationLink
                  *
-                 */var xCar = x.car();
-                    var root = xCar;
+                 */String xCar = x.car();
+                    String root = xCar;
                     Term y = null;
-                    var includeDoc = false;
-                    var finished = false;
+                    boolean includeDoc = false;
+                    boolean finished = false;
                     switch (root) {
                         case "ListFn":
                             y = $.p(args);
@@ -374,9 +383,9 @@ public class KIF implements Iterable<Task> {
                             if (args.size() != 2) {
                                 throw new RuntimeException("instance expects 2 arguments");
                             } else {
-                                var pred = args.get(1);
+                                Term pred = args.get(1);
 
-                                var subj = args.get(0);
+                                Term subj = args.get(0);
 
                                 if (symmetricRelations.contains(pred)) {
                                     symmetricRelations.add(subj);
@@ -408,7 +417,7 @@ public class KIF implements Iterable<Task> {
 
                         case "relatedInternalConcept":
                             /*(documentation relatedInternalConcept EnglishLanguage "Means that the two arguments are related concepts within the SUMO, i.e. there is a significant similarity of meaning between them. To indicate a meaning relation between a SUMO concept and a concept from another source, use the Predicate relatedExternalConcept.")            */
-                            var includeRelatedInternalConcept = true;
+                            boolean includeRelatedInternalConcept = true;
                             if (includeRelatedInternalConcept) {
                                 if (args.size() != 2) {
                                     throw new UnsupportedOperationException("relatedInternalConcept expects 2 arguments");
@@ -439,12 +448,18 @@ public class KIF implements Iterable<Task> {
 
 
                         case "forall":
-                            var forVar = sargs.get(0);
+                            String forVar = sargs.get(0);
                             if (forVar.startsWith("(")) {
                                 forVar = forVar.substring(1, forVar.length() - 1);
                             }
-                            var forVars = forVar.split(" ");
-                            var missingAParamVar = Arrays.stream(forVars).anyMatch(vv -> !sargs.get(1).contains(vv));
+                            String[] forVars = forVar.split(" ");
+                            boolean missingAParamVar = false;
+                            for (String vv : forVars) {
+                                if (!sargs.get(1).contains(vv)) {
+                                    missingAParamVar = true;
+                                    break;
+                                }
+                            }
                             if (!missingAParamVar) {
                                 y = args.get(1);
                             } else {
@@ -469,14 +484,14 @@ public class KIF implements Iterable<Task> {
 
                             if (level == 0) {
                                 if (args.size() >= 3) {
-                                    var subj = (args.get(0));
-                                    var arg = (args.get(1));
-                                    var type = (args.get(2));
+                                    Term subj = (args.get(0));
+                                    Term arg = (args.get(1));
+                                    Term type = (args.get(2));
                                     if (type.equals(ASYMMETRIC_RELATION)) {
                                         finished = true;
                                         break;
                                     }
-                                    var d = fn.computeIfAbsent(subj, (s) -> new FnDef());
+                                    FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
 
                                     d.domain.updateValue(((IdempotInt) arg).i, () -> type, (Function<? super Term, ? extends Term>) domainRangeMerger(type));
 
@@ -490,13 +505,13 @@ public class KIF implements Iterable<Task> {
                         case "range":
                             if (level == 0) {
                                 if (args.size() == 2) {
-                                    var subj = args.get(0);
-                                    var range = args.get(1);
+                                    Term subj = args.get(0);
+                                    Term range = args.get(1);
                                     if (range.equals(ASYMMETRIC_RELATION)) {
                                         finished = true;
                                         break;
                                     }
-                                    var d = fn.computeIfAbsent(subj, (s) -> new FnDef());
+                                    FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
                                     d.range = range;
                                 } else {
                                     throw new UnsupportedOperationException("unrecognized range spec");
@@ -539,8 +554,8 @@ public class KIF implements Iterable<Task> {
                         case "externalImage":
                             if (includeDoc) {
                                 if (args.size() == 3) {
-                                    var subj = args.get(0);
-                                    var lang = args.get(1);
+                                    Term subj = args.get(0);
+                                    Term lang = args.get(1);
                                     Term desc = $.quote(args.get(2));
                                     try {
                                         y = INH.the($.p(subj, desc), lang);
@@ -559,11 +574,11 @@ public class KIF implements Iterable<Task> {
 
                         case "termFormat": {
                             if (includeDoc) {
-                                var language = args.get(0).toString();
+                                String language = args.get(0).toString();
                                 language = language.replace("Language", "");
 
-                                var term = args.get(1);
-                                var string = args.get(2);
+                                Term term = args.get(1);
+                                Term string = args.get(2);
                                 y = INH.the($.p($.the(language), string), term);
                             } else {
                                 finished = true;
@@ -581,7 +596,7 @@ public class KIF implements Iterable<Task> {
                         if (y == null) {
 
 
-                            var z = formulaToTerm(xCar, level + 1);
+                            Term z = formulaToTerm(xCar, level + 1);
 
                             if (z != null) {
                                 switch (z.toString()) {

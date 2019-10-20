@@ -70,12 +70,12 @@ public enum Murmur3Hash {
      */
     public static long hash64(byte[] data, int length, int seed) {
         long hash = seed;
-        var nblocks = length >> 3;
+        int nblocks = length >> 3;
 
         
-        for (var i = 0; i < nblocks; i++) {
-            var i8 = i << 3;
-            var k = ((long) data[i8] & 0xff)
+        for (int i = 0; i < nblocks; i++) {
+            int i8 = i << 3;
+            long k = ((long) data[i8] & 0xff)
                     | (((long) data[i8 + 1] & 0xff) << 8)
                     | (((long) data[i8 + 2] & 0xff) << 16)
                     | (((long) data[i8 + 3] & 0xff) << 24)
@@ -94,7 +94,7 @@ public enum Murmur3Hash {
 
         
         long k1 = 0;
-        var tailStart = nblocks << 3;
+        int tailStart = nblocks << 3;
         switch (length - tailStart) {
             case 7:
                 k1 ^= ((long) data[tailStart + 6] & 0xff) << 48;
@@ -144,12 +144,12 @@ public enum Murmur3Hash {
     public static long[] hash128(byte[] data, int length, int seed) {
         long h1 = seed;
         long h2 = seed;
-        var nblocks = length >> 4;
+        int nblocks = length >> 4;
 
         
-        for (var i = 0; i < nblocks; i++) {
-            var i16 = i << 4;
-            var k1 = ((long) data[i16] & 0xff)
+        for (int i = 0; i < nblocks; i++) {
+            int i16 = i << 4;
+            long k1 = ((long) data[i16] & 0xff)
                     | (((long) data[i16 + 1] & 0xff) << 8)
                     | (((long) data[i16 + 2] & 0xff) << 16)
                     | (((long) data[i16 + 3] & 0xff) << 24)
@@ -158,7 +158,7 @@ public enum Murmur3Hash {
                     | (((long) data[i16 + 6] & 0xff) << 48)
                     | (((long) data[i16 + 7] & 0xff) << 56);
 
-            var k2 = ((long) data[i16 + 8] & 0xff)
+            long k2 = ((long) data[i16 + 8] & 0xff)
                     | (((long) data[i16 + 9] & 0xff) << 8)
                     | (((long) data[i16 + 10] & 0xff) << 16)
                     | (((long) data[i16 + 11] & 0xff) << 24)
@@ -189,7 +189,7 @@ public enum Murmur3Hash {
         
         long k1 = 0;
         long k2 = 0;
-        var tailStart = nblocks << 4;
+        int tailStart = nblocks << 4;
         switch (length - tailStart) {
             case 15:
                 k2 ^= (long) (data[tailStart + 14] & 0xff) << 48;
@@ -258,18 +258,18 @@ public enum Murmur3Hash {
     }
 
     public static int hash(byte[] data) {
-        var buffer = ByteBuffer
+        ByteBuffer buffer = ByteBuffer
                 .wrap(data)
                 .order(ByteOrder.LITTLE_ENDIAN);
 
 
-        var length = data.length;
-        var hash = SEED;
+        int length = data.length;
+        int hash = SEED;
 
 
-        var numberOfBlocks = length / 4;
-        for (var i = 0; i < numberOfBlocks * 4; i += 4) {
-            var block = buffer.getInt(i);
+        int numberOfBlocks = length / 4;
+        for (int i = 0; i < numberOfBlocks * 4; i += 4) {
+            int block = buffer.getInt(i);
 
             block *= AVALANCHING_MULTIPLIER1;
             block = Integer.rotateLeft(block, 15);
@@ -281,8 +281,8 @@ public enum Murmur3Hash {
         }
 
 
-        var leftOverLength = length % 4;
-        var block = 0;
+        int leftOverLength = length % 4;
+        int block = 0;
         switch (leftOverLength) {
             case 3:
                 block ^= buffer.get(length - 3) << 16;

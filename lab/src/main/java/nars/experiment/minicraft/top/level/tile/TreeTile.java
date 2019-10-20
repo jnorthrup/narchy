@@ -26,18 +26,18 @@ public class TreeTile extends Tile {
 
     @Override
     public void render(Screen screen, Level level, int x, int y) {
-        var col = Color.get(10, 30, 151, level.grassColor);
-        var barkCol1 = Color.get(10, 30, 430, level.grassColor);
-        var barkCol2 = Color.get(10, 30, 320, level.grassColor);
+        int col = Color.get(10, 30, 151, level.grassColor);
+        int barkCol1 = Color.get(10, 30, 430, level.grassColor);
+        int barkCol2 = Color.get(10, 30, 320, level.grassColor);
 
-        var u = level.getTile(x, y - 1) == this;
-        var l = level.getTile(x - 1, y) == this;
-        var r = level.getTile(x + 1, y) == this;
-        var d = level.getTile(x, y + 1) == this;
-        var ul = level.getTile(x - 1, y - 1) == this;
-        var ur = level.getTile(x + 1, y - 1) == this;
-        var dl = level.getTile(x - 1, y + 1) == this;
-        var dr = level.getTile(x + 1, y + 1) == this;
+        boolean u = level.getTile(x, y - 1) == this;
+        boolean l = level.getTile(x - 1, y) == this;
+        boolean r = level.getTile(x + 1, y) == this;
+        boolean d = level.getTile(x, y + 1) == this;
+        boolean ul = level.getTile(x - 1, y - 1) == this;
+        boolean ur = level.getTile(x + 1, y - 1) == this;
+        boolean dl = level.getTile(x - 1, y + 1) == this;
+        boolean dr = level.getTile(x + 1, y + 1) == this;
 
         if (u && ul && l) {
             screen.render(x * 16 + 0, y * 16 + 0, 10 + 1 * 32, col, 0);
@@ -63,7 +63,7 @@ public class TreeTile extends Tile {
 
     @Override
     public void tick(Level level, int xt, int yt) {
-        var damage = level.getData(xt, yt);
+        int damage = level.getData(xt, yt);
         if (damage > 0) level.setData(xt, yt, damage - 1);
     }
 
@@ -80,7 +80,7 @@ public class TreeTile extends Tile {
     @Override
     public boolean interact(Level level, int xt, int yt, Player player, Item item, int attackDir) {
         if (item instanceof ToolItem) {
-            var tool = (ToolItem) item;
+            ToolItem tool = (ToolItem) item;
             if (tool.type == ToolType.axe) {
                 if (player.payStamina(4 - tool.level)) {
                     hurt(level, xt, yt, random.nextInt(10) + (tool.level) * 5 + 10);
@@ -93,21 +93,21 @@ public class TreeTile extends Tile {
 
     private void hurt(Level level, int x, int y, int dmg) {
         {
-            var count = random.nextInt(10) == 0 ? 1 : 0;
-            for (var i = 0; i < count; i++) {
+            int count = random.nextInt(10) == 0 ? 1 : 0;
+            for (int i = 0; i < count; i++) {
                 level.add(new ItemEntity(new ResourceItem(Resource.apple), x * 16 + random.nextInt(10) + 3, y * 16 + random.nextInt(10) + 3));
             }
         }
-        var damage = level.getData(x, y) + dmg;
+        int damage = level.getData(x, y) + dmg;
         level.add(new SmashParticle(x * 16 + 8, y * 16 + 8));
         level.add(new TextParticle(String.valueOf(dmg), x * 16 + 8, y * 16 + 8, Color.get(-1, 500, 500, 500)));
         if (damage >= TREE_HP) {
-            var count = random.nextInt(2) + 1;
-            for (var i = 0; i < count; i++) {
+            int count = random.nextInt(2) + 1;
+            for (int i = 0; i < count; i++) {
                 level.add(new ItemEntity(new ResourceItem(Resource.wood), x * 16 + random.nextInt(10) + 3, y * 16 + random.nextInt(10) + 3));
             }
             count = random.nextInt(random.nextInt(4) + 1);
-            for (var i = 0; i < count; i++) {
+            for (int i = 0; i < count; i++) {
                 level.add(new ItemEntity(new ResourceItem(Resource.acorn), x * 16 + random.nextInt(10) + 3, y * 16 + random.nextInt(10) + 3));
             }
             level.setTile(x, y, Tile.grass, 0);

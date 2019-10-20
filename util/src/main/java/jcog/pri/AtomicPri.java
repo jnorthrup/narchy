@@ -60,7 +60,7 @@ public abstract class AtomicPri implements ScalarValue {
 
     @Override
     public final float priElse(float valueIfDeleted) {
-        var f = pri();
+        float f = pri();
         return f == f ? f : valueIfDeleted;
     }
 
@@ -125,7 +125,7 @@ public abstract class AtomicPri implements ScalarValue {
     }
 
     @Override public float priSetAndGet(float p) {
-        var v = post().valueOf(p);
+        float v = post().valueOf(p);
         PRI.INT.set(this, v);
         return v;
     }

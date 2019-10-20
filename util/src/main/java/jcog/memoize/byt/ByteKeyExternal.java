@@ -39,7 +39,7 @@ public class ByteKeyExternal implements ByteKey {
     }
 
     public <Y> ByteKeyInternal<Y> internal(Y y, float pri) {
-        var b =
+        byte[] b =
                 key.arrayCopy();
                 //key instanceof RecycledDynBytes ? key.arrayCopy() : key.compact();
 

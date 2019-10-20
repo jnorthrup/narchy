@@ -215,7 +215,7 @@ public class JoglGL2ES1 implements QGL {
                 mode=GL.GL_TRIANGLE_FAN;
                 break;
         }
-        var idxLen = indices.remaining();
+        int idxLen = indices.remaining();
         /** No GL_QUADS used
         if ( GL_QUADS == mode && !gl.isGL2() ) {
             final int idx0 = indices.position();
@@ -269,7 +269,7 @@ public class JoglGL2ES1 implements QGL {
     @Override
     public String glGetString(int name) {
         if( GL.GL_EXTENSIONS == name ) {
-            var sb = gl.glGetString(GL.GL_EXTENSIONS) +
+            String sb = gl.glGetString(GL.GL_EXTENSIONS) +
                     " GL_ARB_multitexture" +
                     ' ' + GL_EXT_point_parameters;
             return sb;
@@ -294,7 +294,7 @@ public class JoglGL2ES1 implements QGL {
     }
 
     private void glInterleavedArraysT2F_V3F(int byteStride, FloatBuffer buf) {
-        var pos = buf.position();
+        int pos = buf.position();
         gl.glTexCoordPointer(2, GL.GL_FLOAT, byteStride, buf);
         gl.glEnableClientState(GLPointerFunc.GL_TEXTURE_COORD_ARRAY);
 

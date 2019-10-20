@@ -99,7 +99,7 @@ public abstract class ContainerSurface extends Surface {
 
     @Override
     public final void showing(boolean s) {
-        var wasShown = this.showing;
+        boolean wasShown = this.showing;
         if (wasShown!=s) {
             showing = s;
             if (!s)
@@ -119,10 +119,10 @@ public abstract class ContainerSurface extends Surface {
     public Surface finger(Finger finger) {
 
         if (showing() && childrenCount() > 0 && (!clipBounds || finger.intersects(bounds))) {
-            var found = new Surface[1];
+            Surface[] found = new Surface[1];
             whileEachReverse(c -> {
 
-                var s = c.finger(finger);
+                Surface s = c.finger(finger);
                 if (s != null) {
                     found[0] = s;
                     return false;

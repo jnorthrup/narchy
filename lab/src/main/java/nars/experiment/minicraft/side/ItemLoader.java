@@ -21,15 +21,15 @@ public class ItemLoader {
 
 
     public static CharObjectHashMap<Item> loadItems(int size) {
-        var items = Items.items;
-        var tools = Tools.tools;
+        ItemDefinition[] items = Items.items;
+        ToolDefinition[] tools = Tools.tools;
 
 
-        var itemTypes = new CharObjectHashMap<Item>();
-        for (var td : tools) {
+        CharObjectHashMap<Item> itemTypes = new CharObjectHashMap<Item>();
+        for (ToolDefinition td : tools) {
             itemTypes.put((char) td.item_id, td.makeTool(size));
         }
-        for (var id : items) {
+        for (ItemDefinition id : items) {
             itemTypes.put((char) id.item_id, id.makeItem(size));
         }
         itemTypes.compact();

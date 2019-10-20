@@ -122,7 +122,7 @@ public class WheelJoint extends Joint {
 
     @Override
     public void getReactionForce(float inv_dt, v2 argOut) {
-        var temp = pool.popVec2();
+        v2 temp = pool.popVec2();
         temp.set(m_ay).scaled(m_impulse);
         argOut.set(m_ax).scaled(m_springImpulse).added(temp).scaled(inv_dt);
         pool.pushVec2(1);
@@ -134,18 +134,18 @@ public class WheelJoint extends Joint {
     }
 
     public float getJointTranslation() {
-        var b1 = A;
-        var b2 = B;
+        Body2D b1 = A;
+        Body2D b2 = B;
 
-        var p1 = pool.popVec2();
-        var p2 = pool.popVec2();
-        var axis = pool.popVec2();
+        v2 p1 = pool.popVec2();
+        v2 p2 = pool.popVec2();
+        v2 axis = pool.popVec2();
         b1.getWorldPointToOut(m_localAnchorA, p1);
         b2.getWorldPointToOut(m_localAnchorA, p2);
         p2.subbed(p1);
         b1.getWorldVectorToOut(m_localXAxisA, axis);
 
-        var translation = v2.dot(p2, axis);
+        float translation = v2.dot(p2, axis);
         pool.pushVec2(3);
         return translation;
     }
@@ -231,18 +231,18 @@ public class WheelJoint extends Joint {
         float iA = m_invIA, iB = m_invIB;
 
         v2 cA = data.positions[m_indexA];
-        var aA = data.positions[m_indexA].a;
+        float aA = data.positions[m_indexA].a;
         v2 vA = data.velocities[m_indexA];
-        var wA = data.velocities[m_indexA].w;
+        float wA = data.velocities[m_indexA].w;
 
         v2 cB = data.positions[m_indexB];
-        var aB = data.positions[m_indexB].a;
+        float aB = data.positions[m_indexB].a;
         v2 vB = data.velocities[m_indexB];
-        var wB = data.velocities[m_indexB].w;
+        float wB = data.velocities[m_indexB].w;
 
-        var qA = pool.popRot();
-        var qB = pool.popRot();
-        var temp = pool.popVec2();
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
+        v2 temp = pool.popVec2();
 
         qA.set(aA);
         qB.set(aB);
@@ -274,24 +274,24 @@ public class WheelJoint extends Joint {
             m_sAx = v2.cross(temp.set(d).added(rA), m_ax);
             m_sBx = v2.cross(rB, m_ax);
 
-            var invMass = mA + mB + iA * m_sAx * m_sAx + iB * m_sBx * m_sBx;
+            float invMass = mA + mB + iA * m_sAx * m_sAx + iB * m_sBx * m_sBx;
 
             if (invMass > 0.0f) {
                 m_springMass = 1.0f / invMass;
 
-                var C = v2.dot(d, m_ax);
+                float C = v2.dot(d, m_ax);
 
 
-                var omega = 2.0f * MathUtils.PI * m_frequencyHz;
+                float omega = 2.0f * MathUtils.PI * m_frequencyHz;
 
 
-                var d = 2.0f * m_springMass * m_dampingRatio * omega;
+                float d = 2.0f * m_springMass * m_dampingRatio * omega;
 
 
-                var k = m_springMass * omega * omega;
+                float k = m_springMass * omega * omega;
 
 
-                var h = data.step.dt;
+                float h = data.step.dt;
                 m_gamma = h * (d + h * k);
                 if (m_gamma > 0.0f) {
                     m_gamma = 1.0f / m_gamma;
@@ -320,7 +320,7 @@ public class WheelJoint extends Joint {
         }
 
         if (data.step.warmStarting) {
-            var P = pool.popVec2();
+            v2 P = pool.popVec2();
             
             m_impulse *= data.step.dtRatio;
             m_springImpulse *= data.step.dtRatio;
@@ -328,8 +328,8 @@ public class WheelJoint extends Joint {
 
             P.x = m_impulse * m_ay.x + m_springImpulse * m_ax.x;
             P.y = m_impulse * m_ay.y + m_springImpulse * m_ax.y;
-            var LA = m_impulse * m_sAy + m_springImpulse * m_sAx + m_motorImpulse;
-            var LB = m_impulse * m_sBy + m_springImpulse * m_sBx + m_motorImpulse;
+            float LA = m_impulse * m_sAy + m_springImpulse * m_sAx + m_motorImpulse;
+            float LB = m_impulse * m_sBy + m_springImpulse * m_sBx + m_motorImpulse;
 
             vA.x -= m_invMassA * P.x;
             vA.y -= m_invMassA * P.y;
@@ -359,23 +359,23 @@ public class WheelJoint extends Joint {
         float iA = m_invIA, iB = m_invIB;
 
         v2 vA = data.velocities[m_indexA];
-        var wA = data.velocities[m_indexA].w;
+        float wA = data.velocities[m_indexA].w;
         v2 vB = data.velocities[m_indexB];
-        var wB = data.velocities[m_indexB].w;
+        float wB = data.velocities[m_indexB].w;
 
-        var temp = pool.popVec2();
-        var P = pool.popVec2();
+        v2 temp = pool.popVec2();
+        v2 P = pool.popVec2();
 
         
         {
-            var Cdot = v2.dot(m_ax, temp.set(vB).subbed(vA)) + m_sBx * wB - m_sAx * wA;
-            var impulse = -m_springMass * (Cdot + m_bias + m_gamma * m_springImpulse);
+            float Cdot = v2.dot(m_ax, temp.set(vB).subbed(vA)) + m_sBx * wB - m_sAx * wA;
+            float impulse = -m_springMass * (Cdot + m_bias + m_gamma * m_springImpulse);
             m_springImpulse += impulse;
 
             P.x = impulse * m_ax.x;
             P.y = impulse * m_ax.y;
-            var LA = impulse * m_sAx;
-            var LB = impulse * m_sBx;
+            float LA = impulse * m_sAx;
+            float LB = impulse * m_sBx;
 
             vA.x -= mA * P.x;
             vA.y -= mA * P.y;
@@ -388,11 +388,11 @@ public class WheelJoint extends Joint {
 
         
         {
-            var Cdot = wB - wA - m_motorSpeed;
-            var impulse = -m_motorMass * Cdot;
+            float Cdot = wB - wA - m_motorSpeed;
+            float impulse = -m_motorMass * Cdot;
 
-            var oldImpulse = m_motorImpulse;
-            var maxImpulse = data.step.dt * m_maxMotorTorque;
+            float oldImpulse = m_motorImpulse;
+            float maxImpulse = data.step.dt * m_maxMotorTorque;
             m_motorImpulse = MathUtils.clamp(m_motorImpulse + impulse, -maxImpulse, maxImpulse);
             impulse = m_motorImpulse - oldImpulse;
 
@@ -402,14 +402,14 @@ public class WheelJoint extends Joint {
 
         
         {
-            var Cdot = v2.dot(m_ay, temp.set(vB).subbed(vA)) + m_sBy * wB - m_sAy * wA;
-            var impulse = -m_mass * Cdot;
+            float Cdot = v2.dot(m_ay, temp.set(vB).subbed(vA)) + m_sBy * wB - m_sAy * wA;
+            float impulse = -m_mass * Cdot;
             m_impulse += impulse;
 
             P.x = impulse * m_ay.x;
             P.y = impulse * m_ay.y;
-            var LA = impulse * m_sAy;
-            var LB = impulse * m_sBy;
+            float LA = impulse * m_sAy;
+            float LB = impulse * m_sBy;
 
             vA.x -= mA * P.x;
             vA.y -= mA * P.y;
@@ -430,13 +430,13 @@ public class WheelJoint extends Joint {
     @Override
     public boolean solvePositionConstraints(SolverData data) {
         v2 cA = data.positions[m_indexA];
-        var aA = data.positions[m_indexA].a;
+        float aA = data.positions[m_indexA].a;
         v2 cB = data.positions[m_indexB];
-        var aB = data.positions[m_indexB].a;
+        float aB = data.positions[m_indexB].a;
 
-        var qA = pool.popRot();
-        var qB = pool.popRot();
-        var temp = pool.popVec2();
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
+        v2 temp = pool.popVec2();
 
         qA.set(aA);
         qB.set(aB);
@@ -445,15 +445,15 @@ public class WheelJoint extends Joint {
         Rot.mulToOut(qB, temp.set(m_localAnchorB).subbed(m_localCenterB), rB);
         d.set(cB).subbed(cA).added(rB).subbed(rA);
 
-        var ay = pool.popVec2();
+        v2 ay = pool.popVec2();
         Rot.mulToOut(qA, m_localYAxisA, ay);
 
-        var sAy = v2.cross(temp.set(d).added(rA), ay);
-        var sBy = v2.cross(rB, ay);
+        float sAy = v2.cross(temp.set(d).added(rA), ay);
+        float sBy = v2.cross(rB, ay);
 
-        var C = v2.dot(d, ay);
+        float C = v2.dot(d, ay);
 
-        var k = m_invMassA + m_invMassB + m_invIA * m_sAy * m_sAy + m_invIB * m_sBy * m_sBy;
+        float k = m_invMassA + m_invMassB + m_invIA * m_sAy * m_sAy + m_invIB * m_sBy * m_sBy;
 
         float impulse;
         if (k != 0.0f) {
@@ -462,11 +462,11 @@ public class WheelJoint extends Joint {
             impulse = 0.0f;
         }
 
-        var P = pool.popVec2();
+        v2 P = pool.popVec2();
         P.x = impulse * ay.x;
         P.y = impulse * ay.y;
-        var LA = impulse * sAy;
-        var LB = impulse * sBy;
+        float LA = impulse * sAy;
+        float LB = impulse * sBy;
 
         cA.x -= m_invMassA * P.x;
         cA.y -= m_invMassA * P.y;

@@ -351,12 +351,12 @@ public class Sokoban extends Applet {
     public Sokoban() throws HeadlessException {
 
 
-        var tile = "# @$.&*";
-        for (var i = 0; i < tile.length(); i++) {
-            var t = (BufferedImage) (tiles[tile.charAt(i)] = new BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB));
-            var g = tiles[tile.charAt(i)].getGraphics();
+        String tile = "# @$.&*";
+        for (int i = 0; i < tile.length(); i++) {
+            BufferedImage t = (BufferedImage) (tiles[tile.charAt(i)] = new BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB));
+            Graphics g = tiles[tile.charAt(i)].getGraphics();
 
-            var h = (((float) i) / ((float) (tile.length() - 1)));
+            float h = (((float) i) / ((float) (tile.length() - 1)));
 
             g.setColor(Color.getHSBColor(h, 0.8f, 0.8f));
             g.fillRect(0, 0, t.getWidth(), t.getHeight());
@@ -376,16 +376,16 @@ public class Sokoban extends Applet {
 
     @Override
     public synchronized void update(Graphics g) {
-        var d = size();
+        Dimension d = size();
         if (d.width * d.height == 0) return;
-        var r = g.getClipRect();
+        Rectangle r = g.getClipRect();
 
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, d.width, d.height);
 
 
         int y = -16 + h, x = -16 + w;
-        for (var aLevel : level)
+        for (char aLevel : level)
             if (aLevel == cr) {
                 x = -16 + w;
                 y += 16;
@@ -405,7 +405,7 @@ public class Sokoban extends Applet {
     }
 
     public void drawMove() {
-        var g = getGraphics();
+        Graphics g = getGraphics();
         drawStatus(g);
 
         repaint();
@@ -469,14 +469,14 @@ public class Sokoban extends Applet {
         h = 0;
         level = levels[currlevel].toCharArray();
         lastcount = 0;
-        var W = 0;
-        for (var aLevel : level)
+        int W = 0;
+        for (char aLevel : level)
             if (aLevel == cr) {
                 if (W > w) w = W;
                 W = 0;
                 h++;
             } else W++;
-        var d = size();
+        Dimension d = size();
         w = 72 + (d.width - 72 - 16 * w) / 2;
         h = (d.height - 16 * h) / 2;
     }
@@ -521,7 +521,7 @@ public class Sokoban extends Applet {
                 } else if ((level[pos1] != me) && (level[pos1] != megoal)) x++;
                 else break;
             pos2 = moveone(pos1, x, y, dx, dy);
-            var count = 0;
+            int count = 0;
             if (level[pos2] == floor || level[pos2] == goal) count = 1;
             else {
                 if (uc) {
@@ -548,8 +548,8 @@ public class Sokoban extends Applet {
                 lastrect = new Rectangle(w + Math.min(xo, x) * 16, h + Math.min(yo, y) * 16,
                         (Math.abs(xo - x) + 1) * 16, (Math.abs(yo - y) + 1) * 16);
                 drawMove();
-                var b = true;
-                for (var aLevel : level)
+                boolean b = true;
+                for (char aLevel : level)
                     if (aLevel == dollar) {
                         b = false;
                         break;
@@ -592,7 +592,7 @@ public class Sokoban extends Applet {
     }
 
     public static void main(String[] args) {
-        var w = new JFrame("Sokoban");
+        JFrame w = new JFrame("Sokoban");
         w.setContentPane(new Sokoban());
         w.setSize(500, 500);
         w.setVisible(true);

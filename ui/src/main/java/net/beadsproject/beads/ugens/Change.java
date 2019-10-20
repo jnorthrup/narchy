@@ -44,10 +44,10 @@ public class Change extends UGen {
     @Override
     public void gen() {
 
-        var bi = bufIn[0];
-        var bo = bufOut[0];
+        float[] bi = bufIn[0];
+        float[] bo = bufOut[0];
 
-        for (var i = 1; i < bufferSize; i++) {
+        for (int i = 1; i < bufferSize; i++) {
             float x;
             if ((x = bi[i]) > lastX) {
                 bo[i] = 1;

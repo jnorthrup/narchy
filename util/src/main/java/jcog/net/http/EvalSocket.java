@@ -53,15 +53,15 @@ public class EvalSocket<X> implements HttpModel {
         List<Method> m = new FasterList();
         Collections.addAll(m, x.getClass().getMethods());
 
-        var s = new StringBuilder(1024);
-        for (var y : m) {
+        StringBuilder s = new StringBuilder(1024);
+        for (Method y : m) {
             if (y.getDeclaringClass() == Object.class)
                 continue;
 
             s.append(y.getName()).append(" (");
-            var parameters = y.getParameters();
+            Parameter[] parameters = y.getParameters();
             for (int i = 0, parametersLength = parameters.length; i < parametersLength; i++) {
-                var p = parameters[i];
+                Parameter p = parameters[i];
                 s.append(p.getType()).append(' ').append(p.getName());
                 if (i < parametersLength - 1)
                     s.append(", ");
@@ -84,7 +84,7 @@ public class EvalSocket<X> implements HttpModel {
 //            else
 //                o = engine.eval(code, bindings);
 
-            var ee = new ExpressionEvaluator();
+            ExpressionEvaluator ee = new ExpressionEvaluator();
 
             ee.setParameters(param, new Class[] { context.getClass() });
             ee.setExpressionType(Object.class);
@@ -123,7 +123,7 @@ public class EvalSocket<X> implements HttpModel {
 
     @Override
     public void wssMessage(WebSocket ws, String _message) {
-        var message = _message.trim();
+        String message = _message.trim();
         if (message.isEmpty())
             return;
 
@@ -180,7 +180,7 @@ public class EvalSocket<X> implements HttpModel {
             q.drain(message -> {
                 try {
 
-                    var x = eval(/*"i." +*/ message, context);
+                    Object x = eval(/*"i." +*/ message, context);
                     if (x == null || socket.isClosed())
                         return;
 

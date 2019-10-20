@@ -24,15 +24,15 @@ public abstract class Handle {
 	 */
 	public void draw(Graphics2D g, LevelPanel levelPanel) {
 		if (levelPanel.getState() == LevelPanel.State.SELECT) {
-			var handleCenter = getCenter();
-			var x = handleCenter.x;
-			var y = handleCenter.y;
-			var size = getSize();
+            Point handleCenter = getCenter();
+            int x = handleCenter.x;
+            int y = handleCenter.y;
+            int size = getSize();
 			x -= size / 2;
 			y -= size / 2;
-			var rect = new Rectangle(x, y, size, size);
+            Rectangle rect = new Rectangle(x, y, size, size);
 			g.setColor(new Color(0xff0000ff));
-			var mousePos = levelPanel.getMousePosition();
+            Point mousePos = levelPanel.getMousePosition();
 			if ((mousePos != null && rect.contains(mousePos)) 
 					|| levelPanel.isHandleSelected(this)) {
 				g.fillRect(x, y, size, size);
@@ -59,8 +59,8 @@ public abstract class Handle {
 	 * @return the bounds
 	 */
 	private Rectangle getBounds() {
-		var p = getCenter();
-		var s = getSize();
+        Point p = getCenter();
+        int s = getSize();
 		return new Rectangle(p.x - (s / 2), p.y - (s / 2), s, s);
 	}
 	

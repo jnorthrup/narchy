@@ -24,7 +24,7 @@ public final class OneWayList<E> {
     }
 
     public static <T> OneWayList<T> get(Deque<T> d) {
-        var s = d.size();
+        int s = d.size();
         switch (s) {
             case 0:
                 return null;
@@ -33,9 +33,9 @@ public final class OneWayList<E> {
             case 2:
                 return new OneWayList<>(d.getFirst(), new OneWayList<>(d.getLast(), null));
             default:
-                var i = d.descendingIterator();
+                Iterator<T> i = d.descendingIterator();
                 i.hasNext();
-                var o = new OneWayList<T>(i.next(), null);
+                OneWayList<T> o = new OneWayList<T>(i.next(), null);
                 while (i.hasNext()) {
                     o = new OneWayList<>(i.next(), o);
                 }
@@ -45,14 +45,14 @@ public final class OneWayList<E> {
 
 
     public String toString() {
-        var head = this.head;
-        var elem = (head == null) ? "null" : head.toString();
-        var tail = this.tail;
+        E head = this.head;
+        String elem = (head == null) ? "null" : head.toString();
+        OneWayList<E> tail = this.tail;
         return '[' + (tail == null ? elem : tail.toString(elem)) + ']';
     }
 
     private String toString(String elems) {
-        var elem = head == null ? "null" : head.toString();
+        String elem = head == null ? "null" : head.toString();
         if (tail == null) return elems + ',' + elem;
         return elems + ',' + tail.toString(elem);
     }

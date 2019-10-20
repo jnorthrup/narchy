@@ -94,14 +94,14 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 		model.restart(this);
 
 
-		var deadline = System.nanoTime();
+        long deadline = System.nanoTime();
 
 		//        IntUnaryOperator updater = (cc) -> (cc + 1) % w;
 
         do {
 
-			var c = cursor();
-			var empties = 0;
+            int c = cursor();
+            int empties = 0;
 
             //while ((c = cursor.getAndAccumulate(wheels, (cc, w) -> (cc + 1) % w)) >= 0) {
 			while ((cursor.compareAndSet(c, c = (c + 1) % wheels))) {
@@ -138,8 +138,8 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 	private long await(long deadline) {
 
 
-		var now = System.nanoTime();
-		var sleepTimeNanos = deadline - now;
+        long now = System.nanoTime();
+        long sleepTimeNanos = deadline - now;
 
 		if (sleepTimeNanos > 0) {
 			//System.out.println(Texts.timeStr(sleepTimeNanos) + " sleep");
@@ -175,7 +175,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 		if (r.state() == TimedFuture.CANCELLED)
 			throw new RuntimeException("scheduling an already cancelled task");
 
-		var ok = model.accept(r, this);
+        boolean ok = model.accept(r, this);
 		if (!ok)
 			return null;
 
@@ -209,7 +209,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 	}
 
 	final int cursorActive() {
-		var c = cursor();
+        int c = cursor();
 		if (c != -1)
 			return c;
 		else {
@@ -337,7 +337,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 		if (delayNS <= resolution / 2) {
 			//immediate
-			var f = new ImmediateFuture<V>(callable);
+            ImmediateFuture<V> f = new ImmediateFuture<V>(callable);
 			executor.execute(f);
 			return f;
 		} else if (delayNS < resolution) {
@@ -346,9 +346,9 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 		}
 
 
-		var cycleLen = wheels * resolution;
-		var rounds = (int) (((double) delayNS) / cycleLen);
-		var firstFireOffset = Util.longToInt(delayNS - rounds * cycleLen);
+        long cycleLen = wheels * resolution;
+        int rounds = (int) (((double) delayNS) / cycleLen);
+        int firstFireOffset = Util.longToInt(delayNS - rounds * cycleLen);
 
 		return schedule(new OneTimedFuture(Math.max(0, firstFireOffset), rounds, callable));
 	}
@@ -359,7 +359,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 												  Runnable callable) {
 
 
-		var r = new FixedRateTimedFuture(0, callable,
+        FixedRateTimedFuture r = new FixedRateTimedFuture(0, callable,
 			recurringTimeout, resolution, wheels);
 
 		return scheduleFixedRate(recurringTimeout, firstDelay, r);
@@ -386,7 +386,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 		assert (recurringTimeout >= resolution) : "Cannot schedule tasks for amount of time less than timer precision.";
 
 
-		var r = new FixedDelayTimedFuture<V>(
+        FixedDelayTimedFuture<V> r = new FixedDelayTimedFuture<V>(
 			callable,
 			recurringTimeout, resolution, wheels,
 			this::schedule);
@@ -419,8 +419,8 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 				throw new RuntimeException("loop exists");
 		}
 
-		var t = this.loop = new Thread(this, HashedWheelTimer.class.getSimpleName() + '_' + hashCode());
-		var daemon = false;
+        Thread t = this.loop = new Thread(this, HashedWheelTimer.class.getSimpleName() + '_' + hashCode());
+        boolean daemon = false;
         t.setDaemon(daemon);
 		t.setPriority(THREAD_PRI);
 		t.start();
@@ -513,7 +513,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 		@Override
 		public boolean cancel(boolean mayInterruptIfRunning) {
-			var c = callable;
+            Callable<V> c = callable;
 			if (c != null) {
 				result = null;
 				callable = null;
@@ -534,7 +534,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 		@Override
 		public V get() {
-			var r = this.result;
+            Object r = this.result;
 			return r == this ? null : (V) r;
 		}
 

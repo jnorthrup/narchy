@@ -46,8 +46,8 @@ public class SoNAR extends TimerTask {
         }
 
         public void samples(String dirPath) {
-            for (var f : new File(dirPath).listFiles()) {
-                var path = f.getAbsolutePath();
+            for (File f : new File(dirPath).listFiles()) {
+                String path = f.getAbsolutePath();
                 samples.computeIfAbsent(path, SampleLoader::load);
             }
         }
@@ -128,7 +128,7 @@ public class SoNAR extends TimerTask {
 
     public void listen(Concept k, Function<? super Concept, ? extends SoundProducer> p) {
         termSounds.computeIfAbsent(k, kk -> {
-            var ss = p.apply(kk);
+            SoundProducer ss = p.apply(kk);
             return audio.play(ss, soundVolume,
                     0.5f, /* priority */
                     (float) (Math.random() - 0.5f) /* balance */
@@ -150,9 +150,9 @@ public class SoNAR extends TimerTask {
     @Override
     public void run() {
         now = nar.time();
-        for (var entry : termSounds.entrySet()) {
-            var key = entry.getKey();
-            var value = entry.getValue();
+        for (Map.Entry<Concept, Sound> entry : termSounds.entrySet()) {
+            Concept key = entry.getKey();
+            Sound value = entry.getValue();
             update(key, value);
         }
     }
@@ -160,14 +160,14 @@ public class SoNAR extends TimerTask {
     private boolean update(@NotNull Concept c, Sound s) {
 
 
-        var b = nar.goalTruth(c, now);
+        Truth b = nar.goalTruth(c, now);
 
 
-        var thresh = 0.55f;
+        float thresh = 0.55f;
         if (b != null && b.freq() > thresh) {
 
             if (s.producer instanceof Granulize) {
-                var stretchFactor = (b.freq() - 0.5f) * 2f;
+                float stretchFactor = (b.freq() - 0.5f) * 2f;
                 if (stretchFactor > 0 && stretchFactor < 0.05f) stretchFactor = 0.05f;
                 else if (stretchFactor < 0 && stretchFactor > -0.05f) stretchFactor = -0.05f;
                 ((Granulize) s.producer).setStretchFactor(stretchFactor);
@@ -203,13 +203,13 @@ public class SoNAR extends TimerTask {
     }
 
     public static void main(String[] args) throws InterruptedException, Narsese.NarseseException {
-        var n = new NARS().get();
+        NAR n = new NARS().get();
 
 
         n.input("a:b. :|: (--,b:c). c:d. d:e. (--,e:f). f:g. b:f. a:g?");
         n.startPeriodMS(16);
-        var s = new SoNAR(n);
-        var d = new SampleDirectory();
+        SoNAR s = new SoNAR(n);
+        SampleDirectory d = new SampleDirectory();
         d.samples("/home/me/wav/legoweltkord");
         s.listen(n.conceptualize($("a")), SampleDirectory::byHash);
         s.listen(n.conceptualize($("b")), SampleDirectory::byHash);

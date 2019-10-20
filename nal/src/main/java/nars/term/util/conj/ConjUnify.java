@@ -17,14 +17,14 @@ public enum ConjUnify {
 
     /** conjunction unfiication when # subterms differ */
     public static boolean unifyConj(Term x, Term y, Subterms xx, Subterms yy, Unify u) {
-        var result = false;
+        boolean result = false;
 
         if (Subterms.possiblyUnifiableAssumingNotEqual(xx, yy, u.varBits | (x.hasXternal() || y.hasXternal() ? CONJ.bit : 0))) {
             int xdt = x.dt(), ydt = y.dt();
-            var var = u.varIn(xx) || u.varIn(yy);
+            boolean var = u.varIn(xx) || u.varIn(yy);
             if ((xdt == XTERNAL || ydt == XTERNAL)) {
 
-                var finished = false;
+                boolean finished = false;
                 if (((xdt == XTERNAL && !xx.hasAny(CONJ)) || (ydt == XTERNAL && !yy.hasAny(CONJ)))) {
                     //one is a simple XTERNAL (no conj subterms) so will match if equal root
                     if (x.equalsRoot(y)) {
@@ -33,8 +33,8 @@ public enum ConjUnify {
                     }
                 }
                 if (!finished) {
-                    var xe = x.eventSet();
-                    var ye = y.eventSet();
+                    SortedSet<Term> xe = x.eventSet();
+                    SortedSet<Term> ye = y.eventSet();
                     if (xe.equals(ye)) {
                         result = true;
                     } else if (var) {
@@ -58,8 +58,8 @@ public enum ConjUnify {
                         //ordinary conjunctive unification
                         result = xx.subs() == yy.subs() && Subterms.unifyCommute(xx, yy, u);
                     } else if (x.eventRange() == y.eventRange()) {//TODO test sequences containing vars
-                        var xl = ConjList.events(x);
-                        var yl = ConjList.events(y);//TODO this can possibly work if a raw variable matches a range
+                        ConjList xl = ConjList.events(x);
+                        ConjList yl = ConjList.events(y);//TODO this can possibly work if a raw variable matches a range
                         if (xl.size() == yl.size()) {//TODO allow time splicing/shifting
                             if (Arrays.equals(xl.when, yl.when)) {
                                 xl.removeIf((when, z) -> {
@@ -69,7 +69,7 @@ public enum ConjUnify {
                                     }
                                     return false;
                                 });
-                                var xls = xl.size();
+                                int xls = xl.size();
                                 if (xls == yl.size()) {
                                     result = xls > 1 ? Subterms.unifyLinear($.vFast(xl), $.vFast(yl), u) : xl.get(0).unify(yl.get(0), u);
                                 }
@@ -90,12 +90,12 @@ public enum ConjUnify {
 
         if (x.volume() > y.volume()) {
             //swap
-            var z = y;
+            Term z = y;
             y = x;
             x = z;
         }
 
-        var Y = y;
+        Term Y = y;
         return x.eventsOR((when, xx) -> Conj.eventOf(Y, xx, ETERNAL, 1), ETERNAL, true, true);
 
 

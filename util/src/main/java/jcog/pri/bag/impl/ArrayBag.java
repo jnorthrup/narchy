@@ -41,7 +41,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
      */
     protected int histogramBins(int s) {
         //TODO refine
-        var thresh = 4;
+        int thresh = 4;
         if (s <= thresh)
             return s;
         else {
@@ -100,7 +100,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     /** different from sample(..); this will return uniform random results */
     public final @Nullable Y get(Random rng) {
         Object[] items = table.items.items;
-        var s = Math.min(items.length, size());
+        int s = Math.min(items.length, size());
         return s > 0 ? (Y)items[rng.nextInt(s)] : null;
     }
 
@@ -114,11 +114,11 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
     @Override
     public Stream<Y> stream() {
-        var s = size();
+        int s = size();
         if (s == 0)
             return Stream.empty();
         else {
-            var x = items();
+            Object[] x = items();
             return ArrayIterator.stream(x).filter(Objects::nonNull)
                     .map(o -> (Y) o)
                     .filter(y -> !y.isDeleted());
@@ -135,23 +135,23 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
      */
     private boolean tryInsertFull(X key, Y incoming, float toAddPri) {
 
-        var s = size();
-        var c = capacity();
-        var free = s + 1 <= c;
+        int s = size();
+        int c = capacity();
+        boolean free = s + 1 <= c;
 
         if (!free && cleanAuto()) {
             s = update(null);
             free = s + 1 <= c;
         }
 
-        var a = table.items;
+        SortedArray<Y> a = table.items;
         if (!free) {
-            var lastToRemove = a.last();
-            var priMin = pri(lastToRemove);
+            Y lastToRemove = a.last();
+            float priMin = pri(lastToRemove);
             if (toAddPri < priMin)
                 return false;
 
-            var removed = a.removeLast();
+            Y removed = a.removeLast();
             assert (removed == lastToRemove);
             //if (!removed) throw new WTF(); //assert(removed);
 
@@ -180,11 +180,11 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     }
 
     protected void sort() {
-        var s = size();
+        int s = size();
         if (s <= 1)
             return;
 
-        var c = sortedness();
+        float c = sortedness();
         int from, to;
 
         if (c >= 1f - Float.MIN_NORMAL) {
@@ -192,9 +192,9 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             from = 0;
             to = s;
         } else {
-            var toSort = (int) Math.ceil(c * s);
-            var f = ThreadLocalRandom.current().nextFloat();
-            var center = (int) (Util.sqr(f) * (s - toSort) + toSort / 2); //sqr adds curve to focus on the highest priority subsection
+            int toSort = (int) Math.ceil(c * s);
+            float f = ThreadLocalRandom.current().nextFloat();
+            int center = (int) (Util.sqr(f) * (s - toSort) + toSort / 2); //sqr adds curve to focus on the highest priority subsection
             from = Math.max(center - toSort / 2, 0);
             to = Math.min(center + toSort / 2, s);
         }
@@ -208,16 +208,16 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     /** update histogram, remove values until under capacity */
     private int update(@Nullable Consumer<Y> update) {
 
-        var s = size();
+        int s = size();
         if (s == 0)
             return 0;
 
-        var items = table.items;
+        SortedArray<Y> items = table.items;
         Object[] a = items.array();
 
 
         ArrayHistogram.HistogramWriter hist;
-        var bins = histogramBins(s);
+        int bins = histogramBins(s);
         if (bins > 0) {
             hist = this.hist.write(0, s, bins);
         } else {
@@ -225,18 +225,18 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         }
 
         float m = 0;
-        var sorted = true;
-        var above = Float.POSITIVE_INFINITY;
-        for (var i = 0; i < s; ) {
-            var _y = a[i];
+        boolean sorted = true;
+        float above = Float.POSITIVE_INFINITY;
+        for (int i = 0; i < s; ) {
+            Object _y = a[i];
 
             if (_y == null) {
                 a[i] = null;
                 s--;
             } else {
-                var y = (Y) _y;
+                Y y = (Y) _y;
 
-                var p = pri(y);
+                float p = pri(y);
 
                 if (update != null && p == p) {
                     update.accept(y);
@@ -285,7 +285,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         massSet(m); //set mass here because removedFromMap will decrement mass
 
-        var c = capacity();
+        int c = capacity();
         while (s > c) {
             removeFromMap(table.items.removeLast());
             s--;
@@ -301,11 +301,11 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
     /** immediate sample */
     @Override public @Nullable Y sample(Random rng) {
-        var ii = this.items();
-        var s = Math.min(ii.length, size());
+        Object[] ii = this.items();
+        int s = Math.min(ii.length, size());
         if (s == 0)
             return null;
-        var i = sampleNext(rng, s);
+        int i = sampleNext(rng, s);
         return (Y) ii[i];
     }
 
@@ -323,21 +323,21 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         while ((s = Math.min((ii = items()).length, size())) > 0) {
 
-            var i = sampleNext(rng, s);
+            int i = sampleNext(rng, s);
 
-            var x = ii[i];
+            Object x = ii[i];
 
             if (x != null) {
-                var y = (Y) x;
-                var yp = pri(y);
+                Y y = (Y) x;
+                float yp = pri(y);
                 if (yp == yp) {
 
-                    var next = each.apply(y);
+                    SampleReaction next = each.apply(y);
 
                     if (next.remove) {
 
                         //explicit removal
-                        var d = deleteOnPop();
+                        boolean d = deleteOnPop();
                         if (d)
                             y.delete();
 
@@ -361,31 +361,31 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
     @Override
     public void sampleUnique(Random rng, Predicate<? super Y> kontinue) {
-        var s = size();
+        int s = size();
         if (s == 0) return;
 
-        var ll = items();
+        Object[] ll = items();
         s = Math.min(s, ll.length);
         if (s == 0) return;
 
         //starting point, sampled from bag histogram
-        var p = sampleNext(rng,s);
+        int p = sampleNext(rng,s);
         if (p >= s) p = s-1;
 
         //scan up then down
-        for (var j = 0; j < s; j++) {
-            var above = p - j;
+        for (int j = 0; j < s; j++) {
+            int above = p - j;
             if (above >= 0) {
-                var a = ll[above];
+                Object a = ll[above];
                 if (a != null && !kontinue.test((Y) a))
                     return;
             } else
                 break;
         }
-        for (var j = 0; j < s; j++) {
-            var below = p + j + 1;
+        for (int j = 0; j < s; j++) {
+            int below = p + j + 1;
             if (below < s) {
-                var b = ll[below];
+                Object b = ll[below];
                 if (b!=null && !kontinue.test((Y) b))
                     return;
             } else
@@ -448,7 +448,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
      * raw selection by index, with x^2 bias towards higher pri indexed items
      */
     private static int sampleNextLinear(Random rng, int size) {
-        var targetIndex = rng.nextFloat();
+        float targetIndex = rng.nextFloat();
 
         return Util.bin(targetIndex * targetIndex, size);
     }
@@ -463,7 +463,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     private float priSafe(int i) {
         Object[] a = table.items.array();
         if (i < a.length) {
-            var v = (Y) a[i];
+            Y v = (Y) a[i];
             if (v!=null)
                 return priElse(v, 0);
         }
@@ -473,9 +473,9 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     private int sampleNextLinearNormalized(Random rng, int start, int end) {
         float max = priSafe(start), min = priSafe(end);
 
-        var targetPercentile = rng.nextFloat();
+        float targetPercentile = rng.nextFloat();
 
-        var indexNorm =
+        float indexNorm =
                 Util.lerp((max - min), targetPercentile /* flat */, (targetPercentile * targetPercentile) /* curved */);
 
         return start + Util.bin(indexNorm, (end-start));
@@ -490,11 +490,11 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         if (max - min < 1f/(size*size))
             return sampleNextLinearNormalized(rng, size); //HACK elide recompute pri
 
-        var mii = size / 2;
-        var mid = priSafe(mii);
+        int mii = size / 2;
+        float mid = priSafe(mii);
 
 
-        var skew = (mid - (max-min)/2)/(max-min);
+        float skew = (mid - (max-min)/2)/(max-min);
         if (rng.nextFloat() > skew) {
             return sampleNextLinearNormalized(rng, 0, mii);
         } else {
@@ -628,7 +628,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
      */
     private void samplePopRemove(Y y, int suspectedPosition, boolean strong, boolean stop, Random rng) {
 
-        var l = strong ? lock.writeLock() : lock.tryWriteLock();
+        long l = strong ? lock.writeLock() : lock.tryWriteLock();
         if (l == 0)
             return;
 
@@ -638,7 +638,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             if (y == null)
                 return; //already removed
 
-            var removed = table.items.removeFast(y, suspectedPosition);
+            boolean removed = table.items.removeFast(y, suspectedPosition);
             if (!removed) {
                 removed = table.removeItem(y); //exhaustive
             }
@@ -656,11 +656,11 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     @Override
     public final @Nullable Y remove(X x) {
         Y removed;
-        var l = lock.writeLock();
+        long l = lock.writeLock();
         try {
-            var rx = table.map.remove(x);
+            Y rx = table.map.remove(x);
             if (rx != null) {
-                var removedFromList = table.removeItem(rx);
+                boolean removedFromList = table.removeItem(rx);
                 if (!removedFromList)
                     throw new ConcurrentModificationException("inconsistency while attempting removal: " + x + " -> " + rx);
             }
@@ -681,25 +681,25 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     @Override
     public Y put(Y x, NumberX overflow) {
 
-        var capacity = this.capacity();
+        int capacity = this.capacity();
         if (capacity == 0)
             return null;
 
-        var xp = x.pri();
+        float xp = x.pri();
         if (xp != xp)
             return null; //already deleted
 
-        var key = key(x);
+        X key = key(x);
 
-        var map = table.map;
+        Map<X, Y> map = table.map;
 //        if (map instanceof ConcurrentMap) {
 //            //check map first, and elide acquiring a lock if merge can be performed and doesnt affect priority
 //        } else {
         //l = lock.readLock();
 //        }
-        var l = lock.writeLock();
+        long l = lock.writeLock();
 
-        var existing = map.get(key);
+        Y existing = map.get(key);
 
         if (existing == null || existing == x) {
             Y y;
@@ -728,8 +728,8 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     private Y insert(Y incoming, X key, float pri, long wl) {
         boolean inserted;
         try {
-            var capacity = capacity();
-            var s = size();
+            int capacity = capacity();
+            int s = size();
             if (s >= capacity) {
                 inserted = tryInsertFull(key, incoming, pri);
             } else {
@@ -759,8 +759,8 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     }
 
     private void tryInsert(X key, Y incoming, float p) {
-        var i = table.items.addSafe(incoming, -p, table);
-        var exists = table.map.put(key, incoming);
+        int i = table.items.addSafe(incoming, -p, table);
+        Y exists = table.map.put(key, incoming);
         assert(i >= 0 && exists == null);
     }
 
@@ -776,7 +776,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         Y result;
 
         float delta;
-        var priBefore = existing.pri();
+        float priBefore = existing.pri();
 
         try {
 
@@ -797,7 +797,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
                     //if removed, or significant change occurred
 
                     //if (result != null) {
-                    var priAfter = priBefore + delta;
+                    float priAfter = priBefore + delta;
                     table.items.reprioritize(existing, posBefore(existing, priBefore), delta, priAfter, table);
 //                    } else {
 //                        //got deleted
@@ -814,7 +814,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         //incoming.delete();
 
         if (overflow != null) {
-            var over = Math.max(0, incomingPri - delta);
+            float over = Math.max(0, incomingPri - delta);
             if (over > 0)
                 overflow.add(over);
         }
@@ -851,7 +851,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
      */
     private Y removeFromMap(Y y) {
 
-        var removed = removeFromMapIfExists(y);
+        Y removed = removeFromMapIfExists(y);
         if (removed == null)
             throw new WTF();
 
@@ -859,7 +859,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     }
 
     private @Nullable Y removeFromMapIfExists(Y y) {
-        var removed = table.map.remove(key(y));
+        Y removed = table.map.remove(key(y));
         if (removed == null)
             return null;
 
@@ -871,7 +871,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     public Bag<X, Y> commit(Consumer<Y> update) {
 
 //        long l = lock.readLock();
-        var l = lock.writeLock();
+        long l = lock.writeLock();
         try {
             //if (!isEmpty()) {
 //                l = Util.readToWrite(l, lock);
@@ -901,21 +901,21 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         //        long r = lock.readLock();
         //        try {
 
-        var s = size();
+        int s = size();
         if (s <= 0)
             return;
 
-        var yy = items();
+        Object[] yy = items();
         s = Math.min(yy.length, s);
-        for (var i = 0; i < s; i++) {
-            var y =
+        for (int i = 0; i < s; i++) {
+            Y y =
                     //ITEM.getOpaque(yy, i);
                     (Y) yy[i];
 
             if (y == null)
                 continue; //throw new WTF();
 
-            var p = pri(y);
+            float p = pri(y);
             if (p == p) {
                 action.accept(y);
                 //                if (!commit) {
@@ -943,13 +943,13 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
      */
     public void clear(int n, Consumer<? super Y> each) {
 
-        var s = Math.min(n, size());
+        int s = Math.min(n, size());
         if (s > 0) {
             Collection<Y> popped = new FasterList<>(s);
 
             popBatch(s, popped::add);
 
-            for (var y : popped) {
+            for (Y y : popped) {
                 each.accept(y);
             }
         }
@@ -977,10 +977,10 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         if (n == 0) return ArrayBag.this;
 
 
-        var l = block ? lock.writeLock() : lock.tryWriteLock();
+        long l = block ? lock.writeLock() : lock.tryWriteLock();
         if (l != 0) {
             try {
-                var toRemove = Math.min(n, size());
+                int toRemove = Math.min(n, size());
                 if (toRemove > 0) {
 
                     Consumer<Y> each = popped != null ?
@@ -1010,7 +1010,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
     @Override
     public float priMax() {
-        var x = table.items.first();
+        Y x = table.items.first();
         return x != null ? priElse(x, 0) : 0;
     }
 
@@ -1031,7 +1031,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
     @Override
     public float priMin() {
-        var x = table.items.last();
+        Y x = table.items.last();
         return x != null ? priElse(x, 0) : 0;
     }
 
@@ -1050,10 +1050,10 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
     @Override
     public final void forEach(int max, Consumer<? super Y> action) {
-        var s = size();
+        int s = size();
         if (s > 0) {
-            var ii = table.items.items;
-            var c = Math.min(s, ii.length);
+            Y[] ii = table.items.items;
+            int c = Math.min(s, ii.length);
             Bag.forEach(i -> ii[i], c, max, action);
         }
     }
@@ -1108,7 +1108,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         @Override
         public void forEachKey(Consumer<? super X> each) {
-            for (var t : this) {
+            for (Y t : this) {
                 each.accept(key(t));
             }
         }
@@ -1129,9 +1129,9 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         }
 
         public final void forEach(BiConsumer<X, Y> each) {
-            for (var entry : map.entrySet()) {
-                var key = entry.getKey();
-                var value = entry.getValue();
+            for (Map.Entry<X, Y> entry : map.entrySet()) {
+                X key = entry.getKey();
+                Y value = entry.getValue();
                 each.accept(key, value);
             }
         }

@@ -44,35 +44,43 @@ public class OutputLayer {
 
     public void forwardPropagation(HiddenLayer hiddenLayer) {
 
-        var hiddenLayerNeurons = hiddenLayer.neurons.value;
+        double[] hiddenLayerNeurons = hiddenLayer.neurons.value;
 
-        var out = outputs.value;
+        double[] out = outputs.value;
 
-        for (var i = 0; i < _outputSize; i++) {
+        for (int i = 0; i < _outputSize; i++) {
 
-            var weights = _hiddenToOutputLayerWeights[i];
+            Unit[] weights = _hiddenToOutputLayerWeights[i];
 
-            var bound = controllerSize;
-            var result = IntStream.range(0, bound).mapToDouble(j -> weights[j].value * hiddenLayerNeurons[j]).sum();
-            var sum = result;
+            int bound = controllerSize;
+            double result = 0.0;
+            for (int j = 0; j < bound; j++) {
+                double v = weights[j].value * hiddenLayerNeurons[j];
+                result += v;
+            }
+            double sum = result;
 
 
             sum += weights[controllerSize].value;
             out[i] = Sigmoid.getValue(sum);
         }
 
-        for (var i = 0; i < heads.length; i++) {
+        for (int i = 0; i < heads.length; i++) {
 
 
-            var headsWeights = _hiddenToHeadsWeights[i];
-            var head = heads[i];
+            Unit[][] headsWeights = _hiddenToHeadsWeights[i];
+            Head head = heads[i];
 
-            for (var j = 0; j < headsWeights.length; j++) {
-                var headWeights = headsWeights[j];
+            for (int j = 0; j < headsWeights.length; j++) {
+                Unit[] headWeights = headsWeights[j];
 
-                var bound = controllerSize;
-                var result = IntStream.range(0, bound).mapToDouble(k -> headWeights[k].value * hiddenLayerNeurons[k]).sum();
-                var sum = result;
+                int bound = controllerSize;
+                double result = 0.0;
+                for (int k = 0; k < bound; k++) {
+                    double v = headWeights[k].value * hiddenLayerNeurons[k];
+                    result += v;
+                }
+                double sum = result;
 
 
                 sum += headWeights[controllerSize].value;
@@ -85,7 +93,7 @@ public class OutputLayer {
     public OutputLayer clone() {
 
 
-        var heads = Head.getVector(this.heads.length, i -> memoryWidth);
+        Head[] heads = Head.getVector(this.heads.length, i -> memoryWidth);
         return new OutputLayer(_hiddenToOutputLayerWeights, _hiddenToHeadsWeights,
                 new UVector(_outputSize), heads, _outputSize, controllerSize, memoryWidth, _headUnitSize);
 
@@ -93,65 +101,65 @@ public class OutputLayer {
 
     public void backwardErrorPropagation(double[] knownOutput, HiddenLayer hiddenLayer) {
 
-        var heads = this.heads;
+        Head[] heads = this.heads;
 
         outputs.setDelta(knownOutput);
 
-        var hiddenGrad = hiddenLayer.neurons.grad;
-        var outGrad = outputs.grad;
+        double[] hiddenGrad = hiddenLayer.neurons.grad;
+        double[] outGrad = outputs.grad;
 
-        var cs = this.controllerSize;
+        int cs = this.controllerSize;
 
-        var hiddenToOutputLayerWeights = _hiddenToOutputLayerWeights;
+        Unit[][] hiddenToOutputLayerWeights = _hiddenToOutputLayerWeights;
 
-        var os = _outputSize;
-        for (var j = 0; j < os; j++) {
-
-
-            var unitGrad = outGrad[j];
-
-            var weights = hiddenToOutputLayerWeights[j];
+        int os = _outputSize;
+        for (int j = 0; j < os; j++) {
 
 
-            for (var i = 0; i < cs; i++) {
+            double unitGrad = outGrad[j];
+
+            Unit[] weights = hiddenToOutputLayerWeights[j];
+
+
+            for (int i = 0; i < cs; i++) {
                 hiddenGrad[i] += weights[i].value * unitGrad;
             }
         }
-        var hl = heads.length;
-        for (var j = 0; j < hl; j++) {
+        int hl = heads.length;
+        for (int j = 0; j < hl; j++) {
 
-            var head = heads[j];
-            var weights = _hiddenToHeadsWeights[j];
-            for (var k = 0; k < _headUnitSize; k++) {
-                var unitGrad = head.get(k).grad;
-                var weightsK = weights[k];
-                for (var i = 0; i < cs; i++) {
+            Head head = heads[j];
+            Unit[][] weights = _hiddenToHeadsWeights[j];
+            for (int k = 0; k < _headUnitSize; k++) {
+                double unitGrad = head.get(k).grad;
+                Unit[] weightsK = weights[k];
+                for (int i = 0; i < cs; i++) {
                     hiddenGrad[i] += weightsK[i].value * unitGrad;
                 }
             }
         }
 
-        var hiddenValue = hiddenLayer.neurons.value;
+        double[] hiddenValue = hiddenLayer.neurons.value;
 
-        for (var i = 0; i < os; i++) {
+        for (int i = 0; i < os; i++) {
 
-            var wyh1I = _hiddenToOutputLayerWeights[i];
-            var yGrad = outGrad[i];
-            for (var j = 0; j < cs; j++) {
+            Unit[] wyh1I = _hiddenToOutputLayerWeights[i];
+            double yGrad = outGrad[i];
+            for (int j = 0; j < cs; j++) {
                 wyh1I[j].grad += hiddenValue[j] * yGrad;
             }
             wyh1I[controllerSize].grad += yGrad;
         }
 
-        for (var i = 0; i < hl; i++) {
+        for (int i = 0; i < hl; i++) {
 
 
-            var head = heads[i];
-            var units = _hiddenToHeadsWeights[i];
-            for (var j = 0; j < _headUnitSize; j++) {
-                var headUnitGrad = head.get(j).grad;
-                var unitJ = units[j];
-                for (var k = 0; k < controllerSize; k++) {
+            Head head = heads[i];
+            Unit[][] units = _hiddenToHeadsWeights[i];
+            for (int j = 0; j < _headUnitSize; j++) {
+                double headUnitGrad = head.get(j).grad;
+                Unit[] unitJ = units[j];
+                for (int k = 0; k < controllerSize; k++) {
                     unitJ[k].grad += headUnitGrad * hiddenValue[k];
                 }
                 unitJ[controllerSize].grad += headUnitGrad;
@@ -160,8 +168,8 @@ public class OutputLayer {
     }
 
     public void updateWeights(Consumer<Unit> updateAction) {
-        var tensor2UpdateAction = Unit.tensor2UpdateAction(updateAction);
-        var tensor3UpdateAction = Unit.tensor3UpdateAction(updateAction);
+        Consumer<Unit[][]> tensor2UpdateAction = Unit.tensor2UpdateAction(updateAction);
+        Consumer<Unit[][][]> tensor3UpdateAction = Unit.tensor3UpdateAction(updateAction);
         tensor2UpdateAction.accept(_hiddenToOutputLayerWeights);
         tensor3UpdateAction.accept(_hiddenToHeadsWeights);
     }

@@ -28,8 +28,8 @@ public class Spacecraft extends VectorSprite {
         burstCounter = 0;
         bursting = false;
 
-        for (var i = 0; i < 3; i++) {
-            for (var n = 0; n < 4; n++) {
+        for (int i = 0; i < 3; i++) {
+            for (int n = 0; n < 4; n++) {
                 upgrades[i][n] = 0;
             }
         }

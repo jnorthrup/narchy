@@ -82,7 +82,7 @@ final class LayoutParser {
         }
 
         int c;
-        var len = 0;
+        int len = 0;
         
         if (getchar() == '\"') {
             nextchar();
@@ -120,7 +120,7 @@ final class LayoutParser {
     }
 
     public boolean tokenEquals(String other) {
-        var len = this.tokenLength;
+        int len = this.tokenLength;
         return len == other.length() && data.regionMatches(tokenPos, other, 0, len);
     }
 
@@ -135,13 +135,13 @@ final class LayoutParser {
     }
 
     private int atoi() {
-        var result = 0;
-        var negative = false;
+        int result = 0;
+        boolean negative = false;
         int i = 0, max = tokenLength;
-        var s = data;
+        String s = data;
 
         if (max > 0) {
-            var p = this.tokenPos;
+            int p = this.tokenPos;
             int limit;
             if (s.charAt(p) == '-') {
                 negative = true;
@@ -150,7 +150,7 @@ final class LayoutParser {
             } else {
                 limit = -Integer.MAX_VALUE;
             }
-            var multmin = limit / 10;
+            int multmin = limit / 10;
             int digit;
             if (i < max) {
                 digit = Character.digit(s.charAt(p + i++), 10);
@@ -194,7 +194,7 @@ final class LayoutParser {
     }
 
     private char nextchar() {
-        var i = ++index;
+        int i = ++index;
         return i < length ? data.charAt(i) : 0;
     }
 

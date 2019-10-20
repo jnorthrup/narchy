@@ -54,7 +54,7 @@ public class WizardFrame extends Splitting {
     private void pop() {
         synchronized (this) {
             if (!stack.isEmpty()) {
-                var prev = stack.removeLast();
+                Surface prev = stack.removeLast();
                 if (stack.isEmpty())
                     backButton.hide();
                 assert (prev != null);

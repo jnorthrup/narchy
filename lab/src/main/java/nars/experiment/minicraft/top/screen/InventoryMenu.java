@@ -25,13 +25,13 @@ public class InventoryMenu extends Menu {
         if (input.up.clicked) selected--;
         if (input.down.clicked) selected++;
 
-        var len = player.inventory.items.size();
+        int len = player.inventory.items.size();
         if (len == 0) selected = 0;
         if (selected < 0) selected += len;
         if (selected >= len) selected -= len;
 
         if (input.attack.clicked && len > 0) {
-            var item = player.inventory.items.remove(selected);
+            Item item = player.inventory.items.remove(selected);
             player.activeItem = item;
             game.setMenu(null);
         }

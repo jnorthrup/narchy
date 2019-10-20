@@ -61,7 +61,7 @@ public class UDP extends Loop {
         super();
 
         if (a instanceof Inet4Address) {
-            var target = new byte[16];
+            byte[] target = new byte[16];
             ipv6(a.getAddress(), target, 0);
 
             a = Inet6Address.getByAddress(a.getHostName(), target, null);
@@ -80,7 +80,7 @@ public class UDP extends Loop {
         c.setOption(StandardSocketOptions.SO_REUSEADDR, true);
         c.setOption(StandardSocketOptions.SO_REUSEPORT, true);
 
-        var aa = new InetSocketAddress(a, port);
+        InetSocketAddress aa = new InetSocketAddress(a, port);
         c.bind(aa);
 
 
@@ -187,7 +187,7 @@ public class UDP extends Loop {
         try {
             //System.out.println(this.addr + " send " + to);
 
-            var sent = c.send(ByteBuffer.wrap(data, dataFrom, dataTo), to);
+            int sent = c.send(ByteBuffer.wrap(data, dataFrom, dataTo), to);
             if (sent < data.length) {
                 logger.warn("output overflow: {}/{} bytes sent to {}", sent, data.length, to);
             }

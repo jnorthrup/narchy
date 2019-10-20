@@ -74,8 +74,8 @@ public class CircularFloatBuffer extends CircularBuffer {
         lock.lock();
         try {
 
-            var capacity = this.data.length;
-            var available = available();
+            int capacity = this.data.length;
+            int available = available();
             while (blocking && available < length) {
                 try {
                     writCond.await();
@@ -88,13 +88,13 @@ public class CircularFloatBuffer extends CircularBuffer {
                 return 0;
 
 
-            var len = length;
+            int len = length;
             if (len > available)
                 len = available;
 
-            var tmpIdx = bufEnd + len;
+            int tmpIdx = bufEnd + len;
             if (tmpIdx > capacity) {
-                var tmpLen = capacity - bufEnd;
+                int tmpLen = capacity - bufEnd;
                 System.arraycopy(data, offset, this.data, bufEnd, tmpLen);
                 bufEnd = (tmpIdx) % capacity;
                 System.arraycopy(data, tmpLen + offset, this.data, 0, bufEnd);
@@ -118,13 +118,13 @@ public class CircularFloatBuffer extends CircularBuffer {
 
     /** signed 16-bit pairs of bytes TODO which endian */
     public int writeS16(byte[] sample, int from, int to, float gain) {
-        var len = to-from;
+        int len = to-from;
         //TODO avoid allocation of this temporary buffer
-        var f = new float[len/2];
-        var k = from;
-        for (var i = 0; i < f.length; i++) {
-            var low = sample[k++];
-            var high = sample[k++];
+        float[] f = new float[len/2];
+        int k = from;
+        for (int i = 0; i < f.length; i++) {
+            byte low = sample[k++];
+            byte high = sample[k++];
             f[i] = ((float)(low | (high << 8)))/Short.MAX_VALUE * gain;
         }
         return write(f);
@@ -139,7 +139,7 @@ public class CircularFloatBuffer extends CircularBuffer {
     }
 
     public float peek(int sample) {
-        var idx = idx(sample);
+        int idx = idx(sample);
         return data[idx];
     }
 
@@ -175,10 +175,10 @@ public class CircularFloatBuffer extends CircularBuffer {
             if (data == null || data.length<len)
                 data = new float[len];
 
-            var start = Math.max(0, this.viewPtr - len);
-            var tmpIdx = start + len;
+            int start = Math.max(0, this.viewPtr - len);
+            int tmpIdx = start + len;
             if (tmpIdx > this.data.length) {
-                var tmpLen = this.data.length - start;
+                int tmpLen = this.data.length - start;
                 System.arraycopy(this.data, start, data, 0, tmpLen);
                 start = (tmpIdx) % this.data.length;
                 System.arraycopy(this.data, 0, data, tmpLen, start);
@@ -199,14 +199,14 @@ public class CircularFloatBuffer extends CircularBuffer {
     public int peek(float[] data, int length) {
         lock.lock();
         try {
-            var remSize = writeAt.get() - readAt.get();
+            int remSize = writeAt.get() - readAt.get();
             if (length > 0 && remSize > 0) {
-                var len = length;
+                int len = length;
                 if (len > remSize)
                     len = remSize;
-                var tmpIdx = viewPtr + len;
+                int tmpIdx = viewPtr + len;
                 if (tmpIdx > this.data.length) {
-                    var tmpLen = this.data.length - viewPtr;
+                    int tmpLen = this.data.length - viewPtr;
                     System.arraycopy(this.data, viewPtr, data, 0, tmpLen);
                     viewPtr = (tmpIdx) % this.data.length;
                     System.arraycopy(this.data, 0, data, tmpLen, viewPtr);
@@ -227,7 +227,7 @@ public class CircularFloatBuffer extends CircularBuffer {
         lock.lock();
         try {
             if (length > 0) {
-                var minSize = Math.max(this.minSize, 0);
+                int minSize = Math.max(this.minSize, 0);
                 while (writeAt.get() - minSize < length) {
                     try {
                         readCond.await();
@@ -254,7 +254,7 @@ public class CircularFloatBuffer extends CircularBuffer {
         try {
             wasMarked = false;
             if (length > 0) {
-                var bs = writeAt.get();
+                int bs = writeAt.get();
                 while (blocking && minSize > -1 && bs <= minSize) {
                     try {
                         readCond.await();
@@ -262,13 +262,13 @@ public class CircularFloatBuffer extends CircularBuffer {
                         return -1;
                     }
                 }
-                var minSize = Math.max(this.minSize, 0);
+                int minSize = Math.max(this.minSize, 0);
                 if (bs > 0) {
-                    var len = length;
+                    int len = length;
                     if (len > bs - minSize)
                         len = bs - minSize;
                     int tmpLen;
-                    var m = marks.peek();
+                    BufMark m = marks.peek();
                     if (m != null) {
                         tmpLen = calcMarkSize(m);
                         if (tmpLen <= len) {
@@ -278,7 +278,7 @@ public class CircularFloatBuffer extends CircularBuffer {
                         }
                     }
                     if (len > 0) {
-                        var tmpIdx = bufStart + len;
+                        int tmpIdx = bufStart + len;
                         if (tmpIdx > this.data.length) {
                             tmpLen = this.data.length - bufStart;
                             System.arraycopy(this.data, bufStart, data, offset, tmpLen);
@@ -315,7 +315,7 @@ public class CircularFloatBuffer extends CircularBuffer {
     public float sum(int from, int to) {
         float s = 0;
         //TODO optimize cursor
-        for (var i = from; i < to; i++)
+        for (int i = from; i < to; i++)
             s += peek(i);
         return s;
     }
@@ -330,7 +330,7 @@ public class CircularFloatBuffer extends CircularBuffer {
     }
 
     public double mean(double sStart, double sEnd) {
-        var sum = sum(sStart, sEnd);
+        double sum = sum(sStart, sEnd);
         return sum / (1+(sEnd - sStart));
     }
 

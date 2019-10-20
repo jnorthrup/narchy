@@ -41,7 +41,7 @@ public class RegexRange extends Leaf<String> {
 
     @Override
     public Leaf cloneTree() {
-        var clone = new RegexRange(this);
+        RegexRange clone = new RegexRange(this);
         return clone;
     }
 

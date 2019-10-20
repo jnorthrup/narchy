@@ -182,7 +182,7 @@ public class Twenglish {
 
         LinkedList<Term> t = new LinkedList();
         Span last = null;
-        for (var c : s) {
+        for (Span c : s) {
             t.add(spanToTerm(c));
             last = c;
         }
@@ -206,13 +206,13 @@ public class Twenglish {
         
         if (inputProduct) {
 
-            var tokens =
+            Term tokens =
                     $.p(t.toArray(new Term[t.size()]));
 
 
-            var q = $.func("hear", Atomic.the(source), tokens);
+            Term q = $.func("hear", Atomic.the(source), tokens);
 
-            var newtask = new TaskBuilder(q, BELIEF, 1f, n).present(n);
+            TaskBuilder newtask = new TaskBuilder(q, BELIEF, 1f, n).present(n);
             tt.add(newtask); 
 
 
@@ -256,7 +256,7 @@ public class Twenglish {
                 if (!includeWordPOS) {
                     return lexToTerm(c.content);
                 } else {
-                    var pos = POS.get(c.content.toLowerCase());
+                    String pos = POS.get(c.content.toLowerCase());
                     if (pos != null) {
                         return $.prop(lexToTerm(c.content), tagToTerm(pos));
                     }
@@ -318,12 +318,12 @@ public class Twenglish {
 
         List<TaskBuilder> results = $.newArrayList();
 
-        var tokens = Twokenize.twokenize(s);
+        List<Span> tokens = Twokenize.twokenize(s);
 
         List<List<Span>> sentences = $.newArrayList();
 
         List<Span> currentSentence = $.newArrayList(tokens.size());
-        for (var p : tokens) {
+        for (Span p : tokens) {
 
             currentSentence.add(p);
 
@@ -344,8 +344,8 @@ public class Twenglish {
         if (!currentSentence.isEmpty())
             sentences.add(currentSentence);
 
-        for (var x : sentences) {
-            var ss = parseSentence(source, n, x);
+        for (List<Span> x : sentences) {
+            Collection<TaskBuilder> ss = parseSentence(source, n, x);
             if (ss != null)
                 results.addAll(ss);
         }

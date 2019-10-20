@@ -22,7 +22,7 @@ public class arpeggiator_01 {
 
 
     private void setup() {
-        var ac = new AudioContext();
+        AudioContext ac = new AudioContext();
 
 
         gainEnvelope = new Envelope(ac, 0.0f);
@@ -45,13 +45,13 @@ public class arpeggiator_01 {
         ac.out(arpeggiator);
 
 
-        var wav = new WavePlayer(ac, arpeggiator, WaveFactory.SINE);
+        WavePlayer wav = new WavePlayer(ac, arpeggiator, WaveFactory.SINE);
 
 
         beatClock = ac.clock(800f, arpeggiator).ticksPerBeat(4);
 
 
-        var gain = new Gain(ac, 1, gainEnvelope);
+        Gain gain = new Gain(ac, 1, gainEnvelope);
         gain.setGain(1f);
         gain.in(wav);
 
@@ -71,7 +71,7 @@ public class arpeggiator_01 {
          *  MIDI pitch number to frequency conversion equation from
          *  http:
          */
-        var exponent = (midiPitch - 69.0) / 12.0;
+        double exponent = (midiPitch - 69.0) / 12.0;
         return (float) (Math.pow(2, exponent) * 440.0f);
     }
 

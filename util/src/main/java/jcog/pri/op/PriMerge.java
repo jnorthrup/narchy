@@ -75,10 +75,10 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
         if (incoming!=incoming && ignoreDeletedIncoming())
             return 0;
 
-        var _pBefore = new float[1];
-        var pAfter = existing.pri((x, y) -> {
+        float[] _pBefore = new float[1];
+        float pAfter = existing.pri((x, y) -> {
 
-            var x1 = x;
+            float x1 = x;
             if (x1 != x1) {
                 if (!undelete())
                     return Float.NaN;
@@ -92,7 +92,7 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
         }, incoming);
 
 
-        var pBefore = _pBefore[0];
+        float pBefore = _pBefore[0];
 
         return mode!=null ? mode.apply(incoming, pBefore, pAfter) : Float.NaN;
     }
@@ -114,7 +114,7 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
     public final float mergeUnitize(float existing, float incoming) {
         if (existing != existing)
             existing = 0;
-        var next = merge(existing, incoming);
+        float next = merge(existing, incoming);
         if (next == next) {
             if (next > 1) next = 1;
             else if (next < 0) next = 0;

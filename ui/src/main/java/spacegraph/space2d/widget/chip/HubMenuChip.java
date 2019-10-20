@@ -25,11 +25,11 @@ public class HubMenuChip extends Bordering {
     protected void starting() {
         super.starting();
 
-        var g = parentOrSelf(GraphEdit2D.class); //TODO generic Spawnable interface
-        for (var entry : menu.entrySet()) {
-            var name = entry.getKey();
-            var i = entry.getValue();
-            var ii = new ExpandingChip(name, i);
+        GraphEdit2D g = parentOrSelf(GraphEdit2D.class); //TODO generic Spawnable interface
+        for (Map.Entry<String, Supplier<Surface>> entry : menu.entrySet()) {
+            String name = entry.getKey();
+            Supplier<Surface> i = entry.getValue();
+            ExpandingChip ii = new ExpandingChip(name, i);
             ContainerSurface iii = g.add(ii).posRel(bounds, 1, 1, 0.1f, 0.1f); //TODO radial layout
 
             Exe.runLater(() -> g.addWire(new Wire(HubMenuChip.this, ii)));

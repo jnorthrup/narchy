@@ -159,11 +159,11 @@ public abstract class Input {
      */
     private void sendKeyPresses(String pressSequence) {
         try {
-            var debugString = "Sending keypresses: ";
-            for (var i = 0; i < pressSequence.length(); i += 2) {
+            String debugString = "Sending keypresses: ";
+            for (int i = 0; i < pressSequence.length(); i += 2) {
                 int scancode = pressSequence.charAt(i);
                 int action = pressSequence.charAt(i + 1);
-                var flags = 0;
+                int flags = 0;
 
                 switch (action) {
                     case KeyCode_FileBased.UP:
@@ -669,7 +669,7 @@ public abstract class Input {
             if (e.getY() != 0)
                 ((RdesktopFrame) canvas.getParent()).hideMenu();
 
-            var time = getTime();
+            int time = getTime();
             if (rdp != null) {
                 if ((e.getModifiers() & InputEvent.BUTTON1_MASK) == InputEvent.BUTTON1_MASK) {
                     logger.debug("Mouse Button 1 Pressed.");
@@ -688,7 +688,7 @@ public abstract class Input {
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            var time = getTime();
+            int time = getTime();
             if (rdp != null) {
                 if ((e.getModifiers() & InputEvent.BUTTON1_MASK) == InputEvent.BUTTON1_MASK) {
                     rdp.sendInput(time, RDP_INPUT_MOUSE, MOUSE_FLAG_BUTTON1, e
@@ -710,7 +710,7 @@ public abstract class Input {
 
         @Override
         public void mouseMoved(MouseEvent e) {
-            var time = getTime();
+            int time = getTime();
 
             
             
@@ -734,7 +734,7 @@ public abstract class Input {
 
         @Override
         public void mouseDragged(MouseEvent e) {
-            var time = getTime();
+            int time = getTime();
             
             
             if (rdp != null) {

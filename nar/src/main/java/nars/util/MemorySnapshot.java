@@ -21,8 +21,8 @@ public class MemorySnapshot {
     }
 
     protected void add(Termed /*Concept*/ _c) {
-        var c = (Concept)_c;
-        var t = c.term();
+        Concept c = (Concept)_c;
+        Term t = c.term();
         //index
         byAnon.put(t.anon(), c);
     }

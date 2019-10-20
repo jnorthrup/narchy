@@ -93,7 +93,7 @@ public class TestNAR {
     }
 
     public void run(long finalCycle) {
-        var result = _run(finalCycle);
+        TestNARResult result = _run(finalCycle);
         assertTrue(result.success);
     }
 
@@ -106,16 +106,16 @@ public class TestNAR {
             assertTrue(!succeedsIfAll.isEmpty() || !failsIfAny.isEmpty(), "no conditions tested");
 
 
-        var id = succeedsIfAll.toString();
+        String id = succeedsIfAll.toString();
 
         if (finalCycle <= 0) {
             //infer final cycle
-            for (var oc : succeedsIfAll) {
-                var oce = oc.getFinalCycle();
+            for (NARCondition oc : succeedsIfAll) {
+                long oce = oc.getFinalCycle();
                 if (oce >= 0 && oce > finalCycle) finalCycle = oce + 1;
             }
-            for (var oc : failsIfAny) {
-                var oce = oc.getFinalCycle();
+            for (NARCondition oc : failsIfAny) {
+                long oce = oc.getFinalCycle();
                 if (oce >= 0 && oce > finalCycle) finalCycle = oce + 1;
             }
         }
@@ -131,7 +131,7 @@ public class TestNAR {
          * TODO separate way to generate a test report containing
          * both successful and unsuccessful tests
          */
-        var trace1 = false;
+        boolean trace1 = false;
         if (trace1)
             nar.trace(trace = new StringWriter());
         else
@@ -141,7 +141,7 @@ public class TestNAR {
             new EarlyExit(1);
         }
 
-        var startTime = nar.time();
+        long startTime = nar.time();
 
 
         boolean error;
@@ -154,12 +154,12 @@ public class TestNAR {
             error = true;
         }
 
-        var endTime = nar.time();
-        var runtime = Math.max(0, (int) (endTime - startTime));
+        long endTime = nar.time();
+        int runtime = Math.max(0, (int) (endTime - startTime));
 
         assert(runtime <= finalCycle);
 
-        var success =
+        boolean success =
                 succeedsIfAll.allSatisfy(NARCondition::isTrue)
                 &&
                 !failsIfAny.anySatisfy(NARCondition::isTrue);
@@ -170,9 +170,9 @@ public class TestNAR {
         if (reportStats) {
             logger.info("{}\n", id);
 
-            for (var t : succeedsIfAll)
+            for (NARCondition t : succeedsIfAll)
                 t.log("must", t.isTrue(), logger);
-            for (var t : failsIfAny)
+            for (NARCondition t : failsIfAny)
                 t.log("mustNot", t.isFalse(), logger);
 
 
@@ -194,7 +194,7 @@ public class TestNAR {
         nar.synch();
 
 
-        var frames = Math.max(0, (int) (finalCycle - time()));
+        int frames = Math.max(0, (int) (finalCycle - time()));
         while (frames-- > 0 && !finished)
             nar.run();
 
@@ -212,7 +212,7 @@ public class TestNAR {
 
     public TestNAR input(String... s) {
         finished = false;
-        for (var x: s)
+        for (String x: s)
             try {
                 nar.input(x);
             } catch (Narsese.NarseseException e) {
@@ -224,7 +224,7 @@ public class TestNAR {
 
     public TestNAR input(Task... s) {
         finished = false;
-        for (var x : s) {
+        for (Task x : s) {
             if (x.pri() == 0 || x.isDeleted())
                 throw new RuntimeException("input task has zero or deleted priority");
             nar.input(x);
@@ -352,7 +352,7 @@ public class TestNAR {
 
 
     private TestNAR mustEmit(ByteTopic<Task> c, long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time, boolean must) throws Narsese.NarseseException {
-        var now = time();
+        long now = time();
         cyclesAhead = Math.round(cyclesAhead * NAL.test.TIME_MULTIPLIER);
         return mustEmit(c, now, now + cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, time, must);
     }
@@ -363,15 +363,15 @@ public class TestNAR {
         if (freqMin == -1)
             freqMin = freqMax;
 
-        var temporalTolerance = 0;
-        var tt = temporalTolerance;
+        int temporalTolerance = 0;
+        int tt = temporalTolerance;
         cycleStart -= tt;
         cycleEnd += tt;
 
-        var term =
+        Term term =
                 $.$(sentenceTerm);
-        var tv = term.volume();
-        var tvMax = nar.termVolMax.intValue();
+        int tv = term.volume();
+        int tvMax = nar.termVolMax.intValue();
         if (tv > tvMax) {
             throw new TermException("condition term volume (" + tv + ") exceeds volume max (" + tvMax + ')', term);
         }
@@ -430,10 +430,10 @@ public class TestNAR {
 
 
     private TestNAR mustEmit(ByteTopic<Task> c, long cyclesAhead, String task) throws Narsese.NarseseException {
-        var t = Narsese.task(task, nar);
+        Task t = Narsese.task(task, nar);
 
 
-        var termString = t.term().toString();
+        String termString = t.term().toString();
         float freq, conf;
         if (t.truth() != null) {
             freq = t.freq();

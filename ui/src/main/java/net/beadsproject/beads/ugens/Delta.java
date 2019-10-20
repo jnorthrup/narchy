@@ -40,8 +40,8 @@ public class Delta extends UGen {
     @Override
     public void gen() {
 
-        var bi = bufIn[0];
-        var bo = bufOut[0];
+        float[] bi = bufIn[0];
+        float[] bo = bufOut[0];
 
         bo[0] = bi[0] - lastX;
 

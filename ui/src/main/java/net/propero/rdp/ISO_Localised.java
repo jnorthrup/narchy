@@ -87,7 +87,7 @@ public class ISO_Localised extends ISO {
             throws IOException {
 
         rdpsock = new Socket();
-        var timeout_ms = 3000;
+        int timeout_ms = 3000;
         rdpsock.connect(new InetSocketAddress(host, port), timeout_ms);
     }
 

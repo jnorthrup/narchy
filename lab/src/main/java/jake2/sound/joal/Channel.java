@@ -111,14 +111,14 @@ public class Channel {
 		Channel.buffers = buffers;
 
         numChannels = 0;
-		for (var i = 0; i < MAX_CHANNELS; i++) {
+		for (int i = 0; i < MAX_CHANNELS; i++) {
 
             int sourceId;
             try {
                         al.alGetError(); 
 			al.alGenSources(1, tmp, 0);
 			sourceId = tmp[0];
-				var errorCode = al.alGetError();
+                int errorCode = al.alGetError();
 			
 			if (errorCode != ALConstants.AL_NO_ERROR) {
 	                    Com.Println("can't generate more sources: channel="+
@@ -151,7 +151,7 @@ public class Channel {
 	}
 	
 	static void reset() {
-		for (var i = 0; i < numChannels; i++) {
+		for (int i = 0; i < numChannels; i++) {
 			al.alSourceStop(sources[i]);
 			al.alSourcei(sources[i], ALConstants.AL_BUFFER, 0);
 			channels[i].clear();
@@ -171,7 +171,7 @@ public class Channel {
         streamingEnabled = true;
         streamQueue = 0;
 
-		var source = channels[numChannels].sourceId;
+        int source = channels[numChannels].sourceId;
         al.alSourcei (source, ALConstants.AL_SOURCE_RELATIVE, ALConstants.AL_TRUE);
         al.alSourcef(source, ALConstants.AL_GAIN, 1.0f);
         channels[numChannels].volumeChanged = true;
@@ -194,13 +194,13 @@ public class Channel {
         if(tmp==null)
            tmp = new int[1];
         if (!streamingEnabled) return;
-		var source = channels[numChannels].sourceId;
+        int source = channels[numChannels].sourceId;
 
         
         al.alSourceStop(source);
         int[] tmpCount = {0};
         al.alGetSourcei(source, ALConstants.AL_BUFFERS_QUEUED, tmpCount, 0);
-		var count = tmpCount[0];
+        int count = tmpCount[0];
         Com.DPrintf("unqueue " + count + " buffers\n");
         while (count-- > 0) {
             al.alSourceUnqueueBuffers(source, 1, tmp, 0);
@@ -212,16 +212,16 @@ public class Channel {
         if(tmp==null)
             tmp = new int[1];
         enableStreaming();
-		var buffer = tmp;
-		var source = channels[numChannels].sourceId;
+        int[] buffer = tmp;
+        int source = channels[numChannels].sourceId;
         
         int[] tmp = {0};
         al.alGetSourcei(source, ALConstants.AL_BUFFERS_PROCESSED, tmp, 0);
-		var processed = tmp[0];
+        int processed = tmp[0];
         al.alGetSourcei(source, ALConstants.AL_SOURCE_STATE, tmp, 0);
-		var state = tmp[0];
-		var playing = ( state == ALConstants.AL_PLAYING);
-		var interupted = !playing && streamQueue > 2;
+        int state = tmp[0];
+        boolean playing = ( state == ALConstants.AL_PLAYING);
+        boolean interupted = !playing && streamQueue > 2;
         
         if (interupted) {
             unqueueStreams();
@@ -296,8 +296,8 @@ public class Channel {
 	}
 	
 	private static Channel pickForLoop(int bufferId, float attenuation) {
-        for (var i = 0; i < numChannels; i++) {
-			var ch = channels[i];
+        for (int i = 0; i < numChannels; i++) {
+            Channel ch = channels[i];
 
             if (!ch.active) {
                 ch.entnum = 0;
@@ -322,10 +322,10 @@ public class Channel {
 	static void playAllSounds(float[] listenerOrigin) {
         int[] tmp = {0};
 
-		for (var i = 0; i < numChannels; i++) {
-			var ch = channels[i];
+		for (int i = 0; i < numChannels; i++) {
+            Channel ch = channels[i];
             if (ch.active) {
-				var sourceId = ch.sourceId;
+                int sourceId = ch.sourceId;
                 switch (ch.type) {
 					case Channel.LISTENER:
 						Math3D.VectorCopy(listenerOrigin, sourceOrigin);
@@ -358,7 +358,7 @@ public class Channel {
 					ch.modified = false;
 				} else {
 					al.alGetSourcei(sourceId, ALConstants.AL_SOURCE_STATE, tmp , 0);
-					var state = tmp[0];
+                    int state = tmp[0];
                     if (state == ALConstants.AL_PLAYING) {
 						al.alSourcefv(sourceId, ALConstants.AL_POSITION, sourceOrigin, 0);
 					} else {
@@ -383,17 +383,17 @@ public class Channel {
 			return;
 		}
 
-		var sound = 0;
+        int sound = 0;
 
-		for (var i = 0; i<Globals.cl.frame.num_entities ; i++) {
-			var num = (Globals.cl.frame.parse_entities + i) & (Defines.MAX_PARSE_ENTITIES - 1);
-			var ent = Globals.cl_parse_entities[num];
+		for (int i = 0; i<Globals.cl.frame.num_entities ; i++) {
+            int num = (Globals.cl.frame.parse_entities + i) & (Defines.MAX_PARSE_ENTITIES - 1);
+            entity_state_t ent = Globals.cl_parse_entities[num];
             sound = ent.sound;
 
 			if (sound == 0) continue;
 
             Integer key = ent.number;
-			var ch = looptable.get(key);
+            Channel ch = looptable.get(key);
 
             if (ch != null) {
 				
@@ -402,11 +402,11 @@ public class Channel {
 				continue;
 			}
 
-			var sfx = Globals.cl.sound_precache[sound];
+            sfx_t sfx = Globals.cl.sound_precache[sound];
             if (sfx == null)
 				continue;
 
-			var sc = sfx.cache;
+            sfxcache_t sc = sfx.cache;
             if (sc == null)
 				continue;
 
@@ -429,8 +429,8 @@ public class Channel {
 	
 	private static void removeUnusedLoopSounds() {
 
-        for (var iter = looptable.values().iterator(); iter.hasNext();) {
-			var ch = iter.next();
+        for (Iterator<Channel> iter = looptable.values().iterator(); iter.hasNext();) {
+            Channel ch = iter.next();
             if (!ch.autosound) {
 				al.alSourceStop(ch.sourceId);
 				al.alSourcei(ch.sourceId, ALConstants.AL_LOOPING, ALConstants.AL_FALSE);

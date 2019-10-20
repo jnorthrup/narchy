@@ -42,15 +42,15 @@ public class DefaultTreeEvaluator implements TreeEvaluator {
 
         List<Bounds[]> results = new FastList(context.getCurrentDataSetLength());
 
-        var sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         root.describe(sb);
 
         try {
 
-            var regex = Pattern.compile(sb.toString());
-            var matcher = regex.matcher("");
+            Pattern regex = Pattern.compile(sb.toString());
+            Matcher matcher = regex.matcher("");
 
-            for (var e : context.getCurrentDataSet().
+            for (Example e : context.getCurrentDataSet().
                     getExamples()) {
                 eval(results, matcher, e);
             }
@@ -63,7 +63,7 @@ public class DefaultTreeEvaluator implements TreeEvaluator {
 
     private static void eval(List<Bounds[]> results, Matcher matcher, Example example) {
         try {
-            var m = matcher.reset(example.getString());
+            Matcher m = matcher.reset(example.getString());
 
             List<Bounds> b = new FastList<>(0);
 

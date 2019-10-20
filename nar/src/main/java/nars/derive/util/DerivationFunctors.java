@@ -2,10 +2,12 @@ package nars.derive.util;
 
 import nars.Builtin;
 import nars.NAL;
+import nars.NAR;
 import nars.derive.Derivation;
 import nars.op.Cmp;
 import nars.op.Equal;
 import nars.op.SetFunc;
+import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Neg;
@@ -43,7 +45,7 @@ public enum DerivationFunctors {
 			if (s instanceof InlineFunctor)
 				add(m, s);
 
-		var nar = d.nar;
+        NAR nar = d.nar;
 
 
 		Functor[] derivationFunctors = {
@@ -97,7 +99,7 @@ public enum DerivationFunctors {
 			/** applies # dep and $ indep variable introduction if possible. returns the input term otherwise  */
 			Functor.f1Inline("varIntro", x -> {
 				if (!(x instanceof Compound)) return Null;
-				var y = DepIndepVarIntroduction.the.apply((Compound)x, nar.random(), d.retransform);
+                Term y = DepIndepVarIntroduction.the.apply((Compound)x, nar.random(), d.retransform);
 				return y == null ? Null : y;
 			}),
 
@@ -106,19 +108,19 @@ public enum DerivationFunctors {
 				@Override
 				protected Term apply1(Term _arg) {
 
-					var neg = _arg instanceof Neg;
-					var arg = neg ? _arg.unneg() : _arg;
+                    boolean neg = _arg instanceof Neg;
+                    Term arg = neg ? _arg.unneg() : _arg;
 
 					if (!(arg instanceof Compound))
 						return Null;
 
-					var x = arg.subterms();
-					var n = x.subs();
+                    Subterms x = arg.subterms();
+                    int n = x.subs();
 					if (n == 0)
 						return Null;
 
-					var which = d.random.nextInt(n);
-					var y = x.transformSub(which, Term::neg);
+                    int which = d.random.nextInt(n);
+                    Subterms y = x.transformSub(which, Term::neg);
 					if (x != y)
 						return arg.op().the(y).negIf(neg);
 

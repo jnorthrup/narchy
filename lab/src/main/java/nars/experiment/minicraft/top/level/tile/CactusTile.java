@@ -19,7 +19,7 @@ public class CactusTile extends Tile {
 
     @Override
     public void render(Screen screen, Level level, int x, int y) {
-        var col = Color.get(20, 40, 50, level.sandColor);
+        int col = Color.get(20, 40, 50, level.sandColor);
         screen.render(x * 16 + 0, y * 16 + 0, 8 + 2 * 32, col, 0);
         screen.render(x * 16 + 8, y * 16 + 0, 9 + 2 * 32, col, 0);
         screen.render(x * 16 + 0, y * 16 + 8, 8 + 3 * 32, col, 0);
@@ -33,12 +33,12 @@ public class CactusTile extends Tile {
 
     @Override
     public void hurt(Level level, int x, int y, Mob source, int dmg, int attackDir) {
-        var damage = level.getData(x, y) + dmg;
+        int damage = level.getData(x, y) + dmg;
         level.add(new SmashParticle(x * 16 + 8, y * 16 + 8));
         level.add(new TextParticle(String.valueOf(dmg), x * 16 + 8, y * 16 + 8, Color.get(-1, 500, 500, 500)));
         if (damage >= 10) {
-            var count = random.nextInt(2) + 1;
-            for (var i = 0; i < count; i++) {
+            int count = random.nextInt(2) + 1;
+            for (int i = 0; i < count; i++) {
                 level.add(new ItemEntity(new ResourceItem(Resource.cactusFlower), x * 16 + random.nextInt(10) + 3, y * 16 + random.nextInt(10) + 3));
             }
             level.setTile(x, y, Tile.sand, 0);
@@ -54,7 +54,7 @@ public class CactusTile extends Tile {
 
     @Override
     public void tick(Level level, int xt, int yt) {
-        var damage = level.getData(xt, yt);
+        int damage = level.getData(xt, yt);
         if (damage > 0) level.setData(xt, yt, damage - 1);
     }
 }

@@ -96,7 +96,7 @@ public class LongOpt  {
             /**
              * Localized strings for error messages
              */
-            var _messages = ResourceBundle.getBundle(
+            ResourceBundle _messages = ResourceBundle.getBundle(
                     "gnu/getopt/MessagesBundle", Locale.getDefault());
             throw new IllegalArgumentException(MessageFormat.format(
                     _messages.getString("getopt.invalidValue"), msgArgs));

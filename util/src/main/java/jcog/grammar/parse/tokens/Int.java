@@ -12,17 +12,17 @@ public class Int extends Terminal {
 
 	@Override
 	protected boolean qualifies(Object o) {
-		var t = (Token) o;
+        Token t = (Token) o;
 		if (!t.isNumber()) {
 			return false;
 		}
-		var number = (BigDecimal) t.value();
+        BigDecimal number = (BigDecimal) t.value();
 		return number.scale() <= 0;
 	}
 
 	@Override
 	public List<String> randomExpansion(int maxDepth, int depth) {
-		var d = (int) Math.floor(100 * Math.random());
+        int d = (int) Math.floor(100 * Math.random());
 		List<String> v = new ArrayList<>();
 		v.add(Integer.toString(d));
 		return v;
@@ -35,7 +35,7 @@ public class Int extends Terminal {
 
 	@Override
 	protected Object elementToPushOnStack(Object assemblyObject) {
-		var value = (BigDecimal) ((Token) assemblyObject).value();
+        BigDecimal value = (BigDecimal) ((Token) assemblyObject).value();
 
 		return new Token(value.toBigInteger());
 	}

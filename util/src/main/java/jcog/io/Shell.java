@@ -111,7 +111,7 @@ public class Shell {
         @Override
         public void run() {
             try {
-                var br = new BufferedReader(new InputStreamReader(is));
+                BufferedReader br = new BufferedReader(new InputStreamReader(is));
                 String line = null;
                 while ((line = br.readLine()) != null) {
                     eachLine.accept(line);

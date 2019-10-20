@@ -51,17 +51,17 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 
 		this.isSwapped = isSwapped;
 
-		var colObj = isSwapped ? body1 : body0;
-		var otherObj = isSwapped ? body0 : body1;
+        Collidable colObj = isSwapped ? body1 : body0;
+        Collidable otherObj = isSwapped ? body0 : body1;
 		assert (colObj.shape().isCompound());
 
-		var compoundShape = (CompoundShape) colObj.shape();
-		var numChildren = compoundShape.size();
+        CompoundShape compoundShape = (CompoundShape) colObj.shape();
+        int numChildren = compoundShape.size();
 
 
-        for (var i = 0; i < numChildren; i++) {
-			var tmpShape = colObj.shape();
-			var childShape = compoundShape.getChildShape(i);
+        for (int i = 0; i < numChildren; i++) {
+            CollisionShape tmpShape = colObj.shape();
+            CollisionShape childShape = compoundShape.getChildShape(i);
 			colObj.internalSetTemporaryCollisionShape(childShape);
 			childCollisionAlgorithms.add(ci.intersecter1.findAlgorithm(colObj, otherObj));
 			colObj.internalSetTemporaryCollisionShape(tmpShape);
@@ -70,8 +70,8 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 
 	@Override
 	public void destroy() {
-		var numChildren = childCollisionAlgorithms.size();
-        for (var childCollisionAlgorithm : childCollisionAlgorithms) {
+        int numChildren = childCollisionAlgorithms.size();
+        for (CollisionAlgorithm childCollisionAlgorithm : childCollisionAlgorithms) {
 
 
             Intersecter.freeCollisionAlgorithm(childCollisionAlgorithm);
@@ -81,23 +81,23 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 
 	@Override
 	public void processCollision(Collidable body0, Collidable body1, DispatcherInfo dispatchInfo, ManifoldResult resultOut) {
-		var colObj = isSwapped ? body1 : body0;
-		var otherObj = isSwapped ? body0 : body1;
+        Collidable colObj = isSwapped ? body1 : body0;
+        Collidable otherObj = isSwapped ? body0 : body1;
 
 		assert (colObj.shape().isCompound());
-		var compoundShape = (CompoundShape) colObj.shape();
+        CompoundShape compoundShape = (CompoundShape) colObj.shape();
 
 
-		var tmpTrans = new Transform();
-		var orgTrans = new Transform();
-		var childTrans = new Transform();
-		var orgInterpolationTrans = new Transform();
-		var newChildWorldTrans = new Transform();
+        Transform tmpTrans = new Transform();
+        Transform orgTrans = new Transform();
+        Transform childTrans = new Transform();
+        Transform orgInterpolationTrans = new Transform();
+        Transform newChildWorldTrans = new Transform();
 
-		var numChildren = childCollisionAlgorithms.size();
-        for (var i = 0; i < numChildren; i++) {
+        int numChildren = childCollisionAlgorithms.size();
+        for (int i = 0; i < numChildren; i++) {
 
-			var childShape = compoundShape.getChildShape(i);
+            CollisionShape childShape = compoundShape.getChildShape(i);
 
 			
 			colObj.getWorldTransform(orgTrans);
@@ -109,7 +109,7 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 			colObj.setInterpolationWorldTransform(newChildWorldTrans);
 
 
-			var tmpShape = colObj.shape();
+            CollisionShape tmpShape = colObj.shape();
 			colObj.internalSetTemporaryCollisionShape(childShape);
             
             childCollisionAlgorithms.get(i).processCollision(colObj, otherObj, dispatchInfo, resultOut);
@@ -122,23 +122,23 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 
 	@Override
 	public float calculateTimeOfImpact(Collidable body0, Collidable body1, DispatcherInfo dispatchInfo, ManifoldResult resultOut) {
-		var colObj = isSwapped ? body1 : body0;
-		var otherObj = isSwapped ? body0 : body1;
+        Collidable colObj = isSwapped ? body1 : body0;
+        Collidable otherObj = isSwapped ? body0 : body1;
 
 		assert (colObj.shape().isCompound());
 
-		var compoundShape = (CompoundShape) colObj.shape();
+        CompoundShape compoundShape = (CompoundShape) colObj.shape();
 
 
-		var tmpTrans = new Transform();
-		var orgTrans = new Transform();
-		var childTrans = new Transform();
-		var hitFraction = 1f;
+        Transform tmpTrans = new Transform();
+        Transform orgTrans = new Transform();
+        Transform childTrans = new Transform();
+        float hitFraction = 1f;
 
-		var numChildren = childCollisionAlgorithms.size();
-        for (var i = 0; i < numChildren; i++) {
+        int numChildren = childCollisionAlgorithms.size();
+        for (int i = 0; i < numChildren; i++) {
 
-			var childShape = compoundShape.getChildShape(i);
+            CollisionShape childShape = compoundShape.getChildShape(i);
 
 			
 			colObj.getWorldTransform(orgTrans);
@@ -149,10 +149,10 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 			tmpTrans.mul(childTrans);
 			colObj.transform(tmpTrans);
 
-			var tmpShape = colObj.shape();
+            CollisionShape tmpShape = colObj.shape();
 			colObj.internalSetTemporaryCollisionShape(childShape);
 
-			var frac = childCollisionAlgorithms.get(i).calculateTimeOfImpact(colObj, otherObj, dispatchInfo, resultOut);
+            float frac = childCollisionAlgorithms.get(i).calculateTimeOfImpact(colObj, otherObj, dispatchInfo, resultOut);
 			if (frac < hitFraction) {
 				hitFraction = frac;
 			}
@@ -165,7 +165,7 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 
 	@Override
 	public void getAllContactManifolds(OArrayList<PersistentManifold> manifoldArray) {
-        for (var childCollisionAlgorithm : childCollisionAlgorithms) {
+        for (CollisionAlgorithm childCollisionAlgorithm : childCollisionAlgorithms) {
 
             childCollisionAlgorithm.getAllContactManifolds(manifoldArray);
         }
@@ -177,7 +177,7 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 
 		@Override
 		public CollisionAlgorithm createCollisionAlgorithm(CollisionAlgorithmConstructionInfo ci, Collidable body0, Collidable body1) {
-			var algo = new CompoundCollisionAlgorithm();
+            CompoundCollisionAlgorithm algo = new CompoundCollisionAlgorithm();
 			algo.init(ci, body0, body1, false);
 			return algo;
 		}
@@ -188,7 +188,7 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 
 		@Override
 		public CollisionAlgorithm createCollisionAlgorithm(CollisionAlgorithmConstructionInfo ci, Collidable body0, Collidable body1) {
-			var algo = new CompoundCollisionAlgorithm();
+            CompoundCollisionAlgorithm algo = new CompoundCollisionAlgorithm();
 			algo.init(ci, body0, body1, true);
 			return algo;
 		}

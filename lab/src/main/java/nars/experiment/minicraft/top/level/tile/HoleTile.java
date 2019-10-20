@@ -15,19 +15,19 @@ public class HoleTile extends Tile {
 
     @Override
     public void render(Screen screen, Level level, int x, int y) {
-        var col = Color.get(111, 111, 110, 110);
-        var transitionColor1 = Color.get(3, 111, level.dirtColor - 111, level.dirtColor);
-        var transitionColor2 = Color.get(3, 111, level.sandColor - 110, level.sandColor);
+        int col = Color.get(111, 111, 110, 110);
+        int transitionColor1 = Color.get(3, 111, level.dirtColor - 111, level.dirtColor);
+        int transitionColor2 = Color.get(3, 111, level.sandColor - 110, level.sandColor);
 
-        var u = !level.getTile(x, y - 1).connectsToLiquid();
-        var d = !level.getTile(x, y + 1).connectsToLiquid();
-        var l = !level.getTile(x - 1, y).connectsToLiquid();
-        var r = !level.getTile(x + 1, y).connectsToLiquid();
+        boolean u = !level.getTile(x, y - 1).connectsToLiquid();
+        boolean d = !level.getTile(x, y + 1).connectsToLiquid();
+        boolean l = !level.getTile(x - 1, y).connectsToLiquid();
+        boolean r = !level.getTile(x + 1, y).connectsToLiquid();
 
-        var su = u && level.getTile(x, y - 1).connectsToSand;
-        var sd = d && level.getTile(x, y + 1).connectsToSand;
-        var sl = l && level.getTile(x - 1, y).connectsToSand;
-        var sr = r && level.getTile(x + 1, y).connectsToSand;
+        boolean su = u && level.getTile(x, y - 1).connectsToSand;
+        boolean sd = d && level.getTile(x, y + 1).connectsToSand;
+        boolean sl = l && level.getTile(x - 1, y).connectsToSand;
+        boolean sr = r && level.getTile(x + 1, y).connectsToSand;
 
         if (!u && !l) {
             screen.render(x * 16 + 0, y * 16 + 0, 0, col, 0);

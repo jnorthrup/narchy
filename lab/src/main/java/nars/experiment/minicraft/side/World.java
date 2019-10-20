@@ -37,14 +37,14 @@ public class World implements java.io.Serializable {
 
     public World(int width, int height, Random random) {
 
-        var generated = WorldGenerator.generate(width, height, random);
+        TileID[][] generated = WorldGenerator.generate(width, height, random);
         WorldGenerator.visibility = null;
         this.spawnLocation = WorldGenerator.playerLocation;
         tiles = new Tile[width][height];
 
-        for (var i = 0; i < width; i++) {
-            for (var j = 0; j < height; j++) {
-                var tile = Constants.tileTypes.get(generated[i][j]);
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                Tile tile = Constants.tileTypes.get(generated[i][j]);
                 if (tile == null) {
                     tiles[i][j] = Constants.tileTypes.get(TileID.AIR);
                 } else {
@@ -64,14 +64,14 @@ public class World implements java.io.Serializable {
 
     public void chunkUpdate() {
         ticksAlive++;
-        for (var i = 0; i < chunkWidth; i++) {
-            var isDirectLight = true;
-            for (var j = 0; j < height; j++) {
-                var x = i + chunkWidth * chunkNeedsUpdate;
+        for (int i = 0; i < chunkWidth; i++) {
+            boolean isDirectLight = true;
+            for (int j = 0; j < height; j++) {
+                int x = i + chunkWidth * chunkNeedsUpdate;
                 if (x >= width || x < 0) {
                     continue;
                 }
-                var y = j;
+                int y = j;
                 if (!chunkFillRight) {
                     x = width - 1 - x;
                     y = height - 1 - y;
@@ -121,8 +121,8 @@ public class World implements java.io.Serializable {
     }
 
     private void addTemplate(TileTemplate tileTemplate, int x, int y) {
-        for (var i = 0; i < tileTemplate.template.length; i++) {
-            for (var j = 0; j < tileTemplate.template[0].length; j++) {
+        for (int i = 0; i < tileTemplate.template.length; i++) {
+            for (int j = 0; j < tileTemplate.template[0].length; j++) {
                 if (tileTemplate.template[i][j] != TileID.NONE && x - tileTemplate.spawnY + i >= 0
                         && x - tileTemplate.spawnY + i < tiles.length
                         && y - tileTemplate.spawnX + j >= 0
@@ -142,7 +142,7 @@ public class World implements java.io.Serializable {
         if (x < 0 || x >= width || y < 0 || y >= height) {
             return false;
         }
-        var tile = Constants.tileTypes.get(name);
+        Tile tile = Constants.tileTypes.get(name);
         if (tile == null) {
             return false;
         }
@@ -162,7 +162,7 @@ public class World implements java.io.Serializable {
         if (x < 0 || x >= width || y < 0 || y >= height) {
             return TileID.NONE;
         }
-        var name = tiles[x][y].type.name;
+        TileID name = tiles[x][y].type.name;
         tiles[x][y] = Constants.tileTypes.get(TileID.AIR);
         lightingEngineSun.removedTile(x, y);
         lightingEngineSourceBlocks.removedTile(x, y);
@@ -187,22 +187,37 @@ public class World implements java.io.Serializable {
         if (x < 0 || x >= width || y < 0 || y >= height) {
             return Integer.MAX_VALUE;
         }
-        var currentName = tiles[x][y].type.name;
+        TileID currentName = tiles[x][y].type.name;
 
-        var breakType = Arrays.stream(breakWood).anyMatch(element -> element == currentName) ? breakWood : null;
-        if (Arrays.stream(breakStone).anyMatch(element -> element == currentName)) {
-            breakType = breakStone;
+        TileID[] breakType = null;
+        for (TileID element1 : breakWood) {
+            if (element1 == currentName) {
+                breakType = breakWood;
+                break;
+            }
         }
-        if (Arrays.stream(breakMetal).anyMatch(element -> element == currentName)) {
-            breakType = breakMetal;
+        for (TileID id : breakStone) {
+            if (id == currentName) {
+                breakType = breakStone;
+                break;
+            }
         }
-        if (Arrays.stream(breakDiamond).anyMatch(element -> element == currentName)) {
-            breakType = breakDiamond;
+        for (TileID tileID : breakMetal) {
+            if (tileID == currentName) {
+                breakType = breakMetal;
+                break;
+            }
+        }
+        for (TileID element : breakDiamond) {
+            if (element == currentName) {
+                breakType = breakDiamond;
+                break;
+            }
         }
         if (item == null || item.getClass() != Tool.class) {
             return handResult(breakType);
         }
-        var tool = (Tool) item;
+        Tool tool = (Tool) item;
         if (Arrays.equals(breakType, breakWood) && tool.toolType == Tool.ToolType.Axe) {
             return (int) (getSpeed(tool) * 20);
         } else if (!Arrays.equals(breakType, breakWood) && breakType != null
@@ -244,7 +259,7 @@ public class World implements java.io.Serializable {
     public void draw(GraphicsHandler g, int x, int y, int screenWidth, int screenHeight,
                      float cameraX, float cameraY, int tileSize) {
 
-        var pos = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, screenWidth, screenHeight,
+        Int2 pos = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, screenWidth, screenHeight,
                 tileSize, 0, height / 2);
         g.setColor(Color.darkGray);
         g.fillRect(pos.x, pos.y, width * tileSize, height * tileSize / 2);
@@ -253,9 +268,9 @@ public class World implements java.io.Serializable {
                 tileSize, 0, 0);
         g.setColor(getSkyColor());
         g.fillRect(pos.x, pos.y, width * tileSize, height * tileSize / 2 - 1);
-        for (var i = 0; i < width; i++) {
-            var posX = (int) ((i - cameraX) * tileSize);
-            var posY = (int) ((height - cameraY) * tileSize);
+        for (int i = 0; i < width; i++) {
+            int posX = (int) ((i - cameraX) * tileSize);
+            int posY = (int) ((height - cameraY) * tileSize);
             if (posX < 0 - tileSize || posX > screenWidth || posY < 0 - tileSize
                     || posY > screenHeight) {
                 continue;
@@ -264,9 +279,9 @@ public class World implements java.io.Serializable {
                     tileSize);
         }
 
-        for (var j = height / 2; j < height; j++) {
-            var posX = (int) ((-1 - cameraX) * tileSize);
-            var posY = (int) ((j - cameraY) * tileSize);
+        for (int j = height / 2; j < height; j++) {
+            int posX = (int) ((-1 - cameraX) * tileSize);
+            int posY = (int) ((j - cameraY) * tileSize);
             if (!(posX < 0 - tileSize || posX > screenWidth || posY < 0 - tileSize || posY > screenHeight)) {
                 Constants.tileTypes.get(TileID.ADMINITE).type.sprite.draw(g, posX, posY, tileSize,
                         tileSize);
@@ -279,17 +294,17 @@ public class World implements java.io.Serializable {
             }
         }
 
-        for (var i = 0; i < width; i++) {
-            for (var j = 0; j < height; j++) {
-                var posX = Math.round(((i - cameraX) * tileSize));
-                var posY = Math.round(((j - cameraY) * tileSize));
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                int posX = Math.round(((i - cameraX) * tileSize));
+                int posY = Math.round(((j - cameraY) * tileSize));
                 if (posX < 0 - tileSize || posX > screenWidth || posY < 0 - tileSize
                         || posY > screenHeight) {
                     continue;
                 }
 
-                var lightIntensity = (int) (getLightValue(i, j) * 255);
-                var tint = new Color(16, 16, 16, 255 - lightIntensity);
+                int lightIntensity = (int) (getLightValue(i, j) * 255);
+                Color tint = new Color(16, 16, 16, 255 - lightIntensity);
 
                 if (tiles[i][j].type.name != TileID.AIR) {
                     tiles[i][j].type.sprite.draw(g, posX, posY, tileSize, tileSize, tint);
@@ -305,7 +320,7 @@ public class World implements java.io.Serializable {
         if (x < 0 || x >= width || y < 0 || y >= height) {
             return false;
         }
-        var tt = tiles[x][y].type;
+        TileType tt = tiles[x][y].type;
         return tt == null || tt.passable;
     }
 
@@ -313,7 +328,7 @@ public class World implements java.io.Serializable {
         if (x < 0 || x >= width || y < 0 || y >= height) {
             return false;
         }
-        var tt = tiles[x][y].type;
+        TileType tt = tiles[x][y].type;
         return tt != null && tt.liquid;
     }
 
@@ -321,7 +336,7 @@ public class World implements java.io.Serializable {
         if (x < 0 || x >= width || y < 0 || y >= height) {
             return false;
         }
-        var tt = tiles[x][y].type;
+        TileType tt = tiles[x][y].type;
         return tt != null && tt.name == TileID.AIR;
     }
 
@@ -333,7 +348,7 @@ public class World implements java.io.Serializable {
         if (x < 0 || x >= width || y < 0 || y >= height) {
             return false;
         }
-        var tt = tiles[x][y].type;
+        TileType tt = tiles[x][y].type;
         return tt != null
                 && (tt.name == TileID.WOOD || tt.name == TileID.PLANK
                 || tt.name == TileID.LADDER || tt.liquid);
@@ -343,7 +358,7 @@ public class World implements java.io.Serializable {
         if (x < 0 || x >= width || y < 0 || y >= height) {
             return false;
         }
-        var tt = tiles[x][y].type;
+        TileType tt = tiles[x][y].type;
         return tt != null && (tt.name == TileID.CRAFTING_BENCH);
     }
 
@@ -353,10 +368,10 @@ public class World implements java.io.Serializable {
     public float getLightValue(int x, int y) {
         if (Constants.DEBUG_VISIBILITY_ON)
             return 1;
-        var daylight = getDaylight();
-        var lightValueSun = ((float) lightingEngineSun.getLightValue(x, y))
+        float daylight = getDaylight();
+        float lightValueSun = ((float) lightingEngineSun.getLightValue(x, y))
                 / Constants.LIGHT_VALUE_SUN * daylight;
-        var lightValueSourceBlocks = ((float) lightingEngineSourceBlocks.getLightValue(x, y))
+        float lightValueSourceBlocks = ((float) lightingEngineSourceBlocks.getLightValue(x, y))
                 / Constants.LIGHT_VALUE_SUN;
         if (lightValueSun >= lightValueSourceBlocks)
             return lightValueSun;
@@ -364,7 +379,7 @@ public class World implements java.io.Serializable {
     }
 
     public float getDaylight() {
-        var timeOfDay = getTimeOfDay();
+        float timeOfDay = getTimeOfDay();
         if (timeOfDay > .4f && timeOfDay < .6f) {
             return 1 - StockMethods.smoothStep(.4f, .6f, timeOfDay);
         } else if (timeOfDay > .9) {
@@ -394,7 +409,7 @@ public class World implements java.io.Serializable {
     static final Color midnightSky = new Color(0, 0, 0);
 
     public Color getSkyColor() {
-        var time = getTimeOfDay();
+        float time = getTimeOfDay();
         if (time < 0.25f) {
             return dawnSky.interpolateTo(noonSky, 4 * time);
         } else if (time < 0.5f) {

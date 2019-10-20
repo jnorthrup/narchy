@@ -56,8 +56,8 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
         @Override
         public void move(float dx, float dy) {
-            var nx = Math.round(windowStartX + dx);
-            var ny = Math.round(windowStartY - dy);
+            int nx = Math.round(windowStartX + dx);
+            int ny = Math.round(windowStartY - dy);
             if (nx != windowStartX || ny != windowStartY)
                 video.setPosition(nx, ny);
         }
@@ -121,9 +121,9 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
             @Override
             public void windowResized(WindowEvent e) {
-                var w = video;
-                var W = w.getWidth();
-                var H = w.getHeight();
+                JoglWindow w = video;
+                int W = w.getWidth();
+                int H = w.getHeight();
                 layers.resize(W, H);
             }
 
@@ -162,7 +162,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
         fingers.add(f);
         layers.add(content.overlayZoomBounds(f));
 
-        var cursor = f.cursorSurface();
+        Surface cursor = f.cursorSurface();
         if (cursor!=null)
             layers.add(cursor);
     }
@@ -175,11 +175,11 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
     @Override
     protected void renderOrthos(float dtS) {
 
-        var n = layers.size();
+        int n = layers.size();
         if (n <= 0)
             return;
 
-        var g = video.gl;
+        GL2 g = video.gl;
 
         int w = video.getWidth(), h = video.getHeight();
         g.glViewport(0, 0, w, h);
@@ -222,16 +222,16 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
     /** spawns a developer windonw
      * @return*/
     public OrthoSurfaceGraph dev(/** boolean hover mode (undecorated), other options */ ) {
-        var g = new Gridding();
+        Gridding g = new Gridding();
 
-        var fingerInfo = new BitmapLabel();
+        BitmapLabel fingerInfo = new BitmapLabel();
 
         g.add(fingerInfo);
 
         //TODO static Animating.Label(
         return window(new Animating<>(g, ()->{
-            var f = OrthoSurfaceGraph.this.fingers.get(0);
-            var t = f.touching();
+            Finger f = OrthoSurfaceGraph.this.fingers.get(0);
+            Surface t = f.touching();
 			//"posGl: " + finger.posGlobal(layers.first(Zoomed.class)) + '\n' +
 			fingerInfo.text(
 				"buttn: " + f.buttonSummary() + '\n' + "state: " + f.fingering() + '\n' + "posPx: " + f.posPixel + '\n' + "touch: " + t + '\n' + "posRl: " + (t != null ? f.posRelative(t.bounds) : "?") + '\n'

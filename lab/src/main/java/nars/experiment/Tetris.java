@@ -12,6 +12,7 @@ import nars.NAR;
 import nars.game.GameTime;
 import nars.game.NAct;
 import nars.game.SimpleReward;
+import nars.game.action.GoalActionConcept;
 import nars.gui.sensor.VectorSensorChart;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
@@ -123,26 +124,31 @@ public class Tetris extends GameX {
         if (TETRIS_USE_DENSITY) {
             reward("density", 1, () -> {
 
-                var count = Arrays.stream(state.grid).filter(s -> s > 0).count();
-                var filled = (int) count;
+                long count = 0L;
+                for (double s : state.grid) {
+                    if (s > 0) {
+                        count++;
+                    }
+                }
+                int filled = (int) count;
 
-                var r = state.rowsFilled;
+                int r = state.rowsFilled;
                 return r > 0 ? ((float) filled) / (r * state.width) : 0;
             });
         }
 
         actionUnipolar($.inh(id, "speed"), (s) -> {
             int fastest = (int) this.timePerFall.min, slowest = (int) this.timePerFall.max;
-            var t = Math.round(Util.lerp(s, slowest, fastest));
+            int t = Math.round(Util.lerp(s, slowest, fastest));
             this.timePerFall.set(t);
             return Util.unlerp(t, slowest, fastest); //get the effective frequency after discretizing
         });
 
 
         int[] lastRowsFilled = {0};
-        var lower = reward("lower", 1, () -> {
-            var rowsFilled = state.rowsFilled;
-            var deltaRows = rowsFilled - lastRowsFilled[0];
+        SimpleReward lower = reward("lower", 1, () -> {
+            int rowsFilled = state.rowsFilled;
+            int deltaRows = rowsFilled - lastRowsFilled[0];
             lastRowsFilled[0] = rowsFilled;
             if (deltaRows > 0) {
                 return -1;
@@ -184,7 +190,7 @@ public class Tetris extends GameX {
 
         GameX.Companion.initC(FPS * thinkPerFrame, n -> {
 
-            var t = new Tetris(n, tetris_width, tetris_height);
+            Tetris t = new Tetris(n, tetris_width, tetris_height);
             n.add(t);
 
             window(new VectorSensorChart(t.gridVision, t).withControls(), 400, 800);
@@ -196,7 +202,7 @@ public class Tetris extends GameX {
 
     private TetrisState actionsReflect(NAR nar) {
 
-        var oo = new Opjects(nar.fork((Term) $.inh(id, "opjects")));
+        Opjects oo = new Opjects(nar.fork((Term) $.inh(id, "opjects")));
         oo.exeThresh.set(0.51f);
         Opjects.methodExclusions.add("toVector");
 
@@ -204,7 +210,7 @@ public class Tetris extends GameX {
     }
 
     void actionPushButtonLR() {
-        var lr = actionPushButtonMutex(tLEFT, tRIGHT,
+        GoalActionConcept[] lr = actionPushButtonMutex(tLEFT, tRIGHT,
                 b -> b && state.act(TetrisState.actions.LEFT),
                 b -> b && state.act(TetrisState.actions.RIGHT)
         );
@@ -249,10 +255,15 @@ public class Tetris extends GameX {
     }
 
     private float density() {
-        var count = Arrays.stream(state.grid).filter(s -> s > 0).count();
-        var filled = (int) count;
+        long count = 0L;
+        for (double s : state.grid) {
+            if (s > 0) {
+                count++;
+            }
+        }
+        int filled = (int) count;
 
-        var r = state.rowsFilled;
+        int r = state.rowsFilled;
         return r > 0 ? (float) filled / (r * state.width) : 0;
     }
 
@@ -278,9 +289,9 @@ public class Tetris extends GameX {
 
         @Override
         public String toString() {
-            var shapeBuffer = new StringBuilder();
-            for (var i = 0; i < thePiece[currentOrientation].length; i++) {
-                for (var j = 0; j < thePiece[currentOrientation][i].length; j++)
+            StringBuilder shapeBuffer = new StringBuilder();
+            for (int i = 0; i < thePiece[currentOrientation].length; i++) {
+                for (int j = 0; j < thePiece[currentOrientation][i].length; j++)
                     shapeBuffer.append(' ').append(thePiece[currentOrientation][i][j]);
                 shapeBuffer.append('\n');
             }
@@ -350,8 +361,8 @@ public class Tetris extends GameX {
 
             Arrays.fill(target, -1f);
 
-            var x = 0;
-            for (var i : grid) {
+            int x = 0;
+            for (double i : grid) {
                 if (monochrome)
                     target[x] = i > 0 ? 1.0f : -1.0f;
                 else
@@ -362,16 +373,16 @@ public class Tetris extends GameX {
         }
 
         private void writeCurrentBlock(float color, double[] f) {
-            var thisPiece = possibleBlocks.get(currentBlockId).thePiece[currentRotation];
+            int[][] thisPiece = possibleBlocks.get(currentBlockId).thePiece[currentRotation];
 
             if (color == -1)
                 color = currentBlockId + 1;
-            for (var y = 0; y < thisPiece[0].length; ++y)
-                for (var x = 0; x < thisPiece.length; ++x)
+            for (int y = 0; y < thisPiece[0].length; ++y)
+                for (int x = 0; x < thisPiece.length; ++x)
                     if (thisPiece[x][y] != 0) {
 
 
-                        var linearIndex = i(currentX + x, currentY + y);
+                        int linearIndex = i(currentX + x, currentY + y);
                         f[linearIndex] = color;
                     }
 
@@ -390,9 +401,9 @@ public class Tetris extends GameX {
             synchronized (this) {
 
 
-                var nextRotation = currentRotation;
-                var nextX = currentX;
-                var nextY = currentY;
+                int nextRotation = currentRotation;
+                int nextX = currentX;
+                int nextY = currentY;
 
                 switch (theAction) {
                     case CW:
@@ -411,8 +422,8 @@ public class Tetris extends GameX {
                     case FALL:
                         nextY = currentY;
 
-                        var isInBounds = true;
-                        var isColliding = false;
+                        boolean isInBounds = true;
+                        boolean isColliding = false;
 
 
                         while (isInBounds && !isColliding) {
@@ -475,16 +486,16 @@ public class Tetris extends GameX {
          * @return
          */
         private boolean colliding(int checkX, int checkY, int checkOrientation) {
-            var result = false;
-            var thePiece = possibleBlocks.get(currentBlockId).thePiece[checkOrientation];
-            var ll = thePiece.length;
+            boolean result = false;
+            int[][] thePiece = possibleBlocks.get(currentBlockId).thePiece[checkOrientation];
+            int ll = thePiece.length;
             try {
 
-                for (var y = 0; y < thePiece[0].length && !result; ++y) {
-                    var i = checkY + y;
-                    var b1 = !(i < 0 || i >= height);
-                    for (var x = 0; x < ll && !result; ++x) {
-                        var i1 = checkX + x;
+                for (int y = 0; y < thePiece[0].length && !result; ++y) {
+                    int i = checkY + y;
+                    boolean b1 = !(i < 0 || i >= height);
+                    for (int x = 0; x < ll && !result; ++x) {
+                        int i1 = checkX + x;
                         result = (!b1 || i1 < 0 || i1 >= width || grid[i(i1, i)] != 0) && thePiece[x][y] != 0;
                     }
                 }
@@ -500,16 +511,16 @@ public class Tetris extends GameX {
         }
 
         private boolean collidingCheckOnlySpotsInBounds(int checkX, int checkY, int checkOrientation) {
-            var result = false;
-            var thePiece = possibleBlocks.get(currentBlockId).thePiece[checkOrientation];
-            var ll = thePiece.length;
+            boolean result = false;
+            int[][] thePiece = possibleBlocks.get(currentBlockId).thePiece[checkOrientation];
+            int ll = thePiece.length;
             try {
 
-                for (var y = 0; y < thePiece[0].length && !result; ++y) {
-                    var i1 = checkY + y;
+                for (int y = 0; y < thePiece[0].length && !result; ++y) {
+                    int i1 = checkY + y;
                     if (i1 >= 0 && i1 < height)
-                        for (var x = 0; x < ll && !result; ++x) {
-                            var i = checkX + x;
+                        for (int x = 0; x < ll && !result; ++x) {
+                            int i = checkX + x;
                             result = thePiece[x][y] != 0 && i >= 0 && i < width && grid[i(i, i1)] != 0;
                         }
                 }
@@ -535,16 +546,16 @@ public class Tetris extends GameX {
          * @return
          */
         private boolean inBounds(int checkX, int checkY, int checkOrientation) {
-            var result = false;
+            boolean result = false;
             try {
-                var thePiece = possibleBlocks.get(currentBlockId).thePiece[checkOrientation];
+                int[][] thePiece = possibleBlocks.get(currentBlockId).thePiece[checkOrientation];
 
-                var finished = false;
-                for (var y = 0; !finished&& y < thePiece[0].length; ++y) {
-                    var i1 = checkY + y;
-                    var b = i1 >= 0 && i1 < height;
-                    for (var x = 0; !finished&&x < thePiece.length; ++x) {
-                        var i = checkX + x;
+                boolean finished = false;
+                for (int y = 0; !finished&& y < thePiece[0].length; ++y) {
+                    int i1 = checkY + y;
+                    boolean b = i1 >= 0 && i1 < height;
+                    for (int x = 0; !finished&&x < thePiece.length; ++x) {
+                        int i = checkX + x;
                         finished =  ((!b || i < 0 || i >= width) && thePiece[x][y] != 0) ;
                     }
                 }
@@ -609,7 +620,7 @@ public class Tetris extends GameX {
             currentY = -4;
 
 
-            var hitOnWayIn = false;
+            boolean hitOnWayIn = false;
             while (!inBounds(currentX, currentY, currentRotation)) {
 
                 hitOnWayIn = collidingCheckOnlySpotsInBounds(currentX, currentY, currentRotation);
@@ -629,11 +640,11 @@ public class Tetris extends GameX {
         }
 
         public void checkScore() {
-            var numRowsCleared = 0;
-            var rowsFilled = 0;
+            int numRowsCleared = 0;
+            int rowsFilled = 0;
 
 
-            for (var y = height - 1; y >= 0; --y)
+            for (int y = height - 1; y >= 0; --y)
                 if (isRow(y, true)) {
                     removeRow(y);
                     numRowsCleared += 1;
@@ -641,7 +652,7 @@ public class Tetris extends GameX {
                 } else if (!isRow(y, false))
                     rowsFilled++;
 
-            var prevRows = this.rowsFilled;
+            int prevRows = this.rowsFilled;
             this.rowsFilled = rowsFilled;
 
 
@@ -653,7 +664,7 @@ public class Tetris extends GameX {
             }
 
 
-            var diff = prevRows - rowsFilled;
+            int diff = prevRows - rowsFilled;
 
             if (diff >= height - 1) score = Float.NaN;
             else score = diff;
@@ -671,8 +682,14 @@ public class Tetris extends GameX {
          * @return
          */
         public boolean isRow(int y, boolean filledOrClear) {
-            var bound = width;
-            return IntStream.range(0, bound).mapToDouble(x -> grid[i(x, y)]).noneMatch(s -> filledOrClear ? s == 0 : s != 0);
+            int bound = width;
+            for (int x = 0; x < bound; x++) {
+                double s = grid[i(x, y)];
+                if (filledOrClear ? s == 0 : s != 0) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         /**
@@ -688,22 +705,22 @@ public class Tetris extends GameX {
                 return;
             }
 
-            for (var x = 0; x < width; ++x) {
-                var linearIndex = i(x, y);
+            for (int x = 0; x < width; ++x) {
+                int linearIndex = i(x, y);
                 grid[linearIndex] = 0f;
             }
 
 
-            for (var ty = y; ty > 0; --ty)
-                for (var x = 0; x < width; ++x) {
-                    var linearIndexTarget = i(x, ty);
-                    var linearIndexSource = i(x, ty - 1);
+            for (int ty = y; ty > 0; --ty)
+                for (int x = 0; x < width; ++x) {
+                    int linearIndexTarget = i(x, ty);
+                    int linearIndexSource = i(x, ty - 1);
                     grid[linearIndexTarget] = grid[linearIndexSource];
                 }
 
 
-            for (var x = 0; x < width; ++x) {
-                var linearIndex = i(x, 0);
+            for (int x = 0; x < width; ++x) {
+                int linearIndex = i(x, 0);
                 grid[linearIndex] = 0f;
             }
 
@@ -725,9 +742,9 @@ public class Tetris extends GameX {
          * Utility methd for debuggin
          */
         public void printState() {
-            var index = 0;
-            for (var i = 0; i < height - 1; i++) {
-                for (var j = 0; j < width; j++) System.out.print(grid[i * width + j]);
+            int index = 0;
+            for (int i = 0; i < height - 1; i++) {
+                for (int j = 0; j < width; j++) System.out.print(grid[i * width + j]);
                 System.out.print("\n");
             }
             System.out.println("-------------");

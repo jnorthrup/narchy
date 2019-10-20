@@ -37,7 +37,7 @@ public class ADSR extends UGen {
         super(context, inouts, inouts);
         env = new Envelope(context, 0);
         gain = new Gain(context, inouts, env);
-        for (var i = 0; i < adsr.length - 1; i += 2) {
+        for (int i = 0; i < adsr.length - 1; i += 2) {
             env.add(adsr[i], adsr[i + 1]);
         }
         env.add(0, adsr[adsr.length - 1], new KillTrigger(this));
@@ -50,7 +50,7 @@ public class ADSR extends UGen {
         /*
          * simple transfer of audio buffers, per channel, from gain to this.
          */
-        for (var i = 0; i < ins; i++) {
+        for (int i = 0; i < ins; i++) {
             bufOut[i] = gain.getOutBuffer(i);
         }
     }

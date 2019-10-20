@@ -25,7 +25,7 @@ public class Top2<T> extends AbstractCollection<T> implements Consumer<T> {
 
     public Top2(FloatFunction<T> rank, Iterable<T> from) {
         this(rank);
-        for (var t : from) {
+        for (T t : from) {
             add(t);
         }
     }
@@ -53,7 +53,7 @@ public class Top2<T> extends AbstractCollection<T> implements Consumer<T> {
 
     @Override
     public boolean add(T x) {
-        var xx = rank.floatValueOf(x);
+        float xx = rank.floatValueOf(x);
 
         if (xx != xx)
             return false;
@@ -116,8 +116,8 @@ public class Top2<T> extends AbstractCollection<T> implements Consumer<T> {
     }
 
     public void sample(Consumer<T> target, FloatFunction<T> value, Random random) {
-        var wa = value.floatValueOf(a);
-        var wb = value.floatValueOf(b);
+        float wa = value.floatValueOf(a);
+        float wb = value.floatValueOf(b);
         target.accept(
                 random.nextFloat() < (wa/Math.max(Float.MIN_NORMAL, wa+wb)) ? a : b
         );

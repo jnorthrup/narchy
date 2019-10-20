@@ -9,7 +9,7 @@ public class UMatrix {
 
     public UMatrix(int x, int y) {
         row = new UVector[x];
-        for (var i = 0; i < x; i++)
+        for (int i = 0; i < x; i++)
             row[i] = new UVector(y);
     }
 

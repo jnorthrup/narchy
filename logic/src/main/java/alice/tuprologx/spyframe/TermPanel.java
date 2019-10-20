@@ -28,11 +28,11 @@ public class TermPanel extends JPanel implements ActionListener{
   public static final ToTree<Term> term2tree= new ToTree<>() {
     @Override
     public Node makeTreeFrom(Term term) {
-        var node = new Node(String.valueOf(term));
+        Node node = new Node(String.valueOf(term));
         node.textcolor = node.bordercolor = Color.BLACK;
         
         if (term instanceof Var) {
-            var var = (Var) term;
+            Var var = (Var) term;
             node.text = var.name();
             node.textcolor = node.bordercolor = Color.BLUE;
             if (var.isBound()) {
@@ -42,11 +42,11 @@ public class TermPanel extends JPanel implements ActionListener{
         } else if (term instanceof NumberTerm) {
             node.textcolor = node.bordercolor = Color.MAGENTA;
         } else if (term instanceof Struct) {
-            var struct = (Struct) term;
+            Struct struct = (Struct) term;
             node.text = struct.name();
-            var n = struct.subs();
+            int n = struct.subs();
             node.kids = new Node[n];
-            for (var i = 0; i < n; i++)
+            for (int i = 0; i < n; i++)
                 node.kids[i] = makeTreeFrom(struct.sub(i));
         }
         return node;

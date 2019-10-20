@@ -63,8 +63,8 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 
 		if (s == ETERNAL || s == TIMELESS) {
 			//choose now as the default focus time
-			var now = a.time();
-			var dur = a.dur;
+            long now = a.time();
+            float dur = a.dur;
 			s = now - (long)Math.ceil(dur / 2);
 			e = now + (long)Math.ceil(dur / 2);
 		} else {
@@ -144,14 +144,14 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 		if (t.isDeleted())
 			return true;
 
-		var tStart = t.start();
+        long tStart = t.start();
 		if (tStart == ETERNAL)
 			return false;
 
 		if (seriesEnd < tStart)
 			return false; //occurs after series ends
 
-		var tEnd = t.end();
+        long tEnd = t.end();
 		if (seriesStart > tEnd)
 			return false; //occurs before series starts
 
@@ -185,16 +185,16 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 
 		long nextStart = when.start, nextEnd = when.end;
 
-		var series = this.series;
+        AbstractTaskSeries<SeriesTask> series = this.series;
 
-		var last = series.last();
+        SeriesTask last = series.last();
 		if (last != null && lastContinues(next, when.dur, nextStart, nextEnd, series, last))
 			return last;
 		else {
 			if (next == null)
 				return null;
 			else {
-				var s = newTask(this.term, this.punc(), nextStart, nextEnd, next, when.x.nar);
+                SeriesTask s = newTask(this.term, this.punc(), nextStart, nextEnd, next, when.x.nar);
 				s.why(why);
 				this.add(s);
 				return s;
@@ -203,16 +203,16 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 	}
 
 	private static boolean lastContinues(@Nullable Truth next, float dur, long nextStart, long nextEnd, AbstractTaskSeries<SeriesTask> series, SeriesTask last) {
-		var lastEnd = last.end();
+        long lastEnd = last.end();
 
-		var gapCycles = (nextStart - lastEnd);
+        long gapCycles = (nextStart - lastEnd);
 
 		if (gapCycles <= AbstractTaskSeries.latchDurs() * dur) {
 
 			if (next!=null) {
-				var lastStart = last.start();
-				var stretchCycles = (nextStart - lastStart);
-				var stretchable = stretchCycles <= AbstractTaskSeries.stretchDurs() * dur;
+                long lastStart = last.start();
+                long stretchCycles = (nextStart - lastStart);
+                boolean stretchable = stretchCycles <= AbstractTaskSeries.stretchDurs() * dur;
 				if (stretchable && last.truth().equals(next)) {
 					//continue, if not excessively long
 					stretch(last, nextEnd);

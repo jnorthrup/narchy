@@ -52,7 +52,7 @@ public abstract class AbstractTimedCallable<X> extends AbstractTimedFuture<X> {
 
     @Override
     public X get() {
-        var r = result;
+        Object r = result;
         return r == this ? null : (X) r;
     }
 
@@ -63,7 +63,7 @@ public abstract class AbstractTimedCallable<X> extends AbstractTimedFuture<X> {
 
     public static  <X> X poll(Future<X> f, long timeout, TimeUnit unit) {
 
-        var deadline = System.nanoTime() + unit.toNanos(timeout);
+        long deadline = System.nanoTime() + unit.toNanos(timeout);
 
         do {
 

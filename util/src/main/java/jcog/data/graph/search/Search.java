@@ -50,7 +50,7 @@ public abstract class Search<N, E> {
     }
 
     public static <N, E> Node<N, E> pathStart(List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path, int n) {
-        var step = path.get(n);
+        BooleanObjectPair<FromTo<Node<N, E>, E>> step = path.get(n);
         return step.getTwo().from(step.getOne());
     }
 
@@ -62,7 +62,7 @@ public abstract class Search<N, E> {
      * optimized for Cons usage
      */
     public static <N, E> Node<N, E> pathEnd(List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path) {
-        var step = path instanceof Cons ?
+        BooleanObjectPair<FromTo<Node<N, E>, E>> step = path instanceof Cons ?
                 ((Cons<BooleanObjectPair<FromTo<Node<N, E>, E>>>) path).tail : path.get(path.size() - 1);
         return step.getTwo().to(step.getOne());
     }
@@ -90,12 +90,12 @@ public abstract class Search<N, E> {
         Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>> n;
         while ((n = q.poll()) != null) {
 
-            var at = n.getTwo();
+            Node<N, E> at = n.getTwo();
 
-            var path = n.getOne();
+            List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path = n.getOne();
 
-            for (var e : find(at, path)) {
-                var next = next(e, at, path);
+            for (FromTo<Node<N, E>, E> e : find(at, path)) {
+                Node<N, E> next = next(e, at, path);
                 if (next == null || !visit(next))
                     continue;
 
@@ -154,17 +154,17 @@ public abstract class Search<N, E> {
 
 
     private boolean dfsNode(Node<N, E> n, List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path) {
-        var result = true;
+        boolean result = true;
 
         if (visit(n)) {
-            for (var e : find(n, path)) {
+            for (FromTo<Node<N, E>, E> e : find(n, path)) {
 
-                var next = next(e, n, path);
+                Node<N, E> next = next(e, n, path);
 
                 if (next == null || visited(next))
                     continue;
 
-                var move = pair(next == e.to(), e);
+                BooleanObjectPair<FromTo<Node<N, E>, E>> move = pair(next == e.to(), e);
 
                 path.add(move);
 

@@ -151,19 +151,19 @@ public class Globals implements Defines{
     public static SizeChangeListener sizeChangeListener;
 
     static {
-        for (var i = 0; i < Globals.cl_entities.length; i++) {
+        for (int i = 0; i < Globals.cl_entities.length; i++) {
 			Globals.cl_entities[i] = new centity_t();
         }
     }
 
     static {
-        for (var i = 0; i < Globals.cl_parse_entities.length; i++) {
+        for (int i = 0; i < Globals.cl_parse_entities.length; i++) {
 			Globals.cl_parse_entities[i] = new entity_state_t(null);
         }
     }
 
     static {
-        for (var i = 0; i < Globals.key_lines.length; i++)
+        for (int i = 0; i < Globals.key_lines.length; i++)
 			Globals.key_lines[i] = new byte[Defines.MAXCMDLINE];
     }
 }

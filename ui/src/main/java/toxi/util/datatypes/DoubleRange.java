@@ -35,9 +35,9 @@ import java.util.List;
 public class DoubleRange {
 
     public static DoubleRange fromSamples(double... samples) {
-        var min = Double.MAX_VALUE;
-        var max = Double.MIN_VALUE;
-        for (var s : samples) {
+        double min = Double.MAX_VALUE;
+        double max = Double.MIN_VALUE;
+        for (double s : samples) {
             min = MathUtils.min(min, s);
             max = MathUtils.max(max, s);
         }
@@ -45,8 +45,8 @@ public class DoubleRange {
     }
 
     public static DoubleRange fromSamples(Iterable<Double> samples) {
-        var min = Double.MAX_VALUE;
-        var max = Double.MIN_VALUE;
+        double min = Double.MAX_VALUE;
+        double max = Double.MIN_VALUE;
         for (double s : samples) {
             min = MathUtils.min(min, s);
             max = MathUtils.max(max, s);
@@ -68,7 +68,7 @@ public class DoubleRange {
     public DoubleRange(double min, double max) {
         // swap if necessary...
         if (min > max) {
-            var t = max;
+            double t = max;
             max = min;
             min = t;
         }
@@ -82,7 +82,7 @@ public class DoubleRange {
     }
 
     public DoubleRange copy() {
-        var range = new DoubleRange(min, max);
+        DoubleRange range = new DoubleRange(min, max);
         range.currValue = currValue;
 //        range.random = random;
         return range;
@@ -141,7 +141,7 @@ public class DoubleRange {
 
     public Double[] toArray(double step) {
         List<Double> range = new LinkedList<>();
-        var v = min;
+        double v = min;
         while (v < max) {
             range.add(v);
             v += step;

@@ -133,7 +133,7 @@ public class Gain extends UGen implements DataBeadReceiver {
     }
 
     public @Nullable Envelope envelope() {
-        var g = this.gainUGen;
+        UGen g = this.gainUGen;
         if (g instanceof Envelope)
             return ((Envelope) g);
         else
@@ -148,20 +148,20 @@ public class Gain extends UGen implements DataBeadReceiver {
     @Override
     public void gen() {
         if (gainUGen == null) {
-            for (var channel = 0; channel < ins; channel++) {
-                var bi = bufIn[channel];
-                var bo = bufOut[channel];
+            for (int channel = 0; channel < ins; channel++) {
+                float[] bi = bufIn[channel];
+                float[] bo = bufOut[channel];
 
-                var gain = this.gain;
-                for (var i = 0; i < bufferSize; ++i) {
+                float gain = this.gain;
+                for (int i = 0; i < bufferSize; ++i) {
                     bo[i] = gain * bi[i];
                 }
             }
         } else {
             gainUGen.update();
-            for (var i = 0; i < bufferSize; ++i) {
-                var gain = this.gain = gainUGen.getValue(0, i);
-                for (var channel = 0; channel < ins; channel++) {
+            for (int i = 0; i < bufferSize; ++i) {
+                float gain = this.gain = gainUGen.getValue(0, i);
+                for (int channel = 0; channel < ins; channel++) {
                     bufOut[channel][i] = gain * bufIn[channel][i];
                 }
             }
@@ -171,7 +171,7 @@ public class Gain extends UGen implements DataBeadReceiver {
     @Override
     public DataBeadReceiver sendData(DataAuvent db) {
         if (db != null) {
-            var u = db.getUGen("gain");
+            UGen u = db.getUGen("gain");
             if (u == null) {
                 setGain(db.getFloat("gain", gain));
             } else {

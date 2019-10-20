@@ -78,13 +78,13 @@ public abstract class UnitCompound implements SameSubtermsCompound {
     @Override
     public final boolean ANDrecurse(Predicate<Term> p) {
         if (!p.test(this)) return false;
-        var s = sub();
+        Term s = sub();
         return s instanceof Compound ? ((Compound) s).ANDrecurse(p) : p.test(s);
     }
     @Override
     public final boolean ORrecurse(Predicate<Term> p) {
         if (p.test(this)) return true;
-        var s = sub();
+        Term s = sub();
         return s instanceof Compound ? ((Compound) s).ORrecurse(p) : p.test(s);
     }
 
@@ -108,10 +108,10 @@ public abstract class UnitCompound implements SameSubtermsCompound {
     public @Nullable Term subPath(int start, int end, byte... path) {
         if (end == start)
             return this;
-        var a = path[start];
+        byte a = path[start];
         if (a!=0)
             return null;
-        var s = sub();
+        Term s = sub();
         return ((end - start) == 1) ? s : s.subPath(start + 1, end, path);
     }
 

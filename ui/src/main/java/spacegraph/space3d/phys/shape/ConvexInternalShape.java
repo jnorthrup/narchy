@@ -51,12 +51,12 @@ public abstract class ConvexInternalShape extends ConvexShape {
 	
 	@Override
 	public void getAabbSlow(Transform trans, v3 minAabb, v3 maxAabb) {
-		var margin = getMargin();
-		var vec = new v3();
-		var tmp1 = new v3();
-		var tmp2 = new v3();
+        float margin = getMargin();
+        v3 vec = new v3();
+        v3 tmp1 = new v3();
+        v3 tmp2 = new v3();
 		
-		for (var i = 0; i<3; i++)
+		for (int i = 0; i<3; i++)
 		{
 			vec.set(0f, 0f, 0f);
 			VectorUtil.setCoord(vec, i, 1f);
@@ -80,10 +80,10 @@ public abstract class ConvexInternalShape extends ConvexShape {
 
 	@Override
 	public v3 localGetSupportingVertex(v3 vec, v3 out) {
-		var supVertex = localGetSupportingVertexWithoutMargin(vec, out);
+        v3 supVertex = localGetSupportingVertexWithoutMargin(vec, out);
 
 		if (getMargin() != 0f) {
-			var vecnorm = new v3(vec);
+            v3 vecnorm = new v3(vec);
 			if (vecnorm.lengthSquared() < (BulletGlobals.FLT_EPSILON * BulletGlobals.FLT_EPSILON)) {
 				vecnorm.set(-1f, -1f, -1f);
 			}

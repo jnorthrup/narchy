@@ -2,6 +2,7 @@ package nars.term;
 
 import jcog.Paper;
 import jcog.Skill;
+import nars.Op;
 import nars.term.var.CommonVariable;
 import nars.term.var.ellipsis.Ellipsis;
 import nars.unify.Unify;
@@ -20,14 +21,14 @@ public interface Variable extends /* Atomic - but all implementations are subcla
 
     private static boolean unifyVar(Unify u, Term x, Term y) {
         if (x instanceof Variable) {
-            var xop = x.op();
+            Op xop = x.op();
             if (y instanceof Variable)  {
-                var yop = y.op();
+                Op yop = y.op();
 
                 if (xop.id > yop.id) {
                     //swap for variable rank
-                    var z = x;
-                    var zop = xop;
+                    Term z = x;
+                    Op zop = xop;
                     x = y; xop = yop;
                     y = z; yop = zop;
                 }
@@ -44,7 +45,7 @@ public interface Variable extends /* Atomic - but all implementations are subcla
         }
 
         if (y instanceof Variable) {
-            var yop = y.op();
+            Op yop = y.op();
             return u.var(yop) && Unify.canPut(yop, x) && !x.containsRecursively(y) && u.putXY((Variable) y, x);
         }
 
@@ -88,12 +89,12 @@ public interface Variable extends /* Atomic - but all implementations are subcla
         if (equals(_y))
             return true;
 
-        var x = u.resolveTerm(this, true);
-        var y = u.resolveTerm(_y, true);
+        Term x = u.resolveTerm(this, true);
+        Term y = u.resolveTerm(_y, true);
 
         //unify variable negation mobius
-        var xn = x instanceof Neg;
-        var yn = y instanceof Neg;
+        boolean xn = x instanceof Neg;
+        boolean yn = y instanceof Neg;
         if (xn && yn) {
             //unnegate both
             x = x.unneg();
@@ -101,14 +102,14 @@ public interface Variable extends /* Atomic - but all implementations are subcla
         } else {
             //swap neg for variable order
             if (xn && !yn && y instanceof Variable) {
-                var xu = x.unneg();
+                Term xu = x.unneg();
                 if (xu instanceof Variable && xu.opID() < y.opID()) {
                     x = xu;
                     y = y.neg();
                 } else if (y.equals(xu))
                     return false; //x != --x
             } else if (yn && !xn && x instanceof Variable) {
-                var yu = y.unneg();
+                Term yu = y.unneg();
                 if (yu instanceof Variable && yu.opID() < x.opID()) {
                     y = yu;
                     x = x.neg();

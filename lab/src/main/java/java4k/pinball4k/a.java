@@ -404,32 +404,32 @@ public class a extends JFrame {
 		
 		
 		createBufferStrategy(2);
-		var b = getBufferStrategy();
+        BufferStrategy b = getBufferStrategy();
 
-		var flashFrameIdx = 0;
-		var font = new Font("", FONT_ITALIC_BOLD, 32);
-		var extraBallTarget = 0;
-		var pushTime = 0;
-		var wasTiltKeyPressed = false;
-		var pushedBall = false;
-		var pushed = false;
-		var tilt = false;
-		var state = LOADING;
-		var levely = 0;
-		var multiplier = 0;
-		var score = 0;
-		var frameIdx = 0;
-		var objCount = 0;
-		var objy = 0;
-		var objx = 0;
+        int flashFrameIdx = 0;
+        Font font = new Font("", FONT_ITALIC_BOLD, 32);
+        int extraBallTarget = 0;
+        int pushTime = 0;
+        boolean wasTiltKeyPressed = false;
+        boolean pushedBall = false;
+        boolean pushed = false;
+        boolean tilt = false;
+        int state = LOADING;
+        int levely = 0;
+        int multiplier = 0;
+        int score = 0;
+        int frameIdx = 0;
+        int objCount = 0;
+        int objy = 0;
+        int objx = 0;
         int[] blinkData = null;
-		var behaviourObjMap = new int[MAX_OBJ_COUNT];
-		var intData = new int[MAX_OBJ_COUNT];
-		var numGroups = 0;
+        int[] behaviourObjMap = new int[MAX_OBJ_COUNT];
+        int[] intData = new int[MAX_OBJ_COUNT];
+        int numGroups = 0;
         int[] groupData = null;
-		var floatData = new float[MAX_OBJ_COUNT];
+        float[] floatData = new float[MAX_OBJ_COUNT];
         float flipperAngleVel = 0;
-		var flipperUpDelta = 0;
+        int flipperUpDelta = 0;
         float flipperAngle = 0;
         float ballVelx = 0;
         float ballVely = 0;
@@ -438,10 +438,10 @@ public class a extends JFrame {
         long lastFrame = 0;
         do {
 
-			var bonus = 0;
+            int bonus = 0;
 
 			
-			for (var updateIdx = 0; updateIdx < ITERATIONS; updateIdx++) {
+			for (int updateIdx = 0; updateIdx < ITERATIONS; updateIdx++) {
 
 				
 				if (state == LOADING) {
@@ -450,19 +450,19 @@ public class a extends JFrame {
 					groupData = new int[MAX_OBJ_COUNT];
 
 
-					var dataIn = new DataInputStream(getClass().getResourceAsStream("a"));
+                    DataInputStream dataIn = new DataInputStream(getClass().getResourceAsStream("a"));
 					
 					
 		            while (!(dataIn.readUnsignedByte() == 124 && dataIn.readUnsignedByte() == 124)) {
 					}
-					var flippers = dataIn.readUnsignedByte();
-					var sircles = dataIn.readUnsignedByte();
-					var arrows = dataIn.readUnsignedByte();
-					var lines = dataIn.readUnsignedByte();
+                    int flippers = dataIn.readUnsignedByte();
+                    int sircles = dataIn.readUnsignedByte();
+                    int arrows = dataIn.readUnsignedByte();
+                    int lines = dataIn.readUnsignedByte();
 					objCount = dataIn.readUnsignedByte();
 					
 					
-					for (var i = 0; i < objCount; i++) {
+					for (int i = 0; i < objCount; i++) {
 						intData[i * STRIDE] = dataIn.readUnsignedByte(); 
 						intData[i * STRIDE + ID_SCORE] = dataIn.readUnsignedByte();
 						intData[i * STRIDE + ID_BEHAVIOUR] = dataIn.readUnsignedByte();
@@ -470,14 +470,14 @@ public class a extends JFrame {
 					}
 					
 					
-					for (var i = 0; i < objCount; i++) {
+					for (int i = 0; i < objCount; i++) {
 						
 						behaviourObjMap[intData[i * STRIDE + ID_BEHAVIOUR]] = i;
 						intData[i * STRIDE + ID_X] = dataIn.readUnsignedByte() * 4;
 						intData[i * STRIDE + ID_Y] = dataIn.readUnsignedByte() * 6;
 					}
 
-					var objCountOff = 0;
+                    int objCountOff = 0;
 					
 					
 					while (sircles-- > 0) {
@@ -510,17 +510,17 @@ public class a extends JFrame {
 					}
 
 
-					var strips = dataIn.readUnsignedByte();
+                    int strips = dataIn.readUnsignedByte();
 					while (strips-- > 0) {
 
-						var stripLines = dataIn.readUnsignedByte();
+                        int stripLines = dataIn.readUnsignedByte();
 
 
-						var prevIdx = dataIn.readUnsignedByte();
+                        int prevIdx = dataIn.readUnsignedByte();
 						
 						while (stripLines-- > 0) {
 							
-							for (var i = 0; i<STRIDE; i++) {
+							for (int i = 0; i<STRIDE; i++) {
 								intData[objCountOff + i] = intData[prevIdx * STRIDE + i];
 								floatData[objCountOff + i] = floatData[prevIdx * STRIDE + i];
 							}
@@ -541,7 +541,7 @@ public class a extends JFrame {
 
 					
 					numGroups = dataIn.readUnsignedByte();
-					for (var i = 0; i<numGroups*2; i++) {
+					for (int i = 0; i<numGroups*2; i++) {
 						groupData[i] = dataIn.readUnsignedByte();
 					}
 					
@@ -584,28 +584,28 @@ public class a extends JFrame {
 					float closesty = 0;
 
 
-					var foundCollision = false;
+                    boolean foundCollision = false;
 
 
-					var collisionObjIdx = 0;
+                    int collisionObjIdx = 0;
 					
 					
 					float closestDistance = 0;
 
 					
-					for (var objIdx = 0; objIdx < objCount; objIdx++) {
-						var objFlags 	 = intData[objIdx * STRIDE];
-						var objBehaviour = intData[objIdx * STRIDE + ID_BEHAVIOUR];
+					for (int objIdx = 0; objIdx < objCount; objIdx++) {
+                        int objFlags 	 = intData[objIdx * STRIDE];
+                        int objBehaviour = intData[objIdx * STRIDE + ID_BEHAVIOUR];
 						objx 			 = intData[objIdx * STRIDE + ID_X];
 						objy 			 = intData[objIdx * STRIDE + ID_Y];
-						var linex2 		 = intData[objIdx * STRIDE + ID_X2];
-						var liney2 		 = intData[objIdx * STRIDE + ID_Y2];
+                        int linex2 		 = intData[objIdx * STRIDE + ID_X2];
+                        int liney2 		 = intData[objIdx * STRIDE + ID_Y2];
 						
 						
 						float tempProjectedx = 0;
 						float tempProjectedy = 0;
 						float dist = 0;
-						var intersected = false;
+                        boolean intersected = false;
 					
 						switch (intData[objIdx * STRIDE + ID_TYPE]) {
 						case FLIPPER:
@@ -613,7 +613,7 @@ public class a extends JFrame {
 							flipperUpDelta 	= intData[objIdx * STRIDE + ID_FLIPPER_ANGLE_DIR];
 							flipperAngle 	= floatData[objIdx * STRIDE + FD_FLIPPER_ANGLE];
 							flipperAngleVel = floatData[objIdx * STRIDE];
-							var newAngle = flipperAngle -	(!tilt && k[flipperUpDelta < 0 ? VK_LEFT : VK_RIGHT]
+                            float newAngle = flipperAngle -	(!tilt && k[flipperUpDelta < 0 ? VK_LEFT : VK_RIGHT]
 											? -flipperUpDelta 
 											: flipperUpDelta) * FLIPPER_SPEED;
 							newAngle = Math.max(floatData[objIdx * STRIDE + FD_FLIPPER_MIN_ANGLE], 
@@ -631,9 +631,9 @@ public class a extends JFrame {
 							
 						case LINE:
 
-							var rrr = (ballx-objx) * (linex2-objx) + (bally-objy) * (liney2-objy);
-							var len = length(linex2-objx, liney2-objy);
-							var t = rrr / len / len;
+                            float rrr = (ballx-objx) * (linex2-objx) + (bally-objy) * (liney2-objy);
+                            float len = length(linex2-objx, liney2-objy);
+                            float t = rrr / len / len;
 							if (t >= 0 && t <= 1) {
 								tempProjectedx = objx + (t * (linex2-objx));
 								tempProjectedy = objy + (t * (liney2-objy));
@@ -643,7 +643,7 @@ public class a extends JFrame {
 							} else {
 								
 								dist = length(ballx-objx, bally-objy);
-								var distance2 = length(ballx-linex2, bally-liney2);
+                                float distance2 = length(ballx-linex2, bally-liney2);
 								if (dist < BALL_RADIUS) {
 									intersected = true;
 									tempProjectedx = objx;
@@ -660,8 +660,8 @@ public class a extends JFrame {
 
 						case SIRCLE:
 
-							var dx = ballx - objx;
-							var dy = bally - objy;
+                            float dx = ballx - objx;
+                            float dy = bally - objy;
 							dist = length(dx, dy) - linex2;
 							if (dist < BALL_RADIUS) {
 								intersected = true;
@@ -776,8 +776,8 @@ public class a extends JFrame {
 									bonus += BONUS_UPPER_RIGHT;
 								}
 								if (objBehaviour == BEHAVIOUR_BULLSEYE) {
-									var bonusShift = 0;
-									for (var i = 0; i<3; i++) {
+                                    int bonusShift = 0;
+									for (int i = 0; i<3; i++) {
 
 
 										if (frameIdx < blinkData[33+i]) {
@@ -819,9 +819,9 @@ public class a extends JFrame {
 
 						
 						if (intData[collisionObjIdx * STRIDE + ID_TYPE] == FLIPPER) {
-							var dx = closestx - intData[collisionObjIdx * STRIDE + ID_X];
-							var dy = closesty - intData[collisionObjIdx * STRIDE + ID_Y];
-							var absVel = floatData[collisionObjIdx * STRIDE] * length(dx, dy);
+                            float dx = closestx - intData[collisionObjIdx * STRIDE + ID_X];
+                            float dy = closesty - intData[collisionObjIdx * STRIDE + ID_Y];
+                            float absVel = floatData[collisionObjIdx * STRIDE] * length(dx, dy);
 							
 							if (length(dx, dy) != 0) {
 								objVely = absVel *  dx / length(dx, dy);
@@ -830,15 +830,15 @@ public class a extends JFrame {
 						}
 
 
-						var normalx = (ballx - closestx) / length(ballx - closestx, bally - closesty);
-						var normaly = (bally - closesty) / length(ballx - closestx, bally - closesty);
+                        float normalx = (ballx - closestx) / length(ballx - closestx, bally - closesty);
+                        float normaly = (bally - closesty) / length(ballx - closestx, bally - closesty);
 						
 						
 						ballx = closestx + normalx * BALL_RADIUS;
 						bally = closesty + normaly * BALL_RADIUS;
 
 
-						var impactSpeed = ((intData[collisionObjIdx * STRIDE] & BUMPER_MASK) == 0 || tilt)
+                        float impactSpeed = ((intData[collisionObjIdx * STRIDE] & BUMPER_MASK) == 0 || tilt)
 								? ((objVelx - ballVelx) * normalx + (objVely - ballVely) * normaly) * BOUNCE_NORMAL
 								: ((objVelx - ballVelx) * normalx + (objVely - ballVely) * normaly) * BOUNCE_BUMPER + BUMPER_ADD;
 						
@@ -854,16 +854,16 @@ public class a extends JFrame {
 					}
 
 
-					var c = MULTIPLIER_COLOR;
+                    int c = MULTIPLIER_COLOR;
 
 					
-					for (var groupIdx = 0; groupIdx < numGroups; groupIdx++) {
+					for (int groupIdx = 0; groupIdx < numGroups; groupIdx++) {
 
-						var groupOr = 0;
-						var groupAnd = 0x7f;
-						var blinkTime = 0;
-						for (var i = 0; i<groupData[groupIdx*2]; i++) {
-							var objIdx = groupData[groupIdx*2+GRP_FIRST_INDEX] + i;
+                        int groupOr = 0;
+                        int groupAnd = 0x7f;
+                        int blinkTime = 0;
+						for (int i = 0; i<groupData[groupIdx*2]; i++) {
+                            int objIdx = groupData[groupIdx*2+GRP_FIRST_INDEX] + i;
 							groupOr |= intData[objIdx * STRIDE];
 							groupAnd &= intData[objIdx * STRIDE];
 							if (USE_BLINK) {
@@ -872,7 +872,7 @@ public class a extends JFrame {
 						}
 
 
-						var or = 0;
+                        int or = 0;
                         if ((groupOr & VISIBLE_MASK) == 0 && (groupOr & DROP_DOWN_MASK) != 0) {
 							
 							bonus += BONUS_DROPDOWN;
@@ -889,7 +889,7 @@ public class a extends JFrame {
 						}
 
 
-						var and = 0x7f;
+                        int and = 0x7f;
                         if ((groupAnd & VISIBLE_MASK) != 0 && (groupAnd & ROLL_OVER_MASK) != 0) {
 							
 							bonus += BONUS_ROLLOVER;
@@ -925,8 +925,8 @@ public class a extends JFrame {
 						}
 
 						
-						for (var i = 0; i<groupData[groupIdx*2]; i++) {
-							var objIdx = groupData[groupIdx*2+GRP_FIRST_INDEX]+i;
+						for (int i = 0; i<groupData[groupIdx*2]; i++) {
+                            int objIdx = groupData[groupIdx*2+GRP_FIRST_INDEX]+i;
 							intData[objIdx * STRIDE] |= or;
 							intData[objIdx * STRIDE] &= and;
 							
@@ -967,7 +967,7 @@ public class a extends JFrame {
 			}
 
 
-			var g = (Graphics2D) b.getDrawGraphics();
+            Graphics2D g = (Graphics2D) b.getDrawGraphics();
 			
 			if (!BACKGROUND_GRADIENT) {
 				
@@ -976,15 +976,15 @@ public class a extends JFrame {
 			}
 
 
-			var levely2 = levely + (pushed ? -4 : 0);
+            int levely2 = levely + (pushed ? -4 : 0);
 			
 			
 			g.translate(0, levely2);
 			
 			if (BACKGROUND_GRADIENT) {
 
-				var backColor = BACKGROUND_COLOR;
-				for (var i = 0; i<16; i++) {
+                int backColor = BACKGROUND_COLOR;
+				for (int i = 0; i<16; i++) {
 					g.setColor(new Color(backColor));
 					backColor += 0x20300;
 					g.fillRect(0, i*0x7f, 1024*2, 0x7f);
@@ -994,10 +994,10 @@ public class a extends JFrame {
 			g.setFont(font);
 			Rectangle2D bounds = null;
 
-            final var SHADOW_COLOR = 0x2f2f2f;
+            final int SHADOW_COLOR = 0x2f2f2f;
 
 			
-			for (var objIdx = 0; objIdx<objCount; objIdx++) {
+			for (int objIdx = 0; objIdx<objCount; objIdx++) {
 				
 				if (DRAW_BALL_SHADOW) {
 					
@@ -1007,15 +1007,15 @@ public class a extends JFrame {
 					}
 				}
 
-				var c = intData[objIdx * STRIDE + ID_COLOR];
+                int c = intData[objIdx * STRIDE + ID_COLOR];
 				objx = intData[objIdx * STRIDE + ID_X];
 				objy = intData[objIdx * STRIDE + ID_Y];
-				var linex2 = intData[objIdx * STRIDE + ID_X2];
-				var liney2 = intData[objIdx * STRIDE + ID_Y2];
+                int linex2 = intData[objIdx * STRIDE + ID_X2];
+                int liney2 = intData[objIdx * STRIDE + ID_Y2];
 				
 				
 				if ((intData[objIdx * STRIDE] & BUMPER_MASK) != 0) {
-					var color = Math.min(0xf, (frameIdx - intData[objIdx * STRIDE + ID_COLLISION_TIME]));
+                    int color = Math.min(0xf, (frameIdx - intData[objIdx * STRIDE + ID_COLLISION_TIME]));
 					c = color*BUMPER_COLOR;
 				}
 
@@ -1058,8 +1058,8 @@ public class a extends JFrame {
 				g.setColor(new Color(c));
 
 
-				var flashy = (flashFrameIdx - frameIdx) * 24;
-				var pan = objy > flashy && objy < flashy+200;
+                int flashy = (flashFrameIdx - frameIdx) * 24;
+                boolean pan = objy > flashy && objy < flashy+200;
 				if (pan) {
 					g.setColor(new Color(0xffffff));
 				}
@@ -1093,7 +1093,7 @@ public class a extends JFrame {
 					break;
 				case SIRCLE:
 
-					var r = linex2;
+                    int r = linex2;
 
 					if (FLASH_SIRCLE_SIZE) {
 						if (pan) {
@@ -1123,7 +1123,7 @@ public class a extends JFrame {
 			
 			g.setColor(new Color(0xffffff));
             String text = null;
-            for (var i = 0; i<8; i++) {
+            for (int i = 0; i<8; i++) {
 				text = String.valueOf((i+1));
 				g.drawString(text, 484-14, 1260-i*84);				
 				intData[(groupData[21]+i)*STRIDE] = (i < multiplier ? VISIBLE_MASK : 0); 
@@ -1131,9 +1131,9 @@ public class a extends JFrame {
 
 			
 			if (USE_SHADED_BALL) {
-				var c = 0x5f5f5f;
-				var add = 0;
-				for (var i = 0; i<16; i++) {
+                int c = 0x5f5f5f;
+                int add = 0;
+				for (int i = 0; i<16; i++) {
 					g.setColor(new Color(c));
 					g.fillArc((int) ballx - BALL_RADIUS + i, (int) bally - BALL_RADIUS+i, BALL_RADIUS * 2 - i*3, BALL_RADIUS * 2 - i*3, 0, 360);
 					c += add;

@@ -38,9 +38,9 @@ public final class ReedSolomonEncoder {
 
     private GenericGFPoly buildGenerator(int degree) {
         if (degree >= cachedGenerators.size()) {
-            var lastGenerator = cachedGenerators.get(cachedGenerators.size() - 1);
-            for (var d = cachedGenerators.size(); d <= degree; d++) {
-                var nextGenerator = lastGenerator.multiply(
+            GenericGFPoly lastGenerator = cachedGenerators.get(cachedGenerators.size() - 1);
+            for (int d = cachedGenerators.size(); d <= degree; d++) {
+                GenericGFPoly nextGenerator = lastGenerator.multiply(
                         new GenericGFPoly(field, new int[]{1, field.exp(d - 1 + field.getGeneratorBase())}));
                 cachedGenerators.add(nextGenerator);
                 lastGenerator = nextGenerator;
@@ -53,19 +53,19 @@ public final class ReedSolomonEncoder {
         if (ecBytes == 0) {
             throw new IllegalArgumentException("No error correction bytes");
         }
-        var dataBytes = toEncode.length - ecBytes;
+        int dataBytes = toEncode.length - ecBytes;
         if (dataBytes <= 0) {
             throw new IllegalArgumentException("No data bytes provided");
         }
-        var generator = buildGenerator(ecBytes);
-        var infoCoefficients = new int[dataBytes];
+        GenericGFPoly generator = buildGenerator(ecBytes);
+        int[] infoCoefficients = new int[dataBytes];
         System.arraycopy(toEncode, 0, infoCoefficients, 0, dataBytes);
-        var info = new GenericGFPoly(field, infoCoefficients);
+        GenericGFPoly info = new GenericGFPoly(field, infoCoefficients);
         info = info.multiplyByMonomial(ecBytes, 1);
-        var remainder = info.divide(generator)[1];
-        var coefficients = remainder.getCoefficients();
-        var numZeroCoefficients = ecBytes - coefficients.length;
-        for (var i = 0; i < numZeroCoefficients; i++) {
+        GenericGFPoly remainder = info.divide(generator)[1];
+        int[] coefficients = remainder.getCoefficients();
+        int numZeroCoefficients = ecBytes - coefficients.length;
+        for (int i = 0; i < numZeroCoefficients; i++) {
             toEncode[dataBytes + i] = 0;
         }
         System.arraycopy(coefficients, 0, toEncode, dataBytes + numZeroCoefficients, coefficients.length);

@@ -103,12 +103,12 @@ public class HumanAgent extends AbstractAgent {
             millisFraction -= framesPerSecond;
         }
 
-        var time = System.currentTimeMillis();
+        long time = System.currentTimeMillis();
         if (lastFrameTime == 0) {
             timeError += targetDelta;
         }
         else {
-            var deltaTime = time - lastFrameTime;
+            long deltaTime = time - lastFrameTime;
             
             timeError += targetDelta - (deltaTime - lastWaitTime);
         }
@@ -129,7 +129,7 @@ public class HumanAgent extends AbstractAgent {
     @Override
     public int selectAction() {
 
-        var action = ui.getKeyboardAction();
+        int action = ui.getKeyboardAction();
 
         return action;
     }
@@ -138,7 +138,7 @@ public class HumanAgent extends AbstractAgent {
     public void observe(ScreenMatrix screen, ConsoleRAM ram, RLData rlData) {
         
         if (exportFrames) {
-            var image = converter.convert(screen);
+            BufferedImage image = converter.convert(screen);
             movieGenerator.record(image);
         }
 
@@ -162,14 +162,14 @@ public class HumanAgent extends AbstractAgent {
      */
     public static void main(String[] args) {
 
-        var useGUI = true;
+        boolean useGUI = true;
         String namedPipesName = null;
-        var exportFrames = false;
+        boolean exportFrames = false;
 
 
-        var argIndex = 0;
+        int argIndex = 0;
 
-        var doneParsing = (args.length == 0);
+        boolean doneParsing = (args.length == 0);
 
         
         while (!doneParsing) {
@@ -201,7 +201,7 @@ public class HumanAgent extends AbstractAgent {
                 doneParsing = true;
         }
 
-        var agent = new HumanAgent(useGUI, namedPipesName, exportFrames);
+        HumanAgent agent = new HumanAgent(useGUI, namedPipesName, exportFrames);
 
         agent.run();
     }

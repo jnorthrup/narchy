@@ -16,7 +16,7 @@ public class v3Anim extends v3 implements Animated {
         Exponential {
             @Override
             public void interp(float dt, v3Anim v) {
-                var d = Math.max(0, v.speed.floatValue() * dt);
+                float d = Math.max(0, v.speed.floatValue() * dt);
                 v.moveDirect(d, 0.75f);
             }
         },
@@ -25,7 +25,7 @@ public class v3Anim extends v3 implements Animated {
             public void interp(float dt, v3Anim v) {
 
                 /** constants speed: delta to move, in length */
-                var d = Math.max(0, v.speed.floatValue() * dt);
+                float d = Math.max(0, v.speed.floatValue() * dt);
                 v.moveDirect(d, 1f);
 
             }
@@ -33,8 +33,8 @@ public class v3Anim extends v3 implements Animated {
         LERP {
             @Override
             public void interp(float dt, v3Anim v) {
-                var rate = 10f * dt;
-                var w = v.target;
+                float rate = 10f * dt;
+                v3 w = v.target;
                 if (rate >= 1) {
                     v.setDirect(w);
                     v.set(w);
@@ -59,17 +59,17 @@ public class v3Anim extends v3 implements Animated {
             return;
 
 
-        var w = this.target;
-        var dx = w.x - this.x;
-        var dy = w.y - this.y;
-        var dz = w.z - this.z;
+        v3 w = this.target;
+        float dx = w.x - this.x;
+        float dy = w.y - this.y;
+        float dz = w.z - this.z;
 
-        var lenSq = dx * dx + dy * dy + dz * dz;
+        float lenSq = dx * dx + dy * dy + dz * dz;
         if (lenSq < Util.sqrtMIN_NORMAL)
             return;
 
 
-        var len = (float) Math.sqrt(lenSq);
+        float len = (float) Math.sqrt(lenSq);
         d = Math.min(len*proportion, d) / len;
 
 
@@ -114,7 +114,7 @@ public class v3Anim extends v3 implements Animated {
     @Override
     public boolean animate(float dt) {
 
-        var px = this.x;
+        float px = this.x;
         if (px != px) {
             super.set(target);
         } else {

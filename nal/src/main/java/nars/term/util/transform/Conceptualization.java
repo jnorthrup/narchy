@@ -31,7 +31,7 @@ public enum Conceptualization {
     public static final Retemporalize PreciseXternal = new Untemporalization() {
         @Override
         protected Term transformConj(Compound y) {
-            var ydt = y.dt();
+            int ydt = y.dt();
             return (ydt == DTERNAL || ydt == 0) ? y.dt(DTERNAL) : y.dt(XTERNAL);
         }
     };
@@ -45,7 +45,7 @@ public enum Conceptualization {
             if (yy.hasAny(CONJ) && yy.OR(yyy -> yyy/*.unneg()*/.op() == CONJ)) {
                 //collapse any embedded CONJ which will inevitably have dt=XTERNAL
                 UnifiedSet<Term> t = new UnifiedSet(yy.subs());
-                for (var yyy : yy) {
+                for (Term yyy : yy) {
                     if (yyy instanceof Compound && yyy.op() == CONJ) {
                         yyy.eventsAND((when, what)->{
                             t.add(what);
@@ -58,7 +58,7 @@ public enum Conceptualization {
                 }
 
                 if (yy.subs() != 1 && t.size() == 1) {
-                    var tf = t.getFirst();
+                    Term tf = t.getFirst();
                     return CONJ.the(XTERNAL, tf, tf);
                 } else
                     return CONJ.the(XTERNAL, t);
@@ -75,7 +75,7 @@ public enum Conceptualization {
     public static final Retemporalize FlattenAndDeduplicateAndUnnegateConj = new Untemporalization() {
         @Override
         protected  Term transformConj(Compound y) {
-            var yy = y.subterms();
+            Subterms yy = y.subterms();
             if (yy.hasAny(CONJ) /*&& yy.OR(yyy -> yyy.unneg().op() == CONJ)*/) {
 //                TreeSet<Term> t = new TreeSet();
 //                yy.recurseTerms(x -> true, (yyy,parent)->{
@@ -85,7 +85,7 @@ public enum Conceptualization {
 //                    return true;
 //                }, y);
                 UnifiedSet<Term> t = new UnifiedSet(yy.subs());
-                for (var yyy : yy) {
+                for (Term yyy : yy) {
                     if (yyy.unneg().op() == CONJ) {
                         yyy.unneg().eventsAND((when, what)->{
                             t.add(what.unneg());
@@ -98,7 +98,7 @@ public enum Conceptualization {
                 }
 
                 if (t.size() == 1 && yy.subs() != 1) {
-                    var tf = t.getFirst();
+                    Term tf = t.getFirst();
                     return CONJ.the(XTERNAL, tf, tf);
                 } else
                     return CONJ.the(XTERNAL, t);
@@ -119,7 +119,7 @@ public enum Conceptualization {
 
         @Override
         public final Term transformTemporal(Compound x, int dtNext) {
-            var xo = x.op();
+            Op xo = x.op();
 //            if (xo == INH || xo == SIM) {
 //                if ((
 //                    (x.sub(0).op() == CONJ && x.sub(0).dt() != DTERNAL) //seqlike
@@ -138,7 +138,7 @@ public enum Conceptualization {
 
 
             if (x.opID() == CONJ.id) {
-                var y = transformConj(x);
+                Term y = transformConj(x);
                 if (y!=null)
                     x = (Compound) y;
 

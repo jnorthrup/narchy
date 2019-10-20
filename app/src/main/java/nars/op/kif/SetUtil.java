@@ -38,7 +38,7 @@ public class SetUtil {
         try {
             Set hs = new HashSet();
             Object obj = null;
-            for (var it = collection.iterator(); it.hasNext();) {
+            for (Iterator it = collection.iterator(); it.hasNext();) {
                 obj = it.next();
                 if (hs.contains(obj)) 
                     it.remove();                
@@ -81,13 +81,13 @@ public class SetUtil {
      */
     public static String plistMatch(List<String> plist, String key) {
 
-        var ans = "";
+        String ans = "";
         try {
-            var plistSize = plist.size();
+            int plistSize = plist.size();
             if ((plistSize > 1) && ((plistSize % 2) == 0)) {
-                var valIdx = -1;
+                int valIdx = -1;
                 String str = null;
-                for (var i = 0; i < plistSize; i++) {
+                for (int i = 0; i < plistSize; i++) {
                     str = plist.get(i);
                     if (i == valIdx) {
                         ans = str;
@@ -121,7 +121,7 @@ public class SetUtil {
         try {
             if ((seq instanceof List) && StringUtil.isNonEmptyString(regex)) {
                 Object obj = null;
-                for (var it = seq.listIterator(); it.hasNext();) {
+                for (ListIterator it = seq.listIterator(); it.hasNext();) {
                     obj = it.next();
                     if (obj.toString().matches(regex)) 
                         it.remove();                    
@@ -148,7 +148,7 @@ public class SetUtil {
         try {
             if ((seq instanceof List) && StringUtil.isNonEmptyString(regex)) {
                 Object obj = null;
-                for (var it = seq.listIterator(); it.hasNext();) {
+                for (ListIterator it = seq.listIterator(); it.hasNext();) {
                     obj = it.next();
                     if (!obj.toString().matches(regex)) {
                         it.remove();

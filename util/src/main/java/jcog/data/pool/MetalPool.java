@@ -41,7 +41,7 @@ public abstract class MetalPool<X> implements Pool<X> {
     }
 
     public void prepare(int preallocate) {
-        for (var i = 0; i < preallocate; i++)
+        for (int i = 0; i < preallocate; i++)
             put(create());
     }
 
@@ -55,14 +55,14 @@ public abstract class MetalPool<X> implements Pool<X> {
     public void put(X i) {
         //assert (i != null);
 
-        var c = this.capacity;
+        int c = this.capacity;
         if (c == Integer.MAX_VALUE || data.size() < c) {
             data.add(i);
         }
 
     }
     public void put(X[] items, int size) {
-        var c = this.capacity;
+        int c = this.capacity;
         if (c != Integer.MAX_VALUE) {
             size = c - data.size();
             if (size <= 0)
@@ -81,7 +81,7 @@ public abstract class MetalPool<X> implements Pool<X> {
 
     @Override
     public X get() {
-        var e = data.poll();
+        X e = data.poll();
         return e == null ? create() : e;
     }
 
@@ -91,7 +91,7 @@ public abstract class MetalPool<X> implements Pool<X> {
 
 
     public void putAll(Collection<X> c) {
-        for (var x : c) {
+        for (X x : c) {
             put(x);
         }
     }

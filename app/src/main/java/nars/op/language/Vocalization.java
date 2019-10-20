@@ -87,29 +87,29 @@ public class Vocalization extends NARPart {
     public boolean next() {
 
 
-        var dur = nar.dur() * durationsPerWord;
-        var now = nar.time();
-        var startOfNow = now - (int) Math.ceil(dur);
-        var endOfNow = now + (int) Math.floor(dur);
+        float dur = nar.dur() * durationsPerWord;
+        long now = nar.time();
+        long startOfNow = now - (int) Math.ceil(dur);
+        long endOfNow = now + (int) Math.floor(dur);
 
 
-        var pending = new FasterList<Pair<Term, Truth>>(0);
+        FasterList<Pair<Term, Truth>> pending = new FasterList<Pair<Term, Truth>>(0);
         synchronized (vocalize) {
 
 
-            var tt = vocalize.rowKeySet().headSet(endOfNow);
+            SortedSet<Long> tt = vocalize.rowKeySet().headSet(endOfNow);
 
             if (!tt.isEmpty()) {
-                var ll = new LongArrayList(tt.size());
-                for (var aLong : tt) {
+                LongArrayList ll = new LongArrayList(tt.size());
+                for (Long aLong : tt) {
                     ll.add(aLong);
                 }
 
                 ll.forEach(t -> {
-                    var entries = vocalize.row(t).entrySet();
+                    Set<Map.Entry<Term, TruthAccumulator>> entries = vocalize.row(t).entrySet();
                     if (t >= startOfNow) {
-                        for (var e : entries) {
-                            var x = e.getValue().commitSum();
+                        for (Map.Entry<Term, TruthAccumulator> e : entries) {
+                            Truth x = e.getValue().commitSum();
                             if (x.expectation() > expectationThreshold)
                                 pending.add(Tuples.pair(e.getKey(), x));
                         }
@@ -122,7 +122,7 @@ public class Vocalization extends NARPart {
             return true;
 
 
-        var spoken = decide(pending);
+        Term spoken = decide(pending);
         if (spoken != null)
             speak.accept(spoken);
 
@@ -136,10 +136,10 @@ public class Vocalization extends NARPart {
     private @Nullable
     static Term decide(FasterList<Pair<Term, Truth>> pending) {
         return pending.max((a, b) -> {
-            var ta = a.getTwo().expectation();
-            var tb = b.getTwo().expectation();
+            float ta = a.getTwo().expectation();
+            float tb = b.getTwo().expectation();
             if (ta > tb) {
-                var tab = Float.compare(ta, tb);
+                int tab = Float.compare(ta, tb);
                 return tab;
             } else {
                 return a.getOne().compareTo(b.getOne());

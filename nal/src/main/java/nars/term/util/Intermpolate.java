@@ -3,6 +3,7 @@ package nars.term.util;
 import jcog.Util;
 import jcog.pri.ScalarValue;
 import nars.NAL;
+import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Neg;
@@ -28,9 +29,9 @@ public enum Intermpolate {;
 
         if (a instanceof Neg) {
             if (!(b instanceof Neg)) return Null;
-            var au = a.unneg();
+            Term au = a.unneg();
             if (!(au instanceof Compound)) return Null;
-            var bu = b.unneg();
+            Term bu = b.unneg();
             if (!(bu instanceof Compound)) return Null;
             return intermpolate((Compound)au, (Compound)bu, aProp, curDepth, nar).neg();
         }
@@ -38,16 +39,16 @@ public enum Intermpolate {;
         if (!a.equalsRoot(b))
             return Null;
 
-        var ao = a.op();//, bo = b.op();
+        Op ao = a.op();//, bo = b.op();
 //        if (ao != bo)         return Null; //checked in equalRoot
 
 
-        var len = a.subs();
+        int len = a.subs();
 
         Subterms aa = a.subterms(), bb = b.subterms();
 
 
-        var subsEqual = aa.equals(bb);
+        boolean subsEqual = aa.equals(bb);
 
         if (ao == CONJ && !subsEqual) {
             return intermpolateSeq(a, b, aProp, nar);
@@ -57,7 +58,7 @@ public enum Intermpolate {;
         if (!subsEqual && aa.subs() != bb.subs())
             return Null;
 
-        var dt = ao.temporal ? chooseDT(a, b, aProp, nar) : DTERNAL;
+        int dt = ao.temporal ? chooseDT(a, b, aProp, nar) : DTERNAL;
         if (dt == XTERNAL)
             return Null;
 
@@ -65,15 +66,15 @@ public enum Intermpolate {;
             return a.dt(dt);
         } else {
 
-            var ab = new Term[len];
-            var change = false;
-            for (var i = 0; i < len; i++) {
+            Term[] ab = new Term[len];
+            boolean change = false;
+            for (int i = 0; i < len; i++) {
                 Term ai = aa.sub(i), bi = bb.sub(i);
                 if (!ai.equals(bi)) {
                     if (!(ai instanceof Compound) || !(bi instanceof Compound))
                         return Null;
 
-                    var y = intermpolate((Compound) ai, (Compound) bi, aProp, curDepth / 2f, nar);
+                    Term y = intermpolate((Compound) ai, (Compound) bi, aProp, curDepth / 2f, nar);
                     if (y == Null)
                         return Null;
                     if (!ai.equals(y)) {
@@ -98,9 +99,9 @@ public enum Intermpolate {;
         //return (1 + dtDiff(a.eventRange(), b.eventRange()) ) * Math.max(a.subs(), b.subs()); //HACK estimate
 
         //exhaustive test:
-        var aa = ConjList.events(a);
-        var bb = ConjList.events(b);
-        var n = aa.size();
+        ConjList aa = ConjList.events(a);
+        ConjList bb = ConjList.events(b);
+        int n = aa.size();
         if (n !=bb.size())
             return 1;//Float.POSITIVE_INFINITY;
 
@@ -125,13 +126,13 @@ public enum Intermpolate {;
         long dtDiff = 0;
         long[] aaw = aa.when, bbw = bb.when;
         float subDiff = 0;
-        for (var i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             dtDiff += Math.abs(aaw[i] - bbw[i]); //TODO fail early if dtErr becomes excessive that dtDiff=1
             subDiff += dtDiff(aa.get(i), bb.get(i), depth+1);
         }
 
         float dtErr;
-        var r = Math.max(aar, bbr);
+        long r = Math.max(aar, bbr);
         if (r == 0) {
             if (dtDiff > 0) return 1; //can this happen?
             dtErr = 0;
@@ -144,7 +145,7 @@ public enum Intermpolate {;
     private static Term intermpolateSeq(Compound a, Compound b, float aProp, NAL nar) {
         if (aProp < 0.5f-Float.MIN_NORMAL) {
             //swap so that a is the larger proportion
-            var c = a;
+            Compound c = a;
             a = b;
             b = c;
             aProp = 1 - aProp;
@@ -153,9 +154,9 @@ public enum Intermpolate {;
         if (a.volume()!=b.volume())
             return Null; //is there a solution here?
 
-        var ae = ConjList.events(a);
-        var be = ConjList.events(b);
-        var s = ae.size();
+        ConjList ae = ConjList.events(a);
+        ConjList be = ConjList.events(b);
+        int s = ae.size();
         if (be.size()!=s)
             return Null; //?
 
@@ -167,14 +168,14 @@ public enum Intermpolate {;
 //        if (!Arrays.equals(ae.array(), 0, s, be.array(), 0, s))
 //            return Null; //wtf?
 
-        var dtDither = nar.dtDither();
-        var changed = false;
-        var aw = ae.when;
-        var bw = be.when;
-        for (var i = 0; i < s; i++) {
+        int dtDither = nar.dtDither();
+        boolean changed = false;
+        long[] aw = ae.when;
+        long[] bw = be.when;
+        for (int i = 0; i < s; i++) {
             long ai = aw[i], bi = bw[i];
             if (ai!=bi) {
-                var abi = Tense.dither(Util.lerpLong(aProp, ai, bi), dtDither);
+                long abi = Tense.dither(Util.lerpLong(aProp, ai, bi), dtDither);
                 if (abi != ai) {
                     changed = true;
                     aw[i] = abi;
@@ -232,10 +233,10 @@ public enum Intermpolate {;
     static int merge(int adt, int bdt, float aProp) {
 
 
-        var range = Math.max(Math.abs(adt), Math.abs(bdt));
-        var ab = Util.lerpInt(aProp, bdt, adt);
-        var delta = Math.max(Math.abs(ab - adt), Math.abs(ab - bdt));
-        var ratio = ((float) delta) / range;
+        int range = Math.max(Math.abs(adt), Math.abs(bdt));
+        int ab = Util.lerpInt(aProp, bdt, adt);
+        int delta = Math.max(Math.abs(ab - adt), Math.abs(ab - bdt));
+        float ratio = ((float) delta) / range;
 		//nar.intermpolationRangeLimit.floatValue()) {
 		//            //invalid
 		//            //discard temporal information//return DTERNAL;
@@ -257,7 +258,7 @@ public enum Intermpolate {;
      * XTERNAL matches anything
      */
     public static float dtDiff(Term a, Term b) {
-        var d = dtDiff(a, b, 0);
+        float d = dtDiff(a, b, 0);
         if (NAL.DEBUG)
             assertUnitized(d);
         d = Util.unitize(d);
@@ -283,11 +284,11 @@ public enum Intermpolate {;
             return dtDiffSeq((Compound)a, (Compound)b, depth);
 
         Subterms as = a.subterms(), bs = b.subterms();
-        var dDT = dtDiff(a.dt(), b.dt());
+        float dDT = dtDiff(a.dt(), b.dt());
         if (as.equals(bs)) {
             return dDT;
         } else {
-            var dSubterms = dtDiff(as, bs, depth);
+            float dSubterms = dtDiff(as, bs, depth);
             if (!Float.isFinite(dSubterms))
                 return 1;
 
@@ -321,13 +322,13 @@ public enum Intermpolate {;
 
     private static float dtDiff(Subterms aa, Subterms bb, int depth) {
 
-        var len = aa.subs();
+        int len = aa.subs();
         if (len != bb.subs())
             return 1; //Float.POSITIVE_INFINITY;
 
         float dSubterms = 0;
-        for (var i = 0; i < len; i++) {
-            var di = dtDiff(aa.sub(i), bb.sub(i), depth + 1);
+        for (int i = 0; i < len; i++) {
+            float di = dtDiff(aa.sub(i), bb.sub(i), depth + 1);
 //            if (!Float.isFinite(di)) {
 //                return 1; //Float.POSITIVE_INFINITY;
 //            }

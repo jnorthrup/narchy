@@ -46,13 +46,13 @@ public final class Polygon extends glpoly_t {
 
     private static final Polygon[] polyCache = new Polygon[MAXPOLYS];
     static {
-        for (var i = 0; i < polyCache.length; i++) {
+        for (int i = 0; i < polyCache.length; i++) {
             polyCache[i] = new Polygon();
         }
     }
 
     public static glpoly_t create(int numverts) {
-        var poly = polyCache[polyCount++];
+        Polygon poly = polyCache[polyCount++];
         poly.clear();
         poly.numverts = numverts;
         poly.pos = bufferIndex;

@@ -25,8 +25,8 @@ public class VerifyingTermBuilder extends TermBuilder {
 
     @Override
     public Term compound(Op o, int dt, Term... u) {
-        var aa = a.compound(o, dt, u);
-        var bb = b.compound(o, dt, u);
+        Term aa = a.compound(o, dt, u);
+        Term bb = b.compound(o, dt, u);
         if (!equals(aa, bb)) {
             equals(aa, bb); //temporary for re-debugging
 //            Term aaa = a.compound(o, dt, u); //temporary for re-debugging
@@ -38,8 +38,8 @@ public class VerifyingTermBuilder extends TermBuilder {
 
     @Override
     public Subterms subterms(@Nullable Op inOp, Term... t) {
-        var aa = a.subterms(inOp, t);
-        var bb = b.subterms(inOp, t);
+        Subterms aa = a.subterms(inOp, t);
+        Subterms bb = b.subterms(inOp, t);
         if (!equals(aa, bb))
             throw new WTF(Arrays.toString(t) + (inOp != null ? " (inOp=" + inOp + ") " : "") + " inequal:\n" + aa + '\n' + bb);
         return aa;
@@ -67,8 +67,8 @@ public class VerifyingTermBuilder extends TermBuilder {
 
     @Override
     public Atomic atom(String id) {
-        var aa = a.atom(id);
-        var bb = b.atom(id);
+        Atomic aa = a.atom(id);
+        Atomic bb = b.atom(id);
         if (!aa.equals(bb))
             throw new WTF("atoms inequal: " + aa + " " + bb);
         return aa;

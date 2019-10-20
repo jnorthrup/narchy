@@ -165,19 +165,19 @@ public class MotorJoint extends Joint {
         m_invIB = B.m_invI;
 
         v2 cA = data.positions[m_indexA];
-        var aA = data.positions[m_indexA].a;
+        float aA = data.positions[m_indexA].a;
         v2 vA = data.velocities[m_indexA];
-        var wA = data.velocities[m_indexA].w;
+        float wA = data.velocities[m_indexA].w;
 
         v2 cB = data.positions[m_indexB];
-        var aB = data.positions[m_indexB].a;
+        float aB = data.positions[m_indexB].a;
         v2 vB = data.velocities[m_indexB];
-        var wB = data.velocities[m_indexB].w;
+        float wB = data.velocities[m_indexB].w;
 
-        var qA = pool.popRot();
-        var qB = pool.popRot();
-        var temp = new v2();
-        var K = pool.popMat22();
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
+        v2 temp = new v2();
+        Mat22 K = pool.popMat22();
 
         qA.set(aA);
         qB.set(aB);
@@ -225,7 +225,7 @@ public class MotorJoint extends Joint {
             m_linearImpulse.y *= data.step.dtRatio;
             m_angularImpulse *= data.step.dtRatio;
 
-            var P = m_linearImpulse;
+            v2 P = m_linearImpulse;
             vA.x -= mA * P.x;
             vA.y -= mA * P.y;
             wA -= iA * (m_rA.x * P.y - m_rA.y * P.x + m_angularImpulse);
@@ -249,25 +249,25 @@ public class MotorJoint extends Joint {
     @Override
     public void solveVelocityConstraints(SolverData data) {
         v2 vA = data.velocities[m_indexA];
-        var wA = data.velocities[m_indexA].w;
+        float wA = data.velocities[m_indexA].w;
         v2 vB = data.velocities[m_indexB];
-        var wB = data.velocities[m_indexB].w;
+        float wB = data.velocities[m_indexB].w;
 
         float mA = m_invMassA, mB = m_invMassB;
         float iA = m_invIA, iB = m_invIB;
 
-        var h = data.step.dt;
-        var inv_h = data.step.inv_dt;
+        float h = data.step.dt;
+        float inv_h = data.step.inv_dt;
 
-        var temp = new v2();
+        v2 temp = new v2();
 
         
         {
-            var Cdot = wB - wA + inv_h * m_correctionFactor * m_angularError;
-            var impulse = -m_angularMass * Cdot;
+            float Cdot = wB - wA + inv_h * m_correctionFactor * m_angularError;
+            float impulse = -m_angularMass * Cdot;
 
-            var oldImpulse = m_angularImpulse;
-            var maxImpulse = h * m_maxTorque;
+            float oldImpulse = m_angularImpulse;
+            float maxImpulse = h * m_maxTorque;
             m_angularImpulse = MathUtils.clamp(m_angularImpulse + impulse, -maxImpulse, maxImpulse);
             impulse = m_angularImpulse - oldImpulse;
 
@@ -275,7 +275,7 @@ public class MotorJoint extends Joint {
             wB += iB * impulse;
         }
 
-        var Cdot = new v2();
+        v2 Cdot = new v2();
 
         
         {
@@ -286,14 +286,14 @@ public class MotorJoint extends Joint {
             Cdot.y =
                     vB.y + wB * m_rB.x - vA.y - wA * m_rA.x + inv_h * m_correctionFactor * m_linearError.y;
 
-            var impulse = temp;
+            v2 impulse = temp;
             Mat22.mulToOutUnsafe(m_linearMass, Cdot, impulse);
             impulse.negated();
-            var oldImpulse = new v2();
+            v2 oldImpulse = new v2();
             oldImpulse.set(m_linearImpulse);
             m_linearImpulse.added(impulse);
 
-            var maxImpulse = h * m_maxForce;
+            float maxImpulse = h * m_maxForce;
 
             if (m_linearImpulse.lengthSquared() > maxImpulse * maxImpulse) {
                 m_linearImpulse.normalize();

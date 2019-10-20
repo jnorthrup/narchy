@@ -9,6 +9,8 @@ import jcog.learn.ntm.memory.address.content.BetaSimilarity;
 import jcog.learn.ntm.memory.address.content.ContentAddressing;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 public class NTMMemory {
@@ -64,37 +66,37 @@ public class NTMMemory {
         this(heading, memory.memoryHeight, memory.memoryWidth, memory.heads,
                 UnitFactory.getTensor2(memory.memoryHeight, memory.memoryWidth), memory);
 
-        var erasures = getTensor2(memory.memoryHeight, memory.memoryWidth);
+        double[][] erasures = getTensor2(memory.memoryHeight, memory.memoryWidth);
 
-        var h = headNum();
+        int h = headNum();
 
-        for (var i = 0; i < h; i++) {
-            var d = this.heads[i];
+        for (int i = 0; i < h; i++) {
+            Head d = this.heads[i];
             if (d == null)
                 this.heads[i] = d = new Head(memory.getWidth());
 
-            var eraseVector = d.getEraseVector();
-            var addVector = d.getAddVector();
-            var erases = erase[i];
-            var adds = add[i];
-            for (var j = 0; j < memoryWidth; j++) {
+            Unit[] eraseVector = d.getEraseVector();
+            Unit[] addVector = d.getAddVector();
+            double[] erases = erase[i];
+            double[] adds = add[i];
+            for (int j = 0; j < memoryWidth; j++) {
                 erases[j] = Sigmoid.getValue(eraseVector[j].value);
                 adds[j] = Sigmoid.getValue(addVector[j].value);
             }
         }
 
-        var p = parent();
-        for (var i = 0; i < memoryHeight; i++) {
+        NTMMemory p = parent();
+        for (int i = 0; i < memoryHeight; i++) {
 
-            var oldRow = p.data[i];
-            var erasure = erasures[i];
-            var row = data[i];
-            for (var j = 0; j < memoryWidth; j++) {
-                var oldCell = oldRow[j];
-                var erase = 1.0;
-                var add = 0.0;
-                for (var k = 0; k < h; k++) {
-                    var addressingValue = this.heading[k].addressingVector.value[i];
+            Unit[] oldRow = p.data[i];
+            double[] erasure = erasures[i];
+            Unit[] row = data[i];
+            for (int j = 0; j < memoryWidth; j++) {
+                Unit oldCell = oldRow[j];
+                double erase = 1.0;
+                double add = 0.0;
+                for (int k = 0; k < h; k++) {
+                    double addressingValue = this.heading[k].addressingVector.value[i];
                     erase *= (1.0 - (addressingValue * this.erase[k][j]));
                     add += addressingValue * this.add[k][j];
                 }
@@ -109,11 +111,11 @@ public class NTMMemory {
     }
 
     public void backwardErrorPropagation() {
-        for (var i = 0; i < headNum(); i++) {
-            var headSetting = heading[i];
-            var erase = this.erase[i];
-            var add = this.add[i];
-            var head = heads[i];
+        for (int i = 0; i < headNum(); i++) {
+            HeadSetting headSetting = heading[i];
+            double[] erase = this.erase[i];
+            double[] add = this.add[i];
+            Head head = heads[i];
             headSettingGradientUpdate(i, erase, add, headSetting);
             eraseAndAddGradientUpdate(i, erase, add, headSetting, head);
         }
@@ -121,27 +123,27 @@ public class NTMMemory {
     }
 
     private void memoryGradientUpdate() {
-        var h = headNum();
+        int h = headNum();
 
-        var p = parent();
-
-
-        var heading = this.heading;
-        var erase = this.erase;
-
-        var height = this.memoryHeight;
-        var width = this.memoryWidth;
-
-        for (var i = 0; i < height; i++) {
-
-            var oldDataVector = p.data[i];
-            var newDataVector = data[i];
+        NTMMemory p = parent();
 
 
-            for (var j = 0; j < width; j++) {
-                var gradient = 1.0;
+        HeadSetting[] heading = this.heading;
+        double[][] erase = this.erase;
 
-                for (var q = 0; q < h; q++) {
+        int height = this.memoryHeight;
+        int width = this.memoryWidth;
+
+        for (int i = 0; i < height; i++) {
+
+            Unit[] oldDataVector = p.data[i];
+            Unit[] newDataVector = data[i];
+
+
+            for (int j = 0; j < width; j++) {
+                double gradient = 1.0;
+
+                for (int q = 0; q < h; q++) {
                     gradient *= 1.0 - (heading[q].addressingVector.value[i] * erase[q][j]);
                 }
                 oldDataVector[j].grad += gradient * newDataVector[j].grad;
@@ -150,62 +152,62 @@ public class NTMMemory {
     }
 
     private void eraseAndAddGradientUpdate(int headIndex, double[] erase, double[] add, HeadSetting headSetting, Head head) {
-        var addVector = head.getAddVector();
+        Unit[] addVector = head.getAddVector();
 
-        var h = headNum();
+        int h = headNum();
 
-        var p = parent();
+        NTMMemory p = parent();
 
-        for (var j = 0; j < memoryWidth; j++) {
-            var gradientErase = 0.0;
-            var gradientAdd = 0.0;
+        for (int j = 0; j < memoryWidth; j++) {
+            double gradientErase = 0.0;
+            double gradientAdd = 0.0;
 
-            for (var k = 0; k < memoryHeight; k++) {
-                var row = data[k];
-                var itemGradient = row[j].grad;
-                var addressingVectorItemValue = headSetting.addressingVector.value[k];
+            for (int k = 0; k < memoryHeight; k++) {
+                Unit[] row = data[k];
+                double itemGradient = row[j].grad;
+                double addressingVectorItemValue = headSetting.addressingVector.value[k];
 
-                var gradientErase2 = p.data[k][j].value;
-                for (var q = 0; q < h; q++) {
+                double gradientErase2 = p.data[k][j].value;
+                for (int q = 0; q < h; q++) {
                     if (q != headIndex) {
                         gradientErase2 *= 1.0 - (heading[q].addressingVector.value[k] * this.erase[q][j]);
                     }
 
                 }
 
-                var gradientAddressing = itemGradient * addressingVectorItemValue;
+                double gradientAddressing = itemGradient * addressingVectorItemValue;
 
                 gradientErase += gradientAddressing * (-gradientErase2);
                 gradientAdd += gradientAddressing;
             }
 
 
-            var e = erase[j];
+            double e = erase[j];
             head.getEraseVector()[j].grad += gradientErase * e * (1.0 - e);
-            var a = add[j];
+            double a = add[j];
             addVector[j].grad += gradientAdd * a * (1.0 - a);
         }
     }
 
     private void headSettingGradientUpdate(int headIndex, double[] erase, double[] add, HeadSetting headSetting) {
-        var h = headNum();
+        int h = headNum();
 
-        var p = parent();
+        NTMMemory p = parent();
 
-        for (var j = 0; j < memoryHeight; j++) {
+        for (int j = 0; j < memoryHeight; j++) {
 
-            var row = data[j];
-            var oldRow = p.data[j];
-            var gradient = 0.0;
-            for (var k = 0; k < memoryWidth; k++) {
-                var data = row[k];
-                var oldDataValue = oldRow[k].value;
-                for (var q = 0; q < h; q++) {
+            Unit[] row = data[j];
+            Unit[] oldRow = p.data[j];
+            double gradient = 0.0;
+            for (int k = 0; k < memoryWidth; k++) {
+                Unit data = row[k];
+                double oldDataValue = oldRow[k].value;
+                for (int q = 0; q < h; q++) {
                     if (q == headIndex)
                         continue;
 
 
-                    var setting = heading[q];
+                    HeadSetting setting = heading[q];
                     oldDataValue *= (1.0 - (setting.addressingVector.value[j] * this.erase[q][k]));
                 }
                 gradient += ((oldDataValue * (-erase[k])) + add[k]) * data.grad;
@@ -219,8 +221,8 @@ public class NTMMemory {
     }
 
     public void updateWeights(IWeightUpdater weightUpdater) {
-        for (var betaSimilarities : oldSimilar) {
-            for (var betaSimilarity : betaSimilarities) {
+        for (BetaSimilarity[] betaSimilarities : oldSimilar) {
+            for (BetaSimilarity betaSimilarity : betaSimilarities) {
                 weightUpdater.updateWeight(betaSimilarity);
             }
         }
@@ -228,7 +230,12 @@ public class NTMMemory {
     }
 
     private static double[][] getTensor2(int x, int y) {
-        var tensor = IntStream.range(0, x).mapToObj(i -> new double[y]).toArray(double[][]::new);
+        List<double[]> list = new ArrayList<>();
+        for (int i = 0; i < x; i++) {
+            double[] doubles = new double[y];
+            list.add(doubles);
+        }
+        double[][] tensor = list.toArray(new double[0][]);
 
 
         return tensor;

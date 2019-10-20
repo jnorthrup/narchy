@@ -37,13 +37,13 @@ public class DeductiveChainTest  {
     public DeductiveChainTest(@NotNull TestNAR n, int length, int timeLimit, @NotNull IndexedStatementBuilder b) {
 
         beliefs = new Compound[length];
-        for (var x = 0; x < length; x++) {
+        for (int x = 0; x < length; x++) {
             beliefs[x] = b.apply(x, x+1);
         }
 
         q = b.apply(0, length);
 
-        for (var belief : beliefs) {
+        for (@NotNull Term belief : beliefs) {
             n.nar.believe(belief);
         }
         n.nar.question( q );

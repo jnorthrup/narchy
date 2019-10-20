@@ -59,7 +59,7 @@ public abstract class LivingEntity extends Entity {
     @Override
     public void updatePosition(World world, int tileSize) {
         ticksAlive++;
-        var isSwimClimb = this.isInWaterOrClimbable(world, tileSize);
+        boolean isSwimClimb = this.isInWaterOrClimbable(world, tileSize);
         if (isSwimClimb) {
             dx = moveDirection * swimSpeed;
         } else {
@@ -159,7 +159,7 @@ public abstract class LivingEntity extends Entity {
 
     @Override
     public void heal(int amount) {
-        var newHP = this.hitPoints + amount;
+        int newHP = this.hitPoints + amount;
         this.hitPoints = (newHP > maxHP) ? maxHP : newHP;
         System.out.println("Healed " + amount + ". Current health = " + this.hitPoints);
     }

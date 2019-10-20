@@ -45,7 +45,7 @@ import static nars.Op.ImgInt;
 
     /** @param i positive values only  */
     public static Term _term(short /* short */ i) {
-        var num = (byte) (i & 0xff);
+        byte num = (byte) (i & 0xff);
         switch (group(i)) {
             case ANOMs:
                 return Anom.the(num);

@@ -20,17 +20,17 @@ public class OSMTest {
     static class OSMGraphTest {
         public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
 
-            var i = new IRL(User.the());
+            IRL i = new IRL(User.the());
 
-            var o = new Osm().load("/home/me/m/test.osm.bz2");
+            Osm o = new Osm().load("/home/me/m/test.osm.bz2");
             Consumer<OsmElement> index = x -> {
                 if (x.tags != null && !x.tags.isEmpty())
                     i.index.add(x);
             };
-            for (var osmNode : o.nodes.values()) {
+            for (OsmNode osmNode : o.nodes.values()) {
                 index.accept(osmNode);
             }
-            for (var osmWay : o.ways.values()) {
+            for (OsmWay osmWay : o.ways.values()) {
                 index.accept(osmWay);
             }
 //            o.relations.values().forEach(i.index::addAt);
@@ -39,7 +39,7 @@ public class OSMTest {
 
             System.out.println(o);
 
-            for (var n : o.nodes.values()) {
+            for (OsmNode n : o.nodes.values()) {
                 if (n.tags != null) {
                     System.out.println(n);
                 }
@@ -62,7 +62,7 @@ public class OSMTest {
     }
 
     public static Surface osmTest() {
-        var i = new IRL(User.the());
+        IRL i = new IRL(User.the());
 
 
         return new OsmSurface(i).go(

@@ -38,7 +38,7 @@ public abstract class MultiExec extends Exec {
 
     static boolean execute(FasterList b, int concurrency, Consumer each) {
         //TODO sort, distribute etc
-        var bn = b.size();
+        int bn = b.size();
         if (bn == 0)
             return false;
 
@@ -51,8 +51,8 @@ public abstract class MultiExec extends Exec {
             b.clear(each);
         } else {
 
-            var granularity = 1 * (concurrency / 2f);
-            var chunkSize = Math.max(1, (int) Math.min(concurrency, b.size() / (granularity)));
+            float granularity = 1 * (concurrency / 2f);
+            int chunkSize = Math.max(1, (int) Math.min(concurrency, b.size() / (granularity)));
 
             (((FasterList<?>) b).chunkView(chunkSize))
                     .parallelStream().forEach(x -> {
@@ -103,7 +103,7 @@ public abstract class MultiExec extends Exec {
 
         updateTiming();
 
-        var g = this.governor;
+        BiConsumer<NAR, FasterList<Cause>> g = this.governor;
         if (g!=null)
             MetaGoal.value(nar, g);
 
@@ -178,8 +178,8 @@ public abstract class MultiExec extends Exec {
          * measure queue latency "ping"
          */
         static void queueLatency(long start, long end, NAR n) {
-            var latencyNS = end - start;
-            var frames = latencyNS / ((double) (n.loop.periodNS()));
+            long latencyNS = end - start;
+            double frames = latencyNS / ((double) (n.loop.periodNS()));
             //if (frames > 0.5) {
                 Exec.logger.info("queue latency {} ({} frames)", Texts.timeStr(latencyNS), Texts.n4(frames));
             //}
@@ -187,7 +187,7 @@ public abstract class MultiExec extends Exec {
 
         @Override
         public void accept(NAR n) {
-            var end = nanoTime();
+            long end = nanoTime();
             queueLatency(start, end, n);
         }
     }

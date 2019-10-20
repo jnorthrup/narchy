@@ -97,9 +97,9 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     @Override
     public boolean addAll(Collection<? extends X> c) {
         //throw new TODO("optimized bulk addAt");
-        var acc = false;
+        boolean acc = false;
         for (X x : c) {
-            var add = add(x);
+            boolean add = add(x);
             acc = acc || add;
         }
         return acc;
@@ -108,9 +108,9 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     @SafeVarargs
     public final boolean addAll(X... c) {
         //throw new TODO("optimized bulk addAt");
-        var acc = false;
-        for (var x : c) {
-            var add = add(x);
+        boolean acc = false;
+        for (X x : c) {
+            boolean add = add(x);
             acc = acc || add;
         }
         return acc;
@@ -119,8 +119,8 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     @Override
     public boolean removeAll(Collection c) {
         //throw new TODO("optimized bulk addAt");
-        var rem = false;
-        for (var x : c)
+        boolean rem = false;
+        for (Object x : c)
             rem |= remove(x);
         return rem;
     }
@@ -150,7 +150,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
     @Override
     public void forEach(Consumer<? super X> action) {
-        for (var x : list) {
+        for (X x : list) {
             action.accept(x);
         }
     }
@@ -226,7 +226,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
     /** use if remove() not needed */
     public final Iterator<X> iteratorReadOnly() {
-        var s = size();
+        int s = size();
         switch (s) {
             case 0: return Collections.emptyListIterator();
             case 1: return Iterators.singletonIterator(get(0));
@@ -257,9 +257,9 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
     @Override
     public boolean remove(Object o) {
-        var s = size();
+        int s = size();
         if ( s== 0) return false;
-        var removed = set.remove(o);
+        boolean removed = set.remove(o);
         if (removed) {
             s--;
             list.remove(o);
@@ -286,9 +286,9 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
     @Override
     public X remove(Random random) {
-        var s = size();
+        int s = size();
         if (s == 0) return null;
-        var index = s == 1 ? 0 : random.nextInt(s);
+        int index = s == 1 ? 0 : random.nextInt(s);
         X removed;
         remove(removed = list.remove(index));
         return removed;
@@ -306,7 +306,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
     /** removes the last item in the list, or null if empty */
     public @Nullable X poll() {
-        var x = list.poll();
+        X x = list.poll();
         if (x != null)
             set.remove(x);
         return x;
@@ -374,7 +374,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
         @Override
         public void remove() {
             arrayListIterator.remove();
-            var removed = set.remove(lastElementProvided);
+            boolean removed = set.remove(lastElementProvided);
             if (removed) {
                 //assert (removed);
                 if (set.isEmpty()) {

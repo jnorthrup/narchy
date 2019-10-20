@@ -48,7 +48,7 @@ public abstract class VertexData {
 	public abstract int getIndex(int idx);
 
 	void getTriangle(int firstIndex, v3 scale, v3[] triangle) {
-		for (var i = 0; i<3; i++) {
+		for (int i = 0; i<3; i++) {
 			getVertex(getIndex(firstIndex+i), triangle[i]);
 			VectorUtil.mul(triangle[i], triangle[i], scale);
 		}

@@ -48,20 +48,20 @@ public class Triangle {
         this.k = k;
 
 
-        var a = p[i];
-        var b = p[j];
-        var c = p[k];
+        v2 a = p[i];
+        v2 b = p[j];
+        v2 c = p[k];
 
-        var Bx = (double) b.x - a.x;
-        var By = (double) b.y - a.y;
-        var Cx = (double) c.x - a.x;
-        var Cy = (double) c.y - a.y;
-        var D = 1.0 / (2 * (Bx * Cy - By * Cx));
-        var Bs = Bx * Bx + By * By;
-        var Cs = Cx * Cx + Cy * Cy;
-        var x = (Cy * Bs - By * Cs) * D;
+        double Bx = (double) b.x - a.x;
+        double By = (double) b.y - a.y;
+        double Cx = (double) c.x - a.x;
+        double Cy = (double) c.y - a.y;
+        double D = 1.0 / (2 * (Bx * Cy - By * Cx));
+        double Bs = Bx * Bx + By * By;
+        double Cs = Cx * Cx + Cy * Cy;
+        double x = (Cy * Bs - By * Cs) * D;
         dX = x + a.x;
-        var y = (Bx * Cs - Cx * Bs) * D;
+        double y = (Bx * Cs - Cx * Bs) * D;
         dY = y + a.y;
 
         
@@ -94,8 +94,8 @@ public class Triangle {
     }
 
     private double dis(v2 v) {
-        var x = dX - v.x;
-        var y = dY - v.y;
+        double x = dX - v.x;
+        double y = dY - v.y;
         return x * x + y * y;
     }
 }

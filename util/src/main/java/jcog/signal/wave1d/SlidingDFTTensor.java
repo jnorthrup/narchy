@@ -20,7 +20,7 @@ public class SlidingDFTTensor extends ArrayTensor {
     }
 
     public void update(Tensor src) {
-        var sv = src.volume();
+        int sv = src.volume();
         if(tmp==null || tmp.length!= sv) {
             tmp = new float[sv];
         } else {
@@ -42,7 +42,7 @@ public class SlidingDFTTensor extends ArrayTensor {
     }
 
     public void normalize() {
-        var minmax = Util.minmax(data);
+        float[] minmax = Util.minmax(data);
         if (!(minmax[1] - minmax[0] < Float.MIN_NORMAL)) {
             Util.normalize(data, minmax[0], minmax[1]);
         } else {
@@ -52,7 +52,7 @@ public class SlidingDFTTensor extends ArrayTensor {
 
     /** multiplicative filter, by freq index */
     public void transform(IntFloatToFloatFunction f) {
-        for (var i = 0; i < data.length; i++) {
+        for (int i = 0; i < data.length; i++) {
             data[i] *= f.valueOf(i, data[i]);
         }
     }

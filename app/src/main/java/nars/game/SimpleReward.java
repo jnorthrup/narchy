@@ -62,7 +62,7 @@ public class SimpleReward extends ScalarReward {
         ((BeliefTables)concept.goals()).add(0, new EmptyBeliefTable() {
             @Override
             public void remember(Remember r) {
-                var i = r.input;
+                Task i = r.input;
 
                 if (Math.abs(i.freq() - goal.freq()) > 0.5f) {
                     if (log) {

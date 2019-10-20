@@ -32,7 +32,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
         if (value == null)
             throw new NullPointerException();
 
-        var prev = map.put(key, value);
+        Y prev = map.put(key, value);
         if (prev!=value)
             invalidate();
         return prev;
@@ -84,7 +84,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
      */
     @Override
     public final Y remove(Object key) {
-        var r = map.remove(key);
+        Y r = map.remove(key);
         if (r != null)
             invalidate();
         return r;
@@ -122,9 +122,9 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
 
     @Override
     public final void forEach(BiConsumer<? super X, ? super Y> action) {
-        for (var entry : this.map.entrySet()) {
-            var key = entry.getKey();
-            var value = entry.getValue();
+        for (Entry<X, Y> entry : this.map.entrySet()) {
+            X key = entry.getKey();
+            Y value = entry.getValue();
             action.accept(key, value);
         }
     }
@@ -134,13 +134,13 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
      * this is the fast value iterating method
      */
     public final void forEachValue(Consumer<? super Y> action) {
-        for (var y : valueArray()) {
+        for (Y y : valueArray()) {
             if (y !=null)
                 action.accept(y);
         }
     }
     public final <Z> void forEachValueWith(BiConsumer<? super Y, Z> action, Z z) {
-        for (var y : valueArray()) {
+        for (Y y : valueArray()) {
             if (y !=null)
                 action.accept(y, z);
         }
@@ -149,8 +149,8 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
     @Override
     public Y compute(X key, BiFunction<? super X, ? super Y, ? extends Y> remappingFunction) {
         boolean[] changed = {false};
-        var v = map.compute(key, (k, pv) -> {
-            var next = remappingFunction.apply(k, pv);
+        Y v = map.compute(key, (k, pv) -> {
+            Y next = remappingFunction.apply(k, pv);
             if (next != pv)
                 changed[0] = true;
             return next;
@@ -163,8 +163,8 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
     @Override
     public Y computeIfAbsent(X key, Function<? super X, ? extends Y> mappingFunction) {
         boolean[] changed = {false};
-        var v = map.computeIfAbsent(key, (p) -> {
-            var next = mappingFunction.apply(p);
+        Y v = map.computeIfAbsent(key, (p) -> {
+            Y next = mappingFunction.apply(p);
             changed[0] = true;
             return next;
         });
@@ -179,12 +179,17 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
     }
 
     public boolean whileEachValue(Predicate<? super Y> action) {
-        var x = valueArray();
-        return Arrays.stream(x).allMatch(action);
+        Y[] x = valueArray();
+        for (Y y : x) {
+            if (!action.test(y)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public boolean whileEachValueReverse(Predicate<? super Y> action) {
-        var x = valueArray();
+        Y[] x = valueArray();
         return IntStream.iterate(x.length - 1, i -> i >= 0, i -> i - 1).mapToObj(i -> x[i]).allMatch(action);
     }
 
@@ -296,16 +301,16 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
     };
 
     public Y getIndex(int i) {
-        var l = valueArray();
+        Y[] l = valueArray();
         return l.length > i ? l[i] : null;
     }
     public Y getIndex(Random rng) {
-        var l = valueArray();
+        Y[] l = valueArray();
         return l.length > 0 ? l[rng.nextInt(l.length)] : null;
     }
 
     public Y getIndex(SplitMix64Random rng) {
-        var l = valueArray();
+        Y[] l = valueArray();
         return l.length > 0 ? l[rng.nextInt(l.length)] : null;
     }
 }

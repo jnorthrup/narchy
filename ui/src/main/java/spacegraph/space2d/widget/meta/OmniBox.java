@@ -40,7 +40,7 @@ public class OmniBox extends Widget {
             @Override
             public void add(Surface... s) {
                 synchronized (content) {
-                    var sizeBefore = size();
+                    int sizeBefore = size();
 
                     super.add(s);
 
@@ -261,9 +261,9 @@ public class OmniBox extends Widget {
                 if (query.get() != this)
                     return false;
                 else {
-                    var d = docObj.doc();
-                    var r = new Result(d);
-                    var s = result(r);
+                    Document d = docObj.doc();
+                    Result r = new Result(d);
+                    Surface s = result(r);
                     if (query.get() == this) {
                         results.add(r);
                         target.add(s);
@@ -324,9 +324,9 @@ public class OmniBox extends Widget {
                 prev = query.getAndSet(null);
             } else {
 
-                var q = query.get();
+                Querying q = query.get();
                 if (q == null || !q.q.equals(next)) {
-                    var qq = new Querying(next, target);
+                    Querying qq = new Querying(next, target);
                     prev = query.getAndSet(qq);
                     qq.start();
                 }

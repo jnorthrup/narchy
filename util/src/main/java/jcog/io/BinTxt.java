@@ -10,12 +10,12 @@ public class BinTxt {
 	public static final char[] symbols;
 
 	static {
-		var joiner = new StringJoiner("", "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.~", "");
-        for (var i = 192; i <= 255; i++) {
-			var s = String.valueOf((char) i);
+        StringJoiner joiner = new StringJoiner("", "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.~", "");
+        for (int i = 192; i <= 255; i++) {
+            String s = String.valueOf((char) i);
             joiner.add(s);
         }
-		var x = joiner.toString();
+        String x = joiner.toString();
 
 
         symbols = x.toCharArray();
@@ -28,7 +28,7 @@ public class BinTxt {
 	 * URIchars must be at least base length
 	 */
 	public static String toString(long aNumber, int base) {
-		var result = new StringBuilder(4);
+        StringBuilder result = new StringBuilder(4);
 
 		append(result, aNumber, base);
 
@@ -53,7 +53,7 @@ public class BinTxt {
 	}
 
 	private static void _append(StringBuilder target, long v, int base) {
-		var r = (int) (v % base);
+        int r = (int) (v % base);
 
 		if (v - r != 0)
 			append(target, (v - r) / base, base);

@@ -45,11 +45,11 @@ public class ImageTexture extends Tex {
                             })
                     .build(cu -> {
                         try {
-                            var u = cu.getTwo();
-                            var profile = cu.getOne().getGL().getGLProfile();
+                            String u = cu.getTwo();
+                            GLProfile profile = cu.getOne().getGL().getGLProfile();
                             if (u.startsWith(fa_prefix)) {
-                                var icon = u.substring(fa_prefix.length());
-                                var b = fontAwesomeIcons.get("x128/" + icon + "-fs8.png");
+                                String icon = u.substring(fa_prefix.length());
+                                byte[] b = fontAwesomeIcons.get("x128/" + icon + "-fs8.png");
                                 if (b != null) {
                                     InputStream in = new ByteArrayInputStream(b);
                                     return TextureIO.newTextureData(profile, in, true, "png");
@@ -71,8 +71,8 @@ public class ImageTexture extends Tex {
         {
             MutableMap<String, byte[]> fontAwesomeIcons = new UnifiedMap(1024);
 //            final int bufferSize = 512 * 1024;
-            var classLoader = ImageTexture.class.getClassLoader();
-            try (var fa = new TarInputStream(new BZip2InputStream(true, classLoader.getResourceAsStream("fontawesome_128.bzip2")))) {
+            ClassLoader classLoader = ImageTexture.class.getClassLoader();
+            try (TarInputStream fa = new TarInputStream(new BZip2InputStream(true, classLoader.getResourceAsStream("fontawesome_128.bzip2")))) {
                 TarEntry e;
                 while ((e = fa.getNextEntry()) != null) {
                     if (!e.isDirectory())

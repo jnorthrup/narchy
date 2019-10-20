@@ -13,12 +13,12 @@ public class TermTransformException extends SoftException {
 
     @Override
     public String getMessage() {
-        var m = super.getMessage();
-        var xh = "\tx: ";
-        var s = new StringBuilder(m.length() + xh.length()*2 + 512);
+        String m = super.getMessage();
+        String xh = "\tx: ";
+        StringBuilder s = new StringBuilder(m.length() + xh.length()*2 + 512);
         s.append(getClass()).append('\n');
         s.append(xh);
-        var yh = "\n\ty: ";
+        String yh = "\n\ty: ";
         x.appendTo(s).append(yh);
         return y.appendTo(s).append('\n').append(m).toString();
     }

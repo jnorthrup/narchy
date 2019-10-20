@@ -30,7 +30,7 @@ public enum StateInit { ;
             e.prepareGoal();
 
             /* Initialize first executionContext */
-            var eCtx = new PrologContext(0);
+            PrologContext eCtx = new PrologContext(0);
             eCtx.goalsToEval = new SubGoalStore(ClauseInfo.extractBody(e.startGoal));
             eCtx.clause = (Struct)e.query;
             eCtx.depth = 0;

@@ -214,7 +214,7 @@ public final class Com
 		}
 
 
-		var len = 0;
+        int len = 0;
         int c;
         if (hlp.getchar() == '\"') {
 			hlp.nextchar();
@@ -309,7 +309,7 @@ public final class Com
 		}
 
 		Com.com_argc= args.length;
-		for (var i = 0; i < Com.com_argc; i++)
+		for (int i = 0; i < Com.com_argc; i++)
 		{
 			if (args[i].length() >= Defines.MAX_TOKEN_CHARS)
 				Com.com_argv[i]= "";
@@ -347,7 +347,7 @@ public final class Com
 	/** Prints out messages, which can also be redirected to a remote client. */
 	public static void Printf(String fmt, Vargs vargs)
 	{
-		var msg= sprintf(_debugContext + fmt, vargs);
+        String msg= sprintf(_debugContext + fmt, vargs);
 		if (rd_target != 0)
 		{
 			if ((msg.length() + rd_buffer.length()) > (rd_buffersize - 1))
@@ -370,7 +370,7 @@ public final class Com
 
             if (Globals.logfile == null)
 			{
-				var name = FS.Gamedir() + "/qconsole.log";
+                String name = FS.Gamedir() + "/qconsole.log";
                 if (Globals.logfile_active.value > 2)
 					try
 					{
@@ -477,7 +477,7 @@ public final class Com
 	}
 
 	public static String StripExtension(String string) {
-		var i = string.lastIndexOf('.');
+        int i = string.lastIndexOf('.');
 		if (i < 0)
 			return string;
 		return string.substring(0, i);
@@ -697,7 +697,7 @@ public final class Com
         length = Math.min(60, length);
 		System.arraycopy(base, offset , chkb, 0, length);
 
-		var p_ndx = (sequence % (1024 - 4));
+        int p_ndx = (sequence % (1024 - 4));
         chkb[length] = chktbl[p_ndx + 0];
 		chkb[length + 1] = chktbl[p_ndx + 1];
 		chkb[length + 2] = chktbl[p_ndx + 2];
@@ -706,9 +706,13 @@ public final class Com
 		length += 4;
 
 
-		var crc = CRC.CRC_Block(chkb, length);
+        int crc = CRC.CRC_Block(chkb, length);
 
-		var x = IntStream.range(0, length).map(n -> chkb[n] & 0xFF).sum();
+		int x = 0;
+		for (int n = 0; n < length; n++) {
+			int i = chkb[n] & 0xFF;
+			x += i;
+		}
 
 		crc ^= x;
 

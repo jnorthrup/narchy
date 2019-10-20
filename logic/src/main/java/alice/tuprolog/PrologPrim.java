@@ -85,8 +85,8 @@ public class PrologPrim {
      * @throws Exception if invocation directive failure
      */
     public void evalAsDirective(Struct g) throws Throwable {
-        var primitive_args = newArgs();
-        for (var i = 0; i<primitive_args.length; i++) {
+        Object[] primitive_args = newArgs();
+        for (int i = 0; i<primitive_args.length; i++) {
             primitive_args[i] = g.subResolve(i);
         }
         
@@ -104,8 +104,8 @@ public class PrologPrim {
      * @throws Exception if invocation primitive failure
      */
     public boolean evalAsPredicate(Struct g) throws Throwable {
-        var primitive_args = newArgs();
-        for (var i = 0; i<primitive_args.length; i++) {
+        Object[] primitive_args = newArgs();
+        for (int i = 0; i<primitive_args.length; i++) {
             primitive_args[i] = g.sub(i);
         }
 
@@ -123,8 +123,8 @@ public class PrologPrim {
      */
     public Term evalAsFunctor(Struct g) throws Throwable {
 
-        var primitive_args = newArgs();
-            for (var i = 0; i<primitive_args.length; i++) {
+        Object[] primitive_args = newArgs();
+            for (int i = 0; i<primitive_args.length; i++) {
                 primitive_args[i] = g.subResolve(i);
             }
 

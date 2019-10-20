@@ -44,9 +44,9 @@ public class Piece {
     public void draw(Graphics g) {
 
         g.setColor(color);
-        var radius = 20;
-        var y = 30;
-        var x = 30;
+        int radius = 20;
+        int y = 30;
+        int x = 30;
         g.fillOval(x - radius, y - radius, radius * 2, radius * 2);
     }
 

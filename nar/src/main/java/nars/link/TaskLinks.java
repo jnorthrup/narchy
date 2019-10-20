@@ -59,7 +59,7 @@ public class TaskLinks implements Sampler<TaskLink> {
         @Override
         @Deprecated
         protected void changed() {
-            var a = links;
+            TaskLinkBag a = links;
             if (a != null)
                 a.setCapacity(intValue());
         }
@@ -72,7 +72,7 @@ public class TaskLinks implements Sampler<TaskLink> {
     }
 
     public TaskLinks(/*TODO bag as parameter */) {
-        var c = linksMax.intValue();
+        int c = linksMax.intValue();
 
         //    /**
         //     * tasklink retention rate:
@@ -80,7 +80,7 @@ public class TaskLinks implements Sampler<TaskLink> {
         //     * 1 = deducts no propagated priority (superconductive)
         //     **/
         //    public final FloatRange sustain = new FloatRange(0.5f, 0, 1f);
-        var merge = NAL.tasklinkMerge;
+        PriMerge merge = NAL.tasklinkMerge;
         links = new nars.link.TaskLinkBag(
                 c, merge
 
@@ -91,15 +91,15 @@ public class TaskLinks implements Sampler<TaskLink> {
 
     public @Nullable Multimap<Term,TaskLink> get(Predicate<Term> f, boolean sourceOrTargetMatch) {
         return get((t)->{
-            var tgt = sourceOrTargetMatch ? t.from() : t.to();
+            Term tgt = sourceOrTargetMatch ? t.from() : t.to();
             return f.test(tgt) ? tgt : null;
         });
     }
 
     public @Nullable Multimap<Term,TaskLink> get(Function<TaskLink,Term> f) {
         Multimap<Term,TaskLink> m = null;
-        for (var x : links) {
-            @Nullable var y = f.apply(x);
+        for (TaskLink x : links) {
+            @Nullable Term y = f.apply(x);
             if (y!=null) {
                 if (m == null)
                     m = Multimaps.newListMultimap(new UnifiedMap<>(1), ()-> new FasterList<>(1));

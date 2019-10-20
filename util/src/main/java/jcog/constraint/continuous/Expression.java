@@ -48,7 +48,7 @@ public class Expression {
 
 
     public double getValue() {
-        var result = this.constant;
+        double result = this.constant;
 
         for (int i = 0, termsSize = terms.size(); i < termsSize; i++) {
             result += terms.get(i).getAsDouble();
@@ -62,7 +62,7 @@ public class Expression {
 
     @Override
     public String toString() {
-        var sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         sb.append("isConstant: ").append(isConstant()).append(" constant: ").append(constant);
         if (!isConstant()) {
             sb.append(" terms: [");

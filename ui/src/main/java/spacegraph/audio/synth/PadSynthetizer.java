@@ -50,7 +50,7 @@ public class PadSynthetizer {
        The amplitude is divided by the bandwidth to ensure that the harmonic
        keeps the same amplitude regardless of the bandwidth */
     private static double profile(double fi,double bwi){
-        var x=fi/bwi;
+        double x=fi/bwi;
         x*=x;
         //this avoids computing the e^(-x^2) where it's results are very close to zero
         if (x>14.71280603) return 0.0;
@@ -62,13 +62,13 @@ public class PadSynthetizer {
         You may replace it with any IFFT routine
     */
     private static void IFFT(int N,double[] freq_amp,double[] freq_phase,double[] smp){
-        var n2 = N/2;
+        int n2 = N/2;
         //FFTwrapper fft(N);
-        var fftfreqs = new FFTFREQS(n2);
+        FFTFREQS fftfreqs = new FFTFREQS(n2);
 
-        for (var i = 0; i<n2; i++){
-            var fai = freq_amp[i];
-            var fpi = freq_phase[i];
+        for (int i = 0; i<n2; i++){
+            double fai = freq_amp[i];
+            double fpi = freq_phase[i];
             fftfreqs.c[i]= fai * Math.cos(fpi);
             fftfreqs.s[i]= fai * Math.sin(fpi);
         }
@@ -109,7 +109,7 @@ public class PadSynthetizer {
         public static void ifft( double[] dataReal, double[] dataImag ) {
 
             // Conjugate input (inverse sign of dataImag values).
-            for (var i = 0; i<dataImag.length; i++ ) {
+            for (int i = 0; i<dataImag.length; i++ ) {
                 dataImag[i] = -dataImag[i];
             }
 
@@ -117,7 +117,7 @@ public class PadSynthetizer {
             FFT.fft( dataReal, dataImag );
 
             // Conjugate again and divide by data length.
-            for (var i = 0; i<dataImag.length; i++ ) {
+            for (int i = 0; i<dataImag.length; i++ ) {
                 dataReal[i] /= dataReal.length;
                 dataImag[i] = -dataImag[i]/dataImag.length;
             }
@@ -139,9 +139,9 @@ public class PadSynthetizer {
          * @param dataImag
          */
         private static void bitReversalReordering( double[] dataReal, double[] dataImag ) {
-            var nBits = Integer.numberOfTrailingZeros(dataReal.length);
-            for (var i = 1; i<dataReal.length-1; i++) {
-                var iRev = reverseBits(i, nBits);
+            int nBits = Integer.numberOfTrailingZeros(dataReal.length);
+            for (int i = 1; i<dataReal.length-1; i++) {
+                int iRev = reverseBits(i, nBits);
                 if ( iRev > i) {
 					ArrayUtil.swapDouble(dataReal, i, iRev);
 					ArrayUtil.swapDouble(dataImag, i, iRev);
@@ -162,7 +162,7 @@ public class PadSynthetizer {
          * @return x in reverse bits order
          */
         public static int reverseBits ( int i, int nBits ) {
-            var iRev = 0;
+            int iRev = 0;
             while ( (i!=0) && (nBits-- >0) ) {
                 iRev <<= 1;
                 iRev |= (i & 1);
@@ -181,29 +181,29 @@ public class PadSynthetizer {
          */
         private static void DanielsonLanczos(double[] dataReal, double[] dataImag) {
 
-            var mmax = 1;
+            int mmax = 1;
 
             while (dataReal.length > mmax) {
 
-                var istep = 2 * mmax;
-                var theta = -Math.PI / mmax;
-                var sinHalfTheta = Math.sin(0.5 * theta);
+                int istep = 2 * mmax;
+                double theta = -Math.PI / mmax;
+                double sinHalfTheta = Math.sin(0.5 * theta);
 
                 // wp = -2.0 * SIN(0.5_8*theta)**2 + i* SIN(theta)
-                var wpR = -2.0 * sinHalfTheta * sinHalfTheta;
-                var wpI = Math.sin(theta);
+                double wpR = -2.0 * sinHalfTheta * sinHalfTheta;
+                double wpI = Math.sin(theta);
 
                 // w = 1. + i*0.
-                var wR = 1.0;
-                var wI = 0.0;
+                double wR = 1.0;
+                double wI = 0.0;
 
-                for (var m = 1; m<=mmax; m++) {
+                for (int m = 1; m<=mmax; m++) {
 
                     double tempI;
                     double tempR;
-                    for (var i = m-1; i<dataReal.length; i+=istep) {
+                    for (int i = m-1; i<dataReal.length; i+=istep) {
 
-                        var j = i + mmax;
+                        int j = i + mmax;
 
                         // temp = ws * data[j]
                         tempR = wR * dataReal[j] - wI * dataImag[j];
@@ -236,7 +236,7 @@ public class PadSynthetizer {
     */
     private static void normalize(int N, double[] smp){
         int i;
-        var max=0.0;
+        double max=0.0;
         for (i=0;i<N;i++) {
             if (Math.abs(smp[i])>max) max= Math.abs(smp[i]);
         }
@@ -266,25 +266,25 @@ public class PadSynthetizer {
             double bw,int number_harmonics, double[] A, double[] smp) {
 
         int i;
-        var freq_amp=new double[N/2];
+        double[] freq_amp=new double[N/2];
 
         //default, all the frequency amplitudes are zero
         for (i=0;i<N/2;i++) freq_amp[i]=0.0;
 
-        for (var nh = 1; nh<number_harmonics; nh++){//for each harmonic
+        for (int nh = 1; nh<number_harmonics; nh++){//for each harmonic
             //bandwidth of the current harmonic measured in Hz
-            var bw_Hz = (Math.pow(2.0, bw / 1200.0) - 1.0) * f * nh;
+            double bw_Hz = (Math.pow(2.0, bw / 1200.0) - 1.0) * f * nh;
 
-            var bwi = bw_Hz / (2.0 * samplerate);
-            var fi = f * nh / samplerate;
+            double bwi = bw_Hz / (2.0 * samplerate);
+            double fi = f * nh / samplerate;
             for (i=0;i<N/2;i++){
-                var hprofile = profile((i / (double) N) - fi, bwi);
+                double hprofile = profile((i / (double) N) - fi, bwi);
                 freq_amp[i]+=hprofile*A[nh];
             }
         }
 
         //Add random phases
-        var freq_phase = new double[N / 2];
+        double[] freq_phase = new double[N / 2];
         for (i=0; i<N/2; i++){
             freq_phase[i]=RND()*2.0*Math.PI;
         }
@@ -297,17 +297,17 @@ public class PadSynthetizer {
 
     public static void main(String[] args) {
 
-        var A = new double[number_harmonics];
+        double[] A = new double[number_harmonics];
         //A[0] is not used
         A[0]=0.0;
 
-        var sample = new double[N];
-        for (var note = 0; note<=24; note+=4){
-            var f1=130.81* Math.pow(2,note/12.0);
+        double[] sample = new double[N];
+        for (int note = 0; note<=24; note+=4){
+            double f1=130.81* Math.pow(2,note/12.0);
             System.out.print("Generating frequency: "+(int) f1+" Hz\n");
-            for (var i = 1; i<number_harmonics; i++) {
+            for (int i = 1; i<number_harmonics; i++) {
                 A[i]=1.0/i;
-                var formants=
+                double formants=
                     Math.exp(-Math.pow((i*f1-600.0)/150.0,2.0))+
                     Math.exp(-Math.pow((i*f1-900.0)/250.0,2.0))+
                     Math.exp(-Math.pow((i*f1-2200.0)/200.0,2.0))+
@@ -318,8 +318,8 @@ public class PadSynthetizer {
             padsynth_basic_algorithm(N,44100,f1,60.0,number_harmonics,A,sample);
 
             /* Output the data to the 16 bit, mono raw file */
-            var isample = new short[N];
-            for (var i = 0; i<N; i++) {
+            short[] isample = new short[N];
+            for (int i = 0; i<N; i++) {
                 isample[i]= (short) (sample[i]*32768.0);
             }
 

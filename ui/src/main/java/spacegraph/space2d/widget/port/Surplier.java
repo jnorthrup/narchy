@@ -35,7 +35,7 @@ public class Surplier<T> extends ConstantPort<T> {
 //                        return; //toggled off while building
 //                    }
 
-                    var b = built.getOpaque();
+                    T b = built.getOpaque();
                     set(b);
                     if (b instanceof Surface) {
                         toggle.stop();

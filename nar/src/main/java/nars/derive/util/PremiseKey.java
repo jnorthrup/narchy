@@ -20,7 +20,7 @@ public class PremiseKey extends ByteKeyExternalWithParameter<PreDerivation> {
         //TODO if taskTerm or beliefTerm have #'s, apply full Anon intern that considers Int as Atom like before Int's had an Intern repr
 
         if (NAL.premise.PREMISE_KEY_DITHER && ditherDT > 1) {
-            var io = new TermIO.DeferredTemporalTermIO();
+            TermIO.DeferredTemporalTermIO io = new TermIO.DeferredTemporalTermIO();
             io.write(d.taskTerm, key);
             io.write(d.beliefTerm, key);
             io.writeDTs(ditherDT, key);

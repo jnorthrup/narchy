@@ -77,7 +77,7 @@ import java.io.PrintStream;
     }
 
     public MetaGoal.Report stats(PrintStream out) {
-        var r = new MetaGoal.Report();
+        MetaGoal.Report r = new MetaGoal.Report();
         r.add(why);
         r.print(out);
         return r;
@@ -88,7 +88,7 @@ import java.io.PrintStream;
 
         //if (x.edgeCount(true, false)==0) { //root
         //}
-        for (var x : graph.nodes()) {
+        for (Node<PriNode, Object> x : graph.nodes()) {
             x.id().update(graph);
         }
     }
@@ -120,7 +120,7 @@ import java.io.PrintStream;
         return graph.removeNode(p);
     }
     public void removeAll(PriNode... p) {
-        for (var pp:p)
+        for (PriNode pp:p)
             remove(pp);
     }
 
@@ -138,8 +138,8 @@ import java.io.PrintStream;
 
     public <C extends Cause> C newCause(ShortToObjectFunction<C> idToChannel) {
         synchronized (why) {
-            var next = (short) (why.size());
-            var c = idToChannel.valueOf(next);
+            short next = (short) (why.size());
+            C c = idToChannel.valueOf(next);
             why.add(c);
             return c;
         }
@@ -162,8 +162,8 @@ import java.io.PrintStream;
         if (mode!=null)
             target.input(mode);
 
-        var g = graph;
-        var thisNode = g.addNode(target);
+        MapNodeGraph<PriNode, Object> g = graph;
+        NodeGraph.MutableNode<PriNode, Object> thisNode = g.addNode(target);
         synchronized (g) {
             target.parent(sources, g, thisNode);
         }

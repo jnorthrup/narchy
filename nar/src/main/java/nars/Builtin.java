@@ -23,9 +23,7 @@ import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static nars.Op.*;
@@ -104,7 +102,7 @@ public enum Builtin {
             new AbstractInlineFunctor2("conjWithout") {
                 @Override
                 protected Term apply(Term conj, Term event) {
-                    var x = Conj.diffAll(conj, event);
+                    Term x = Conj.diffAll(conj, event);
                     return conj.equals(x) ? Null : x;
                 }
             },
@@ -114,7 +112,7 @@ public enum Builtin {
             new AbstractInlineFunctor2("conjWithoutPN") {
                 @Override
                 protected Term apply(Term conj, Term event) {
-                    var x = Conj.diffAllPN(conj, event);
+                    Term x = Conj.diffAllPN(conj, event);
                     return conj.equals(x) ? Null : x;
                 }
             },
@@ -129,16 +127,16 @@ public enum Builtin {
                 if (from.opID() == to.opID() && (n = from.subs()) == to.subs()) {
 
                     Map<Term, Term> m = null;
-                    for (var i = 0; i < n; i++) {
-                        var f = from.sub(i);
-                        var t = to.sub(i);
+                    for (int i = 0; i < n; i++) {
+                        Term f = from.sub(i);
+                        Term t = to.sub(i);
                         if (!f.equals(t)) {
                             if (m == null) m = new UnifiedMap<>(1);
                             m.put(f, t);
                         }
                     }
                     if (m != null) {
-                        var y = target.replace(m);
+                        Term y = target.replace(m);
                         if (y != null && !y.equals(target))
                             return y;
                     }
@@ -153,10 +151,10 @@ public enum Builtin {
             Functor.f2("indicesOf", (x, y) -> {
 
 
-                var s = x.subs();
+                int s = x.subs();
                 if (s > 0) {
                     TreeSet<Term> indices = null;
-                    for (var i = 0; i < s; i++) {
+                    for (int i = 0; i < s; i++) {
                         if (x.sub(i).equals(y)) {
                             if (indices == null) indices = new TreeSet();
                             indices.add(IdempotInt.the(i));
@@ -169,10 +167,10 @@ public enum Builtin {
             Functor.f2("keyValues", (x, y) -> {
 
 
-                var s = x.subs();
+                int s = x.subs();
                 if (s > 0) {
                     TreeSet<Term> indices = null;
-                    for (var i = 0; i < s; i++) {
+                    for (int i = 0; i < s; i++) {
                         if (x.sub(i).equals(y)) {
                             if (indices == null) indices = new TreeSet();
                             indices.add($.p(y, IdempotInt.the(i)));
@@ -196,9 +194,14 @@ public enum Builtin {
             }),
 
             Functor.f2("varMask", (x, y) -> {
-                var s = x.subs();
+                int s = x.subs();
                 if (s > 0) {
-                    var t = IntStream.range(0, s).mapToObj(i -> x.sub(i).equals(y) ? y : $.varDep("z" + i)).toArray(Term[]::new);
+                    List<Term> list = new ArrayList<>();
+                    for (int i = 0; i < s; i++) {
+                        Term term = x.sub(i).equals(y) ? y : $.varDep("z" + i);
+                        list.add(term);
+                    }
+                    Term[] t = list.toArray(new Term[0]);
                     return $.p(t);
                 }
                 return Null;
@@ -282,7 +285,7 @@ public enum Builtin {
     private static final ImmutableMap<Term, Functor> statiks;
     static {
         MutableMap<Term,Functor> s = new UnifiedMap(statik.length);
-        for (var f : statik) {
+        for (Functor f : statik) {
             s.put(f.term(), f);
         }
         statiks = s.toImmutable();
@@ -293,7 +296,7 @@ public enum Builtin {
 
 
     private static void registerFunctors(NAR nar) {
-        for (var t : Builtin.statik)
+        for (Functor t : Builtin.statik)
             nar.add(t);
 
 
@@ -301,16 +304,16 @@ public enum Builtin {
 
         /** dynamic target builder - useful for NAR specific contexts like clock etc.. */
         nar.add(Functor.f(termDynamic, s -> {
-            var o = Op.stringToOperator.get($.unquote(s.sub(0)));
-            var args = s.sub(1).subterms().arrayShared();
+            Op o = Op.stringToOperator.get($.unquote(s.sub(0)));
+            Term[] args = s.sub(1).subterms().arrayShared();
             if (args.length == 2) {
                 if (o.temporal) {
 
-                    var dtTerm = s.sub(2);
+                    Term dtTerm = s.sub(2);
                     if (!(dtTerm instanceof QuantityTerm))
                         dtTerm = QuantityTerm.the(dtTerm);
 
-                    var dt = Tense.occToDT(nar.time.toCycles(((QuantityTerm) dtTerm).quant));
+                    int dt = Tense.occToDT(nar.time.toCycles(((QuantityTerm) dtTerm).quant));
                     return o.the(dt, args);
                 }
 
@@ -324,7 +327,7 @@ public enum Builtin {
         /** applies # dep and $ indep variable introduction if possible. returns the input term otherwise  */
         nar.add(Functor.f1Inline("varIntro", x -> {
             if (!(x instanceof Compound)) return Null;
-            var result = DepIndepVarIntroduction.the.apply((Compound)x, nar.random(), null);
+            Term result = DepIndepVarIntroduction.the.apply((Compound)x, nar.random(), null);
             return result != null ? result : Null;
         }));
 
@@ -332,11 +335,11 @@ public enum Builtin {
         nar.add(Functor.f("esubterm", c -> {
 
 
-            var x = c.sub(0, null);
+            Term x = c.sub(0, null);
             if (x == null)
                 return Null;
 
-            var index = c.sub(1, Null);
+            Term index = c.sub(1, Null);
             if (index == Null)
                 return Null;
 
@@ -365,7 +368,7 @@ public enum Builtin {
         nar.add(new AbstractInlineFunctor2("without") {
             @Override
             protected Term apply(Term container, Term content) {
-                var y = Terms.withoutAll(container, content::equals);
+                Term y = Terms.withoutAll(container, content::equals);
                 return y == container ? Null : y;
             }
         });
@@ -373,7 +376,7 @@ public enum Builtin {
         nar.add(new AbstractInlineFunctor2("unsect") {
             @Override
             protected Term apply(Term container, Term content) {
-                var y = Terms.withoutAll(container, content.op() != CONJ ? content::equals : content::contains);
+                Term y = Terms.withoutAll(container, content.op() != CONJ ? content::equals : content::contains);
                 return y == container ? Null : y;
             }
         });
@@ -381,8 +384,8 @@ public enum Builtin {
         nar.add(new AbstractInlineFunctor2("withoutPN") {
             @Override
             protected Term apply(Term container, Term _content) {
-                var content = _content.unneg();
-                var y = Terms.withoutAll(container, content::equalsPosOrNeg);
+                Term content = _content.unneg();
+                Term y = Terms.withoutAll(container, content::equalsPosOrNeg);
                 return y == container ? Null : y;
             }
         });
@@ -470,7 +473,7 @@ public enum Builtin {
                if (conj instanceof Neg)
                    conj = conj.unneg();
 
-               var requireVars = !event.hasVars();
+               boolean requireVars = !event.hasVars();
                if (requireVars && !conj.hasVars())
                    return Null;
 
@@ -516,25 +519,25 @@ public enum Builtin {
 
         nar.add(Functor.f("slice", (args) -> {
             if (args.subs() == 2) {
-                var x = args.sub(0);
+                Term x = args.sub(0);
                 if (x.subs() > 0) {
-                    var len = x.subs();
+                    int len = x.subs();
 
-                    var index = args.sub(1);
-                    var o = index.op();
+                    Term index = args.sub(1);
+                    Op o = index.op();
                     if (o == INT) {
 
-                        var i = ((IdempotInt) index).i;
+                        int i = ((IdempotInt) index).i;
                         return i >= 0 && i < len ? x.sub(i) : False;
 
                     } else if (o == PROD && index.subs() == 2) {
-                        var start = (index).sub(0);
+                        Term start = (index).sub(0);
                         if (start.op() == INT) {
-                            var end = (index).sub(1);
+                            Term end = (index).sub(1);
                             if (end.op() == INT) {
-                                var si = ((IdempotInt) start).i;
+                                int si = ((IdempotInt) start).i;
                                 if (si >= 0 && si < len) {
-                                    var ei = ((IdempotInt) end).i;
+                                    int ei = ((IdempotInt) end).i;
                                     if (ei >= 0 && ei <= len) {
                                         if (si == ei)
                                             return Op.EmptyProduct;

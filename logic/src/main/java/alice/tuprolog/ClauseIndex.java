@@ -19,7 +19,7 @@ public interface ClauseIndex extends Iterable<ClauseInfo> {
 	 * @return  The list of matching-compatible predicates
 	 */
 	default @Nullable Deque<ClauseInfo> predicates(Struct headt) {
-		var family = clauses(headt.key());
+        FamilyClausesList family = clauses(headt.key());
 		return family == null ? null : family.get(headt);
 	}
 

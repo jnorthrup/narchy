@@ -86,7 +86,7 @@ public class PatternMatcher {
         return matchPattern(str, mPattern, mParsedPattern, mType);
     }
     public String toString() {
-        var type = "? ";
+        String type = "? ";
         switch (mType) {
             case PATTERN_LITERAL:
                 type = "LITERAL: ";
@@ -122,18 +122,18 @@ public class PatternMatcher {
         return false;
     }
     static boolean matchGlobPattern(String pattern, String match) {
-        var NP = pattern.length();
+        int NP = pattern.length();
         if (NP <= 0) {
             return match.length() <= 0;
         }
-        var NM = match.length();
+        int NM = match.length();
         int ip = 0, im = 0;
-        var nextChar = pattern.charAt(0);
+        char nextChar = pattern.charAt(0);
         while ((ip<NP) && (im<NM)) {
-            var c = nextChar;
+            char c = nextChar;
             ip++;
             nextChar = ip < NP ? pattern.charAt(ip) : 0;
-            var escaped = (c == '\\');
+            boolean escaped = (c == '\\');
             if (escaped) {
                 c = nextChar;
                 ip++;
@@ -203,18 +203,18 @@ public class PatternMatcher {
      * negative. This method will throw on any pattern structure violations.
      */
     static synchronized int[] parseAndVerifyAdvancedPattern(String pattern) {
-        var ip = 0;
-        var LP = pattern.length();
-        var it = 0;
-        var inSet = false;
-        var inRange = false;
-        var inCharClass = false;
+        int ip = 0;
+        int LP = pattern.length();
+        int it = 0;
+        boolean inSet = false;
+        boolean inRange = false;
+        boolean inCharClass = false;
         while (ip < LP) {
             if (it > MAX_PATTERN_STORAGE - 3) {
                 throw new IllegalArgumentException("Pattern is too large!");
             }
-            var c = pattern.charAt(ip);
-            var addToParsedPattern = false;
+            char c = pattern.charAt(ip);
+            boolean addToParsedPattern = false;
             switch (c) {
                 case '[':
                     if (inSet) {
@@ -235,7 +235,7 @@ public class PatternMatcher {
                     if (!inSet) {
                         addToParsedPattern = true; 
                     } else {
-                        var parsedToken = sParsedPatternScratch[it - 1];
+                        int parsedToken = sParsedPatternScratch[it - 1];
                         if (parsedToken == PARSED_TOKEN_CHAR_SET_START ||
                             parsedToken == PARSED_TOKEN_CHAR_SET_INVERSE_START) {
                             throw new IllegalArgumentException(
@@ -312,17 +312,17 @@ public class PatternMatcher {
                     }
                 }
             } else if (inRange) {
-                var endOfSet = pattern.indexOf('}', ip);
+                int endOfSet = pattern.indexOf('}', ip);
                 if (endOfSet < 0) {
                     throw new IllegalArgumentException("Range not ended with '}'");
                 }
-                var rangeString = pattern.substring(ip, endOfSet);
+                String rangeString = pattern.substring(ip, endOfSet);
                 try {
                     int rangeMin;
                     int rangeMax;
-                    var commaIndex = rangeString.indexOf(',');
+                    int commaIndex = rangeString.indexOf(',');
                     if (commaIndex < 0) {
-                        var parsedRange = Integer.parseInt(rangeString);
+                        int parsedRange = Integer.parseInt(rangeString);
                         rangeMin = rangeMax = parsedRange;
                     } else {
                         rangeMin = Integer.parseInt(rangeString.substring(0, commaIndex));
@@ -367,7 +367,7 @@ public class PatternMatcher {
 
         int charSetStart = 0, charSetEnd = 0;
         while (ip < LP) {
-            var patternChar = parsedPattern[ip];
+            int patternChar = parsedPattern[ip];
 
             int tokenType;
             switch (patternChar) {
@@ -423,7 +423,7 @@ public class PatternMatcher {
                 return false;
             }
 
-            var matched = matchChars(match, im, LM, tokenType, minRepetition, maxRepetition,
+            int matched = matchChars(match, im, LM, tokenType, minRepetition, maxRepetition,
                     parsedPattern, charSetStart, charSetEnd);
             
             if (matched == NO_MATCH) {
@@ -437,7 +437,7 @@ public class PatternMatcher {
     private static int matchChars(String match, int im, int lm, int tokenType,
             int minRepetition, int maxRepetition, int[] parsedPattern,
             int tokenStart, int tokenEnd) {
-        var matched = 0;
+        int matched = 0;
         while(matched < maxRepetition
                 && matchChar(match, im + matched, lm, tokenType, parsedPattern, tokenStart,
                     tokenEnd)) {
@@ -454,16 +454,16 @@ public class PatternMatcher {
             case TOKEN_TYPE_ANY:
                 return true;
             case TOKEN_TYPE_SET:
-                for (var i = tokenStart; i < tokenEnd; i += 2) {
-                    var matchChar = match.charAt(im);
+                for (int i = tokenStart; i < tokenEnd; i += 2) {
+                    char matchChar = match.charAt(im);
                     if (matchChar >= parsedPattern[i] && matchChar <= parsedPattern[i + 1]) {
                         return true;
                     }
                 }
                 return false;
             case TOKEN_TYPE_INVERSE_SET:
-                for (var i = tokenStart; i < tokenEnd; i += 2) {
-                    var matchChar = match.charAt(im);
+                for (int i = tokenStart; i < tokenEnd; i += 2) {
+                    char matchChar = match.charAt(im);
                     if (matchChar >= parsedPattern[i] && matchChar <= parsedPattern[i + 1]) {
                         return false;
                     }

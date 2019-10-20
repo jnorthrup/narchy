@@ -24,7 +24,7 @@ public abstract class BinaryBidiFunctor extends Functor implements Idempotent {
 
     @Override
     public final @Nullable Term apply(Evaluation e, Subterms terms) {
-        var s = terms.subs();
+        int s = terms.subs();
         switch (s) {
             case 2:
                 return apply2(e, terms.sub(0), terms.sub(1));
@@ -42,14 +42,14 @@ public abstract class BinaryBidiFunctor extends Functor implements Idempotent {
     protected abstract Term compute(Evaluation e, Term x, Term y);
 
     protected Term apply3(Evaluation e, Term x, Term y, Term xy) {
-        var xVar = x.op().var;
-        var yVar = y.op().var;
+        boolean xVar = x.op().var;
+        boolean yVar = y.op().var;
         if (xy.op().var) {
 
             if (xVar || yVar) {
                 return null;
             } else {
-                var XY = compute(e, x, y);
+                Term XY = compute(e, x, y);
                 if (XY!=null) {
                     return e.is(xy, XY) ? null : IdempotentBool.Null;
                 } else {
@@ -63,7 +63,7 @@ public abstract class BinaryBidiFunctor extends Functor implements Idempotent {
                 return computeYfromXandXY(e, x, y, xy);
             } else if (!yVar /*&& !xVar*/) {
 
-                var XY = compute(e, x, y);
+                Term XY = compute(e, x, y);
                 if (XY == null)
                     return null;
                 //assert(XY!=null): "functor " + this + " " + x + "," + y + ", " + xy + " -> compute=null";

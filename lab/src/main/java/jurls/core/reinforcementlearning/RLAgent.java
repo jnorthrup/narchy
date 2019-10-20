@@ -11,7 +11,9 @@ import jurls.core.approximation.ParameterizedFunctionGenerator;
 import jurls.core.utils.ActionValuePair;
 import jurls.core.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.IntStream;
 
 /**
@@ -64,7 +66,7 @@ public class RLAgent extends LearnerAndActor {
         stateAction = new double[s0.length + 1];
         memory = new double[memorySize][];
 
-        for (var i = 0; i < memory.length; ++i) {
+        for (int i = 0; i < memory.length; ++i) {
             memory[i] = new double[s0.length];
         }
         stateMin = new double[s0.length];
@@ -78,9 +80,9 @@ public class RLAgent extends LearnerAndActor {
 
     @Override
     public int learnAndAction(double[] state, double reward, double[] previousState, int previousAction) {
-        final var U = 0.01;
+        final double U = 0.01;
 
-        for (var i = 0; i < state.length; ++i) {
+        for (int i = 0; i < state.length; ++i) {
             if (state[i] > stateMax[i]) {
                 stateMax[i] = state[i];
             }
@@ -99,8 +101,13 @@ public class RLAgent extends LearnerAndActor {
             memoryIndex = 0;
         }
 
-        var nextFactor1 = Arrays.stream(memory).mapToDouble(m -> {
-            var sum = IntStream.range(0, m.length).mapToDouble(j -> normalizedState[j] - m[j]).map(d -> d * d).sum();
+        double nextFactor1 = Arrays.stream(memory).mapToDouble(m -> {
+            double sum = 0.0;
+            for (int j = 0; j < m.length; j++) {
+                double d = normalizedState[j] - m[j];
+                double v = d * d;
+                sum += v;
+            }
             return sum;
         }).map(sum2 -> 1 / (1 + sum2 * factor1ComponentDivisor)).sum();
         nextFactor1 /= memory.length;
@@ -114,9 +121,9 @@ public class RLAgent extends LearnerAndActor {
         if (rewardMin == rewardMax) {
             rewardMax = rewardMin + U;
         }
-        var r = (reward - rewardMin) / (rewardMax - rewardMin);
+        double r = (reward - rewardMin) / (rewardMax - rewardMin);
         rSum = r + rSum * rLParameters.getGamma();
-        var referenceQ = 1 / (1 - rLParameters.getGamma());
+        double referenceQ = 1 / (1 - rLParameters.getGamma());
 
         factor1 = nextFactor1;
         factor2 = 1 - rSum / referenceQ;
@@ -141,21 +148,26 @@ public class RLAgent extends LearnerAndActor {
     }
 
     public ActionValuePair[] getActionProbabilities(double[] state) {
-        var bound = numActions;
-        var actionValuePairs = IntStream.range(0, bound).mapToObj(i -> new ActionValuePair(
-                i,
-                Utils.q(parameterizedFunction, stateAction, state, i)
-        )).toArray(ActionValuePair[]::new);
+        int bound = numActions;
+        List<ActionValuePair> list = new ArrayList<>();
+        for (int i = 0; i < bound; i++) {
+            ActionValuePair actionValuePair = new ActionValuePair(
+                    i,
+                    Utils.q(parameterizedFunction, stateAction, state, i)
+            );
+            list.add(actionValuePair);
+        }
+        ActionValuePair[] actionValuePairs = list.toArray(new ActionValuePair[0]);
 
         return actionSelector.fromQValuesToProbabilities(epsilon, actionValuePairs);
     }
 
     public int chooseAction(double[] state) {
-        var actionProbabilityPairs = getActionProbabilities(state);
+        ActionValuePair[] actionProbabilityPairs = getActionProbabilities(state);
         Arrays.sort(actionProbabilityPairs, (o1, o2) -> (int) Math.signum(o1.getV() - o2.getV()));
 
 
-        var i = actionProbabilityPairs.length-1;
+        int i = actionProbabilityPairs.length-1;
 
 
         
@@ -170,7 +182,7 @@ public class RLAgent extends LearnerAndActor {
 
     @Override
     public String getDebugString(int indent) {
-        var ind = Utils.makeIndent(indent);
+        String ind = Utils.makeIndent(indent);
         return ind + "Q/SARSA(lambda)\n"
                 + ind + "factor1 = " + factor1 + "\n"
                 + ind + "factor2 = " + factor2 + "\n"

@@ -46,7 +46,7 @@ public class MemoizingTermBuilder extends InterningTermBuilder {
 
     @Override
     public Term root(Compound x) {
-        var t = x.hasAny(Op.Temporal);
+        boolean t = x.hasAny(Op.Temporal);
         if (!t)
             return x;
 

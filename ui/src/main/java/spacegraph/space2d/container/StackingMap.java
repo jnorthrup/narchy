@@ -25,7 +25,7 @@ public class StackingMap<X,Y extends Surface> extends AbstractMutableContainer<Y
 
 	public Y computeIfAbsent(X x, Function<X, Y> s) {
 		return map.compute(x, (xx, xp) -> {
-			var xn = s.apply(xx);
+            Y xn = s.apply(xx);
 			if (xp != null) {
 				if (xp == xn) return xn;
 				else {

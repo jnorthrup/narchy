@@ -9,6 +9,7 @@ import spacegraph.space2d.phys.fracture.poly2Tri.Triangulation;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.stream.IntStream;
 
 /**
@@ -83,7 +84,7 @@ public class Polygon implements Iterable<v2>, Cloneable {
      */
     public void add(v2 v) {
         if (vertices.length == vertexCount) {
-            var newArray = new v2[vertexCount * 2];
+            v2[] newArray = new v2[vertexCount * 2];
             System.arraycopy(vertices, 0, newArray, 0, vertexCount);
             vertices = newArray;
         }
@@ -132,11 +133,11 @@ public class Polygon implements Iterable<v2>, Cloneable {
      */
     public boolean inside(v2 p) {
         int i, j;
-        var c = false;
-        var v = new v2();
+        boolean c = false;
+        v2 v = new v2();
         for (i = 0, j = vertexCount - 1; i < vertexCount; j = i++) {
-            var a = get(i);
-            var b = get(j);
+            v2 a = get(i);
+            v2 b = get(j);
             v.set(b);
             v.subbed(a);
             if (((a.y >= p.y) != (b.y >= p.y)) && (p.x <= v.x * (p.y - a.y) / v.y + a.x)) {
@@ -152,8 +153,8 @@ public class Polygon implements Iterable<v2>, Cloneable {
     private double mass() {
         double m = 0;
         for (int i = 0, j = 1; i != vertexCount; i = j, j++) {
-            var b1 = get(i);
-            var b2 = get(j == vertexCount ? 0 : j);
+            v2 b1 = get(i);
+            v2 b2 = get(j == vertexCount ? 0 : j);
             m += v2.cross(b1, b2);
         }
         m = Math.abs(m / 2);
@@ -164,13 +165,13 @@ public class Polygon implements Iterable<v2>, Cloneable {
      * @return Vrati tazisko polygonu.
      */
     public v2 centroid() {
-        var C = new v2();
+        v2 C = new v2();
         double m = 0;
-        var g = new v2();
+        v2 g = new v2();
         for (int i = 0, j = 1; i != vertexCount; i = j, j++) {
-            var b1 = get(i);
-            var b2 = get(j == vertexCount ? 0 : j);
-            var s = v2.cross(b1, b2);
+            v2 b1 = get(i);
+            v2 b2 = get(j == vertexCount ? 0 : j);
+            float s = v2.cross(b1, b2);
             m += s;
             g.set(b1);
             g.added(b2);
@@ -186,7 +187,7 @@ public class Polygon implements Iterable<v2>, Cloneable {
      */
     private double radius() {
         double ln = Float.NEGATIVE_INFINITY;
-        for (var i = 0; i < vertexCount; ++i) {
+        for (int i = 0; i < vertexCount; ++i) {
             ln = Math.max(get(i).distanceSq(cycleGet(i + 1)), ln);
         }
         return Math.sqrt(ln);
@@ -196,8 +197,8 @@ public class Polygon implements Iterable<v2>, Cloneable {
      * @return Ak je polygon priliz maly, alebo tenky (nieje dobre ho zobrazovat), vrati false.
      */
     public boolean isCorrect() {
-        var r = radius();
-        var mass = mass();
+        double r = radius();
+        double mass = mass();
         return (r > Material.MINFRAGMENTSIZE && mass > Material.MINFRAGMENTSIZE && mass / r > Material.MINFRAGMENTSIZE);
     }
 
@@ -210,12 +211,12 @@ public class Polygon implements Iterable<v2>, Cloneable {
         if (vertexCount == 0) {
             return null;
         } else {
-            var minX = Float.POSITIVE_INFINITY;
-            var minY = Float.POSITIVE_INFINITY;
-            var maxX = Float.NEGATIVE_INFINITY;
-            var maxY = Float.NEGATIVE_INFINITY;
-            for (var i = 0; i < vertexCount; ++i) {
-                var v = get(i);
+            float minX = Float.POSITIVE_INFINITY;
+            float minY = Float.POSITIVE_INFINITY;
+            float maxX = Float.NEGATIVE_INFINITY;
+            float maxY = Float.NEGATIVE_INFINITY;
+            for (int i = 0; i < vertexCount; ++i) {
+                v2 v = get(i);
                 minX = Math.min(v.x, minX);
                 maxX = Math.max(v.x, maxX);
                 minY = Math.min(v.y, minY);
@@ -237,16 +238,21 @@ public class Polygon implements Iterable<v2>, Cloneable {
         }
 
 
-        var bound = vertexCount;
-        var reverseArray = IntStream.range(0, bound).mapToObj(i1 -> get(vertexCount - i1 - 1)).toArray(v2[]::new);
+        int bound = vertexCount;
+        List<v2> result = new ArrayList<>();
+        for (int i1 = 0; i1 < bound; i1++) {
+            v2 v2 = get(vertexCount - i1 - 1);
+            result.add(v2);
+        }
+        v2[] reverseArray = result.toArray(new v2[0]);
 
-        var triangles = Triangulation.triangulate(reverseArray, vertexCount);
+        ArrayList<int[]> triangles = Triangulation.triangulate(reverseArray, vertexCount);
 
-        var c = triangles.size();
+        int c = triangles.size();
 
-        var list = new int[c][3];
-        for (var i = 0; i < c; i++) {
-            var t = triangles.get(i);
+        int[][] list = new int[c][3];
+        for (int i = 0; i < c; i++) {
+            int[] t = triangles.get(i);
             list[i][0] = t[0];
             list[i][1] = t[1];
             list[i][2] = t[2];
@@ -260,11 +266,11 @@ public class Polygon implements Iterable<v2>, Cloneable {
      * Otoci poradie prvkov v poli.
      */
     public void flip() {
-        var size = size();
-        var n = size() >> 1;
-        for (var i = 0; i < n; i++) {
-            var temp = vertices[i];
-            var j = size - 1 - i;
+        int size = size();
+        int n = size() >> 1;
+        for (int i = 0; i < n; i++) {
+            v2 temp = vertices[i];
+            int j = size - 1 - i;
             vertices[i] = vertices[j];
             vertices[j] = temp;
         }
@@ -281,10 +287,10 @@ public class Polygon implements Iterable<v2>, Cloneable {
      * @return Vrati true, pokial je polygon konvexny.
      */
     private boolean isConvex() {
-        for (var i = 0; i < vertexCount; i++) {
-            var a = get(i);
-            var b = cycleGet(i + 1);
-            var c = cycleGet(i + 2);
+        for (int i = 0; i < vertexCount; i++) {
+            v2 a = get(i);
+            v2 b = cycleGet(i + 1);
+            v2 c = cycleGet(i + 2);
             if (PlatformMathUtils.siteDef(a, b, c) == 1) {
                 return false;
             }
@@ -297,9 +303,9 @@ public class Polygon implements Iterable<v2>, Cloneable {
      */
     public boolean isClockwise() {
         double signedArea = 0;
-        for (var i = 0; i < size(); ++i) {
-            var v1 = get(i);
-            var v2 = cycleGet(i + 1);
+        for (int i = 0; i < size(); ++i) {
+            v2 v1 = get(i);
+            v2 v2 = cycleGet(i + 1);
             double v1x = v1.x;
             double v1y = v1.y;
             double v2x = v2.x;
@@ -316,8 +322,8 @@ public class Polygon implements Iterable<v2>, Cloneable {
      */
     @Override
     public Polygon clone() {
-        var newArray = new v2[vertexCount];
-        var newCount = vertexCount;
+        v2[] newArray = new v2[vertexCount];
+        int newCount = vertexCount;
         System.arraycopy(vertices, 0, newArray, 0, vertexCount);
         return new Polygon(newArray, newCount);
     }

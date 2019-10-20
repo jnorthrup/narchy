@@ -28,9 +28,9 @@ public final class Combinations {
         this.n = n;
         this.r = r;
         a = new int[r];
-        var nFact = factorial(n);
-        var rFact = factorial(r);
-        var nminusrFact = factorial(n - r);
+        int nFact = factorial(n);
+        int rFact = factorial(r);
+        int nminusrFact = factorial(n - r);
         total = nFact / (rFact * nminusrFact);
         reset();
     }
@@ -39,10 +39,10 @@ public final class Combinations {
     
     
     public void reset() {
-        var a = this.a;
+        int[] a = this.a;
 
-        var alen = a.length;
-        for (var i = 0; i < alen; i++) {
+        int alen = a.length;
+        for (int i = 0; i < alen; i++) {
             a[i] = i;
         }
         numLeft = total;
@@ -94,15 +94,15 @@ public final class Combinations {
             return a;
         }
 
-        var a = this.a;
+        int[] a = this.a;
 
 
-        var i = r - 1;
+        int i = r - 1;
         while (a[i] == n - r + i) {
             i--;
         }
         a[i]++;
-        for (var j = i + 1; j < r; j++) {
+        for (int j = i + 1; j < r; j++) {
             a[j] = a[i] + j - i;
         }
 

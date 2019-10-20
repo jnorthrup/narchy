@@ -44,9 +44,9 @@ public class CodiCA extends CA {
 
         ColorSpace = new int[sizeX][sizeY][sizeZ];
         cell = new CodiCell[sizeX][sizeY][sizeZ];
-        for (var ix = 0; ix < sizeX; ix++)
-            for (var iy = 0; iy < sizeY; iy++)
-                for (var iz = 0; iz < sizeZ; iz++)
+        for (int ix = 0; ix < sizeX; ix++)
+            for (int iy = 0; iy < sizeY; iy++)
+                for (int iz = 0; iz < sizeZ; iz++)
                     cell[ix][iy][iz] = new CodiCell();
     }
 
@@ -57,14 +57,14 @@ public class CodiCA extends CA {
         CAChanged = 1;
         SignalingInited = false;
         uninitialized = true;
-        for (var ix = 0; ix < sizeX; ix++)
-            for (var iy = 0; iy < sizeY; iy++)
-                for (var iz = 0; iz < sizeZ; iz++) {
+        for (int ix = 0; ix < sizeX; ix++)
+            for (int iy = 0; iy < sizeY; iy++)
+                for (int iz = 0; iz < sizeZ; iz++) {
                     ColorSpace[ix][iy][iz] = 0;
-                    var cell = this.cell[ix][iy][iz];
+                    CodiCell cell = this.cell[ix][iy][iz];
                     cell.Type = 0;
                     cell.Activ = 0;
-                    for (var i = 0; i < 6; i++)
+                    for (int i = 0; i < 6; i++)
                         cell.IOBuf[i] = 0;
                     cell.Chromo = (random.nextInt() % 256);
 
@@ -74,7 +74,7 @@ public class CodiCA extends CA {
                         cell.Chromo = (cell.Chromo & ~12) | 3;
 
                     /** add blocks every 2 cells TODO verify this is what it actually means */
-                    var gridBlock = true;
+                    boolean gridBlock = true;
                     if (gridBlock) {
                         if ((ix % 2) + (iy % 2) != 0)
                             cell.Chromo &= ~192;
@@ -94,12 +94,12 @@ public class CodiCA extends CA {
     protected void Kicking() {
 
 
-        var ca = cell;
-        for (var iz = 0; iz < sizeZ; iz++)
-            for (var iy = 0; iy < sizeY; iy++)
-                for (var ix = 0; ix < sizeX; ix++) {
+        CodiCell[][][] ca = cell;
+        for (int iz = 0; iz < sizeZ; iz++)
+            for (int iy = 0; iy < sizeY; iy++)
+                for (int ix = 0; ix < sizeX; ix++) {
 
-                    var caio = ca[ix][iy][iz].IOBuf;
+                    int[] caio = ca[ix][iy][iz].IOBuf;
                     caio[4] = iz != sizeZ - 1 ? ca[ix][iy][iz + 1].IOBuf[4] : 0;
 
                     caio[2] = iy != sizeY - 1 ? ca[ix][iy + 1][iz].IOBuf[2] : 0;
@@ -108,11 +108,11 @@ public class CodiCA extends CA {
                 }
 
 
-        for (var iz = sizeZ - 1; iz >= 0; iz--)
-            for (var iy = sizeY - 1; iy >= 0; iy--)
-                for (var ix = sizeX - 1; ix >= 0; ix--) {
+        for (int iz = sizeZ - 1; iz >= 0; iz--)
+            for (int iy = sizeY - 1; iy >= 0; iy--)
+                for (int ix = sizeX - 1; ix >= 0; ix--) {
 
-                    var caio = ca[ix][iy][iz].IOBuf;
+                    int[] caio = ca[ix][iy][iz].IOBuf;
                     caio[5] = iz != 0 ? ca[ix][iy][iz - 1].IOBuf[5] : 0;
 
                     caio[3] = iy != 0 ? ca[ix][iy - 1][iz].IOBuf[3] : 0;
@@ -123,11 +123,11 @@ public class CodiCA extends CA {
 
     private void InitSignaling() {
         SignalingInited = true;
-        var ca = cell;
-        for (var iz = 0; iz < sizeZ; iz++)
-            for (var iy = 0; iy < sizeY; iy++)
-                for (var ix = 0; ix < sizeX; ix++) {
-                    var c = ca[ix][iy][iz];
+        CodiCell[][][] ca = cell;
+        for (int iz = 0; iz < sizeZ; iz++)
+            for (int iy = 0; iy < sizeY; iy++)
+                for (int ix = 0; ix < sizeX; ix++) {
+                    CodiCell c = ca[ix][iy][iz];
                     c.Activ = 0;
                     Arrays.fill(c.IOBuf, 0, 6, 0);
                     if (c.Type == NEURON)
@@ -152,13 +152,13 @@ public class CodiCA extends CA {
 
     protected int GrowthStep() {
         CAChanged = 0;
-        for (var iz = 0; iz < sizeZ; iz++)
-            for (var iy = 0; iy < sizeY; iy++)
-                for (var ix = 0; ix < sizeX; ix++) {
+        for (int iz = 0; iz < sizeZ; iz++)
+            for (int iy = 0; iy < sizeY; iy++)
+                for (int ix = 0; ix < sizeX; ix++) {
 
 
-                    var ca = cell[ix][iy][iz];
-                    var caio = ca.IOBuf;
+                    CodiCell ca = cell[ix][iy][iz];
+                    int[] caio = ca.IOBuf;
                     switch (ca.Type) {
                         case BLANK:
 
@@ -167,65 +167,77 @@ public class CodiCA extends CA {
                                 CAChanged = 1;
 
                                 ca.Gate = (ca.Chromo & 63) % 6;
-                                for (var i = 0; i < 6; i++)
+                                for (int i = 0; i < 6; i++)
                                     caio[i] = DEND_SIG;
                                 caio[ca.Gate] = AXON_SIG;
                                 caio[(ca.Gate % 2 * -2) + 1 + ca.Gate] = AXON_SIG;
                                 break;
                             }
 
-                            var InputSum =
-                                    IntStream.of(0, 1, 2, 3, 4, 5).map(i21 -> caio[i21]).sum();
+                            int InputSum =
+                                    0;
+                            for (int i21 : new int[]{0, 1, 2, 3, 4, 5}) {
+                                int i3 = caio[i21];
+                                InputSum += i3;
+                            }
                             if (InputSum == 0) break;
 
-                            var result = IntStream.of(0, 1, 2, 3, 4, 5).map(i11 -> (caio[i11] & AXON_SIG)).sum();
+                            int result = 0;
+                            for (int i11 : new int[]{0, 1, 2, 3, 4, 5}) {
+                                int i2 = (caio[i11] & AXON_SIG);
+                                result += i2;
+                            }
                             InputSum =
                                     result;
                             if (InputSum == AXON_SIG) {
                                 ca.Type = AXON;
                                 CAChanged = 1;
-                                for (var i = 0; i < 6; i++)
+                                for (int i = 0; i < 6; i++)
                                     if (caio[i] == AXON)
                                         ca.Gate = i;
-                                for (var i = 0; i < 6; i++)
+                                for (int i = 0; i < 6; i++)
                                     caio[i] = ((ca.Chromo >>> i) & 1) != 0 ? AXON_SIG : 0;
                                 break;
                             }
                             if (InputSum > AXON_SIG) {
-                                for (var i = 0; i < 6; i++)
+                                for (int i = 0; i < 6; i++)
                                     caio[i] = 0;
                                 break;
                             }
 
-                            var sum = IntStream.of(0, 1, 2, 3, 4, 5).map(v -> (caio[v] & DEND_SIG)).sum();
+                            int sum = 0;
+                            for (int v : new int[]{0, 1, 2, 3, 4, 5}) {
+                                int i1 = (caio[v] & DEND_SIG);
+                                sum += i1;
+                            }
                             InputSum =
                                     sum;
                             if (InputSum == DEND_SIG) {
                                 CAChanged = 1;
                                 ca.Type = DEND;
-                                for (var i = 0; i < 6; i++)
+                                for (int i = 0; i < 6; i++)
                                     if ((caio[i]) != 0)
                                         ca.Gate = ((i % 2) * -2) + 1 + i;
-                                for (var i = 0; i < 6; i++)
+                                for (int i = 0; i < 6; i++)
                                     caio[i] = ((ca.Chromo >>> i) & 1) != 0 ? DEND_SIG : 0;
                                 break;
                             }
 
-                            for (var i = 0; i < 6; i++)
+                            for (int i = 0; i < 6; i++)
                                 caio[i] = 0;
                             break;
                         case NEURON:
-                            for (var i = 0; i < 6; i++)
+                            for (int i = 0; i < 6; i++)
                                 caio[i] = DEND_SIG;
                             caio[ca.Gate] = AXON_SIG;
                             caio[((ca.Gate % 2) * -2) + 1 + ca.Gate] = AXON_SIG;
                             break;
                         case AXON:
-                            for (var i = 0; i < 6; i++)
+                            for (int i = 0; i < 6; i++)
                                 caio[i] = ((ca.Chromo >>> i) & 1) != 0 ? AXON_SIG : 0;
                             break;
                         case DEND:
-                            for (var i = 0; i < 6; i++)
+                            for (int i = 0; i < 6; i++)
                                 caio[i] = ((ca.Chromo >>> i) & 1) != 0 ? DEND_SIG : 0;
                             break;
                     }
@@ -237,19 +249,19 @@ public class CodiCA extends CA {
     protected int SignalStep() {
 
 
-        for (var iz = 0; iz < sizeZ; iz++)
-            for (var iy = 0; iy < sizeY; iy++)
-                for (var ix = 0; ix < sizeX; ix++) {
+        for (int iz = 0; iz < sizeZ; iz++)
+            for (int iy = 0; iy < sizeY; iy++)
+                for (int ix = 0; ix < sizeX; ix++) {
 
-                    var ca = cell[ix][iy][iz];
-                    var caio = ca.IOBuf;
+                    CodiCell ca = cell[ix][iy][iz];
+                    int[] caio = ca.IOBuf;
                     switch (ca.Type) {
                         case BLANK:
 
 
                             break;
                         case NEURON: {
-                            var InputSum = 1 +
+                            int InputSum = 1 +
                                     caio[0] +
                                     caio[1] +
                                     caio[2] +
@@ -271,13 +283,17 @@ public class CodiCA extends CA {
                             break;
                         }
                         case AXON:
-                            for (var i = 0; i < 6; i++)
+                            for (int i = 0; i < 6; i++)
                                 caio[i] = caio[ca.Gate];
                             ca.Activ = (caio[ca.Gate]) != 0 ? 1 : 0;
                             break;
                         case DEND: {
-                            var InputSum =
-                                    IntStream.of(0, 1, 2, 3, 4, 5).map(i -> caio[i]).sum();
+                            int InputSum =
+                                    0;
+                            for (int i : new int[]{0, 1, 2, 3, 4, 5}) {
+                                int i1 = caio[i];
+                                InputSum += i1;
+                            }
                             if (InputSum > 2) InputSum = 2;
                             Arrays.fill(caio, 0);
 
@@ -363,21 +379,21 @@ public class CodiCA extends CA {
 
         @Override
         protected void paint(GL2 gl, ReSurface reSurface) {
-            var tw = w()/c.sizeX;
-            var th = h()/c.sizeY;
+            float tw = w()/c.sizeX;
+            float th = h()/c.sizeY;
 
 
-            for (var x = 0; x < c.sizeX; x++) {
-                for (var y = 0; y < c.sizeY; y++) {
-                    for (var z = 0; z < c.sizeZ; z++) {
-                        var ca = c.cell[x][y][z];
-                        var type = ca.Type;
+            for (int x = 0; x < c.sizeX; x++) {
+                for (int y = 0; y < c.sizeY; y++) {
+                    for (int z = 0; z < c.sizeZ; z++) {
+                        CodiCell ca = c.cell[x][y][z];
+                        int type = ca.Type;
                         if (type == 0)
                             continue;
 
-                        var px = x * tw;
-                        var py = y * th;
-                        var pz = z * tw;
+                        float px = x * tw;
+                        float py = y * th;
+                        float pz = z * tw;
 
 
                         float r, g, b;
@@ -405,15 +421,15 @@ public class CodiCA extends CA {
 //
 //                        }
 
-                        var gate = ca.Gate / 3f;
+                        float gate = ca.Gate / 3f;
                         b += gate * 0.5f;
 
                         gl.glColor4f(r, g, b, 0.5f);
                         Draw.rect(px, py, tw, th, gl);
 
-                        var activation = ca.Activ;
+                        int activation = ca.Activ;
                         if (activation != 0) {
-                            var a = 0.5f + 0.5f * Math.abs(activation) / 32f;
+                            float a = 0.5f + 0.5f * Math.abs(activation) / 32f;
 
                             if (activation > 0)
                                 gl.glColor4f(1f, 0.25f + 0.5f * a, 0f, a);
@@ -430,7 +446,7 @@ public class CodiCA extends CA {
     }
 
     public static void main(String[] args) {
-        var c = new CodiCA(20, 20, 1);
+        CodiCA c = new CodiCA(20, 20, 1);
 
         new Loop() {
 

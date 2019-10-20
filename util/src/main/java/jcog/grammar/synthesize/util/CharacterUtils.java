@@ -96,7 +96,7 @@ public class CharacterUtils {
         alphaLowerCaseChecks.add('e');
         alphaLowerCaseChecks.add('q');
         for (char c : nonAlphaNumericCharacters) {
-            var curC = GrammarUtils.getList(c);
+            List<Character> curC = GrammarUtils.getList(c);
             generalizations.add(new CharacterGeneralization(numericCharacters, curC, curC));
             generalizations.add(new CharacterGeneralization(alphaLowerCaseCharacters, curC, curC));
             generalizations.add(new CharacterGeneralization(alphaUpperCaseCharacters, curC, curC));

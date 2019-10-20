@@ -44,11 +44,11 @@ public class RMS extends UGen {
 
     @Override
     public void gen() {
-        var bo = bufOut[0];
-        for (var i = 0; i < bufferSize; i++) {
+        float[] bo = bufOut[0];
+        for (int i = 0; i < bufferSize; i++) {
             float newMem = 0;
-            for (var j = 0; j < channels; j++) {
-                var x = bufIn[j][i];
+            for (int j = 0; j < channels; j++) {
+                float x = bufIn[j][i];
                 newMem += x * x;
             }
             sum -= rmsMem[index];

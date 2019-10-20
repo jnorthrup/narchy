@@ -65,7 +65,7 @@ public class MutableTruth implements Truth {
 
 	@Override
 	public final MutableTruth neg() {
-		var x = new MutableTruth();
+        MutableTruth x = new MutableTruth();
 		x.freq = 1 - freq;
 		x.evi = evi;
 		return x;

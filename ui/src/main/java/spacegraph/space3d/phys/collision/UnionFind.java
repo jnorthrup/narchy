@@ -46,9 +46,9 @@ public class UnionFind {
 	 */
 	public void sortIslands() {
 
-		var numElements = elements.size();
+        int numElements = elements.size();
 
-		for (var i = 0; i < numElements; i++) {
+		for (int i = 0; i < numElements; i++) {
 			
 			elements.get(i).id = find(i);
 			
@@ -67,7 +67,7 @@ public class UnionFind {
 	public void reset(int N) {
 		allocate(N);
 
-		for (var i = 0; i < N; i++) {
+		for (int i = 0; i < N; i++) {
 			
 			elements.get(i).id = i;
 			

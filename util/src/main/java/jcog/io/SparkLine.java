@@ -28,9 +28,15 @@ public enum SparkLine {
 	 */
 	public static String render(Collection<Integer> values) {
 		int max = Collections.max(values), min = Collections.min(values);
-		var scale = (max - min) / 7.0f;
-		var sb = values.stream().mapToInt(value -> Math.round((value - min) / scale)).mapToObj(index -> String.valueOf(ticks.get(index))).collect(Collectors.joining());
-		var accumulator = sb;
+        float scale = (max - min) / 7.0f;
+		StringBuilder result = new StringBuilder();
+		for (Integer value : values) {
+			int index = Math.round((value - min) / scale);
+			String s = String.valueOf(ticks.get(index));
+			result.append(s);
+		}
+		String sb = result.toString();
+        String accumulator = sb;
         return accumulator;
 	}
 
@@ -42,10 +48,10 @@ public enum SparkLine {
 	}
 
 	public static String renderFloats(FloatArrayList values, float min, float max) {
-		var scale = (max - min);
-		var accumulator = new StringBuilder();
+        float scale = (max - min);
+        StringBuilder accumulator = new StringBuilder();
 		values.forEach(value -> {
-			var index = Math.round((value - min) / scale) * 7;
+            int index = Math.round((value - min) / scale) * 7;
 			accumulator.append(ticks.get(index));
 		});
 		return accumulator.toString();

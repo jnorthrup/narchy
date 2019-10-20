@@ -32,8 +32,8 @@ public class TensorFunc implements Tensor {
 
     @Override
     public float[] snapshot() {
-        var x = from.snapshot();
-        for (var i = 0; i < x.length; i++)
+        float[] x = from.snapshot();
+        for (int i = 0; i < x.length; i++)
             x[i] = func.valueOf(x[i]);
         return x;
     }

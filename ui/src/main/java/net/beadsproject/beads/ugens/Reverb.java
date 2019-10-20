@@ -68,7 +68,7 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
         src = new OnePoleFilter(context, 4000);
 
 
-        var earlyTapIn = new TapIn(context, 125);
+        TapIn earlyTapIn = new TapIn(context, 125);
         earlyTapOut = new TapOut(context, earlyTapIn, 10);
         eAPF1 = new AllpassFilter(context, (int) (12.812 * sampsPerMS), 113,
                 .3f);
@@ -76,7 +76,7 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
                 337, .4f);
         eAPF3 = new AllpassFilter(context, (int) (12.812 * sampsPerMS * 9.4),
                 1051, .5f);
-        var earlyGainEcho = new Gain(context, 1, -.3f);
+        Gain earlyGainEcho = new Gain(context, 1, -.3f);
         
 
         
@@ -87,16 +87,16 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
         lAPF3 = new AllpassFilter(context, (int) (140f * sampsPerMS), 29, .65f);
         lAPF4 = new AllpassFilter(context, (int) (140f * sampsPerMS), 37, .6f);
         lpf = new OnePoleFilter(context, 1000);
-        var lateTapIn = new TapIn(context, 1000);
-        var lateTapOut1 = new TapOut(context, lateTapIn, 10);
-        var lateTapOut2 = new TapOut(context, lateTapIn, 31.17f);
-        var lateGainEcho = new Gain(context, 1, -.25f);
+        TapIn lateTapIn = new TapIn(context, 1000);
+        TapOut lateTapOut1 = new TapOut(context, lateTapIn, 10);
+        TapOut lateTapOut2 = new TapOut(context, lateTapIn, 31.17f);
+        Gain lateGainEcho = new Gain(context, 1, -.25f);
         
 
         
         earlyGain = new Gain(context, 1, 1);
         lateGain = new Gain(context, 1, 1);
-        var collectedGain = new Gain(context, 1, 1);
+        Gain collectedGain = new Gain(context, 1, 1);
 
         
         delayModulator = new RandomPWM(context, RandomPWM.RAMPED_NOISE, 4000,
@@ -126,8 +126,8 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
 
         apfOuts = new AllpassFilter[outChannels];
         outDelayScale = new float[outChannels];
-        for (var i = 0; i < outChannels; i++) {
-            var g = .3f + ((float) i / (i + 1)) * .1f + (float) Math.sin(i)
+        for (int i = 0; i < outChannels; i++) {
+            float g = .3f + ((float) i / (i + 1)) * .1f + (float) Math.sin(i)
                     * .05f;
             outDelayScale[i] = (3f * i + 5) / (5f * i + 5);
             apfOuts[i] = new AllpassFilter(context, (int) (60f * sampsPerMS),
@@ -143,7 +143,7 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
     @Override
     protected void preFrame() {
         delayModulator.update();
-        var m = (int) (delayModulator.getValue() * .3f * sampsPerMS);
+        int m = (int) (delayModulator.getValue() * .3f * sampsPerMS);
         lAPF1.setDelay((int) lateDelay1 - m);
         lAPF2.setDelay((int) lateDelay2 + m);
         lAPF3.setDelay((int) lateDelay3 - m);
@@ -178,13 +178,13 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
         lateDelay4 = lateDelay3 * 1.16f;
         earlyTapOut.setDelay(60f * size);
 
-        var d = 12.812f * sampsPerMS * size;
+        float d = 12.812f * sampsPerMS * size;
         eAPF1.setDelay((int) d);
         eAPF2.setDelay((int) (d * 3 - 2));
         eAPF3.setDelay((int) (d * 9.3 + 1));
 
         d = 60f * sampsPerMS * size;
-        for (var i = 0; i < this.outs; i++) {
+        for (int i = 0; i < this.outs; i++) {
             apfOuts[i].setDelay((int) (d * outDelayScale[i]));
         }
         return this;
@@ -213,7 +213,7 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
             damping = 1;
         this.damping = damping;
 
-        var f = 1f - (float) Math.sqrt(damping);
+        float f = 1f - (float) Math.sqrt(damping);
 
         src.setFrequency(f * 10000 + 250);
         lpf.setFrequency(f * 8000 + 200);
@@ -292,7 +292,7 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
      * @return The parameter DataBead.
      */
     public DataAuvent getParams() {
-        var db = new DataAuvent();
+        DataAuvent db = new DataAuvent();
         db.put("damping", damping);
         db.put("roomSize", size);
         db.put("earlyReflectionsLevel", earlyLevel);

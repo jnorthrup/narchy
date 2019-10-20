@@ -56,7 +56,7 @@ public class Sweep implements Serializable {
     public float alpha0;
 
     public String toString() {
-        var s = "Sweep:\nlocalCenter: " + localCenter + '\n';
+        String s = "Sweep:\nlocalCenter: " + localCenter + '\n';
         s += "c0: " + c0 + ", c: " + c + '\n';
         s += "a0: " + a0 + ", a: " + a + '\n';
         s += "alpha0: " + alpha0;
@@ -70,7 +70,7 @@ public class Sweep implements Serializable {
     }
 
     public final void normalize() {
-        var d = MathUtils.TWOPI * MathUtils.floor(a0 / MathUtils.TWOPI);
+        float d = MathUtils.TWOPI * MathUtils.floor(a0 / MathUtils.TWOPI);
         a0 -= d;
         a -= d;
     }
@@ -98,7 +98,7 @@ public class Sweep implements Serializable {
         
         xf.pos.x = (1.0f - beta) * c0.x + beta * c.x;
         xf.pos.y = (1.0f - beta) * c0.y + beta * c.y;
-        var angle = (1.0f - beta) * a0 + beta * a;
+        float angle = (1.0f - beta) * a0 + beta * a;
         xf.set(angle);
 
         
@@ -117,7 +117,7 @@ public class Sweep implements Serializable {
         assert (alpha0 < 1.0f);
 
 
-        var beta = (alpha - alpha0) / (1.0f - alpha0);
+        float beta = (alpha - alpha0) / (1.0f - alpha0);
         c0.x += beta * (c.x - c0.x);
         c0.y += beta * (c.y - c0.y);
         a0 += beta * (a - a0);

@@ -28,6 +28,7 @@ import jake2.qcommon.Com;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 public class M_Soldier {
@@ -1370,7 +1371,13 @@ public class M_Soldier {
                 return true;
             }
 
-            var b = Stream.of(soldier_move_walk1, soldier_move_walk2, soldier_move_start_run).anyMatch(mmove_t -> self.monsterinfo.currentmove == mmove_t);
+            boolean b = false;
+            for (jake2.game.mmove_t mmove_t : Arrays.asList(soldier_move_walk1, soldier_move_walk2, soldier_move_start_run)) {
+                if (self.monsterinfo.currentmove == mmove_t) {
+                    b = true;
+                    break;
+                }
+            }
             if (b) {
                 self.monsterinfo.currentmove = soldier_move_run;
             } else {
@@ -1391,8 +1398,11 @@ public class M_Soldier {
 
             if (GameBase.level.time < self.pain_debounce_time) {
                 if ((self.velocity[2] > 100)) {
-                    if (Stream.of(soldier_move_pain1, soldier_move_pain2, soldier_move_pain3).anyMatch(mmove_t -> (self.monsterinfo.currentmove == mmove_t))) {
-                        self.monsterinfo.currentmove = soldier_move_pain4;
+                    for (jake2.game.mmove_t mmove_t : Arrays.asList(soldier_move_pain1, soldier_move_pain2, soldier_move_pain3)) {
+                        if ((self.monsterinfo.currentmove == mmove_t)) {
+                            self.monsterinfo.currentmove = soldier_move_pain4;
+                            break;
+                        }
                     }
                 }
                 return;
@@ -1400,7 +1410,7 @@ public class M_Soldier {
 
             self.pain_debounce_time = GameBase.level.time + 3;
 
-            var n = self.s.skinnum | 1;
+            int n = self.s.skinnum | 1;
             switch (n) {
                 case 1:
                     game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain_light,
@@ -1424,7 +1434,7 @@ public class M_Soldier {
             if (GameBase.skill.value == 3)
                 return;
 
-            var r = Lib.random();
+            float r = Lib.random();
 
             if (r < 0.33)
                 self.monsterinfo.currentmove = soldier_move_pain1;
@@ -1638,8 +1648,8 @@ public class M_Soldier {
             float[] up = {0, 0, 0};
             Math3D.AngleVectors(dir, forward, right, up);
 
-            var r = Lib.crandom() * 1000;
-            var u = Lib.crandom() * 500;
+            float r = Lib.crandom() * 1000;
+            float u = Lib.crandom() * 500;
             Math3D.VectorMA(start, 8192, forward, end);
             Math3D.VectorMA(end, r, right, end);
             Math3D.VectorMA(end, u, up, end);
@@ -2304,7 +2314,7 @@ public class M_Soldier {
         @Override
         public void dodge(edict_t self, edict_t attacker, float eta) {
 
-            var r = Lib.random();
+            float r = Lib.random();
             if (r > 0.25)
                 return;
 

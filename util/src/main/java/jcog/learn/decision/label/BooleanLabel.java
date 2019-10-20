@@ -37,8 +37,8 @@ public final class BooleanLabel  {
      */
     @Override
     public int hashCode() {
-        final var prime = 31;
-        var result = 1;
+        final int prime = 31;
+        int result = 1;
         result = prime * result + (label ? 1231 : 1237);
         return result;
     }
@@ -54,7 +54,7 @@ public final class BooleanLabel  {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        var other = (BooleanLabel) obj;
+        BooleanLabel other = (BooleanLabel) obj;
         return label == other.label;
     }
 

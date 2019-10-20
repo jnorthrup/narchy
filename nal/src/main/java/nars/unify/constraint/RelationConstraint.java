@@ -28,7 +28,7 @@ public abstract class RelationConstraint<U extends Unify> extends UnifyConstrain
 
     @Override
     public final boolean invalid(Term x, U f) {
-        var yy = f.resolveVar(y);
+        Term yy = f.resolveVar(y);
         return (yy == null || yy != y) && invalid(x, yy, f);
     }
 
@@ -251,7 +251,7 @@ public abstract class RelationConstraint<U extends Unify> extends UnifyConstrain
         public boolean invalid(Term x, Term y, Unify context) {
 
             if (x instanceof Compound && y instanceof Compound) {
-                var xo = x.op();
+                Op xo = x.op();
                 if (xo.set && y.opID() == xo.id) {
                     Subterms xx = x.subterms(), yy = y.subterms();
                     if (xx.equals(yy))
@@ -286,7 +286,7 @@ public abstract class RelationConstraint<U extends Unify> extends UnifyConstrain
             if (!(x instanceof Compound) || !(y instanceof Compound))
                 return false;
 
-            var xo = x.op();
+            Op xo = x.op();
             return xo.set && (xo.id == y.opID());
         }
     }

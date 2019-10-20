@@ -38,7 +38,7 @@ public class NBitsConverter extends UGen {
         
         
 
-        for (var i = 0; i < bufferSize; i++) {
+        for (int i = 0; i < bufferSize; i++) {
             bufOut[0][i] = invToRange * (int) (bufIn[0][i] * toRange);
         }
     }

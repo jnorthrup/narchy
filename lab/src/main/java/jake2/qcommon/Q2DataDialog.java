@@ -31,9 +31,9 @@ public class Q2DataDialog extends javax.swing.JDialog {
         super();
         initComponents();
 
-        var mode = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode();
-        var x = (mode.getWidth() - getWidth()) / 2;
-        var y = (mode.getHeight() - getHeight()) / 2;
+        DisplayMode mode = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode();
+        int x = (mode.getWidth() - getWidth()) / 2;
+        int y = (mode.getHeight() - getHeight()) / 2;
         setLocation(x, y);
         dir = String.join(sep, home, "Jake2", "baseq2");
         jTextField1.setText(dir);
@@ -46,10 +46,10 @@ public class Q2DataDialog extends javax.swing.JDialog {
         statusPanel = new JPanel();
         status = new JLabel("initializing Jake2...");
         jTextField1 = new javax.swing.JTextField();
-        var changeButton = new JButton();
-        var cancelButton = new JButton();
-        var exitButton = new JButton();
-        var okButton = new JButton();
+        JButton changeButton = new JButton();
+        JButton cancelButton = new JButton();
+        JButton exitButton = new JButton();
+        JButton okButton = new JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Jake2 - Bytonic Software");
@@ -68,7 +68,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
         choosePanel.setPreferredSize(new java.awt.Dimension(400, 100));
 
 
-        var gridBagConstraints = new GridBagConstraints();
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 1;
@@ -131,7 +131,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
         choosePanel.add(okButton, gridBagConstraints);
 
 
-        var c = new Jake2Canvas();
+        Jake2Canvas c = new Jake2Canvas();
         getContentPane().add(c, BorderLayout.CENTER);
 
         statusPanel.setLayout(new java.awt.GridBagLayout());
@@ -176,7 +176,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
     }
 
     private void changeButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        var chooser = new JFileChooser();
+        JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.setDialogType(JFileChooser.CUSTOM_DIALOG);
         chooser.setMultiSelectionEnabled(false);
@@ -308,9 +308,9 @@ public class Q2DataDialog extends javax.swing.JDialog {
         }
 
         private void initComponents() {
-            var constraints = new GridBagConstraints();
+            GridBagConstraints constraints = new GridBagConstraints();
             setLayout(new GridBagLayout());
-            var d = new Dimension(400, 100);
+            Dimension d = new Dimension(400, 100);
             setMinimumSize(d);
             setMaximumSize(d);
             setPreferredSize(d);
@@ -331,7 +331,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
             constraints.fill = GridBagConstraints.HORIZONTAL;
             constraints.insets = new Insets(0, 2, 0, 5);
             constraints.anchor = GridBagConstraints.WEST;
-            var label = new JLabel("select baseq2 directory from existing Quake2 installation");
+            JLabel label = new JLabel("select baseq2 directory from existing Quake2 installation");
             label.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -351,7 +351,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
             });
             add(label, constraints);
 
-            var selection = new ButtonGroup();
+            ButtonGroup selection = new ButtonGroup();
             dir = new JRadioButton();
             install = new JRadioButton();
             selection.add(dir);
@@ -378,7 +378,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
             constraints.insets = new Insets(5, 5, 5, 5);
             constraints.fill = GridBagConstraints.NONE;
             constraints.anchor = GridBagConstraints.SOUTHWEST;
-            var exit = new JButton("Exit");
+            JButton exit = new JButton("Exit");
             exit.addActionListener(e -> System.exit(0));
 
 
@@ -411,16 +411,16 @@ public class Q2DataDialog extends javax.swing.JDialog {
 
         public InstallPanel(Q2DataDialog d) {
             initComponents();
-            var dir = Q2DataDialog.home + Q2DataDialog.sep + "Jake2";
+            String dir = Q2DataDialog.home + Q2DataDialog.sep + "Jake2";
             destDir.setText(dir);
             initMirrors();
             parent = d;
         }
 
         private void initComponents() {
-            var constraints = new GridBagConstraints();
+            GridBagConstraints constraints = new GridBagConstraints();
             setLayout(new GridBagLayout());
-            var d = new Dimension(400, 100);
+            Dimension d = new Dimension(400, 100);
             setMinimumSize(d);
             setMaximumSize(d);
             setPreferredSize(d);
@@ -458,7 +458,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
             constraints.weightx = 0;
             constraints.gridwidth = 1;
             constraints.fill = GridBagConstraints.NONE;
-            var choose = new JButton("...");
+            JButton choose = new JButton("...");
             choose.addActionListener(e -> choose());
             add(choose, constraints);
 
@@ -467,7 +467,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
             constraints.gridwidth = 1;
             constraints.weighty = 1;
             constraints.fill = GridBagConstraints.NONE;
-            var exit = new JButton("Exit");
+            JButton exit = new JButton("Exit");
             exit.addActionListener(e -> exit());
             add(exit, constraints);
 
@@ -475,7 +475,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
             constraints.gridy = 2;
             constraints.gridwidth = 4;
             constraints.anchor = GridBagConstraints.SOUTH;
-            var cancel = new JButton("Cancel");
+            JButton cancel = new JButton("Cancel");
             cancel.addActionListener(e -> cancel());
             add(cancel, constraints);
 
@@ -483,18 +483,18 @@ public class Q2DataDialog extends javax.swing.JDialog {
             constraints.gridy = 2;
             constraints.gridwidth = 2;
             constraints.anchor = GridBagConstraints.SOUTHEAST;
-            var install = new JButton("Install");
+            JButton install = new JButton("Install");
             install.addActionListener(e -> install());
             add(install, constraints);
         }
 
         private void readMirrors() {
-            var in = getClass().getResourceAsStream("/mirrors");
-            var r = new BufferedReader(new InputStreamReader(in));
+            InputStream in = getClass().getResourceAsStream("/mirrors");
+            BufferedReader r = new BufferedReader(new InputStreamReader(in));
             try {
                 while (true) {
-                    var name = r.readLine();
-                    var value = r.readLine();
+                    String name = r.readLine();
+                    String value = r.readLine();
                     if (name == null || value == null) break;
                     mirrorNames.add(name);
                     mirrorLinks.add(value);
@@ -514,10 +514,10 @@ public class Q2DataDialog extends javax.swing.JDialog {
 
         private void initMirrors() {
             readMirrors();
-            for (var i = 0; i < mirrorNames.size(); i++) {
+            for (int i = 0; i < mirrorNames.size(); i++) {
                 mirrorBox.addItem(mirrorNames.get(i));
             }
-            var i = Globals.rnd.nextInt(mirrorNames.size());
+            int i = Globals.rnd.nextInt(mirrorNames.size());
             mirrorBox.setSelectedIndex(i);
         }
 
@@ -539,7 +539,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
         }
 
         private void choose() {
-            var chooser = new JFileChooser();
+            JFileChooser chooser = new JFileChooser();
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             chooser.setDialogType(JFileChooser.CUSTOM_DIALOG);
             chooser.setMultiSelectionEnabled(false);
@@ -579,7 +579,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
             setLayout(new GridBagLayout());
             new GridBagConstraints();
 
-            var gridBagConstraints = new GridBagConstraints();
+            GridBagConstraints gridBagConstraints = new GridBagConstraints();
             gridBagConstraints.gridx = 0;
             gridBagConstraints.gridy = 0;
             gridBagConstraints.gridwidth = 1;
@@ -601,7 +601,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
             cancel.addActionListener(e -> cancel());
             add(cancel, gridBagConstraints);
 
-            var d = new Dimension(400, 100);
+            Dimension d = new Dimension(400, 100);
             setMinimumSize(d);
             setMaximumSize(d);
             setPreferredSize(d);
@@ -639,9 +639,9 @@ public class Q2DataDialog extends javax.swing.JDialog {
             OutputStream out = null;
             InputStream in = null;
             try {
-                var url = new URL(mirror);
-                var conn = url.openConnection();
-                var length = conn.getContentLength();
+                URL url = new URL(mirror);
+                URLConnection conn = url.openConnection();
+                int length = conn.getContentLength();
                 progress.setMaximum(length / 1024);
                 progress.setMinimum(0);
 
@@ -687,15 +687,15 @@ public class Q2DataDialog extends javax.swing.JDialog {
             InputStream in = null;
             OutputStream out = null;
             try {
-                var f = new ZipFile(filename);
+                ZipFile f = new ZipFile(filename);
                 Enumeration e = f.entries();
                 while (e.hasMoreElements()) {
-                    var entry = (ZipEntry) e.nextElement();
-                    var name = entry.getName();
+                    ZipEntry entry = (ZipEntry) e.nextElement();
+                    String name = entry.getName();
                     int i;
                     if ((i = name.indexOf("/baseq2")) > -1 && !name.contains(".dll")) {
                         name = destDir + name.substring(i);
-                        var outFile = new File(name);
+                        File outFile = new File(name);
                         if (entry.isDirectory()) {
                             outFile.mkdirs();
                         } else {
@@ -732,13 +732,13 @@ public class Q2DataDialog extends javax.swing.JDialog {
 
         void copyStream(InputStream in, OutputStream out) throws Exception {
             try {
-                var c = 0;
+                int c = 0;
                 int l;
                 while ((l = in.read(buf)) > 0) {
                     if (!running) throw new Exception("installation canceled");
                     out.write(buf, 0, l);
                     c += l;
-                    var k = c / 1024;
+                    int k = c / 1024;
                     progress.setValue(k);
                     progress.setString(k + "/" + progress.getMaximum() + " KB");
                 }

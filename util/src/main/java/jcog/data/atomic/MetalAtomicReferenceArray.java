@@ -68,7 +68,7 @@ public class MetalAtomicReferenceArray<E>  {
 			arrayFieldOffset = unsafe.objectFieldOffset
 				(AtomicReferenceArray.class.getDeclaredField("array"));
 			base = unsafe.arrayBaseOffset(Object[].class);
-			var scale = unsafe.arrayIndexScale(Object[].class);
+            int scale = unsafe.arrayIndexScale(Object[].class);
 			if ((scale & (scale - 1)) != 0)
 				throw new Error("data type scale not a power of two");
 			shift = 31 - Integer.numberOfLeadingZeros(scale);
@@ -241,7 +241,7 @@ public class MetalAtomicReferenceArray<E>  {
 	 * @since 1.8
 	 */
 	public final E getAndUpdate(int i, UnaryOperator<E> updateFunction) {
-		var offset = checkedByteOffset(i);
+        long offset = checkedByteOffset(i);
 		E prev, next;
 		do {
 			prev = getRaw(offset);
@@ -262,7 +262,7 @@ public class MetalAtomicReferenceArray<E>  {
 	 * @since 1.8
 	 */
 	public final E updateAndGet(int i, UnaryOperator<E> updateFunction) {
-		var offset = checkedByteOffset(i);
+        long offset = checkedByteOffset(i);
 		E prev, next;
 		do {
 			prev = getRaw(offset);
@@ -288,7 +288,7 @@ public class MetalAtomicReferenceArray<E>  {
 	 */
 	public final E getAndAccumulate(int i, E x,
 									BinaryOperator<E> accumulatorFunction) {
-		var offset = checkedByteOffset(i);
+        long offset = checkedByteOffset(i);
 		E prev, next;
 		do {
 			prev = getRaw(offset);
@@ -314,7 +314,7 @@ public class MetalAtomicReferenceArray<E>  {
 	 */
 	public final E accumulateAndGet(int i, E x,
 									BinaryOperator<E> accumulatorFunction) {
-		var offset = checkedByteOffset(i);
+        long offset = checkedByteOffset(i);
 		E prev, next;
 		do {
 			prev = getRaw(offset);
@@ -328,13 +328,13 @@ public class MetalAtomicReferenceArray<E>  {
 	 * @return the String representation of the current values of array
 	 */
 	public String toString() {
-		var iMax = array.length - 1;
+        int iMax = array.length - 1;
 		if (iMax == -1)
 			return "[]";
 
-		var b = new StringBuilder();
+        StringBuilder b = new StringBuilder();
 		b.append('[');
-		for (var i = 0; ; i++) {
+		for (int i = 0; ; i++) {
 			b.append(getRaw(byteOffset(i)));
 			if (i == iMax)
 				return b.append(']').toString();
@@ -344,8 +344,8 @@ public class MetalAtomicReferenceArray<E>  {
 
 	public void fill(E e) {
 		//TODO optimized scan through
-		var n = length();
-		for (var i = 0; i < n; i++)
+        int n = length();
+		for (int i = 0; i < n; i++)
 			setFast(i, e);
 	}
 

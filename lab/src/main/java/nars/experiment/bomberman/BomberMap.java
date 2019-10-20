@@ -99,7 +99,7 @@ public class BomberMap extends JPanel {
         /** if java runtime is Java 2 */
         if (Main.J2) {
             /** create the rendering hints for better graphics output */
-            var h = new RenderingHints(null);
+            RenderingHints h = new RenderingHints(null);
             h.put(RenderingHints.KEY_TEXT_ANTIALIASING,
                     RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             h.put(RenderingHints.KEY_FRACTIONALMETRICS,
@@ -129,13 +129,13 @@ public class BomberMap extends JPanel {
         bonusImages = new Image[2][2];
 
         try {
-            var strs = new String[3];
+            String[] strs = new String[3];
             /** load the map images */
-            for (var i = 0; i < 2; i++) {
+            for (int i = 0; i < 2; i++) {
                 strs[0] = BomberMain.RP + "Images/BomberWalls/" + (i + 1);
                 strs[1] = BomberMain.RP + "Images/BomberBricks/" + (i + 1);
                 strs[2] = BomberMain.RP + "Images/BomberFloors/" + (i + 1);
-                for (var j = 0; j < 3; j++) {
+                for (int j = 0; j < 3; j++) {
                     if (i == 0) strs[j] += ".jpg";
                     else strs[j] += ".gif";
                 }
@@ -151,15 +151,15 @@ public class BomberMap extends JPanel {
 
             String str = null;
             /** load the bomb images */
-            for (var i = 0; i < 2; i++) {
+            for (int i = 0; i < 2; i++) {
                 str = BomberMain.RP + "Images/BomberBombs/" + (i + 1) + ".gif";
                 bombImages[i] = Toolkit.getDefaultToolkit().getImage(
                         new File(str).getCanonicalPath());
             }
 
             /** load the fire images */
-            for (var t = 0; t < 7; t++)
-                for (var i = 0; i < 8; i++) {
+            for (int t = 0; t < 7; t++)
+                for (int i = 0; i < 8; i++) {
                     str = BomberMain.RP + "Images/BomberFires/";
                     switch (t) {
                         case FIRE_CENTER:
@@ -192,9 +192,9 @@ public class BomberMap extends JPanel {
                     }
                 }
 
-            var f = 0;
+            int f = 0;
             /** load the fire brick images */
-            for (var i = 0; i < 2; i++)
+            for (int i = 0; i < 2; i++)
                 for (f = 0; f < 8; f++) {
                     str = BomberMain.RP + "Images/BomberFireBricks/" +
                             (i + 1) + (f + 1) + ".gif";
@@ -203,7 +203,7 @@ public class BomberMap extends JPanel {
                 }
 
             /** load the bonus image sprites */
-            for (var i = 0; i < 2; i++)
+            for (int i = 0; i < 2; i++)
                 for (f = 0; f < 2; f++) {
                     str = BomberMain.RP + "Images/BomberBonuses/" +
                             (i == 0 ? "F" : "B") + (f + 1) + ".gif";
@@ -219,25 +219,25 @@ public class BomberMap extends JPanel {
         /** frame object */
         /** generator random level */
         level = levelRand.draw() % 2;
-        var tracker = new MediaTracker(this);
+        MediaTracker tracker = new MediaTracker(this);
         /** prepare the images */
         try {
-            var counter = 0;
+            int counter = 0;
             /** load the map images */
-            for (var i = 0; i < 2; i++)
-                for (var j = 0; j < 3; j++) {
+            for (int i = 0; i < 2; i++)
+                for (int j = 0; j < 3; j++) {
                     if (mapImages[i][j] != null) {
                         tracker.addImage(mapImages[i][j], counter++);
                     }
                 }
             /** load the bomb images */
-            for (var i = 0; i < 2; i++)
+            for (int i = 0; i < 2; i++)
                 tracker.addImage(bombImages[i], counter++);
             /** load the fire brick images */
             System.arraycopy(fireBrickImages[level], 0, fireImages[FIRE_BRICK], 0, 8);
             /** load the fire images */
-            for (var i = 0; i < 8; i++)
-                for (var j = 0; j < 8; j++)
+            for (int i = 0; i < 8; i++)
+                for (int j = 0; j < 8; j++)
                     tracker.addImage(fireImages[i][j], counter++);
 
             /** wait for images to finish loading */
@@ -257,8 +257,8 @@ public class BomberMap extends JPanel {
         /** create the map grid */
         grid = new int[17][17];
         /** fill the map with walls by alternating r by c */
-        for (var r = 0; r < 17; r++)
-            for (var c = 0; c < 17; c++) {
+        for (int r = 0; r < 17; r++)
+            for (int c = 0; c < 17; c++) {
                 /** if it's the edge */
                 if (r == 0 || c == 0 || r == 16 || c == 16) grid[r][c] = WALL;
                 else if ((r & 1) == 0 && (c & 1) == 0) grid[r][c] = WALL;
@@ -268,11 +268,11 @@ public class BomberMap extends JPanel {
                 bonusGrid[r][c] = null;
             }
 
-        var ri = new BomberRandInt(1, 15);
+        BomberRandInt ri = new BomberRandInt(1, 15);
         /** generate random bricks */
-        for (var i = 0; i < 192 * 2; i++) {
-            var x = ri.draw();
-            var y = ri.draw();
+        for (int i = 0; i < 192 * 2; i++) {
+            int x = ri.draw();
+            int y = ri.draw();
             if (grid[x][y] == NOTHING)
                 grid[x][y] = BRICK;
         }
@@ -313,11 +313,11 @@ public class BomberMap extends JPanel {
      * @param owner owner
      */
     public synchronized void createBonus(int x, int y) {
-        var type = bonusRand.draw();
+        int type = bonusRand.draw();
         /** create bonus : 0 = fire; 1 = bomb */
         if (type == 0 || type == 1) {
-            var _y = (y >> BomberMain.shiftCount) << BomberMain.shiftCount;
-            var _x = (x >> BomberMain.shiftCount) << BomberMain.shiftCount;
+            int _y = (y >> BomberMain.shiftCount) << BomberMain.shiftCount;
+            int _x = (x >> BomberMain.shiftCount) << BomberMain.shiftCount;
             bonusGrid[_x >> BomberMain.shiftCount][_y >> BomberMain.shiftCount] =
                     new BomberBonus(this, _x, _y, type);
             bonuses.addElement(new Bonus(_x, _y));
@@ -331,8 +331,8 @@ public class BomberMap extends JPanel {
      */
     public synchronized void removeBonus(int x, int y) {
         int i = 0, k = bonuses.size();
-        var r = (x >> BomberMain.shiftCount);
-        var c = (y >> BomberMain.shiftCount);
+        int r = (x >> BomberMain.shiftCount);
+        int c = (y >> BomberMain.shiftCount);
         Bonus b = null;
         while (i < k) {
             b = (Bonus) bonuses.elementAt(i);
@@ -357,8 +357,8 @@ public class BomberMap extends JPanel {
      * @param owner owner
      */
     public synchronized void createBomb(int x, int y, int owner) {
-        var _x = (x >> BomberMain.shiftCount) << BomberMain.shiftCount;
-        var _y = (y >> BomberMain.shiftCount) << BomberMain.shiftCount;
+        int _x = (x >> BomberMain.shiftCount) << BomberMain.shiftCount;
+        int _y = (y >> BomberMain.shiftCount) << BomberMain.shiftCount;
         bombGrid[_x >> BomberMain.shiftCount][_y >> BomberMain.shiftCount] =
                 new BomberBomb(this, _x, _y, owner);
         bombs.addElement(new Bomb(_x, _y));
@@ -371,8 +371,8 @@ public class BomberMap extends JPanel {
      */
     public synchronized void removeBomb(int x, int y) {
         int i = 0, k = bombs.size();
-        var r = (x >> BomberMain.shiftCount);
-        var c = (y >> BomberMain.shiftCount);
+        int r = (x >> BomberMain.shiftCount);
+        int c = (y >> BomberMain.shiftCount);
         Bomb b = null;
         while (i < k) {
             b = (Bomb) bombs.elementAt(i);
@@ -393,9 +393,9 @@ public class BomberMap extends JPanel {
      * @param type fire type
      */
     public void createFire(int x, int y, int owner, int type) {
-        var _x = (x >> BomberMain.shiftCount) << BomberMain.shiftCount;
-        var _y = (y >> BomberMain.shiftCount) << BomberMain.shiftCount;
-        var createFire = false;
+        int _x = (x >> BomberMain.shiftCount) << BomberMain.shiftCount;
+        int _y = (y >> BomberMain.shiftCount) << BomberMain.shiftCount;
+        boolean createFire = false;
         /** if there's a bomb here */
         if (grid[_x >> BomberMain.shiftCount][_y >> BomberMain.shiftCount] ==
                 BOMB) {
@@ -410,16 +410,16 @@ public class BomberMap extends JPanel {
                 BomberMain.shiftCount][_y >> BomberMain.shiftCount]) {
             createFire = true;
             /** create a fire there */
-            var f = new BomberFire(this, _x, _y, type);
+            BomberFire f = new BomberFire(this, _x, _y, type);
         }
         /** if this is a center */
         if (createFire && type == FIRE_CENTER) {
-            var shiftCount = BomberMain.shiftCount;
+            int shiftCount = BomberMain.shiftCount;
             /** then create a chain of fire */
             int northStop = 0, southStop = 0, westStop = 0, eastStop = 0,
                     northBlocks = 0, southBlocks = 0, westBlocks = 0, eastBlocks = 0;
             /** see how long the fire can be */
-            for (var i = 1; i <= BomberGame.players[owner].fireLength; i++) {
+            for (int i = 1; i <= BomberGame.players[owner].fireLength; i++) {
                 /** if it can still go south */
                 if (southStop == 0) {
                     if (((_y >> shiftCount) + i) < 17) {
@@ -490,8 +490,8 @@ public class BomberMap extends JPanel {
                 }
             }
             /** create the north chain */
-            var size = BomberMain.size;
-            for (var i = 1; i <= northBlocks; i++) {
+            int size = BomberMain.size;
+            for (int i = 1; i <= northBlocks; i++) {
                 /** if this is a tail */
                 if (i == northBlocks) {
                     /** if there's a brick */
@@ -504,7 +504,7 @@ public class BomberMap extends JPanel {
                 /** if it's not a tail then create a normal fire */
                 else createFire(_x, _y - (i * size), owner, FIRE_VERTICAL);
             }
-            for (var i = 1; i <= southBlocks; i++) {
+            for (int i = 1; i <= southBlocks; i++) {
                 /** if this is a tail */
                 if (i == southBlocks) {
                     /** if there's a brick */
@@ -517,7 +517,7 @@ public class BomberMap extends JPanel {
                 /** if it's not a tail then create a normal fire */
                 else createFire(_x, _y + (i * size), owner, FIRE_VERTICAL);
             }
-            for (var i = 1; i <= eastBlocks; i++) {
+            for (int i = 1; i <= eastBlocks; i++) {
                 /** if this is a tail */
                 if (i == eastBlocks) {
                     /** if there's a brick */
@@ -530,7 +530,7 @@ public class BomberMap extends JPanel {
                 /** if it's not a tail then create a normal fire */
                 else createFire(_x + (i * size), _y, owner, FIRE_HORIZONTAL);
             }
-            for (var i = 1; i <= westBlocks; i++) {
+            for (int i = 1; i <= westBlocks; i++) {
                 /** if this is a tail */
                 if (i == westBlocks) {
                     /** if there's a brick */
@@ -552,7 +552,7 @@ public class BomberMap extends JPanel {
      */
     @Override
     public synchronized void paint(Graphics graphics) {
-        var g = graphics;
+        Graphics g = graphics;
         /** if java runtime is Java 2 */
         if (Main.J2) {
             paint2D(graphics);
@@ -573,8 +573,8 @@ public class BomberMap extends JPanel {
                 g.fillRect(0, 0, 17 << BomberMain.shiftCount,
                         17 << BomberMain.shiftCount);
                 /** draw the map */
-                for (var r = 0; r < 17; r++)
-                    for (var c = 0; c < 17; c++) {
+                for (int r = 0; r < 17; r++)
+                    for (int c = 0; c < 17; c++) {
                         /** if there's something in the block */
                         if (grid[r][c] > NOTHING &&
                                 grid[r][c] != BOMB && grid[r][c] != FIRE_BRICK &&
@@ -626,7 +626,7 @@ public class BomberMap extends JPanel {
      * @param graphics graphics handle
      */
     public void paint2D(Graphics graphics) {
-        var g2 = (Graphics2D) graphics;
+        Graphics2D g2 = (Graphics2D) graphics;
         /** set the rendering hints */
         g2.setRenderingHints((RenderingHints) hints);
         /** if game is over */
@@ -643,8 +643,8 @@ public class BomberMap extends JPanel {
             g2.fillRect(0, 0, 17 << BomberMain.shiftCount,
                     17 << BomberMain.shiftCount);
             /** draw the map */
-            for (var r = 0; r < 17; r++)
-                for (var c = 0; c < 17; c++) {
+            for (int r = 0; r < 17; r++)
+                for (int c = 0; c < 17; c++) {
                     /** if there's something in the block */
                     if (grid[r][c] > NOTHING &&
                             grid[r][c] != BOMB && grid[r][c] != FIRE_BRICK &&

@@ -39,7 +39,7 @@ public class BomberImageButton {
         /** if java runtime is Java 2 */
         if (Main.J2) {
             /** create the rendering hints for better graphics output */
-            var h = new RenderingHints(null);
+            RenderingHints h = new RenderingHints(null);
             h.put(RenderingHints.KEY_TEXT_ANTIALIASING,
                     RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             h.put(RenderingHints.KEY_FRACTIONALMETRICS,
@@ -80,7 +80,7 @@ public class BomberImageButton {
         this.ID = ID;
         /** calculate area in which the object owns to handle mouse events */
         /** area the object controls */
-        var rect = new Rectangle(this.x, this.y - 5, w, h + 10);
+        Rectangle rect = new Rectangle(this.x, this.y - 5, w, h + 10);
     }
 
     /**
@@ -113,7 +113,7 @@ public class BomberImageButton {
         }
         /** if java runtime isn't Java 2 */
         else {
-            var g = graphics;
+            Graphics g = graphics;
             /** draw the button */
             g.drawImage(images[state], x, y, w / (32 / BomberMain.size * 2),
                     h / (32 / BomberMain.size * 2), null);
@@ -125,7 +125,7 @@ public class BomberImageButton {
      * @param graphics graphics handle
      */
     public void paint2D(Graphics graphics) {
-        var g2 = (Graphics2D) graphics;
+        Graphics2D g2 = (Graphics2D) graphics;
         /** set the rendering hints */
         g2.setRenderingHints((RenderingHints) hints);
         /** draw the button */

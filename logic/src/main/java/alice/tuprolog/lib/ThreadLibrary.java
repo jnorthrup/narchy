@@ -33,7 +33,7 @@ public class ThreadLibrary extends PrologLib {
 	
 	
 	public boolean thread_id_1 (Term t) {
-		var id = runner().getId();
+        int id = runner().getId();
         unify(t,new NumberTerm.Int(id));
 		return true;
 	}
@@ -54,7 +54,7 @@ public class ThreadLibrary extends PrologLib {
 		if (!(id instanceof NumberTerm.Int))
 			throw PrologError.type_error(prolog, 1,
                     "integer", id);
-		var res = join(((NumberTerm.Int)id).intValue());
+        Solution res = join(((NumberTerm.Int)id).intValue());
 		if (res == null) return false;
 		Term status;
 		try {
@@ -72,7 +72,7 @@ public class ThreadLibrary extends PrologLib {
 	}
 
 	public Solution read(int id) {
-		var er = runner(id);
+        ThreadedPrologRun er = runner(id);
 		if (er == null || er.isDetached()) return null;
 		/*toSPY
 		 * System.out.println("Thread id "+runnerId()+" - prelevo la soluzione (read) del thread di id: "+er.getId());
@@ -88,7 +88,7 @@ public class ThreadLibrary extends PrologLib {
 		if (!(id instanceof NumberTerm.Int))
 			throw PrologError.type_error(prolog, 1,
                     "integer", id);
-		var res= read( ((NumberTerm.Int)id).intValue());
+        Solution res= read( ((NumberTerm.Int)id).intValue());
 		if (res==null) return false;
 		Term status;
 		try {
@@ -114,7 +114,7 @@ public class ThreadLibrary extends PrologLib {
 	}
 
 	public boolean hasNext(int id) {
-		var er = runner(id);
+        ThreadedPrologRun er = runner(id);
 		return !(er == null || er.isDetached()) && er.hasOpenAlternatives();
 	}
 
@@ -127,7 +127,7 @@ public class ThreadLibrary extends PrologLib {
 	}
 
 	public boolean nextSolution(int id) {
-		var er = runner(id);
+        ThreadedPrologRun er = runner(id);
 		/*toSPY
 		 * System.out.println("Thread id "+runnerId()+" - next_solution: risveglio il thread di id: "+er.getId());
 		 */
@@ -250,7 +250,7 @@ public class ThreadLibrary extends PrologLib {
 
 	public void mutexLock(String name) {
 		//while (true) {
-		var mutex = createLock(name);
+        ReentrantLock mutex = createLock(name);
 
 		mutex.lock();
 		/*toSPY
@@ -259,7 +259,7 @@ public class ThreadLibrary extends PrologLib {
 	}
 
 	public boolean mutexTryLock(String name) {
-		var mutex = locks.get(name);
+        ReentrantLock mutex = locks.get(name);
 		return mutex != null && mutex.tryLock();
 		/*toSPY
 		 * System.out.println("Thread id "+runnerId()+ " - provo ad impossessarmi del lock");
@@ -267,7 +267,7 @@ public class ThreadLibrary extends PrologLib {
 	}
 
 	public boolean mutexUnlock(String name) {
-		var mutex = locks.get(name);
+        ReentrantLock mutex = locks.get(name);
 		if (mutex == null) return false;
 		try {
 			mutex.unlock();
@@ -281,16 +281,16 @@ public class ThreadLibrary extends PrologLib {
 	}
 
 	public boolean isLocked(String name) {
-		var mutex = locks.get(name);
+        ReentrantLock mutex = locks.get(name);
 		return mutex != null && mutex.isLocked();
 	}
 
 	public void unlockAll() {
 
-        for (var entry : locks.entrySet()) {
-			var k = entry.getKey();
-			var mutex = entry.getValue();
-			var unlocked = false;
+        for (Map.Entry<String, ReentrantLock> entry : locks.entrySet()) {
+            String k = entry.getKey();
+            ReentrantLock mutex = entry.getValue();
+            boolean unlocked = false;
             while (!unlocked) {
                 try {
                     mutex.unlock();
@@ -307,7 +307,7 @@ public class ThreadLibrary extends PrologLib {
 	}
 
 	public int queueSize(String name) {
-		var q = queues.get(name);
+        TermQueue q = queues.get(name);
 		return q == null ? -1 : q.size();
 	}
 
@@ -400,30 +400,30 @@ public class ThreadLibrary extends PrologLib {
 
 
 	public boolean getMsg(String name, Term msg) {
-		var er = runner();
+        PrologRun er = runner();
 		if (er == null) return false;
-		var queue = queues.get(name);
+        TermQueue queue = queues.get(name);
 		if (queue == null) return false;
 		return queue.get(msg, prolog, er);
 	}
 	public boolean sendMsg(int dest, Term msg) {
-		var er = runner(dest);
+        ThreadedPrologRun er = runner(dest);
 		if (er == null) return false;
-		var msgcopy = msg.copy(new LinkedHashMap<>(), 0);
+        Term msgcopy = msg.copy(new LinkedHashMap<>(), 0);
 		er.msgs.store(msgcopy);
 		return true;
 	}
 
 	public boolean sendMsg(String name, Term msg) {
-		var queue = queues.get(name);
+        TermQueue queue = queues.get(name);
 		if (queue == null) return false;
-		var msgcopy = msg.copy(new LinkedHashMap<>(), 0);
+        Term msgcopy = msg.copy(new LinkedHashMap<>(), 0);
 		queue.store(msgcopy);
 		return true;
 	}
 
 	public boolean getMsg(int id, Term msg) {
-		var er = runner(id);
+        ThreadedPrologRun er = runner(id);
 		if (er == null) return false;
 		er.msgs.get(msg, prolog, er);
 		return true;
@@ -431,40 +431,40 @@ public class ThreadLibrary extends PrologLib {
 
 
 	public boolean waitMsg(int id, Term msg) {
-		var er = runner(id);
+        ThreadedPrologRun er = runner(id);
 		if (er == null) return false;
 		er.msgs.wait(msg, prolog, er);
 		return true;
 	}
 
 	public boolean waitMsg(String name, Term msg) {
-		var er = runner();
+        PrologRun er = runner();
 		if (er == null) return false;
-		var queue = queues.get(name);
+        TermQueue queue = queues.get(name);
 		if (queue == null) return false;
 		return queue.wait(msg, prolog, er);
 	}
 
 	public boolean peekMsg(int id, Term msg) {
-		var er = runner(id);
+        ThreadedPrologRun er = runner(id);
 		if (er == null) return false;
 		return er.msgs.peek(msg, prolog);
 	}
 
 	public boolean peekMsg(String name, Term msg) {
-		var queue = queues.get(name);
+        TermQueue queue = queues.get(name);
 		if (queue == null) return false;
 		return queue.peek(msg, prolog);
 	}
 
 	public boolean removeMsg(String name, Term msg) {
-		var queue = queues.get(name);
+        TermQueue queue = queues.get(name);
 		if (queue == null) return false;
 		return queue.remove(msg, prolog);
 	}
 
 	public boolean removeMsg(int id, Term msg) {
-		var er = runner(id);
+        ThreadedPrologRun er = runner(id);
 		if (er == null) return false;
 		return er.msgs.remove(msg, prolog);
 	}
@@ -479,11 +479,11 @@ public class ThreadLibrary extends PrologLib {
 	
 	
 	public Solution join(int id) {
-		var er = runner(id);
+        ThreadedPrologRun er = runner(id);
 		if (er == null || er.isDetached()) return null;
 		/*toSPY
 		 * System.out.println("Thread id "+runnerId()+" - prelevo la soluzione (join)");*/
-		var solution = er.read();
+        Solution solution = er.read();
 		/*toSPY
 		 * System.out.println("Soluzione: "+solution);*/
 		runners.remove(id);
@@ -491,7 +491,7 @@ public class ThreadLibrary extends PrologLib {
 	}
 
 	public void detach(int id) {
-		var er = runner(id);
+        ThreadedPrologRun er = runner(id);
 		if (er != null)
 			er.detach();
 	}
@@ -501,12 +501,12 @@ public class ThreadLibrary extends PrologLib {
 		if (goal == null)
 			return false;
 
-		var id = this.id.incrementAndGet();
+        int id = this.id.incrementAndGet();
 
 		if (goal instanceof Var)
 			goal = goal.term();
 
-		var er = new ThreadedPrologRun(id);
+        ThreadedPrologRun er = new ThreadedPrologRun(id);
 		er.initialize(this.prolog);
 
 		if (!threadID.unify(this.prolog, new NumberTerm.Int(id)))
@@ -518,7 +518,7 @@ public class ThreadLibrary extends PrologLib {
 		runners.put(id, er);
 
 
-		var t = new Thread(er);
+        Thread t = new Thread(er);
 
 		t.start();
 		return true;
@@ -568,7 +568,7 @@ public class ThreadLibrary extends PrologLib {
 		private boolean searchLoop(Term t, Prolog engine, boolean block, boolean remove, PrologRun er) {
 			synchronized (queue) {
                 do {
-					var found = search(t, engine, remove);
+                    boolean found = search(t, engine, remove);
                     if (found)
 						return true;
 
@@ -586,7 +586,7 @@ public class ThreadLibrary extends PrologLib {
 
 		private boolean search(Term t, Prolog engine, boolean remove) {
 			synchronized (queue) {
-				var it = queue.iterator();
+                Iterator<Term> it = queue.iterator();
 				while (it.hasNext()) {
 					if (t.unify(engine, it.next())) {
 						if (remove)

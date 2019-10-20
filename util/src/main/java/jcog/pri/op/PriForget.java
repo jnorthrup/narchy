@@ -47,9 +47,9 @@ public enum PriForget { ;
 
             //float decayRate = temperature * Util.unitize(pressure / (pressure + mass));
             //float decayRate = temperature * Util.unitize(pressure / (pressure + mass));
-            var decayRate = pressure * temperature / mass;
+            float decayRate = pressure * temperature / mass;
 
-            var factor = leak + decayRate;
+            float factor = leak + decayRate;
 
             //Util.unitize(pressure * temperature / mass);
 
@@ -61,12 +61,12 @@ public enum PriForget { ;
     }
 
     public static @Nullable Consumer forgetIdeal(double rate, double idealPri, int size, int cap, double pressure, double mass) {
-        var excess = pressure +
+        double excess = pressure +
                 Math.max(0,
                     mass - (cap /*size*/ * idealPri)
                 )
         ;
-        var eachMustForgetPct =
+        double eachMustForgetPct =
                 rate * (excess / (mass+excess));
 
             if (eachMustForgetPct >= ScalarValue.EPSILON) {

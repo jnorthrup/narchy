@@ -24,12 +24,12 @@ public class TsneTest {
     public static Surface testTsneModel() {
 
 //        try {
-        var data = //new ARFF(new File("/tmp/x.arff"));
+        DataTable data = //new ARFF(new File("/tmp/x.arff"));
                 new DataTable();
         data.addColumns(DoubleColumn.create("a"), DoubleColumn.create("b"), DoubleColumn.create("c"));
         float n = 20;
-        for (var j = 0; j < n; j++) {
-            for (var i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            for (int i = 0; i < n; i++) {
                 data.add(
                         //Math.cos((i ^ (i-5))/n), Math.sin(i/10f), -0.5f + Math.random()
                         (i^j)/n, Math.sqrt(i/n), Math.sin(j/(n/4f))
@@ -37,14 +37,14 @@ public class TsneTest {
             }
         }
 
-        var m = new TsneModel(0, data.columnCount());
+        TsneModel m = new TsneModel(0, data.columnCount());
         return
                 new Graph2D<DataTable.Instance>().
                         update(m).
                         render(new TsneRenderer() {
                             @Override
                             protected void paintNode(GL2 gl, Surface surface, DataTable.Instance id) {
-                                var score = ((Double) (id.data.get(0))).floatValue();
+                                float score = ((Double) (id.data.get(0))).floatValue();
                                 Draw.colorGrays(gl, 0.5f + 0.5f * Util.unitize((score - 1400) / 200));
                                 Draw.rect(surface.bounds, gl);
                             }
@@ -62,21 +62,21 @@ public class TsneTest {
     public void test1() {
 
 
-        var DIM = 4;
-        var N = 128;
-        var x = new double[N][DIM];
-        var j = 0;
-        for (var i = 0; i < N / 2; i++) {
+        int DIM = 4;
+        int N = 128;
+        double[][] x = new double[N][DIM];
+        int j = 0;
+        for (int i = 0; i < N / 2; i++) {
             x[j++] = new double[]{0, 0, 1 + Math.random() / 2f, 1 + Math.random() / 2f};
         }
-        for (var i = 0; i < N / 2; i++) {
+        for (int i = 0; i < N / 2; i++) {
             x[j++] = new double[]{1, 0, -1 + Math.random() / 2f, -1 + Math.random() / 2f};
         }
 
 
-        var t = new SimpleTSne();
+        SimpleTSne t = new SimpleTSne();
 
-        var y = t.reset(x, new TSneConfig(
+        double[][] y = t.reset(x, new TSneConfig(
                 2,
                 false, true
         ));
@@ -90,20 +90,20 @@ public class TsneTest {
             }
 
             protected void paint(GL2 gl) {
-                var vv = t.Y;
+                double[][] vv = t.Y;
                 if (vv == null)
                     return;
                 vv = vv.clone();
 
 
                 float h;
-                var w = h = 1f / vv.length;
-                var scale = 0.1f;
+                float w = h = 1f / vv.length;
+                float scale = 0.1f;
                 for (int i = 0, yLength = vv.length; i < yLength; i++) {
-                    var v = vv[i];
+                    double[] v = vv[i];
 
-                    var x = (float) (v[0]);
-                    var y = (float) (((v.length > 1) ? v[1] : 0));
+                    float x = (float) (v[0]);
+                    float y = (float) (((v.length > 1) ? v[1] : 0));
 
                     x *= scale;
                     y *= scale;

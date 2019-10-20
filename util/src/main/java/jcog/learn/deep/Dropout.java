@@ -30,7 +30,7 @@ public class Dropout {
         if (activation == null) activation = "ReLU";
 
 
-        for(var i = 0; i<this.n_layers; i++) {
+        for(int i = 0; i<this.n_layers; i++) {
 
             int input_size;
             if(i == 0) {
@@ -50,17 +50,17 @@ public class Dropout {
     }
 
     public void train(int epochs, double[][] train_X, double[][] train_Y, boolean dropout, double p_dropout, double lr) {
-        var layer_output = new double[0];
+        double[] layer_output = new double[0];
 
-        for(var epoch = 0; epoch<epochs; epoch++) {
+        for(int epoch = 0; epoch<epochs; epoch++) {
 
-            for(var n = 0; n<N; n++) {
+            for(int n = 0; n<N; n++) {
 
                 List<double[]> dropout_masks = new ArrayList<>(n_layers);
                 List<double[]> layer_inputs = new ArrayList<>(n_layers + 1);
 
 
-                for(var i = 0; i<n_layers; i++) {
+                for(int i = 0; i<n_layers; i++) {
 
                     double[] layer_input;
                     if(i == 0) layer_input = train_X[n];
@@ -72,8 +72,8 @@ public class Dropout {
                     hiddenLayers[i].forward(layer_input, layer_output);
 
                     if(dropout) {
-                        var mask = HiddenLayer.dropout(layer_output.length, p_dropout, rng);
-                        for(var j = 0; j<layer_output.length; j++) layer_output[j] *= mask[j];
+                        double[] mask = HiddenLayer.dropout(layer_output.length, p_dropout, rng);
+                        for(int j = 0; j<layer_output.length; j++) layer_output[j] *= mask[j];
 
                         dropout_masks.add(mask.clone());
                     }
@@ -81,14 +81,14 @@ public class Dropout {
                 }
 
 
-                var logistic_layer_dy = logisticLayer.train(layer_output, train_Y[n], lr);
+                double[] logistic_layer_dy = logisticLayer.train(layer_output, train_Y[n], lr);
                 layer_inputs.add(layer_output.clone());
 
 
-                var prev_dy = logistic_layer_dy;
-                var dy = new double[0];
+                double[] prev_dy = logistic_layer_dy;
+                double[] dy = new double[0];
 
-                for(var i = n_layers-1; i>=0; i--) {
+                for(int i = n_layers-1; i>=0; i--) {
 
                     double[][] prev_W;
                     if(i == n_layers-1) {
@@ -99,7 +99,7 @@ public class Dropout {
                     }
 
                     if(dropout) {
-                        for(var j = 0; j<prev_dy.length; j++) {
+                        for(int j = 0; j<prev_dy.length; j++) {
                             prev_dy[j] *= dropout_masks.get(i)[j];
                         }
                     }
@@ -114,7 +114,7 @@ public class Dropout {
 
 
     public void pretest(double p_dropout) {
-        for(var i = 0; i<n_layers; i++) {
+        for(int i = 0; i<n_layers; i++) {
             int in;
 
             if (i == 0) in = n_in;
@@ -125,8 +125,8 @@ public class Dropout {
             else out = hidden_layer_sizes[i+1];
 
 
-            for (var l = 0; l < out; l++) {
-                for (var m = 0; m < in; m++) {
+            for (int l = 0; l < out; l++) {
+                for (int m = 0; m < in; m++) {
                     hiddenLayers[i].W[l][m] *= 1 - p_dropout;
                 }
             }
@@ -135,9 +135,9 @@ public class Dropout {
 
 
     public void predict(double[] x, double[] y) {
-        var layer_output = new double[0];
+        double[] layer_output = new double[0];
 
-        for(var i = 0; i<n_layers; i++) {
+        for(int i = 0; i<n_layers; i++) {
 
             double[] layer_input;
             if(i == 0) layer_input = x;
@@ -153,18 +153,18 @@ public class Dropout {
 
 
     private static void test_dropout() {
-        var rng = new Random(123);
+        Random rng = new Random(123);
 
-        var learning_rate = 0.1;
-        var n_epochs = 5000;
+        double learning_rate = 0.1;
+        int n_epochs = 5000;
 
-        var train_N = 4;
-        var n_in = 2;
+        int train_N = 4;
+        int n_in = 2;
         int[] hidden_layer_sizes = {10, 10};
-        var n_out = 2;
+        int n_out = 2;
 
-        var dropout = true;
-        var p_dropout = 0.5;
+        boolean dropout = true;
+        double p_dropout = 0.5;
 
 
         double[][] train_X = {
@@ -182,7 +182,7 @@ public class Dropout {
         };
 
 
-        var classifier = new Dropout(train_N, n_in, hidden_layer_sizes, n_out, rng, "ReLU");
+        Dropout classifier = new Dropout(train_N, n_in, hidden_layer_sizes, n_out, rng, "ReLU");
 
         
         classifier.train(n_epochs, train_X, train_Y, dropout, p_dropout, learning_rate);
@@ -199,13 +199,13 @@ public class Dropout {
                 {1., 1.},
         };
 
-        var test_N = 4;
-        var test_Y = new double[test_N][n_out];
+        int test_N = 4;
+        double[][] test_Y = new double[test_N][n_out];
 
         
-        for(var i = 0; i<test_N; i++) {
+        for(int i = 0; i<test_N; i++) {
             classifier.predict(test_X[i], test_Y[i]);
-            for(var j = 0; j<n_out; j++) {
+            for(int j = 0; j<n_out; j++) {
                 System.out.print(test_Y[i][j] + " ");
             }
             System.out.println();

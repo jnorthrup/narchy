@@ -19,9 +19,9 @@ public class DiscreteTruth implements Truth {
 
     /** gets the shared instance */
     public static DiscreteTruth the(float f, float c) {
-        var i = Truth.truthToInt(f, c);
-        var index = i % shared.length;
-        var t = shared[index];
+        int i = Truth.truthToInt(f, c);
+        int index = i % shared.length;
+        DiscreteTruth t = shared[index];
         if (t == null || t.hash != i)
             shared[index] = t = new DiscreteTruth(i);
         return t;

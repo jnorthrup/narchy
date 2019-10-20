@@ -7,7 +7,7 @@ public interface SpinMutex {
 
     /** returns ticket to exit */
     default int start(int context, int key) {
-        var hash = (((long)context) << 32) | key;
+        long hash = (((long)context) << 32) | key;
         if (hash == 0) hash = 1; 
         return start(hash);
     }
@@ -18,7 +18,7 @@ public interface SpinMutex {
     void end(int ticketToExit);
 
     default void run(int context, int key, Runnable what) {
-        var ticket = start(context, key);
+        int ticket = start(context, key);
         try {
             what.run();
         } finally {
@@ -27,7 +27,7 @@ public interface SpinMutex {
     }
 
     default <X> void runWith(int context, int key, Consumer<X> what, X arg) {
-        var ticket = start(context, key);
+        int ticket = start(context, key);
         try {
             what.accept(arg);
         } finally {
@@ -36,7 +36,7 @@ public interface SpinMutex {
     }
 
     default <X> X run(int context, int key, Supplier<X> what) {
-        var ticket = start(context, key);
+        int ticket = start(context, key);
         try {
             return what.get();
         } finally {

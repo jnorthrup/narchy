@@ -3,6 +3,7 @@ package nars.term.util.conj;
 import jcog.TODO;
 import jcog.data.bit.MetalBitSet;
 import nars.op.UniSubst;
+import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atom;
@@ -44,7 +45,7 @@ public enum ConjMatch { ;
 
         event = Image.imageNormalize(event);
 
-        var varBits = ConjMatch.varBits;
+        int varBits = ConjMatch.varBits;
         if (!Term.commonStructure( event.structure()&(~varBits), conj.subStructure()&(~varBits)))
             return Null;
 
@@ -54,15 +55,15 @@ public enum ConjMatch { ;
 
     private static Term beforeOrAfterSeq(Term conj, Term event, boolean includeBefore, boolean includeMatched, boolean includeAfter, int varBits, UnifyTransform s, int ttl) {
 
-        var eVar = event.hasAny(varBits);
-        var unify = eVar || conj.hasAny(varBits);
+        boolean eVar = event.hasAny(varBits);
+        boolean unify = eVar || conj.hasAny(varBits);
 
         if (!unify && (!(event instanceof Compound) || event.opID()!=CONJ.id)) {
             if (!Conj.isSeq(conj)) {
                 if (!includeMatched) {
                     //simple parallel remove match case
-                    var cs = conj.subterms();
-                    var csNext = cs.remove(event);
+                    Subterms cs = conj.subterms();
+                    Subterms csNext = cs.remove(event);
                     if (csNext==cs)
                         return Null;
                     return cs != csNext ? (csNext.subs() > 1 ? CONJ.the(csNext) : csNext.sub(0)) : Null;
@@ -75,21 +76,21 @@ public enum ConjMatch { ;
         }
 
         //TODO only include events that actually can be returned
-        var seq = ConjList.events(conj);
+        ConjList seq = ConjList.events(conj);
 
-        var n = seq.size();
+        int n = seq.size();
 
 
-        var matches = includeMatched ? null : MetalBitSet.bits(n); //only necessary if they are to be removed
+        MetalBitSet matches = includeMatched ? null : MetalBitSet.bits(n); //only necessary if they are to be removed
         s.clear(varBits, false);
         s.setTTL(ttl);
 
-        var forward = (includeAfter != includeBefore) ? includeAfter : ThreadLocalRandom.current().nextBoolean();
+        boolean forward = (includeAfter != includeBefore) ? includeAfter : ThreadLocalRandom.current().nextBoolean();
 
-        var ee = ConjList.events(event);
-        var u = unify ? new EventUnifier(s) : null;
+        ConjList ee = ConjList.events(event);
+        EventUnifier u = unify ? new EventUnifier(s) : null;
 
-        var at = seq.contains(ee, unify ? u : Term::equals, 1, forward, matches, s.dtTolerance);
+        int[] at = seq.contains(ee, unify ? u : Term::equals, 1, forward, matches, s.dtTolerance);
         if (at.length == 0)
             return Null;
 
@@ -105,7 +106,7 @@ public enum ConjMatch { ;
             seq.removeIf((w,x)-> w > matchStart);
 
 
-        var ss = seq.term();
+        Term ss = seq.term();
         if (u!=null && ss.hasAny(varBits)) {
             ss = u.apply(ss); //transform any unified vars
             if (u.u instanceof UniSubst.MyUnifyTransform)

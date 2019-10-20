@@ -13,8 +13,8 @@ public class AnimFloatAngle extends AnimFloat {
 
     @Override
     public void set(float value) {
-        var angleToRad = (float)Math.PI/180f;
-        var base = super.floatValue() * angleToRad;
+        float angleToRad = (float)Math.PI/180f;
+        float base = super.floatValue() * angleToRad;
         value = (float) MathUtils.normalizeAngle(value * angleToRad - base, 0 /* places it nearest to current value */) + base;
         super.set(value/angleToRad);
     }

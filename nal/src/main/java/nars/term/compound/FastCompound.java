@@ -98,7 +98,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
 
         ObjectByteHashMap<Term> atoms = new ObjectByteHashMap();
 
-        var shadow = new DynBytes(256);
+        DynBytes shadow = new DynBytes(256);
 
 
         shadow.writeUnsignedByte(o.ordinal());
@@ -108,7 +108,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
         int structure = o.bit, hashCode = 1;
         byte volume = 1;
 
-        for (var x : subterms) {
+        for (Term x : subterms) {
             x.recurseTermsOrdered(child -> {
                 shadow.writeUnsignedByte((byte) child.op().ordinal());
                 if (child.op().atomic) {
@@ -130,11 +130,11 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
         assert (volume < 127);
 
 
-        var a = new Term[atoms.size()];
-        for (var p : atoms.keyValuesView()) {
+        Term[] a = new Term[atoms.size()];
+        for (ObjectBytePair<Term> p : atoms.keyValuesView()) {
             a[p.getTwo()] = p.getOne();
         }
-        var normalized = false;
+        boolean normalized = false;
 
         return new FastCompoundInstancedAtoms(a, shadow.toByteArray(), structure, hashCode, volume, normalized);
     }
@@ -195,7 +195,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
             return at + 2;
         }
 
-        var o = new int[1];
+        int[] o = new int[1];
         subtermOffsets(at, (sub, offset) -> {
             if (sub == subterm) {
                 o[0] = offset;
@@ -208,15 +208,15 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
     }
 
     private void subtermOffsets(int at, ByteIntPredicate each) {
-        var shadow = this.shadow;
+        byte[] shadow = this.shadow;
 
         assert (!ov[shadow[at]].atomic);
 
-        var subterms = shadow[at + 1];
+        byte subterms = shadow[at + 1];
         if (subterms == 0)
             return;
 
-        var stack = new byte[MAX_LAYERS];
+        byte[] stack = new byte[MAX_LAYERS];
         stack[0] = subterms;
 
         at += 2;
@@ -228,7 +228,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
                     return;
             }
 
-            var op = shadow[at++];
+            byte op = shadow[at++];
 
 
             if (ov[op].atomic) {
@@ -267,7 +267,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
      * subterm, or sub-subterm, etc.
      */
     public Term term(int offset) {
-        var opAtSub = ov[shadow[offset]];
+        Op opAtSub = ov[shadow[offset]];
 		return opAtSub.atomic ? atom(shadow[offset + 1]) : TermBuilder.newCompound(opAtSub,
 			Op.terms.subterms(new SubtermView(this, offset).toArray(EmptyTermArray))
 
@@ -291,8 +291,8 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
             return false;
 
         if (that instanceof FastCompound) {
-            var f = (FastCompound) that;
-            var aa = atomCount();
+            FastCompound f = (FastCompound) that;
+            int aa = atomCount();
             if (aa == f.atomCount()) {
                 if (Arrays.equals(shadow, f.shadow)) {
                     for (byte i = 0; i < aa; i++)
@@ -339,10 +339,10 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
 
         @Override
         public int intifyShallow(int v, IntObjectToIntFunction<Term> reduce) {
-            var o = offset;
+            int o = offset;
             int[] vv = {v};
             c.subtermOffsets(o, (subterm, at) -> {
-                var t = c.term(at);
+                Term t = c.term(at);
 
                 vv[0] = reduce.intValueOf(vv[0], t);
                 return true;
@@ -353,13 +353,13 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
         @Override
         public int hashCode() {
 
-            var h = _hash;
+            int h = _hash;
 			return h == 0 ? (_hash = intifyShallow(1, (i, t) -> Util.hashCombine(i, t.hashCode()))) : h;
         }
 
 
         public SubtermView go(int offset) {
-            var o = this.offset;
+            int o = this.offset;
             if (o != offset) {
                 this.offset = offset;
                 _hash = 0;
@@ -374,9 +374,9 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
 
         @Override
         public int subs() {
-            var offset = this.offset;
-            var s = c.shadow;
-            var op = ov[s[offset]];
+            int offset = this.offset;
+            byte[] s = c.shadow;
+            Op op = ov[s[offset]];
 			return op.atomic ? 0 : s[offset + 1];
         }
 

@@ -50,7 +50,7 @@ public class CombinedMultithreadStrategy extends AbstractExecutionStrategy {
     private volatile boolean terminated = false;
 
     private static int countThreads(Map<String, String> parameters) {
-        var paramValue = parameters.get(THREADS_KEY);
+        String paramValue = parameters.get(THREADS_KEY);
         int threads;
         try {
             threads = Integer.parseInt(paramValue);
@@ -65,17 +65,17 @@ public class CombinedMultithreadStrategy extends AbstractExecutionStrategy {
     public void execute(Configuration configuration, ExecutionListenerFactory listenerFactory) throws Exception {
         workingThread = Thread.currentThread();
         listenerFactory.register(this);
-        var parameters = configuration.getStrategyParameters();
-        var threads = countThreads(parameters);
-        var strategyClass = getStrategy(parameters);
-        var altStrategyClass = strategyClass;
+        Map<String, String> parameters = configuration.getStrategyParameters();
+        int threads = countThreads(parameters);
+        Class<? extends RunStrategy> strategyClass = getStrategy(parameters);
+        Class<? extends RunStrategy> altStrategyClass = strategyClass;
 
         executor = Executors.newFixedThreadPool(Math.max(1, threads));
-        var completionService = new ExecutorCompletionService<Void>(executor);
-        var initialSeed = configuration.getInitialSeed();
-        var jobs = configuration.getJobs();
+        ExecutorCompletionService<Void> completionService = new ExecutorCompletionService<Void>(executor);
+        long initialSeed = configuration.getInitialSeed();
+        int jobs = configuration.getJobs();
 
-        var changejobs = jobs+1;
+        int changejobs = jobs+1;
         
         if(parameters.containsKey(RUN_ALT_STRATEGY_KEY)){
             altStrategyClass = CombinedMultithreadStrategy.getAlternativeStrategy(parameters);
@@ -87,9 +87,9 @@ public class CombinedMultithreadStrategy extends AbstractExecutionStrategy {
             altFitnessClassName = CombinedMultithreadStrategy.getAlternativeFitness(parameters);
         }
         
-        for (var i = 0; i < jobs; i++) {
+        for (int i = 0; i < jobs; i++) {
             RunStrategy job;
-            var jobConf = new Configuration(configuration);
+            Configuration jobConf = new Configuration(configuration);
             if(i<changejobs){
                  job = strategyClass.newInstance();
             } else {
@@ -108,8 +108,8 @@ public class CombinedMultithreadStrategy extends AbstractExecutionStrategy {
         }
         executor.shutdown();
 
-        var listener = listenerFactory.getNewListener();
-        for (var i = 0; i < jobs; i++) {
+        ExecutionListener listener = listenerFactory.getNewListener();
+        for (int i = 0; i < jobs; i++) {
             Future<Void> result = null;
             try {
                 if(terminated) {
@@ -130,8 +130,8 @@ public class CombinedMultithreadStrategy extends AbstractExecutionStrategy {
                 result.get();
             } catch (ExecutionException x) {
                 if (x.getCause() instanceof TreeEvaluationException) {
-                    var ex = (TreeEvaluationException) x.getCause();
-                    var strategy = ex.getAssociatedStrategy();
+                    TreeEvaluationException ex = (TreeEvaluationException) x.getCause();
+                    RunStrategy strategy = ex.getAssociatedStrategy();
                     LOG.log(Level.SEVERE, "Job " + strategy.getConfiguration().getJobId() + " failed with exception", ex.getCause());
                     if (listener != null) {
                         listener.evolutionFailed(strategy, ex);
@@ -151,7 +151,7 @@ public class CombinedMultithreadStrategy extends AbstractExecutionStrategy {
     }
     
     protected static Class<? extends RunStrategy> getAlternativeStrategy(Map<String, String> parameters) {
-        var paramValue = parameters.get(RUN_ALT_STRATEGY_KEY);
+        String paramValue = parameters.get(RUN_ALT_STRATEGY_KEY);
         Class<? extends RunStrategy> strategyClass;
         try{
             strategyClass = Class.forName(paramValue).asSubclass(RunStrategy.class);
@@ -164,7 +164,7 @@ public class CombinedMultithreadStrategy extends AbstractExecutionStrategy {
 
     
     private static String getAlternativeFitness(Map<String, String> parameters) {
-        var paramValue = parameters.get(RUN_ALT_FITNESS_KEY);
+        String paramValue = parameters.get(RUN_ALT_FITNESS_KEY);
         return paramValue;
     }
     
@@ -173,8 +173,8 @@ public class CombinedMultithreadStrategy extends AbstractExecutionStrategy {
             LOG.warning("Invalid parameterAlternativeName provided to activeAlternaveParameter method");
             return;
         }
-        var alternativeValue = parametersMap.get(parameterAlternativeName);
-        var parameterOriginalName = parameterAlternativeName.substring(0,parameterAlternativeName.length()-1);
+        String alternativeValue = parametersMap.get(parameterAlternativeName);
+        String parameterOriginalName = parameterAlternativeName.substring(0,parameterAlternativeName.length()-1);
         parametersMap.put(parameterOriginalName, alternativeValue);
     }
 }

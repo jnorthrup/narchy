@@ -57,7 +57,7 @@ public class MatrixImage extends JComponent {
     }
 
     public static int val2col(double n, double min, double max) {
-        var mean = (max + min) / 2.0;
+        double mean = (max + min) / 2.0;
         int r;
         if (n < mean) {
             r = (int) (255.0 * (min - n) / (mean - min)) + 255;
@@ -71,7 +71,7 @@ public class MatrixImage extends JComponent {
             r = 255;
         }
         int g;
-        var n5 = min + 2.0 * (max - min) / 3.0;
+        double n5 = min + 2.0 * (max - min) / 3.0;
         if (n < mean) {
             g = (int) (255.0 * (n - min) / (mean - min));
         } else if (n < n5) {
@@ -107,10 +107,10 @@ public class MatrixImage extends JComponent {
         if (value == 0) {
             return 255 << 24;
         } else if (value > 0) {
-            var p = 255 - (int) (255.0 * (value - minValue) / (maxValue - minValue));
+            int p = 255 - (int) (255.0 * (value - minValue) / (maxValue - minValue));
             return 255 << 24 | 255 << 16 | p << 8 | p;
         } else {
-            var p = 255 + (int) (255.0 * (value - minValue) / (maxValue - minValue));
+            int p = 255 + (int) (255.0 * (value - minValue) / (maxValue - minValue));
             return 255 << 24 | p << 16 | p << 8 | 255;
         }
 
@@ -140,11 +140,11 @@ public class MatrixImage extends JComponent {
     }
 
     public void draw(ParameterizedFunction f) {
-        var numParam = f.numberOfParameters();
-        var cw = (int) Math.ceil(Math.sqrt(numParam));
-        var ch = numParam / cw;
+        int numParam = f.numberOfParameters();
+        int cw = (int) Math.ceil(Math.sqrt(numParam));
+        int ch = numParam / cw;
         draw((x, y) -> {
-            var i = y * ch + x;
+            int i = y * ch + x;
             if (i < numParam) {
                 return f.getParameter(i);
             }
@@ -165,8 +165,8 @@ public class MatrixImage extends JComponent {
 
     public void draw(NeuroMap m, double minValue, double maxValue, int maxRows) {
 
-        var entries = Math.min(maxRows, m.getCapacity());
-        var row = m.getIndex() - entries;
+        int entries = Math.min(maxRows, m.getCapacity());
+        int row = m.getIndex() - entries;
 
         draw(new Data2D() {
 
@@ -186,7 +186,7 @@ public class MatrixImage extends JComponent {
                 lx = x;
 
                 if ((io != null) && (input != null) && (output != null)) {
-                    var ioil = input.length;
+                    int ioil = input.length;
                     if (lx < ioil) {
                         return input[lx];
                     } else {
@@ -218,12 +218,12 @@ public class MatrixImage extends JComponent {
         this.minValue = minValue;
         this.maxValue = maxValue;
 
-        var w = image.getWidth();
-        var h = image.getHeight();
+        int w = image.getWidth();
+        int h = image.getHeight();
 
-        for (var i = 0; i < h; i++) {
-            for (var j = 0; j < w; j++) {
-                var value = d.getValue(i, j);
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                double value = d.getValue(i, j);
                 pixel(image, j, i, value);
             }
         }

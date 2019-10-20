@@ -110,7 +110,7 @@ public class Optilive<S,E>  {
     private void save() {
             try {
                 //save
-                var path = outDir + "/" +
+                String path = outDir + "/" +
                         current.varKey() + '.' + currentStart + ".arff";
                 logger.info("save {}", path);
                 new ARFF(current.data).writeToFile(path);
@@ -165,7 +165,7 @@ public class Optilive<S,E>  {
         } catch (Throwable t) {
             logger.error("{}", t);
         } finally {
-            var currentEnd = System.currentTimeMillis();
+            long currentEnd = System.currentTimeMillis();
             logger.info("experiment end {}\t({})", new Date(currentEnd), Texts.timeStr(1_000_000 * (currentEnd - currentStart)));
 
             if (outDir!=null) {
@@ -218,7 +218,7 @@ public class Optilive<S,E>  {
 
     public void stop() {
         synchronized(thread) {
-            var thread = this.thread;
+            Thread thread = this.thread;
             this.thread = null;
             thread.interrupt();
             thread.stop();

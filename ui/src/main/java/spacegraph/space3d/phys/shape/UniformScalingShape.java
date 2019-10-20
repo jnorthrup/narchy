@@ -69,7 +69,7 @@ public class UniformScalingShape extends ConvexShape {
 	@Override
 	public void batchedUnitVectorGetSupportingVertexWithoutMargin(v3[] vectors, v3[] supportVerticesOut, int numVectors) {
 		childConvexShape.batchedUnitVectorGetSupportingVertexWithoutMargin(vectors, supportVerticesOut, numVectors);
-		for (var i = 0; i<numVectors; i++) {
+		for (int i = 0; i<numVectors; i++) {
 			supportVerticesOut[i].scaled(uniformScalingFactor);
 		}
 	}
@@ -77,11 +77,11 @@ public class UniformScalingShape extends ConvexShape {
 	@Override
 	public void getAabbSlow(Transform t, v3 aabbMin, v3 aabbMax) {
 		childConvexShape.getAabbSlow(t, aabbMin, aabbMax);
-		var aabbCenter = new v3();
+        v3 aabbCenter = new v3();
 		aabbCenter.add(aabbMax, aabbMin);
 		aabbCenter.scaled(0.5f);
 
-		var scaledAabbHalfExtends = new v3();
+        v3 scaledAabbHalfExtends = new v3();
 		scaledAabbHalfExtends.sub(aabbMax, aabbMin);
 		scaledAabbHalfExtends.scaled(0.5f * uniformScalingFactor);
 
@@ -124,11 +124,11 @@ public class UniformScalingShape extends ConvexShape {
 	@Override
 	public void getAabb(Transform t, v3 aabbMin, v3 aabbMax) {
 		childConvexShape.getAabb(t, aabbMin, aabbMax);
-		var aabbCenter = new v3();
+        v3 aabbCenter = new v3();
 		aabbCenter.add(aabbMax, aabbMin);
 		aabbCenter.scaled(0.5f);
 
-		var scaledAabbHalfExtends = new v3();
+        v3 scaledAabbHalfExtends = new v3();
 		scaledAabbHalfExtends.sub(aabbMax, aabbMin);
 		scaledAabbHalfExtends.scaled(0.5f * uniformScalingFactor);
 

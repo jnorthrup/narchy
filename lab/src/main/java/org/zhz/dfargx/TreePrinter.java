@@ -25,22 +25,22 @@ public class TreePrinter {
     }
 
     public static void printTree(Node root) {
-        var h = calculateDepth(root, 0);
+        int h = calculateDepth(root, 0);
         complete(root, 0, h, LNull::new);
         Queue<Node> q = new ArrayDeque<>();
         q.offer(root);
-        var t = 1;
-        var j = 0;
+        int t = 1;
+        int j = 0;
         while (!q.isEmpty()) {
-            var node = q.poll();
-            var width = 4 * (int) Math.pow(2, h - t);
+            Node node = q.poll();
+            int width = 4 * (int) Math.pow(2, h - t);
             if (node instanceof LNull) {
-                for (var i = 0; i < width * 2; i++) {
+                for (int i = 0; i < width * 2; i++) {
                     out.print(' ');
                 }
             } else {
-                var s = node.toString();
-                for (var i = 0; i < width; i++) {
+                String s = node.toString();
+                for (int i = 0; i < width; i++) {
                     if (!(node.left() instanceof LNull)) {
                         if (i < width / 2 || t == h) {
                             out.print(' ');
@@ -50,7 +50,7 @@ public class TreePrinter {
                     } else out.print(' ');
                 }
                 out.print(s);
-                for (var i = s.length(); i < width; i++) {
+                for (int i = s.length(); i < width; i++) {
                     if (!(node.right() instanceof LNull)) {
                         if (i < width / 2 && t != h) {
                             out.print('-');
@@ -95,7 +95,7 @@ public class TreePrinter {
     }
 
     private static Node copyTree(Node root) {
-        var newRoot = root.copy();
+        Node newRoot = root.copy();
         if (root.hasLeft()) {
             newRoot.setLeft(copyTree(root.left()));
         }

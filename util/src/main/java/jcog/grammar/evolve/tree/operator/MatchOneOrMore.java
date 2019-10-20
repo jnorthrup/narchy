@@ -36,13 +36,13 @@ public class MatchOneOrMore extends Quantifier {
 
     @Override
     public void describe(StringBuilder builder, DescriptionContext context, RegexFlavour flavour) {
-        var tmp = new StringBuilder();
-        var child = get(0);
+        StringBuilder tmp = new StringBuilder();
+        Node child = get(0);
 
-        var index = context.incGroups();
+        int index = context.incGroups();
         child.describe(tmp, context, flavour);
-        var l = child.isEscaped() ? tmp.length() - 1 : tmp.length();
-        var group = l > 1 && !child.isCharacterClass() && !(child instanceof Group) && !(child instanceof NonCapturingGroup);
+        int l = child.isEscaped() ? tmp.length() - 1 : tmp.length();
+        boolean group = l > 1 && !child.isCharacterClass() && !(child instanceof Group) && !(child instanceof NonCapturingGroup);
         switch (flavour) {
             case JAVA:
                 if (group) {

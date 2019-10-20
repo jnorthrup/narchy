@@ -61,24 +61,24 @@ public final class OArrayList<T> extends AbstractList<T> implements RandomAccess
 			
 		}
 
-		var array = this.array;
-		for (var x : v) {
+        T[] array = this.array;
+		for (T x : v) {
 			array[size++] = x;
 		}
 	}
 
 	public final void forEachWithIndex(IntObjectPredicate<? super T> each) {
-		var s = size();
-		var array = this.array;
-		for (var i = 0; i < s; i++) {
+        int s = size();
+        T[] array = this.array;
+		for (int i = 0; i < s; i++) {
 			if (!each.accept(i, array[i]))
 				break;
 		}
 	}
 	public final void forEachWithIndexProc(IntObjectProcedure<? super T> each) {
-		var s = size();
-		var array = this.array;
-		for (var i = 0; i < s; i++) {
+        int s = size();
+        T[] array = this.array;
+		for (int i = 0; i < s; i++) {
 			each.value(i, array[i]);
 		}
 	}
@@ -99,8 +99,8 @@ public final class OArrayList<T> extends AbstractList<T> implements RandomAccess
 			expand();
 		}
 
-		var a = array;
-		var num = size - index;
+        T[] a = array;
+        int num = size - index;
 		if (num > 0) {
 			System.arraycopy(a, index, a, index+1, num);
 		}
@@ -112,8 +112,8 @@ public final class OArrayList<T> extends AbstractList<T> implements RandomAccess
 	@Override
 	public T remove(int index) {
 
-		var a = this.array;
-		var prev = a[index];
+        T[] a = this.array;
+        T prev = a[index];
 		System.arraycopy(a, index+1, a, index, size-index-1);
 		a[--size] = null;
 		return prev;
@@ -123,7 +123,7 @@ public final class OArrayList<T> extends AbstractList<T> implements RandomAccess
 	public boolean remove(Object o) {
 		if (isEmpty())
 			return false;
-		var i = indexOf(o);
+        int i = indexOf(o);
 		if (i == -1)
 			return false;
 		remove(i);
@@ -132,12 +132,12 @@ public final class OArrayList<T> extends AbstractList<T> implements RandomAccess
 
 	@Override
 	public final boolean removeIf(Predicate<? super T> filter) {
-		var s = size();
+        int s = size();
 		if (s == 0)
 			return false;
-		var ps = s;
-		var a = this.array;
-		for (var i = 0; i < s; ) {
+        int ps = s;
+        T[] a = this.array;
+		for (int i = 0; i < s; ) {
 			if (filter.test(a[i])) {
 				s--;
 				System.arraycopy(a, i+1, a, i, s - i);
@@ -156,7 +156,7 @@ public final class OArrayList<T> extends AbstractList<T> implements RandomAccess
 
 	@SuppressWarnings("unchecked")
 	private void expand() {
-		var newArray = (T[])new Object[array.length << 1];
+        T[] newArray = (T[])new Object[array.length << 1];
 		System.arraycopy(array, 0, newArray, 0, array.length);
 		array = newArray;
 	}
@@ -175,8 +175,8 @@ public final class OArrayList<T> extends AbstractList<T> implements RandomAccess
 	@Override
 	public T set(int index, T value) {
 
-		var a = this.array;
-		var old = a[index];
+        T[] a = this.array;
+        T old = a[index];
 		a[index] = value;
 		return old;
 	}
@@ -201,10 +201,10 @@ public final class OArrayList<T> extends AbstractList<T> implements RandomAccess
 
 	@Override
 	public int indexOf(/*@NotNull*/ Object o) {
-		var _size = size;
-		var _array = array;
-		for (var i = 0; i<_size; i++) {
-			var x = _array[i];
+        int _size = size;
+        T[] _array = array;
+		for (int i = 0; i<_size; i++) {
+            T x = _array[i];
 			if (o.equals(x))
 				return i;
 			
@@ -217,7 +217,7 @@ public final class OArrayList<T> extends AbstractList<T> implements RandomAccess
 	@Override
     public void writeExternal(ObjectOutput out) throws IOException {
 		out.writeInt(size);
-		for (var i = 0; i<size; i++) {
+		for (int i = 0; i<size; i++) {
 			out.writeObject(array[i]);
 		}
 	}
@@ -225,10 +225,10 @@ public final class OArrayList<T> extends AbstractList<T> implements RandomAccess
 	@Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		size = in.readInt();
-		var cap = 16;
+        int cap = 16;
 		while (cap < size) cap <<= 1;
 		array = (T[])new Object[cap];
-		for (var i = 0; i<size; i++) {
+		for (int i = 0; i<size; i++) {
 			array[i] = (T)in.readObject();
 		}
 	}

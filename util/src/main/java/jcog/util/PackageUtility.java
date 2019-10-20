@@ -21,10 +21,10 @@ public enum PackageUtility {
         File directory = null;
         String pkgPath;
         try {
-            var cld = Thread.currentThread().getContextClassLoader();
+            ClassLoader cld = Thread.currentThread().getContextClassLoader();
             assert (cld != null);
             pkgPath = pkgName.replace('.', '/');
-            var resource = cld.getResource(pkgPath);
+            URL resource = cld.getResource(pkgPath);
             if (resource == null)
                 throw new ClassNotFoundException("No resource for " + pkgPath);
             directory = new File(resource.getFile());
@@ -35,9 +35,9 @@ public enum PackageUtility {
         List<Class> classes = new ArrayList<>();
         if (directory.exists()) {
 
-            var files = directory.list();
+            String[] files = directory.list();
             
-            for (var file : files) {
+            for (String file : files) {
                             
                 if ((!innerClasses) && (file.contains("$")))
                     continue;
@@ -55,7 +55,7 @@ public enum PackageUtility {
         
         if (!directory.exists()) {
 
-            var jarPath = directory.toString().replace("!/" + pkgPath, "")
+            String jarPath = directory.toString().replace("!/" + pkgPath, "")
                     .replace("file:", "");
             
             jarPath = jarPath.replace("!\\" + pkgPath.replace("/", "\\"), "")
@@ -77,18 +77,18 @@ public enum PackageUtility {
     public static List<Class> getClasses(String jarName, String packageName) throws IOException {
         List<Class> classes = new ArrayList<>();
 
-        var cleanedPackageName = packageName.replaceAll("\\.", "/");
+        String cleanedPackageName = packageName.replaceAll("\\.", "/");
 
-        var jarFile = new JarInputStream(new FileInputStream(
+        JarInputStream jarFile = new JarInputStream(new FileInputStream(
                 jarName));
 
         while (true) {
-            var jarEntry = jarFile.getNextJarEntry();
+            JarEntry jarEntry = jarFile.getNextJarEntry();
             if (jarEntry == null)
                 break;
             if ((jarEntry.getName().startsWith(cleanedPackageName))
                     && (jarEntry.getName().endsWith(".class"))) {
-                var classFileName = jarEntry.getName().replaceAll("/",
+                String classFileName = jarEntry.getName().replaceAll("/",
                         "\\.");
                 try {
                     classes.add(Class.forName(classFileName.substring(0,

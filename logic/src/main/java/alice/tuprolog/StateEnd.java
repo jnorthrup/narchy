@@ -50,7 +50,7 @@ public class StateEnd extends State {
 
     @Override
     State run(PrologSolve e) {
-        var gv = e.goalVars.size();
+        int gv = e.goalVars.size();
         if (gv > 0) {
             vars = new FasterList<>(gv);
             goal = (Struct) e.startGoal.copyResult(e.goalVars, vars);
@@ -71,7 +71,7 @@ public class StateEnd extends State {
 
         while (a1 instanceof Struct && ((Struct) a1).subs() > 0) {
 
-            var a10 = ((Struct) a1).sub(0);
+            Term a10 = ((Struct) a1).sub(0);
             if (a10 instanceof Var) {
 
 
@@ -79,7 +79,7 @@ public class StateEnd extends State {
 
 
             } else if (a10 instanceof Struct) {
-                var a100 = ((Struct) a10).sub(0);
+                Term a100 = ((Struct) a10).sub(0);
 
 
                 a10 = solve(a100, a, a10);
@@ -99,11 +99,11 @@ public class StateEnd extends State {
     }
 
     private static Term findVarName(Term link, Object[] a, Term initGoalBag, int pos) {
-        var findName = false;
+        boolean findName = false;
 
         while (link instanceof Var && !findName) {
 
-            var y = 0;
+            int y = 0;
             while (!findName && y < a.length) {
                 Term gVar = (Var) a[y];
                 while (!findName && gVar instanceof Var) {
@@ -125,26 +125,26 @@ public class StateEnd extends State {
 
 
     private void relinkVar(PrologSolve e) {
-        var pParent = e.run.prolog;
+        Prolog pParent = e.run.prolog;
 
 
-        var bag = e.run.getBagOFres();
-        var initBag = pParent.getBagOFbag();
+        List<Term> bag = e.run.getBagOFres();
+        Term initBag = pParent.getBagOFbag();
 
 
 
         /* itero nel goal per cercare una eventuale struttura che deve fare match con la
          * result bag ESEMPIO setof(X,member(X,[V,U,f(U),f(V)]),[a,b,f(b),f(a)]).
          */
-        var tgoal = pParent.getBagOFgoal();
-        var a = (e.goalVars).toArray();
+        Term tgoal = pParent.getBagOFgoal();
+        Object[] a = (e.goalVars).toArray();
 
 
-        var query = e.query;
+        Term query = e.query;
 
 
         if (";".equals(((Struct) query).name())) {
-            var query_temp = (Struct) ((Struct) query).sub(0);
+            Struct query_temp = (Struct) ((Struct) query).sub(0);
             if ("setof".equals(query_temp.name()) && setOfCounter == 0) {
                 query = query_temp;
                 this.setOfCounter++;
@@ -157,8 +157,8 @@ public class StateEnd extends State {
 
         if (((Struct) query).subs() > 2 && ((Struct) query).sub(2) instanceof Struct) {
 
-            var findSamePredicateIndicator = false;
-            var find = false;
+            boolean findSamePredicateIndicator = false;
+            boolean find = false;
             Term initGoalBag = null;
 
             Prolog p = null;
@@ -178,7 +178,7 @@ public class StateEnd extends State {
                         findSamePredicateIndicator = true;
                         break;
                     } else if (((Var) initBag).link() instanceof Struct) {
-                        var s = (Struct) ((Var) initBag).link();
+                        Struct s = (Struct) ((Var) initBag).link();
 
                         if (tgoal instanceof Struct && s.key().compareTo(((Struct) tgoal).key()) == 0) {
 
@@ -190,8 +190,8 @@ public class StateEnd extends State {
 
                     if (find || findSamePredicateIndicator && initGoalBag instanceof Struct) {
 
-                        var a0 = ((Struct) initGoalBag).sub(0);
-                        var a1 = ((Struct) initGoalBag).sub(1);
+                        Term a0 = ((Struct) initGoalBag).sub(0);
+                        Term a1 = ((Struct) initGoalBag).sub(1);
                         if (a0 instanceof Var) {
 
 
@@ -207,21 +207,27 @@ public class StateEnd extends State {
 
             if (initGoalBag != null) {
 
-                var initGoalBagList = new ArrayList<Term>();
-                var initGoalBagTemp = (Struct) initGoalBag;
+                ArrayList<Term> initGoalBagList = new ArrayList<Term>();
+                Struct initGoalBagTemp = (Struct) initGoalBag;
                 while (initGoalBagTemp.subs() > 0) {
-                    var t1 = initGoalBagTemp.sub(0);
+                    Term t1 = initGoalBagTemp.sub(0);
                     initGoalBagList.add(t1);
-                    var t2 = initGoalBagTemp.sub(1);
+                    Term t2 = initGoalBagTemp.sub(1);
                     if (t2 instanceof Struct) {
                         initGoalBagTemp = (Struct) t2;
                     }
                 }
 
 
-                var initGoalBagListOrdered = new ArrayList<Term>();
+                ArrayList<Term> initGoalBagListOrdered = new ArrayList<Term>();
                 if ("setof".equals(((Struct) query).name())) {
-                    var initGoalBagListVar = initGoalBagList.stream().filter(anInitGoalBagList -> anInitGoalBagList instanceof Var).map(anInitGoalBagList -> ((Var) anInitGoalBagList).name()).collect(Collectors.toCollection(ArrayList::new));
+                    ArrayList<String> initGoalBagListVar = new ArrayList<>();
+                    for (Term anInitGoalBagList : initGoalBagList) {
+                        if (anInitGoalBagList instanceof Var) {
+                            String name = ((Var) anInitGoalBagList).name();
+                            initGoalBagListVar.add(name);
+                        }
+                    }
 
                     List<Term> left = new ArrayList<>();
                     left.add(initGoalBagList.get(0));
@@ -229,8 +235,8 @@ public class StateEnd extends State {
                     List<Term> right_temp = new ArrayList<>();
 
                     List<Term> left_temp = new ArrayList<>();
-                    for (var m = 1; m < initGoalBagList.size(); m++) {
-                        var k = 0;
+                    for (int m = 1; m < initGoalBagList.size(); m++) {
+                        int k = 0;
                         for (k = 0; k < left.size(); k++) {
                             if (initGoalBagList.get(m).isGreaterRelink(left.get(k), initGoalBagListVar)) {
 
@@ -243,10 +249,10 @@ public class StateEnd extends State {
                         }
                         if (k == left.size())
                             left_temp.add(initGoalBagList.get(m));
-                        for (var y = 0; y < left.size(); y++) {
+                        for (int y = 0; y < left.size(); y++) {
 
-                            var search = false;
-                            for (var aLeft_temp : left_temp) {
+                            boolean search = false;
+                            for (Term aLeft_temp : left_temp) {
                                 if (aLeft_temp.toString().equals(left.get(y).toString()))
                                     search = true;
                             }
@@ -261,7 +267,7 @@ public class StateEnd extends State {
                                 y--;
                             }
                         }
-                        for (var y = 0; y < right.size(); y++) {
+                        for (int y = 0; y < right.size(); y++) {
                             right_temp.add(right.get(y));
                             right.remove(y);
                             y--;
@@ -284,26 +290,36 @@ public class StateEnd extends State {
 
                 initGoalBagTemp = (Struct) initGoalBag;
 
-                var t = initGoalBagListOrdered.toArray();
-                var t1 = Arrays.stream(t).map(item -> (Term) item).toArray(Term[]::new);
+                Object[] t = initGoalBagListOrdered.toArray();
+                List<Term> result = new ArrayList<>();
+                for (Object item : t) {
+                    Term item1 = (Term) item;
+                    result.add(item1);
+                }
+                Term[] t1 = result.toArray(new Term[0]);
 
 
                 initGoalBag = new Struct(initGoalBagTemp.name(), t1);
 
 
                 List<Term> initBagList = new ArrayList<>();
-                var initBagTemp = (Struct) ((Var) initBag).link();
+                Struct initBagTemp = (Struct) ((Var) initBag).link();
                 while (initBagTemp.subs() > 0) {
-                    var t0 = initBagTemp.sub(0);
+                    Term t0 = initBagTemp.sub(0);
                     initBagList.add(t0);
-                    var t2 = initBagTemp.sub(1);
+                    Term t2 = initBagTemp.sub(1);
                     if (t2 instanceof Struct) {
                         initBagTemp = (Struct) t2;
                     }
                 }
 
-                var tNoOrd = initBagList.toArray();
-                var termNoOrd = Arrays.stream(tNoOrd).map(o -> (Term) o).toArray(Term[]::new);
+                Object[] tNoOrd = initBagList.toArray();
+                List<Term> list = new ArrayList<>();
+                for (Object o : tNoOrd) {
+                    Term term = (Term) o;
+                    list.add(term);
+                }
+                Term[] termNoOrd = list.toArray(new Term[0]);
 
 
                 initBag = new Struct(initGoalBagTemp.name(), termNoOrd);
@@ -318,9 +334,9 @@ public class StateEnd extends State {
 
                     e.nextState = PrologRun.END_FALSE;
 
-                    var prologRun = pParent.run;
-                    var ss = prologRun.sinfo != null ? prologRun.sinfo.setOfSolution : null;
-                    var s = ss != null ? ss + "\n\nfalse." : "null\n\nfalse.";
+                    PrologRun prologRun = pParent.run;
+                    String ss = prologRun.sinfo != null ? prologRun.sinfo.setOfSolution : null;
+                    String s = ss != null ? ss + "\n\nfalse." : "null\n\nfalse.";
                     pParent.endFalse(s);
 
                     return;
@@ -334,24 +350,24 @@ public class StateEnd extends State {
          * lSolVar = [H_e2301, H_e2302, H_e2303, H_e2304, H_e2305, H_e2306, H_e2307, H_e2308]
          */
 
-        var lSolVar = new ArrayList<String>();
+        ArrayList<String> lSolVar = new ArrayList<String>();
 
         /*NB lSolVar ha lunghezza multipla di lGoal var, se ho pi soluzioni si ripete
          * servirebbe esempio con 2 bag */
-        var l_temp = new ArrayList<String>();
-        for (var i = 0; i < bag.size(); i++) {
-            var resVar = (Var) bag.get(i);
+        ArrayList<String> l_temp = new ArrayList<String>();
+        for (int i = 0; i < bag.size(); i++) {
+            Var resVar = (Var) bag.get(i);
 
-            var t = resVar.link();
+            Term t = resVar.link();
 
             if (t != null) {
                 if (t instanceof Struct) {
-                    var t1 = ((Struct) t);
+                    Struct t1 = ((Struct) t);
 
 
                     l_temp.clear();
                     l_temp = findVar(t1, l_temp);
-                    for (var w = l_temp.size() - 1; w >= 0; w--) {
+                    for (int w = l_temp.size() - 1; w >= 0; w--) {
                         lSolVar.add(l_temp.get(w));
                     }
                 } else if (t instanceof Var) {
@@ -374,16 +390,16 @@ public class StateEnd extends State {
          * lgoalBOVar = [Z_e0, X_e73, Y_e74, V_e59, WithRespectTo_e31, U_e588, V_e59, H_e562, X_e73, Y_e74, F_e900]
          */
 
-        var goalBO = (Var) pParent.getBagOFgoal();
+        Var goalBO = (Var) pParent.getBagOFgoal();
 
-        var lgoalBOVar = new ArrayList<String>();
-        var goalBOvalue = goalBO.link();
+        ArrayList<String> lgoalBOVar = new ArrayList<String>();
+        Term goalBOvalue = goalBO.link();
         if (goalBOvalue instanceof Struct) {
-            var t1 = ((Struct) goalBOvalue);
+            Struct t1 = ((Struct) goalBOvalue);
 
             l_temp.clear();
             l_temp = findVar(t1, l_temp);
-            for (var w = l_temp.size() - 1; w >= 0; w--) {
+            for (int w = l_temp.size() - 1; w >= 0; w--) {
                 lgoalBOVar.add(l_temp.get(w));
             }
         }
@@ -399,8 +415,8 @@ public class StateEnd extends State {
          * per la bagof c.getEngineMan().getBagOFvarSet()
          */
 
-        var v = (Var) pParent.getBagOFvarSet();
-        var varList = (Struct) v.link();
+        Var v = (Var) pParent.getBagOFvarSet();
+        Struct varList = (Struct) v.link();
         List<String> lGoalVar = new ArrayList<>();
 
 
@@ -408,10 +424,10 @@ public class StateEnd extends State {
             for (java.util.Iterator<? extends Term> it = varList.listIterator(); it.hasNext(); ) {
 
 
-                var var = it.next();
-                for (var anA : a) {
-                    var vv = (Var) anA;
-                    var vLink = vv.link();
+                Term var = it.next();
+                for (Object anA : a) {
+                    Var vv = (Var) anA;
+                    Term vLink = vv.link();
                     if (vLink != null && vLink.isEqual(var)/*&& !(var.toString().startsWith("_"))*/) {
 
                         lGoalVar.add(vv.name());
@@ -429,7 +445,7 @@ public class StateEnd extends State {
 
         if (lGoalVar.size() > lgoalBOVar.size()) {
 
-            for (var h = 0; h < lGoalVar.size(); h++)
+            for (int h = 0; h < lGoalVar.size(); h++)
                 if (h >= lgoalBOVar.size()) {
 
                     lgoalBOVar.add(lGoalVar.get(h));
@@ -440,15 +456,15 @@ public class StateEnd extends State {
          * a) cerco l'indice della variabile in lSolVar
          * b) sostituisco con quella di stesso indice in lgoalBOVar
          */
-        var goalSolution = new Var();
+        Var goalSolution = new Var();
 
         if (!lSolVar.isEmpty() && !lgoalBOVar.isEmpty() && !varList.isGround() && !goalBO.isGround()) {
             String bagVarName = null;
-            for (var i = 0; i < bag.size(); i++) {
+            for (int i = 0; i < bag.size(); i++) {
 
-                var resVar = (Var) bag.get(i);
+                Var resVar = (Var) bag.get(i);
 
-                var t = resVar.link();
+                Term t = resVar.link();
                 if (t == null) {
 
                     t = resVar;
@@ -456,9 +472,9 @@ public class StateEnd extends State {
 
 
                 bagVarName = null;
-                for (var anA : a) {
-                    var vv = (Var) anA;
-                    var vv_link = structValue(vv, i);
+                for (Object anA : a) {
+                    Var vv = (Var) anA;
+                    Var vv_link = structValue(vv, i);
 
                     if (vv_link.isEqual(t)) {
 
@@ -470,10 +486,10 @@ public class StateEnd extends State {
 
 
                         if (vv_link.link() != null && vv_link.link() instanceof Struct) {
-                            var s = substituteVar((Struct) vv_link.link(), lSolVar, lgoalBOVar);
+                            Struct s = substituteVar((Struct) vv_link.link(), lSolVar, lgoalBOVar);
 
                         } else {
-                            var index = lSolVar.indexOf(resVar.name());
+                            int index = lSolVar.indexOf(resVar.name());
 
 
                             setStructValue(vv, i, new Var(lgoalBOVar.get(index)));
@@ -484,11 +500,11 @@ public class StateEnd extends State {
 
             }
 
-            for (var j = 0; j < vars.size(); j++) {
-                var vv = vars.get(j);
-                var on = vv.getOriginalName();
+            for (int j = 0; j < vars.size(); j++) {
+                Var vv = vars.get(j);
+                String on = vv.getOriginalName();
                 if (on.equals(bagVarName)) {
-                    var solVar = varValue2(goalSolution);
+                    Var solVar = varValue2(goalSolution);
 
                     solVar.setName(on);
                     solVar.rename(0, 0);
@@ -502,25 +518,25 @@ public class StateEnd extends State {
         /*
          * STEP6: gestisco caso particolare SETOF in cui non stampa la soluzione
          */
-        var bagString = pParent.getBagOFresString();
-        var i = 0;
-        var s = "";
+        List<String> bagString = pParent.getBagOFresString();
+        int i = 0;
+        String s = "";
 
-        var bs = bagString.size();
-        for (var m = 0; m < bs; m++) {
-            var bagResString = bag.get(m).toString();
-            var var = false;
+        int bs = bagString.size();
+        for (int m = 0; m < bs; m++) {
+            String bagResString = bag.get(m).toString();
+            boolean var = false;
             if (bag.get(m) instanceof Var && ((Var) bag.get(m)).link() != null && (((Var) bag.get(m)).link() instanceof Struct) && !((Var) bag.get(m)).link().isAtom())
                 var = true;
 
             if (var && bagResString.length() != bagString.get(m).length()) {
 
-                var st = new StringTokenizer(bagString.get(m));
-                var st1 = new StringTokenizer(bagResString);
+                StringTokenizer st = new StringTokenizer(bagString.get(m));
+                StringTokenizer st1 = new StringTokenizer(bagResString);
                 while (st.hasMoreTokens()) {
-                    var t1 = st.nextToken(" /(),;");
+                    String t1 = st.nextToken(" /(),;");
 
-                    var t2 = st1.nextToken(" /(),;");
+                    String t2 = st1.nextToken(" /(),;");
 
                     if (t1.compareTo(t2) != 0 && !t2.contains("_")) {
 
@@ -557,7 +573,7 @@ public class StateEnd extends State {
     public static Var structValue(Var v, int i) {
         structValue:
         while (true) {
-            var vStruct = new Var();
+            Var vStruct = new Var();
             Term l;
             while ((l = v.link()) != null) {
 
@@ -565,11 +581,11 @@ public class StateEnd extends State {
 
                     v = (Var) l;
                 } else if (l instanceof Struct) {
-                    var s = ((Struct) l);
+                    Struct s = ((Struct) l);
 
 
                     while (i > 0) {
-                        var s1 = s.sub(1);
+                        Term s1 = s.sub(1);
 
                         if (s1 instanceof Struct) {
                             s = (Struct) s1;
@@ -601,12 +617,12 @@ public class StateEnd extends State {
 
                 v = (Var) l;
             } else if (l instanceof Struct) {
-                var s = ((Struct) l);
+                Struct s = ((Struct) l);
 
 
                 while (i > 0) {
 
-                    var s1 = s.sub(1);
+                    Term s1 = s.sub(1);
                     if (s1 instanceof Struct)
                         s = (Struct) s1;
                     else if (s1 instanceof Var) {
@@ -624,12 +640,12 @@ public class StateEnd extends State {
 
 
     public static ArrayList<String> findVar(Struct s, ArrayList<String> l) {
-        var allVar = l;
+        ArrayList<String> allVar = l;
         if (allVar == null) allVar = new ArrayList();
         if (s.subs() > 0) {
-            var t = s.sub(0);
+            Term t = s.sub(0);
             if (s.subs() > 1) {
-                var tt = s.sub(1);
+                Term tt = s.sub(1);
 
                 if (tt instanceof Var) {
                     allVar.add(((Var) tt).name());
@@ -647,37 +663,37 @@ public class StateEnd extends State {
     }
 
     public static Struct substituteVar(Struct s, ArrayList<String> lSol, ArrayList<String> lgoal) {
-        var t = s.sub(0);
+        Term t = s.sub(0);
 
         Term tt = null;
         if (s.subs() > 1)
             tt = s.sub(1);
 
         if (tt instanceof Var) {
-            var index = lSol.indexOf(((Var) tt).name());
+            int index = lSol.indexOf(((Var) tt).name());
 
             s.setSub(1, new Var(lgoal.get(index)));
             if (t instanceof Var) {
-                var index1 = lSol.indexOf(((Var) t).name());
+                int index1 = lSol.indexOf(((Var) t).name());
 
                 s.setSub(0, new Var(lgoal.get(index1)));
             }
             if (t instanceof Struct && ((Struct) t).subs() > 0) {
 
 
-                var s1 = substituteVar((Struct) t, lSol, lgoal);
+                Struct s1 = substituteVar((Struct) t, lSol, lgoal);
 
                 s.setSub(0, s1);
             }
         } else {
             if (t instanceof Var) {
-                var index1 = lSol.indexOf(((Var) t).name());
+                int index1 = lSol.indexOf(((Var) t).name());
 
                 s.setSub(0, new Var(lgoal.get(index1)));
             }
             if (t instanceof Struct) {
 
-                var s1 = substituteVar((Struct) t, lSol, lgoal);
+                Struct s1 = substituteVar((Struct) t, lSol, lgoal);
 
                 s.setSub(0, s1);
             }

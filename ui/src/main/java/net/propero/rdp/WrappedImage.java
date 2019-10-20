@@ -152,9 +152,9 @@ public class WrappedImage {
         if (cm == null)
             return bi.getRGB(x, y);
         else {
-            var pix = bi.getRGB(x, y) & 0xFFFFFF;
+            int pix = bi.getRGB(x, y) & 0xFFFFFF;
             int[] vals = {(pix >> 16) & 0xFF, (pix >> 8) & 0xFF, (pix) & 0xFF};
-            var out = cm.getDataElement(vals, 0);
+            int out = cm.getDataElement(vals, 0);
 
 
 

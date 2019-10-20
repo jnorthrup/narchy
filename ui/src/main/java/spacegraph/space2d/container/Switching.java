@@ -49,9 +49,9 @@ public class Switching extends ContainerSurface {
         if (switched == next)
             return this;
 
-        var prevSurface = this.current;
+        Surface prevSurface = this.current;
 
-        var nextSurface = (current = (states[switched = next].get()));
+        Surface nextSurface = (current = (states[switched = next].get()));
         if (prevSurface != nextSurface) {
 
             if (prevSurface != null)

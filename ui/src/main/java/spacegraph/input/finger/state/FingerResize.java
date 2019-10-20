@@ -27,7 +27,7 @@ public abstract class FingerResize extends Dragging {
 
     @Override
     public @Nullable FingerRenderer cursor() {
-        var m = this.mode;
+        DragEdit m = this.mode;
         return m!=null ? m.cursor() : null;
     }
 
@@ -46,13 +46,13 @@ public abstract class FingerResize extends Dragging {
     @Override
     public boolean drag(Finger f) {
 
-        var m = mode(f);
+        DragEdit m = mode(f);
         if (m == null)
             return false;
 
-        var pos = this.pos(f);
-        var fx = pos.x;
-        var fy = pos.y;
+        v2 pos = this.pos(f);
+        float fx = pos.x;
+        float fy = pos.y;
 
         switch (m) {
 
@@ -60,50 +60,50 @@ public abstract class FingerResize extends Dragging {
                 return false;
 
             case RESIZE_S: {
-                var pmy = before.top();
-                var bh = before.h;
-                var ty = (fy - posStart.y);
+                float pmy = before.top();
+                float bh = before.h;
+                float ty = (fy - posStart.y);
                 resize(before.left(), pmy - bh + ty, before.right(), pmy);
                 break;
             }
 
             case RESIZE_SW: {
-                var pmx = before.right();
-                var pmy = before.top();
-                var bw = before.w;
-                var bh = before.h;
-                var tx = (fx - posStart.x);
-                var ty = (fy - posStart.y);
+                float pmx = before.right();
+                float pmy = before.top();
+                float bw = before.w;
+                float bh = before.h;
+                float tx = (fx - posStart.x);
+                float ty = (fy - posStart.y);
                 resize(pmx - bw + tx, pmy - bh + ty, pmx, pmy);
                 break;
             }
 
             case RESIZE_NE: {
-                var pmx = before.left();
-                var pmy = before.bottom();
-                var bw = before.w;
-                var bh = before.h;
-                var tx = (fx - posStart.x);
-                var ty = (fy - posStart.y);
+                float pmx = before.left();
+                float pmy = before.bottom();
+                float bw = before.w;
+                float bh = before.h;
+                float tx = (fx - posStart.x);
+                float ty = (fy - posStart.y);
                 resize(pmx, pmy,
                         Math.max(pmx + aspectRatioRatioLimit * bw, bw + pmx + tx),
                         Math.max(pmy + aspectRatioRatioLimit * bh, bh + pmy + ty));
                 break;
             }
             case RESIZE_SE: {
-                var pmx = before.left();
-                var pmy = before.top();
-                var bw = before.w;
-                var bh = before.h;
-                var tx = (fx - posStart.x);
-                var ty = (fy - posStart.y);
+                float pmx = before.left();
+                float pmy = before.top();
+                float bw = before.w;
+                float bh = before.h;
+                float tx = (fx - posStart.x);
+                float ty = (fy - posStart.y);
                 resize(pmx, pmy - bh + ty, Math.max(pmx + aspectRatioRatioLimit * bw, bw + pmx + tx), pmy);
                 break;
             }
             case RESIZE_N: {
                 float top, bottom;
-                var bh = before.h;
-                var ty = (fy - posStart.y);
+                float bh = before.h;
+                float ty = (fy - posStart.y);
                 if (!invY) {
                     top = before.bottom();
                     bottom = Math.max(top + aspectRatioRatioLimit * bh, top + bh + ty);
@@ -121,12 +121,12 @@ public abstract class FingerResize extends Dragging {
             }
 
             case RESIZE_NW: {
-                var pmx = before.right();
-                var pmy = before.bottom();
-                var bw = before.w;
-                var bh = before.h;
-                var tx = (fx - posStart.x);
-                var ty = (fy - posStart.y);
+                float pmx = before.right();
+                float pmy = before.bottom();
+                float bw = before.w;
+                float bh = before.h;
+                float tx = (fx - posStart.x);
+                float ty = (fy - posStart.y);
                 resize(pmx - bw + tx, pmy,
                         pmx,
                         Math.max(pmy + aspectRatioRatioLimit * bh, bh + pmy + ty));
@@ -135,17 +135,17 @@ public abstract class FingerResize extends Dragging {
 
 
             case RESIZE_E: {
-                var pmx = before.left();
-                var bw = before.w;
-                var tx = (fx - posStart.x);
+                float pmx = before.left();
+                float bw = before.w;
+                float tx = (fx - posStart.x);
                 resize(pmx, before.bottom(),
                         pmx + Math.max(aspectRatioRatioLimit * bw, bw + tx), before.top());
                 break;
             }
             case RESIZE_W: {
-                var pmx = before.right();
-                var bw = before.w;
-                var tx = (posStart.x - fx);
+                float pmx = before.right();
+                float bw = before.w;
+                float tx = (posStart.x - fx);
                 resize(pmx - Math.max(aspectRatioRatioLimit * bw, bw + tx), before.bottom(),
                         pmx, before.top());
                 break;

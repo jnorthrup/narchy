@@ -50,7 +50,7 @@ class TextureUtils {
 
 
     private static int generateTextureID(GL inGL) {
-        var result = new int[1];
+        int[] result = new int[1];
         inGL.glGenTextures(1, result, 0);
 
         return result[0];
@@ -71,7 +71,7 @@ class TextureUtils {
 
     private static ByteBuffer convertARGBBufferedImageToJOGLDirectByteBuffer(BufferedImage inBufferedImage, boolean inPutR, boolean inPutG, boolean inPutB, boolean inPutA) {
 
-        var tSizeMultiplier = 0;
+        int tSizeMultiplier = 0;
         if (inPutR) {
             tSizeMultiplier++;
         }
@@ -84,24 +84,24 @@ class TextureUtils {
         if (inPutA) {
             tSizeMultiplier++;
         }
-        var tBufferedImageByteBuffer = ByteBuffer.allocateDirect(inBufferedImage.getWidth() * inBufferedImage.getHeight() * tSizeMultiplier);
+        ByteBuffer tBufferedImageByteBuffer = ByteBuffer.allocateDirect(inBufferedImage.getWidth() * inBufferedImage.getHeight() * tSizeMultiplier);
         tBufferedImageByteBuffer.order(ByteOrder.nativeOrder());
-        var tBufferedImage_ARGB = ((DataBufferInt) inBufferedImage.getRaster().getDataBuffer()).getData();
-        for (var aTBufferedImage_ARGB : tBufferedImage_ARGB) {
+        int[] tBufferedImage_ARGB = ((DataBufferInt) inBufferedImage.getRaster().getDataBuffer()).getData();
+        for (int aTBufferedImage_ARGB : tBufferedImage_ARGB) {
             if (inPutR) {
-                var tRed = (byte) ((aTBufferedImage_ARGB >> 16) & 0xFF);
+                byte tRed = (byte) ((aTBufferedImage_ARGB >> 16) & 0xFF);
                 tBufferedImageByteBuffer.put(tRed);
             }
             if (inPutG) {
-                var tGreen = (byte) ((aTBufferedImage_ARGB >> 8) & 0xFF);
+                byte tGreen = (byte) ((aTBufferedImage_ARGB >> 8) & 0xFF);
                 tBufferedImageByteBuffer.put(tGreen);
             }
             if (inPutB) {
-                var tBlue = (byte) ((aTBufferedImage_ARGB) & 0xFF);
+                byte tBlue = (byte) ((aTBufferedImage_ARGB) & 0xFF);
                 tBufferedImageByteBuffer.put(tBlue);
             }
             if (inPutA) {
-                var tAlpha = (byte) ((aTBufferedImage_ARGB >> 24) & 0xFF);
+                byte tAlpha = (byte) ((aTBufferedImage_ARGB >> 24) & 0xFF);
                 tBufferedImageByteBuffer.put(tAlpha);
             }
         }
@@ -111,18 +111,18 @@ class TextureUtils {
 
     public static BufferedImage createARGBBufferedImage(int inWidth, int inHeight) {
 
-        var tARGBImageIntermediate = new BufferedImage(inWidth, inHeight, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage tARGBImageIntermediate = new BufferedImage(inWidth, inHeight, BufferedImage.TYPE_INT_ARGB);
         fillImageWithTransparentColor(tARGBImageIntermediate);
         return tARGBImageIntermediate;
     }
 
     private static void fillImageWithTransparentColor(Image inImage) {
-        var TRANSPARENT = new Color(0, 0, 0, 0);
+        Color TRANSPARENT = new Color(0, 0, 0, 0);
         fillImageWithColor(inImage, TRANSPARENT);
     }
 
     private static void fillImageWithColor(Image inImage, Color inColor) {
-        var tGraphics2D = (Graphics2D) inImage.getGraphics();
+        Graphics2D tGraphics2D = (Graphics2D) inImage.getGraphics();
         tGraphics2D.setColor(inColor);
         tGraphics2D.setComposite(AlphaComposite.Src);
         tGraphics2D.fillRect(0, 0, inImage.getWidth(null), inImage.getHeight(null));
@@ -132,7 +132,7 @@ class TextureUtils {
     public static int generateTexture1DFromBufferedImage(GL2 inGL, BufferedImage inBufferedImage, int inBorderMode) {
 
         inGL.glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        var t1DTextureID = TextureUtils.generateTextureID(inGL);
+        int t1DTextureID = TextureUtils.generateTextureID(inGL);
         inGL.glEnable(GL_TEXTURE_1D);
         inGL.glBindTexture(GL_TEXTURE_1D, t1DTextureID);
         inGL.glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, inBufferedImage.getWidth(), 0, GL_RGBA, GL_UNSIGNED_BYTE, TextureUtils.convertARGBBufferedImageToJOGLRGBADirectByteBuffer(inBufferedImage));
@@ -182,18 +182,18 @@ class TextureUtils {
 //    }
 
     public static void loadBufferedImageAs_GL_TEXTURE_2D_WithTextureDXT1Compression(BufferedImage inBufferedImage, int[] inTextureID, GL2ES3 inGL) {
-        var tWidth = inBufferedImage.getWidth();
-        var tHeight = inBufferedImage.getHeight();
+        int tWidth = inBufferedImage.getWidth();
+        int tHeight = inBufferedImage.getHeight();
         inGL.glGenTextures(1, inTextureID, 0);
         inGL.glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
         inGL.glBindTexture(GL_TEXTURE_2D, inTextureID[0]);
         inGL.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         inGL.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         inGL.glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA_S3TC_DXT1_EXT, tWidth, tHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, convertARGBBufferedImageToJOGLRGBADirectByteBuffer(inBufferedImage));
-        var tIsCompressed = new int[1];
+        int[] tIsCompressed = new int[1];
         inGL.glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED, tIsCompressed, 0);
 
-        var tCompressedTextureSize = new int[1];
+        int[] tCompressedTextureSize = new int[1];
         inGL.glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, tCompressedTextureSize, 0);
 
 

@@ -109,8 +109,8 @@ public class Lib {
 	/** Converts a string to a vector. Needs improvement. */
 	public static float[] atov(String v) {
 		float[] res = { 0, 0, 0 };
-		var strres = v.split(" ");
-		for (var n = 0; n < 3 && n < strres.length; n++)
+        String[] strres = v.split(" ");
+		for (int n = 0; n < 3 && n < strres.length; n++)
 		{
 			res[n] = atof(strres[n]);
 		}
@@ -119,7 +119,7 @@ public class Lib {
 
 	/** Like in libc. */
 	public static int strlen(char[] in) {
-		for (var i = 0; i < in.length; i++)
+		for (int i = 0; i < in.length; i++)
 			if (in[i] == 0)
 				return i;
 		return in.length;
@@ -127,7 +127,7 @@ public class Lib {
 	
 	/** Like in libc. */
 	public static int strlen(byte[] in) {
-		for (var i = 0; i < in.length; i++)
+		for (int i = 0; i < in.length; i++)
 			if (in[i] == 0)
 				return i;
 		return in.length;
@@ -136,9 +136,9 @@ public class Lib {
 	/** Converts memory to a memory dump string. */
 	public static String hexdumpfile(ByteBuffer bb, int len) {
 
-		var bb1 = bb.slice();
+        ByteBuffer bb1 = bb.slice();
 
-		var buf = new byte[len];
+        byte[] buf = new byte[len];
 	
 		bb1.get(buf);
 	
@@ -147,13 +147,13 @@ public class Lib {
 	
 	/** Converts memory to a memory dump string. */
 	public static String hexDump(byte[] data1, int len, boolean showAddress) {
-		var result = new StringBuilder();
-		var charfield = new StringBuilder();
-		var i = 0;
+        StringBuilder result = new StringBuilder();
+        StringBuilder charfield = new StringBuilder();
+        int i = 0;
 		while (i < len) {
 			if ((i & 0xf) == 0) {
 				if (showAddress) {
-					var address = Integer.toHexString(i);
+                    String address = Integer.toHexString(i);
 					address = ("0000".substring(0, 4 - address.length()) + address).toUpperCase();
 					result.append(address).append(": ");
 				}
@@ -183,7 +183,7 @@ public class Lib {
 	
 	/** Formats an hex byte. */
 	public static String hex2(int i) {
-		var val = Integer.toHexString(i & 0xff);
+        String val = Integer.toHexString(i & 0xff);
 		return ("00".substring(0, 2 - val.length()) + val).toUpperCase();	
 	}
 	
@@ -197,7 +197,7 @@ public class Lib {
 	
 	/** Prints a vector to the quake console. */
 	public static void printv(String in, float[] arr) {
-		for (var n = 0; n < arr.length; n++) {
+		for (int n = 0; n < arr.length; n++) {
 			Com.Println(in + '[' + n + "]: " + arr[n]);
 		}
 	}
@@ -208,7 +208,7 @@ public class Lib {
 	public static void fwriteString(String s, int len, RandomAccessFile f) throws IOException {
 		if (s ==  null) 
 			return;
-		var diff = len - s.length();
+        int diff = len - s.length();
 		if (diff > 0) {
 			f.write(stringToBytes(s));
 	
@@ -240,7 +240,7 @@ public class Lib {
 	
 	/** Like in libc */
 	public static String freadString(RandomAccessFile f, int len) {
-		var buffer = new byte[len];
+        byte[] buffer = new byte[len];
 		FS.Read(buffer, len, f);
 	
 		return Lib.CtoJava(buffer);
@@ -248,7 +248,7 @@ public class Lib {
 	
 	/** Returns the right part of the string from the last occruence of c. */
 	public static String rightFrom(String in, char c) {
-		var pos = in.lastIndexOf(c);
+        int pos = in.lastIndexOf(c);
 		if (pos == -1)
 			return "";
 		else if (pos < in.length())
@@ -258,7 +258,7 @@ public class Lib {
 	
 	/** Returns the left part of the string from the last occruence of c. */
 	public static String leftFrom(String in, char c) {
-		var pos = in.lastIndexOf(c);
+        int pos = in.lastIndexOf(c);
 		if (pos == -1)
 			return "";
 		else if (pos < in.length())
@@ -269,8 +269,8 @@ public class Lib {
 	/** Renames a file. */
 	public static int rename(String oldn, String newn) {
 		try {
-			var f1 = new File(oldn);
-			var f2 = new File(newn);
+            File f1 = new File(oldn);
+            File f2 = new File(newn);
 			f1.renameTo(f2);
 			return 0;
 		}
@@ -281,7 +281,7 @@ public class Lib {
 	
 	/** Converts an int to 4 bytes java representation. */
 	public static byte[] getIntBytes(int c) {
-		var b = new byte[4];
+        byte[] b = new byte[4];
 		b[0] = (byte) ((c & 0xff));
 		b[1] = (byte) ((c >>> 8) & 0xff);
 		b[2] = (byte) ((c >>> 16) & 0xff);
@@ -296,7 +296,7 @@ public class Lib {
 	
 	/** Duplicates a float array. */
 	public static float[] clone(float[] in) {
-		var out = new float[in.length];
+        float[] out = new float[in.length];
 	
 		if (in.length != 0)
 			System.arraycopy(in, 0, out, 0, in.length);
@@ -324,7 +324,7 @@ public class Lib {
 	
 	/** Helper method that savely handles the null termination of old C String data. */
 	public static String CtoJava(String old) {
-		var index = old.indexOf('\0');
+        int index = old.indexOf('\0');
 	    if (index == 0) return "";
 	    return (index > 0) ? old.substring(0, index) : old; 
 	}
@@ -350,36 +350,36 @@ public class Lib {
 	public static final int SIZEOF_SHORT = 2;
 	
 	public static FloatBuffer newFloatBuffer(int numElements) {
-		var bb = newByteBuffer(numElements * SIZEOF_FLOAT);
+        ByteBuffer bb = newByteBuffer(numElements * SIZEOF_FLOAT);
 	  return bb.asFloatBuffer();
 	}
 	public static FloatBuffer newFloatBuffer(int numElements, ByteOrder order) {
-		var bb = newByteBuffer(numElements * SIZEOF_FLOAT, order);
+        ByteBuffer bb = newByteBuffer(numElements * SIZEOF_FLOAT, order);
 	  return bb.asFloatBuffer();
 	}
         public static IntBuffer newIntBuffer(int numElements) {
-			var bb = newByteBuffer(numElements * SIZEOF_INT);
+            ByteBuffer bb = newByteBuffer(numElements * SIZEOF_INT);
           return bb.asIntBuffer();
         }
         public static IntBuffer newIntBuffer(int numElements, ByteOrder order) {
-			var bb = newByteBuffer(numElements * SIZEOF_INT, order);
+            ByteBuffer bb = newByteBuffer(numElements * SIZEOF_INT, order);
           return bb.asIntBuffer();
         }
 	public static ShortBuffer newShortBuffer(int numElements) {
-		var bb = newByteBuffer(numElements * SIZEOF_SHORT);
+        ByteBuffer bb = newByteBuffer(numElements * SIZEOF_SHORT);
 	  return bb.asShortBuffer();
 	}
 	public static ShortBuffer newShortBuffer(int numElements, ByteOrder order) {
-		var bb = newByteBuffer(numElements * SIZEOF_SHORT, order);
+        ByteBuffer bb = newByteBuffer(numElements * SIZEOF_SHORT, order);
 	  return bb.asShortBuffer();
 	}
 	public static ByteBuffer newByteBuffer(int numElements) {
-		var bb = ByteBuffer.allocateDirect(numElements);
+        ByteBuffer bb = ByteBuffer.allocateDirect(numElements);
 	  bb.order(ByteOrder.nativeOrder());
 	  return bb;
 	}
 	public static ByteBuffer newByteBuffer(int numElements, ByteOrder order) {
-		var bb = ByteBuffer.allocateDirect(numElements);
+        ByteBuffer bb = ByteBuffer.allocateDirect(numElements);
 	  bb.order(order);
 	  return bb;
 	}

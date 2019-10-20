@@ -63,7 +63,7 @@ class BaseFrameBufferObjectRendererExecutor {
     public void start(GL2 inGL) {
 
 
-        var result = new int[1];
+        int[] result = new int[1];
         inGL.glGenFramebuffers(1, result, 0);
         mFrameBufferObjectID = result[0];
         inGL.glBindFramebuffer(GL_FRAMEBUFFER, mFrameBufferObjectID);
@@ -121,7 +121,7 @@ class BaseFrameBufferObjectRendererExecutor {
         inGL.glActiveTexture(inTextureUnitID);
         inGL.glBindTexture(GL_TEXTURE_2D, mColorTextureID);
 
-        var textureTarget = GL_TEXTURE_2D;
+        int textureTarget = GL_TEXTURE_2D;
         inGL.glEnable(textureTarget);
         inGL.glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
         inGL.glTexParameteri(textureTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -197,7 +197,7 @@ class BaseFrameBufferObjectRendererExecutor {
 
     private static void checkFrameBufferObjectCompleteness(GL inGL) {
 
-        var tError = inGL.glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        int tError = inGL.glCheckFramebufferStatus(GL_FRAMEBUFFER);
         switch (tError) {
             case GL_FRAMEBUFFER_COMPLETE:
             case GL_FRAMEBUFFER_UNSUPPORTED:

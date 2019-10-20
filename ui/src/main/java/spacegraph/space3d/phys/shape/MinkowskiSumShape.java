@@ -50,9 +50,9 @@ public class MinkowskiSumShape extends ConvexInternalShape {
 	
 	@Override
 	public v3 localGetSupportingVertexWithoutMargin(v3 vec, v3 out) {
-		var tmp = new v3();
-		var supVertexA = new v3();
-		var supVertexB = new v3();
+        v3 tmp = new v3();
+        v3 supVertexA = new v3();
+        v3 supVertexB = new v3();
 
 		
 		tmp.negated(vec);
@@ -73,7 +73,7 @@ public class MinkowskiSumShape extends ConvexInternalShape {
 	@Override
 	public void batchedUnitVectorGetSupportingVertexWithoutMargin(v3[] vectors, v3[] supportVerticesOut, int numVectors) {
 		
-		for (var i = 0; i < numVectors; i++) {
+		for (int i = 0; i < numVectors; i++) {
 			localGetSupportingVertexWithoutMargin(vectors[i], supportVerticesOut[i]);
 		}
 	}

@@ -55,7 +55,7 @@ public class AtomicFloatVector extends AbstractVector implements WritableTensor 
         if (Math.abs(x) < Float.MIN_NORMAL)
             return 0; //no effect
 
-        var data = this.data;
+        AtomicIntegerArray data = this.data;
 
         float nextFloat;
         int prev, next;
@@ -69,7 +69,7 @@ public class AtomicFloatVector extends AbstractVector implements WritableTensor 
     @Override public final float merge(int linearCell, float arg, FloatFloatToFloatFunction x, PriReturn returning) {
         int prevI, nextI;
         float prev, next;
-        var data = this.data;
+        AtomicIntegerArray data = this.data;
 
         do {
             prevI = data.getAcquire(linearCell);
@@ -88,19 +88,19 @@ public class AtomicFloatVector extends AbstractVector implements WritableTensor 
 
     @Override
     public void fill(float x) {
-        var xx = floatToIntBits(x);
-        var v = volume();
-        var data = this.data;
-        for (var i = 0; i < v; i++)
+        int xx = floatToIntBits(x);
+        int v = volume();
+        AtomicIntegerArray data = this.data;
+        for (int i = 0; i < v; i++)
             data.set(i, xx);
     }
 
     @Override
     public String toString() {
-        var joiner = new StringJoiner(",");
-        var bound = volume();
-        for (var x = 0; x < bound; x++) {
-            var s = Float.toString(
+        StringJoiner joiner = new StringJoiner(",");
+        int bound = volume();
+        for (int x = 0; x < bound; x++) {
+            String s = Float.toString(
                     getAt(x)
             );
             joiner.add(s);

@@ -4,6 +4,7 @@ import jcog.TODO;
 import nars.$;
 import nars.Op;
 import nars.eval.Evaluation;
+import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
@@ -15,6 +16,9 @@ import nars.term.functor.BinaryBidiFunctor;
 import nars.term.functor.UnaryBidiFunctor;
 import nars.term.util.conj.Conj;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
@@ -66,9 +70,9 @@ public enum ListFunc {
 
         @Override
         protected Term compute(Evaluation e, Term x, Term y) {
-            var xx = x.op() == PROD ? x.subterms().arrayShared() : new Term[]{x};
+            Term[] xx = x.op() == PROD ? x.subterms().arrayShared() : new Term[]{x};
             if (xx.length == 0) return y;
-            var yy = y.op() == PROD ? y.subterms().arrayShared() : new Term[]{y};
+            Term[] yy = y.op() == PROD ? y.subterms().arrayShared() : new Term[]{y};
             if (yy.length == 0) return x;
             return $.pFast(Terms.concat(xx, yy));
         }
@@ -76,18 +80,23 @@ public enum ListFunc {
         @Override
         protected Term computeFromXY(Evaluation e, Term x, Term y, Term xy) {
 
-            var l = xy.subs();
+            int l = xy.subs();
             switch (l) {
                 case 0:
                     return e.is(x, Op.EmptyProduct, y, Op.EmptyProduct) ? null : IdempotentBool.Null;
                 case 1:
                     return e.is(x, Op.EmptyProduct, y, xy) && e.is(x, xy, y, Op.EmptyProduct) ? null : IdempotentBool.Null;
                 default:
-                    var xys = xy.subterms();
+                    Subterms xys = xy.subterms();
 
-                    var list = IntStream.range(-1, l).mapToObj(finalI -> Termerator.assign(
-                            x, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
-                            y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)))).collect(toList());
+                    List<Predicate<Termerator>> list = new ArrayList<>();
+                    for (int i = -1; i < l; i++) {
+                        int finalI = i;
+                        Predicate<Termerator> assign = Termerator.assign(
+                                x, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
+                                y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)));
+                        list.add(assign);
+                    }
                     e.canBe(list);
 
                     return null;
@@ -98,11 +107,11 @@ public enum ListFunc {
         @Override
         protected Term computeXfromYandXY(Evaluation e, Term x, Term y, Term xy) {
 
-            var yy = y.op() != PROD ? $.pFast(y) : y;
+            Term yy = y.op() != PROD ? $.pFast(y) : y;
 
-            var ys = yy.subs();
+            int ys = yy.subs();
 
-            var remainderLength = xy.subs() - ys;
+            int remainderLength = xy.subs() - ys;
             if (remainderLength >= 0)
                 if (yy.subterms().ANDi((yi, yii) -> xy.sub(remainderLength + yii).equals(yi)))
                     return e.is(x, remainderLength == 0 ?
@@ -118,10 +127,10 @@ public enum ListFunc {
         @Override
         protected Term computeYfromXandXY(Evaluation e, Term x, Term y, Term xy) {
 
-            var xx = x.op() != PROD ? $.pFast(x) : x;
+            Term xx = x.op() != PROD ? $.pFast(x) : x;
 
-            var xs = xx.subs();
-            var remainderLength = xy.subs() - xs;
+            int xs = xx.subs();
+            int remainderLength = xy.subs() - xs;
             if (remainderLength >= 0)
                 if (xx.subterms().ANDi((xi, xii) -> xy.sub(xii).equals(xi)))
                     return e.is(y, (remainderLength == 0) ? Op.EmptyProduct : $.pFast(xy.subterms().terms((i, ii) -> i >= xs))) ? null : IdempotentBool.Null;
@@ -135,7 +144,7 @@ public enum ListFunc {
 
         @Override
         protected Term compute(Term x) {
-            var o = x.op();
+            Op o = x.op();
             switch (o) {
                 case PROD:
                     if (x.subs() > 1)
@@ -145,7 +154,7 @@ public enum ListFunc {
                 case IMPL:
                     return o.the(x.dt(),x.subterms().reversed());
                 case CONJ:
-                    var dt = x.dt();
+                    int dt = x.dt();
                     if (!Conj.concurrent(dt))
                         return ((Compound)x).dt(-dt);
                     break;
@@ -164,11 +173,11 @@ public enum ListFunc {
 
     public static final Functor subs = Functor.f2Or3("subs", args -> {
         if (args.subs() == 2) {
-            var n = args.sub(1);
+            Term n = args.sub(1);
             if (n.op() == INT) {
-                var nn = ((IdempotInt) n).i;
-                var xx = args.sub(0).subterms();
-                var m = xx.subs();
+                int nn = ((IdempotInt) n).i;
+                Subterms xx = args.sub(0).subterms();
+                int m = xx.subs();
                 return nn < m ? PROD.the(xx.subRangeArray(nn, m)) : IdempotentBool.Null;
             } else {
                 return null;

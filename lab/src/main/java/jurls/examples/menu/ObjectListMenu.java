@@ -21,8 +21,8 @@ public class ObjectListMenu extends RLMenu {
         this.xs = xs;
 
         buttons = new JRadioButtonMenuItem[xs.length];
-        var bg = new ButtonGroup();
-        for (var i = 0; i < xs.length; ++i) {
+        ButtonGroup bg = new ButtonGroup();
+        for (int i = 0; i < xs.length; ++i) {
             buttons[i] = new JRadioButtonMenuItem(new MyAction(xs[i].toString()));
             bg.add(buttons[i]);
             add(buttons[i]);
@@ -32,7 +32,7 @@ public class ObjectListMenu extends RLMenu {
     }
 
     public Object getObject() {
-        for (var i = 0; i < buttons.length; ++i) {
+        for (int i = 0; i < buttons.length; ++i) {
             if (buttons[i].isSelected()) {
                 return xs[i];
             }

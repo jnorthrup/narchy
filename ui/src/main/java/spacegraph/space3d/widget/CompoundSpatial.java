@@ -33,7 +33,7 @@ public abstract class CompoundSpatial<X> extends AbstractSpatial<X> {
             next(world);
         }
 
-        for (var s : spatials)
+        for (Spatial s : spatials)
             s.update(world);
 
     }
@@ -71,12 +71,12 @@ public abstract class CompoundSpatial<X> extends AbstractSpatial<X> {
 
     @Override
     public void forEachBody(Consumer<Collidable> c) {
-        for (var body : bodies) {
+        for (Collidable body : bodies) {
             c.accept(body);
         }
 
         if (!spatials.isEmpty()) {
-            for (var s : spatials) {
+            for (Spatial s : spatials) {
                 s.forEachBody(c);
             }
         }

@@ -82,7 +82,7 @@ public class ContactID implements Comparable<ContactID> {
     }
 
     public void flip() {
-        var tempA = indexA;
+        byte tempA = indexA;
         indexA = indexB;
         indexB = tempA;
         tempA = typeA;

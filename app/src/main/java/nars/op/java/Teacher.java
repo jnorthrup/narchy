@@ -36,10 +36,10 @@ public class Teacher<X> {
                       Consumer<X> task,
                       Predicate<X> post /* validation*/) {
 
-        var t = new Trick<X>(taskName, pre, task, post);
+        Trick<X> t = new Trick<X>(taskName, pre, task, post);
         t.train(x, n);
 
-        var valid = t.valid(x);
+        boolean valid = t.valid(x);
         if (!valid)
             throw new RuntimeException("invalid after training. please dont confuse NARS");
 

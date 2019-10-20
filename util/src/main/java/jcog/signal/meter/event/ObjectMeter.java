@@ -36,7 +36,7 @@ public class ObjectMeter<X> extends SourceFunctionMeter<X> {
     
     /** returns the previous value, or NaN if none were set  */
     public X set(X newValue) {
-        var oldValue = val;
+        X oldValue = val;
         val = newValue;
         return oldValue;
     }
@@ -47,7 +47,7 @@ public class ObjectMeter<X> extends SourceFunctionMeter<X> {
     
     @Override
     public X getValue(Object key, int index) {
-        var c = val;
+        X c = val;
         if (autoReset) {
             reset();
         }

@@ -51,8 +51,8 @@ public class ConvexPlaneCollisionAlgorithm extends CollisionAlgorithm {
 		this.manifoldPtr = mf;
 		this.isSwapped = isSwapped;
 
-		var convexObj = isSwapped ? col1 : col0;
-		var planeObj = isSwapped ? col0 : col1;
+        Collidable convexObj = isSwapped ? col1 : col0;
+        Collidable planeObj = isSwapped ? col0 : col1;
 
 		if (manifoldPtr == null && intersecter.needsCollision(convexObj, planeObj)) {
 			manifoldPtr = intersecter.getNewManifold(convexObj, planeObj);
@@ -76,52 +76,52 @@ public class ConvexPlaneCollisionAlgorithm extends CollisionAlgorithm {
 			return;
 		}
 
-		var tmpTrans = new Transform();
+        Transform tmpTrans = new Transform();
 
-		var convexObj = isSwapped ? body1 : body0;
-		var planeObj = isSwapped ? body0 : body1;
+        Collidable convexObj = isSwapped ? body1 : body0;
+        Collidable planeObj = isSwapped ? body0 : body1;
 
-		var convexShape = (ConvexShape) convexObj.shape();
-		var planeShape = (StaticPlaneShape) planeObj.shape();
+        ConvexShape convexShape = (ConvexShape) convexObj.shape();
+        StaticPlaneShape planeShape = (StaticPlaneShape) planeObj.shape();
 
-		var planeNormal = planeShape.getPlaneNormal(new v3());
-		var planeConstant = planeShape.getPlaneConstant();
+        v3 planeNormal = planeShape.getPlaneNormal(new v3());
+        float planeConstant = planeShape.getPlaneConstant();
 
-		var planeInConvex = new Transform();
+        Transform planeInConvex = new Transform();
 		convexObj.getWorldTransform(planeInConvex);
 		planeInConvex.invert();
 		planeInConvex.mul(planeObj.getWorldTransform(tmpTrans));
 
-		var convexInPlaneTrans = new Transform();
+        Transform convexInPlaneTrans = new Transform();
 		convexInPlaneTrans.invert(planeObj.getWorldTransform(tmpTrans));
 		convexInPlaneTrans.mul(convexObj.getWorldTransform(tmpTrans));
 
-		var tmp = new v3();
+        v3 tmp = new v3();
 		tmp.negated(planeNormal);
 		planeInConvex.basis.transform(tmp);
 
-		var vtx = convexShape.localGetSupportingVertex(tmp, new v3());
-		var vtxInPlane = new v3(vtx);
+        v3 vtx = convexShape.localGetSupportingVertex(tmp, new v3());
+        v3 vtxInPlane = new v3(vtx);
 		convexInPlaneTrans.transform(vtxInPlane);
 
-		var distance = (planeNormal.dot(vtxInPlane) - planeConstant);
+        float distance = (planeNormal.dot(vtxInPlane) - planeConstant);
 
-		var vtxInPlaneProjected = new v3();
+        v3 vtxInPlaneProjected = new v3();
 		tmp.scale(distance, planeNormal);
 		vtxInPlaneProjected.sub(vtxInPlane, tmp);
 
-		var vtxInPlaneWorld = new v3(vtxInPlaneProjected);
+        v3 vtxInPlaneWorld = new v3(vtxInPlaneProjected);
 		planeObj.getWorldTransform(tmpTrans).transform(vtxInPlaneWorld);
 
-		var breakingThresh = manifoldPtr.getContactBreakingThreshold();
+        float breakingThresh = manifoldPtr.getContactBreakingThreshold();
         resultOut.setPersistentManifold(manifoldPtr);
-		var hasCollision = distance < breakingThresh;
+        boolean hasCollision = distance < breakingThresh;
         if (hasCollision) {
 
-			var normalOnSurfaceB = new v3(planeNormal);
+            v3 normalOnSurfaceB = new v3(planeNormal);
 			planeObj.getWorldTransform(tmpTrans).basis.transform(normalOnSurfaceB);
 
-			var pOnB = new v3(vtxInPlaneWorld);
+            v3 pOnB = new v3(vtxInPlaneWorld);
 			resultOut.addContactPoint(normalOnSurfaceB, pOnB, distance, breakingThresh);
 		}
 		if (ownManifold) {
@@ -150,7 +150,7 @@ public class ConvexPlaneCollisionAlgorithm extends CollisionAlgorithm {
 
 		@Override
 		public CollisionAlgorithm createCollisionAlgorithm(CollisionAlgorithmConstructionInfo ci, Collidable body0, Collidable body1) {
-			var algo = new ConvexPlaneCollisionAlgorithm();
+            ConvexPlaneCollisionAlgorithm algo = new ConvexPlaneCollisionAlgorithm();
 			if (!swapped) {
 				algo.init(null, ci, body0, body1, false);
 			}

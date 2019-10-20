@@ -41,9 +41,9 @@ public class TermPerfectTrie<K extends Term, V> extends Trie<List<K>, V> impleme
     private static <A, B> void printSummary(TrieNode<List<A>, B> node, PrintStream out) {
 
         node.forEach(n -> {
-            var seq = n.seq();
+            List<A> seq = n.seq();
 
-            var from = n.start();
+            int from = n.start();
 
             out.print(n.childCount() + "|" + n.getSize() + "  ");
 
@@ -65,11 +65,11 @@ public class TermPerfectTrie<K extends Term, V> extends Trie<List<K>, V> impleme
     @Deprecated
     public SummaryStatistics costAnalyze(@Nullable PrintStream o, FloatFunction<K> costFn) {
 
-        var termCost = new SummaryStatistics();
-        var sequenceLength = new SummaryStatistics();
-        var branchFanOut = new SummaryStatistics();
-        var endDepth = new SummaryStatistics();
-        var currentDepth = new int[1];
+        SummaryStatistics termCost = new SummaryStatistics();
+        SummaryStatistics sequenceLength = new SummaryStatistics();
+        SummaryStatistics branchFanOut = new SummaryStatistics();
+        SummaryStatistics endDepth = new SummaryStatistics();
+        int[] currentDepth = new int[1];
 
         costAnalyze(costFn, termCost, sequenceLength, branchFanOut, endDepth, currentDepth, this.root);
 
@@ -88,20 +88,20 @@ public class TermPerfectTrie<K extends Term, V> extends Trie<List<K>, V> impleme
 
     private static <K, V> void costAnalyze(FloatFunction<K> costFn, SummaryStatistics termCost, SummaryStatistics sequenceLength, SummaryStatistics branchFanOut, SummaryStatistics endDepth, int[] currentDepth, TrieNode<List<K>, V> root) {
 
-        var nc = root.childCount();
+        int nc = root.childCount();
         if (nc > 0)
             branchFanOut.addValue(nc);
 
         root.forEach(n -> {
-            var seq = n.seq();
+            List<K> seq = n.seq();
 
-            var from = n.start();
+            int from = n.start();
 
 
-            var to = n.end();
+            int to = n.end();
             sequenceLength.addValue(to-from);
 
-            for (var i = from; i < to; i++) {
+            for (int i = from; i < to; i++) {
                 termCost.addValue(costFn.floatValueOf(seq.get(i)));
             }
 
@@ -127,9 +127,9 @@ public class TermPerfectTrie<K extends Term, V> extends Trie<List<K>, V> impleme
 
     @Override
     public int matches(List<K> sequenceA, int indexA, List<K> sequenceB, int indexB, int count) {
-        for (var i = 0; i < count; i++) {
-            var a = sequenceA.get(i + indexA);
-            var b = sequenceB.get(i + indexB);
+        for (int i = 0; i < count; i++) {
+            K a = sequenceA.get(i + indexA);
+            K b = sequenceB.get(i + indexB);
             if (!a.equals(b))
                 return i;
             else {

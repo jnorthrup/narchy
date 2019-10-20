@@ -56,8 +56,8 @@ public class MutableIntRange {
         if (x < 0 || x > 1)
             throw new UnsupportedOperationException("out of range");
 
-        var l = lo;
-        var h = hi;
+        int l = lo;
+        int h = hi;
         if (l == h) return l;
         else return Util.lerpInt(x, lo, hi);
     }

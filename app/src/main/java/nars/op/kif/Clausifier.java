@@ -65,11 +65,11 @@ public class Clausifier  {
             System.out.println("Error Formula.separateConjunctions(): not a conjunction " + thisFormula);
             return null;
         }
-        var temp = new Formula();
+        Formula temp = new Formula();
         temp.read(thisFormula.cdr());
-        var result = new ArrayList<Formula>();
+        ArrayList<Formula> result = new ArrayList<Formula>();
         while (!temp.empty()) {
-            var clause = new Formula();
+            Formula clause = new Formula();
             clause.read(temp.car());
             result.add(clause);
             temp.read(temp.cdr());
@@ -81,7 +81,7 @@ public class Clausifier  {
      *  convenience method
      */
     public static ArrayList<Formula> separateConjunctions(Formula f) {
-        var temp = new Clausifier(f.theFormula);
+        Clausifier temp = new Clausifier(f.theFormula);
         return temp.separateConjunctions();
     }
 
@@ -89,7 +89,7 @@ public class Clausifier  {
      *  convenience method
      */
     public static Formula clausify(Formula f) {
-        var temp = new Clausifier(f.theFormula);
+        Clausifier temp = new Clausifier(f.theFormula);
         return temp.clausify();
     }
 
@@ -111,13 +111,13 @@ public class Clausifier  {
      */
     public ArrayList clausifyWithRenameInfo() {
 
-        var old = new Formula();
+        Formula old = new Formula();
         old.theFormula = thisFormula.theFormula;
         Formula ans = null;
         thisFormula = equivalencesOut();
         thisFormula = implicationsOut();
         thisFormula = negationsIn();
-        var allRenames = new HashMap();
+        HashMap allRenames = new HashMap();
         Map scopedRenames = new HashMap();
         Map topLevelVars = new HashMap();
         thisFormula = renameVariables(topLevelVars, scopedRenames, allRenames);
@@ -127,7 +127,7 @@ public class Clausifier  {
         Map standardizedRenames = new HashMap();
         thisFormula = standardizeApart(standardizedRenames);
         allRenames.putAll(standardizedRenames);
-        var result = new ArrayList();
+        ArrayList result = new ArrayList();
         result.add(thisFormula);
         result.add(old);
         result.add(allRenames);
@@ -195,29 +195,29 @@ public class Clausifier  {
      */
     public ArrayList toNegAndPosLitsWithRenameInfo() {
 
-        var ans = new ArrayList();
+        ArrayList ans = new ArrayList();
         List<Formula> clausesWithRenameInfo = this.clausifyWithRenameInfo();
         if (clausesWithRenameInfo.size() == 3) {
-            var clausalForm = clausesWithRenameInfo.get(0);
-            var cForm = new Clausifier(clausalForm.theFormula);
+            Formula clausalForm = clausesWithRenameInfo.get(0);
+            Clausifier cForm = new Clausifier(clausalForm.theFormula);
             ArrayList clauses = cForm.operatorsOut();
             if ((clauses != null) && !clauses.isEmpty()) {
 
-                var newClauses = new ArrayList();
+                ArrayList newClauses = new ArrayList();
                 Formula clause = null;
-                for (var o : (Iterable<Formula>) clauses) {
-                    var negLits = new ArrayList<Formula>();
-                    var literals = new ArrayList();
+                for (Formula o : (Iterable<Formula>) clauses) {
+                    ArrayList<Formula> negLits = new ArrayList<Formula>();
+                    ArrayList literals = new ArrayList();
                     literals.add(negLits);
-                    var posLits = new ArrayList<Formula>();
+                    ArrayList<Formula> posLits = new ArrayList<Formula>();
                     literals.add(posLits);
                     clause = o;
                     if (clause.listP()) {
                         while (!clause.empty()) {
-                            var lit = clause.car();
-                            var litF = new Formula();
+                            String lit = clause.car();
+                            Formula litF = new Formula();
                             litF.read(lit);
-                            var isNegLit = false;
+                            boolean isNegLit = false;
                             if (litF.listP() && litF.car().equals(Formula.NOT)) {
                                 litF.read(litF.cadr());
                                 isNegLit = true;
@@ -241,8 +241,8 @@ public class Clausifier  {
                 ans.add(newClauses);
             }
             if (ans.size() == 1) {
-                var cwriLen = clausesWithRenameInfo.size();
-                for (var j = 1; j < cwriLen; j++)
+                int cwriLen = clausesWithRenameInfo.size();
+                for (int j = 1; j < cwriLen; j++)
                     ans.add(clausesWithRenameInfo.get(j));                    
             }
         }
@@ -253,7 +253,7 @@ public class Clausifier  {
      *  convenience method
      */
     public static ArrayList toNegAndPosLitsWithRenameInfo(Formula f) {
-        var temp = new Clausifier(f.theFormula);
+        Clausifier temp = new Clausifier(f.theFormula);
         return temp.toNegAndPosLitsWithRenameInfo();
     }
 
@@ -274,7 +274,7 @@ public class Clausifier  {
      */
     public Formula toCanonicalClausalForm() {
 
-        var ans = new Formula();
+        Formula ans = new Formula();
         List clauseData = this.toNegAndPosLitsWithRenameInfo();
         if (clauseData.isEmpty()) 
             ans = thisFormula;
@@ -285,12 +285,12 @@ public class Clausifier  {
                 StringBuilder sb = null;
                 Iterator itc = null;
                 for (itc = clauses.iterator(); itc.hasNext();) {
-                    var clause = (List) itc.next();
+                    List clause = (List) itc.next();
                     if (clause.size() == 2) {
                         sb = new StringBuilder();
-                        var neglits = (List) clause.get(0);
+                        List neglits = (List) clause.get(0);
                         if (neglits.size() > 1) Collections.sort(neglits);
-                        var i = 0;
+                        int i = 0;
                         Iterator itl = null;
                         for (itl = neglits.iterator(); itl.hasNext(); i++) {
                             if (i > 0) sb.append(Formula.SPACE);
@@ -300,7 +300,7 @@ public class Clausifier  {
                             sb.append(itl.next());
                             sb.append(Formula.RP);
                         }
-                        var poslits = (List) clause.get(1);
+                        List poslits = (List) clause.get(1);
                         if (!poslits.isEmpty()) {
                             Collections.sort(poslits);
                             for (itl = poslits.iterator(); itl.hasNext(); i++) {
@@ -319,7 +319,7 @@ public class Clausifier  {
                 }
                 Collections.sort(sortedClauses);
                 sb = new StringBuilder();
-                var j = 0;
+                int j = 0;
                 for (itc = sortedClauses.iterator(); itc.hasNext(); j++) {
                     if (j > 0) sb.append(Formula.SPACE);
                     sb.append(itc.next());
@@ -340,7 +340,7 @@ public class Clausifier  {
      *  convenience method
      */
     public static Formula toCanonicalClausalForm(Formula f) {
-        var temp = new Clausifier(f.theFormula);
+        Clausifier temp = new Clausifier(f.theFormula);
         return temp.toCanonicalClausalForm();
     }
 
@@ -366,24 +366,24 @@ public class Clausifier  {
      */
     protected Formula toOpenQueryForNegatedDualForm() {
 
-        var qF = new Formula();
-        var temp = new Formula();
+        Formula qF = new Formula();
+        Formula temp = new Formula();
         temp.theFormula = thisFormula.theFormula;
         qF.read(temp.makeQuantifiersExplicit(false));
 
 
-        var negQF = new Formula();
+        Formula negQF = new Formula();
         negQF.read("(not " + qF.theFormula + ')');
 
 
-        var canonNegF = new Formula();
+        Formula canonNegF = new Formula();
         canonNegF.read(Clausifier.toCanonicalClausalForm(negQF).theFormula);
 
 
-        var queryF = new Formula();
+        Formula queryF = new Formula();
         queryF.read(normalizeVariables(canonNegF.theFormula,
                                        true));
-        var result = queryF;
+        Formula result = queryF;
         return result;
     }
 
@@ -411,31 +411,31 @@ public class Clausifier  {
     protected Formula toCanonicalKifSpecialForm(boolean preserveSharedVariables) {
 
 
-        var flist = thisFormula.theFormula;
-        var vpref = Formula.V_PREF;
-        var rpref = Formula.R_PREF;
-        var vrepl = "vvvv";
-        var rrepl = "rrrr";
+        String flist = thisFormula.theFormula;
+        String vpref = Formula.V_PREF;
+        String rpref = Formula.R_PREF;
+        String vrepl = "vvvv";
+        String rrepl = "rrrr";
         if (preserveSharedVariables) {
             if (flist.contains(vpref)) flist = flist.replace(vpref, vrepl);
             if (flist.contains(rpref)) flist = flist.replace(rpref, rrepl);
         }
-        var sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         if (Formula.listP(flist)) {
             if (Formula.empty(flist)) 
                 sb.append(flist);                
             else {
-                var f = new Formula();
+                Formula f = new Formula();
                 f.read(flist);
-                var arg0 = f.car();
+                String arg0 = f.car();
                 if (Formula.isLogicalOperator(arg0)) 
                     sb.append(Clausifier.toCanonicalClausalForm(f).theFormula);                    
                 else {
                     List tuple = f.literalToArrayList();
                     sb.append(Formula.LP);
-                    var i = 0;
-                    for (var it = tuple.iterator(); it.hasNext(); i++) {
-                        var nextF = new Formula();
+                    int i = 0;
+                    for (Iterator it = tuple.iterator(); it.hasNext(); i++) {
+                        Formula nextF = new Formula();
                         nextF.read((String) it.next());
                         if (i > 0) sb.append(Formula.SPACE);
                         sb.append(Clausifier.toCanonicalKifSpecialForm(nextF,false).theFormula);
@@ -453,9 +453,9 @@ public class Clausifier  {
             flist = flist.replace(rrepl, rpref);
         }
         flist = normalizeVariables(flist);
-        var canonSF = new Formula();
+        Formula canonSF = new Formula();
         canonSF.read(flist);
-        var result = canonSF;
+        Formula result = canonSF;
         return result;
     }
 
@@ -464,7 +464,7 @@ public class Clausifier  {
      */
     private static Formula toCanonicalKifSpecialForm(Formula f, boolean preserveSharedVariables) {
 
-        var temp = new Clausifier(f.theFormula);
+        Clausifier temp = new Clausifier(f.theFormula);
         return temp.toCanonicalKifSpecialForm(preserveSharedVariables);
     }
 
@@ -510,7 +510,7 @@ public class Clausifier  {
 
         int[] idxs = {1, 1};
         Map vmap = new HashMap();
-        var result = normalizeVariables_1(input, idxs, vmap, replaceSkolemTerms);
+        String result = normalizeVariables_1(input, idxs, vmap, replaceSkolemTerms);
         return result;
     }
 
@@ -534,14 +534,14 @@ public class Clausifier  {
     protected static String normalizeVariables_1(String input,int[] idxs, 
                                                  Map vmap, boolean replaceSkolemTerms) {
 
-        var sb = new StringBuilder();
-        var flist = input.trim();
-        var isSkolem = Formula.isSkolemTerm(flist);
+        StringBuilder sb = new StringBuilder();
+        String flist = input.trim();
+        boolean isSkolem = Formula.isSkolemTerm(flist);
         if ((replaceSkolemTerms && isSkolem) || Formula.isVariable(flist)) {
-            var newvar = (String) vmap.get(flist);
+            String newvar = (String) vmap.get(flist);
             if (newvar == null) {
-                var rvbase = (Formula.RVAR + "VAR");
-                var vbase = Formula.VVAR;
+                String rvbase = (Formula.RVAR + "VAR");
+                String vbase = Formula.VVAR;
                 newvar = ((flist.startsWith(Formula.V_PREF) || isSkolem)
                           ? (vbase + idxs[0]++)
                           : (rvbase + idxs[1]++));
@@ -553,12 +553,12 @@ public class Clausifier  {
             if (Formula.empty(flist)) 
                 sb.append(flist);                
             else {
-                var f = new Formula();
+                Formula f = new Formula();
                 f.read(flist);
                 List tuple = f.literalToArrayList();
                 sb.append(Formula.LP);
-                var i = 0;
-                for (var it = tuple.iterator(); it.hasNext(); i++) {
+                int i = 0;
+                for (Iterator it = tuple.iterator(); it.hasNext(); i++) {
                     if (i > 0) sb.append(Formula.SPACE);
                     sb.append(normalizeVariables_1((String) it.next(),idxs,
                                                    vmap,replaceSkolemTerms));
@@ -568,7 +568,7 @@ public class Clausifier  {
         }
         else 
             sb.append(flist);
-        var result = sb.toString();
+        String result = sb.toString();
         return result;
     }
 
@@ -581,28 +581,28 @@ public class Clausifier  {
      */
     private Formula equivalencesOut() {
 
-        var ans = thisFormula;
+        Formula ans = thisFormula;
         if (thisFormula.listP() && !(thisFormula.empty())) {
-            var head = thisFormula.car();
+            String head = thisFormula.car();
             String theNewFormula = null;
             if (!StringUtil.emptyString(head) && Formula.listP(head)) {
-                var headF = new Clausifier(head);
-                var newHead = headF.equivalencesOut().theFormula;
-                var theNewClausifier = new Clausifier(thisFormula.cdr());
+                Clausifier headF = new Clausifier(head);
+                String newHead = headF.equivalencesOut().theFormula;
+                Clausifier theNewClausifier = new Clausifier(thisFormula.cdr());
                 theNewFormula = theNewClausifier.equivalencesOut().cons(newHead).theFormula;
             }
             else if (head.equals(Formula.IFF)) {
-                var second = thisFormula.cadr();
-                var secondF = new Clausifier(second);
-                var newSecond = secondF.equivalencesOut().theFormula;
-                var third = thisFormula.caddr();
-                var thirdF = new Clausifier(third);
-                var newThird = thirdF.equivalencesOut().theFormula;
+                String second = thisFormula.cadr();
+                Clausifier secondF = new Clausifier(second);
+                String newSecond = secondF.equivalencesOut().theFormula;
+                String third = thisFormula.caddr();
+                Clausifier thirdF = new Clausifier(third);
+                String newThird = thirdF.equivalencesOut().theFormula;
                 theNewFormula = ("(and (=> " + newSecond + ' ' + newThird
                                  + ") (=> " + newThird + ' ' + newSecond + "))");
             }
             else {
-                var fourth = new Clausifier(thisFormula.cdrAsFormula().theFormula);
+                Clausifier fourth = new Clausifier(thisFormula.cdrAsFormula().theFormula);
                 theNewFormula = fourth.equivalencesOut().cons(head).theFormula;                
             }
             if (theNewFormula != null) {
@@ -622,27 +622,27 @@ public class Clausifier  {
      */
     private Formula implicationsOut() {
 
-        var ans = thisFormula;
+        Formula ans = thisFormula;
         if (thisFormula.listP() && !thisFormula.empty()) {
-            var head = thisFormula.car();
+            String head = thisFormula.car();
             String theNewFormula = null;
             if (!StringUtil.emptyString(head) && Formula.listP(head)) {
-                var headF = new Clausifier(head);
-                var newHead = headF.implicationsOut().theFormula;
-                var theNewClausifier = new Clausifier(thisFormula.cdr());
+                Clausifier headF = new Clausifier(head);
+                String newHead = headF.implicationsOut().theFormula;
+                Clausifier theNewClausifier = new Clausifier(thisFormula.cdr());
                 theNewFormula = theNewClausifier.implicationsOut().cons(newHead).theFormula;
             }
             else if (head.equals(Formula.IF)) {
-                var second = thisFormula.cadr();
-                var secondF = new Clausifier(second);
-                var newSecond = secondF.implicationsOut().theFormula;
-                var third = thisFormula.caddr();
-                var thirdF = new Clausifier(third);
-                var newThird = thirdF.implicationsOut().theFormula;
+                String second = thisFormula.cadr();
+                Clausifier secondF = new Clausifier(second);
+                String newSecond = secondF.implicationsOut().theFormula;
+                String third = thisFormula.caddr();
+                Clausifier thirdF = new Clausifier(third);
+                String newThird = thirdF.implicationsOut().theFormula;
                 theNewFormula = ("(or (not " + newSecond + ") " + newThird + ')');
             }
             else {
-                var fourth = new Clausifier(thisFormula.cdrAsFormula().theFormula);
+                Clausifier fourth = new Clausifier(thisFormula.cdrAsFormula().theFormula);
                 theNewFormula = fourth.implicationsOut().cons(head).theFormula;                
             }
             if (theNewFormula != null) {
@@ -665,8 +665,8 @@ public class Clausifier  {
      */
     private Formula negationsIn() {
 
-        var f = thisFormula;
-        var ans = negationsIn_1();
+        Formula f = thisFormula;
+        Formula ans = negationsIn_1();
         
         while (!f.theFormula.equals(ans.theFormula)) {     
             f = ans;
@@ -690,15 +690,15 @@ public class Clausifier  {
 
         if (thisFormula.listP()) {
             if (thisFormula.empty()) { return thisFormula; }
-            var arg0 = thisFormula.car();
-            var arg1 = thisFormula.cadr();
+            String arg0 = thisFormula.car();
+            String arg1 = thisFormula.cadr();
             if (arg0.equals(Formula.NOT) && Formula.listP(arg1)) {
-                var arg1F = new Formula();
+                Formula arg1F = new Formula();
                 arg1F.read(arg1);
-                var arg0_of_arg1 = arg1F.car();
+                String arg0_of_arg1 = arg1F.car();
                 if (arg0_of_arg1.equals(Formula.NOT)) {
-                    var arg1_of_arg1 = arg1F.cadr();
-                    var arg1_of_arg1F = new Formula();
+                    String arg1_of_arg1 = arg1F.cadr();
+                    Formula arg1_of_arg1F = new Formula();
                     arg1_of_arg1F.read(arg1_of_arg1);
                     return arg1_of_arg1F;
                 }
@@ -711,39 +711,39 @@ public class Clausifier  {
                     return listAll(arg1F.cdrAsFormula(),"(not ", ")").cons(newOp);
                 }
                 if (Formula.isQuantifier(arg0_of_arg1)) {
-                    var vars = arg1F.cadr();
-                    var arg2_of_arg1 = arg1F.caddr();
+                    String vars = arg1F.cadr();
+                    String arg2_of_arg1 = arg1F.caddr();
                     String quant = null;
                     if (arg0_of_arg1.equals(Formula.UQUANT))
                     	quant = Formula.EQUANT;
                     else
                     	quant = Formula.UQUANT;
                     arg2_of_arg1 = ("(not " + arg2_of_arg1 + ')');
-                    var arg2_of_arg1F = new Formula();
+                    Formula arg2_of_arg1F = new Formula();
                     arg2_of_arg1F.read(arg2_of_arg1);
-                    var theNewFormula = ('(' + quant + ' ' + vars + ' '
+                    String theNewFormula = ('(' + quant + ' ' + vars + ' '
                                             + negationsIn_1(arg2_of_arg1F).theFormula + ')');
-                    var newF = new Formula();
+                    Formula newF = new Formula();
                     newF.read(theNewFormula);
                     return newF;
                 }
-                var theNewFormula = ("(not " + negationsIn_1(arg1F).theFormula + ')');
-                var newF = new Formula();
+                String theNewFormula = ("(not " + negationsIn_1(arg1F).theFormula + ')');
+                Formula newF = new Formula();
                 newF.read(theNewFormula);
                 return newF;
             }
             if (Formula.isQuantifier(arg0)) {
-                var arg2 = thisFormula.caddr();
-                var arg2F = new Formula();
+                String arg2 = thisFormula.caddr();
+                Formula arg2F = new Formula();
                 arg2F.read(arg2);
-                var newArg2 = negationsIn_1(arg2F).theFormula;
-                var theNewFormula = ('(' + arg0 + ' ' + arg1 + ' ' + newArg2 + ')');
-                var newF = new Formula();
+                String newArg2 = negationsIn_1(arg2F).theFormula;
+                String theNewFormula = ('(' + arg0 + ' ' + arg1 + ' ' + newArg2 + ')');
+                Formula newF = new Formula();
                 newF.read(theNewFormula);
                 return newF;
             }
             if (Formula.listP(arg0)) {
-                var arg0F = new Formula();
+                Formula arg0F = new Formula();
                 arg0F.read(arg0);
                 return negationsIn_1(thisFormula.cdrAsFormula()).cons(negationsIn_1(arg0F).theFormula);
             }
@@ -756,7 +756,7 @@ public class Clausifier  {
      *  convenience method
      */
     private static Formula negationsIn_1(Formula f) {
-        var temp = new Clausifier(f.theFormula);
+        Clausifier temp = new Clausifier(f.theFormula);
         return temp.negationsIn_1();
     }
 
@@ -780,12 +780,12 @@ public class Clausifier  {
      */
     private Formula listAll(String before, String after) {
 
-        var ans = thisFormula;
+        Formula ans = thisFormula;
         if (thisFormula.listP()) {
-            var theNewFormula = "";
-            var f = thisFormula;
+            String theNewFormula = "";
+            Formula f = thisFormula;
             while (!(f.empty())) {
-                var element = f.car();
+                String element = f.car();
                 if (!StringUtil.emptyString(before)) 
                     element = (before + element);                
                 if (!StringUtil.emptyString(after)) 
@@ -807,7 +807,7 @@ public class Clausifier  {
      */
     private static Formula listAll(Formula f, String before, String after) {
 
-        var temp = new Clausifier(f.theFormula);
+        Clausifier temp = new Clausifier(f.theFormula);
         return temp.listAll(before,after);
     }
 
@@ -820,7 +820,7 @@ public class Clausifier  {
      */
     private static int incVarIndex() {
 
-        var oldVal = VAR_INDEX;
+        int oldVal = VAR_INDEX;
         if (oldVal == Integer.MAX_VALUE) 
             VAR_INDEX = 0;        
         else 
@@ -837,7 +837,7 @@ public class Clausifier  {
      */
     private static int incSkolemIndex() {
 
-        var oldVal = SKOLEM_INDEX;
+        int oldVal = SKOLEM_INDEX;
         if (oldVal == Integer.MAX_VALUE)
             SKOLEM_INDEX = 0;        
         else
@@ -855,8 +855,8 @@ public class Clausifier  {
      */
     private static String newVar(String prefix) {
 
-        var base = Formula.VX;
-        var varIdx = Integer.toString(incVarIndex());
+        String base = Formula.VX;
+        String varIdx = Integer.toString(incVarIndex());
         if (!StringUtil.emptyString(prefix)) {
             List woDigitSuffix = KB.getMatches(prefix, "var_with_digit_suffix");
             if (woDigitSuffix != null) 
@@ -899,7 +899,7 @@ public class Clausifier  {
      */
     public Formula rename(String term2, String term1) {
 
-        var newFormula = new Formula();
+        Formula newFormula = new Formula();
         newFormula.read("()");
         if (thisFormula.atom()) {
             if (thisFormula.theFormula.equals(term2)) 
@@ -907,13 +907,13 @@ public class Clausifier  {
             return thisFormula;
         }
         if (!thisFormula.empty()) {
-            var f1 = new Formula();
+            Formula f1 = new Formula();
             f1.read(thisFormula.car());
             if (f1.listP()) 
                 newFormula = newFormula.cons(f1.rename(term2,term1));            
             else
                 newFormula = newFormula.append(f1.rename(term2,term1));
-            var f2 = new Formula();
+            Formula f2 = new Formula();
             f2.read(thisFormula.cdr());
             newFormula = newFormula.append(f2.rename(term2,term1));
         }
@@ -925,7 +925,7 @@ public class Clausifier  {
      */
     public Formula substituteVariables(Map<String,String> m) {
 
-        var newFormula = new Formula();
+        Formula newFormula = new Formula();
         newFormula.read("()");
         if (thisFormula.atom()) {
             if (m.containsKey(thisFormula.theFormula)) {
@@ -936,13 +936,13 @@ public class Clausifier  {
             return thisFormula;
         }
         if (!thisFormula.empty()) {
-            var f1 = new Formula();
+            Formula f1 = new Formula();
             f1.read(thisFormula.car());
             if (f1.listP())
                 newFormula = newFormula.cons(f1.substituteVariables(m));            
             else
                 newFormula = newFormula.append(f1.substituteVariables(m));
-            var f2 = new Formula();
+            Formula f2 = new Formula();
             f2.read(thisFormula.cdr());
             newFormula = newFormula.append(f2.substituteVariables(m));
         }
@@ -969,10 +969,10 @@ public class Clausifier  {
                 vars.add(f.theFormula);
             }
         } else if (!f.empty()) {
-            var f1 = new Formula();
+            Formula f1 = new Formula();
             f1.read(f.car());
             extractVariablesRecursively(f1, vars);
-            var f2 = new Formula();
+            Formula f2 = new Formula();
             f2.read(f.cdr());
             extractVariablesRecursively(f2, vars);
         }
@@ -989,14 +989,14 @@ public class Clausifier  {
      */
     public Formula instantiateVariables() {
 
-        var f = renameVariables();
-        var varList = f.collectVariables();
-        var al = varList.get(0);
+        Formula f = renameVariables();
+        ArrayList<ArrayList<String>> varList = f.collectVariables();
+        ArrayList<String> al = varList.get(0);
         al.addAll(varList.get(1));
         Map<String, String> vars = new TreeMap<>();
-        for (var s : al) {
+        for (String s : al) {
             _GENSYM_COUNTER++;
-            var value = "GenSym" + _GENSYM_COUNTER;
+            String value = "GenSym" + _GENSYM_COUNTER;
             vars.put(s, value);
         }
         return f.substituteVariables(vars);
@@ -1024,7 +1024,7 @@ public class Clausifier  {
      */
     public static Formula renameVariables(Formula f) {
 
-        var temp = new Clausifier(f.theFormula);
+        Clausifier temp = new Clausifier(f.theFormula);
         return temp.renameVariables();
     }
 
@@ -1033,7 +1033,7 @@ public class Clausifier  {
      */
     public static Formula renameVariables(Formula f, Map topLevelVars, Map scopedRenames, Map allRenames) {
 
-        var temp = new Clausifier(f.theFormula);
+        Clausifier temp = new Clausifier(f.theFormula);
         return temp.renameVariables(topLevelVars,scopedRenames,allRenames);
     }
 
@@ -1058,48 +1058,48 @@ public class Clausifier  {
 
         if (thisFormula.listP()) {
             if (thisFormula.empty()) { return thisFormula; }
-            var arg0 = thisFormula.car();
+            String arg0 = thisFormula.car();
             if (Formula.isQuantifier(arg0)) {          
                 
                 Map<String,String> newScopedRenames = new HashMap<>(scopedRenames);
-                var oldVars = thisFormula.cadr();
-                var oldVarsF = new Formula();
+                String oldVars = thisFormula.cadr();
+                Formula oldVarsF = new Formula();
                 oldVarsF.read(oldVars);
-                var newVars = "";
+                String newVars = "";
                 while (oldVarsF != null && !oldVarsF.empty()) {
-                    var oldVar = oldVarsF.car();
-                    var newVar = newVar();
+                    String oldVar = oldVarsF.car();
+                    String newVar = newVar();
                     newScopedRenames.put(oldVar, newVar);
                     allRenames.put(newVar, oldVar);
                     newVars += (Formula.SPACE + newVar);
                     oldVarsF = oldVarsF.cdrAsFormula();
                 }
                 newVars = (Formula.LP + newVars.trim() + Formula.RP);
-                var arg2 = thisFormula.caddr();
-                var arg2F = new Formula();
+                String arg2 = thisFormula.caddr();
+                Formula arg2F = new Formula();
                 arg2F.read(arg2);
-                var newArg2 = Clausifier.renameVariables(arg2F,topLevelVars,newScopedRenames,
+                String newArg2 = Clausifier.renameVariables(arg2F,topLevelVars,newScopedRenames,
                                                        allRenames).theFormula;
-                var theNewFormula = (Formula.LP + arg0 + Formula.SPACE + newVars + Formula.SPACE + newArg2 + Formula.RP);
-                var newF = new Formula();
+                String theNewFormula = (Formula.LP + arg0 + Formula.SPACE + newVars + Formula.SPACE + newArg2 + Formula.RP);
+                Formula newF = new Formula();
                 newF.read(theNewFormula);
                 return newF;
             }
-            var arg0F = new Formula();
+            Formula arg0F = new Formula();
             arg0F.read(arg0);
-            var newArg0 = Clausifier.renameVariables(arg0F,topLevelVars,scopedRenames,
+            String newArg0 = Clausifier.renameVariables(arg0F,topLevelVars,scopedRenames,
                                                    allRenames).theFormula;
-            var newRest = Clausifier.renameVariables(thisFormula.cdrAsFormula(),topLevelVars,scopedRenames,
+            String newRest = Clausifier.renameVariables(thisFormula.cdrAsFormula(),topLevelVars,scopedRenames,
                                                                  allRenames).theFormula;
-            var newRestF = new Formula();
+            Formula newRestF = new Formula();
             newRestF.read(newRest);
-            var theNewFormula = newRestF.cons(newArg0).theFormula;
-            var newF = new Formula();
+            String theNewFormula = newRestF.cons(newArg0).theFormula;
+            Formula newF = new Formula();
             newF.read(theNewFormula);
             return newF;
         }
         if (Formula.isVariable(thisFormula.theFormula)) {
-            var rnv = scopedRenames.get(thisFormula.theFormula);
+            String rnv = scopedRenames.get(thisFormula.theFormula);
             if (StringUtil.emptyString(rnv)) {
                 rnv = topLevelVars.get(thisFormula.theFormula);
                 if (StringUtil.emptyString(rnv)) {
@@ -1108,7 +1108,7 @@ public class Clausifier  {
                     allRenames.put(rnv, thisFormula.theFormula);
                 }
             }
-            var newF = new Formula();
+            Formula newF = new Formula();
             newF.read(rnv);
             return newF;
         }
@@ -1129,12 +1129,12 @@ public class Clausifier  {
      */
     private static String newSkolemTerm(Set<String> vars) {
 
-        var ans = Formula.SK_PREF;
-        var idx = incSkolemIndex();
+        String ans = Formula.SK_PREF;
+        int idx = incSkolemIndex();
         if ((vars != null) && !vars.isEmpty()) {
 
             ans += (Formula.FN_SUFF + idx);
-            for (var var : vars) {
+            for (String var : vars) {
                 ans += (Formula.SPACE + var);
             }
             ans = (Formula.LP + ans + Formula.RP);
@@ -1157,16 +1157,16 @@ public class Clausifier  {
     private Formula existentialsOut() {
 
 
-        var iUQVs = new TreeSet<String>();
+        TreeSet<String> iUQVs = new TreeSet<String>();
 
 
-        var scopedVars = new TreeSet<String>();
+        TreeSet<String> scopedVars = new TreeSet<String>();
 
 
         collectIUQVars(iUQVs, scopedVars);
 
 
-        var scopedUQVs = new TreeSet<String>();
+        TreeSet<String> scopedUQVs = new TreeSet<String>();
         Map<String, String> evSubs = new HashMap<>();
         return existentialsOut(evSubs, iUQVs, scopedUQVs);
     }
@@ -1193,23 +1193,23 @@ public class Clausifier  {
         
         if (thisFormula.listP()) {
             if (thisFormula.empty()) { return thisFormula; }
-            var arg0 = thisFormula.car();
+            String arg0 = thisFormula.car();
             if (arg0.equals(Formula.UQUANT)) {
 
 
-                var newScopedUQVs = new TreeSet<String>(scopedUQVs);
-                var varList = thisFormula.cadr();
-                var varListF = new Formula();
+                TreeSet<String> newScopedUQVs = new TreeSet<String>(scopedUQVs);
+                String varList = thisFormula.cadr();
+                Formula varListF = new Formula();
                 varListF.read(varList);
                 while (!(varListF.empty())) {
-                    var var = varListF.car();
+                    String var = varListF.car();
                     newScopedUQVs.add(var);
                     varListF.read(varListF.cdr());
                 }
-                var arg2 = thisFormula.caddr();
-                var arg2F = new Formula();
+                String arg2 = thisFormula.caddr();
+                Formula arg2F = new Formula();
                 arg2F.read(arg2);
-                var theNewFormula = ("(forall " + varList + ' '
+                String theNewFormula = ("(forall " + varList + ' '
                                         + existentialsOut(arg2F, evSubs, iUQVs, 
                                                           newScopedUQVs).theFormula + ')');
                 thisFormula.read(theNewFormula);
@@ -1217,36 +1217,36 @@ public class Clausifier  {
             }
             if (arg0.equals(Formula.EQUANT)) {
 
-                var uQVs = new TreeSet<String>(iUQVs);
+                TreeSet<String> uQVs = new TreeSet<String>(iUQVs);
                 uQVs.addAll(scopedUQVs);
 
-                var varList = thisFormula.cadr();
-                var varListF = new Formula();
+                String varList = thisFormula.cadr();
+                Formula varListF = new Formula();
                 varListF.read(varList);
-                var eQVs = new ArrayList<String>();
+                ArrayList<String> eQVs = new ArrayList<String>();
                 while (!(varListF.empty())) {
-                    var var = varListF.car();
+                    String var = varListF.car();
                     eQVs.add(var);
                     varListF.read(varListF.cdr());
                 }
 
 
-                for (var var : eQVs) {
-                    var skTerm = newSkolemTerm(uQVs);
+                for (String var : eQVs) {
+                    String skTerm = newSkolemTerm(uQVs);
                     evSubs.put(var, skTerm);
                 }
-                var arg2 = thisFormula.caddr();
-                var arg2F = new Formula();
+                String arg2 = thisFormula.caddr();
+                Formula arg2F = new Formula();
                 arg2F.read(arg2);
                 return existentialsOut(arg2F,evSubs, iUQVs, scopedUQVs);
             }
-            var arg0F = new Formula();
+            Formula arg0F = new Formula();
             arg0F.read(arg0);
-            var newArg0 = existentialsOut(arg0F,evSubs,iUQVs,scopedUQVs).theFormula;
+            String newArg0 = existentialsOut(arg0F,evSubs,iUQVs,scopedUQVs).theFormula;
             return existentialsOut(thisFormula.cdrAsFormula(),evSubs, iUQVs, scopedUQVs).cons(newArg0);
         }
         if (Formula.isVariable(thisFormula.theFormula)) {
-            var newTerm = evSubs.get(thisFormula.theFormula);
+            String newTerm = evSubs.get(thisFormula.theFormula);
             if (!StringUtil.emptyString(newTerm)) 
                 thisFormula.read(newTerm);                
             return thisFormula;
@@ -1259,7 +1259,7 @@ public class Clausifier  {
      */
     private static Formula existentialsOut(Formula f, Map evSubs, TreeSet iUQVs, TreeSet scopedUQVs) {
 
-        var temp = new Clausifier(f.theFormula);
+        Clausifier temp = new Clausifier(f.theFormula);
         return temp.existentialsOut(evSubs, iUQVs, scopedUQVs);
     }
 
@@ -1279,26 +1279,26 @@ public class Clausifier  {
     private void collectIUQVars(TreeSet iuqvs, TreeSet scopedVars) {
 
         if (thisFormula.listP() && !thisFormula.empty()) {
-            var arg0 = thisFormula.car();
+            String arg0 = thisFormula.car();
             if (Formula.isQuantifier(arg0)) {
 
-                var newScopedVars = new TreeSet(scopedVars);
+                TreeSet newScopedVars = new TreeSet(scopedVars);
 
-                var varList = thisFormula.cadr();
-                var varListF = new Formula();
+                String varList = thisFormula.cadr();
+                Formula varListF = new Formula();
                 varListF.read(varList);
                 while (!(varListF.empty())) {
-                    var var = varListF.car();
+                    String var = varListF.car();
                     newScopedVars.add(var);
                     varListF = varListF.cdrAsFormula();
                 }
-                var arg2 = thisFormula.caddr();
-                var arg2F = new Formula();
+                String arg2 = thisFormula.caddr();
+                Formula arg2F = new Formula();
                 arg2F.read(arg2);
                 collectIUQVars(arg2F,iuqvs,newScopedVars);
             }
             else {
-                var arg0F = new Formula();
+                Formula arg0F = new Formula();
                 arg0F.read(arg0);
                 collectIUQVars(arg0F,iuqvs,scopedVars);
                 collectIUQVars(thisFormula.cdrAsFormula(),iuqvs,scopedVars);
@@ -1315,7 +1315,7 @@ public class Clausifier  {
      */
     private static void collectIUQVars(Formula f, TreeSet iuqvs, TreeSet scopedVars) {
 
-        var temp = new Clausifier(f.theFormula);
+        Clausifier temp = new Clausifier(f.theFormula);
         temp.collectIUQVars(iuqvs,scopedVars);
     }
 
@@ -1332,15 +1332,15 @@ public class Clausifier  {
 
         if (thisFormula.listP()) {
             if (thisFormula.empty()) { return thisFormula; }
-            var arg0 = thisFormula.car();
+            String arg0 = thisFormula.car();
             if (arg0.equals(Formula.UQUANT)) {
-                var arg2 = thisFormula.caddr();
+                String arg2 = thisFormula.caddr();
                 thisFormula.read(arg2);
                 return universalsOut(thisFormula);
             }
-            var arg0F = new Formula();
+            Formula arg0F = new Formula();
             arg0F.read(arg0);
-            var newArg0 = universalsOut(arg0F).theFormula;
+            String newArg0 = universalsOut(arg0F).theFormula;
             return universalsOut(thisFormula.cdrAsFormula()).cons(newArg0);
         }
         return thisFormula;
@@ -1351,7 +1351,7 @@ public class Clausifier  {
      */
     public static Formula universalsOut(Formula f) {
 
-        var temp = new Clausifier(f.theFormula);
+        Clausifier temp = new Clausifier(f.theFormula);
         return temp.universalsOut();
     }
 
@@ -1373,8 +1373,8 @@ public class Clausifier  {
      */
     private Formula nestedOperatorsOut() {
 
-        var f = thisFormula;
-        var ans = nestedOperatorsOut_1();
+        Formula f = thisFormula;
+        Formula ans = nestedOperatorsOut_1();
         
         
         while (!f.theFormula.equals(ans.theFormula)) {     
@@ -1392,7 +1392,7 @@ public class Clausifier  {
      */
     private static Formula nestedOperatorsOut(Formula f) {
 
-        var temp = new Clausifier(f.theFormula);
+        Clausifier temp = new Clausifier(f.theFormula);
         return temp.nestedOperatorsOut();
     }
 
@@ -1407,27 +1407,27 @@ public class Clausifier  {
 
         if (thisFormula.listP()) {
             if (thisFormula.empty()) { return thisFormula; }
-            var arg0 = thisFormula.car();
+            String arg0 = thisFormula.car();
             if (Formula.isCommutative(arg0) || arg0.equals(Formula.NOT)) {
-                var literals = new ArrayList();
-                var restF = thisFormula.cdrAsFormula();
+                ArrayList literals = new ArrayList();
+                Formula restF = thisFormula.cdrAsFormula();
                 while (!(restF.empty())) {
-                    var lit = restF.car();
-                    var litF = new Formula();
+                    String lit = restF.car();
+                    Formula litF = new Formula();
                     litF.read (lit);
                     if (litF.listP()) {
-                        var litFarg0 = litF.car();
+                        String litFarg0 = litF.car();
                         if (litFarg0.equals(arg0)) {
                             if (arg0.equals(Formula.NOT)) {
-                                var theNewFormula = litF.cadr();
-                                var newF = new Formula();
+                                String theNewFormula = litF.cadr();
+                                Formula newF = new Formula();
                                 newF.read(theNewFormula);
                                 return nestedOperatorsOut_1(newF);
                             }
-                            var rest2F = litF.cdrAsFormula();
+                            Formula rest2F = litF.cdrAsFormula();
                             while (!(rest2F.empty())) {
-                                var rest2arg0 = rest2F.car();
-                                var rest2arg0F = new Formula();
+                                String rest2arg0 = rest2F.car();
+                                Formula rest2arg0F = new Formula();
                                 rest2arg0F.read(rest2arg0);
                                 literals.add(nestedOperatorsOut_1(rest2arg0F).theFormula);
                                 rest2F = rest2F.cdrAsFormula();
@@ -1440,16 +1440,16 @@ public class Clausifier  {
                         literals.add(lit);                        
                     restF = restF.cdrAsFormula();
                 }
-                var theNewFormula = (Formula.LP + arg0);
-                for (var literal : literals) theNewFormula += (Formula.SPACE + literal);
+                String theNewFormula = (Formula.LP + arg0);
+                for (Object literal : literals) theNewFormula += (Formula.SPACE + literal);
                 theNewFormula += Formula.RP;
-                var newF = new Formula();
+                Formula newF = new Formula();
                 newF.read(theNewFormula);
                 return newF;
             }
-            var arg0F = new Formula();
+            Formula arg0F = new Formula();
             arg0F.read(arg0);
-            var newArg0 = nestedOperatorsOut_1(arg0F).theFormula;
+            String newArg0 = nestedOperatorsOut_1(arg0F).theFormula;
             return nestedOperatorsOut_1(thisFormula.cdrAsFormula()).cons(newArg0);
         }
         return thisFormula;
@@ -1460,7 +1460,7 @@ public class Clausifier  {
      */
     private static Formula nestedOperatorsOut_1(Formula f) {
 
-        var temp = new Clausifier(f.theFormula);
+        Clausifier temp = new Clausifier(f.theFormula);
         return temp.nestedOperatorsOut_1();
     }
 
@@ -1478,8 +1478,8 @@ public class Clausifier  {
      */
     private Formula disjunctionsIn() {
 
-        var f = thisFormula;
-        var ans = disjunctionsIn_1(nestedOperatorsOut());
+        Formula f = thisFormula;
+        Formula ans = disjunctionsIn_1(nestedOperatorsOut());
         
         while (! f.theFormula.equals(ans.theFormula)) {     
             f = ans;
@@ -1499,19 +1499,19 @@ public class Clausifier  {
 
         if (thisFormula.listP()) {
             if (thisFormula.empty()) { return thisFormula; }
-            var arg0 = thisFormula.car();
+            String arg0 = thisFormula.car();
             if (arg0.equals(Formula.OR)) {
                 List<String> disjuncts = new ArrayList<>();
                 List<String> conjuncts = new ArrayList<>();
-                var restF = thisFormula.cdrAsFormula();
+                Formula restF = thisFormula.cdrAsFormula();
                 while (!(restF.empty())) {
-                    var disjunct = restF.car();
-                    var disjunctF = new Formula();
+                    String disjunct = restF.car();
+                    Formula disjunctF = new Formula();
                     disjunctF.read(disjunct);
                     if (disjunctF.listP() 
                         && disjunctF.car().equals(Formula.AND) 
                         && conjuncts.isEmpty()) {
-                        var rest2F = disjunctionsIn_1(disjunctF.cdrAsFormula());
+                        Formula rest2F = disjunctionsIn_1(disjunctF.cdrAsFormula());
                         while (!(rest2F.empty())) {
                             conjuncts.add(rest2F.car());
                             rest2F = rest2F.cdrAsFormula();
@@ -1524,24 +1524,24 @@ public class Clausifier  {
 
                 if (conjuncts.isEmpty()) { return thisFormula; }
 
-                var resultF = new Formula();
+                Formula resultF = new Formula();
                 resultF.read("()");
-                var disjunctsString = "";
-                for (var disjunct : disjuncts) disjunctsString += (Formula.SPACE + disjunct);
+                String disjunctsString = "";
+                for (String disjunct : disjuncts) disjunctsString += (Formula.SPACE + disjunct);
                 disjunctsString = (Formula.LP + disjunctsString.trim() + Formula.RP);
-                var disjunctsF = new Formula();
+                Formula disjunctsF = new Formula();
                 disjunctsF.read(disjunctsString);
-                for (var conjunct : conjuncts) {
-                    var newDisjuncts =
+                for (String conjunct : conjuncts) {
+                    String newDisjuncts =
                         disjunctionsIn_1(disjunctsF.cons(conjunct).cons(Formula.OR)).theFormula;
                     resultF = resultF.cons(newDisjuncts);
                 }
                 resultF = resultF.cons(Formula.AND);
                 return resultF;
             }
-            var arg0F = new Formula();
+            Formula arg0F = new Formula();
             arg0F.read(arg0);
-            var newArg0 = disjunctionsIn_1(arg0F).theFormula;
+            String newArg0 = disjunctionsIn_1(arg0F).theFormula;
             return disjunctionsIn_1(thisFormula.cdrAsFormula()).cons(newArg0);
         }
         return thisFormula;
@@ -1552,7 +1552,7 @@ public class Clausifier  {
      */
     private static Formula disjunctionsIn_1(Formula f) {
 
-        var temp = new Clausifier(f.theFormula);
+        Clausifier temp = new Clausifier(f.theFormula);
         return temp.disjunctionsIn_1();
     }
 
@@ -1569,16 +1569,16 @@ public class Clausifier  {
      */
     private ArrayList<Formula> operatorsOut() {
 
-        var result = new ArrayList<Formula>();
+        ArrayList<Formula> result = new ArrayList<Formula>();
         if (!StringUtil.emptyString(thisFormula.theFormula)) {
-            var clauses = new ArrayList<Formula>();
+            ArrayList<Formula> clauses = new ArrayList<Formula>();
             if (thisFormula.listP()) {
-                var arg0 = thisFormula.car();
+                String arg0 = thisFormula.car();
                 if (arg0.equals(Formula.AND)) {
-                    var restF = thisFormula.cdrAsFormula();
+                    Formula restF = thisFormula.cdrAsFormula();
                     while (!(restF.empty())) {
-                        var fStr = restF.car();
-                        var newF = new Formula();
+                        String fStr = restF.car();
+                        Formula newF = new Formula();
                         newF.read(fStr);
                         clauses.add(newF);
                         restF = restF.cdrAsFormula();
@@ -1587,15 +1587,15 @@ public class Clausifier  {
             }
             if (clauses.isEmpty()) 
                 clauses.add(thisFormula);
-            for (var clause : clauses) {
-                var clauseF = new Formula();
+            for (Formula clause : clauses) {
+                Formula clauseF = new Formula();
                 clauseF.read("()");
-                var f = clause;
+                Formula f = clause;
                 if (f.listP()) {
                     if (f.car().equals(Formula.OR)) {
                         f = f.cdrAsFormula();
                         while (!(f.empty())) {
-                            var lit = f.car();
+                            String lit = f.car();
                             clauseF = clauseF.cons(lit);
                             f = f.cdrAsFormula();
                         }
@@ -1629,7 +1629,7 @@ public class Clausifier  {
      */
     private static Formula standardizeApart(Formula f, Map<String, String> renameMap) {
 
-        var temp = new Clausifier(f.theFormula);
+        Clausifier temp = new Clausifier(f.theFormula);
         return temp.standardizeApart(renameMap);
     }
 
@@ -1649,7 +1649,7 @@ public class Clausifier  {
      */
     private Formula standardizeApart(Map<String,String> renameMap) {
 
-        var result = thisFormula;
+        Formula result = thisFormula;
         Map<String,String> reverseRenames = null;
         if (renameMap instanceof Map) 
             reverseRenames = renameMap;            
@@ -1657,14 +1657,14 @@ public class Clausifier  {
             reverseRenames = new HashMap();
 
         if (!StringUtil.emptyString(thisFormula.theFormula)) {
-            var clauses = new ArrayList<Formula>();
+            ArrayList<Formula> clauses = new ArrayList<Formula>();
             if (thisFormula.listP()) {
-                var arg0 = thisFormula.car();
+                String arg0 = thisFormula.car();
                 if (arg0.equals(Formula.AND)) {
-                    var restF = thisFormula.cdrAsFormula();
+                    Formula restF = thisFormula.cdrAsFormula();
                     while (!(restF.empty())) {
-                        var fStr = restF.car();
-                        var newF = new Formula();
+                        String fStr = restF.car();
+                        Formula newF = new Formula();
                         newF.read(fStr);
                         clauses.add(newF);
                         restF = restF.cdrAsFormula();
@@ -1674,21 +1674,21 @@ public class Clausifier  {
             if (clauses.isEmpty()) 
                 clauses.add(thisFormula);
 
-            var n = clauses.size();
-            for (var i = 0; i < n ; i++) {
+            int n = clauses.size();
+            for (int i = 0; i < n ; i++) {
                 Map<String, String> renames = new HashMap<>();
-                var oldClause = clauses.remove(0);
+                Formula oldClause = clauses.remove(0);
                 clauses.add(standardizeApart_1(oldClause,renames,reverseRenames));
             }
 
             
             if (n > 1) {
-                var theNewFormula = "(and";
-                for (var f : clauses) {
+                String theNewFormula = "(and";
+                for (Formula f : clauses) {
                     theNewFormula += (Formula.SPACE + f.theFormula);
                 }
                 theNewFormula += Formula.RP;
-                var newF = new Formula();
+                Formula newF = new Formula();
                 newF.read(theNewFormula);
                 result = newF;
             }
@@ -1716,22 +1716,22 @@ public class Clausifier  {
      */
     private Formula standardizeApart_1(Map<String, String> renames, Map<String, String> reverseRenames) {
 
-        var ans = thisFormula;
+        Formula ans = thisFormula;
         if (thisFormula.listP() && !(thisFormula.empty())) {
-            var arg0 = thisFormula.car();
-            var arg0F = new Formula();
+            String arg0 = thisFormula.car();
+            Formula arg0F = new Formula();
             arg0F.read(arg0);
             arg0F = standardizeApart_1(arg0F,renames,reverseRenames);
             ans = standardizeApart_1(thisFormula.cdrAsFormula(),renames,reverseRenames).cons(arg0F.theFormula);
         }
         else if (Formula.isVariable(thisFormula.theFormula)) {
-            var rnv = renames.get(thisFormula.theFormula);
+            String rnv = renames.get(thisFormula.theFormula);
             if (StringUtil.emptyString(rnv)) {
                 rnv = newVar();
                 renames.put(thisFormula.theFormula, rnv);
                 reverseRenames.put(rnv, thisFormula.theFormula);
             }
-            var rnvF = new Formula();
+            Formula rnvF = new Formula();
             rnvF.read(rnv);
             ans = rnvF;
         }
@@ -1743,7 +1743,7 @@ public class Clausifier  {
      */
     private static Formula standardizeApart_1(Formula f, Map<String, String> renames, Map<String, String> reverseRenames) {
 
-        var temp = new Clausifier(f.theFormula);
+        Clausifier temp = new Clausifier(f.theFormula);
         return temp.standardizeApart_1(renames, reverseRenames);
     }
 
@@ -1766,7 +1766,7 @@ public class Clausifier  {
         String ans = null;
         if (!StringUtil.emptyString(var) && (varMap instanceof Map)) {
             ans = var;
-            var next = varMap.get(ans);
+            String next = varMap.get(ans);
             while (! ((next == null) || next.equals(ans))) {
                 ans = next;
                 next = varMap.get(ans);        
@@ -1824,10 +1824,10 @@ public class Clausifier  {
      */
     public static void test1() {
 
-        var f = new Formula();
+        Formula f = new Formula();
         f.read("(forall (?ROW1 ?ITEM) (equal (ListOrderFn (ListFn ?ROW1 ?ITEM) (ListLengthFn (ListFn ?ROW1 ?ITEM))) ?ITEM))");
         System.out.println("INFO in Clausifier.test1(): input formula: " + f);
-        var clausalForm = Clausifier.clausify(f);
+        Formula clausalForm = Clausifier.clausify(f);
         System.out.println("INFO in Clausifier.test1(): output formula: " + clausalForm);
     }
 
@@ -1904,9 +1904,9 @@ public class Clausifier  {
     
         System.out.println();
         System.out.println("================== testRemoveImpEq ======================");
-        var f = new Clausifier("(=> a b)");
+        Clausifier f = new Clausifier("(=> a b)");
         System.out.println("input: " + f);
-        var form = f.equivalencesOut();
+        Formula form = f.equivalencesOut();
         System.out.println(form);
         f = new Clausifier(form.theFormula);
         form = f.implicationsOut();
@@ -1940,9 +1940,9 @@ public class Clausifier  {
         
         System.out.println();
         System.out.println("================== testMoveQuantifiersLeft ======================");
-        var f = new Clausifier("(or p (forall (?X) (q ?X)))");
+        Clausifier f = new Clausifier("(or p (forall (?X) (q ?X)))");
         System.out.println("input: " + f);
-        var form = f.existentialsOut();
+        Formula form = f.existentialsOut();
         System.out.println("result: " + form);
         f = new Clausifier(form.theFormula);
         form = f.universalsOut();        
@@ -1992,10 +1992,10 @@ public class Clausifier  {
         
         System.out.println();
         System.out.println("================== testMoveNegationIn ======================");
-        var f = new Clausifier("(not (or p q))");
+        Clausifier f = new Clausifier("(not (or p q))");
         
         System.out.println("input: " + f);
-        var form = f.negationsIn();
+        Formula form = f.negationsIn();
         System.out.println("result should be (and (not p) (not q)): " + form);
         System.out.println();
         
@@ -2060,9 +2060,9 @@ public class Clausifier  {
         
         System.out.println();
         System.out.println("================== testStandardizeVariables ======================");
-        var f = new Clausifier("(not (or (forall (?X) (a ?X)) (b ?X)))");
+        Clausifier f = new Clausifier("(not (or (forall (?X) (a ?X)) (b ?X)))");
         System.out.println("input: " + f);
-        var form = f.standardizeApart();
+        Formula form = f.standardizeApart();
         System.out.println("result should be : (not (or (forall (?VAR2) (a ?VAR2)) (b ?VAR1)))");
         System.out.println("actual: "+ form);
         System.out.println();
@@ -2082,9 +2082,9 @@ public class Clausifier  {
         
         System.out.println();
         System.out.println("================== testSkolemization ======================");
-        var f = new Clausifier("(?[VAR0]:(![VAR3]:(![VAR2]:(?[VAR5]:(![VAR1]:(?[VAR4]:((((~a(VAR0)&~b(X))&~p(VAR2, f(VAR1)))|q(g(a), X))&(~q(g(a), X)|((a(VAR3)|b(X))|p(VAR5, f(VAR4)))))))))))");
+        Clausifier f = new Clausifier("(?[VAR0]:(![VAR3]:(![VAR2]:(?[VAR5]:(![VAR1]:(?[VAR4]:((((~a(VAR0)&~b(X))&~p(VAR2, f(VAR1)))|q(g(a), X))&(~q(g(a), X)|((a(VAR3)|b(X))|p(VAR5, f(VAR4)))))))))))");
         System.out.println("input: " + f);
-        var form = f.existentialsOut();
+        Formula form = f.existentialsOut();
         System.out.println("actual: "+ form);
         System.out.println();
     }
@@ -2095,9 +2095,9 @@ public class Clausifier  {
         
         System.out.println();
         System.out.println("================== testDistribute ======================");
-        var f = new Clausifier("(or (and a b) c)");
+        Clausifier f = new Clausifier("(or (and a b) c)");
         System.out.println("input: " + f);
-        var form = f.disjunctionsIn();
+        Formula form = f.disjunctionsIn();
         System.out.println("actual: " + form);
         /*
         System.out.println("input: " + form);
@@ -2128,10 +2128,10 @@ public class Clausifier  {
 
         System.out.println();
         System.out.println("================== testClausification ======================");
-        var f = new Clausifier(s);
+        Clausifier f = new Clausifier(s);
         System.out.println("input: " + f);
         System.out.println();
-        var form = f.equivalencesOut();
+        Formula form = f.equivalencesOut();
         System.out.println("after Remove Equivalence: " + form);
 
         System.out.println();
@@ -2171,7 +2171,7 @@ public class Clausifier  {
         
         System.out.println();
         f = new Clausifier(form.theFormula);
-        var forms = f.separateConjunctions();
+        ArrayList<Formula> forms = f.separateConjunctions();
         System.out.println("after separation: " + forms);
     }
     
@@ -2189,12 +2189,12 @@ public class Clausifier  {
         
         System.out.println();
         System.out.println("================== testClausificationSimple ======================");
-        var form = new Formula();
-        var c = new Clausifier("(<=> (or (or (forall (?X) (a ?X))  (b ?X)) (exists (?X) (exists (?Y) (p ?X (f ?Y))))) (q (g a) ?X))");
+        Formula form = new Formula();
+        Clausifier c = new Clausifier("(<=> (or (or (forall (?X) (a ?X))  (b ?X)) (exists (?X) (exists (?Y) (p ?X (f ?Y))))) (q (g a) ?X))");
 
         System.out.println("input: " + c.thisFormula);
         System.out.println();
-        var result = c.clausify();
+        Formula result = c.clausify();
         System.out.println(result);   
         
         c = new Clausifier("(<=> (and (equal (AbsoluteValueFn ?NUMBER1) ?NUMBER2) (instance ?NUMBER1 RealNumber) " +

@@ -83,9 +83,9 @@ public abstract class CollectionParser extends Parser {
 	 */
 	@Override
 	protected String unvisitedString(Set<Parser> visited) {
-		var buf = new StringBuilder("(");
-		var needSeparator = false;
-		for (var subparser : subparsers) {
+        StringBuilder buf = new StringBuilder("(");
+        boolean needSeparator = false;
+		for (Parser subparser : subparsers) {
 			if (needSeparator) {
 				buf.append(toStringSeparator());
 			}

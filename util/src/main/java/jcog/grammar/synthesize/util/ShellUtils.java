@@ -30,7 +30,7 @@ public class ShellUtils {
     public static void write(String query, File file) {
         file.delete();
         try {
-            var fw = new FileWriter(file);
+            FileWriter fw = new FileWriter(file);
             fw.write(query);
             fw.close();
         } catch (IOException e) {
@@ -44,8 +44,8 @@ public class ShellUtils {
 
     public static String read(InputStream input) {
         try {
-            var br = new BufferedReader(new InputStreamReader(input));
-            var result = br.lines().map(line -> line + '\n').collect(Collectors.joining());
+            BufferedReader br = new BufferedReader(new InputStreamReader(input));
+            String result = br.lines().map(line -> line + '\n').collect(Collectors.joining());
             br.close();
             return result;
         } catch (IOException e) {
@@ -63,9 +63,9 @@ public class ShellUtils {
     }
 
     public static String executeForStream(String command, boolean isError, long timeoutMillis) {
-        var process = executeNoWait(command);
+        Process process = executeNoWait(command);
         Callable<String> exec = () -> {
-            var result = read(isError ? process.getErrorStream() : process.getInputStream());
+            String result = read(isError ? process.getErrorStream() : process.getInputStream());
             try {
                 process.waitFor();
             } catch (InterruptedException e) {
@@ -80,8 +80,8 @@ public class ShellUtils {
                 throw new RuntimeException("Error executing command: " + command, e);
             }
         } else {
-            var executor = Executors.newSingleThreadExecutor();
-            var future = executor.submit(exec);
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Future<String> future = executor.submit(exec);
             executor.shutdown();
             String result;
             try {
@@ -128,7 +128,7 @@ public class ShellUtils {
         public String apply(String query) {
             write("", this.auxFilename);
             write(query, this.filename);
-            var result = ShellUtils.executeForStream(this.command, this.isError, this.timeoutMillis);
+            String result = ShellUtils.executeForStream(this.command, this.isError, this.timeoutMillis);
             delete(this.auxFilename);
             delete(this.filename);
             return result;

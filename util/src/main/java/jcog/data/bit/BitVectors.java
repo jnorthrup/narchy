@@ -112,10 +112,10 @@ public enum BitVectors {
 	 */
 	
 	public static void writeFast( BitVector v, DataOutput dos ) throws IOException {
-		var length = v.length();
+        long length = v.length();
         dos.writeLong( length );
 		long i;
-		var l = length - length % Long.SIZE;
+        long l = length - length % Long.SIZE;
         for(i = 0; i < l; i += Long.SIZE ) dos.writeLong( v.getLong( i, i + Long.SIZE ) );
 		if ( i < length ) dos.writeLong( v.getLong( i, length ) );
 	}
@@ -132,10 +132,10 @@ public enum BitVectors {
 	 */
 	
 	public static LongArrayBitVector readFast( DataInput dis ) throws IOException {
-		var length = dis.readLong();
-		var bits = new long[LongArrayBitVector.numWords(length)];
-		var l = bits.length;
-		for(var i = 0; i < l; i++ ) bits[ i ] = dis.readLong();
+        long length = dis.readLong();
+        long[] bits = new long[LongArrayBitVector.numWords(length)];
+        int l = bits.length;
+		for(int i = 0; i < l; i++ ) bits[ i ] = dis.readLong();
 		return LongArrayBitVector.wrap( bits, length );
 	}
 	
@@ -150,10 +150,10 @@ public enum BitVectors {
 	 * @see #readFast(DataInput)
 	 */
 	public static LongArrayBitVector readFast( DataInput dis, LongArrayBitVector bv ) throws IOException {
-		var length = dis.readLong();
+        long length = dis.readLong();
 		bv.ensureCapacity( length );
-		var l = LongArrayBitVector.numWords( length );
-		for(var i = 0; i < l; i++ ) bv.bits[ i ] = dis.readLong();
+        int l = LongArrayBitVector.numWords( length );
+		for(int i = 0; i < l; i++ ) bv.bits[ i ] = dis.readLong();
 		bv.length( length );
 		return bv;
 	}

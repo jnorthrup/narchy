@@ -63,8 +63,8 @@ public final class GenericGF {
 
         expTable = new int[size];
         logTable = new int[size];
-        var x = 1;
-        for (var i = 0; i < size; i++) {
+        int x = 1;
+        for (int i = 0; i < size; i++) {
             expTable[i] = x;
             x *= 2; // we're assuming the generator alpha is 2
             if (x >= size) {
@@ -72,7 +72,7 @@ public final class GenericGF {
                 x &= size - 1;
             }
         }
-        for (var i = 0; i < size - 1; i++) {
+        for (int i = 0; i < size - 1; i++) {
             logTable[expTable[i]] = i;
         }
         // logTable[0] == 0 but this should never be used
@@ -107,7 +107,7 @@ public final class GenericGF {
         if (coefficient == 0) {
             return zero;
         }
-        var coefficients = new int[degree + 1];
+        int[] coefficients = new int[degree + 1];
         coefficients[0] = coefficient;
         return new GenericGFPoly(this, coefficients);
     }

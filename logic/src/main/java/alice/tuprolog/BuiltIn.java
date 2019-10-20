@@ -100,11 +100,11 @@ public final class BuiltIn extends PrologLib {
         arg0 = arg0.term();
         if (arg0 instanceof Struct) {
 
-            var ss = (Struct) arg0;
+            Struct ss = (Struct) arg0;
             if (":-".equals(ss.name())) {
-                var ssi = ss.listIterator();
+                Iterator<Term> ssi = ss.listIterator();
                 while (ssi.hasNext()) {
-                    var argi = ssi.next();
+                    Term argi = ssi.next();
                     if (!(argi instanceof Struct)) {
                         if (argi instanceof Var)
                             throw PrologError.instantiation_error(prolog, 1);
@@ -123,13 +123,13 @@ public final class BuiltIn extends PrologLib {
     }
 
     public boolean assertz_1(Term _arg0) throws PrologError {
-        var arg0 = _arg0.term();
+        Term arg0 = _arg0.term();
         if (arg0 instanceof Struct) {
-            var ss = (Struct) arg0;
+            Struct ss = (Struct) arg0;
             if (":-".equals(ss.name())) {
-                var ssi = ss.listIterator();
+                Iterator<Term> ssi = ss.listIterator();
                 while (ssi.hasNext()) {
-                    var argi = ssi.next();
+                    Term argi = ssi.next();
                     if (!(argi instanceof Struct)) {
                         if (argi instanceof Var)
                             throw PrologError.instantiation_error(prolog, 1);
@@ -148,7 +148,7 @@ public final class BuiltIn extends PrologLib {
     }
 
     public boolean $retract_1(Term arg1) throws PrologError {
-        var arg0 = arg1.term();
+        Term arg0 = arg1.term();
 
         if (!(arg0 instanceof Struct)) {
             if (arg0 instanceof Var)
@@ -157,8 +157,8 @@ public final class BuiltIn extends PrologLib {
                 throw PrologError.type_error(prolog, 1, "clause", arg0);
         }
 
-        var sarg0 = (Struct) arg0;
-        var sClause = sarg0.isClause();
+        Struct sarg0 = (Struct) arg0;
+        boolean sClause = sarg0.isClause();
 
 
         if (theories.retract(sarg0, c -> unify(!sClause ? new Struct(":-", arg0, new Struct("true")) : sarg0, c.clause)
@@ -243,7 +243,7 @@ public final class BuiltIn extends PrologLib {
         }
 
         try {
-            var paths = getStringArrayFromStruct((Struct) arg1);
+            String[] paths = getStringArrayFromStruct((Struct) arg1);
             if (paths == null || paths.length == 0)
                 throw PrologError.existence_error(prolog, 2, "paths", arg1, new Struct("Invalid paths' list."));
             libs.loadClass(((Struct) arg0).name(), paths);
@@ -256,15 +256,15 @@ public final class BuiltIn extends PrologLib {
     }
 
     private static String[] getStringArrayFromStruct(Struct list) {
-        var i = list.listSize();
+        int i = list.listSize();
         if (i == 0)
             return ArrayUtil.EMPTY_STRING_ARRAY;
 
-        var args = new String[i];
+        String[] args = new String[i];
         Iterator<? extends Term> it = list.listIterator();
-        var count = 0;
+        int count = 0;
         while (it.hasNext()) {
-            var path = alice.util.Tools.removeApostrophes(it.next().toString());
+            String path = alice.util.Tools.removeApostrophes(it.next().toString());
             args[count++] = path;
         }
         return args;
@@ -295,7 +295,7 @@ public final class BuiltIn extends PrologLib {
      */
     public boolean flag_list_1(Term arg0) {
         arg0 = arg0.term();
-        var flist = flags.flags();
+        Struct flist = flags.flags();
         return unify(arg0, flist);
     }
 
@@ -353,13 +353,13 @@ public final class BuiltIn extends PrologLib {
             return new Struct("call", term);
 
         if (term instanceof Struct) {
-            var s = (Struct) term;
-            var pi = s.key();
+            Struct s = (Struct) term;
+            String pi = s.key();
             if (List.of(";/2", ",/2", "->/2").contains(pi)) {
-                var n = s.subs();
-                for (var i = 0; i < n; i++) {
-                    var t = s.sub(i);
-                    var arg = convertTermToGoal(t);
+                int n = s.subs();
+                for (int i = 0; i < n; i++) {
+                    Term t = s.sub(i);
+                    Term arg = convertTermToGoal(t);
                     if (arg == null)
                         return null;
                     s.setSub(i, arg);
@@ -380,7 +380,7 @@ public final class BuiltIn extends PrologLib {
     private void handleError(Throwable t) throws PrologError {
 
         if (t instanceof ArithmeticException) {
-            var cause = (ArithmeticException) t;
+            ArithmeticException cause = (ArithmeticException) t;
 
             if ("/ by zero".equals(cause.getMessage()))
                 throw PrologError.evaluation_error(prolog, 2, "zero_divisor");
@@ -442,7 +442,7 @@ public final class BuiltIn extends PrologLib {
 
         arg0 = arg0.term();
         arg1 = arg1.term();
-        var id = prolog.getEnv().nDemoSteps;
+        int id = prolog.getEnv().nDemoSteps;
         return unify(arg1, arg0.copy(new IdentityHashMap<>(), id));
     }
 
@@ -471,9 +471,9 @@ public final class BuiltIn extends PrologLib {
         if (/* !arg0 instanceof Struct || */!arg1.isList())
             throw PrologError.type_error(prolog, 2, "list", arg1);
 
-        var list = (Struct) arg1;
+        Struct list = (Struct) arg1;
         Iterable<ClauseInfo> l = theories.find(arg0);
-        for (var b : l) {
+        for (ClauseInfo b : l) {
             if (arg0.unifiable(b.head)) {
                 b.clause.resolveTerm();
                 if (list == Struct.EmptyList)
@@ -497,9 +497,9 @@ public final class BuiltIn extends PrologLib {
         if (!arg1.isGround())
             throw PrologError.type_error(prolog, 2, "ground", arg1);
 
-        var name = arg0.toString();
+        String name = arg0.toString();
 
-        var f = flags.get(name);
+        Flag f = flags.get(name);
         if (f == null)
             throw PrologError.domain_error(prolog, 1, "prolog_flag",
                     arg0);
@@ -521,8 +521,8 @@ public final class BuiltIn extends PrologLib {
         if (!arg0.isAtomic() && !(arg0 instanceof Struct)) {
             throw PrologError.type_error(prolog, 1, "struct", arg0);
         }
-        var name = arg0.toString();
-        var flag = flags.get(name);
+        String name = arg0.toString();
+        Flag flag = flags.get(name);
         if (flag == null)
             throw PrologError.domain_error(prolog, 1, "prolog_flag",
                     arg0);
@@ -546,10 +546,10 @@ public final class BuiltIn extends PrologLib {
         if (!arg2.isAtomic() && !arg2.isList())
             throw PrologError.type_error(prolog, 3, "atom_or_atom_list",
                     arg2);
-        var priority = ((NumberTerm.Int) arg0).intValue();
+        int priority = ((NumberTerm.Int) arg0).intValue();
         if (priority < PrologOperators.OP_LOW || priority > PrologOperators.OP_HIGH)
             throw PrologError.domain_error(prolog, 1, "operator_priority", arg0);
-        var specifier = ((Struct) arg1).name();
+        String specifier = ((Struct) arg1).name();
 
 
         switch (specifier) {
@@ -593,7 +593,7 @@ public final class BuiltIn extends PrologLib {
         if (flagSet.isList()
                 && (isTrue = flagModifiable.equals(Term.TRUE) || flagModifiable.equals(Term.FALSE))) {
 
-            var libName = "";
+            String libName = "";
 
             flags.add(flagName.toString(), (Struct) flagSet,
                     flagDefault, isTrue, libName);
@@ -617,7 +617,7 @@ public final class BuiltIn extends PrologLib {
     public void include_1(Term theory) throws
             InvalidTheoryException, IOException {
         theory = theory.term();
-        var path = alice.util.Tools.removeApostrophes(theory.toString());
+        String path = alice.util.Tools.removeApostrophes(theory.toString());
         if (!new File(path).isAbsolute()) {
             path = prolog.getCurrentDirectory() + File.separator + path;
         }

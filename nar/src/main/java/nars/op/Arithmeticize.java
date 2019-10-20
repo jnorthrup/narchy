@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
@@ -106,9 +107,9 @@ public enum Arithmeticize {
 
         @Override
         protected Term applyUnnormalized(Term x, int volMax, What w) {
-            var random = w.random();
+            Random random = w.random();
             /** rate at which input is pre-evaluated.  TODO make FloatRange etc */
-            var preEvalRate = 0.5f;
+            float preEvalRate = 0.5f;
             return Arithmeticize.apply(x, null, volMax, random.nextFloat() < (preEvalRate / x.volume()), random);
         }
     }
@@ -129,18 +130,18 @@ public enum Arithmeticize {
         //pre-evaluate using the arith operators; ignore other operators (unless they are already present, ex: member)
         //Term xx = Evaluation.solveFirst(x, ArithFunctors);
         if (preEval) {
-            var xx = Evaluation.eval(x, true, false, evaluator.get());
+            Set<Term> xx = Evaluation.eval(x, true, false, evaluator.get());
             if (!xx.isEmpty()) {
                 xx.removeIf(z -> !z.hasAny(INT));
 
-                var xxs = xx.size();
+                int xxs = xx.size();
                 if (xxs == 1) {
-                    var xxx = xx.iterator().next();
+                    Term xxx = xx.iterator().next();
                     if (xxx.hasAny(INT))
                         x = xxx;
                 } else if (xxs > 1) {
                     if (Util.sum(Termlike::volume, xx) < volMax - 1) {
-                        var xxx = CONJ.the(xx);
+                        Term xxx = CONJ.the(xx);
                         if (xxx.hasAny(INT))
                             x = xxx;
                     }
@@ -148,19 +149,19 @@ public enum Arithmeticize {
             }
         }
 
-        var ints = new IntHashSet(4);
+        IntHashSet ints = new IntHashSet(4);
         x.recurseTerms(t -> t.hasAny(Op.INT), t -> {
             if (t instanceof IdempotInt)
                 ints.add(((IdempotInt) t).i);
             return true;
         }, null);
 
-        var ui = ints.size();
+        int ui = ints.size();
         if (ui < minInts)
             return null;
 
-        var mm = mods(ints);
-        var y = mm[
+        ArithmeticOp[] mm = mods(ints);
+        Term y = mm[
                     Roulette.selectRoulette(mm.length, c -> mm[c].score, random)
                 ].apply(x, anon);
 
@@ -177,8 +178,8 @@ public enum Arithmeticize {
         private final int[] val;
 
         IntArrayListCached(int[] ii) {
-            var hash = ii[0];
-            for (var i = 1; i < ii.length; i++)
+            int hash = ii[0];
+            for (int i = 1; i < ii.length; i++)
                 hash = Util.hashCombine(hash, ii[i]);
             this.hash = hash;
             this.val = ii;
@@ -205,15 +206,15 @@ public enum Arithmeticize {
     private static ArithmeticOp[] _mods(IntArrayListCached iii) {
 
 
-        var ii = iii.val;
+        int[] ii = iii.val;
 
         FasterList<ArithmeticOp> ops = new FasterList(2);
-        var eqMods = new IntObjectHashMap<FasterList<Pair<Term, UnaryOperator<Term>>>>(ii.length);
+        IntObjectHashMap<FasterList<Pair<Term, UnaryOperator<Term>>>> eqMods = new IntObjectHashMap<FasterList<Pair<Term, UnaryOperator<Term>>>>(ii.length);
 
-        for (var bIth = 0; bIth < ii.length; bIth++) {
-            var b = ii[bIth];
-            for (var aIth = bIth + 1; aIth < ii.length; aIth++) {
-                var a = ii[aIth];
+        for (int bIth = 0; bIth < ii.length; bIth++) {
+            int b = ii[bIth];
+            for (int aIth = bIth + 1; aIth < ii.length; aIth++) {
+                int a = ii[aIth];
 
 
                 //assert (b < a);
@@ -238,7 +239,7 @@ public enum Arithmeticize {
 //                    maybe(eqMods, a).add(pair(
 //                            Int.the(b), v -> $.func(MathFunc.add, v, $.the(BMinA))
 //                    ));
-                    var AMinB = a - b;
+                    int AMinB = a - b;
                     maybe(eqMods, b).add(pair(
                             IdempotInt.the(a), v -> $.func(MathFunc.add, v, $.the(AMinB))
                     ));
@@ -303,13 +304,13 @@ public enum Arithmeticize {
                 A :
                 $.v(Aop, (byte) 1); //optimistic prenormalization
 
-            var yy = x.replace(baseTerm, var);
+            Term yy = x.replace(baseTerm, var);
 
-            for (var s : mods) {
-                var s0 = s.getOne();
+            for (Pair<Term, UnaryOperator<Term>> s : mods) {
+                Term s0 = s.getOne();
                 if (anon != null)
                     s0 = anon.put(s0);
-                var s1 = s.getTwo().apply(var);
+                Term s1 = s.getTwo().apply(var);
                 yy = yy.replace(s0, s1);
                 if (yy == Null)
                     return Null; //HACK
@@ -318,11 +319,11 @@ public enum Arithmeticize {
             if (baseTerm.equals(var))
                 return null;
 
-            var equality =
+            Term equality =
                     //SIM.the(baseTerm, V);
                     Equal.the(baseTerm, var);
 
-            var y = CONJ.the(equality, yy);
+            Term y = CONJ.the(equality, yy);
 
             return y.op() != CONJ ? null : y;
         }
@@ -355,7 +356,7 @@ public enum Arithmeticize {
                 cmp = cmpABUnnormalized;
             }
 
-            var xx = x.transform(new MapSubst.MapSubstN(Map.of(IdempotInt.the(a), A, IdempotInt.the(b), B), INT.bit));
+            Term xx = x.transform(new MapSubst.MapSubstN(Map.of(IdempotInt.the(a), A, IdempotInt.the(b), B), INT.bit));
 
             return (xx instanceof IdempotentBool) ? null : CONJ.the(xx, cmp);
         }

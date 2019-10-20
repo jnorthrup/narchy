@@ -54,7 +54,7 @@ public class WorldManifold {
         normal = new v2();
         points = new v2[Settings.maxManifoldPoints];
 //        separations = new float[Settings.maxManifoldPoints];
-        for (var i = 0; i < Settings.maxManifoldPoints; i++) {
+        for (int i = 0; i < Settings.maxManifoldPoints; i++) {
             points[i] = new v2();
         }
     }
@@ -68,17 +68,17 @@ public class WorldManifold {
 
         switch (manifold.type) {
             case CIRCLES: {
-                var pointA = new v2();
-                var pointB = new v2();
+                v2 pointA = new v2();
+                v2 pointB = new v2();
 
                 normal.x = 1;
                 normal.y = 0;
-                var v = manifold.localPoint;
+                v2 v = manifold.localPoint;
                 
                 
                 pointA.x = (xfA.c * v.x - xfA.s * v.y) + xfA.pos.x;
                 pointA.y = (xfA.s * v.x + xfA.c * v.y) + xfA.pos.y;
-                var mp0p = manifold.points[0].localPoint;
+                v2 mp0p = manifold.points[0].localPoint;
                 pointB.x = (xfB.c * mp0p.x - xfB.s * mp0p.y) + xfB.pos.x;
                 pointB.y = (xfB.s * mp0p.x + xfB.c * mp0p.y) + xfB.pos.y;
 
@@ -88,11 +88,11 @@ public class WorldManifold {
                     normal.normalize();
                 }
 
-                var cAx = normal.x * radiusA + pointA.x;
-                var cAy = normal.y * radiusA + pointA.y;
+                float cAx = normal.x * radiusA + pointA.x;
+                float cAy = normal.y * radiusA + pointA.y;
 
-                var cBx = -normal.x * radiusB + pointB.x;
-                var cBy = -normal.y * radiusB + pointB.y;
+                float cBx = -normal.x * radiusB + pointB.x;
+                float cBy = -normal.y * radiusB + pointB.y;
 
                 points[0].x = (cAx + cBx) * .5f;
                 points[0].y = (cAy + cBy) * .5f;
@@ -100,14 +100,14 @@ public class WorldManifold {
             }
             break;
             case FACE_A: {
-                var planePoint = new v2();
+                v2 planePoint = new v2();
 
                 Rot.mulToOutUnsafe(xfA, manifold.localNormal, normal);
                 Transform.mulToOut(xfA, manifold.localPoint, planePoint);
 
-                var clipPoint = new v2();
+                v2 clipPoint = new v2();
 
-                for (var i = 0; i < manifold.pointCount; i++) {
+                for (int i = 0; i < manifold.pointCount; i++) {
                     
                     
                     
@@ -116,16 +116,16 @@ public class WorldManifold {
                     Transform.mulToOut(xfB, manifold.points[i].localPoint, clipPoint);
 
 
-                    var scalar =
+                    float scalar =
                             radiusA
                                     - ((clipPoint.x - planePoint.x) * normal.x + (clipPoint.y - planePoint.y)
                                     * normal.y);
 
-                    var cAx = normal.x * scalar + clipPoint.x;
-                    var cAy = normal.y * scalar + clipPoint.y;
+                    float cAx = normal.x * scalar + clipPoint.x;
+                    float cAy = normal.y * scalar + clipPoint.y;
 
-                    var cBx = -normal.x * radiusB + clipPoint.x;
-                    var cBy = -normal.y * radiusB + clipPoint.y;
+                    float cBx = -normal.x * radiusB + clipPoint.x;
+                    float cBy = -normal.y * radiusB + clipPoint.y;
 
                     points[i].x = (cAx + cBx) * .5f;
                     points[i].y = (cAy + cBy) * .5f;
@@ -134,14 +134,14 @@ public class WorldManifold {
             }
             break;
             case FACE_B:
-                var planePoint = new v2();
+                v2 planePoint = new v2();
                 Rot.mulToOutUnsafe(xfB, manifold.localNormal, normal);
                 Transform.mulToOut(xfB, manifold.localPoint, planePoint);
 
 
-                var clipPoint = new v2();
+                v2 clipPoint = new v2();
 
-                for (var i = 0; i < manifold.pointCount; i++) {
+                for (int i = 0; i < manifold.pointCount; i++) {
                     
                     
                     
@@ -151,16 +151,16 @@ public class WorldManifold {
                     Transform.mulToOut(xfA, manifold.points[i].localPoint, clipPoint);
 
 
-                    var scalar =
+                    float scalar =
                             radiusB
                                     - ((clipPoint.x - planePoint.x) * normal.x + (clipPoint.y - planePoint.y)
                                     * normal.y);
 
-                    var cBx = normal.x * scalar + clipPoint.x;
-                    var cBy = normal.y * scalar + clipPoint.y;
+                    float cBx = normal.x * scalar + clipPoint.x;
+                    float cBy = normal.y * scalar + clipPoint.y;
 
-                    var cAx = -normal.x * radiusA + clipPoint.x;
-                    var cAy = -normal.y * radiusA + clipPoint.y;
+                    float cAx = -normal.x * radiusA + clipPoint.x;
+                    float cAy = -normal.y * radiusA + clipPoint.y;
 
                     points[i].set( (cAx + cBx) * .5f, (cAy + cBy) * .5f);
 //                    separations[i] = (cAx - cBx) * normal.x + (cAy - cBy) * normal.y;

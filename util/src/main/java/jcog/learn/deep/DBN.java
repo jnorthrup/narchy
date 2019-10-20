@@ -35,7 +35,7 @@ public class DBN {
         else this.rng = rng;
 
         
-        for(var i = 0; i<this.n_layers; i++) {
+        for(int i = 0; i<this.n_layers; i++) {
             int input_size;
             if(i == 0) {
                 input_size = this.n_ins;
@@ -60,13 +60,13 @@ public class DBN {
     }
 
     public void pretrain(double[][] train_X, double lr, int k, int epochs) {
-        var layer_input = ArrayUtil.EMPTY_DOUBLE_ARRAY;
+        double[] layer_input = ArrayUtil.EMPTY_DOUBLE_ARRAY;
 
-        for(var i = 0; i<n_layers; i++) {
-            for(var epoch = 0; epoch<epochs; epoch++) {
-                for(var n = 0; n<N; n++) {
+        for(int i = 0; i<n_layers; i++) {
+            for(int epoch = 0; epoch<epochs; epoch++) {
+                for(int n = 0; n<N; n++) {
                     
-                    for(var l = 0; l<=i; l++) {
+                    for(int l = 0; l<=i; l++) {
 
                         if(l == 0) {
                             layer_input = new double[n_ins];
@@ -76,7 +76,7 @@ public class DBN {
                             if(l == 1) prev_layer_input_size = n_ins;
                             else prev_layer_input_size = hidden_layer_sizes[l-2];
 
-                            var prev_layer_input = new double[prev_layer_input_size];
+                            double[] prev_layer_input = new double[prev_layer_input_size];
                             System.arraycopy(layer_input, 0, prev_layer_input, 0, prev_layer_input_size);
 
                             layer_input = new double[hidden_layer_sizes[l-1]];
@@ -92,15 +92,15 @@ public class DBN {
     }
 
     public void finetune(double[][] train_X, double[][] train_Y, double lr, int epochs) {
-        var layer_input = ArrayUtil.EMPTY_DOUBLE_ARRAY;
+        double[] layer_input = ArrayUtil.EMPTY_DOUBLE_ARRAY;
 
-        var prev_layer_input = ArrayUtil.EMPTY_DOUBLE_ARRAY;
+        double[] prev_layer_input = ArrayUtil.EMPTY_DOUBLE_ARRAY;
 
-        for(var epoch = 0; epoch<epochs; epoch++) {
-            for(var n = 0; n<N; n++) {
+        for(int epoch = 0; epoch<epochs; epoch++) {
+            for(int n = 0; n<N; n++) {
 
                 
-                for(var i = 0; i<n_layers; i++) {
+                for(int i = 0; i<n_layers; i++) {
                     if(i == 0) {
                         prev_layer_input = new double[n_ins];
                         System.arraycopy(train_X[n], 0, prev_layer_input, 0, n_ins);
@@ -121,18 +121,18 @@ public class DBN {
 
     public void predict(double[] x, double[] y) {
 
-        var prev_layer_input = new double[n_ins];
+        double[] prev_layer_input = new double[n_ins];
         System.arraycopy(x, 0, prev_layer_input, 0, n_ins);
 
 
-        var layer_input = ArrayUtil.EMPTY_DOUBLE_ARRAY;
-        for(var i = 0; i<n_layers; i++) {
+        double[] layer_input = ArrayUtil.EMPTY_DOUBLE_ARRAY;
+        for(int i = 0; i<n_layers; i++) {
             layer_input = new double[sigmoid_layers[i].n_out];
 
-            for(var k = 0; k<sigmoid_layers[i].n_out; k++) {
-                var linear_output = 0.0;
+            for(int k = 0; k<sigmoid_layers[i].n_out; k++) {
+                double linear_output = 0.0;
 
-                for(var j = 0; j<sigmoid_layers[i].n_in; j++) {
+                for(int j = 0; j<sigmoid_layers[i].n_in; j++) {
                     linear_output += sigmoid_layers[i].W[k][j] * prev_layer_input[j];
                 }
                 linear_output += sigmoid_layers[i].b[k];
@@ -145,9 +145,9 @@ public class DBN {
             }
         }
 
-        for(var i = 0; i<log_layer.n_out; i++) {
+        for(int i = 0; i<log_layer.n_out; i++) {
             y[i] = 0;
-            for(var j = 0; j<log_layer.n_in; j++) {
+            for(int j = 0; j<log_layer.n_in; j++) {
                 y[i] += log_layer.W[i][j] * layer_input[j];
             }
             y[i] += log_layer.b[i];
@@ -157,17 +157,17 @@ public class DBN {
     }
 
     private static void test_dbn() {
-        var rng = new Random(123);
+        Random rng = new Random(123);
 
-        var pretrain_lr = 0.1;
-        var pretraining_epochs = 1000;
-        var k = 1;
+        double pretrain_lr = 0.1;
+        int pretraining_epochs = 1000;
+        int k = 1;
 
-        var train_N = 6;
-        var n_ins = 6;
-        var n_outs = 2;
+        int train_N = 6;
+        int n_ins = 6;
+        int n_outs = 2;
         int[] hidden_layer_sizes = {3, 3};
-        var n_layers = hidden_layer_sizes.length;
+        int n_layers = hidden_layer_sizes.length;
 
         
         double[][] train_X = {
@@ -180,7 +180,7 @@ public class DBN {
         };
 
 
-        var dbn = new DBN(train_N, n_ins, hidden_layer_sizes, n_outs, n_layers, rng);
+        DBN dbn = new DBN(train_N, n_ins, hidden_layer_sizes, n_outs, n_layers, rng);
 
         
         dbn.pretrain(train_X, pretrain_lr, k, pretraining_epochs);
@@ -194,8 +194,8 @@ public class DBN {
                 {0, 1},
                 {0, 1},
         };
-        var finetune_epochs = 500;
-        var finetune_lr = 0.1;
+        int finetune_epochs = 500;
+        double finetune_lr = 0.1;
         dbn.finetune(train_X, train_Y, finetune_lr, finetune_epochs);
 
 
@@ -207,13 +207,13 @@ public class DBN {
                 {0, 0, 1, 1, 1, 0},
         };
 
-        var test_N = 4;
-        var test_Y = new double[test_N][n_outs];
+        int test_N = 4;
+        double[][] test_Y = new double[test_N][n_outs];
 
         
-        for(var i = 0; i<test_N; i++) {
+        for(int i = 0; i<test_N; i++) {
             dbn.predict(test_X[i], test_Y[i]);
-            for(var j = 0; j<n_outs; j++) {
+            for(int j = 0; j<n_outs; j++) {
                 System.out.print(test_Y[i][j] + " ");
             }
             System.out.println();

@@ -77,9 +77,9 @@ public class MarkovChain<T> {
         List<T>[] tuple = new List[]{new FasterList<T>()};
         
         phrase.forEach(t -> {
-            var tu = tuple[0];
+            List<T> tu = tuple[0];
 
-            var sz = tu.size();
+            int sz = tu.size();
             if (sz < arity) {
                 tu.add(t);
             } else {
@@ -88,8 +88,8 @@ public class MarkovChain<T> {
             }
         });
 
-        var c = current[0];
-        var t = tuple[0];
+        Chain c = current[0];
+        List<T> t = tuple[0];
 
         if (!t.isEmpty())
             c = c.learn(getOrAdd(t), strength);
@@ -109,7 +109,7 @@ public class MarkovChain<T> {
 
     @SafeVarargs
     public final MarkovChain learnAll(T[]... phrases) {
-        for (var p : phrases)
+        for (T[] p : phrases)
             learn(p);
         return this;
     }
@@ -272,7 +272,7 @@ public class MarkovChain<T> {
          * @return the node that was learned
          */
         public Chain<T> learn(Chain<T> n, float strength) {
-            var e = edges.computeIfAbsent(n, nn -> new NLink<>(nn, 0));
+            NLink<Chain<T>> e = edges.computeIfAbsent(n, nn -> new NLink<>(nn, 0));
             e.priAdd(strength);
             return e.get();
         }
@@ -317,7 +317,7 @@ public class MarkovChain<T> {
 
 
         static <T> NLink<T> selectRoulette(Random RNG, Collection<NLink<T>> edges) {
-            var s = edges.size();
+            int s = edges.size();
             if (s == 0)
                 return null;
             if (s == 1)
@@ -328,12 +328,12 @@ public class MarkovChain<T> {
             for (NLink e : edges)
                 totalScore += e.pri();
 
-            var r = RNG.nextFloat() * totalScore;
+            float r = RNG.nextFloat() * totalScore;
 
-            var current = 0;
+            int current = 0;
 
             for (NLink e : edges) {
-                var dw = e.pri();
+                float dw = e.pri();
 
                 if (r >= current && r < current + dw)
                     return e;

@@ -17,8 +17,8 @@ class StandardTimer extends Timer {
 	
 	@Override
     public long currentTimeMillis() {
-		var time = System.currentTimeMillis();
-		var delta = time - base;
+        long time = System.currentTimeMillis();
+        long delta = time - base;
 		if (delta < 0) {
 			delta += Long.MAX_VALUE + 1;
 		}

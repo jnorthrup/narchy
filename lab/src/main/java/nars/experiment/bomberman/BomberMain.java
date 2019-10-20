@@ -85,10 +85,10 @@ public class BomberMain extends JFrame {
         pack();
 
         /** get screen size */
-        var d = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 
-        var x = (d.width - getSize().width) / 2;
-        var y = (d.height - getSize().height) / 2;
+        int x = (d.width - getSize().width) / 2;
+        int y = (d.height - getSize().height) / 2;
 
         /** center the window on the screen */
         setLocation(x, y);
@@ -103,12 +103,12 @@ public class BomberMain extends JFrame {
      * @param players total number of players
      */
     public void newGame(int players) {
-        var dialog = new JDialog(this, "Loading Game...", false);
+        JDialog dialog = new JDialog(this, "Loading Game...", false);
         dialog.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         dialog.setSize(new Dimension(200, 0));
         dialog.setResizable(false);
-        var x = getLocation().x + (getSize().width - 200) / 2;
-        var y = getLocation().y + getSize().height / 2;
+        int x = getLocation().x + (getSize().width - 200) / 2;
+        int y = getLocation().y + getSize().height / 2;
         dialog.setLocation(x, y);
         /** show the dialog */
         dialog.show();
@@ -119,7 +119,7 @@ public class BomberMain extends JFrame {
         /** get rid of the menu */
         menu = null;
         /** create the map */
-        var map = new BomberMap(this);
+        BomberMap map = new BomberMap(this);
 
         /** create the game */
         game = new BomberGame(this, map, players);
@@ -137,6 +137,6 @@ public class BomberMain extends JFrame {
      * @param args arguments
      */
     public static void main(String[] args) {
-        var bomberMain1 = new BomberMain();
+        BomberMain bomberMain1 = new BomberMain();
     }
 }

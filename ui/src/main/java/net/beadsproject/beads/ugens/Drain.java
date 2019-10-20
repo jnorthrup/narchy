@@ -53,7 +53,7 @@ public class Drain extends UGen {
      * @param audioData the audio data.
      */
     public synchronized void add(float[][] audioData) {
-        var g = new Grain();
+        Grain g = new Grain();
         g.audioData = audioData;
         g.position = 0;
         grains.add(g);
@@ -64,11 +64,11 @@ public class Drain extends UGen {
      */
     @Override
     public void gen() {
-        for (var i = 0; i < bufferSize; i++) {
-            var grainIterator = grains.iterator();
+        for (int i = 0; i < bufferSize; i++) {
+            Iterator<Grain> grainIterator = grains.iterator();
             while (grainIterator.hasNext()) {
-                var g = grainIterator.next();
-                for (var j = 0; j < outs; j++) {
+                Grain g = grainIterator.next();
+                for (int j = 0; j < outs; j++) {
                     bufOut[j][i] += g.audioData[j % g.audioData.length][g.position];
                 }
                 g.position++;

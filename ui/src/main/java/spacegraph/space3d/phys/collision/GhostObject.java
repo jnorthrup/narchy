@@ -57,11 +57,11 @@ public class GhostObject extends Collidable {
 	 * This method is mainly for expert/internal use only.
 	 */
 	public void addOverlappingObjectInternal(Broadphasing otherProxy, Broadphasing thisProxy) {
-		var otherObject = otherProxy.data;
+        Collidable otherObject = otherProxy.data;
 		assert(otherObject != null);
 
 
-		var index = overlappingObjects.indexOf(otherObject);
+        int index = overlappingObjects.indexOf(otherObject);
 		if (index == -1) {
 			
 			overlappingObjects.add(otherObject);
@@ -72,51 +72,51 @@ public class GhostObject extends Collidable {
 	 * This method is mainly for expert/internal use only.
 	 */
 	public void removeOverlappingObjectInternal(Broadphasing otherProxy, Intersecter intersecter, Broadphasing thisProxy) {
-		var otherObject = otherProxy.data;
+        Collidable otherObject = otherProxy.data;
 		assert(otherObject != null);
 
-		var o = this.overlappingObjects;
-		var index = o.indexOf(otherObject);
+        OArrayList<Collidable> o = this.overlappingObjects;
+        int index = o.indexOf(otherObject);
 		if (index != -1) {
 
-			var num = o.size();
+            int num = o.size();
 			o.setFast(index, o.get(num - 1));
 			o.removeFast(num -1);
 		}
 	}
 
 	public void convexSweepTest(ConvexShape castShape, Transform convexFromWorld, Transform convexToWorld, Collisions.ConvexResultCallback resultCallback, float allowedCcdPenetration) {
-		var convexFromTrans = new Transform();
-		var convexToTrans = new Transform();
+        Transform convexFromTrans = new Transform();
+        Transform convexToTrans = new Transform();
 
 		convexFromTrans.set(convexFromWorld);
 		convexToTrans.set(convexToWorld);
 
-		var castShapeAabbMin = new v3();
-		var castShapeAabbMax = new v3();
+        v3 castShapeAabbMin = new v3();
+        v3 castShapeAabbMax = new v3();
 
 
-		var linVel = new v3();
-		var angVel = new v3();
+        v3 linVel = new v3();
+        v3 angVel = new v3();
         TransformUtil.calculateVelocity(convexFromTrans, convexToTrans, 1f, linVel, angVel);
-		var R = new Transform();
+        Transform R = new Transform();
         R.setIdentity();
         R.setRotation(convexFromTrans.getRotation(new Quat4f()));
         castShape.calculateTemporalAabb(R, linVel, angVel, 1f, castShapeAabbMin, castShapeAabbMax);
 
-		var tmpTrans = new Transform();
+        Transform tmpTrans = new Transform();
 
 
-        for (var collidable : overlappingObjects) {
+        for (Collidable collidable : overlappingObjects) {
 
             if (resultCallback.needsCollision(collidable.broadphase)) {
 
-				var collisionObjectAabbMin = new v3();
-				var collisionObjectAabbMax = new v3();
+                v3 collisionObjectAabbMin = new v3();
+                v3 collisionObjectAabbMax = new v3();
                 collidable.shape().getAabb(collidable.getWorldTransform(tmpTrans), collisionObjectAabbMin, collisionObjectAabbMax);
                 AabbUtil2.aabbExpand(collisionObjectAabbMin, collisionObjectAabbMax, castShapeAabbMin, castShapeAabbMax);
                 float[] hitLambda = {1f};
-				var hitNormal = new v3();
+                v3 hitNormal = new v3();
                 if (AabbUtil2.rayAabb(convexFromWorld, convexToWorld, collisionObjectAabbMin, collisionObjectAabbMax, hitLambda, hitNormal)) {
                     Collisions.objectQuerySingle(castShape, convexFromTrans, convexToTrans,
                             collidable,
@@ -130,18 +130,18 @@ public class GhostObject extends Collidable {
 	}
 
 	public void rayTest(v3 rayFromWorld, v3 rayToWorld, Collisions.RayResultCallback resultCallback) {
-		var rayFromTrans = new Transform();
+        Transform rayFromTrans = new Transform();
 		rayFromTrans.setIdentity();
 		rayFromTrans.set(rayFromWorld);
-		var rayToTrans = new Transform();
+        Transform rayToTrans = new Transform();
 		rayToTrans.setIdentity();
 		rayToTrans.set(rayToWorld);
 
-		var tmpTrans = new Transform();
+        Transform tmpTrans = new Transform();
 
-		var solver = new VoronoiSimplexSolver();
+        VoronoiSimplexSolver solver = new VoronoiSimplexSolver();
 
-        for (var collidable : overlappingObjects) {
+        for (Collidable collidable : overlappingObjects) {
 
             if (resultCallback.needsCollision(collidable.broadphase)) {
                 Collisions.rayTestSingle(rayFromTrans, rayToTrans,

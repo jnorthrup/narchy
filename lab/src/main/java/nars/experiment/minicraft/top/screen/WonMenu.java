@@ -24,13 +24,13 @@ public class WonMenu extends Menu {
         Font.renderFrame(screen, "", 1, 3, 18, 9);
         Font.draw("You won! Yay!", screen, 2 * 8, 4 * 8, Color.get(-1, 555, 555, 555));
 
-        var seconds = game.gameTime / 60;
-        var minutes = seconds / 60;
-        var hours = minutes / 60;
+        int seconds = game.gameTime / 60;
+        int minutes = seconds / 60;
+        int hours = minutes / 60;
         minutes %= 60;
         seconds %= 60;
 
-        var timeString = "";
+        String timeString = "";
         if (hours > 0) {
             timeString = hours + "h" + (minutes < 10 ? "0" : "") + minutes + "m";
         } else {

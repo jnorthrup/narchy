@@ -60,7 +60,7 @@ public class Between<K extends Comparable<? super K>> implements Comparable<Betw
 		if (this == o) return true;
 		if (!(o instanceof Between)) return false;
 
-		var between = (Between<?>) o;
+        Between<? extends Comparable<?>> between = (Between<?>) o;
 
 		return low.equals(between.low) && high.equals(between.high);
 
@@ -68,16 +68,16 @@ public class Between<K extends Comparable<? super K>> implements Comparable<Betw
 
 	@Override
 	public int hashCode() {
-		var result = low.hashCode();
+        int result = low.hashCode();
 		result = 31 * result + high.hashCode();
 		return result;
 	}
 
 	@Override
 	public int compareTo( Between<K> x) {
-		var leftC = low.compareTo(x.low);
+        int leftC = low.compareTo(x.low);
 		if (leftC != 0) return leftC;
-		var rightC = high.compareTo(x.high);
+        int rightC = high.compareTo(x.high);
 		return rightC;
 	}
 }

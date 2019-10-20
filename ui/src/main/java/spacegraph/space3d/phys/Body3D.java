@@ -122,9 +122,9 @@ public class Body3D<X> extends Collidable<X> {
 
         linearDamping = 0f;
 		angularDamping = 0.5f;
-		var linearSleepingThreshold = 0.8f;
+		float linearSleepingThreshold = 0.8f;
         this.linearSleepingThreshold = linearSleepingThreshold;
-		var angularSleepingThreshold = 1.0f;
+		float angularSleepingThreshold = 1.0f;
         this.angularSleepingThreshold = angularSleepingThreshold;
 		
 		contactSolverType = 0;
@@ -179,7 +179,7 @@ public class Body3D<X> extends Collidable<X> {
 		forceActivationState(Collidable.DISABLE_SIMULATION);
 		data = null;
 
-		var bp = broadphase;
+		Broadphasing bp = broadphase;
 		if (bp != null) {
 			
 			
@@ -219,7 +219,7 @@ public class Body3D<X> extends Collidable<X> {
 	}
 
 	public static <X> Body3D<X> ifDynamicAndActive(Collidable<X> colObj) {
-		var d = ifDynamic(colObj);
+		Body3D<X> d = ifDynamic(colObj);
 		return ((d == null) || !d.isActive()) ? null : d;
 	}
 
@@ -391,7 +391,7 @@ public class Body3D<X> extends Collidable<X> {
 		angularVelocity.scaleAdd(step, totalTorque, angularVelocity);
 
 
-		var angvel = angularVelocity.lengthSquared();
+		float angvel = angularVelocity.lengthSquared();
 		if (angvel > Util.sqr(MAX_ANGVEL/step)) {
 			angularVelocity.scaled((MAX_ANGVEL / step) / angvel);
 		}
@@ -445,7 +445,7 @@ public class Body3D<X> extends Collidable<X> {
 
 
 	public void torqueImpulse(v3 torque) {
-		var tmp = new v3(torque);
+		v3 tmp = new v3(torque);
 		invInertiaTensorWorld.transform(tmp);
 		angularVelocity.add(tmp);
 		activate();
@@ -456,7 +456,7 @@ public class Body3D<X> extends Collidable<X> {
 		if (inverseMass != 0f) {
 			impulse(impulse);
 			if (angularFactor != 0f) {
-				var tmp = new v3();
+				v3 tmp = new v3();
 				tmp.cross(rel_pos, impulse);
 				tmp.scaled(angularFactor);
 				torqueImpulse(tmp);
@@ -482,10 +482,10 @@ public class Body3D<X> extends Collidable<X> {
 	}
 	
 	private void updateInertiaTensor() {
-		var mat1 = new Matrix3f();
+		Matrix3f mat1 = new Matrix3f();
 		MatrixUtil.scale(mat1, transform.basis, invInertiaLocal);
 
-		var mat2 = new Matrix3f(transform.basis);
+		Matrix3f mat2 = new Matrix3f(transform.basis);
 		mat2.transpose();
 
 		invInertiaTensorWorld.mul(mat1, mat2);
@@ -534,7 +534,7 @@ public class Body3D<X> extends Collidable<X> {
 
 	public v3 getVelocityInLocalPoint(v3 rel_pos, v3 out) {
 
-		var vec = out;
+		v3 vec = out;
 		vec.cross(angularVelocity, rel_pos);
 		vec.add(linearVelocity);
 		return out;
@@ -553,29 +553,29 @@ public class Body3D<X> extends Collidable<X> {
 	}
 
 	public float computeImpulseDenominator(v3 pos, v3 normal) {
-		var r0 = new v3();
+		v3 r0 = new v3();
 		r0.sub(pos, transform);
 
-		var c0 = new v3();
+		v3 c0 = new v3();
 		c0.cross(r0, normal);
 
-		var tmp = new v3();
+		v3 tmp = new v3();
 		MatrixUtil.transposeTransform(tmp, c0, invInertiaTensorWorld);
 
-		var vec = new v3();
+		v3 vec = new v3();
 		vec.cross(tmp, r0);
 
 		return inverseMass + normal.dot(vec);
 	}
 
 	public float computeAngularImpulseDenominator(v3 axis) {
-		var vec = new v3();
+		v3 vec = new v3();
 		MatrixUtil.transposeTransform(vec, axis, invInertiaTensorWorld);
 		return axis.dot(vec);
 	}
 
 	public void updateDeactivation(float timeStep) {
-		var state = getActivationState();
+		int state = getActivationState();
 		if ((state == ISLAND_SLEEPING) || (state == DISABLE_DEACTIVATION)) {
 			return;
 		}
@@ -591,7 +591,7 @@ public class Body3D<X> extends Collidable<X> {
 	}
 
 	public boolean wantsSleeping(float theDeactivationTime) {
-		var state = getActivationState();
+		int state = getActivationState();
 		if (state == DISABLE_DEACTIVATION) {
 			return false;
 		}
@@ -634,16 +634,21 @@ public class Body3D<X> extends Collidable<X> {
 	@Override
 	public boolean checkCollideWithOverride(Collidable co) {
 
-		var otherRb = ifDynamic(co);
+		Body3D otherRb = ifDynamic(co);
 		if (otherRb == null) {
 			return true;
 		}
 
-		return constraintRefs.stream().noneMatch(c -> c.getRigidBodyA() == otherRb || c.getRigidBodyB() == otherRb);
+		for (TypedConstraint c : constraintRefs) {
+			if (c.getRigidBodyA() == otherRb || c.getRigidBodyB() == otherRb) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public void addConstraintRef(TypedConstraint c) {
-		var index = constraintRefs.indexOf(c);
+		int index = constraintRefs.indexOf(c);
 		if (index == -1) {
 			constraintRefs.add(c);
 		}

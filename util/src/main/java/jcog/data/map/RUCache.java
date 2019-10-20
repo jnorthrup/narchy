@@ -34,7 +34,7 @@ public class RUCache<K, V> {
     public V get(K k) {
         synchronized (mru) {
             return mru.compute(k, (key, value) -> {
-                var value1 = value;
+                V value1 = value;
                 if (value1 != null) {
 				}
                 else {

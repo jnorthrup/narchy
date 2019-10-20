@@ -52,9 +52,9 @@ public class ConceptWidget extends SpaceWidget<Concept> {
 
     @Override
     public Body3D newBody(boolean collidesWithOthersLikeThis) {
-        var x = super.newBody(collidesWithOthersLikeThis);
+        Body3D x = super.newBody(collidesWithOthersLikeThis);
 
-        final var initDistanceEpsilon = 50f;
+        final float initDistanceEpsilon = 50f;
 
 
         x.transform.set(
@@ -63,7 +63,7 @@ public class ConceptWidget extends SpaceWidget<Concept> {
                 r(initDistanceEpsilon));
 
 
-        final var initImpulseEpsilon = 0.25f;
+        final float initImpulseEpsilon = 0.25f;
         x.impulse(v(
                 r(initImpulseEpsilon),
                 r(initImpulseEpsilon),
@@ -81,17 +81,17 @@ public class ConceptWidget extends SpaceWidget<Concept> {
 
         @Override
         public void accept(List<ConceptWidget> pending) {
-            for (var conceptWidget : pending) {
+            for (ConceptWidget conceptWidget : pending) {
                 each(conceptWidget);
             }
         }
 
         public static void each(ConceptWidget cw) {
-            var p = cw.pri;
+            float p = cw.pri;
             p = (p == p) ? p : 0;
 
 
-            var nodeScale = (float) (minSize + Math.sqrt(p) * maxSize);
+            float nodeScale = (float) (minSize + Math.sqrt(p) * maxSize);
             cw.scale(nodeScale, nodeScale, nodeScale);
 
 
@@ -158,7 +158,7 @@ public class ConceptWidget extends SpaceWidget<Concept> {
 
 
         public void merge(EdgeComponent e) {
-            var p = e.priElseZero();
+            float p = e.priElseZero();
             if (p <= priTHRESH)
                 return;
 

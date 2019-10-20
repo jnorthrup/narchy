@@ -17,7 +17,7 @@ public class SelectorSensor extends VectorSensor {
         super(termizer.apply(values.length) /* n+1*/, n);
         assert(values.length > 1);
         choices = new FasterList<>(values.length);
-        for (var e : values) {
+        for (int e : values) {
             choices.add(newComponent(
                 termizer.apply(e),
                 () -> value.getAsInt() == e ? 1f : 0f)

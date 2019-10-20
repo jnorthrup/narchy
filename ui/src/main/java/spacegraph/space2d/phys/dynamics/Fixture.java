@@ -155,26 +155,26 @@ public class Fixture {
         }
 
 
-        var edge = body.contacts();
+        ContactEdge edge = body.contacts();
         while (edge != null) {
-            var contact = edge.contact;
-            var fixtureA = contact.aFixture;
-            var fixtureB = contact.bFixture;
+            Contact contact = edge.contact;
+            Fixture fixtureA = contact.aFixture;
+            Fixture fixtureB = contact.bFixture;
             if (fixtureA == this || fixtureB == this) {
                 contact.flagForFiltering();
             }
             edge = edge.next;
         }
 
-        var world = body.W;
+        Dynamics2D world = body.W;
 
         if (world == null) {
             return;
         }
 
 
-        var broadPhase = world.contactManager.broadPhase;
-        for (var i = 0; i < m_proxyCount; ++i) {
+        BroadPhase broadPhase = world.contactManager.broadPhase;
+        for (int i = 0; i < m_proxyCount; ++i) {
             broadPhase.touchProxy(proxies[i].id);
         }
     }
@@ -344,10 +344,10 @@ public class Fixture {
         this.shape = shape;
 
 
-        var childCount = this.shape.getChildCount();
+        int childCount = this.shape.getChildCount();
         if (proxies == null || proxies.length!=childCount) {
             proxies = new FixtureProxy[childCount];
-            for (var i = 0; i < childCount; i++) {
+            for (int i = 0; i < childCount; i++) {
                 proxies[i] = new FixtureProxy();
                 proxies[i].fixture = null;
                 proxies[i].id = BroadPhase.NULL_PROXY;
@@ -355,11 +355,11 @@ public class Fixture {
         }
 
         if (proxies.length < childCount) {
-            var old = proxies;
-            var newLen = MathUtils.max(old.length * 2, childCount);
+            FixtureProxy[] old = proxies;
+            int newLen = MathUtils.max(old.length * 2, childCount);
             proxies = new FixtureProxy[newLen];
             System.arraycopy(old, 0, proxies, 0, old.length);
-            for (var i = 0; i < newLen; i++) {
+            for (int i = 0; i < newLen; i++) {
                 if (i >= old.length) {
                     proxies[i] = new FixtureProxy();
                 }
@@ -389,8 +389,8 @@ public class Fixture {
 
         m_proxyCount = shape.getChildCount();
 
-        for (var i = 0; i < m_proxyCount; ++i) {
-            var proxy = proxies[i];
+        for (int i = 0; i < m_proxyCount; ++i) {
+            FixtureProxy proxy = proxies[i];
             shape.computeAABB(proxy.aabb, xf, i);
             proxy.id = broadPhase.createProxy(proxy.aabb, proxy);
             proxy.fixture = this;
@@ -405,8 +405,8 @@ public class Fixture {
      */
     public void destroyProxies(BroadPhase broadPhase) {
         
-        for (var i = 0; i < m_proxyCount; ++i) {
-            var proxy = proxies[i];
+        for (int i = 0; i < m_proxyCount; ++i) {
+            FixtureProxy proxy = proxies[i];
             broadPhase.destroyProxy(proxy.id);
             proxy.id = BroadPhase.NULL_PROXY;
         }
@@ -435,14 +435,14 @@ public class Fixture {
         v2 a1l = aabb1.lowerBound, a2l = aabb2.lowerBound;
         v2 a1u = aabb1.upperBound, a2u = aabb2.upperBound;
 
-        for (var i = 0; i < m_proxyCount; ++i) {
-            var proxy = proxies[i];
-            var childIndex = proxy.childIndex;
+        for (int i = 0; i < m_proxyCount; ++i) {
+            FixtureProxy proxy = proxies[i];
+            int childIndex = proxy.childIndex;
 
             shape.computeAABB(aabb1, transform1, childIndex);
             shape.computeAABB(aabb2, transform2, childIndex);
 
-            var pab = proxy.aabb;
+            AABB pab = proxy.aabb;
             v2 pabl = pab.lowerBound, pabu = pab.upperBound;
             pabl.x = Math.min(a1l.x, a2l.x);
             pabl.y = Math.min(a1l.y, a2l.y);

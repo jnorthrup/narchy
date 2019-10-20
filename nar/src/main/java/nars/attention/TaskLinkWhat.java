@@ -42,7 +42,7 @@ public class TaskLinkWhat extends What {
 
     @Override
     protected void starting(NAR nar) {
-        var narDUR = nar.dur();
+        float narDUR = nar.dur();
 
         this.dur.set(narDUR); //initializes value
 

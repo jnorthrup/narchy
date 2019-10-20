@@ -72,19 +72,19 @@ public class Point2PointConstraint extends TypedConstraint {
 	public void buildJacobian() {
 		appliedImpulse = 0f;
 
-		var normal = new v3();
+        v3 normal = new v3();
 		normal.set(0f, 0f, 0f);
 
-		var tmpMat1 = new Matrix3f();
-		var tmpMat2 = new Matrix3f();
-		var tmp1 = new v3();
-		var tmp2 = new v3();
-		var tmpVec = new v3();
+        Matrix3f tmpMat1 = new Matrix3f();
+        Matrix3f tmpMat2 = new Matrix3f();
+        v3 tmp1 = new v3();
+        v3 tmp2 = new v3();
+        v3 tmpVec = new v3();
 
-		var centerOfMassA = rbA.getCenterOfMassTransform(new Transform());
-		var centerOfMassB = rbB.getCenterOfMassTransform(new Transform());
+        Transform centerOfMassA = rbA.getCenterOfMassTransform(new Transform());
+        Transform centerOfMassB = rbB.getCenterOfMassTransform(new Transform());
 
-		for (var i = 0; i < 3; i++) {
+		for (int i = 0; i < 3; i++) {
 			VectorUtil.setCoord(normal, i, 1f);
 
 			tmpMat1.transpose(centerOfMassA.basis);
@@ -116,41 +116,41 @@ public class Point2PointConstraint extends TypedConstraint {
 
 	@Override
 	public void solveConstraint(float timeStep) {
-		var tmp = new v3();
-		var tmp2 = new v3();
+        v3 tmp = new v3();
+        v3 tmp2 = new v3();
 
 
-		var centerOfMassA = rbA.getCenterOfMassTransform(new Transform());
-		var centerOfMassB = rbB.getCenterOfMassTransform(new Transform());
+        Transform centerOfMassA = rbA.getCenterOfMassTransform(new Transform());
+        Transform centerOfMassB = rbB.getCenterOfMassTransform(new Transform());
 
-		var pivotAInW = new v3(pivotInA);
+        v3 pivotAInW = new v3(pivotInA);
 		centerOfMassA.transform(pivotAInW);
 
-		var pivotBInW = new v3(pivotInB);
+        v3 pivotBInW = new v3(pivotInB);
 		centerOfMassB.transform(pivotBInW);
 
 
-		var normal = new v3();
+        v3 normal = new v3();
 		normal.set(0f, 0f, 0f);
 
 
-		var rel_pos1 = new v3();
+        v3 rel_pos1 = new v3();
 		rel_pos1.sub(pivotAInW, centerOfMassA);
-		var rel_pos2 = new v3();
+        v3 rel_pos2 = new v3();
 		rel_pos2.sub(pivotBInW, centerOfMassB);
 
 
-		var vel1 = rbA.getVelocityInLocalPoint(rel_pos1, new v3());
-		var vel2 = rbB.getVelocityInLocalPoint(rel_pos2, new v3());
-		var vel = new v3();
+        v3 vel1 = rbA.getVelocityInLocalPoint(rel_pos1, new v3());
+        v3 vel2 = rbB.getVelocityInLocalPoint(rel_pos2, new v3());
+        v3 vel = new v3();
 		vel.sub(vel1, vel2);
 
-		var rel_vel = normal.dot(vel);
+        float rel_vel = normal.dot(vel);
 
 
-		for (var i = 0; i < 3; i++) {
+		for (int i = 0; i < 3; i++) {
 			VectorUtil.setCoord(normal, i, 1f);
-			var jacDiagABInv = 1f / jac[i].Adiag;
+            float jacDiagABInv = 1f / jac[i].Adiag;
 
 
 			/*
@@ -161,12 +161,12 @@ public class Point2PointConstraint extends TypedConstraint {
 
 			
 			tmp.sub(pivotAInW, pivotBInW);
-			var depth = -tmp.dot(normal);
+            float depth = -tmp.dot(normal);
 
-			var damping = 1f;
-			var impulse = depth * tau / timeStep * jacDiagABInv - damping * rel_vel * jacDiagABInv;
+            float damping = 1f;
+            float impulse = depth * tau / timeStep * jacDiagABInv - damping * rel_vel * jacDiagABInv;
 
-			var impulseClamp = this.impulseClamp;
+            float impulseClamp = this.impulseClamp;
 			if (impulseClamp > 0f) {
 				if (impulse < -impulseClamp) {
 					impulse = -impulseClamp;
@@ -177,7 +177,7 @@ public class Point2PointConstraint extends TypedConstraint {
 			}
 
 			appliedImpulse += impulse;
-			var impulse_vector = new v3();
+            v3 impulse_vector = new v3();
 			impulse_vector.scale(impulse, normal);
 			tmp.sub(pivotAInW, centerOfMassA);
 			rbA.impulse(impulse_vector, tmp);

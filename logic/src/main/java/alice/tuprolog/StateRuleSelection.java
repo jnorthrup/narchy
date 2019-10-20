@@ -41,13 +41,13 @@ public class StateRuleSelection extends State {
      */
     @Override
     State run(PrologSolve e) {
-        var c = e.run;
+        PrologRun c = e.run;
 
         /*----------------------------------------------------
          * Individuo compatibleGoals e
          * stabilisco se derivo da Backtracking.
          */
-        var alternative = e.currentAlternative;
+        ChoicePointContext alternative = e.currentAlternative;
         e.currentAlternative = null;
         ClauseStore clauseStore;
         boolean fromBacktracking;
@@ -58,7 +58,7 @@ public class StateRuleSelection extends State {
             List<Var> varsList = new FasterList<>();
             e.currentContext.trailingVars = OneWayList.add(e.currentContext.trailingVars, varsList);
 
-            var goal = e.currentContext.currentGoal;
+            Struct goal = e.currentContext.currentGoal;
             clauseStore = ClauseStore.match(goal, c.prolog.theories.find(goal), varsList);
             if (clauseStore == null) { //g.isEmpty() || (clauseStore = ClauseStore.build(goal, g, varsList))==null) {
                 return PrologRun.BACKTRACK;
@@ -80,7 +80,7 @@ public class StateRuleSelection extends State {
         /*-----------------------------------------------------
          * Build ExecutionContext and ChoicePointContext
          */
-        var ec = new PrologContext(e.nDemoSteps++);
+        PrologContext ec = new PrologContext(e.nDemoSteps++);
         ec.clause = clause.clause;
 
 
@@ -89,10 +89,10 @@ public class StateRuleSelection extends State {
 
 
         if (alternative != null) {
-            var choicePoint = alternative;
-            var depth = alternative.executionContext.depth;
+            ChoicePointContext choicePoint = alternative;
+            int depth = alternative.executionContext.depth;
             ec.choicePointAfterCut = choicePoint.prevChoicePointContext;
-            var currentGoal = choicePoint.executionContext.currentGoal;
+            Struct currentGoal = choicePoint.executionContext.currentGoal;
             while (currentGoal.subs() == 2 && ";".equals(currentGoal.name())) {
                 if (choicePoint.prevChoicePointContext != null) {
                     int distance;
@@ -101,7 +101,7 @@ public class StateRuleSelection extends State {
                         choicePoint = choicePoint.prevChoicePointContext;
                     }
                     if (distance == 1 && choicePoint.prevChoicePointContext != null) {
-                        var cppp = choicePoint.prevChoicePointContext;
+                        ChoicePointContext cppp = choicePoint.prevChoicePointContext;
                         ec.choicePointAfterCut = cppp.prevChoicePointContext;
                         currentGoal = cppp.executionContext.currentGoal;
                         choicePoint = cppp;
@@ -114,14 +114,14 @@ public class StateRuleSelection extends State {
             ec.choicePointAfterCut = e.choicePointSelector.getPointer();
         }
 
-        var curCtx = e.currentContext;
-        var curGoal = curCtx.currentGoal;
-        var unifiedVars = e.currentContext.trailingVars.head;
+        PrologContext curCtx = e.currentContext;
+        Struct curGoal = curCtx.currentGoal;
+        Collection<Var> unifiedVars = e.currentContext.trailingVars.head;
         curGoal.unify(unifiedVars, unifiedVars, ec.headClause);
 
 
         if ((ec.haveAlternatives = clauseStore.haveAlternatives()) && !fromBacktracking) {
-            var cpc = new ChoicePointContext();
+            ChoicePointContext cpc = new ChoicePointContext();
             cpc.compatibleGoals = clauseStore;
             cpc.executionContext = curCtx;
             cpc.indexSubGoal = curCtx.goalsToEval.current();

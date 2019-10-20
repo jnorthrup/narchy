@@ -86,10 +86,10 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
             trainingDataset = trainingDataset.getStripedDataset();
         }
 
-        var parameters = configuration.getPopulationBuilderParameters();
-        var DISCARD_W_TOKENS = true;
-        var TOKEN_UNMATCH_THREASHOLD = 80.0;
-        var TOKEN_THREASHOLD = 80.0;
+        Map<String, String> parameters = configuration.getPopulationBuilderParameters();
+        boolean DISCARD_W_TOKENS = true;
+        double TOKEN_UNMATCH_THREASHOLD = 80.0;
+        double TOKEN_THREASHOLD = 80.0;
         if(parameters!=null){
             
             if(parameters.containsKey("tokenThreashold")){
@@ -104,32 +104,32 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
         }
 
 
-        var charset = new CharHashSet();
+        CharHashSet charset = new CharHashSet();
 
 
-        var nodeFactory = configuration.getNodeFactory();
+        NodeFactory nodeFactory = configuration.getNodeFactory();
         
         
         Set<Leaf> terminalSet = new UnifiedSet(nodeFactory.getTerminalSet());
                 
-        for (var example : trainingDataset.getExamples()) {
-            for (var match : example.getMatchedStrings()) {
+        for (Example example : trainingDataset.getExamples()) {
+            for (String match : example.getMatchedStrings()) {
 
                 
-                for (var i = 0; i < match.length(); i++)
+                for (int i = 0; i < match.length(); i++)
                     charset.add( match.charAt(i) );
 
             }
         }
 
 
-        var winnerTokens = TokenizedContextTerminalSetBuilder.calculateWinnerMatchTokens(trainingDataset, TOKEN_THREASHOLD, DISCARD_W_TOKENS);
-        var winnerUnMatchTokens = TokenizedContextTerminalSetBuilder.calculateWinnerUnmatchTokens(trainingDataset, TOKEN_UNMATCH_THREASHOLD,DISCARD_W_TOKENS);
+        Map<String, Double> winnerTokens = TokenizedContextTerminalSetBuilder.calculateWinnerMatchTokens(trainingDataset, TOKEN_THREASHOLD, DISCARD_W_TOKENS);
+        Map<String, Double> winnerUnMatchTokens = TokenizedContextTerminalSetBuilder.calculateWinnerUnmatchTokens(trainingDataset, TOKEN_UNMATCH_THREASHOLD,DISCARD_W_TOKENS);
         winnerTokens.putAll(winnerUnMatchTokens);
         
         
-        for (var entry : winnerTokens.entrySet()) {
-            var token = entry.getKey();
+        for (Map.Entry<String, Double> entry : winnerTokens.entrySet()) {
+            String token = entry.getKey();
                 
                 Leaf leaf = new Constant(Utils.escape(token));
                 terminalSet.add(leaf);
@@ -154,16 +154,16 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
     
     public static Map<String,Double> calculateWinnerMatchTokens(DataSet dataSet, double threashold, boolean discardWtokens){
         Map<String,Double> tokensCounter = new HashMap<>();
-        for (var example : dataSet.getExamples()) {
-            for (var match : example.getMatchedStrings()) {
-                var tokens = tokenizer.tokenize(match);
+        for (Example example : dataSet.getExamples()) {
+            for (String match : example.getMatchedStrings()) {
+                List<String> tokens = tokenizer.tokenize(match);
                 Set<String> tokensSet = new HashSet<>(tokens);
-                for(var token : tokensSet){
+                for(String token : tokensSet){
                     if(matchW(token) && discardWtokens){
                         continue;
                     }
                     if(tokensCounter.containsKey(token)){
-                        var value = tokensCounter.get(token);
+                        Double value = tokensCounter.get(token);
                         value++;
                         tokensCounter.put(token, value);
                     } else {
@@ -173,11 +173,11 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
             }
         }
 
-        var numberOfMatches = dataSet.getNumberMatches();
+        int numberOfMatches = dataSet.getNumberMatches();
         Map<String, Double> winnerMatchTokensLocal = new HashMap<>();
-        for (var entry : tokensCounter.entrySet()) {
-            var key = entry.getKey();
-            var double1 = entry.getValue();
+        for (Map.Entry<String, Double> entry : tokensCounter.entrySet()) {
+            String key = entry.getKey();
+            Double double1 = entry.getValue();
             Double doublePercentange = (double1 * 100.0) / numberOfMatches;
             entry.setValue(doublePercentange); 
              if(doublePercentange >= threashold){
@@ -189,8 +189,8 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
     
     public static Map<String,Double> calculateWinnerUnmatchTokens(DataSet dataSet, double threashold, boolean discardWtokens){
         Map<String,Double> tokensCounter = new HashMap<>();
-        var numberOfPositiveExamples = 0;
-        for (var example : dataSet.getExamples()) {
+        int numberOfPositiveExamples = 0;
+        for (Example example : dataSet.getExamples()) {
             if(example.getMatch().isEmpty()){
                 
                 continue;
@@ -198,18 +198,18 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
             numberOfPositiveExamples++;
             Set<String> exampleTokenSet = new HashSet<>();
                 
-            for (var unmatch : example.getUnmatchedStrings()) {
-                var tokens = tokenizer.tokenize(unmatch);
+            for (String unmatch : example.getUnmatchedStrings()) {
+                List<String> tokens = tokenizer.tokenize(unmatch);
                 exampleTokenSet.addAll(tokens);
             }
             
             
-            for(var token : exampleTokenSet){
+            for(String token : exampleTokenSet){
                 if(matchW(token) && discardWtokens){
                     continue;
                 }
                 if(tokensCounter.containsKey(token)){
-                    var value = tokensCounter.get(token);
+                    Double value = tokensCounter.get(token);
                     value++;
                     tokensCounter.put(token, value);
                 } else {
@@ -219,9 +219,9 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
         }
 
         Map<String, Double> winnerUnmatchTokensLocal = new HashMap<>();
-        for (var entry : tokensCounter.entrySet()) {
-            var key = entry.getKey();
-            var double1 = entry.getValue();
+        for (Map.Entry<String, Double> entry : tokensCounter.entrySet()) {
+            String key = entry.getKey();
+            Double double1 = entry.getValue();
             Double doublePercentange = (double1 * 100.0) / numberOfPositiveExamples;
             entry.setValue(doublePercentange); 
              if(doublePercentange >= threashold){

@@ -51,10 +51,10 @@ public abstract class IntVar {
     public static final int MAX_VALUE = 1000000000;
 
     public static int[] makeInt(int n, IntUnaryOperator f) {
-        var array = new int[10];
-        var count = 0;
-        for (var i = 0; i < n; i++) {
-            var i1 = f.applyAsInt(i);
+        int[] array = new int[10];
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            int i1 = f.applyAsInt(i);
             if (array.length == count) array = Arrays.copyOf(array, count * 2);
             array[count++] = i1;
         }
@@ -273,16 +273,16 @@ public abstract class IntVar {
 
     @Override
     public String toString() {
-        var domain = new int[size()];
+        int[] domain = new int[size()];
         copyDomain(domain);
         Arrays.sort(domain);
-        var joiner = new StringJoiner("", "{", domain[domain.length - 1] + "}");
-        var bound = domain.length - 1;
-        for (var i = 0; i < bound; i++) {
-            var s = domain[i] + ", ";
+        StringJoiner joiner = new StringJoiner("", "{", domain[domain.length - 1] + "}");
+        int bound = domain.length - 1;
+        for (int i = 0; i < bound; i++) {
+            String s = domain[i] + ", ";
             joiner.add(s);
         }
-        var bf = joiner.toString();
+        String bf = joiner.toString();
         return bf;
     }
 }

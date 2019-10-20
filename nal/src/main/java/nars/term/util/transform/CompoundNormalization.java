@@ -29,9 +29,9 @@ public final class CompoundNormalization extends VariableNormalization {
     @Override
     public Term applyPosCompound(Compound x) {
         /* if x is not the root target (ie. a subterm) */
-        var hasImg = imgPossible && x.hasAll(Image.ImageBits);
+        boolean hasImg = imgPossible && x.hasAll(Image.ImageBits);
         if (hasImg && x!=root && x.opID()==INH.id) {
-            var y = (Compound) Image._imgNormalize(x);
+            Compound y = (Compound) Image._imgNormalize(x);
             if (x!=y) {
                 x = y;
                 hasImg = x.hasAll(Image.ImageBits); //check if image bits remain

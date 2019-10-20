@@ -123,7 +123,7 @@ public class Struct extends Term {
         if (name_ == null)
             throw new InvalidTermException("The functor of a Struct cannot be null");
 
-        var arity = subs.length;
+        int arity = subs.length;
         if (name_.isEmpty() && arity > 0)
             throw new InvalidTermException("The functor of a non-atom Struct cannot be an empty string");
 
@@ -229,7 +229,7 @@ public class Struct extends Term {
      * <code>getArg(index).getTerm()</code>
      */
     public Term subResolve(int index) {
-        var s = subs[index];
+        Term s = subs[index];
         return s instanceof Var ? s.term() : s;
     }
 
@@ -262,9 +262,14 @@ public class Struct extends Term {
     @Override
     public boolean isGround() {
         if (!isAtomic()) {
-            var a = this.subs;
-            var bound = subs();
-            return IntStream.range(0, bound).allMatch(i -> a[i].isGround());
+            Term[] a = this.subs;
+            int bound = subs();
+            for (int i = 0; i < bound; i++) {
+                if (!a[i].isGround()) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         return true;
@@ -288,16 +293,25 @@ public class Struct extends Term {
         if (subs() == 0) {
             return null;
         }
-        for (var i = 0; i < subs(); i++) {
+        for (int i = 0; i < subs(); i++) {
             if (subs[i] instanceof Struct) {
-                var s = (Struct) subs[i];
+                Struct s = (Struct) subs[i];
                 if (s.name().equals(name)) {
                     return s;
                 }
             }
         }
-        var bound = subs();
-        return IntStream.range(0, bound).filter(i -> subs[i] instanceof Struct).mapToObj(i -> (Struct) subs[i]).map(s -> s.sub(name)).filter(Objects::nonNull).findFirst().orElse(null);
+        int bound = subs();
+        for (int i = 0; i < bound; i++) {
+            if (subs[i] instanceof Struct) {
+                Struct s = (Struct) subs[i];
+                Struct sub = s.sub(name);
+                if (sub != null) {
+                    return sub;
+                }
+            }
+        }
+        return null;
     }
 
 
@@ -311,20 +325,20 @@ public class Struct extends Term {
         if (!(t instanceof Struct)) {
             return true;
         } else {
-            var ts = (Struct) t;
-            var tarity = ts.subs();
+            Struct ts = (Struct) t;
+            int tarity = ts.subs();
             if (subs() > tarity) {
                 return true;
             } else if (subs() == tarity) {
-                var nc = name.compareTo(ts.name);
+                int nc = name.compareTo(ts.name);
                 if (nc > 0) {
                     return true;
                 } else if (nc == 0) {
-                    var bb = ts.subs;
+                    Term[] bb = ts.subs;
                     if (bb!=this.subs) {
-                        for (var c = 0; c < subs(); c++) {
-                            var a = this.subs[c];
-                            var b = bb[c];
+                        for (int c = 0; c < subs(); c++) {
+                            Term a = this.subs[c];
+                            Term b = bb[c];
                             if (a == b) continue;
                             if (a.isGreater(b)) {
                                 return true;
@@ -345,8 +359,8 @@ public class Struct extends Term {
         if (!(t instanceof Struct)) {
             return true;
         } else {
-            var ts = (Struct) t;
-            var tarity = ts.subs();
+            Struct ts = (Struct) t;
+            int tarity = ts.subs();
             if (subs() > tarity) {
                 return true;
             } else if (subs() == tarity) {
@@ -354,7 +368,7 @@ public class Struct extends Term {
                 if (name.compareTo(ts.name) > 0) {
                     return true;
                 } else if (name.compareTo(ts.name) == 0) {
-                    for (var c = 0; c < subs(); c++) {
+                    for (int c = 0; c < subs(); c++) {
 
                         if (subs[c].isGreaterRelink(ts.subs[c], vorder)) {
                             return true;
@@ -382,11 +396,16 @@ public class Struct extends Term {
         if (t == this) return true;
 
         if (t instanceof Struct) {
-            var ts = (Struct) t;
+            Struct ts = (Struct) t;
             if (subs() == ts.subs() && name.equals(ts.name)) {
                 if (this.subs!=ts.subs) {
-                    var bound = subs();
-                    return IntStream.range(0, bound).allMatch(c -> subs[c].equals(ts.subs[c]));
+                    int bound = subs();
+                    for (int c = 0; c < bound; c++) {
+                        if (!subs[c].equals(ts.subs[c])) {
+                            return false;
+                        }
+                    }
+                    return true;
 
                 }
                 return true;
@@ -401,7 +420,7 @@ public class Struct extends Term {
 
     public boolean isConstant() {
         if (!isAtomic()) {
-            for (var x : subs) {
+            for (Term x : subs) {
                 if (x instanceof Var)
                     return false;
                 if ((x instanceof Struct) && (!((Struct) x).isConstant()))
@@ -422,12 +441,12 @@ public class Struct extends Term {
         if (!(vMap instanceof IdentityHashMap) && isConstant())
             return this;
 
-        var arity = this.subs();
+        int arity = this.subs();
         Term[] xx = this.subs, yy = null;
 
-        for (var c = 0; c < arity; c++) {
-            var x = xx[c];
-            var y = x.copy(vMap, idExecCtx);
+        for (int c = 0; c < arity; c++) {
+            Term x = xx[c];
+            Term y = x.copy(vMap, idExecCtx);
             if (x != y) {
                 if (yy == null)
                     yy = xx.clone();
@@ -439,7 +458,7 @@ public class Struct extends Term {
         if (yy == null)
             return this; //unchanged
 
-        var t = new Struct(name, yy);
+        Struct t = new Struct(name, yy);
         t.resolved = resolved;
         t.key = key;
         t.primitive = primitive;
@@ -459,16 +478,16 @@ public class Struct extends Term {
         if (!(vMap instanceof IdentityHashMap) && isGround())
             return this;
 
-        var t = new Struct(name, new Term[subs()]);
+        Struct t = new Struct(name, new Term[subs()]);
         t.resolved = false;
         t.key = key;
         t.primitive = null;
-        var thatArg = t.subs;
-        var thisArg = this.subs;
-        var arity = this.subs();
+        Term[] thatArg = t.subs;
+        Term[] thisArg = this.subs;
+        int arity = this.subs();
 
-        for (var c = 0; c < arity; c++) {
-            var xc = thisArg[c];
+        for (int c = 0; c < arity; c++) {
+            Term xc = thisArg[c];
             Term yc;
             if (xc instanceof Var || (xc instanceof Struct && (!((Struct) xc).isConstant()))) {
 
@@ -523,22 +542,22 @@ public class Struct extends Term {
         if (resolved)
             return;
 
-        var arg = this.subs;
-        var arity = this.subs();
-        for (var c = 0; c < arity; c++) {
-            var term = arg[c];
+        Term[] arg = this.subs;
+        int arity = this.subs();
+        for (int c = 0; c < arity; c++) {
+            Term term = arg[c];
             if (term == null)
                 continue;
 
             term = term.term();
 
             if (term instanceof Var) {
-                var t = (Var) term;
+                Var t = (Var) term;
                 t.setTimestamp(count);
                 if (!t.isAnonymous()) {
 
                     Var found = null;
-                    var tName = t.name();
+                    String tName = t.name();
                     if (vl != null && !vl.isEmpty()) {
                         found = vl.get(tName);
                     }
@@ -616,8 +635,8 @@ public class Struct extends Term {
         if (!isList())
             throw new UnsupportedOperationException("The structure " + this + " is not a list.");
 
-        var t = this;
-        var count = 0;
+        Struct t = this;
+        int count = 0;
         while (!t.isEmptyList()) {
             count++;
             t = (Struct) t.subs[1].term();
@@ -644,10 +663,10 @@ public class Struct extends Term {
      * Gets a list Struct representation, with the functor as first element.
      */
     Struct toList() {
-        var t = emptyList();
-        var arg = this.subs;
+        Struct t = emptyList();
+        Term[] arg = this.subs;
 
-        for (var c = subs() - 1; c >= 0; c--) {
+        for (int c = subs() - 1; c >= 0; c--) {
             t = new Struct(arg[c].term(), t);
         }
         return new Struct(new Struct(name), t);
@@ -660,11 +679,11 @@ public class Struct extends Term {
      * If this structure is not a list, null object is returned
      */
     Struct fromList() {
-        var ft = subs[0].term();
+        Term ft = subs[0].term();
         if (!ft.isAtomic())
             return null;
 
-        var at = (Struct) subs[1].term();
+        Struct at = (Struct) subs[1].term();
         List<Term> al = new LinkedList<>();
         while (!at.isEmptyList()) {
             if (!at.isList())
@@ -711,17 +730,24 @@ public class Struct extends Term {
         if (this == y) return true;
 
         if (y instanceof Struct) {
-            var yy = (Struct) y;
+            Struct yy = (Struct) y;
             if (resolved && yy.resolved && equals(y))
                 return true;
 
-            var arity = this.subs();
+            int arity = this.subs();
             if (arity == yy.subs() && name.equals(yy.name)) {
-                var xarg = this.subs;
-                var yarg = yy.subs;
+                Term[] xarg = this.subs;
+                Term[] yarg = yy.subs;
                 //repeat term, skip
-                var bound = arity;
-                return IntStream.range(0, bound).filter(c -> c <= 0 || xarg[c] != xarg[c - 1] || yarg[c] != yarg[c - 1]).allMatch(c -> xarg[c].unify(vl1, vl2, yarg[c]));
+                int bound = arity;
+                for (int c = 0; c < bound; c++) {
+                    if (c <= 0 || xarg[c] != xarg[c - 1] || yarg[c] != yarg[c - 1]) {
+                        if (!xarg[c].unify(vl1, vl2, yarg[c])) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
             }
         } else if (y instanceof Var) {
             return y.unify(vl2, vl1, this);
@@ -771,10 +797,10 @@ public class Struct extends Term {
             case "{}":
                 return '{' + toString0_bracket() + '}';
         }
-        var s = (Parser.isAtom(name) ? name : '\'' + name + '\'');
+        String s = (Parser.isAtom(name) ? name : '\'' + name + '\'');
         if (subs() > 0) {
             s += '(';
-            for (var c = 1; c < subs(); c++) {
+            for (int c = 1; c < subs(); c++) {
                 s = s + (!(subs[c - 1] instanceof Var) ? subs[c - 1].toString() : ((Var) subs[c - 1]).toStringFlattened()) + ',';
             }
             s = s + (!(subs[subs() - 1] instanceof Var) ? subs[subs() - 1].toString() : ((Var) subs[subs() - 1]).toStringFlattened()) + ')';
@@ -783,17 +809,17 @@ public class Struct extends Term {
     }
 
     private String toString0() {
-        var h = subs[0].term();
-        var t = subs[1].term();
+        Term h = subs[0].term();
+        Term t = subs[1].term();
         if (t.isList()) {
-            var tl = (Struct) t;
+            Struct tl = (Struct) t;
             if (tl.isEmptyList()) {
                 return h.toString();
             }
             return (h instanceof Var ? ((Var) h).toStringFlattened() : h.toString()) + ',' + tl.toString0();
         } else {
-            var h0 = h instanceof Var ? ((Var) h).toStringFlattened() : h.toString();
-            var t0 = t instanceof Var ? ((Var) t).toStringFlattened() : t.toString();
+            String h0 = h instanceof Var ? ((Var) h).toStringFlattened() : h.toString();
+            String t0 = t instanceof Var ? ((Var) t).toStringFlattened() : t.toString();
             return (h0 + '|' + t0);
         }
     }
@@ -805,9 +831,9 @@ public class Struct extends Term {
             return subs[0].term().toString();
         } else {
 
-            var head = ((Struct) subs[0]).subResolve(0);
-            var tail = ((Struct) subs[0]).subResolve(1);
-            var buf = new StringBuilder(head.toString());
+            Term head = ((Struct) subs[0]).subResolve(0);
+            Term tail = ((Struct) subs[0]).subResolve(1);
+            StringBuilder buf = new StringBuilder(head.toString());
             while (tail instanceof Struct && ",".equals(((Struct) tail).name())) {
                 head = ((Struct) tail).subResolve(0);
                 buf.append(',').append(head);
@@ -820,10 +846,10 @@ public class Struct extends Term {
     }
 
     private String toStringAsList(PrologOperators op) {
-        var h = subs[0];
-        var t = subs[1].term();
+        Term h = subs[0];
+        Term t = subs[1].term();
         if (t.isList()) {
-            var tl = (Struct) t;
+            Struct tl = (Struct) t;
             if (tl.isEmptyList()) {
                 return h.toStringAsArgY(op, 0);
             }
@@ -842,7 +868,7 @@ public class Struct extends Term {
             return ('{' + toString0_bracket() + '}');
         }
 
-        var p = 0;
+        int p = 0;
         switch (subs()) {
             case 2:
                 if ((p = op.opPrio(name, "xfx")) >= PrologOperators.OP_LOW) {
@@ -905,7 +931,7 @@ public class Struct extends Term {
                 }
                 break;
         }
-        var v = (Parser.isAtom(name) ? name : '\'' + name + '\'');
+        String v = (Parser.isAtom(name) ? name : '\'' + name + '\'');
         if (subs() == 0) {
             return v;
         }
@@ -949,7 +975,7 @@ public class Struct extends Term {
                 throw new NoSuchElementException();
 
 
-            var head = list.subResolve(0);
+            Term head = list.subResolve(0);
             list = (Struct) list.subResolve(1);
             return head;
         }

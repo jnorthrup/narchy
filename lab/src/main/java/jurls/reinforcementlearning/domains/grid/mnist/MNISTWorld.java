@@ -85,11 +85,11 @@ public class MNISTWorld extends MNIST implements World {
         i.toArray(sensor, noise);
 
 
-        var threshold = 0.75;
+        double threshold = 0.75;
 
-        var a = -1;
-        for (var x = 0; x < action.length; x++) {
-            var active = (action[x] > threshold);
+        int a = -1;
+        for (int x = 0; x < action.length; x++) {
+            boolean active = (action[x] > threshold);
             if (active) {
                 a = x;
             }            
@@ -136,7 +136,7 @@ public class MNISTWorld extends MNIST implements World {
     
     public static void main(String[] args) throws Exception {
 
-        var m = new MNISTWorld("/home/me/Downloads", 800, maxDigit);
+        MNISTWorld m = new MNISTWorld("/home/me/Downloads", 800, maxDigit);
 
 
 

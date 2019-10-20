@@ -57,7 +57,7 @@ public final class Ranking {
     }    
     
     public String getDescription(){
-        var sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         this.tree.describe(sb);
         return sb.toString();
     }

@@ -398,12 +398,12 @@ public class GranularSamplePlayer extends SamplePlayer {
     private void setGrainPan(Grain g, float panRandomness) {
         g.pan = new float[outs];
         if (outs == 2) {
-            var pan = (float) Math.random() * Math.min(1, Math.max(0, panRandomness)) * 0.5f;
+            float pan = (float) Math.random() * Math.min(1, Math.max(0, panRandomness)) * 0.5f;
             pan = Math.random() < 0.5f ? 0.5f + pan : 0.5f - pan;
             g.pan[0] = pan > 0.5f ? 1f : 2f * pan;
             g.pan[1] = pan < 0.5f ? 1f : 2f * (1 - pan);
         } else {
-            for (var i = 0; i < outs; i++) {
+            for (int i = 0; i < outs; i++) {
                 g.pan[i] = 1f;
             }
         }
@@ -425,7 +425,7 @@ public class GranularSamplePlayer extends SamplePlayer {
      */
     private void firstGrain() {
         if (firstGrain) {
-            var g = new Grain();
+            Grain g = new Grain();
             g.position = position;
             g.age = grainSizeEnvelope.getValue() / 4f;
             g.grainSize = grainSizeEnvelope.getValue(0, 0);
@@ -457,23 +457,23 @@ public class GranularSamplePlayer extends SamplePlayer {
             randomPanEnvelope.update();
             firstGrain();
             
-            for (var i = 0; i < bufferSize; i++) {
+            for (int i = 0; i < bufferSize; i++) {
                 
                 if (timeSinceLastGrain > grainIntervalEnvelope.getValue(0, i)) {
-                    var g = !freeGrains.isEmpty() ? freeGrains.pollFirst() : new Grain();
+                    Grain g = !freeGrains.isEmpty() ? freeGrains.pollFirst() : new Grain();
                     resetGrain(g, i);
                     setGrainPan(g, randomPanEnvelope.getValue(0, i));
                     grains.add(g);
                     timeSinceLastGrain = 0f;
                 }
                 
-                for (var j = 0; j < outs; j++) {
+                for (int j = 0; j < outs; j++) {
                     bufOut[j][i] = 0.0f;
                 }
                 
-                for (var g : grains) {
+                for (Grain g : grains) {
 
-                    var windowScale = window.getFractInterp((float) (g.age / g.grainSize));
+                    float windowScale = window.getFractInterp((float) (g.age / g.grainSize));
                     
                     
                     switch (interpolationType) {
@@ -497,20 +497,20 @@ public class GranularSamplePlayer extends SamplePlayer {
                             break;
                     }
                     
-                    for (var j = 0; j < outs; j++) {
+                    for (int j = 0; j < outs; j++) {
                         bufOut[j][i] += g.pan[j] * windowScale * frame[j % sample.getNumChannels()];
                     }
                 }
                 
                 calculateNextPosition(i);
                 pitch = Math.abs(pitchEnvelope.getValue(0, i));
-                for (var g : grains) {
+                for (Grain g : grains) {
                     calculateNextGrainPosition(g);
                 }
                 
                 timeSinceLastGrain += msPerSample;
                 
-                for (var g : grains) {
+                for (Grain g : grains) {
                     if (g.age > g.grainSize) {
                         freeGrains.add(g);
                         deadGrains.add(g);
@@ -528,7 +528,7 @@ public class GranularSamplePlayer extends SamplePlayer {
      * @param g the Grain.
      */
     private void calculateNextGrainPosition(Grain g) {
-        var direction = rate >= 0 ? 1 : -1;
+        int direction = rate >= 0 ? 1 : -1;
         g.age += msPerSample;
         if (loopInsideGrains) {
             switch (loopType) {

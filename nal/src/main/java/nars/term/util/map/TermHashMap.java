@@ -61,8 +61,8 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
     @Override
     public Set<Entry<Term, X>> entrySet() {
-        var hasID = !id.isEmpty();
-        var hasOther = !other.isEmpty();
+        boolean hasID = !id.isEmpty();
+        boolean hasOther = !other.isEmpty();
         if (!hasID) {
             return !hasOther ? Collections.emptySet() : other.entrySet();
         } else {
@@ -73,7 +73,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
     @Override
     public X compute(Term key, BiFunction<? super Term, ? super X, ? extends X> f) {
-        var aid = Intrin.id(key);
+        short aid = Intrin.id(key);
         return aid != 0 ?
             id.updateValueWith(aid, () -> f.apply(key, null), (p, k) -> f.apply(k, p), key) :
             other.compute(key, f);
@@ -82,7 +82,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
     public X computeIfAbsent(Term key,
                              Function<? super Term, ? extends X> mappingFunction) {
-        var aid = Intrin.id(key);
+        short aid = Intrin.id(key);
         return aid != 0 ?
                 id.getIfAbsentPutWith(aid, mappingFunction::apply, key) :
                 other.computeIfAbsent(key, mappingFunction);
@@ -91,7 +91,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
     @Override
     public final X get(Object key) {
-        var aid = Intrin.id((Term) key);
+        short aid = Intrin.id((Term) key);
         return aid != 0 ?
                 id.get(aid) :
                 other.get(key);
@@ -99,7 +99,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
     @Override
     public final X put(Term key, X value) {
-        var aid = Intrin.id(key);
+        short aid = Intrin.id(key);
         return aid != 0 ?
                 id.put(aid, value) :
                 other.put(key, value);
@@ -107,7 +107,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
     @Override
     public X remove(Object key) {
-        var aid = Intrin.id((Term) key);
+        short aid = Intrin.id((Term) key);
         return aid != 0 ?
                 id.remove(aid) :
                 other.remove(key);
@@ -118,9 +118,9 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
         if (!id.isEmpty())
             id.forEachKeyValue((x, y) -> action.accept(Intrin.term(x), y));
         if (!other.isEmpty()) {
-            for (var entry : other.entrySet()) {
-                var key = entry.getKey();
-                var value = entry.getValue();
+            for (Entry<Term, X> entry : other.entrySet()) {
+                Term key = entry.getKey();
+                X value = entry.getValue();
                 action.accept(key, value);
             }
         }

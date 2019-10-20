@@ -92,10 +92,10 @@ public class LineStrip2D implements Iterable<Vec2D> {
     }
 
     public Vec2D getCentroid() {
-        var num = vertices.size();
+        int num = vertices.size();
         if (num > 0) {
-            var centroid = new Vec2D();
-            for (var v : vertices) {
+            Vec2D centroid = new Vec2D();
+            for (Vec2D v : vertices) {
                 centroid.addSelf(v);
             }
             return centroid.scaleSelf(1f / num);
@@ -140,19 +140,19 @@ public class LineStrip2D implements Iterable<Vec2D> {
                 return null;
             }
         }
-        var arcLen = getLength();
+        float arcLen = getLength();
         if (arcLen > 0) {
             double delta = step / arcLen;
-            var currIdx = 0;
+            int currIdx = 0;
             for (double t = 0; t < 1.0; t += delta) {
-                var currT = t * arcLen;
+                double currT = t * arcLen;
                 while (currT >= arcLenIndex[currIdx]) {
                     currIdx++;
                 }
                 ReadonlyVec2D p = vertices.get(currIdx - 1);
                 ReadonlyVec2D q = vertices.get(currIdx);
-                var frac = (float) ((currT - arcLenIndex[currIdx - 1]) / (arcLenIndex[currIdx] - arcLenIndex[currIdx - 1]));
-                var i = p.interpolateTo(q, frac);
+                float frac = (float) ((currT - arcLenIndex[currIdx - 1]) / (arcLenIndex[currIdx] - arcLenIndex[currIdx - 1]));
+                Vec2D i = p.interpolateTo(q, frac);
                 uniform.add(i);
             }
             if (doAddFinalVertex) {
@@ -169,8 +169,12 @@ public class LineStrip2D implements Iterable<Vec2D> {
      * @return list of lines
      */
     public List<Line2D> getEdges() {
-        var num = vertices.size();
-        List<Line2D> edges = IntStream.range(1, num).mapToObj(i -> new Line2D(vertices.get(i - 1), vertices.get(i))).collect(Collectors.toCollection(() -> new ArrayList<>(num - 1)));
+        int num = vertices.size();
+        List<Line2D> edges = new ArrayList<>(num - 1);
+        for (int i = 1; i < num; i++) {
+            Line2D line2D = new Line2D(vertices.get(i - 1), vertices.get(i));
+            edges.add(line2D);
+        }
         return edges;
     }
 
@@ -179,7 +183,7 @@ public class LineStrip2D implements Iterable<Vec2D> {
             arcLenIndex = new float[vertices.size()];
         }
         float arcLen = 0;
-        for (var i = 1; i < arcLenIndex.length; i++) {
+        for (int i = 1; i < arcLenIndex.length; i++) {
             ReadonlyVec2D p = vertices.get(i - 1);
             ReadonlyVec2D q = vertices.get(i);
             arcLen += p.distanceTo(q);
@@ -198,18 +202,18 @@ public class LineStrip2D implements Iterable<Vec2D> {
      * @return
      */
     public Vec2D getPointAt(float t) {
-        var num = vertices.size();
+        int num = vertices.size();
         if (num > 1) {
             if (t <= 0.0) {
                 return vertices.get(0);
             } else if (t >= 1.0) {
                 return vertices.get(num - 1);
             }
-            var totalLength = this.getLength();
+            float totalLength = this.getLength();
             double offp = 0, offq = 0;
-            for (var i = 1; i < num; i++) {
-                var p = vertices.get(i - 1);
-                var q = vertices.get(i);
+            for (int i = 1; i < num; i++) {
+                Vec2D p = vertices.get(i - 1);
+                Vec2D q = vertices.get(i);
                 offq += q.distanceTo(p) / totalLength;
                 if (offp <= t && offq >= t) {
                     return p.interpolateTo(q, (float) MathUtils.mapInterval(t,
@@ -222,9 +226,13 @@ public class LineStrip2D implements Iterable<Vec2D> {
     }
 
     public List<Line2D> getSegments() {
-        var num = vertices.size();
-        var bound = num;
-        List<Line2D> segments = IntStream.range(1, bound).mapToObj(i -> new Line2D(vertices.get(i - 1), vertices.get(i))).collect(Collectors.toCollection(() -> new ArrayList<>(num - 1)));
+        int num = vertices.size();
+        int bound = num;
+        List<Line2D> segments = new ArrayList<>(num - 1);
+        for (int i = 1; i < bound; i++) {
+            Line2D line2D = new Line2D(vertices.get(i - 1), vertices.get(i));
+            segments.add(line2D);
+        }
         return segments;
     }
 
@@ -236,10 +244,10 @@ public class LineStrip2D implements Iterable<Vec2D> {
     }
 
     public LineIntersection intersectLine(Line2D line) {
-        var l = new Line2D(new Vec2D(), new Vec2D());
+        Line2D l = new Line2D(new Vec2D(), new Vec2D());
         for (int i = 1, num = vertices.size(); i < num; i++) {
             l.set(vertices.get(i - 1), vertices.get(i));
-            var isec = l.intersectLine(line);
+            LineIntersection isec = l.intersectLine(line);
             if (isec.getType() == Type.INTERSECTING
                     || isec.getType() == Type.COINCIDENT) {
                 return isec;
@@ -253,7 +261,7 @@ public class LineStrip2D implements Iterable<Vec2D> {
     }
 
     public LineStrip2D rotate(float theta) {
-        for (var v : vertices) {
+        for (Vec2D v : vertices) {
             v.rotate(theta);
         }
         return this;
@@ -264,7 +272,7 @@ public class LineStrip2D implements Iterable<Vec2D> {
     }
 
     public LineStrip2D scale(float x, float y) {
-        for (var v : vertices) {
+        for (Vec2D v : vertices) {
             v.scaleSelf(x, y);
         }
         return this;
@@ -279,8 +287,8 @@ public class LineStrip2D implements Iterable<Vec2D> {
     }
 
     public LineStrip2D scaleSize(float x, float y) {
-        var centroid = getCentroid();
-        for (var v : vertices) {
+        Vec2D centroid = getCentroid();
+        for (Vec2D v : vertices) {
             v.subSelf(centroid).scaleSelf(x, y).addSelf(centroid);
         }
         return this;
@@ -299,7 +307,7 @@ public class LineStrip2D implements Iterable<Vec2D> {
     }
 
     public LineStrip2D translate(float x, float y) {
-        for (var v : vertices) {
+        for (Vec2D v : vertices) {
             v.addSelf(x, y);
         }
         return this;

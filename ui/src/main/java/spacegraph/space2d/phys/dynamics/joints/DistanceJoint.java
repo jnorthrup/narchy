@@ -170,17 +170,17 @@ public class DistanceJoint extends Joint {
         m_invIB = B.m_invI;
 
         v2 cA = data.positions[m_indexA];
-        var aA = data.positions[m_indexA].a;
+        float aA = data.positions[m_indexA].a;
         v2 vA = data.velocities[m_indexA];
-        var wA = data.velocities[m_indexA].w;
+        float wA = data.velocities[m_indexA].w;
 
         v2 cB = data.positions[m_indexB];
-        var aB = data.positions[m_indexB].a;
+        float aB = data.positions[m_indexB].a;
         v2 vB = data.velocities[m_indexB];
-        var wB = data.velocities[m_indexB].w;
+        float wB = data.velocities[m_indexB].w;
 
-        var qA = pool.popRot();
-        var qB = pool.popRot();
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
 
         qA.set(aA);
         qB.set(aB);
@@ -193,7 +193,7 @@ public class DistanceJoint extends Joint {
         pool.pushRot(2);
 
 
-        var length = m_u.length();
+        float length = m_u.length();
         if (length > Settings.linearSlop) {
             m_u.x *= 1.0f / length;
             m_u.y *= 1.0f / length;
@@ -202,27 +202,27 @@ public class DistanceJoint extends Joint {
         }
 
 
-        var crAu = v2.cross(m_rA, m_u);
-        var crBu = v2.cross(m_rB, m_u);
-        var invMass = m_invMassA + m_invIA * crAu * crAu + m_invMassB + m_invIB * crBu * crBu;
+        float crAu = v2.cross(m_rA, m_u);
+        float crBu = v2.cross(m_rB, m_u);
+        float invMass = m_invMassA + m_invIA * crAu * crAu + m_invMassB + m_invIB * crBu * crBu;
 
         
         m_mass = invMass != 0.0f ? 1.0f / invMass : 0.0f;
 
         if (m_frequencyHz > 0.0f) {
-            var C = length - m_length;
+            float C = length - m_length;
 
 
-            var omega = 2.0f * MathUtils.PI * m_frequencyHz;
+            float omega = 2.0f * MathUtils.PI * m_frequencyHz;
 
 
-            var d = 2.0f * m_mass * m_dampingRatio * omega;
+            float d = 2.0f * m_mass * m_dampingRatio * omega;
 
 
-            var k = m_mass * omega * omega;
+            float k = m_mass * omega * omega;
 
 
-            var h = data.step.dt;
+            float h = data.step.dt;
             m_gamma = h * (d + h * k);
             m_gamma = m_gamma != 0.0f ? 1.0f / m_gamma : 0.0f;
             m_bias = C * h * k * m_gamma;
@@ -238,7 +238,7 @@ public class DistanceJoint extends Joint {
             
             m_impulse *= data.step.dtRatio;
 
-            var P = pool.popVec2();
+            v2 P = pool.popVec2();
             P.set(m_u).scaled(m_impulse);
 
             vA.x -= m_invMassA * P.x;
@@ -262,26 +262,26 @@ public class DistanceJoint extends Joint {
     @Override
     public void solveVelocityConstraints(SolverData data) {
         v2 vA = data.velocities[m_indexA];
-        var wA = data.velocities[m_indexA].w;
+        float wA = data.velocities[m_indexA].w;
         v2 vB = data.velocities[m_indexB];
-        var wB = data.velocities[m_indexB].w;
+        float wB = data.velocities[m_indexB].w;
 
-        var vpA = pool.popVec2();
-        var vpB = pool.popVec2();
+        v2 vpA = pool.popVec2();
+        v2 vpB = pool.popVec2();
 
         
         v2.crossToOutUnsafe(wA, m_rA, vpA);
         vpA.added(vA);
         v2.crossToOutUnsafe(wB, m_rB, vpB);
         vpB.added(vB);
-        var Cdot = v2.dot(m_u, vpB.subbed(vpA));
+        float Cdot = v2.dot(m_u, vpB.subbed(vpA));
 
-        var impulse = -m_mass * (Cdot + m_bias + m_gamma * m_impulse);
+        float impulse = -m_mass * (Cdot + m_bias + m_gamma * m_impulse);
         m_impulse += impulse;
 
 
-        var Px = impulse * m_u.x;
-        var Py = impulse * m_u.y;
+        float Px = impulse * m_u.x;
+        float Py = impulse * m_u.y;
 
         vA.x -= m_invMassA * Px;
         vA.y -= m_invMassA * Py;
@@ -303,16 +303,16 @@ public class DistanceJoint extends Joint {
         if (m_frequencyHz > 0.0f) {
             return true;
         }
-        var qA = pool.popRot();
-        var qB = pool.popRot();
-        var rA = pool.popVec2();
-        var rB = pool.popVec2();
-        var u = pool.popVec2();
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
+        v2 rA = pool.popVec2();
+        v2 rB = pool.popVec2();
+        v2 u = pool.popVec2();
 
         v2 cA = data.positions[m_indexA];
-        var aA = data.positions[m_indexA].a;
+        float aA = data.positions[m_indexA].a;
         v2 cB = data.positions[m_indexB];
-        var aB = data.positions[m_indexB].a;
+        float aB = data.positions[m_indexB].a;
 
         qA.set(aA);
         qB.set(aB);
@@ -322,13 +322,13 @@ public class DistanceJoint extends Joint {
         u.set(cB).added(rB).subbed(cA).subbed(rA);
 
 
-        var length = u.normalize();
-        var C = length - m_length;
+        float length = u.normalize();
+        float C = length - m_length;
         C = MathUtils.clamp(C, -Settings.maxLinearCorrection, Settings.maxLinearCorrection);
 
-        var impulse = -m_mass * C;
-        var Px = impulse * u.x;
-        var Py = impulse * u.y;
+        float impulse = -m_mass * C;
+        float Px = impulse * u.x;
+        float Py = impulse * u.y;
 
         cA.x -= m_invMassA * Px;
         cA.y -= m_invMassA * Py;

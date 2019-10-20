@@ -57,13 +57,13 @@ public class GameItems {
             if (ent.team != null) {
                 int count;
 
-                var master = ent.teammaster;
+                edict_t master = ent.teammaster;
     
                 
                 for (count = 0, ent = master; ent != null; ent = ent.chain, count++)
                     ;
 
-                var choice = Lib.rand() % count;
+                int choice = Lib.rand() % count;
     
                 for (count = 0, ent = master; count < choice; ent = ent.chain, count++)
                     ;
@@ -98,7 +98,7 @@ public class GameItems {
             if (other.client.pers.max_slugs < 100)
                 other.client.pers.max_slugs = 100;
 
-            var item = FindItem("Bullets");
+            gitem_t item = FindItem("Bullets");
             int index;
             if (item != null) {
                 index = ITEM_INDEX(item);
@@ -418,7 +418,7 @@ public class GameItems {
         public boolean interact(edict_t ent, edict_t other) {
             int count;
 
-            var weapon = (ent.item.flags & Defines.IT_WEAPON) != 0;
+            boolean weapon = (ent.item.flags & Defines.IT_WEAPON) != 0;
             if ((weapon)
                     && ((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO) != 0)
                 count = 1000;
@@ -427,7 +427,7 @@ public class GameItems {
             else
                 count = ent.item.quantity;
 
-            var oldcount = other.client.pers.inventory[ITEM_INDEX(ent.item)];
+            int oldcount = other.client.pers.inventory[ITEM_INDEX(ent.item)];
     
             if (!Add_Ammo(other, ent.item, count))
                 return false;
@@ -451,9 +451,9 @@ public class GameItems {
         public boolean interact(edict_t ent, edict_t other) {
 
 
-            var newinfo = ent.item.info;
+            gitem_armor_t newinfo = ent.item.info;
 
-            var old_armor_index = ArmorIndex(other);
+            int old_armor_index = ArmorIndex(other);
     
             
             if (ent.item.tag == Defines.ARMOR_SHARD) {
@@ -533,7 +533,7 @@ public class GameItems {
         @Override
         public boolean interact(edict_t ent, edict_t other) {
 
-            var quantity = other.client.pers.inventory[ITEM_INDEX(ent.item)];
+            int quantity = other.client.pers.inventory[ITEM_INDEX(ent.item)];
     
             other.client.pers.inventory[ITEM_INDEX(ent.item)]++;
     
@@ -553,7 +553,7 @@ public class GameItems {
         @Override
         public boolean interact(edict_t ent, edict_t other) {
 
-            var quantity = other.client.pers.inventory[ITEM_INDEX(ent.item)];
+            int quantity = other.client.pers.inventory[ITEM_INDEX(ent.item)];
             if ((GameBase.skill.value == 1 && quantity >= 2)
                     || (GameBase.skill.value >= 2 && quantity >= 1))
                 return false;
@@ -629,7 +629,7 @@ public class GameItems {
             if (other.client.pers.max_slugs < 75)
                 other.client.pers.max_slugs = 75;
 
-            var item = FindItem("Bullets");
+            gitem_t item = FindItem("Bullets");
             int index;
             if (item != null) {
                 index = ITEM_INDEX(item);
@@ -660,8 +660,8 @@ public class GameItems {
         @Override
         public void drop(edict_t ent, gitem_t item) {
 
-            var index = ITEM_INDEX(item);
-            var dropped = Drop_Item(ent, item);
+            int index = ITEM_INDEX(item);
+            edict_t dropped = Drop_Item(ent, item);
             if (ent.client.pers.inventory[index] >= item.quantity)
                 dropped.count = item.quantity;
             else
@@ -728,7 +728,7 @@ public class GameItems {
             float[] dest = {0, 0, 0};
             Math3D.VectorAdd(ent.s.origin, v, dest);
 
-            var tr = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs, dest, ent,
+            trace_t tr = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs, dest, ent,
                     Defines.MASK_SOLID);
             if (tr.startsolid) {
                 game_import_t.dprintf("droptofloor: " + ent.classname
@@ -782,7 +782,7 @@ public class GameItems {
                                 .soundindex("misc/power2.wav"), 1,
                                 Defines.ATTN_NORM, 0);
             } else {
-                var index = ITEM_INDEX(FindItem("cells"));
+                int index = ITEM_INDEX(FindItem("cells"));
                 if (0 == ent.client.pers.inventory[index]) {
                     game_import_t.cprintf(ent, Defines.PRINT_HIGH,
                             "No cells for power armor.\n");
@@ -833,8 +833,16 @@ public class GameItems {
      */
     static gitem_t FindItemByClassname(String classname) {
 
-        var bound = GameBase.game.num_items;
-        return Arrays.stream(GameItemList.itemlist, 1, bound).filter(it -> it.classname != null).filter(it -> it.classname.equalsIgnoreCase(classname)).findFirst().orElse(null);
+        int bound = GameBase.game.num_items;
+        for (int i = 1; i < bound; i++) {
+            gitem_t it = GameItemList.itemlist[i];
+            if (it.classname != null) {
+                if (it.classname.equalsIgnoreCase(classname)) {
+                    return it;
+                }
+            }
+        }
+        return null;
 
     }
 
@@ -843,8 +851,8 @@ public class GameItems {
      */
     
     static gitem_t FindItem(String pickup_name) {
-        for (var i = 1; i < GameBase.game.num_items; i++) {
-            var it = GameItemList.itemlist[i];
+        for (int i = 1; i < GameBase.game.num_items; i++) {
+            gitem_t it = GameItemList.itemlist[i];
     
             if (it.pickup_name == null)
                 continue;
@@ -870,7 +878,7 @@ public class GameItems {
 
     static edict_t Drop_Item(edict_t ent, gitem_t item) {
 
-        var dropped = GameUtil.G_Spawn();
+        edict_t dropped = GameUtil.G_Spawn();
     
         dropped.classname = item.classname;
         dropped.item = item;
@@ -896,7 +904,7 @@ public class GameItems {
             Math3D.VectorSet(offset, 24, 0, -16);
             Math3D.G_ProjectSource(ent.s.origin, offset, forward, right,
                     dropped.s.origin);
-            var trace = game_import_t.trace(ent.s.origin, dropped.mins, dropped.maxs,
+            trace_t trace = game_import_t.trace(ent.s.origin, dropped.mins, dropped.maxs,
                     dropped.s.origin, ent, Defines.CONTENTS_SOLID);
             Math3D.VectorCopy(trace.endpos, dropped.s.origin);
         } else {
@@ -964,7 +972,7 @@ public class GameItems {
 
     public static boolean Pickup_PowerArmor(edict_t ent, edict_t other) {
 
-        var quantity = other.client.pers.inventory[ITEM_INDEX(ent.item)];
+        int quantity = other.client.pers.inventory[ITEM_INDEX(ent.item)];
     
         other.client.pers.inventory[ITEM_INDEX(ent.item)]++;
     
@@ -1008,7 +1016,7 @@ public class GameItems {
                 return false;
         }
 
-        var index = ITEM_INDEX(item);
+        int index = ITEM_INDEX(item);
     
         if (ent.client.pers.inventory[index] == max)
             return false;
@@ -1032,8 +1040,8 @@ public class GameItems {
      */
     public static void SetItemNames() {
 
-        for (var i = 1; i < GameBase.game.num_items; i++) {
-            var it = GameItemList.itemlist[i];
+        for (int i = 1; i < GameBase.game.num_items; i++) {
+            gitem_t it = GameItemList.itemlist[i];
             game_import_t.configstring(Defines.CS_ITEMS + i, it.pickup_name);
         }
     
@@ -1046,7 +1054,7 @@ public class GameItems {
 
     public static void SelectNextItem(edict_t ent, int itflags) {
 
-        var cl = ent.client;
+        gclient_t cl = ent.client;
     
         if (cl.chase_target != null) {
             GameChase.ChaseNext(ent);
@@ -1054,11 +1062,11 @@ public class GameItems {
         }
     
         
-        for (var i = 1; i <= Defines.MAX_ITEMS; i++) {
-            var index = (cl.pers.selected_item + i) % Defines.MAX_ITEMS;
+        for (int i = 1; i <= Defines.MAX_ITEMS; i++) {
+            int index = (cl.pers.selected_item + i) % Defines.MAX_ITEMS;
             if (0 == cl.pers.inventory[index])
                 continue;
-            var it = GameItemList.itemlist[index];
+            gitem_t it = GameItemList.itemlist[index];
             if (it.use == null)
                 continue;
             if (0 == (it.flags & itflags))
@@ -1073,7 +1081,7 @@ public class GameItems {
 
     public static void SelectPrevItem(edict_t ent, int itflags) {
 
-        var cl = ent.client;
+        gclient_t cl = ent.client;
     
         if (cl.chase_target != null) {
             GameChase.ChasePrev(ent);
@@ -1081,12 +1089,12 @@ public class GameItems {
         }
     
         
-        for (var i = 1; i <= Defines.MAX_ITEMS; i++) {
-            var index = (cl.pers.selected_item + Defines.MAX_ITEMS - i)
+        for (int i = 1; i <= Defines.MAX_ITEMS; i++) {
+            int index = (cl.pers.selected_item + Defines.MAX_ITEMS - i)
                     % Defines.MAX_ITEMS;
             if (0 == cl.pers.inventory[index])
                 continue;
-            var it = GameItemList.itemlist[index];
+            gitem_t it = GameItemList.itemlist[index];
             if (null == it.use)
                 continue;
             if (0 == (it.flags & itflags))
@@ -1125,22 +1133,22 @@ public class GameItems {
     
         
         if (it.ammo != null && it.ammo.length() != 0) {
-            var ammo = FindItem(it.ammo);
+            gitem_t ammo = FindItem(it.ammo);
             if (ammo != it)
                 PrecacheItem(ammo);
         }
 
 
-        var s = it.precaches;
+        String s = it.precaches;
         if (s == null || s.length() != 0)
             return;
 
-        var tk = new StringTokenizer(s);
+        StringTokenizer tk = new StringTokenizer(s);
     
         while (tk.hasMoreTokens()) {
-            var data = tk.nextToken();
+            String data = tk.nextToken();
 
-            var len = data.length();
+            int len = data.length();
 
             if (len >= Defines.MAX_QPATH || len < 5)
                 game_import_t
@@ -1195,7 +1203,13 @@ public class GameItems {
                 }
             }
             if (((int) GameBase.dmflags.value & Defines.DF_NO_HEALTH) != 0) {
-                var b = Stream.of(Pickup_Health, Pickup_Adrenaline, Pickup_AncientHead).anyMatch(entInteractAdapter -> item.pickup == entInteractAdapter);
+                boolean b = false;
+                for (EntInteractAdapter entInteractAdapter : Arrays.asList(Pickup_Health, Pickup_Adrenaline, Pickup_AncientHead)) {
+                    if (item.pickup == entInteractAdapter) {
+                        b = true;
+                        break;
+                    }
+                }
                 if (b) {
                     GameUtil.G_FreeEdict(ent);
                     return;
@@ -1314,7 +1328,7 @@ public class GameItems {
         if (ent.item.pickup == null)
             return;
 
-        var taken = ent.item.pickup.interact(ent, other);
+        boolean taken = ent.item.pickup.interact(ent, other);
     
         if (taken) {
             

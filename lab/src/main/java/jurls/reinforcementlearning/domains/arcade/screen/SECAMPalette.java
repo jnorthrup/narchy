@@ -69,11 +69,11 @@ public class SECAMPalette extends ColorPalette {
         super();
 
         
-        for (var index = 0; index < colorData.length; index++) {
-            var v = colorData[index & ~0x1];
-            var r = (v & 0xFF0000) >> 16;
-            var g = (v & 0x00FF00) >> 8;
-            var b = v & 0x0000FF;
+        for (int index = 0; index < colorData.length; index++) {
+            int v = colorData[index & ~0x1];
+            int r = (v & 0xFF0000) >> 16;
+            int g = (v & 0x00FF00) >> 8;
+            int b = v & 0x0000FF;
 
             super.set(new Color(r, g, b), index);
         }

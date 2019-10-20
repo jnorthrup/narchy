@@ -63,7 +63,7 @@ public enum PatternTermBuilder /* implements TermBuilder ? */ { ;
 //                    return x;
             }
 
-            var _x = super.applyPosCompound(x);
+            Term _x = super.applyPosCompound(x);
             if (!(_x instanceof Compound)) {
                 return _x;
             }
@@ -71,10 +71,10 @@ public enum PatternTermBuilder /* implements TermBuilder ? */ { ;
             x = (Compound) _x;
 
             Term xx;
-            var neg = x instanceof Neg;
+            boolean neg = x instanceof Neg;
 			xx = neg ? x.unneg() : x;
 
-            @Nullable var e = xx instanceof Compound ? firstEllipsis(((Compound)xx).subtermsDirect()) : null;
+            @Nullable Ellipsislike e = xx instanceof Compound ? firstEllipsis(((Compound)xx).subtermsDirect()) : null;
             return (e != null ? PatternCompound.ellipsis((Compound) xx, xx.subterms(), (Ellipsis) e) : xx).negIf(neg);
         }
     }

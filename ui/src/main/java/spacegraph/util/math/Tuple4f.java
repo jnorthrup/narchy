@@ -391,7 +391,7 @@ public abstract class Tuple4f implements java.io.Serializable, Cloneable {
      */
     public boolean equals(Object t1) {
         try {
-            var t2 = (Tuple4f) t1;
+            Tuple4f t2 = (Tuple4f) t1;
             return (this.x == t2.x && this.y == t2.y &&
                     this.z == t2.z && this.w == t2.w);
         } catch (NullPointerException | ClassCastException e2) {
@@ -413,7 +413,7 @@ public abstract class Tuple4f implements java.io.Serializable, Cloneable {
      */
     public boolean epsilonEquals(Tuple4f t1, float epsilon) {
 
-        var diff = x - t1.x;
+        float diff = x - t1.x;
         if (Float.isNaN(diff)) return false;
         if ((diff < 0 ? -diff : diff) > epsilon) return false;
 
@@ -442,7 +442,7 @@ public abstract class Tuple4f implements java.io.Serializable, Cloneable {
      * @return the integer hash code value
      */
     public int hashCode() {
-        var bits = 1L;
+        long bits = 1L;
         bits = 31L * bits + VecMathUtil.floatToIntBits(x);
         bits = 31L * bits + VecMathUtil.floatToIntBits(y);
         bits = 31L * bits + VecMathUtil.floatToIntBits(z);

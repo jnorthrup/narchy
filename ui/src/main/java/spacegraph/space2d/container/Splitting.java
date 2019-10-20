@@ -63,7 +63,7 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
     }
 
     public Splitting<X, Y> vertical(boolean v) {
-        var w = this.vertical;
+        boolean w = this.vertical;
         if (w != v) {
             this.vertical = v;
             layout();
@@ -84,7 +84,7 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
     }
 
     public Splitting<X, Y> split(float split) {
-        var s = this.split;
+        float s = this.split;
         if (!Util.equals(s, Spatialization.EPSILON)) {
             this.split = split;
             layout();
@@ -108,37 +108,37 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
 
         Surface a = T(), b = B();
 
-        var r = this.resizer();
+        Surface r = this.resizer();
         if (a != null && b != null /*&& a.visible() && b.visible()*/) {
 
             float X = x(), Y = y(), h = h(), w = w();
 
             if (vertical) {
 
-                var Ysplit = Y + split * h;
+                float Ysplit = Y + split * h;
 
-                var r3 = RectFloat.XYXY(X, Ysplit, X + w, Y + h);
+                RectFloat r3 = RectFloat.XYXY(X, Ysplit, X + w, Y + h);
                 a.pos(r3);
 
-                var r2 = RectFloat.XYXY(X, Y, X + w, Ysplit);
+                RectFloat r2 = RectFloat.XYXY(X, Y, X + w, Ysplit);
                 b.pos(r2);
 
                 if (r != null) {
-                    var r1 = RectFloat.XYXY(X, Ysplit - resizeMargin / 2 * h, X + w, Ysplit + resizeMargin / 2 * h);
+                    RectFloat r1 = RectFloat.XYXY(X, Ysplit - resizeMargin / 2 * h, X + w, Ysplit + resizeMargin / 2 * h);
                     r.pos(r1);
                     r.show();
                 }
             } else {
-                var Xsplit = X + split * w;
+                float Xsplit = X + split * w;
 
-                var r3 = RectFloat.XYXY(X, Y, Xsplit, Y + h);
+                RectFloat r3 = RectFloat.XYXY(X, Y, Xsplit, Y + h);
                 a.pos(r3);
 
-                var r2 = RectFloat.XYXY(Xsplit, Y, X + w, Y + h);
+                RectFloat r2 = RectFloat.XYXY(Xsplit, Y, X + w, Y + h);
                 b.pos(r2);
 
                 if (r != null) {
-                    var r1 = RectFloat.XYXY(Xsplit - resizeMargin / 2 * w, Y, Xsplit + resizeMargin / 2 * w, Y + h);
+                    RectFloat r1 = RectFloat.XYXY(Xsplit - resizeMargin / 2 * w, Y, Xsplit + resizeMargin / 2 * w, Y + h);
                     r.pos(r1);
                     r.show();
                 }
@@ -238,9 +238,9 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
             public boolean drag(Finger f) {
 
                     focus();
-                var b = f.posRelative(Splitting.this);
-                var pct = vertical ? b.y : b.x;
-                var p = Util.clamp(pct, minSplit, maxSplit);
+                v2 b = f.posRelative(Splitting.this);
+                float pct = vertical ? b.y : b.x;
+                float p = Util.clamp(pct, minSplit, maxSplit);
                     split(p);
                     return true;
 
@@ -265,9 +265,9 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
 
         final PushButton swap = new PushButton("<->").clicked(() -> {
             //synchronized (Splitting.this) {
-            var a = Splitting.this.L();
+            X a = Splitting.this.L();
             if (a != null) {
-                var b = Splitting.this.R();
+                Y b = Splitting.this.R();
                 if (b != null) {
                     if (children.compareAndSet(0, a, b)) {
                         children.setFast(1, a);

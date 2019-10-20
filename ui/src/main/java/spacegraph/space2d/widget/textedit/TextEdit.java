@@ -44,7 +44,7 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
         model.keys = TextEditActions.DEFAULT_KEYS;
 
 
-        var initialSize = new v2(1, 1);
+        v2 initialSize = new v2(1, 1);
         viewMinMax(new v2(1,1), initialSize);
         view(initialSize);
 
@@ -61,7 +61,7 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
     }
 
     public static Appendable out() {
-        var e = new TextEdit();
+        TextEdit e = new TextEdit();
         return new AppendableUnitContainer<>(e) {
 
             @Override
@@ -110,7 +110,7 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
 
     /** TODO add reasonable limits (too many lines to display etc) */
     private void viewAll() {
-        var b = buffer();
+        Buffer b = buffer();
         int w = b.width(), h = b.height();
         viewMax(new v2(Math.max(viewMax.x, w), Math.max(viewMax.y, h)));
         view(w, h);
@@ -121,7 +121,7 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
     }
 
     private void updateScroll() {
-        var buffer = buffer();
+        Buffer buffer = buffer();
         viewMax(new v2(Math.max(viewMax.x, buffer.width()), Math.max(viewMax.y, buffer.height())));
         onChange.emit(TextEdit.this);
     }

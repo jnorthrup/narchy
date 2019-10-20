@@ -135,18 +135,18 @@ public class FrictionJoint extends Joint {
         m_invIA = A.m_invI;
         m_invIB = B.m_invI;
 
-        var aA = data.positions[m_indexA].a;
+        float aA = data.positions[m_indexA].a;
         v2 vA = data.velocities[m_indexA];
-        var wA = data.velocities[m_indexA].w;
+        float wA = data.velocities[m_indexA].w;
 
-        var aB = data.positions[m_indexB].a;
+        float aB = data.positions[m_indexB].a;
         v2 vB = data.velocities[m_indexB];
-        var wB = data.velocities[m_indexB].w;
+        float wB = data.velocities[m_indexB].w;
 
 
-        var temp = pool.popVec2();
-        var qA = pool.popRot();
-        var qB = pool.popRot();
+        v2 temp = pool.popVec2();
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
 
         qA.set(aA);
         qB.set(aB);
@@ -167,7 +167,7 @@ public class FrictionJoint extends Joint {
         float mA = m_invMassA, mB = m_invMassB;
         float iA = m_invIA, iB = m_invIB;
 
-        var K = pool.popMat22();
+        Mat22 K = pool.popMat22();
         K.ex.x = mA + mB + iA * m_rA.y * m_rA.y + iB * m_rB.y * m_rB.y;
         K.ex.y = -iA * m_rA.x * m_rA.y - iB * m_rB.x * m_rB.y;
         K.ey.x = K.ex.y;
@@ -185,7 +185,7 @@ public class FrictionJoint extends Joint {
             m_linearImpulse.scaled(data.step.dtRatio);
             m_angularImpulse *= data.step.dtRatio;
 
-            var P = pool.popVec2();
+            v2 P = pool.popVec2();
             P.set(m_linearImpulse);
 
             temp.set(P).scaled(mA);
@@ -215,22 +215,22 @@ public class FrictionJoint extends Joint {
     @Override
     public void solveVelocityConstraints(SolverData data) {
         v2 vA = data.velocities[m_indexA];
-        var wA = data.velocities[m_indexA].w;
+        float wA = data.velocities[m_indexA].w;
         v2 vB = data.velocities[m_indexB];
-        var wB = data.velocities[m_indexB].w;
+        float wB = data.velocities[m_indexB].w;
 
         float mA = m_invMassA, mB = m_invMassB;
         float iA = m_invIA, iB = m_invIB;
 
-        var h = data.step.dt;
+        float h = data.step.dt;
 
         
         {
-            var Cdot = wB - wA;
-            var impulse = -m_angularMass * Cdot;
+            float Cdot = wB - wA;
+            float impulse = -m_angularMass * Cdot;
 
-            var oldImpulse = m_angularImpulse;
-            var maxImpulse = h * m_maxTorque;
+            float oldImpulse = m_angularImpulse;
+            float maxImpulse = h * m_maxTorque;
             m_angularImpulse = MathUtils.clamp(m_angularImpulse + impulse, -maxImpulse, maxImpulse);
             impulse = m_angularImpulse - oldImpulse;
 
@@ -240,23 +240,23 @@ public class FrictionJoint extends Joint {
 
         
         {
-            var Cdot = pool.popVec2();
-            var temp = pool.popVec2();
+            v2 Cdot = pool.popVec2();
+            v2 temp = pool.popVec2();
 
             v2.crossToOutUnsafe(wA, m_rA, temp);
             v2.crossToOutUnsafe(wB, m_rB, Cdot);
             Cdot.added(vB).subbed(vA).subbed(temp);
 
-            var impulse = pool.popVec2();
+            v2 impulse = pool.popVec2();
             Mat22.mulToOutUnsafe(m_linearMass, Cdot, impulse);
             impulse.negated();
 
 
-            var oldImpulse = pool.popVec2();
+            v2 oldImpulse = pool.popVec2();
             oldImpulse.set(m_linearImpulse);
             m_linearImpulse.added(impulse);
 
-            var maxImpulse = h * m_maxForce;
+            float maxImpulse = h * m_maxForce;
 
             if (m_linearImpulse.lengthSquared() > maxImpulse * maxImpulse) {
                 m_linearImpulse.normalize();

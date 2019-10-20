@@ -77,10 +77,10 @@ public class G extends Applet implements Runnable {
     public void run() {
 		setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 		this.enableEvents(AWTEvent.KEY_EVENT_MASK);
-		var screen = new BufferedImage(WINDOW_WIDTH, WINDOW_HEIGHT, BufferedImage.TYPE_INT_RGB);
-		var g = screen.getGraphics();
-		var appletGraphics = getGraphics();
-		var random = new Random();
+        BufferedImage screen = new BufferedImage(WINDOW_WIDTH, WINDOW_HEIGHT, BufferedImage.TYPE_INT_RGB);
+        Graphics g = screen.getGraphics();
+        Graphics appletGraphics = getGraphics();
+        Random random = new Random();
 
 		/* VARIABLES */
 
@@ -89,19 +89,19 @@ public class G extends Applet implements Runnable {
 		int y;
 
 
-		var wallImage = new BufferedImage(TILE_SIZE, TILE_SIZE, BufferedImage.TYPE_INT_ARGB);
-		var wallGraphics = wallImage.getGraphics();
+        BufferedImage wallImage = new BufferedImage(TILE_SIZE, TILE_SIZE, BufferedImage.TYPE_INT_ARGB);
+        Graphics wallGraphics = wallImage.getGraphics();
 		for (x = 0; x < TILE_SIZE; x++) {
 			for (y = 0; y < TILE_SIZE; y++) {
-				var randomNumber = random.nextInt(100) + 80;
+                int randomNumber = random.nextInt(100) + 80;
 				wallGraphics.setColor(new Color(randomNumber, randomNumber, randomNumber));
 				wallGraphics.fillRect(x, y, 1, 1);
 			}
 		}
 
 
-		var ladderImage = new BufferedImage(TILE_SIZE, TILE_SIZE, BufferedImage.TYPE_INT_ARGB);
-		var ladderGfx = ladderImage.getGraphics();
+        BufferedImage ladderImage = new BufferedImage(TILE_SIZE, TILE_SIZE, BufferedImage.TYPE_INT_ARGB);
+        Graphics ladderGfx = ladderImage.getGraphics();
 		ladderGfx.setColor(Color.BLACK);
 		ladderGfx.fillRect(0, 0, 2, TILE_SIZE);
 		ladderGfx.fillRect(30, 0, 2, TILE_SIZE);
@@ -109,8 +109,8 @@ public class G extends Applet implements Runnable {
 		ladderGfx.fillRect(0, 15, TILE_SIZE, 2);
 
 
-		var loadBoxImage = new BufferedImage(200, 40, BufferedImage.TYPE_INT_ARGB);
-		var loadBoxGfx = loadBoxImage.getGraphics();
+        BufferedImage loadBoxImage = new BufferedImage(200, 40, BufferedImage.TYPE_INT_ARGB);
+        Graphics loadBoxGfx = loadBoxImage.getGraphics();
         int i;
         for (i = 0; i < 40; i++) {
 			loadBoxGfx.setColor(new Color(255 - (i * 3), 255 - (i * 3), 255 - (i * 3)));
@@ -142,39 +142,39 @@ public class G extends Applet implements Runnable {
 		BUTTON_FIRE_PRESSED = NO;
 
 
-		var nextFrameStartTime = System.nanoTime();
-		var bgX = 0;
-		var mapX = 0;
-		var currentLevel = "";
-		var draw_textTimer = 0;
-		var killedEnemies = 0;
-		var levelIndex = 0;
-		var levelCompleted = YES;
-		var levelLoaded = NO;
-		var activeParticles = 0;
-		var particle_life = new int[MAX_NUMBER_OF_PARTICLES];
-		var particle_yVelocity = new float[MAX_NUMBER_OF_PARTICLES];
-		var particle_xVelocity = new float[MAX_NUMBER_OF_PARTICLES];
-		var particle_y = new int[MAX_NUMBER_OF_PARTICLES];
-		var particle_x = new int[MAX_NUMBER_OF_PARTICLES];
-		var balls_direction_isUp = YES;
-		var balls_height = 0;
-		var enemy_climbing = new int[MAX_NUMBER_OF_ENEMIES];
-		var enemy_direction = new int[MAX_NUMBER_OF_ENEMIES];
-		var enemy_health = new int[MAX_NUMBER_OF_ENEMIES];
-		var enemy_y = new int[MAX_NUMBER_OF_ENEMIES];
-		var enemy_x = new int[MAX_NUMBER_OF_ENEMIES];
-		var numberOfActiveEnemies = 0;
-		var numberOfActiveBullets = 0;
-		var bullet_direction = new int[MAX_NUMBER_OF_ACTIVE_BULLETS];
-		var bullet_y = new int[MAX_NUMBER_OF_ACTIVE_BULLETS];
-		var bullet_x = new int[MAX_NUMBER_OF_ACTIVE_BULLETS];
-		var player_bulletCounter = 0;
-		var player_climbing = NO;
-		var player_direction = DIRECTION_RIGHT;
-		var player_falling = NO;
-		var player_y = 0;
-		var player_x = 0;
+        long nextFrameStartTime = System.nanoTime();
+        int bgX = 0;
+        int mapX = 0;
+        String currentLevel = "";
+        int draw_textTimer = 0;
+        int killedEnemies = 0;
+        int levelIndex = 0;
+        int levelCompleted = YES;
+        int levelLoaded = NO;
+        int activeParticles = 0;
+        int[] particle_life = new int[MAX_NUMBER_OF_PARTICLES];
+        float[] particle_yVelocity = new float[MAX_NUMBER_OF_PARTICLES];
+        float[] particle_xVelocity = new float[MAX_NUMBER_OF_PARTICLES];
+        int[] particle_y = new int[MAX_NUMBER_OF_PARTICLES];
+        int[] particle_x = new int[MAX_NUMBER_OF_PARTICLES];
+        int balls_direction_isUp = YES;
+        int balls_height = 0;
+        int[] enemy_climbing = new int[MAX_NUMBER_OF_ENEMIES];
+        int[] enemy_direction = new int[MAX_NUMBER_OF_ENEMIES];
+        int[] enemy_health = new int[MAX_NUMBER_OF_ENEMIES];
+        int[] enemy_y = new int[MAX_NUMBER_OF_ENEMIES];
+        int[] enemy_x = new int[MAX_NUMBER_OF_ENEMIES];
+        int numberOfActiveEnemies = 0;
+        int numberOfActiveBullets = 0;
+        int[] bullet_direction = new int[MAX_NUMBER_OF_ACTIVE_BULLETS];
+        int[] bullet_y = new int[MAX_NUMBER_OF_ACTIVE_BULLETS];
+        int[] bullet_x = new int[MAX_NUMBER_OF_ACTIVE_BULLETS];
+        int player_bulletCounter = 0;
+        int player_climbing = NO;
+        int player_direction = DIRECTION_RIGHT;
+        int player_falling = NO;
+        int player_y = 0;
+        int player_x = 0;
         BufferedImage bgImage2 = null;
         BufferedImage bgImage1 = null;
         BufferedImage mapImage2 = null;
@@ -211,9 +211,9 @@ public class G extends Applet implements Runnable {
 				
 				x = random.nextInt(7) + 2;
 				i = random.nextInt(7) + 2;
-				var a = random.nextInt(7) + 2;
+                int a = random.nextInt(7) + 2;
                 bgImage2 = new BufferedImage(WINDOW_WIDTH, WINDOW_HEIGHT, BufferedImage.TYPE_INT_ARGB);
-				var backgroundGfx = bgImage2.getGraphics();
+                Graphics backgroundGfx = bgImage2.getGraphics();
 				for (y = 0; y < WINDOW_HEIGHT; y++) {
 					backgroundGfx.setColor(new Color(255 - (y / x), 255 - (y / i), 255 - (y / a)));
 					backgroundGfx.drawLine(0, y, WINDOW_WIDTH, y);
@@ -221,7 +221,7 @@ public class G extends Applet implements Runnable {
 
 				
 				mapImage2 = new BufferedImage(WINDOW_WIDTH, WINDOW_HEIGHT, BufferedImage.TYPE_INT_ARGB);
-				var gfx = mapImage2.getGraphics();
+                Graphics gfx = mapImage2.getGraphics();
 				gfx.setColor(Color.BLACK);
 				for (y = 0; y < MAP_HEIGHT; y++) {
 					for (x = 0; x < MAP_WIDTH; x++) {
@@ -593,7 +593,7 @@ public class G extends Applet implements Runnable {
 
 	@Override
     public void processKeyEvent(KeyEvent e) {
-		var keyCode = e.getKeyCode();
+        int keyCode = e.getKeyCode();
 		if (e.getID() == KeyEvent.KEY_PRESSED) {
             switch (keyCode) {
                 case KeyEvent.VK_SPACE:

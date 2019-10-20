@@ -13,6 +13,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Vector;
 import java.util.stream.Stream;
 
@@ -92,7 +93,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
         }
 
         /** create control buttons the panel */
-        var jp = new JPanel(new GridLayout(4, 1));
+        JPanel jp = new JPanel(new GridLayout(4, 1));
         /** create the buttons */
         startB = addButton("Start", jp, sounds.size() != 0);
         pauseB = addButton("Pause", jp, false);
@@ -109,7 +110,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
      */
     private JButton addButton(String name, JPanel panel, boolean state) {
         /** create the button */
-        var b = new JButton(name);
+        JButton b = new JButton(name);
         /** add action handler */
         b.addActionListener(this);
         /** set state */
@@ -132,7 +133,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
                 /**
                  * sound synthesizer
                  */
-                var synthesizer = (Synthesizer) sequencer;
+                Synthesizer synthesizer = (Synthesizer) sequencer;
                 /** get the system channels */
                 channels = synthesizer.getChannels();
             }
@@ -167,15 +168,15 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
     public void loadFile(String name) {
         try {
             /** create the file object */
-            var file = new File(name);
+            File file = new File(name);
             /** if the object is a directory */
             if (file != null && file.isDirectory()) {
                 /** get the list of files in the directory */
-                var files = file.list();
+                String[] files = file.list();
                 /** iterate through the list */
-                for (var i = 0; i < files.length; i++) {
+                for (int i = 0; i < files.length; i++) {
                     /** get the path */
-                    var leafFile = new File(file.getAbsolutePath(), files[i]);
+                    File leafFile = new File(file.getAbsolutePath(), files[i]);
                     /** if it's a directory */
                     if (leafFile.isDirectory()) {
                         /** recurse into the directory */
@@ -203,11 +204,14 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
      * @param file file object to addAt
      */
     private void addSound(File file) {
-        var s = file.getName();
+        String s = file.getName();
         /** if the file has right extension */
         /** add the file */
-        if (Stream.of(".au", ".rmf", ".mid", ".wav", ".aif", ".aiff").anyMatch(s::endsWith)) {
-            sounds.add(file);
+        for (String s1 : Arrays.asList(".au", ".rmf", ".mid", ".wav", ".aif", ".aiff")) {
+            if (s.endsWith(s1)) {
+                sounds.add(file);
+                break;
+            }
         }
     }
 
@@ -248,7 +252,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
 
                 try {
                     /** open the file */
-                    var is = new FileInputStream((File) object);
+                    FileInputStream is = new FileInputStream((File) object);
                     /** try to create a midi sound object */
                     currentSound = new BufferedInputStream(is, 1024);
                 } catch (Exception e1) {
@@ -269,9 +273,9 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
         if (currentSound instanceof AudioInputStream) {
             try {
                 /** create the stream */
-                var stream = (AudioInputStream) currentSound;
+                AudioInputStream stream = (AudioInputStream) currentSound;
                 /** create the file format object */
-                var format = stream.getFormat();
+                AudioFormat format = stream.getFormat();
 
                 /**
                  * we can't yet open the device for ALAW/ULAW playback,
@@ -280,7 +284,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
                 if ((format.getEncoding() == AudioFormat.Encoding.ULAW) ||
                         (format.getEncoding() == AudioFormat.Encoding.ALAW)) {
                     /** setup the format */
-                    var tmp = new AudioFormat(
+                    AudioFormat tmp = new AudioFormat(
                             AudioFormat.Encoding.PCM_SIGNED,
                             format.getSampleRate(), format.getSampleSizeInBits() * 2,
                             format.getChannels(), format.getFrameSize() * 2,
@@ -291,12 +295,12 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
                     format = tmp;
                 }
                 /** create the line to play the sound */
-                var info = new DataLine.Info(Clip.class,
+                DataLine.Info info = new DataLine.Info(Clip.class,
                         stream.getFormat(), ((int) stream.getFrameLength() *
                         format.getFrameSize()));
 
                 /** convert the sound into a clip */
-                var clip = (Clip) AudioSystem.getLine(info);
+                Clip clip = (Clip) AudioSystem.getLine(info);
                 clip.addLineListener(this);
                 clip.open(stream);
                 /** store the clip */
@@ -359,7 +363,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
         /** if the current sound object is a clip */
         else if (currentSound instanceof Clip && thread != null) {
             /** get the clip */
-            var clip = (Clip) currentSound;
+            Clip clip = (Clip) currentSound;
             /** play the clip */
             clip.start();
             try {
@@ -472,14 +476,14 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
      */
     public void setPan() {
         /** default value of 0: pan left / right evenly */
-        var value = 0;
+        int value = 0;
         /** if the sound object is a clip */
         if (currentSound instanceof Clip) {
             try {
                 /** get the clip */
-                var clip = (Clip) currentSound;
+                Clip clip = (Clip) currentSound;
                 /** get the current pane value */
-                var panControl =
+                FloatControl panControl =
                         (FloatControl) clip.getControl(FloatControl.Type.PAN);
                 /** set the pan value */
                 panControl.setValue(value / 100.0f);
@@ -490,7 +494,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
         else if (currentSound instanceof Sequence ||
                 currentSound instanceof BufferedInputStream) {
             /** iterate through all the channels */
-            for (var i = 0; i < channels.length; i++) {
+            for (int i = 0; i < channels.length; i++) {
                 /** and set the pan values */
                 channels[i].controlChange(10,
                         (int) (((double) value + 100.0) / 200.0 * 127.0));
@@ -508,12 +512,12 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
         if (currentSound instanceof Clip) {
             try {
                 /** get the clip */
-                var clip = (Clip) currentSound;
+                Clip clip = (Clip) currentSound;
                 /** get the current gain */
-                var gainControl =
+                FloatControl gainControl =
                         (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
                 /** create and calculate the gain value */
-                var dB = (float)
+                float dB = (float)
                         (Math.log(value == 0.0 ? 0.0001 : value) / Math.log(10.0) * 20.0);
                 /** set the gain value */
                 gainControl.setValue(dB);
@@ -524,7 +528,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
         else if (currentSound instanceof Sequence ||
                 currentSound instanceof BufferedInputStream) {
             /** iterate through all the channels */
-            for (var i = 0; i < channels.length; i++) {
+            for (int i = 0; i < channels.length; i++) {
                 /** set gain */
                 channels[i].controlChange(7, (int) (value * 127.0));
             }
@@ -626,7 +630,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
     @Override
     public void actionPerformed(ActionEvent e) {
         /** get source of event */
-        var button = (JButton) e.getSource();
+        JButton button = (JButton) e.getSource();
         /** if the start button is clicked */
         if ("Start".equals(button.getText())) {
             /** not paused */

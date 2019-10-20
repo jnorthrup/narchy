@@ -26,8 +26,8 @@ import java.util.Arrays;
      */
     @Deprecated public static byte[] subarray(byte[] array, int start, int length) {
 //        return jcog.util.ArrayUtils.subarray(array, start, length);
-        var result = new byte[length];
-        for (var i = 0; (i < length) && (i + start < array.length); i++) {
+        byte[] result = new byte[length];
+        for (int i = 0; (i < length) && (i + start < array.length); i++) {
             result[i] = array[i + start];
         }
         return result;
@@ -40,14 +40,18 @@ import java.util.Arrays;
      */
     public static byte[] concatenate(byte[][] input) {
         //sum the lengths of the columns
-        var totalLength = Arrays.stream(input).mapToInt(value -> value.length).sum();
+        int totalLength = 0;
+        for (byte[] value : input) {
+            int length = value.length;
+            totalLength += length;
+        }
         //create the result array
-        var result = new byte[totalLength];
+        byte[] result = new byte[totalLength];
 
         //populate the result array
-        var currentIndex = 0;
-        for (var bytes : input) {
-            for (var aByte : bytes) {
+        int currentIndex = 0;
+        for (byte[] bytes : input) {
+            for (byte aByte : bytes) {
                 result[currentIndex++] = aByte;
             }
         }
@@ -66,7 +70,7 @@ import java.util.Arrays;
         else
             result = new byte[input2.length];
 
-        for (var i = 0; i < result.length; i++) {
+        for (int i = 0; i < result.length; i++) {
             if (input1 == null)
                 result[i] = input2[i];
             else if (i < input1.length)

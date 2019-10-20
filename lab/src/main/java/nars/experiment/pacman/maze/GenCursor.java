@@ -33,13 +33,13 @@ public class GenCursor {
 
     public boolean advance() {
 
-        var openDirs = maze.getUngeneratedDirections(new Point(this.x, this.y), area);
+        Direction[] openDirs = maze.getUngeneratedDirections(new Point(this.x, this.y), area);
 
         if (openDirs.length > 0) {
 
             trigger = true;
 
-            var move = openDirs[rand.nextInt(openDirs.length)];
+            Direction move = openDirs[rand.nextInt(openDirs.length)];
             maze.tiles[motion(move, 1).x][motion(move, 1).y] = 1;
             this.x = motion(move, 2).x;
             this.y = motion(move, 2).y;
@@ -49,9 +49,9 @@ public class GenCursor {
 
             if (trigger) {
 
-                var dirs = getPunchDirections();
+                Direction[] dirs = getPunchDirections();
 
-                for (var x = 0; x < dirs.length; x++)
+                for (int x = 0; x < dirs.length; x++)
                     maze.tiles[motion(dirs[x], 1).x][motion(dirs[x], 1).y] = 1;
 
                 trigger = false;
@@ -60,7 +60,7 @@ public class GenCursor {
 
             if (path.size() > 0) {
 
-                var move = path.get(path.size() - 1).opposite();
+                Direction move = path.get(path.size() - 1).opposite();
                 this.x = motion(move, 2).x;
                 this.y = motion(move, 2).y;
 
@@ -110,7 +110,7 @@ public class GenCursor {
         if (path.size() > 2)
             past = path.get(path.size() - 2);
 
-        var openDirs = new ArrayList<Direction>();
+        ArrayList<Direction> openDirs = new ArrayList<Direction>();
         if (past != Direction.right)
             if (maze.isWall(x - 1, y) && x > area.x)
                 openDirs.add(Direction.left);
@@ -133,7 +133,7 @@ public class GenCursor {
                 openDirs.remove(path.get(path.size() - 1));
         }
 
-        var returnedDirs = new Direction[openDirs.size()];
+        Direction[] returnedDirs = new Direction[openDirs.size()];
         openDirs.toArray(returnedDirs);
         return returnedDirs;
 

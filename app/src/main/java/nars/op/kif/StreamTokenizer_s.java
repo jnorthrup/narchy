@@ -250,7 +250,7 @@ public class StreamTokenizer_s {
      * @see java.io.StreamTokenizer_s#ordinaryChar(int)
      */
     public void resetSyntax() {
-        for (var i = ctype.length; --i >= 0;) {
+        for (int i = ctype.length; --i >= 0;) {
             ctype[i] = 0;
         }
     }
@@ -514,18 +514,18 @@ public class StreamTokenizer_s {
      */
     @SuppressWarnings("HardcodedFileSeparator")
     public int nextToken() throws IOException {
-        var result = 0;
-        var finished = false;
+        int result = 0;
+        boolean finished = false;
         while (true) {
             if (pushedBack) {
                 pushedBack = false;
                 result = ttype;
                 break;
             }
-            var ct = ctype;
+            byte[] ct = ctype;
             sval = null;
 
-            var c = peekc;
+            int c = peekc;
             if (c < 0) {
                 c = NEED_CHAR;
             }
@@ -590,7 +590,7 @@ public class StreamTokenizer_s {
             if (finished) break;
 
             if ((ctype & CT_DIGIT) != 0) {
-                var neg = false;
+                boolean neg = false;
                 if (c == '-') {
                     c = read();
                     if (c != '.' && (c < '0' || c > '9')) {
@@ -601,8 +601,8 @@ public class StreamTokenizer_s {
                     neg = true;
                 }
                 double v = 0;
-                var decexp = 0;
-                var seendot = 0;
+                int decexp = 0;
+                int seendot = 0;
                 while (true) {
                     if (c == '.' && seendot == 0) {
                         seendot = 1;
@@ -631,10 +631,10 @@ public class StreamTokenizer_s {
             }
 
             if ((ctype & CT_ALPHA) != 0) {
-                var i = 0;
+                int i = 0;
                 do {
                     if (i >= buf.length) {
-                        var nb = new char[buf.length * 2];
+                        char[] nb = new char[buf.length * 2];
                         System.arraycopy(buf, 0, nb, 0, buf.length);
                         buf = nb;
                     }
@@ -653,21 +653,21 @@ public class StreamTokenizer_s {
 
             if ((ctype & CT_QUOTE) != 0) {
                 ttype = c;
-                var i = 0;
+                int i = 0;
                 /* Invariants (because \Octal needs a lookahead):
                  *   (i)  c contains char value
                  *   (ii) d contains the lookahead
                  */
-                var d = read();
+                int d = read();
 
                 while (d >= 0 && d != ttype) {
                     if (d == '\\') {
                         c = read();
-                        var first = c;   /* To allow \377, but not \477 */
+                        int first = c;   /* To allow \377, but not \477 */
 
                         if (c >= '0' && c <= '7') {
                             c -= '0';
-                            var c2 = read();
+                            int c2 = read();
                             if ('0' <= c2 && c2 <= '7') {
                                 c = (c << 3) + (c2 - '0');
                                 c2 = read();
@@ -711,7 +711,7 @@ public class StreamTokenizer_s {
                         d = read();
                     }
                     if (i >= buf.length) {
-                        var nb = new char[buf.length * 2];
+                        char[] nb = new char[buf.length * 2];
                         System.arraycopy(buf, 0, nb, 0, buf.length);
                         buf = nb;
                     }
@@ -732,7 +732,7 @@ public class StreamTokenizer_s {
             if (c == '/' && (slashSlashCommentsP || slashStarCommentsP)) {
                 c = read();
                 if (c == '*' && slashStarCommentsP) {
-                    var prevc = 0;
+                    int prevc = 0;
                     while ((c = read()) != '/' || prevc != '*') {
                         if (c == '\r') {
                             LINENO++;
@@ -849,7 +849,7 @@ public class StreamTokenizer_s {
                     break;
                 }
 
-                var s = new char[3];
+                char[] s = new char[3];
                 s[0] = s[2] = '\'';
                 s[1] = (char) ttype;
                 ret = new String(s);

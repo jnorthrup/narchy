@@ -146,18 +146,18 @@ public class WeldJoint extends Joint {
         m_invIB = B.m_invI;
 
 
-        var aA = data.positions[m_indexA].a;
+        float aA = data.positions[m_indexA].a;
         v2 vA = data.velocities[m_indexA];
-        var wA = data.velocities[m_indexA].w;
+        float wA = data.velocities[m_indexA].w;
 
 
-        var aB = data.positions[m_indexB].a;
+        float aB = data.positions[m_indexB].a;
         v2 vB = data.velocities[m_indexB];
-        var wB = data.velocities[m_indexB].w;
+        float wB = data.velocities[m_indexB].w;
 
-        var qA = pool.popRot();
-        var qB = pool.popRot();
-        var temp = pool.popVec2();
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
+        v2 temp = pool.popVec2();
 
         qA.set(aA);
         qB.set(aB);
@@ -178,7 +178,7 @@ public class WeldJoint extends Joint {
         float mA = m_invMassA, mB = m_invMassB;
         float iA = m_invIA, iB = m_invIB;
 
-        var K = pool.popMat33();
+        Mat33 K = pool.popMat33();
 
         K.ex.x = mA + mB + m_rA.y * m_rA.y * iA + m_rB.y * m_rB.y * iB;
         K.ey.x = -m_rA.y * m_rA.x * iA - m_rB.y * m_rB.x * iB;
@@ -193,23 +193,23 @@ public class WeldJoint extends Joint {
         if (m_frequencyHz > 0.0f) {
             K.getInverse22(m_mass);
 
-            var invM = iA + iB;
-            var m = invM > 0.0f ? 1.0f / invM : 0.0f;
+            float invM = iA + iB;
+            float m = invM > 0.0f ? 1.0f / invM : 0.0f;
 
 
-            var omega = 2.0f * MathUtils.PI * m_frequencyHz;
+            float omega = 2.0f * MathUtils.PI * m_frequencyHz;
 
 
-            var d = 2.0f * m * m_dampingRatio * omega;
+            float d = 2.0f * m * m_dampingRatio * omega;
 
 
-            var k = m * omega * omega;
+            float k = m * omega * omega;
 
 
-            var h = data.step.dt;
+            float h = data.step.dt;
             m_gamma = h * (d + h * k);
             m_gamma = m_gamma != 0.0f ? 1.0f / m_gamma : 0.0f;
-            var C = aB - aA - m_referenceAngle;
+            float C = aB - aA - m_referenceAngle;
             m_bias = C * h * k * m_gamma;
 
             invM += m_gamma;
@@ -221,7 +221,7 @@ public class WeldJoint extends Joint {
         }
 
         if (data.step.warmStarting) {
-            var P = pool.popVec2();
+            v2 P = pool.popVec2();
 
             m_impulse.scaled(data.step.dtRatio);
 
@@ -252,20 +252,20 @@ public class WeldJoint extends Joint {
     @Override
     public void solveVelocityConstraints(SolverData data) {
         v2 vA = data.velocities[m_indexA];
-        var wA = data.velocities[m_indexA].w;
+        float wA = data.velocities[m_indexA].w;
         v2 vB = data.velocities[m_indexB];
-        var wB = data.velocities[m_indexB].w;
+        float wB = data.velocities[m_indexB].w;
 
         float mA = m_invMassA, mB = m_invMassB;
         float iA = m_invIA, iB = m_invIB;
 
-        var Cdot1 = pool.popVec2();
-        var P = pool.popVec2();
-        var temp = pool.popVec2();
+        v2 Cdot1 = pool.popVec2();
+        v2 P = pool.popVec2();
+        v2 temp = pool.popVec2();
         if (m_frequencyHz > 0.0f) {
-            var Cdot2 = wB - wA;
+            float Cdot2 = wB - wA;
 
-            var impulse2 = -m_mass.ez.z * (Cdot2 + m_bias + m_gamma * m_impulse.z);
+            float impulse2 = -m_mass.ez.z * (Cdot2 + m_bias + m_gamma * m_impulse.z);
             m_impulse.z += impulse2;
 
             wA -= iA * impulse2;
@@ -275,7 +275,7 @@ public class WeldJoint extends Joint {
             v2.crossToOutUnsafe(wA, m_rA, temp);
             Cdot1.added(vB).subbed(vA).subbed(temp);
 
-            var impulse1 = P;
+            v2 impulse1 = P;
             Mat33.mul22ToOutUnsafe(m_mass, Cdot1, impulse1);
             impulse1.negated();
 
@@ -293,12 +293,12 @@ public class WeldJoint extends Joint {
             v2.crossToOutUnsafe(wA, m_rA, temp);
             v2.crossToOutUnsafe(wB, m_rB, Cdot1);
             Cdot1.added(vB).subbed(vA).subbed(temp);
-            var Cdot2 = wB - wA;
+            float Cdot2 = wB - wA;
 
-            var Cdot = pool.popVec3();
+            v3 Cdot = pool.popVec3();
             Cdot.set(Cdot1.x, Cdot1.y, Cdot2);
 
-            var impulse = pool.popVec3();
+            v3 impulse = pool.popVec3();
             Mat33.mulToOutUnsafe(m_mass, Cdot, impulse);
             impulse.negated();
             m_impulse.addLocal(impulse);
@@ -327,14 +327,14 @@ public class WeldJoint extends Joint {
     @Override
     public boolean solvePositionConstraints(SolverData data) {
         v2 cA = data.positions[m_indexA];
-        var aA = data.positions[m_indexA].a;
+        float aA = data.positions[m_indexA].a;
         v2 cB = data.positions[m_indexB];
-        var aB = data.positions[m_indexB].a;
-        var qA = pool.popRot();
-        var qB = pool.popRot();
-        var temp = pool.popVec2();
-        var rA = pool.popVec2();
-        var rB = pool.popVec2();
+        float aB = data.positions[m_indexB].a;
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
+        v2 temp = pool.popVec2();
+        v2 rA = pool.popVec2();
+        v2 rB = pool.popVec2();
 
         qA.set(aA);
         qB.set(aB);
@@ -345,9 +345,9 @@ public class WeldJoint extends Joint {
         Rot.mulToOutUnsafe(qA, temp.set(m_localAnchorA).subbed(m_localCenterA), rA);
         Rot.mulToOutUnsafe(qB, temp.set(m_localAnchorB).subbed(m_localCenterB), rB);
 
-        var K = pool.popMat33();
-        var C1 = pool.popVec2();
-        var P = pool.popVec2();
+        Mat33 K = pool.popMat33();
+        v2 C1 = pool.popVec2();
+        v2 P = pool.popVec2();
 
         K.ex.x = mA + mB + rA.y * rA.y * iA + rB.y * rB.y * iB;
         K.ey.x = -rA.y * rA.x * iA - rB.y * rB.x * iB;
@@ -378,13 +378,13 @@ public class WeldJoint extends Joint {
             aB += iB * v2.cross(rB, P);
         } else {
             C1.set(cB).added(rB).subbed(cA).subbed(rA);
-            var C2 = aB - aA - m_referenceAngle;
+            float C2 = aB - aA - m_referenceAngle;
 
             positionError = C1.length();
             angularError = Math.abs(C2);
 
-            var C = pool.popVec3();
-            var impulse = pool.popVec3();
+            v3 C = pool.popVec3();
+            v3 impulse = pool.popVec3();
             C.set(C1.x, C1.y, C2);
 
             K.solve33ToOut(C, impulse);

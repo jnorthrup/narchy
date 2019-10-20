@@ -30,7 +30,7 @@ public enum TruthIntegration {
 
 		//assert (qStart != ETERNAL && qStart <= qEnd);
 
-		var tStart = t.start();
+        long tStart = t.start();
 		double factor;
 		if (qStart == qEnd) {
 			//point
@@ -50,11 +50,11 @@ public enum TruthIntegration {
 			factor = tStart == ETERNAL ? qEnd - qStart + 1 : eviIntegrate(qStart, qEnd, tStart, t.end(), dur);
 		}
 
-		var e = t.evi();
+        double e = t.evi();
 		if (!eternalize) {
 			return e * factor;
 		} else {
-			var ee = TruthFunctions.eternalize(e);
+            double ee = TruthFunctions.eternalize(e);
 			return (ee * (qEnd - qStart + 1)) + ((e-ee) * factor);
 		}
 	}
@@ -78,8 +78,8 @@ public enum TruthIntegration {
 	 * allows ranking task by projected evidence strength to a target query region, but if temporal, the value is not the actual integrated evidence value but a monotonic approximation
 	 */
 	public static double eviFast(Task t, long qStart, long qEnd) {
-		var tStart = t.start();
-		var qRange = qEnd - qStart + 1;
+        long tStart = t.start();
+        long qRange = qEnd - qStart + 1;
 		qRange *= 2; //expansion bubble to rank extra evidence beyond the query range while ensuring fair comprison between temporals and eternals
 		return t.evi() * (tStart == ETERNAL ?
 			qRange //qRange
@@ -93,10 +93,10 @@ public enum TruthIntegration {
 
 	/** for ranking relative relevance of tasks with respect to a time point */
 	public static double eviFast(Task t, long now) {
-		var s = t.start();  //assert(s!=ETERNAL);
-		var e = t.end();
-		var dist = (now >= s && now <= e) ? 0 : Util.mean((double) Math.abs(now - s), Math.abs(now - e));
-		var range = 1 + e - s;
+        long s = t.start();  //assert(s!=ETERNAL);
+        long e = t.end();
+        double dist = (now >= s && now <= e) ? 0 : Util.mean((double) Math.abs(now - s), Math.abs(now - e));
+        long range = 1 + e - s;
 		return range * t.evi() / (1 + dist);
 
 		//return (1+e-s) * t.evi() / (1 + Math.max(Math.abs(now - s), Math.abs(now - e))); //penalize long tasks even if they surround now evenly
@@ -113,7 +113,7 @@ public enum TruthIntegration {
 //	}
 
 	private static double eviIntegrate(long qs, long qe, long ts, long te, float dur) {
-		var e = EvidenceEvaluator.of(ts, te, dur);
+        EvidenceEvaluator e = EvidenceEvaluator.of(ts, te, dur);
 		if (max(qs, ts) > min(qe, te)) {
 		   //DISJOINT - entirely before, or after //!LongInterval.intersectsRaw(ts, te, qs, qe)) {
 		   return e.integrate2(qs, qe);

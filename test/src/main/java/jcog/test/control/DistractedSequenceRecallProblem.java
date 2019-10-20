@@ -106,21 +106,21 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
 
     @Override
     protected void test(IntIntToObjectFunction<Agent> agentBuilder) {
-        var sequenceLength =
+        int sequenceLength =
                 //24;
                 8;
 
         seqLen = sequenceLength;
         //4;
-        var targets = 2;
+        int targets = 2;
         this.targets = targets; // targets all all bits up to _targets
-        var prompts = 2;
+        int prompts = 2;
         this.prompts = prompts;
         //4;
-        var distractors = 2;
+        int distractors = 2;
         this.distractors = distractors;
 
-        var observations = numInputs();
+        int observations = numInputs();
 
         sequenceState = new ArrayTensor( new int[] { observations, seqLen } );
         sequenceActions = new ArrayTensor(new int[] { this.targets, seqLen });
@@ -130,11 +130,11 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
 
         reset();
 
-        var a = agentBuilder.value(observations, targets);
+        Agent a = agentBuilder.value(observations, targets);
 
-        var windowLen = 5000;
-        var rewardStat = new DescriptiveStatistics(windowLen);
-        for (var i = 0; i < 5000000; i++) {
+        int windowLen = 5000;
+        DescriptiveStatistics rewardStat = new DescriptiveStatistics(windowLen);
+        for (int i = 0; i < 5000000; i++) {
 
             update(a);
 
@@ -161,19 +161,19 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
         sequenceState.fill( 0.f );
         sequenceActions.fill( 0.f );
 
-        var targetBits = new ArrayList<Integer>();
-        var targetTimes = new ArrayList<Integer>();
+        ArrayList<Integer> targetBits = new ArrayList<Integer>();
+        ArrayList<Integer> targetTimes = new ArrayList<Integer>();
 //        HashSet< Integer > usedTargetIndices = new HashSet< Integer >();
 
-        var observations = numInputs();
-        var length = seqLen - prompts;
+        int observations = numInputs();
+        int length = seqLen - prompts;
 
         // pick targets for each prompt in a trial:
         // Need a 2-D pick:
-        for(var t = 0; t < prompts; ++t ) {
-            var targetBit = rng.nextInt(targets); // allow duplicate targets (unspecified whether this is the case)
+        for(int t = 0; t < prompts; ++t ) {
+            int targetBit = rng.nextInt(targets); // allow duplicate targets (unspecified whether this is the case)
 
-            var targetTime = 0;
+            int targetTime = 0;
 
             do {
                 targetTime = rng.nextInt( length );//targetIndexRange );
@@ -188,13 +188,13 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
         Collections.sort( targetTimes );
 
         // set the target inputs:
-        for(var t = 0; t < prompts; ++t ) {
+        for(int t = 0; t < prompts; ++t ) {
             int targetBit  = targetBits.get( t );
             int targetTime = targetTimes.get( t );
             sequenceState.set(1f, new int[] { targetTime, targetBit }); // these inputs are the targets
             // zero output expected during target setting
-            var promptBit = targets +t;
-            var promptTime = length + t;
+            int promptBit = targets +t;
+            int promptTime = length + t;
             sequenceState.set(1f, new int[] { promptTime, promptBit }); // these inputs are the targets
             sequenceActions.set(1f, new int[] { promptTime, targetBit }); // ideal output bit is the target value
         }
@@ -206,10 +206,10 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
         // tractor symbols, all in random order; the remaining two symbols are the two
         // prompts, which direct the network to produce the first and second target in the
         // sequence "
-        for(var t = 0; t < length; ++t ) {
+        for(int t = 0; t < length; ++t ) {
             // don't set a bit when there's an target given:
-            var hasTargetBit = false;
-            for(var t2 = 0; t2 < prompts; ++t2 ) {
+            boolean hasTargetBit = false;
+            for(int t2 = 0; t2 < prompts; ++t2 ) {
                 int targetTime = targetTimes.get( t2 );
                 if( targetTime == t ) {
                     hasTargetBit = true;
@@ -221,7 +221,7 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
             }
 
             // else pick a random distractor bit:
-            var distractorBit = targets + prompts + rng.nextInt(distractors);
+            int distractorBit = targets + prompts + rng.nextInt(distractors);
             sequenceState.set(1f, new int[] { t , distractorBit }); // these inputs are the targets
         }
 
@@ -243,10 +243,10 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
     public void print() {
 
         // print column titles
-        var observations = numInputs();
-        var length = observations;
+        int observations = numInputs();
+        int length = observations;
 
-        for(var c = 0; c < length; ++c ) {
+        for(int c = 0; c < length; ++c ) {
             if( c < 10 ) {
                 System.err.print( "0" );
             }
@@ -256,7 +256,7 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
 
         System.err.print( "| " );
 
-        for(var c = 0; c < length; ++c ) {
+        for(int c = 0; c < length; ++c ) {
             if( c < 10 ) {
                 System.err.print( "0" );
             }
@@ -268,45 +268,45 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
 
         // Row 2: Bit assignments
         length = targets;
-        for(var c = 0; c < length; ++c ) {
+        for(int c = 0; c < length; ++c ) {
             System.err.print( "T  " );
         }
 
         length = prompts;
-        for(var c = 0; c < length; ++c ) {
+        for(int c = 0; c < length; ++c ) {
             System.err.print( "P  " );
         }
 
         length = distractors;
-        for(var c = 0; c < length; ++c ) {
+        for(int c = 0; c < length; ++c ) {
             System.err.print( "D  " );
         }
 
         System.err.print( "| " );
 
         length = targets;
-        for(var c = 0; c < length; ++c ) {
+        for(int c = 0; c < length; ++c ) {
             System.err.print( "T  " );
         }
 
         length = prompts;
-        for(var c = 0; c < length; ++c ) {
+        for(int c = 0; c < length; ++c ) {
             System.err.print( "P  " );
         }
 
         length = distractors;
-        for(var c = 0; c < length; ++c ) {
+        for(int c = 0; c < length; ++c ) {
             System.err.print( "D  " );
         }
 
         System.err.println();
 
         // ok now print the actual inputs and outputs
-        for(var sequence = 0; sequence < seqLen; ++sequence ) {
+        for(int sequence = 0; sequence < seqLen; ++sequence ) {
 
-            for(var c = 0; c < observations; ++c ) {
-                var s = "   ";
-                var r = sequenceState.get(sequence, c);
+            for(int c = 0; c < observations; ++c ) {
+                String s = "   ";
+                float r = sequenceState.get(sequence, c);
                 if( r > 0.f ) {
                     if( c < ( targets + prompts) ) {
                         s = "*  ";
@@ -321,9 +321,9 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
 
             System.err.print( "| " );
 
-            for(var c = 0; c < targets; ++c ) {
+            for(int c = 0; c < targets; ++c ) {
 //                String s = "   ";
-                var r = sequenceActions.get(sequence, c);
+                float r = sequenceActions.get(sequence, c);
                 //                if( r > 0.f ) {
 //                    if( c < ( _targets + _prompts ) ) {
 //                        s = "*  ";
@@ -333,28 +333,28 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
 //                    }
 
                     r = Math.min( 0.999f, Math.max( 0f, r ) );
-                var n = (int)( r * 100f ); // 0..99
-                var val = String.valueOf( n );
+                int n = (int)( r * 100f ); // 0..99
+                String val = String.valueOf( n );
                     while( val.length() < 3 ) val = ' ' + val;
-                var ideal = "";
+                String ideal = "";
                 ideal += val;
 //                }
                 System.err.print( ideal );
 //                System.err.print( s );
             }
 
-            var seq = String.valueOf( sequence );
+            String seq = String.valueOf( sequence );
             while( seq.length() < 3 ) seq = ' ' + seq;
             System.err.print('-' + seq + '-');
 
             if( sequence == this.seq) {
-                var agent = "";
-                for(var c = 0; c < targets; ++c ) {
+                String agent = "";
+                for(int c = 0; c < targets; ++c ) {
 //                    float r = _idealActions._values[ c ];
-                    var r = actions.get(c);
+                    float r = actions.get(c);
                     r = Math.min( 0.999f, Math.max( 0f, r ) );
-                    var n = (int)( r * 100f ); // 0..99
-                    var val = String.valueOf( n );
+                    int n = (int)( r * 100f ); // 0..99
+                    String val = String.valueOf( n );
                     while( val.length() < 3 ) val = ' ' + val;
                     agent += val;
                 }
@@ -374,21 +374,21 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
 
     protected void updateState() {
         // generate state:
-        var observations = numInputs();
-        for(var i = 0; i < observations; ++i ) {
+        int observations = numInputs();
+        for(int i = 0; i < observations; ++i ) {
             state.setAt(i, sequenceState.get(seq, i));
         }
     }
 
     protected void updateIdealActions() {
         // generate ideal actions
-        for(var i = 0; i < targets; ++i ) {
+        for(int i = 0; i < targets; ++i ) {
             idealActions.setAt(i, sequenceActions.get(seq, i));
         }
     }
 
     public float getRandomExpectedReward() {
-        var expectedReward = 1f / (float) targets; // will be correct 25% of the time if 4 targets
+        float expectedReward = 1f / (float) targets; // will be correct 25% of the time if 4 targets
         expectedReward *= (float) prompts; // happens this number of times
         expectedReward /= (float) seqLen;
         //float t = ( _sequenceLength - _prompts ) + expectedReward; // ie 22 * 1, +
@@ -398,14 +398,14 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
 
     protected void updateReward() {
         // e.g. len 10, 2 prompts, 10-2=8,9 are the test ones
-        var testStart = seqLen - prompts;
+        int testStart = seqLen - prompts;
 
         if( seq < testStart ) {
             reward = 0f;
             return; // don't care.
         }
 
-        var maxError = 0f;
+        float maxError = 0f;
 
 //        System.err.println( "REWARD @ seq: " + _sequence );
 //        for( int i = 0; i < _targets; ++i ) {
@@ -415,10 +415,10 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
 //            System.err.println( "T: " + i + " Ideal: " + ideal + " Actual: " + actual + " Err: " + diff );
 //        }
 
-        for(var i = 0; i < targets; ++i ) {
-            var ideal = idealActions.get(i);
-            var actual = actions.get(i);
-            var diff = Math.abs( ideal - actual );
+        for(int i = 0; i < targets; ++i ) {
+            float ideal = idealActions.get(i);
+            float actual = actions.get(i);
+            float diff = Math.abs( ideal - actual );
             maxError = Math.max( diff, maxError );
         }
 
@@ -436,7 +436,7 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
 
         updateReward();
 
-        var nextAction = a.act(reward, state.data);
+        int nextAction = a.act(reward, state.data);
         actions.fill(0);
         actions.setAt(nextAction, 1f);
 

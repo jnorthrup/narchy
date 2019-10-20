@@ -19,6 +19,8 @@ package alice.tuprolog.lib;
 
 import alice.tuprolog.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 /**
@@ -42,7 +44,7 @@ public class ISOLibrary extends PrologLib {
         if (!arg0.isAtomic())
             throw PrologError.type_error(prolog, 1, "atom",
                     arg0);
-        var atom = (Struct) arg0;
+        Struct atom = (Struct) arg0;
         return unify(len, new NumberTerm.Int(atom.name().length()));
     }
 
@@ -54,13 +56,13 @@ public class ISOLibrary extends PrologLib {
                 throw PrologError.type_error(prolog, 2,
                         "list", arg1);
             }
-            var list = (Struct) arg1;
+            Struct list = (Struct) arg1;
             if (list.isEmptyList()) {
                 return unify(arg0, new Struct(""));
             }
-            var st = "";
+            String st = "";
             while (!(list.isEmptyList())) {
-                var st1 = list.subResolve(0).toString();
+                String st1 = list.subResolve(0).toString();
                 try {
                     if (st1.startsWith("'") && st1.endsWith("'")) {
                         st1 = st1.substring(1, st1.length() - 1);
@@ -82,10 +84,15 @@ public class ISOLibrary extends PrologLib {
                 throw PrologError.type_error(prolog, 1,
                         "atom", arg0);
             }
-            var st = ((Struct) arg0).name();
-            var bound = st.length();
-            var tlist = IntStream.range(0, bound).mapToObj(i -> new Struct(new String(new char[]{st.charAt(i)}))).toArray(Term[]::new);
-            var list = new Struct(tlist);
+            String st = ((Struct) arg0).name();
+            int bound = st.length();
+            List<Struct> result = new ArrayList<>();
+            for (int i = 0; i < bound; i++) {
+                Struct struct = new Struct(new String(new char[]{st.charAt(i)}));
+                result.add(struct);
+            }
+            Term[] tlist = result.toArray(new Term[0]);
+            Struct list = new Struct(tlist);
             /*
              * for (int i=0; i<st.length(); i++){ Struct ch=new Struct(new
              * String(new char[]{ st.charAt(st.length()-i-1)} )); list=new
@@ -101,7 +108,7 @@ public class ISOLibrary extends PrologLib {
         arg1 = arg1.term();
         if (arg1 instanceof Var) {
             if (arg0.isAtomic()) {
-                var st = ((Struct) arg0).name();
+                String st = ((Struct) arg0).name();
                 if (st.length() <= 1)
                     return unify(arg1, new NumberTerm.Int(st.charAt(0)));
                 else
@@ -112,7 +119,7 @@ public class ISOLibrary extends PrologLib {
                         "character", arg0);
         } else if ((arg1 instanceof NumberTerm.Int)
                 || (arg1 instanceof NumberTerm.Long)) {
-            var c = (char) ((NumberTerm) arg1).intValue();
+            char c = (char) ((NumberTerm) arg1).intValue();
             return unify(arg0, new Struct(String.valueOf(c)));
         } else
             throw PrologError.type_error(prolog, 2,
@@ -255,7 +262,7 @@ public class ISOLibrary extends PrologLib {
 
         }
         if (val0 instanceof NumberTerm) {
-            var fl = ((NumberTerm) val0).doubleValue();
+            double fl = ((NumberTerm) val0).doubleValue();
             return new NumberTerm.Double(Math.abs(fl - Math.rint(fl)));
         }
         return null;
@@ -347,9 +354,9 @@ public class ISOLibrary extends PrologLib {
 
         }
         if (val0 instanceof NumberTerm && val1 instanceof NumberTerm) {
-            var x = ((NumberTerm) val0).intValue();
-            var y = ((NumberTerm) val1).intValue();
-            var f = new java.lang.Double(Math.floor((double) x / y))
+            int x = ((NumberTerm) val0).intValue();
+            int y = ((NumberTerm) val1).intValue();
+            int f = new java.lang.Double(Math.floor((double) x / y))
                     .intValue();
             return new NumberTerm.Int(x - (f * y));
         }

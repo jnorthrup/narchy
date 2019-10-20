@@ -48,20 +48,20 @@ public class GLScreenShot implements Supplier<BufferedImage> {
             if (seen == null || width == 0 || height == 0)
                 return null;
 
-            var current = this.current;
+            BufferedImage current = this.current;
             if (current != null)
                 return current;
 
             BufferedImage b;
             if (rgbOrDepth) {
-                var bb = ((ByteBuffer) seen).array();
+                byte[] bb = ((ByteBuffer) seen).array();
 
-                var raster1 = Raster.createInterleavedRaster(
+                WritableRaster raster1 = Raster.createInterleavedRaster(
                         new DataBufferByte(bb, bb.length), width, height, width * 3, 3, rgbOffsets, new Point());
 
                 b = new BufferedImage(rgbColorModel, raster1, false, null);
             } else {
-                var bb = ((ByteBuffer) seen).array();
+                byte[] bb = ((ByteBuffer) seen).array();
 //                GrayU8 g = new GrayU8();
 //                g.setWidth(width);
 //                g.setHeight(height);
@@ -69,7 +69,7 @@ public class GLScreenShot implements Supplier<BufferedImage> {
 //                return ConvertBufferedImage.convertTo(g, null);
 
 
-                var raster1 = Raster.createInterleavedRaster(
+                WritableRaster raster1 = Raster.createInterleavedRaster(
                         new DataBufferByte(bb, bb.length), width, height, width, 1, grayOffsets, new Point());
 
                 b = new BufferedImage(grayColorModel, raster1, false, null);
@@ -87,12 +87,12 @@ public class GLScreenShot implements Supplier<BufferedImage> {
     public void update(GL gl) {
 
 
-        var drawable = gl.getContext().getGLDrawable();
+        GLDrawable drawable = gl.getContext().getGLDrawable();
         width = drawable.getSurfaceWidth();
         height = drawable.getSurfaceHeight();
 
 
-        var pixels = width * height;
+        int pixels = width * height;
 
 
         if (width % 4 != 0) {
@@ -101,7 +101,7 @@ public class GLScreenShot implements Supplier<BufferedImage> {
 
         synchronized (this) {
             current = null;
-            var bytes = rgbOrDepth ? pixels * 3 : pixels;
+            int bytes = rgbOrDepth ? pixels * 3 : pixels;
 
             if (seen == null || seen.capacity() != bytes) {
                 seen = ByteBuffer.allocate(bytes);

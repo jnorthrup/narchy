@@ -46,18 +46,18 @@ public class BrightnessNormalize implements Bitmap2D {
         if (s == null || s.length!=W*H)
             s = new float[W * H];
 
-        var i = 0;
+        int i = 0;
 
         double brightSum = 0;
         float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY;
-        for (var y = 0; y < H; y++) {
-            for (var x = 0; x < W; x++) {
+        for (int y = 0; y < H; y++) {
+            for (int x = 0; x < W; x++) {
 //                int rgb = from.getRGB(x,y);
 //                float r = Bitmap2D.decode8bRed(rgb);
 //                float g = Bitmap2D.decode8bGreen(rgb);
 //                float b = Bitmap2D.decode8bBlue(rgb);
 //                float bri = (r + g + b)/3f;
-                var bri = src.brightness(x, y);
+                float bri = src.brightness(x, y);
                 if (bri == bri) {
                     if (bri < min) min = bri;
                     if (bri > max) max = bri;
@@ -69,8 +69,8 @@ public class BrightnessNormalize implements Bitmap2D {
                 s[i++] = bri;
             }
         }
-        var mean = (float) (brightSum / (W * H));
-        var range = max-min;
+        float mean = (float) (brightSum / (W * H));
+        float range = max-min;
         if (range < ScalarValue.EPSILON)
             return; //no change, just pass-thru
 
@@ -82,7 +82,7 @@ public class BrightnessNormalize implements Bitmap2D {
 //            min = Util.max(0, mean - (max - mean));
 
         for (i = 0; i < s.length; i++) {
-            var b = s[i];
+            float b = s[i];
             if (b==b) {
                 s[i] = unitize((b-min)/range );
             }
@@ -112,7 +112,7 @@ public class BrightnessNormalize implements Bitmap2D {
         if (s == null)
             return rng.nextFloat();
 
-        var x = s[yy * W + xx];
+        float x = s[yy * W + xx];
         if (x != x)
             return rng.nextFloat();
         return x;

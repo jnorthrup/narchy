@@ -21,12 +21,14 @@ public abstract class TaskLinkSnapshot implements Runnable {
 	public final void run() {
 		synchronized (snapshot) {
 			snapshot.clearFast();
-			var c = active.capacity();
+            int c = active.capacity();
 			//TODO resize bitmap
 			snapshot.ensureCapacity(c);
-			active.forEach(snapshot::addFast);
+			for (TaskLink taskLink : active) {
+				snapshot.addFast(taskLink);
+			}
 			items = snapshot.array();
-			var s = snapshot.size();
+            int s = snapshot.size();
 			if (s < c)
 				Arrays.fill(items, s, items.length,null); //clear remainder of array
 			next();

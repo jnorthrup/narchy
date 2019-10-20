@@ -51,9 +51,9 @@ public class Line extends LevelObject {
 				g.setColor(Color.red);
 			}
 
-			var mousePos = levelPanel.getMousePosition();
+            Point mousePos = levelPanel.getMousePosition();
 			if (mousePos != null) {
-				var mouseRect = new Rectangle(mousePos, new Dimension(1, 1));
+                Rectangle mouseRect = new Rectangle(mousePos, new Dimension(1, 1));
 				if (lineHandle.intersects(mouseRect)) {
 					g.setColor(new Color(0xff7f0000));				
 				}
@@ -113,7 +113,7 @@ public class Line extends LevelObject {
 		
 		@Override
         public boolean intersects(Rectangle rect) {
-			var line = new Line2D.Float(p, p2);
+            Line2D.Float line = new Line2D.Float(p, p2);
 			if (rect.width <= 1 && rect.height <= 1) {
 				return line.ptSegDist(new Point(rect.x, rect.y)) < 5;
 			} 

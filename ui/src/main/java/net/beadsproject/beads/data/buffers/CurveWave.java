@@ -30,10 +30,10 @@ public class CurveWave extends WaveFactory {
      */
     @Override
     public ArrayTensor get(int bufferSize) {
-        var size = bufferSize;
-        var b = new ArrayTensor(size);
-        var exponent = Math.exp(-curviness);
-        for (var i = 0; i < bufferSize; i++) {
+        int size = bufferSize;
+        ArrayTensor b = new ArrayTensor(size);
+        double exponent = Math.exp(-curviness);
+        for (int i = 0; i < bufferSize; i++) {
             b.data[i] = (float) Math.pow(((float) i) / bufferSize, exponent);
         }
         return b;

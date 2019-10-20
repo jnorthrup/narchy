@@ -26,10 +26,10 @@ public class HiddenLayer {
 
         if (W == null) {
             this.W = new double[n_out][n_in];
-            var a = 1.0 / this.n_in;
+            double a = 1.0 / this.n_in;
 
-            for(var i = 0; i<n_out; i++) {
-                for(var j = 0; j<n_in; j++) {
+            for(int i = 0; i<n_out; i++) {
+                for(int j = 0; j<n_in; j++) {
                     this.W[i][j] = uniform(-a, a, rng);
                 }
             }
@@ -56,8 +56,12 @@ public class HiddenLayer {
     }
 
     public double output(double[] input, double[] w, double b) {
-        var bound = n_in;
-        var linear_output = IntStream.range(0, bound).mapToDouble(j -> w[j] * input[j]).sum();
+        int bound = n_in;
+        double linear_output = 0.0;
+        for (int j = 0; j < bound; j++) {
+            double v = w[j] * input[j];
+            linear_output += v;
+        }
         linear_output += b;
 
         return activation.apply(linear_output);
@@ -65,7 +69,7 @@ public class HiddenLayer {
 
 
     public void forward(double[] input, double[] output) {
-        for(var i = 0; i<n_out; i++) {
+        for(int i = 0; i<n_out; i++) {
             output[i] = this.output(input, W[i], b[i]);
         }
     }
@@ -73,20 +77,20 @@ public class HiddenLayer {
     public void backward(double[] input, double[] dy, double[] prev_layer_input, double[] prev_layer_dy, double[][] prev_layer_W, double lr) {
         if(dy == null) dy = new double[n_out];
 
-        var prev_n_in = n_out;
-        var prev_n_out = prev_layer_dy.length;
+        int prev_n_in = n_out;
+        int prev_n_out = prev_layer_dy.length;
 
-        for(var i = 0; i<prev_n_in; i++) {
+        for(int i = 0; i<prev_n_in; i++) {
             dy[i] = 0;
-            for(var j = 0; j<prev_n_out; j++) {
+            for(int j = 0; j<prev_n_out; j++) {
                 dy[i] += prev_layer_dy[j] * prev_layer_W[j][i];
             }
 
             dy[i] *= dactivation.apply(prev_layer_input[i]);
         }
 
-        for(var i = 0; i<n_out; i++) {
-            for(var j = 0; j<n_in; j++) {
+        for(int i = 0; i<n_out; i++) {
+            for(int j = 0; j<n_in; j++) {
                 W[i][j] += lr * dy[i] * input[j];
             }
             b[i] += lr * dy[i];
@@ -94,10 +98,10 @@ public class HiddenLayer {
     }
 
     public static double[] dropout(int size, double p, Random rng) {
-        var mask = new double[10];
-        var count = 0;
-        for (var i = 0; i < size; i++) {
-            var binomial = binomial(1, p, rng);
+        double[] mask = new double[10];
+        int count = 0;
+        for (int i = 0; i < size; i++) {
+            double binomial = binomial(1, p, rng);
             if (mask.length == count) mask = Arrays.copyOf(mask, count * 2);
             mask[count++] = binomial;
         }

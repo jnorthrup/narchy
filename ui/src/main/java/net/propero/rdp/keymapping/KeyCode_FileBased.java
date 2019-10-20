@@ -68,7 +68,7 @@ public abstract class KeyCode_FileBased {
 
 
         try {
-            var fstream = new FileInputStream(keyMapFile);
+            FileInputStream fstream = new FileInputStream(keyMapFile);
             readMapFile(fstream);
         } catch (FileNotFoundException e) {
             throw new KeyMapException("KeyMap file not found: " + keyMapFile);
@@ -108,16 +108,16 @@ public abstract class KeyCode_FileBased {
         if (fstream == null)
             throw new KeyMapException("Could not find specified keymap file");
 
-        var mapCodeSet = false;
+        boolean mapCodeSet = false;
 
-        var lineNum = 0;
+        int lineNum = 0;
         try {
-            var in = new DataInputStream(fstream);
+            DataInputStream in = new DataInputStream(fstream);
 
             if (in == null)
                 logger.warn("in == null");
 
-            var line = "";
+            String line = "";
             while (in.available() != 0) {
                 lineNum++;
                 line = in.readLine();
@@ -133,25 +133,25 @@ public abstract class KeyCode_FileBased {
                     
 
                 } else if (fc == 'c') {
-                    var st = new StringTokenizer(line);
+                    StringTokenizer st = new StringTokenizer(line);
                     st.nextToken();
 
-                    var s = st.nextToken();
+                    String s = st.nextToken();
                     mapCode = Integer.decode(s);
                     mapCodeSet = true;
                 }
             }
 
 
-            var newMap = new Vector();
+            Vector newMap = new Vector();
 
-            for (var aKeyMap : keyMap) {
-                var current = (MapDef) aKeyMap;
+            for (Object aKeyMap : keyMap) {
+                MapDef current = (MapDef) aKeyMap;
                 if (current.isCharacterDef()
                         && !(current.isAltDown() || current.isCtrlDown()
                         || current.isShiftDown() || current
                         .isCapslockOn())) {
-                    var code = getCodeFromAlphaChar(current.getKeyChar());
+                    int code = getCodeFromAlphaChar(current.getKeyChar());
                     if (code > -1) {
 
                         newMap.add(new MapDef(code, 0, current.getScancode(),
@@ -205,27 +205,27 @@ public abstract class KeyCode_FileBased {
      */
     private String stateChanges(KeyEvent e, MapDef theDef) {
 
-        final var SHIFT = 0;
+        final int SHIFT = 0;
 
-        var BEFORE = 0;
+        int BEFORE = 0;
 
-        var state = new boolean[4][2];
+        boolean[][] state = new boolean[4][2];
 
         state[SHIFT][BEFORE] = e.isShiftDown();
-        var AFTER = 1;
+        int AFTER = 1;
         state[SHIFT][AFTER] = theDef.isShiftDown();
 
-        final var CTRL = 1;
+        final int CTRL = 1;
         state[CTRL][BEFORE] = e.isControlDown() || e.isAltGraphDown();
         state[CTRL][AFTER] = theDef.isCtrlDown();
 
-        final var ALT = 2;
+        final int ALT = 2;
         state[ALT][BEFORE] = e.isAltDown() || e.isAltGraphDown();
         state[ALT][AFTER] = theDef.isAltDown();
 
         updateCapsLock(e);
 
-        final var CAPSLOCK = 3;
+        final int CAPSLOCK = 3;
         state[CAPSLOCK][BEFORE] = capsLockDown;
         state[CAPSLOCK][AFTER] = theDef.isCapslockOn();
 
@@ -237,10 +237,10 @@ public abstract class KeyCode_FileBased {
         if ((e == null) || (theDef == null) || (!theDef.isCharacterDef()))
             return "";
 
-        var up = "" + ((char) UP);
-        var down = "" + ((char) DOWN);
+        String up = "" + ((char) UP);
+        String down = "" + ((char) DOWN);
 
-        var changes = "";
+        String changes = "";
         if (state[SHIFT][BEFORE] != state[SHIFT][AFTER]) {
             if (state[SHIFT][BEFORE])
                 changes += ((char) 0x2a) + up;
@@ -257,8 +257,8 @@ public abstract class KeyCode_FileBased {
 
         if (Options.altkey_quiet) {
 
-            var quietdown = "" + ((char) QUIETDOWN);
-            var quietup = "" + ((char) QUIETUP);
+            String quietdown = "" + ((char) QUIETDOWN);
+            String quietup = "" + ((char) QUIETUP);
             if (state[ALT][BEFORE] != state[ALT][AFTER]) {
                 if (state[ALT][BEFORE])
                     changes += (char) 0x38 + quietup + ((char) 0x38)
@@ -303,10 +303,10 @@ public abstract class KeyCode_FileBased {
      */
     public void writeToFile(String filename) {
         try {
-            var out = new FileOutputStream(filename);
-            var p = new PrintStream(out);
+            FileOutputStream out = new FileOutputStream(filename);
+            PrintStream p = new PrintStream(out);
 
-            for (var aKeyMap : keyMap) {
+            for (Object aKeyMap : keyMap) {
                 ((MapDef) aKeyMap).writeToStream(p);
             }
 
@@ -330,11 +330,11 @@ public abstract class KeyCode_FileBased {
         if (c == KeyEvent.CHAR_UNDEFINED)
             return false;
 
-        var i = keyMap.iterator();
+        Iterator i = keyMap.iterator();
         MapDef best = null;
 
         while (i.hasNext()) {
-            var current = (MapDef) i.next();
+            MapDef current = (MapDef) i.next();
             if (current.appliesTo(c)) {
                 best = current;
             }
@@ -354,11 +354,11 @@ public abstract class KeyCode_FileBased {
      * @return Scancode of supplied key
      */
     public int charToScancode(char c, String[] mod) {
-        var i = keyMap.iterator();
+        Iterator i = keyMap.iterator();
         MapDef best = null;
 
         while (i.hasNext()) {
-            var current = (MapDef) i.next();
+            MapDef current = (MapDef) i.next();
             if (current.appliesTo(c)) {
                 best = current;
             }
@@ -387,7 +387,7 @@ public abstract class KeyCode_FileBased {
     private MapDef getDef(KeyEvent e) {
 
         if (e.getID() == KeyEvent.KEY_RELEASED) {
-            var def = (MapDef) keysCurrentlyDown.get(e
+            MapDef def = (MapDef) keysCurrentlyDown.get(e
                     .getKeyCode());
             registerKeyEvent(e, def);
             if (e.getID() == KeyEvent.KEY_RELEASED)
@@ -397,14 +397,14 @@ public abstract class KeyCode_FileBased {
 
         updateCapsLock(e);
 
-        var i = keyMap.iterator();
-        var smallestDist = -1;
+        Iterator i = keyMap.iterator();
+        int smallestDist = -1;
         MapDef best = null;
 
-        var noScanCode = !hasScancode(e.getKeyChar());
+        boolean noScanCode = !hasScancode(e.getKeyChar());
 
         while (i.hasNext()) {
-            var current = (MapDef) i.next();
+            MapDef current = (MapDef) i.next();
             boolean applies;
 
             if ((e.getID() == KeyEvent.KEY_PRESSED)) {
@@ -415,7 +415,7 @@ public abstract class KeyCode_FileBased {
                 applies = false;
 
             if (applies) {
-                var d = current.modifierDistance(e, capsLockDown);
+                int d = current.modifierDistance(e, capsLockDown);
                 if ((smallestDist == -1) || (d < smallestDist)) {
                     smallestDist = d;
                     best = current;
@@ -442,7 +442,7 @@ public abstract class KeyCode_FileBased {
      */
     public int getScancode(KeyEvent e) {
 
-        var d = getDef(e);
+        MapDef d = getDef(e);
 
         if (d != null) {
             return d.getScancode();
@@ -494,14 +494,14 @@ public abstract class KeyCode_FileBased {
      * send to server
      */
     public String getKeyStrokes(KeyEvent e) {
-        var d = getDef(e);
+        MapDef d = getDef(e);
 
         if (d == null)
             return "";
 
-        var codes = stateChanges(e, d);
+        String codes = stateChanges(e, d);
 
-        var type = "";
+        String type = "";
 
         if (e.getID() == KeyEvent.KEY_RELEASED) {
             if ((!Options.caps_sends_up_and_down)

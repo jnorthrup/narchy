@@ -28,7 +28,7 @@ public class SlashState extends TokenizerState {
 	@Override
 	public Token nextToken(PushbackReader r, int theSlash, Tokenizer t) throws IOException {
 
-		var c = r.read();
+        int c = r.read();
 		if (c == '*') {
 			return slashStarState.nextToken(r, '*', t);
 		}

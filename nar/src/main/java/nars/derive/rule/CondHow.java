@@ -17,6 +17,7 @@ import nars.derive.cond.TaskBeliefTermsEqual;
 import nars.derive.util.DerivationFunctors;
 import nars.derive.util.PremiseTermAccessor;
 import nars.derive.util.PuncMap;
+import nars.subterm.Subterms;
 import nars.subterm.util.SubtermCondition;
 import nars.term.Variable;
 import nars.term.*;
@@ -31,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static nars.Op.*;
@@ -143,7 +145,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 
 	public void taskPunc(boolean belief, boolean goal, boolean question, boolean quest, boolean command) {
 		pre.removeIf(x -> x instanceof PuncMap); //remove any existing
-		var accepts = PuncMap.TRUE;
+        byte accepts = PuncMap.TRUE;
 		pre.add(new PuncMap(belief ? accepts : 0, goal ? accepts : 0, question ? accepts : 0, quest ? accepts : 0, command ? accepts : 0));
 	}
 
@@ -152,7 +154,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 	 */
 	public void cond(Term o) {
 
-		var negated = o instanceof Neg;
+        boolean negated = o instanceof Neg;
 		if (negated)
 			o = o.unneg();
 
@@ -160,14 +162,14 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 		if (name == Null)
 			throw new TermException("invalid " + getClass().getSimpleName() + " precondition", o);
 
-		var pred = name.toString();
-		var args = Functor.args(o);
-		var an = args.subs();
-		var X = an > 0 ? args.sub(0) : null;
-		var Y = an > 1 ? args.sub(1) : null;
+        String pred = name.toString();
+        Subterms args = Functor.args(o);
+        int an = args.subs();
+        Term X = an > 0 ? args.sub(0) : null;
+        Term Y = an > 1 ? args.sub(1) : null;
 
-		var XX = X instanceof Variable ? (Variable) X : null;
-		var YY = Y instanceof Variable ? (Variable) Y : null;
+        nars.term.Variable XX = X instanceof Variable ? (Variable) X : null;
+        nars.term.Variable YY = Y instanceof Variable ? (Variable) Y : null;
 
 		/** variables sorted */
 		Variable Xv, Yv;
@@ -181,7 +183,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 			Yv = XX;
 		}
 
-		var negationApplied = new boolean[1];
+        boolean[] negationApplied = new boolean[1];
 
 		cond(o, negated, negationApplied, pred, X, Y, XX, YY, Xv, Yv);
 
@@ -192,7 +194,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 
 	protected void cond(Term o, boolean negated, boolean[] _negationApplied, String pred, Term x, Term y, Variable Xv, Variable Yv, Variable Xvs, Variable Yvs) {
 
-		var negationApplied = _negationApplied[0]; //safety check to make sure semantic of negation was applied by the handler
+        boolean negationApplied = _negationApplied[0]; //safety check to make sure semantic of negation was applied by the handler
 
 		switch (pred) {
 
@@ -286,7 +288,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 
 				if (y instanceof Variable) {
 
-					var c = new SubOfConstraint(Xv, (Variable) y, mode, polarity);
+                    SubOfConstraint c = new SubOfConstraint(Xv, (Variable) y, mode, polarity);
 					constraints.add((UnifyConstraint)(c.negIf(negated)));
 				} else {
 					if (polarity == 0)
@@ -319,7 +321,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 			case "eventOf":
 			case "eventOfNeg": {
 
-				var yNeg = pred.endsWith("Neg");
+                boolean yNeg = pred.endsWith("Neg");
 
 				if (y instanceof Neg) {
 					y = y.unneg();
@@ -401,7 +403,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 				int struct;
 				if (y.op() == SETe) {
 					struct = 0;
-					for (var yy : y.subterms()) {
+					for (Term yy : y.subterms()) {
 						struct |= Op.the($.unquote(yy)).bit;
 					}
 				} else {
@@ -434,7 +436,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 			}
 
 			case "isUnneg": {
-				var oo = Op.the($.unquote(y));
+                Op oo = Op.the($.unquote(y));
 				isUnneg(x, oo, negated);
 				if (negated) negationApplied = true;
 				break;
@@ -494,17 +496,17 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 			depth = pp.length;
 		}
 
-		var o = t.op();
+        Op o = t.op();
 		if (o == Op.VAR_PATTERN)
 			return;
 
-		var rr = depth == 0 ? r : r.path(pp);
+        Function<PreDerivation, Term> rr = depth == 0 ? r : r.path(pp);
 
 
 
 		TermMatcher.constrain(t, depth, pre, rr);
 
-		var n = t.subs();
+        int n = t.subs();
 		if (!o.commutative || (n == 1 && o!=CONJ)) {
 			if (p == null)
 				p = new ByteArrayList(8);
@@ -560,9 +562,9 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 
 		//boolean isTask = taskPattern.equals(x);
 		//boolean isBelief = beliefPattern.equals(x);
-		var pt = //(isTask || !taskPattern.ORrecurse(s -> s instanceof Ellipsislike)) ?
+        @Nullable byte[] pt = //(isTask || !taskPattern.ORrecurse(s -> s instanceof Ellipsislike)) ?
 			Terms.pathConstant(taskPattern, x);
-		var pb = //(isBelief || !beliefPattern.ORrecurse(s -> s instanceof Ellipsislike)) ?
+        @Nullable byte[] pb = //(isBelief || !beliefPattern.ORrecurse(s -> s instanceof Ellipsislike)) ?
 			Terms.pathConstant(beliefPattern, x);// : null;
 		if (pt != null || pb != null) {
 
@@ -579,8 +581,8 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 		} else {
 			//assert(!isTask && !isBelief);
 			//non-exact filter
-			var inTask = taskPattern.containsRecursively(x);
-			var inBelief = beliefPattern.containsRecursively(x);
+            boolean inTask = taskPattern.containsRecursively(x);
+            boolean inBelief = beliefPattern.containsRecursively(x);
 
 			if (inTask && inBelief) {
 				//only need to test one. use smallest volume
@@ -629,22 +631,22 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 
 	/** cost-sorted array of constraint enable procedures, bundled by common term via CompoundConstraint */
 	private UnifyConstraint<Derivation.PremiseUnify>[] constraints(MutableSet<UnifyConstraint<Derivation.PremiseUnify>> constraints) {
-		var preCopy = constraints.toArray(UnifyConstraint.None);
-		var all = constraints.stream().filter(c -> {
+        UnifyConstraint[] preCopy = constraints.toArray(UnifyConstraint.None);
+        Stream<UnifyConstraint<Derivation.PremiseUnify>> all = constraints.stream().filter(c -> {
 			if (!c.remainAmong(preCopy)) {
-				var cc = ArrayUtil.indexOfInstance(preCopy, c);
+                int cc = ArrayUtil.indexOfInstance(preCopy, c);
 				preCopy[cc] = null;
 				return false;
 			}
 			return true;
 		}).flatMap(c -> {
-			var cc = preFilter(c, taskPattern, beliefPattern);
+            PREDICATE<PreDerivation> cc = preFilter(c, taskPattern, beliefPattern);
 			if (cc != null) {
 				pre.add(cc);
 				return Stream.empty();
 			}
 			if (c instanceof RelationConstraint) {
-				var m = ((RelationConstraint<Derivation.PremiseUnify>) c).mirror();
+                RelationConstraint<Derivation.PremiseUnify> m = ((RelationConstraint<Derivation.PremiseUnify>) c).mirror();
 				if (m != null) {
 					//isnt possible:
 //                    PREDICATE<Unify> mm = preFilter(m, taskPattern, beliefPattern);
@@ -660,14 +662,14 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 			return Stream.of(c);
 		}).distinct();
 
-		var alls = all.toArray(UnifyConstraint[]::new);
+        UnifyConstraint[] alls = all.toArray(UnifyConstraint[]::new);
 		all = Stream.of(alls);
 
 		if (alls.length > 1) {
-			var allsCopy = alls.clone();
+            UnifyConstraint[] allsCopy = alls.clone();
 			all = all.filter(c -> {
 				if (!c.remainAmong(allsCopy)) {
-					var cc = ArrayUtil.indexOfInstance(allsCopy, c);
+                    int cc = ArrayUtil.indexOfInstance(allsCopy, c);
 					allsCopy[cc] = null;
 					return false;
 				}
@@ -684,19 +686,19 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 
 	private static PREDICATE<PreDerivation> preFilter(UnifyConstraint cc, Term taskPattern, Term beliefPattern) {
 
-		var x = cc.x;
+        nars.term.Variable x = cc.x;
 
 		if (cc instanceof NegRelationConstraint) {
 			PREDICATE p = preFilter(((NegRelationConstraint) cc).r, taskPattern, beliefPattern);
 			return p != null ? p.neg() : null;
 		} else if (cc instanceof RelationConstraint) {
 
-			var y = ((RelationConstraint) cc).y;
-			var xInT = Terms.pathConstant(taskPattern, x);
-			var xInB = Terms.pathConstant(beliefPattern, x);
+            nars.term.Variable y = ((RelationConstraint) cc).y;
+            @Nullable byte[] xInT = Terms.pathConstant(taskPattern, x);
+            @Nullable byte[] xInB = Terms.pathConstant(beliefPattern, x);
 			if (xInT != null || xInB != null) {
-				var yInT = Terms.pathConstant(taskPattern, y);
-				var yInB = Terms.pathConstant(beliefPattern, y);
+                @Nullable byte[] yInT = Terms.pathConstant(taskPattern, y);
+                @Nullable byte[] yInB = Terms.pathConstant(beliefPattern, y);
 				if ((yInT != null || yInB != null)) {
 					if (xInT != null && xInB != null) {
 						if (xInB.length < xInT.length) xInT = null;
@@ -712,8 +714,8 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 
 
 		} else if (cc instanceof UnaryConstraint) {
-			var xInT = Terms.pathConstant(taskPattern, x);
-			var xInB = Terms.pathConstant(beliefPattern, x);
+            @Nullable byte[] xInT = Terms.pathConstant(taskPattern, x);
+            @Nullable byte[] xInB = Terms.pathConstant(beliefPattern, x);
 			if (xInT != null || xInB != null) {
 				if (xInT != null && xInB != null) {
 					if (xInB.length < xInT.length) xInT = null;
@@ -771,8 +773,8 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 		/** constraints must be computed BEFORE preconditions as some constraints may be transformed into preconditions */
 		CONSTRAINTS = constraints(constraints);
 
-		var rules = pre.size();
-		var PRE = pre.toArray(new PREDICATE[rules]);
+        int rules = pre.size();
+        PREDICATE[] PRE = pre.toArray(new PREDICATE[rules]);
 
 		if (rules > 1) {
 			Arrays.sort(PRE, 0, rules, sortByCostIncreasing);

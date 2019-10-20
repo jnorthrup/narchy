@@ -160,7 +160,7 @@ public abstract class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 
 		@Override
 		public final void put(X n) {
-			var p = tasks.putIfAbsent(n, n);
+            X p = tasks.putIfAbsent(n, n);
 			if (p != null) {
 				Task.merge(p, n);
 				hit.incrementAndGet();
@@ -174,11 +174,11 @@ public abstract class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 		 */
 		@Override
 		public void commit() {
-			var num = tasks.size();
+            int num = tasks.size();
 			if (num > 0) {
-				var ii = tasks.values().iterator();
+                Iterator<X> ii = tasks.values().iterator();
 				while (ii.hasNext()) {
-					var r = ii.next();
+                    X r = ii.next();
 					ii.remove();
 					target.accept(r);
 					if (--num <= 0)
@@ -243,7 +243,7 @@ public abstract class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 		}
 
 		{
-			final var merge = NAL.tasklinkMerge;
+			final PriMerge merge = NAL.tasklinkMerge;
 			tasks = new SimpleBufferedBag<>(new PriArrayBag<>(merge, 0) {
 				@Override
 				protected int histogramBins(int s) {
@@ -322,23 +322,23 @@ public abstract class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 		@Override
 		public void commit() {
 
-			var now = nar.time();
+            long now = nar.time();
 
-			var dt = now - prev;
+            long dt = now - prev;
 
 			prev = now;
 
-			var b = this.tasks;
+            Bag<Task, Task> b = this.tasks;
 
 			b.setCapacity(capacity.intValue());
 			b.commit(null);
 
-			var s = b.size();
+            int s = b.size();
 			if (s > 0) {
-				var cc = target.concurrency();
-				var toRun = cc - pending.getOpaque();
+                int cc = target.concurrency();
+                int toRun = cc - pending.getOpaque();
 				if (toRun >= 0) {
-					var n = Math.min(s, batchSize((((float) toRun) / cc) * dt / nar.dur()));
+                    int n = Math.min(s, batchSize((((float) toRun) / cc) * dt / nar.dur()));
 					if (n > 0) {
 						//TODO target.input(tasks, n, target.concurrency());
 
@@ -348,12 +348,12 @@ public abstract class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 							b.pop(null, n, target);
 						} else {
 							//batch
-							var remain = n;
-							var nEach = (int) Math.ceil(((float) remain) / toRun);
+                            int remain = n;
+                            int nEach = (int) Math.ceil(((float) remain) / toRun);
 
 
-							for (var i = 0; i < toRun && remain > 0; i++) {
-								var asked = Math.min(remain, nEach);
+							for (int i = 0; i < toRun && remain > 0; i++) {
+                                int asked = Math.min(remain, nEach);
 								remain -= asked;
 								target.input(b, asked, nar.exe,
 									asked > 2 && NAL.PRE_SORT_TASK_INPUT_BATCH ? Task.sloppySorter : null,

@@ -117,7 +117,13 @@ public class GameCombat {
             }
         }
 
-        var b = IntStream.of(Defines.MOVETYPE_PUSH, Defines.MOVETYPE_STOP, Defines.MOVETYPE_NONE).anyMatch(i -> targ.movetype == i);
+        boolean b = false;
+        for (int i : new int[]{Defines.MOVETYPE_PUSH, Defines.MOVETYPE_STOP, Defines.MOVETYPE_NONE}) {
+            if (targ.movetype == i) {
+                b = true;
+                break;
+            }
+        }
         if (b) {
                                                              
             targ.die.die(targ, inflictor, attacker, damage, point);
@@ -153,13 +159,13 @@ public class GameCombat {
         if (damage == 0)
             return 0;
 
-        var client = ent.client;
+        gclient_t client = ent.client;
     
         if ((dflags & Defines.DAMAGE_NO_ARMOR) != 0)
             return 0;
 
-        var power = 0;
-        var index = 0;
+        int power = 0;
+        int index = 0;
         int power_armor_type;
         if (client != null) {
             power_armor_type = GameItems.PowerArmorType(ent);
@@ -188,7 +194,7 @@ public class GameCombat {
             float[] vec = {0, 0, 0};
             Math3D.VectorSubtract(point, ent.s.origin, vec);
             Math3D.VectorNormalize(vec);
-            var dot = Math3D.DotProduct(vec, forward);
+            float dot = Math3D.DotProduct(vec, forward);
             if (dot <= 0.3)
                 return 0;
     
@@ -201,7 +207,7 @@ public class GameCombat {
             damage = (2 * damage) / 3;
         }
 
-        var save = power * damagePerCell;
+        int save = power * damagePerCell;
     
         if (save == 0)
             return 0;
@@ -211,7 +217,7 @@ public class GameCombat {
         SpawnDamage(pa_te_type, point, normal, save);
         ent.powerarmor_time = GameBase.level.time + 0.2f;
 
-        var power_used = save / damagePerCell;
+        int power_used = save / damagePerCell;
     
         if (client != null)
             client.pers.inventory[index] -= power_used;
@@ -226,7 +232,7 @@ public class GameCombat {
         if (damage == 0)
             return 0;
 
-        var client = ent.client;
+        gclient_t client = ent.client;
     
         if (client == null)
             return 0;
@@ -234,13 +240,13 @@ public class GameCombat {
         if ((dflags & Defines.DAMAGE_NO_ARMOR) != 0)
             return 0;
 
-        var index = GameItems.ArmorIndex(ent);
+        int index = GameItems.ArmorIndex(ent);
     
         if (index == 0)
             return 0;
 
-        var armor = GameItems.GetItemByIndex(index);
-        var garmor = armor.info;
+        gitem_t armor = GameItems.GetItemByIndex(index);
+        gitem_armor_t garmor = armor.info;
 
         int save;
         if (0 != (dflags & Defines.DAMAGE_ENERGY))
@@ -352,7 +358,7 @@ public class GameCombat {
     
         while ((edictit = GameBase.findradius(edictit, inflictor.s.origin,
                 radius)) != null) {
-            var ent = edictit.o;
+            edict_t ent = edictit.o;
             if (ent == ignore)
                 continue;
             if (ent.takedamage == 0)
@@ -361,7 +367,7 @@ public class GameCombat {
             Math3D.VectorAdd(ent.mins, ent.maxs, v);
             Math3D.VectorMA(ent.s.origin, 0.5f, v, v);
             Math3D.VectorSubtract(inflictor.s.origin, v, v);
-            var points = damage - 0.5f * Math3D.VectorLength(v);
+            float points = damage - 0.5f * Math3D.VectorLength(v);
             if (ent == attacker)
                 points *= 0.5f;
             if (points > 0) {
@@ -404,7 +410,7 @@ public class GameCombat {
                 damage = 1;
         }
 
-        var client = targ.client;
+        gclient_t client = targ.client;
 
         int te_sparks;
         if ((dflags & Defines.DAMAGE_BULLET) != 0)
@@ -450,8 +456,8 @@ public class GameCombat {
             }
         }
 
-        var take = damage;
-        var save = 0;
+        int take = damage;
+        int save = 0;
     
         
         if ((targ.flags & Defines.FL_GODMODE) != 0
@@ -474,10 +480,10 @@ public class GameCombat {
             save = damage;
         }
 
-        var psave = CheckPowerArmor(targ, point, normal, take, dflags);
+        int psave = CheckPowerArmor(targ, point, normal, take, dflags);
         take -= psave;
 
-        var asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
+        int asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
         take -= asave;
     
         

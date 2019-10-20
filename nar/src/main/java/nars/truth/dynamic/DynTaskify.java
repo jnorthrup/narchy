@@ -106,7 +106,7 @@ public class DynTaskify extends TaskList {
 
         long s, e;
         long earliest;
-        var latest = maxValue(Stamp::end);
+        long latest = maxValue(Stamp::end);
         if (latest == LongInterval.ETERNAL) {
             //all are eternal
             earliest = s = e = LongInterval.ETERNAL;
@@ -122,7 +122,7 @@ public class DynTaskify extends TaskList {
                     s + minValue(t -> t.rangeIfNotEternalElse(1) - 1);
             } else {
 
-                var u = Tense.union(0, this);
+                long[] u = Tense.union(0, this);
                 s = u[0];
                 e = u[1];
 //                s = e = ETERNAL;
@@ -137,25 +137,25 @@ public class DynTaskify extends TaskList {
 
     private boolean components() {
 
-        var c = this.components;
+        FasterList<Component> c = this.components;
 
         if (c == null )
             return false;
 
-        var cn = c.size();
+        int cn = c.size();
         if (cn == 0)
             return false;
 
         if (cn > 1) {
 
-            var order = new int[10];
-            var count = 0;
-            for (var i1 = 0; i1 < cn; i1++) {
+            int[] order = new int[10];
+            int count = 0;
+            for (int i1 = 0; i1 < cn; i1++) {
                 if (order.length == count) order = Arrays.copyOf(order, count * 2);
                 order[count++] = i1;
             }
             order = Arrays.copyOfRange(order, 0, count);
-            var cc = c.array();
+            Component[] cc = c.array();
 
             IntToFloatFunction smallestFirst = j -> +cc[j].termVolume;
             //IntToFloatFunction biggestFirst = (int j) -> -(cc[j]).termVolume;
@@ -164,9 +164,9 @@ public class DynTaskify extends TaskList {
                     //biggestFirst
             );
 
-            for (var i = 0; i < cn; i++) {
-                var j = order[i];
-                var tt = cc[j].apply(this);
+            for (int i = 0; i < cn; i++) {
+                int j = order[i];
+                Task tt = cc[j].apply(this);
                 if (tt == null)
                     return false;
 
@@ -177,7 +177,7 @@ public class DynTaskify extends TaskList {
             }
         } else {
             ensureCapacityForAdditional(1);
-            var only = c.get(0).apply(this);
+            Task only = c.get(0).apply(this);
             if (only == null)
                 return false;
             setTask(0, only);
@@ -187,7 +187,7 @@ public class DynTaskify extends TaskList {
 
 
     private boolean evalComponent(Term subTerm, long start, long end) {
-        var negated = subTerm instanceof Neg;
+        boolean negated = subTerm instanceof Neg;
         Term c;
         if (negated) {
             c = subTerm.unneg();
@@ -195,7 +195,7 @@ public class DynTaskify extends TaskList {
         } else
             c = subTerm;
 
-        var table = nar.tableDynamic(c, beliefOrGoal);
+        BeliefTable table = nar.tableDynamic(c, beliefOrGoal);
         if (table==null || table.isEmpty())
             return false;
 
@@ -266,8 +266,8 @@ public class DynTaskify extends TaskList {
 
     /** earliest start time, excluding ETERNALs.  returns ETERNAL if all ETERNAL */
     public long earliestStart() {
-        var w = minValue(t -> {
-            var ts = t.start();
+        long w = minValue(t -> {
+            long ts = t.start();
             return ts != LongInterval.ETERNAL ? ts : LongInterval.TIMELESS;
         });
         return w == TIMELESS ? ETERNAL : w;

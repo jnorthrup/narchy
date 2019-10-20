@@ -144,9 +144,9 @@ public class Color3b extends Tuple3b {
      * @since vecmath 1.2
      */
     public final Color get() {
-        var r = x & 0xff;
-        var g = y & 0xff;
-        var b = z & 0xff;
+        int r = x & 0xff;
+        int g = y & 0xff;
+        int b = z & 0xff;
 
 	return new Color(r, g, b);
     }

@@ -69,7 +69,7 @@ final class Node<K extends Comparable<? super K>, V> {
     }
 
     public Node<K, V> sibling() {
-        var p = this.parent;
+        Node<K, V> p = this.parent;
         //assert p != null;
         return this == p.left ? p.right : p.left;
     }
@@ -156,9 +156,9 @@ public class RBTree<K extends Comparable<? super K>, V> {
 //    }
 
     private Node<K, V> node(K key) {
-        var n = root;
+        Node<K, V> n = root;
         while (n != null) {
-            var c = key.compareTo(n.key);
+            int c = key.compareTo(n.key);
             if (c == 0) {
                 return n;
             } else if (c < 0) {
@@ -171,14 +171,14 @@ public class RBTree<K extends Comparable<? super K>, V> {
     }
 
     protected V lookup(K key) {
-        var n = node(key);
+        Node<K, V> n = node(key);
         return n == null ? null : n.value;
     }
 
     private void rotateLeft(Node<K, V> n) {
-        var r = n.right;
+        Node<K, V> r = n.right;
         replaceNode(n, r);
-        var rleft = r.left;
+        Node<K, V> rleft = r.left;
         n.right = rleft;
         if (rleft != null) {
             rleft.parent = n;
@@ -188,9 +188,9 @@ public class RBTree<K extends Comparable<? super K>, V> {
     }
 
     private void rotateRight(Node<K, V> n) {
-        var l = n.left;
+        Node<K, V> l = n.left;
         replaceNode(n, l);
-        var lright = l.right;
+        Node<K, V> lright = l.right;
         n.left = lright;
         if (lright != null) {
             lright.parent = n;
@@ -200,7 +200,7 @@ public class RBTree<K extends Comparable<? super K>, V> {
     }
 
     private void replaceNode(Node<K, V> oldn, Node<K, V> newn) {
-        var parent = oldn.parent;
+        Node<K, V> parent = oldn.parent;
         if (parent == null) {
             root = newn;
         } else {
@@ -275,8 +275,8 @@ public class RBTree<K extends Comparable<? super K>, V> {
     }
 
     void insertCase4(Node<K, V> n) {
-        var p = n.parent;
-        var gp = n.grandparent();
+        Node<K, V> p = n.parent;
+        Node<K, V> gp = n.grandparent();
         if (n == p.right && p == gp.left) {
             rotateLeft(p);
             insertCase5(n.left);
@@ -299,27 +299,27 @@ public class RBTree<K extends Comparable<? super K>, V> {
 
     public void remove(K key, ClauseInfo c) {
 
-        var n = node(key);
+        Node<K, V> n = node(key);
         if (n == null)
             return;
 
         /*must be check if node is a list of clause*/
         @SuppressWarnings("unchecked")
-        var nodeClause = (LinkedList<ClauseInfo>) n.value;
+        LinkedList<ClauseInfo> nodeClause = (LinkedList<ClauseInfo>) n.value;
         if (nodeClause.size() > 1) {
             nodeClause.remove(c);
         } else {
             if (n.left != null && n.right != null) {
 
 
-                var pred = maximumNode(n.left);
+                Node<K, V> pred = maximumNode(n.left);
                 n.key = pred.key;
                 n.value = pred.value;
                 n = pred;
             }
 
             assert n.left == null || n.right == null;
-            var child = (n.right == null) ? n.left : n.right;
+            Node<K, V> child = (n.right == null) ? n.left : n.right;
 
             if (nodeColor(n) == Color.BLACK) {
                 n.color = nodeColor(child);
@@ -361,7 +361,7 @@ public class RBTree<K extends Comparable<? super K>, V> {
     }
 
     private void deleteCase3(Node<K, V> n) {
-        var ns = n.sibling();
+        Node<K, V> ns = n.sibling();
         if (nodeColor(n.parent) == Color.BLACK &&
                 nodeColor(ns) == Color.BLACK &&
                 nodeColor(ns.left) == Color.BLACK &&
@@ -373,7 +373,7 @@ public class RBTree<K extends Comparable<? super K>, V> {
     }
 
     private void deleteCase4(Node<K, V> n) {
-        var ns = n.sibling();
+        Node<K, V> ns = n.sibling();
         if (nodeColor(n.parent) == Color.RED &&
                 nodeColor(ns) == Color.BLACK &&
                 nodeColor(ns.left) == Color.BLACK &&
@@ -385,7 +385,7 @@ public class RBTree<K extends Comparable<? super K>, V> {
     }
 
     private void deleteCase5(Node<K, V> n) {
-        var ns = n.sibling();
+        Node<K, V> ns = n.sibling();
         if (n == n.parent.left &&
                 nodeColor(ns) == Color.BLACK &&
                 nodeColor(ns.left) == Color.RED &&
@@ -405,7 +405,7 @@ public class RBTree<K extends Comparable<? super K>, V> {
     }
 
     private void deleteCase6(Node<K, V> n) {
-        var ns = n.sibling();
+        Node<K, V> ns = n.sibling();
         ns.color = nodeColor(n.parent);
         n.parent.color = Color.BLACK;
         if (n == n.parent.left) {
@@ -431,7 +431,7 @@ public class RBTree<K extends Comparable<? super K>, V> {
         if (n.right != null) {
             printHelper(n.right, indent + INDENT_STEP);
         }
-        for (var i = 0; i < indent; i++)
+        for (int i = 0; i < indent; i++)
             System.out.print(" ");
         if (n.color == Color.BLACK)
             System.out.println(n.key);

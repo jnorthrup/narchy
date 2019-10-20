@@ -87,12 +87,12 @@ public class GameFunc {
             return;
         }
 
-        var accel_dist = AccelerationDistance(moveinfo.speed, moveinfo.accel);
-        var decel_dist = AccelerationDistance(moveinfo.speed, moveinfo.decel);
+        float accel_dist = AccelerationDistance(moveinfo.speed, moveinfo.accel);
+        float decel_dist = AccelerationDistance(moveinfo.speed, moveinfo.decel);
 
         if ((moveinfo.remaining_distance - accel_dist - decel_dist) < 0) {
 
-            var f = (moveinfo.accel + moveinfo.decel)
+            float f = (moveinfo.accel + moveinfo.decel)
                     / (moveinfo.accel * moveinfo.decel);
             moveinfo.move_speed = (float) ((-2 + Math.sqrt(4 - 4 * f
                     * (-2 * moveinfo.remaining_distance))) / (2 * f));
@@ -122,12 +122,12 @@ public class GameFunc {
         if (moveinfo.current_speed == moveinfo.move_speed)
             if ((moveinfo.remaining_distance - moveinfo.current_speed) < moveinfo.decel_distance) {
 
-                var p1_distance = moveinfo.remaining_distance
+                float p1_distance = moveinfo.remaining_distance
                         - moveinfo.decel_distance;
-                var p2_distance = moveinfo.move_speed
+                float p2_distance = moveinfo.move_speed
                         * (1.0f - (p1_distance / moveinfo.move_speed));
                 moveinfo.current_speed = moveinfo.move_speed;
-                var distance = p1_distance + p2_distance;
+                float distance = p1_distance + p2_distance;
                 moveinfo.next_speed = moveinfo.move_speed - moveinfo.decel
                         * (p2_distance / distance);
                 return;
@@ -136,7 +136,7 @@ public class GameFunc {
         
         if (moveinfo.current_speed < moveinfo.speed) {
 
-            var old_speed = moveinfo.current_speed;
+            float old_speed = moveinfo.current_speed;
 
             
             moveinfo.current_speed += moveinfo.accel;
@@ -148,11 +148,11 @@ public class GameFunc {
                 return;
 
 
-            var p1_distance = moveinfo.remaining_distance - moveinfo.decel_distance;
-            var p1_speed = (old_speed + moveinfo.move_speed) / 2.0f;
-            var p2_distance = moveinfo.move_speed
+            float p1_distance = moveinfo.remaining_distance - moveinfo.decel_distance;
+            float p1_speed = (old_speed + moveinfo.move_speed) / 2.0f;
+            float p2_distance = moveinfo.move_speed
                     * (1.0f - (p1_distance / p1_speed));
-            var distance = p1_distance + p2_distance;
+            float distance = p1_distance + p2_distance;
             moveinfo.current_speed = (p1_speed * (p1_distance / distance))
                     + (moveinfo.move_speed * (p2_distance / distance));
             moveinfo.next_speed = moveinfo.move_speed - moveinfo.decel
@@ -178,7 +178,7 @@ public class GameFunc {
     static void plat_spawn_inside_trigger(edict_t ent) {
 
 
-        var trigger = GameUtil.G_Spawn();
+        edict_t trigger = GameUtil.G_Spawn();
         trigger.touch = Touch_Plat_Center;
         trigger.movetype = Defines.MOVETYPE_NONE;
         trigger.solid = Defines.SOLID_TRIGGER;
@@ -455,7 +455,7 @@ public class GameFunc {
     static void train_resume(edict_t self) {
         float[] dest = { 0, 0, 0 };
 
-        var ent = self.target_ent;
+        edict_t ent = self.target_ent;
 
         Math3D.VectorSubtract(ent.s.origin, self.mins, dest);
         self.moveinfo.state = STATE_TOP;
@@ -617,7 +617,7 @@ public class GameFunc {
             }
             Math3D.VectorScale(ent.moveinfo.dir, ent.moveinfo.speed,
                     ent.velocity);
-            var frames = (float) Math
+            float frames = (float) Math
                     .floor((ent.moveinfo.remaining_distance / ent.moveinfo.speed)
                             / Defines.FRAMETIME);
             ent.moveinfo.remaining_distance -= frames * ent.moveinfo.speed
@@ -686,17 +686,17 @@ public class GameFunc {
                         destdelta);
 
 
-            var len = Math3D.VectorLength(destdelta);
+            float len = Math3D.VectorLength(destdelta);
 
 
-            var traveltime = len / ent.moveinfo.speed;
+            float traveltime = len / ent.moveinfo.speed;
 
             if (traveltime < Defines.FRAMETIME) {
                 AngleMove_Final.think(ent);
                 return true;
             }
 
-            var frames = (float) (Math.floor(traveltime / Defines.FRAMETIME));
+            float frames = (float) (Math.floor(traveltime / Defines.FRAMETIME));
 
             
             
@@ -892,10 +892,13 @@ public class GameFunc {
         @Override
         public void touch(edict_t self, edict_t other, cplane_t plane,
                           csurface_t surf) {
-            if (IntStream.of(0, 1, 2).anyMatch(i -> self.avelocity[i] != 0)) {
-                GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
-                        other.s.origin, Globals.vec3_origin, self.dmg, 1, 0,
-                        Defines.MOD_CRUSH);
+            for (int i : new int[]{0, 1, 2}) {
+                if (self.avelocity[i] != 0) {
+                    GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
+                            other.s.origin, Globals.vec3_origin, self.dmg, 1, 0,
+                            Defines.MOD_CRUSH);
+                    break;
+                }
             }
         }
     };
@@ -1133,7 +1136,7 @@ public class GameFunc {
             abs_movedir[0] = Math.abs(ent.movedir[0]);
             abs_movedir[1] = Math.abs(ent.movedir[1]);
             abs_movedir[2] = Math.abs(ent.movedir[2]);
-            var dist = abs_movedir[0] * ent.size[0] + abs_movedir[1] * ent.size[1]
+            float dist = abs_movedir[0] * ent.size[0] + abs_movedir[1] * ent.size[1]
                     + abs_movedir[2] * ent.size[2] - GameBase.st.lip;
             Math3D.VectorMA(ent.pos1, dist, ent.movedir, ent.pos2);
 
@@ -1298,20 +1301,20 @@ public class GameFunc {
                 return true;
 
 
-            var min = Math.abs(self.moveinfo.distance);
+            float min = Math.abs(self.moveinfo.distance);
             edict_t ent;
             for (ent = self.teamchain; ent != null; ent = ent.teamchain) {
-                var dist = Math.abs(ent.moveinfo.distance);
+                float dist = Math.abs(ent.moveinfo.distance);
                 if (dist < min)
                     min = dist;
             }
 
-            var time = min / self.moveinfo.speed;
+            float time = min / self.moveinfo.speed;
 
             
             for (ent = self; ent != null; ent = ent.teamchain) {
-                var newspeed = Math.abs(ent.moveinfo.distance) / time;
-                var ratio = newspeed / ent.moveinfo.speed;
+                float newspeed = Math.abs(ent.moveinfo.distance) / time;
+                float ratio = newspeed / ent.moveinfo.speed;
                 if (ent.moveinfo.accel == ent.moveinfo.speed)
                     ent.moveinfo.accel = newspeed;
                 else
@@ -1417,7 +1420,7 @@ public class GameFunc {
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                         int damage, float[] point) {
 
-            for (var ent = self.teammaster; ent != null; ent = ent.teamchain) {
+            for (edict_t ent = self.teammaster; ent != null; ent = ent.teamchain) {
                 ent.health = ent.max_health;
                 ent.takedamage = Defines.DAMAGE_NO;
             }
@@ -1734,8 +1737,8 @@ public class GameFunc {
         public boolean think(edict_t self) {
             if (self.target_ent.pathtarget != null) {
 
-                var ent = self.target_ent;
-                var savetarget = ent.target;
+                edict_t ent = self.target_ent;
+                String savetarget = ent.target;
                 ent.target = ent.pathtarget;
                 GameUtil.G_UseTargets(ent, self.activator);
                 ent.target = savetarget;
@@ -1778,9 +1781,9 @@ public class GameFunc {
         public boolean think(edict_t self) {
             edict_t ent = null;
 
-            var first = true;
+            boolean first = true;
 
-            var dogoto = true;
+            boolean dogoto = true;
             while (dogoto) {
                 if (null == self.target) {
                     
@@ -1847,7 +1850,7 @@ public class GameFunc {
                 game_import_t.dprintf("train_find: no target\n");
                 return true;
             }
-            var ent = GameBase.G_PickTarget(self.target);
+            edict_t ent = GameBase.G_PickTarget(self.target);
             if (null == ent) {
                 game_import_t.dprintf("train_find: target " + self.target
                         + " not found\n");
@@ -1913,7 +1916,7 @@ public class GameFunc {
                 return;
             }
 
-            var target = GameBase.G_PickTarget(other.pathtarget);
+            edict_t target = GameBase.G_PickTarget(other.pathtarget);
             if (null == target) {
                 game_import_t.dprintf("elevator used with bad pathtarget: "
                         + other.pathtarget + '\n');
@@ -2251,13 +2254,13 @@ public class GameFunc {
             float[] forward = {0, 0, 0};
             Math3D.AngleVectors(ent.s.angles, forward, right, up);
             Math3D.VectorClear(ent.s.angles);
-            var side = 1.0f - (ent.spawnflags & SECRET_1ST_LEFT);
+            float side = 1.0f - (ent.spawnflags & SECRET_1ST_LEFT);
             float width;
             if ((ent.spawnflags & SECRET_1ST_DOWN) != 0)
                 width = Math.abs(Math3D.DotProduct(up, ent.size));
             else
                 width = Math.abs(Math3D.DotProduct(right, ent.size));
-            var length = Math.abs(Math3D.DotProduct(forward, ent.size));
+            float length = Math.abs(Math3D.DotProduct(forward, ent.size));
             if ((ent.spawnflags & SECRET_1ST_DOWN) != 0)
                 Math3D.VectorMA(ent.s.origin, -1 * width, up, ent.pos1);
             else

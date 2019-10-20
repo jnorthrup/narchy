@@ -54,7 +54,7 @@ public abstract class RdesktopFrame extends Frame {
      */
     RdesktopFrame() {
 
-        var java_version = System.getProperty("java.specification.version");
+        String java_version = System.getProperty("java.specification.version");
         if (java_version.compareTo("1.6") == 0) {
             this.setSize(Options.width + 6, Options.height + 30);
         }
@@ -99,12 +99,12 @@ public abstract class RdesktopFrame extends Frame {
      * @param f Window to be centred
      */
     private static void centreWindow(Window f) {
-        var screen_size = Toolkit.getDefaultToolkit().getScreenSize();
-        var window_size = f.getSize();
-        var x = (screen_size.width - window_size.width) / 2;
+        Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension window_size = f.getSize();
+        int x = (screen_size.width - window_size.width) / 2;
         if (x < 0)
             x = 0;
-        var y = (screen_size.height - window_size.height) / 2;
+        int y = (screen_size.height - window_size.height) / 2;
         if (y < 0)
             y = 0; 
         f.setLocation(x, y);
@@ -221,7 +221,7 @@ public abstract class RdesktopFrame extends Frame {
      */
     public boolean showYesNoErrorDialog(String[] msg) {
 
-        var d = new YesNoDialog(this, "properJavaRDP error", msg);
+        YesNoDialog d = new YesNoDialog(this, "properJavaRDP error", msg);
         d.show();
         return d.retry;
     }
@@ -335,12 +335,12 @@ public abstract class RdesktopFrame extends Frame {
             super(parent, title, true);
 
 
-            var msg = new Panel();
+            Panel msg = new Panel();
             msg.setLayout(new GridLayout(message.length, 1));
-            for (var aMessage : message) msg.add(new Label(aMessage, Label.CENTER));
+            for (String aMessage : message) msg.add(new Label(aMessage, Label.CENTER));
             this.add("Center", msg);
 
-            var p = new Panel();
+            Panel p = new Panel();
             p.setLayout(new FlowLayout());
             yes = new Button("Yes");
             yes.addActionListener(this);
@@ -372,14 +372,14 @@ public abstract class RdesktopFrame extends Frame {
             super(parent, title, true);
 
 
-            var msg = new Panel();
+            Panel msg = new Panel();
             msg.setLayout(new GridLayout(message.length, 1));
-            for (var aMessage : message) msg.add(new Label(aMessage, Label.CENTER));
+            for (String aMessage : message) msg.add(new Label(aMessage, Label.CENTER));
             this.add("Center", msg);
 
-            var p = new Panel();
+            Panel p = new Panel();
             p.setLayout(new FlowLayout());
-            var ok = new Button("OK");
+            Button ok = new Button("OK");
             ok.addActionListener(this);
             p.add(ok);
             this.add("South", p);

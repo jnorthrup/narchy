@@ -73,9 +73,9 @@ public class PartsTable extends Gridding implements GridModel, GridRenderer {
     @Override
     public @Nullable Object get(int x, int y) {
         try {
-            var pe = partEntries.get(y);
-            var k = pe.getKey();
-            var p = pe.getValue();
+            Map.Entry<?, Part> pe = partEntries.get(y);
+            Object k = pe.getKey();
+            Part p = pe.getValue();
             switch (x) {
                 case 0: {
                     return new Bordering(

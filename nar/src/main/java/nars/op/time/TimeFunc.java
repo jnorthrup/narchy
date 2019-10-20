@@ -56,7 +56,7 @@ public enum TimeFunc {
 			if (args.subs()!=3)
 				return Null;
 
-			var temporal = args.sub(0);
+            Term temporal = args.sub(0);
 			TemporalAccessor a;
 			switch (temporal.op()) {
 				case CONJ: a = ConjAccessor; break;

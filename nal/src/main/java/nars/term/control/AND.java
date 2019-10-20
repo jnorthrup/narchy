@@ -28,7 +28,7 @@ public abstract class AND<X> extends AbstractPred<X> {
                 $.p(cond)
         );
 
-        for (var x : cond)
+        for (PREDICATE<X> x : cond)
             if (x instanceof AND)
                 throw new UnsupportedOperationException("should have been flattened");
 
@@ -47,7 +47,12 @@ public abstract class AND<X> extends AbstractPred<X> {
 
         @Override
         public final boolean test(X m) {
-            return Arrays.stream(cond).allMatch(x -> x.test(m));
+            for (PREDICATE<X> x : cond) {
+                if (!x.test(m)) {
+                    return false;
+                }
+            }
+            return true;
         }
 
 
@@ -139,7 +144,12 @@ public abstract class AND<X> extends AbstractPred<X> {
 
         @Override
         public final boolean test(X x) {
-            return Stream.of(a, b, c).allMatch(xpredicate -> xpredicate.test(x));
+            for (PREDICATE<X> xpredicate : Arrays.asList(a, b, c)) {
+                if (!xpredicate.test(x)) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public PREDICATE<X> first() {
@@ -153,7 +163,7 @@ public abstract class AND<X> extends AbstractPred<X> {
     }
 
     public static @Nullable <D> PREDICATE<D> the(List<PREDICATE<D>> cond) {
-        var s = cond.size();
+        int s = cond.size();
         switch (s) {
             case 0: return null;
             case 1: return cond.get(0);
@@ -162,12 +172,18 @@ public abstract class AND<X> extends AbstractPred<X> {
     }
 
     public static @Nullable <D> PREDICATE<D> the(Term[] cond) {
-        var s = cond.length;
+        int s = cond.length;
         switch (s) {
             case 0: return null;
             case 1: return (PREDICATE<D>) cond[0];
             default:
-                var needsFlat = Arrays.stream(cond).anyMatch(c -> c instanceof AND);
+                boolean needsFlat = false;
+                for (Term c : cond) {
+                    if (c instanceof AND) {
+                        needsFlat = true;
+                        break;
+                    }
+                }
                 if (needsFlat || !(cond instanceof PREDICATE[])) {
                     cond = stream(cond).flatMap(
                             x -> x instanceof AND ?
@@ -216,8 +232,14 @@ public abstract class AND<X> extends AbstractPred<X> {
         return b;
     }
     public static @Nullable <X> PREDICATE<X>  first(AND<X>  b, Predicate<PREDICATE<X> > test) {
-        var s = b.subs();
-        return IntStream.range(0, s).mapToObj(i -> (PREDICATE<X>) b.sub(i)).filter(test).findFirst().orElse(null);
+        int s = b.subs();
+        for (int i = 0; i < s; i++) {
+            PREDICATE<X> sub = (PREDICATE<X>) b.sub(i);
+            if (test.test(sub)) {
+                return sub;
+            }
+        }
+        return null;
     }
 
     /** recursive */

@@ -346,7 +346,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 return o.the((int) timeDelta, subj, pred);
             } else {
 
-                var q = (QuantityTerm) timeDelta;
+                QuantityTerm q = (QuantityTerm) timeDelta;
                 return $.func(termDynamic, o.strAtom, $.p(subj, pred), q);
             }
         }
@@ -471,8 +471,8 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
         @Override
         public <V> boolean match(MatcherContext<V> context) {
-            var count = 0;
-            var max = context.getInputBuffer().length() - context.getCurrentIndex();
+            int count = 0;
+            int max = context.getInputBuffer().length() - context.getCurrentIndex();
 
             while (count < max && Atom.isValidAtomChar(context.getCurrentChar())) {
                 context.advanceIndex(1);
@@ -707,7 +707,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 }
 
             default: {
-                var o = Op.stringToOperator.get(op);
+                Op o = Op.stringToOperator.get(op);
 //                if (o == null)
 //                    throw new UnsupportedOperationException();
                 result = o.the(subs);
@@ -762,7 +762,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         if (o instanceof Term) return (Term) o;
         if (o == null) return null;
         if (o instanceof String) {
-            var s = (String) o;
+            String s = (String) o;
 
             return Atomic.the(s);
 
@@ -778,9 +778,9 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     final @Nullable Term popTerm(Op op /*default */) {
 
 
-        var opp = new Op[1];
+        Op[] opp = new Op[1];
         opp[0] = op;
-        var vectorterms = popTerms(opp);
+        FasterList<Term> vectorterms = popTerms(opp);
         if (vectorterms == null)
             return IdempotentBool.Null;
 
@@ -800,13 +800,13 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
 
         while (!stack.isEmpty()) {
-            var p = pop();
+            Object p = pop();
 
             if (p instanceof Object[]) {
 
-                var pp = (Object[]) p;
+                Object[] pp = (Object[]) p;
                 if (pp.length > 1) {
-                    for (var i = pp.length - 1; i >= 1; i--) {
+                    for (int i = pp.length - 1; i >= 1; i--) {
                         stack.push(pp[i]);
                     }
                 }

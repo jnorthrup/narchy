@@ -26,7 +26,7 @@ public final class ClauseStore {
 
     public static @Nullable ClauseStore match(Term goal, Deque<ClauseInfo> familyClauses, @Nullable List<Var> vars) {
         if (!familyClauses.isEmpty()) {
-            var clauseStore = new ClauseStore(goal, vars);
+            ClauseStore clauseStore = new ClauseStore(goal, vars);
             if (clauseStore.matchFirst(familyClauses))
                 return clauseStore;
         }
@@ -39,11 +39,11 @@ public final class ClauseStore {
      * Restituisce la clausola da caricare
      */
     public ClauseInfo fetchNext(boolean pop, boolean save) {
-        var clauses = this.clauses;
+        Deque<ClauseInfo> clauses = this.clauses;
         if (clauses == null)
             return null;
 
-        var v = vars.size();
+        int v = vars.size();
         if (save && v == 0) save = false;
 
         ClauseInfo clause = null;
@@ -56,9 +56,9 @@ public final class ClauseStore {
             } else
                 clause = clauses.peekFirst();
 
-            var saveUnifications = deunify(vars, save ? new FasterList<>(v) : null);
+            List<Term> saveUnifications = deunify(vars, save ? new FasterList<>(v) : null);
 
-            var u = goal.unifiable(clause.head);
+            boolean u = goal.unifiable(clause.head);
 
             if (saveUnifications != null)
                 reunify(vars, saveUnifications, v);
@@ -97,7 +97,7 @@ public final class ClauseStore {
     protected boolean unifiesMore() {
 
         //boolean found = unifiable(goal);
-        var found = fetchNext(false, true) != null;
+        boolean found = fetchNext(false, true) != null;
 
 
         return found;
@@ -107,7 +107,7 @@ public final class ClauseStore {
 
         deunify(vars, null);
 
-        var found = unifiableFirst(goal, d);
+        boolean found = unifiableFirst(goal, d);
 
         return found;
     }
@@ -121,7 +121,7 @@ public final class ClauseStore {
     private static List<Term> deunify(List<Var> varsToDeunify, @Nullable List<Term> saveUnifications) {
 
 
-        for (var v : varsToDeunify) {
+        for (Var v : varsToDeunify) {
             if (saveUnifications != null)
                 saveUnifications.add(v.link);
             v.link = null;
@@ -144,8 +144,8 @@ public final class ClauseStore {
             }
         } else {
 
-            var it1 = varsToReunify.listIterator(size);
-            var it2 = saveUnifications.listIterator(size);
+            ListIterator<Var> it1 = varsToReunify.listIterator(size);
+            ListIterator<Term> it2 = saveUnifications.listIterator(size);
             while (it1.hasPrevious()) {
                 it1.previous().setLink(it2.previous());
             }
@@ -175,7 +175,7 @@ public final class ClauseStore {
 
     private boolean unifiableFirst(Term goal, Deque<ClauseInfo> matching) {
         Deque<ClauseInfo> clauses = null;
-        for (var ci : matching) {
+        for (ClauseInfo ci : matching) {
             if (clauses == null) {
                 deunify(vars, null);
                 if (goal.unifiable(ci.head)) {

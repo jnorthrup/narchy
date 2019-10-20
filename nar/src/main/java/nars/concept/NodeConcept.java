@@ -74,7 +74,7 @@ public class NodeConcept implements Concept {
 
         nar.emotion.conceptDelete.increment();
 
-        var c = meta.clearPut(DELETED, DELETED);
+        Object[] c = meta.clearPut(DELETED, DELETED);
         //            if (linker instanceof TemplateTermLinker) ((FasterList)linker).clear(); //HACK TODO maybe add Linker.clear()
         return c == null || (c.length != 2 || c[0] != DELETED);
     }

@@ -109,6 +109,11 @@ public abstract class TypeHandler {
 
     public boolean clipboardValid(DataFlavor[] dataTypes) {
 
-        return Arrays.stream(dataTypes).anyMatch(dataType -> mimeTypeValid(dataType.getPrimaryType()));
+        for (DataFlavor dataType : dataTypes) {
+            if (mimeTypeValid(dataType.getPrimaryType())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -17,30 +17,30 @@ import java.util.function.Supplier;
  */
 public class LambdaEdit {
     static SerializedLambda getSerializedLambda(Serializable lambda) throws Exception {
-        var method = lambda.getClass().getDeclaredMethod("writeReplace");
+        Method method = lambda.getClass().getDeclaredMethod("writeReplace");
         method.setAccessible(true);
         return (SerializedLambda) method.invoke(lambda);
     }
 
     static byte[] classByteCode(Class<?> c) {
 
-        var n = c.getName();
+        String n = c.getName();
         return classByteCode(n);
     }
 
     static byte[] classByteCode(String n) {
         try {
-            var l = new File(LambdaEdit.class.getResource(".").toURI()).listFiles();
+            File[] l = new File(LambdaEdit.class.getResource(".").toURI()).listFiles();
             System.out.println(Arrays.toString(l));
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        var name = "./jcog/util/" + n.replace('.', '/') + ".class";
-        try (var input = LambdaEdit.class.getResourceAsStream(name)) {
+        String name = "./jcog/util/" + n.replace('.', '/') + ".class";
+        try (InputStream input = LambdaEdit.class.getResourceAsStream(name)) {
             if (input == null)
                 return null;
 
-            var result = new byte[input.available()];
+            byte[] result = new byte[input.available()];
             input.read(result);
             return result;
         } catch (IOException e) {
@@ -48,7 +48,7 @@ public class LambdaEdit {
         }
     }
     protected final byte[] loadOriginalBytecode(String originalResources, String name) throws IOException {
-        try (var is = getResourceStream(originalResources + name + ".class")) {
+        try (InputStream is = getResourceStream(originalResources + name + ".class")) {
             return is.readAllBytes();
         }
     }
@@ -60,11 +60,11 @@ public class LambdaEdit {
 
     {
         try {
-            var sl = getSerializedLambda((Serializable) MY_LAMBDA);
-            var bc1 = classByteCode(sl.getImplMethodName());
-            var bc2 = classByteCode(sl.getImplClass());
+            SerializedLambda sl = getSerializedLambda((Serializable) MY_LAMBDA);
+            byte[] bc1 = classByteCode(sl.getImplMethodName());
+            byte[] bc2 = classByteCode(sl.getImplClass());
 
-            var bytecode = classByteCode(MY_LAMBDA.getClass());
+            byte[] bytecode = classByteCode(MY_LAMBDA.getClass());
             
             
         } catch (Exception e) {
@@ -104,12 +104,12 @@ public class LambdaEdit {
 
     public static Method getLambdaMethod(SerializedLambda lambda) {
         try {
-            var implClassName = lambda.getImplClass().replace('/', '.');
-            var implClass = Class.forName(implClassName);
+            String implClassName = lambda.getImplClass().replace('/', '.');
+            Class<?> implClass = Class.forName(implClassName);
 
-            var lambdaName = lambda.getImplMethodName();
+            String lambdaName = lambda.getImplMethodName();
 
-            for (var m : implClass.getDeclaredMethods()) {
+            for (Method m : implClass.getDeclaredMethods()) {
                 if (m.getName().equals(lambdaName)) {
                     return m;
                 }

@@ -100,19 +100,19 @@ public class PulleyJoint extends Joint {
     }
 
     public float getCurrentLengthA() {
-        var p = pool.popVec2();
+        v2 p = pool.popVec2();
         A.getWorldPointToOut(m_localAnchorA, p);
         p.subbed(m_groundAnchorA);
-        var length = p.length();
+        float length = p.length();
         pool.pushVec2(1);
         return length;
     }
 
     public float getCurrentLengthB() {
-        var p = pool.popVec2();
+        v2 p = pool.popVec2();
         B.getWorldPointToOut(m_localAnchorB, p);
         p.subbed(m_groundAnchorB);
-        var length = p.length();
+        float length = p.length();
         pool.pushVec2(1);
         return length;
     }
@@ -156,21 +156,21 @@ public class PulleyJoint extends Joint {
     }
 
     public float getLength1() {
-        var p = pool.popVec2();
+        v2 p = pool.popVec2();
         A.getWorldPointToOut(m_localAnchorA, p);
         p.subbed(m_groundAnchorA);
 
-        var len = p.length();
+        float len = p.length();
         pool.pushVec2(1);
         return len;
     }
 
     public float getLength2() {
-        var p = pool.popVec2();
+        v2 p = pool.popVec2();
         B.getWorldPointToOut(m_localAnchorB, p);
         p.subbed(m_groundAnchorB);
 
-        var len = p.length();
+        float len = p.length();
         pool.pushVec2(1);
         return len;
     }
@@ -191,18 +191,18 @@ public class PulleyJoint extends Joint {
         m_invIB = B.m_invI;
 
         v2 cA = data.positions[m_indexA];
-        var aA = data.positions[m_indexA].a;
+        float aA = data.positions[m_indexA].a;
         v2 vA = data.velocities[m_indexA];
-        var wA = data.velocities[m_indexA].w;
+        float wA = data.velocities[m_indexA].w;
 
         v2 cB = data.positions[m_indexB];
-        var aB = data.positions[m_indexB].a;
+        float aB = data.positions[m_indexB].a;
         v2 vB = data.velocities[m_indexB];
-        var wB = data.velocities[m_indexB].w;
+        float wB = data.velocities[m_indexB].w;
 
-        var qA = pool.popRot();
-        var qB = pool.popRot();
-        var temp = pool.popVec2();
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
+        v2 temp = pool.popVec2();
 
         qA.set(aA);
         qB.set(aB);
@@ -214,8 +214,8 @@ public class PulleyJoint extends Joint {
         m_uA.set(cA).added(m_rA).subbed(m_groundAnchorA);
         m_uB.set(cB).added(m_rB).subbed(m_groundAnchorB);
 
-        var lengthA = m_uA.length();
-        var lengthB = m_uB.length();
+        float lengthA = m_uA.length();
+        float lengthB = m_uB.length();
 
         if (lengthA > 10f * Settings.linearSlop) {
             m_uA.scaled(1.0f / lengthA);
@@ -230,11 +230,11 @@ public class PulleyJoint extends Joint {
         }
 
 
-        var ruA = v2.cross(m_rA, m_uA);
-        var ruB = v2.cross(m_rB, m_uB);
+        float ruA = v2.cross(m_rA, m_uA);
+        float ruB = v2.cross(m_rB, m_uB);
 
-        var mA = m_invMassA + m_invIA * ruA * ruA;
-        var mB = m_invMassB + m_invIB * ruB * ruB;
+        float mA = m_invMassA + m_invIA * ruA * ruA;
+        float mB = m_invMassB + m_invIB * ruB * ruB;
 
         m_mass = mA + m_ratio * m_ratio * mB;
 
@@ -248,8 +248,8 @@ public class PulleyJoint extends Joint {
             m_impulse *= data.step.dtRatio;
 
 
-            var PA = pool.popVec2();
-            var PB = pool.popVec2();
+            v2 PA = pool.popVec2();
+            v2 PB = pool.popVec2();
 
             PA.set(m_uA).scaled(-m_impulse);
             PB.set(m_uB).scaled(-m_ratio * m_impulse);
@@ -277,22 +277,22 @@ public class PulleyJoint extends Joint {
     @Override
     public void solveVelocityConstraints(SolverData data) {
         v2 vA = data.velocities[m_indexA];
-        var wA = data.velocities[m_indexA].w;
+        float wA = data.velocities[m_indexA].w;
         v2 vB = data.velocities[m_indexB];
-        var wB = data.velocities[m_indexB].w;
+        float wB = data.velocities[m_indexB].w;
 
-        var vpA = pool.popVec2();
-        var vpB = pool.popVec2();
-        var PA = pool.popVec2();
-        var PB = pool.popVec2();
+        v2 vpA = pool.popVec2();
+        v2 vpB = pool.popVec2();
+        v2 PA = pool.popVec2();
+        v2 PB = pool.popVec2();
 
         v2.crossToOutUnsafe(wA, m_rA, vpA);
         vpA.added(vA);
         v2.crossToOutUnsafe(wB, m_rB, vpB);
         vpB.added(vB);
 
-        var Cdot = -v2.dot(m_uA, vpA) - m_ratio * v2.dot(m_uB, vpB);
-        var impulse = -m_mass * Cdot;
+        float Cdot = -v2.dot(m_uA, vpA) - m_ratio * v2.dot(m_uB, vpB);
+        float impulse = -m_mass * Cdot;
         m_impulse += impulse;
 
         PA.set(m_uA).scaled(-impulse);
@@ -314,20 +314,20 @@ public class PulleyJoint extends Joint {
 
     @Override
     public boolean solvePositionConstraints(SolverData data) {
-        var qA = pool.popRot();
-        var qB = pool.popRot();
-        var rA = pool.popVec2();
-        var rB = pool.popVec2();
-        var uA = pool.popVec2();
-        var uB = pool.popVec2();
-        var temp = pool.popVec2();
-        var PA = pool.popVec2();
-        var PB = pool.popVec2();
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
+        v2 rA = pool.popVec2();
+        v2 rB = pool.popVec2();
+        v2 uA = pool.popVec2();
+        v2 uB = pool.popVec2();
+        v2 temp = pool.popVec2();
+        v2 PA = pool.popVec2();
+        v2 PB = pool.popVec2();
 
         v2 cA = data.positions[m_indexA];
-        var aA = data.positions[m_indexA].a;
+        float aA = data.positions[m_indexA].a;
         v2 cB = data.positions[m_indexB];
-        var aB = data.positions[m_indexB].a;
+        float aB = data.positions[m_indexB].a;
 
         qA.set(aA);
         qB.set(aB);
@@ -338,8 +338,8 @@ public class PulleyJoint extends Joint {
         uA.set(cA).added(rA).subbed(m_groundAnchorA);
         uB.set(cB).added(rB).subbed(m_groundAnchorB);
 
-        var lengthA = uA.length();
-        var lengthB = uB.length();
+        float lengthA = uA.length();
+        float lengthB = uB.length();
 
         if (lengthA > 10.0f * Settings.linearSlop) {
             uA.scaled(1.0f / lengthA);
@@ -354,21 +354,21 @@ public class PulleyJoint extends Joint {
         }
 
 
-        var ruA = v2.cross(rA, uA);
-        var ruB = v2.cross(rB, uB);
+        float ruA = v2.cross(rA, uA);
+        float ruB = v2.cross(rB, uB);
 
-        var mA = m_invMassA + m_invIA * ruA * ruA;
-        var mB = m_invMassB + m_invIB * ruB * ruB;
+        float mA = m_invMassA + m_invIA * ruA * ruA;
+        float mB = m_invMassB + m_invIB * ruB * ruB;
 
-        var mass = mA + m_ratio * m_ratio * mB;
+        float mass = mA + m_ratio * m_ratio * mB;
 
         if (mass > 0.0f) {
             mass = 1.0f / mass;
         }
 
-        var C = m_constant - lengthA - m_ratio * lengthB;
+        float C = m_constant - lengthA - m_ratio * lengthB;
 
-        var impulse = -mass * C;
+        float impulse = -mass * C;
 
         PA.set(uA).scaled(-impulse);
         PB.set(uB).scaled(-m_ratio * impulse);
@@ -388,7 +388,7 @@ public class PulleyJoint extends Joint {
         pool.pushRot(2);
         pool.pushVec2(7);
 
-        var linearError = Math.abs(C);
+        float linearError = Math.abs(C);
         return linearError < Settings.linearSlop;
     }
 }

@@ -46,7 +46,7 @@ public class SubOfConstraint<U extends Unify> extends RelationConstraint<U> {
 
     @Override
     public float cost() {
-        var baseCost = containment.cost();
+        float baseCost = containment.cost();
         switch (polarityCompare) {
             case 1: return baseCost;
             case 0: return 1.9f * baseCost;
@@ -58,17 +58,17 @@ public class SubOfConstraint<U extends Unify> extends RelationConstraint<U> {
 
     public final boolean invalid(Term x, Term y, Unify context) {
 
-        var _container = forward ? x : y;
+        Term _container = forward ? x : y;
         if (!(_container instanceof Compound))
             return true;
-        var container = (Compound)_container;
+        Compound container = (Compound)_container;
 
 
-        var content = forward ? y : x;
+        Term content = forward ? y : x;
 //        if (container.volume() <= content.volume())
 //            return true; //doesnt seem to happen, probably eliminated by bigger-than constraint
 
-        var c = this.containment;
+        SubtermCondition c = this.containment;
         switch (polarityCompare) {
             case +1: return !c.test(container, content);
             case -1: return !c.test(container, content.neg());

@@ -55,7 +55,7 @@ public class PrologOperators extends ConcurrentHashMap<String, PrologOp> /**/ {
      * it replaces it with the new one
      */
     public void opNew(String name, String type, int prio) {
-        var op = new PrologOp(name, type, prio);
+        PrologOp op = new PrologOp(name, type, prio);
         if (prio >= OP_LOW && prio <= OP_HIGH)
             addOperator(op);
     }
@@ -64,12 +64,12 @@ public class PrologOperators extends ConcurrentHashMap<String, PrologOp> /**/ {
      * Returns the priority of an operator (0 if the operator is not defined).
      */
     public int opPrio(String name, String type) {
-        var o = getOperator(name, type);
+        PrologOp o = getOperator(name, type);
         return (o == null) ? 0 : o.prio;
     }
 
     public int opPrio(String nametype) {
-        var o = get(nametype);
+        PrologOp o = get(nametype);
         return (o == null) ? 0 : o.prio;
     }
 

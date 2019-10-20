@@ -18,14 +18,14 @@ abstract class VarIntroduction {
             return null;
 
 
-        var uu = select(x.subtermsDirect());
+        Term[] uu = select(x.subtermsDirect());
         if (uu.length == 0)
             return null;
 
-        var u = uu.length > 1 ? choose(uu, rng) : uu[0];
-        var v = introduce(x, u);
+        Term u = uu.length > 1 ? choose(uu, rng) : uu[0];
+        Term v = introduce(x, u);
         if (v != null && !(v instanceof IdempotentBool)) {
-            var y = x.replace(u, v);
+            Term y = x.replace(u, v);
             if (y != null && y.op().conceptualizable && !y.equals(x)) {
                 if (retransform!=null)
                     retransform.put(u, v);

@@ -93,8 +93,8 @@ public class ArrayTensor extends AbstractMutableTensor
 
     @Override
     public void forEach(IntFloatProcedure each, int start, int end) {
-        var d = data;
-        for (var i = start; i < end; i++) {
+        float[] d = data;
+        for (int i = start; i < end; i++) {
             each.value(i, d[i]);
         }
     }
@@ -102,7 +102,7 @@ public class ArrayTensor extends AbstractMutableTensor
     public void set(float[] raw) {
         if (Arrays.equals(data, raw))
             return;
-        var d = data.length;
+        int d = data.length;
         assert (d == raw.length);
         arraycopy(raw, 0, data, 0, d);
     }
@@ -111,9 +111,9 @@ public class ArrayTensor extends AbstractMutableTensor
      * downsample 64 to 32
      */
     public void set(double[] d) {
-        var data = this.data;
+        float[] data = this.data;
         assert (data.length == d.length);
-        for (var i = 0; i < d.length; i++)
+        for (int i = 0; i < d.length; i++)
             data[i] = (float) d[i];
     }
 

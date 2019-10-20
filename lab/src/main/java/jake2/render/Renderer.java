@@ -27,6 +27,8 @@ package jake2.render;
 
 import jake2.client.refexport_t;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -108,8 +110,8 @@ public class Renderer {
     public static refexport_t getDriver(String driverName, boolean fast) {
         
         Ref driver = null;
-        var count = drivers.size();
-        for (var driver1 : drivers) {
+        int count = drivers.size();
+        for (Ref driver1 : drivers) {
             driver = driver1;
             if (driver.getName().equals(driverName)) {
                 return driver.GetRefAPI((fast) ? fastRenderer : basicRenderer);
@@ -132,8 +134,13 @@ public class Renderer {
             return new String[0];
         }
 
-        var count = drivers.size();
-        var names = drivers.stream().map(Ref::getName).toArray(String[]::new);
+        int count = drivers.size();
+        List<String> list = new ArrayList<>();
+        for (Ref driver : drivers) {
+            String name = driver.getName();
+            list.add(name);
+        }
+        String[] names = list.toArray(new String[0]);
         return names;
     }
 

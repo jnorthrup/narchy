@@ -47,7 +47,7 @@ public class V extends Applet implements Runnable {
 	private static final int[] toInt = new int[128];
 
 	static {
-		for (var i = 0; i < ALPHABET.length; i++) {
+		for (int i = 0; i < ALPHABET.length; i++) {
 			toInt[ALPHABET[i]] = i;
 		}
 	}
@@ -59,23 +59,23 @@ public class V extends Applet implements Runnable {
 	 * @return the byte array (not null)
 	 */
 	public static byte[] decode(String s) {
-		var delta = s.endsWith("==") ? 2 : s.endsWith("=") ? 1 : 0;
-		var buffer = new byte[s.length() * 3 / 4 - delta];
-		var mask = 0xFF;
-		var index = 0;
-		for (var i = 0; i < s.length(); i += 4) {
-			var c0 = toInt[s.charAt(i)];
-			var c1 = toInt[s.charAt(i + 1)];
+        int delta = s.endsWith("==") ? 2 : s.endsWith("=") ? 1 : 0;
+        byte[] buffer = new byte[s.length() * 3 / 4 - delta];
+        int mask = 0xFF;
+        int index = 0;
+		for (int i = 0; i < s.length(); i += 4) {
+            int c0 = toInt[s.charAt(i)];
+            int c1 = toInt[s.charAt(i + 1)];
 			buffer[index++] = (byte) (((c0 << 2) | (c1 >> 4)) & mask);
 			if (index >= buffer.length) {
 				return buffer;
 			}
-			var c2 = toInt[s.charAt(i + 2)];
+            int c2 = toInt[s.charAt(i + 2)];
 			buffer[index++] = (byte) (((c1 << 4) | (c2 >> 2)) & mask);
 			if (index >= buffer.length) {
 				return buffer;
 			}
-			var c3 = toInt[s.charAt(i + 3)];
+            int c3 = toInt[s.charAt(i + 3)];
 			buffer[index++] = (byte) (((c2 << 6) | c3) & mask);
 		}
 		return buffer;
@@ -84,8 +84,8 @@ public class V extends Applet implements Runnable {
 	@Override
 	public void run() {
 
-		var iBackground = new BufferedImage(320, 205, BufferedImage.TYPE_INT_ARGB_PRE);
-		var g = iBackground.createGraphics();
+        BufferedImage iBackground = new BufferedImage(320, 205, BufferedImage.TYPE_INT_ARGB_PRE);
+        Graphics2D g = iBackground.createGraphics();
 		try {
 			
 
@@ -105,15 +105,15 @@ public class V extends Applet implements Runnable {
 		}
 
 
-		var screen = new BufferedImage(320, 480, BufferedImage.TYPE_INT_RGB);
+        BufferedImage screen = new BufferedImage(320, 480, BufferedImage.TYPE_INT_RGB);
 		g = screen.createGraphics();
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		var appletGraphics = (Graphics2D) getGraphics();
+        Graphics2D appletGraphics = (Graphics2D) getGraphics();
 
 
-		var lastTime = System.nanoTime();
+        long lastTime = System.nanoTime();
 
-		var level = new int[4];
+        int[] level = new int[4];
 		level[0] = level[1] = 400;
 
 
@@ -121,26 +121,26 @@ public class V extends Applet implements Runnable {
         float curVecY = 0;
         float playerX = 60;
         float playerY = 240;
-		var brightColor = new Color(230, 230, 230);
-		var darkColor = new Color(53, 53, 61);
-		var windowColor = new Color(176, 176, 191);
-		var downColor = new Color(100, 106, 125);
-        final var CHANGE_DIF = 1.2f;
-		var bWin = false;
-		var bStart = false;
-		var bCurDown = false;
-		var maxScore = 0;
-		var score = 0;
-		var j = 0;
-		var i = 0;
-		var frameTime = 0;
-		var curFrame = 0;
-		var x = 0;
-		var s = "";
-		var think = 10000000L;
+        Color brightColor = new Color(230, 230, 230);
+        Color darkColor = new Color(53, 53, 61);
+        Color windowColor = new Color(176, 176, 191);
+        Color downColor = new Color(100, 106, 125);
+        final float CHANGE_DIF = 1.2f;
+        boolean bWin = false;
+        boolean bStart = false;
+        boolean bCurDown = false;
+        int maxScore = 0;
+        int score = 0;
+        int j = 0;
+        int i = 0;
+        int frameTime = 0;
+        int curFrame = 0;
+        int x = 0;
+        String s = "";
+        long think = 10000000L;
         while (true) {
-			var now = System.nanoTime();
-			var delta = now - lastTime;
+            long now = System.nanoTime();
+            long delta = now - lastTime;
 			think += delta;
 
 			

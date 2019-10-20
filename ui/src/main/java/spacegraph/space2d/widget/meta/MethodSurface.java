@@ -22,10 +22,10 @@ public class MethodSurface extends Gridding {
         add(new VectorLabel(m.getName()));
 
         parameterSuppliers = new FasterList<>(m.getParameterCount());
-        var p = m.getParameters();
+        Parameter[] p = m.getParameters();
 
         for (int i = 0, pLength = p.length; i < pLength; i++) {
-            var c = p[i];
+            Parameter c = p[i];
             edit(c, defaults);
             if (parameterSuppliers.size()!=i+1) {
                 System.err.println("warning: edit for " + c+ " was not constructed"); //TODO logger
@@ -35,16 +35,16 @@ public class MethodSurface extends Gridding {
     }
 
     protected void edit(Parameter p, Map<String, Object> defaults) {
-        var pp = new Gridding();
-        var pName = p.getName();
+        Gridding pp = new Gridding();
+        String pName = p.getName();
         pp.add(new VectorLabel(pName));
-        var t = p.getType();
+        Class<?> t = p.getType();
         if (t == float.class) {
             //..
         } else if (t == String.class) {
-            var te = new TextEdit(8, 1);
+            TextEdit te = new TextEdit(8, 1);
             pp.add(te);
-            var d = defaults.get(pName);
+            Object d = defaults.get(pName);
             if (d!=null) {
                 te.text(d.toString());
             }

@@ -46,7 +46,7 @@ public class ap extends GamePanel {
     
     
     
-    final var S = "\uff5b\u8dae\uff29\u6c32\u8f32\u7134\u76fe\uff14\u8d2a"
+    final String S = "\uff5b\u8dae\uff29\u6c32\u8f32\u7134\u76fe\uff14\u8d2a"
         + "\uff1c\u7688\uff16\u8a24\uff32\u91b4\u71f6\uff1e\u7428\u8b28\uff13"
         + "aaaaaaaaaaaabbaaaaaaaaaabbccaaaaaaaaabccccaaaaaaaabcccccaaaaaaabcccc"
         + "ccaaaaaabcccccccaaaaaabcccccccaaaaaabcccccccaaaaabdbccccccaaaabdddbb"
@@ -64,29 +64,29 @@ public class ap extends GamePanel {
         + "gggbgaaaggbgaagggggaagggggaggggaaaggaaaaaaaaaagaaaaaggaaaagggaaaaggg"
         + "aaaagbgaaaagbgaaaagbgaaaagggaaaaggggaagggaggggggaaggggaa";
 
-      final var SPRITE_PLAYER_0 = 0;
-    final var SPRITE_PLAYER_1 = 1;
-    final var SPRITE_PLAYER_2 = 2;
-    final var SPRITE_PLAYER_3 = 3;
-    final var SPRITE_PLAYER_4 = 4;
-    final var SPRITE_PLAYER_5 = 5;
-    final var SPRITE_PLAYER_6 = 6;
-      final var SPRITE_GREEN_SHELL = 9;
-      final var SPRITE_FAKE_ITEM_BOX = 13;
+      final int SPRITE_PLAYER_0 = 0;
+    final int SPRITE_PLAYER_1 = 1;
+    final int SPRITE_PLAYER_2 = 2;
+    final int SPRITE_PLAYER_3 = 3;
+    final int SPRITE_PLAYER_4 = 4;
+    final int SPRITE_PLAYER_5 = 5;
+    final int SPRITE_PLAYER_6 = 6;
+      final int SPRITE_GREEN_SHELL = 9;
+      final int SPRITE_FAKE_ITEM_BOX = 13;
 
-    final var MAP_O = 0;
+    final int MAP_O = 0;
 
-      final var MAP_X = 0;
-      final var MAP_Z = 2;
+      final int MAP_X = 0;
+      final int MAP_Z = 2;
 
-    final var MAP_LENGTH = 707;
+    final int MAP_LENGTH = 707;
 
-    var imageBuffer = new BufferedImage(
+      BufferedImage imageBuffer = new BufferedImage(
         800, 600, BufferedImage.TYPE_INT_RGB);
-    var g = imageBuffer.createGraphics();
-    var bigFont = g.getFont().deriveFont(Font.BOLD | Font.ITALIC, 90f);
-    var defaultTransform = new AffineTransform();
-    var transform = new AffineTransform();
+      Graphics2D g = imageBuffer.createGraphics();
+      Font bigFont = g.getFont().deriveFont(Font.BOLD | Font.ITALIC, 90f);
+      AffineTransform defaultTransform = new AffineTransform();
+      AffineTransform transform = new AffineTransform();
 
       int i;
     int j;
@@ -95,7 +95,7 @@ public class ap extends GamePanel {
     int r;
 
 
-    var map = new float[MAP_LENGTH][4][3];
+      float[][][] map = new float[MAP_LENGTH][4][3];
     float vy = -1;
     float py = 1;    
     float px = 0;
@@ -109,7 +109,7 @@ public class ap extends GamePanel {
           px += vx;
           py += vy;
 
-          var m = map[k++];
+            float[][] m = map[k++];
           m[MAP_O][MAP_X] = px;
           m[MAP_O][MAP_Z] = py;          
         }
@@ -117,35 +117,35 @@ public class ap extends GamePanel {
         
         r = (c >> 8) - 128;
 
-        var centerX = -r * vy;
-        var centerY = r * vx;
+          float centerX = -r * vy;
+          float centerY = r * vx;
 
-        var X = -centerX;
-        var Y = -centerY;
+          float X = -centerX;
+          float Y = -centerY;
 
         centerX += px;
         centerY += py;
 
-        var steps = (int)(r * q * 0.02464f);
+          int steps = (int)(r * q * 0.02464f);
         if (steps < 0) {
           steps = -steps;
         }
         for(j = 1; j < steps; j++) {
-          var cos = (float)Math.cos(j / (float)r);
-          var sin = (float)Math.sin(j / (float)r);
-          var X2 = X * cos - Y * sin;
+            float cos = (float)Math.cos(j / (float)r);
+            float sin = (float)Math.sin(j / (float)r);
+            float X2 = X * cos - Y * sin;
 
             vx = centerX + X2 - px;
-          var Y2 = X * sin + Y * cos;
+            float Y2 = X * sin + Y * cos;
             vy = centerY + Y2 - py;
-          var mag = (float)Math.hypot(vx, vy);
+            float mag = (float)Math.hypot(vx, vy);
           vx /= mag;
           vy /= mag;
 
           px = centerX + X2;
           py = centerY + Y2;
 
-          var m = map[k++];
+            float[][] m = map[k++];
           m[MAP_O][MAP_X] = px;
           m[MAP_O][MAP_Z] = py;           
         }
@@ -153,23 +153,23 @@ public class ap extends GamePanel {
     }
 
 
-      final var MAP_Y = 1;
+      final int MAP_Y = 1;
       for(i = 0; i < MAP_LENGTH; i++) {
       map[i][MAP_O][MAP_Y] = 5 
           * (((float)Math.cos(0.088871f * i - 0.6f)) - 1);
     }
 
 
-      final var MAP_W = 3;
-      final var MAP_V = 2;
-      final var MAP_U = 1;
+      final int MAP_W = 3;
+      final int MAP_V = 2;
+      final int MAP_U = 1;
       for(i = 0; i < MAP_LENGTH; i++) {
-        var m0 = map[i];
-        var m1 = map[(i + 1) % MAP_LENGTH];
-        var x = m0[MAP_O][MAP_X] - m1[MAP_O][MAP_X];
-        var y = m0[MAP_O][MAP_Y] - m1[MAP_O][MAP_Y];
-        var z = m0[MAP_O][MAP_Z] - m1[MAP_O][MAP_Z];
-        var mag = (float)Math.sqrt(x * x + y * y + z * z);
+          float[][] m0 = map[i];
+          float[][] m1 = map[(i + 1) % MAP_LENGTH];
+          float x = m0[MAP_O][MAP_X] - m1[MAP_O][MAP_X];
+          float y = m0[MAP_O][MAP_Y] - m1[MAP_O][MAP_Y];
+          float z = m0[MAP_O][MAP_Z] - m1[MAP_O][MAP_Z];
+          float mag = (float)Math.sqrt(x * x + y * y + z * z);
       x /= mag;
       y /= mag;
       z /= mag;
@@ -185,7 +185,7 @@ public class ap extends GamePanel {
 
 
       int p;
-    var sprites = new BufferedImage[17];
+      BufferedImage[] sprites = new BufferedImage[17];
       for(i = 0; i < 17; i++) {
       if (i < 8) {
         sprites[i] = new BufferedImage(28, 30, BufferedImage.TYPE_INT_ARGB_PRE);
@@ -244,89 +244,89 @@ public class ap extends GamePanel {
     }
     
     long nextFrameStartTime = 0;
-    var startingLine = 0;
-    var gameReset = 1;
-    final var GAME_STATE_ENDING = 2;
-    var gameState = GAME_STATE_ENDING;
-    var lightning = 0;
-    var flash = true;
-    var releasedC = true;
-    var lap = 0;
-    var rank = 0;
+      int startingLine = 0;
+      int gameReset = 1;
+    final int GAME_STATE_ENDING = 2;
+      int gameState = GAME_STATE_ENDING;
+      int lightning = 0;
+      boolean flash = true;
+      boolean releasedC = true;
+      int lap = 0;
+      int rank = 0;
       Graphics2D g2 = null;
-    var smallFont = bigFont.deriveFont(45f);
-    var elements = new ArrayList<float[]>();
-    var ps = new float[2][3];
-    var polygonYs = new int[4];
-    var polygonXs = new int[4];
-    var onb3 = new float[4][3];
-    var onb2 = new float[4][3];
-    var onb = new float[4][3];
-    final var PLAYERS = 8;
+      Font smallFont = bigFont.deriveFont(45f);
+      ArrayList<float[]> elements = new ArrayList<float[]>();
+      float[][] ps = new float[2][3];
+      int[] polygonYs = new int[4];
+      int[] polygonXs = new int[4];
+      float[][] onb3 = new float[4][3];
+      float[][] onb2 = new float[4][3];
+      float[][] onb = new float[4][3];
+    final int PLAYERS = 8;
     ArrayList<float[]>[] shells = new ArrayList[PLAYERS];
-    var players = new float[PLAYERS][];
-    final var ROAD_COLORS = 8;
-    var roadColors = new Color[ROAD_COLORS];
-      final var GAME_RESET_DELAY = 1024;
-      final var ORBIT_RADIUS_D = 0.25f;
-      final var ORBIT_RADIUS_X = 0.2f;
-      final var ORBIT_VANG = 0.05f;
-      final var SHELL_VD = 0.2f;
-      final var FAST_VD = 0.15f;
-      final var MAX_VD = 0.1f;
-      final var MAX_ENEMY_VD = 0.09f;
-      final var AD = 0.001f;
-      final var VX = 0.02f;
-      final var ENEMY_EDGE_X = 0.95f;
-      final var HUMAN_EDGE_X = 1.1f;
-      final var SHELL_TIME_OUT = 2048;
-      final var HUMAN = 0;
-      final var SCALE = 512;
-      final var CAMERA_Z = 800;
-      final var CAMERA_Y = 200;
-    final var SCREEN_HEIGHT = 600;
-    final var SCREEN_CENTER_Y = SCREEN_HEIGHT / 2;
-    final var SCREEN_WIDTH = 800;
-    final var SCREEN_CENTER_X = SCREEN_WIDTH / 2;
-      final var GAME_STATE_PLAYING = 1;
-      final var GAME_STATE_ATTRACT_MODE = 0;
-      final var SPRITE_NONE = 17;
-      final var SPRITE_BANANA = 16;
-      final var SPRITE_STAR = 15;
-      final var SPRITE_THUNDERBOLT = 14;
-      final var SPRITE_ITEM_BOX = 12;
-      final var SPRITE_MUSHROOM = 11;
-      final var SPRITE_BLUE_SHELL = 10;
-      final var SPRITE_RED_SHELL = 8;
-      final var SPRITE_PLAYER_7 = 7;
-      final var ELEMENT_ITEM_TRIGGER = 23;
-      final var ELEMENT_FALLING = 22;
-      final var ELEMENT_PLAYER = 21;
-      final var ELEMENT_ORBITING = 20;
-      final var ELEMENT_BANANAING = 19;
-      final var ELEMENT_TINYING = 18;
-      final var ELEMENT_EXPLODING = 17;
-      final var ELEMENT_STARING = 16;
-      final var ELEMENT_MUSHROOMING = 15;
-      final var ELEMENT_ITEM_COUNT = 14;
-      final var ELEMENT_ITEM = 13;
-      final var ELEMENT_ITEM_RANDOMIZER = 12;
-      final var ELEMENT_TIMER = 11;
-      final var ELEMENT_VX = 10;
-      final var ELEMENT_VD = 9;
-      final var ELEMENT_PROJECTED_NY = 8;
-      final var ELEMENT_PROJECTED_NX = 7;
-      final var ELEMENT_PROJECTED_Y = 6;
-      final var ELEMENT_PROJECTED_X = 5;
-      final var ELEMENT_VISIBLE = 4;
-      final var ELEMENT_Z = 3;
-      final var ELEMENT_SPRITE = 2;
-      final var ELEMENT_D = 1;
-      final var ELEMENT_X = 0;
-      final var KEY_C = 99;
-      final var KEY_X = 120;
-      final var KEY_RIGHT = 1007;
-      final var KEY_LEFT = 1006;
+      float[][] players = new float[PLAYERS][];
+    final int ROAD_COLORS = 8;
+      Color[] roadColors = new Color[ROAD_COLORS];
+      final int GAME_RESET_DELAY = 1024;
+      final float ORBIT_RADIUS_D = 0.25f;
+      final float ORBIT_RADIUS_X = 0.2f;
+      final float ORBIT_VANG = 0.05f;
+      final float SHELL_VD = 0.2f;
+      final float FAST_VD = 0.15f;
+      final float MAX_VD = 0.1f;
+      final float MAX_ENEMY_VD = 0.09f;
+      final float AD = 0.001f;
+      final float VX = 0.02f;
+      final float ENEMY_EDGE_X = 0.95f;
+      final float HUMAN_EDGE_X = 1.1f;
+      final int SHELL_TIME_OUT = 2048;
+      final int HUMAN = 0;
+      final int SCALE = 512;
+      final int CAMERA_Z = 800;
+      final int CAMERA_Y = 200;
+    final int SCREEN_HEIGHT = 600;
+    final int SCREEN_CENTER_Y = SCREEN_HEIGHT / 2;
+    final int SCREEN_WIDTH = 800;
+    final int SCREEN_CENTER_X = SCREEN_WIDTH / 2;
+      final int GAME_STATE_PLAYING = 1;
+      final int GAME_STATE_ATTRACT_MODE = 0;
+      final int SPRITE_NONE = 17;
+      final int SPRITE_BANANA = 16;
+      final int SPRITE_STAR = 15;
+      final int SPRITE_THUNDERBOLT = 14;
+      final int SPRITE_ITEM_BOX = 12;
+      final int SPRITE_MUSHROOM = 11;
+      final int SPRITE_BLUE_SHELL = 10;
+      final int SPRITE_RED_SHELL = 8;
+      final int SPRITE_PLAYER_7 = 7;
+      final int ELEMENT_ITEM_TRIGGER = 23;
+      final int ELEMENT_FALLING = 22;
+      final int ELEMENT_PLAYER = 21;
+      final int ELEMENT_ORBITING = 20;
+      final int ELEMENT_BANANAING = 19;
+      final int ELEMENT_TINYING = 18;
+      final int ELEMENT_EXPLODING = 17;
+      final int ELEMENT_STARING = 16;
+      final int ELEMENT_MUSHROOMING = 15;
+      final int ELEMENT_ITEM_COUNT = 14;
+      final int ELEMENT_ITEM = 13;
+      final int ELEMENT_ITEM_RANDOMIZER = 12;
+      final int ELEMENT_TIMER = 11;
+      final int ELEMENT_VX = 10;
+      final int ELEMENT_VD = 9;
+      final int ELEMENT_PROJECTED_NY = 8;
+      final int ELEMENT_PROJECTED_NX = 7;
+      final int ELEMENT_PROJECTED_Y = 6;
+      final int ELEMENT_PROJECTED_X = 5;
+      final int ELEMENT_VISIBLE = 4;
+      final int ELEMENT_Z = 3;
+      final int ELEMENT_SPRITE = 2;
+      final int ELEMENT_D = 1;
+      final int ELEMENT_X = 0;
+      final int KEY_C = 99;
+      final int KEY_X = 120;
+      final int KEY_RIGHT = 1007;
+      final int KEY_LEFT = 1006;
       while(true) {
 
           float[] element;
@@ -438,7 +438,7 @@ public class ap extends GamePanel {
                       && players[i][ELEMENT_ITEM_RANDOMIZER] == 0 
                           ? SPRITE_MUSHROOM 
                               : 8 + (int)(9 * (float)Math.random());
-              var rareItem = players[i][ELEMENT_ITEM] == SPRITE_BLUE_SHELL
+                boolean rareItem = players[i][ELEMENT_ITEM] == SPRITE_BLUE_SHELL
                   || players[i][ELEMENT_ITEM] == SPRITE_THUNDERBOLT
                   || players[i][ELEMENT_ITEM] == SPRITE_STAR;
               if (players[i][ELEMENT_ITEM_RANDOMIZER] == 0
@@ -581,7 +581,7 @@ public class ap extends GamePanel {
           }          
         }
 
-            var maxVd = MAX_VD;
+              float maxVd = MAX_VD;
         if (players[HUMAN][ELEMENT_MUSHROOMING] > 0
             || players[HUMAN][ELEMENT_STARING] > 0) {
           maxVd = FAST_VD;
@@ -659,8 +659,8 @@ public class ap extends GamePanel {
           for(i = 0; i < 8; i++) {
             if (!Arrays.equals(element, players[i]) && players[i][ELEMENT_EXPLODING] == 0
                 && element[ELEMENT_EXPLODING] == 0) {
-              var dx = players[i][ELEMENT_X] - element[ELEMENT_X];
-              var dd = players[i][ELEMENT_D] - element[ELEMENT_D];
+                float dx = players[i][ELEMENT_X] - element[ELEMENT_X];
+                float dd = players[i][ELEMENT_D] - element[ELEMENT_D];
               if (dx < 0) {
                 dx = -dx;
               }
@@ -739,7 +739,7 @@ public class ap extends GamePanel {
                   j = 0;
                   float best = 1024;
                   for(i = 0; i < PLAYERS; i++) {
-                    var dd = players[i][ELEMENT_D] - element[ELEMENT_D];
+                      float dd = players[i][ELEMENT_D] - element[ELEMENT_D];
                   if (dd >= 0 && dd < best) {
                     best = dd;
                     j = i;
@@ -782,7 +782,7 @@ public class ap extends GamePanel {
       g.setColor(((lightning >> 1) & 1) == 1 ? Color.WHITE : Color.BLACK);
       g.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-        var bandOffset = players[HUMAN][ELEMENT_D] % 1;
+          float bandOffset = players[HUMAN][ELEMENT_D] % 1;
           band0 = ((int)players[HUMAN][ELEMENT_D]) % MAP_LENGTH;
       band1 = (band0 + 1) % MAP_LENGTH;
 
@@ -801,8 +801,8 @@ public class ap extends GamePanel {
       
       
       for(k = MAP_LENGTH; k >= 0; k--) {
-        var band = k % MAP_LENGTH;
-        var m = map[band];
+          int band = k % MAP_LENGTH;
+          float[][] m = map[band];
         
         
         for(p = 0; p < 2; p++) {
@@ -833,13 +833,19 @@ public class ap extends GamePanel {
             polygonYs[1] = 2 * SCREEN_HEIGHT;
             break;
           } else {
-            var K = 1.5f * CAMERA_Z / (CAMERA_Z - ps[1][MAP_Z]);
+              float K = 1.5f * CAMERA_Z / (CAMERA_Z - ps[1][MAP_Z]);
             polygonXs[p] = SCREEN_CENTER_X + (int)(K * ps[1][MAP_X]);
             polygonYs[p] = SCREEN_CENTER_Y - (int)(K * ps[1][MAP_Y]);
           }
         }
 
-        var b = IntStream.of(0, 1, 2, 3).noneMatch(v -> polygonYs[v] <= -128);
+        boolean b = true;
+        for (int v : new int[]{0, 1, 2, 3}) {
+          if (polygonYs[v] <= -128) {
+            b = false;
+            break;
+          }
+        }
         if (b) {
           
           g.setColor(roadColors[
@@ -894,7 +900,7 @@ public class ap extends GamePanel {
         
         
         element[ELEMENT_VISIBLE] = 0;
-        var K = 1.5f * CAMERA_Z / (CAMERA_Z - onb3[MAP_O][MAP_Z]);
+          float K = 1.5f * CAMERA_Z / (CAMERA_Z - onb3[MAP_O][MAP_Z]);
         if (K > 0) {
           element[ELEMENT_PROJECTED_X] = SCREEN_CENTER_X 
               + K * onb3[MAP_O][MAP_X];
@@ -907,7 +913,7 @@ public class ap extends GamePanel {
           }
 
 
-          var mag = K;
+            float mag = K;
           K = 1.5f * CAMERA_Z / (CAMERA_Z - onb3[MAP_O][MAP_Z]);          
           if (K > 0) {            
             element[ELEMENT_PROJECTED_NX] = SCREEN_CENTER_X 
@@ -929,7 +935,7 @@ public class ap extends GamePanel {
         element = elements.get(k);
         p = k;
         for(j = k - 1; j >= 0; j--) {
-          var element2 = elements.get(j);
+            float[] element2 = elements.get(j);
           if (element2[ELEMENT_Z] < element[ELEMENT_Z]) {
             p = j;
           }
@@ -1031,8 +1037,8 @@ public class ap extends GamePanel {
   public static void main(String[] args) throws Throwable {
 
 
-    var applet = new ap();
-    var frame = new javax.swing.JFrame(
+      ap applet = new ap();
+      JFrame frame = new javax.swing.JFrame(
             "Rainbow Road");
 
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

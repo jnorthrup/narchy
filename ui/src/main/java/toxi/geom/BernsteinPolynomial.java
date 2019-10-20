@@ -51,11 +51,11 @@ public class BernsteinPolynomial {
         b2 = new float[res];
         b3 = new float[res];
         float t = 0;
-        var dt = 1.0f / (resolution - 1);
-        for (var i = 0; i < resolution; i++) {
-            var t1 = 1 - t;
-            var t12 = t1 * t1;
-            var t2 = t * t;
+        float dt = 1.0f / (resolution - 1);
+        for (int i = 0; i < resolution; i++) {
+            float t1 = 1 - t;
+            float t12 = t1 * t1;
+            float t2 = t * t;
             b0[i] = t1 * t12;
             b1[i] = 3 * t * t12;
             b2[i] = 3 * t2 * t1;

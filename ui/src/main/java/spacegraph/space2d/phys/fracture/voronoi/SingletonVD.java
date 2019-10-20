@@ -92,14 +92,14 @@ public class SingletonVD {
      * o pomalu alokaciu pamate.
      */
     public SingletonVD() {
-        for (var i = 0; i < triangles.length; ++i) {
+        for (int i = 0; i < triangles.length; ++i) {
             triangles[i] = new Triangle(i); 
         }
-        for (var i = 0; i < points.length; ++i) {
+        for (int i = 0; i < points.length; ++i) {
             points[i] = new v2();
         }
-        for (var i = 0; i < 0x100; ++i) {
-            for (var j = i + 1; j < 0x100; ++j) {
+        for (int i = 0; i < 0x100; ++i) {
+            for (int j = i + 1; j < 0x100; ++j) {
                 edges[(i << 8) | j] = new Edge();
             }
         }
@@ -122,7 +122,7 @@ public class SingletonVD {
         minY = Math.min(a.y, b.y);
 
         calculateDelaunay(focee);
-        var count = focee.length;
+        int count = focee.length;
 
         if (count == 0) {
             return;
@@ -138,7 +138,7 @@ public class SingletonVD {
         pCount = 4;
 
         if (count == 1) {
-            var p = voronoi[0];
+            int[] p = voronoi[0];
             p[0] = 0;
             p[1] = 1;
             p[2] = 2;
@@ -147,45 +147,45 @@ public class SingletonVD {
         } else {
             Arrays.fill(validCorners, true);
 
-            for (var i = 0; i != triangC; ++i) {
-                var triangle = triangles[i];
-                var x = triangle.dX;
-                var y = triangle.dY;
+            for (int i = 0; i != triangC; ++i) {
+                Triangle triangle = triangles[i];
+                double x = triangle.dX;
+                double y = triangle.dY;
 
                 if (x <= maxX && x >= minX && y <= maxY && y >= minY) {
-                    var ti = triangle.i;
-                    var tj = triangle.j;
-                    var tk = triangle.k;
+                    int ti = triangle.i;
+                    int tj = triangle.j;
+                    int tk = triangle.k;
 
                     voronoi[ti][vCount[ti]++] = voronoi[tj][vCount[tj]++] = voronoi[tk][vCount[tk]++] = pCount;
                     points[pCount++].set((float) triangle.dX, (float) triangle.dY);
                 }
             }
 
-            var left = hull;
+            Hull left = hull;
             do {
-                var right = left.prev;
+                Hull right = left.prev;
                 addBoundary(left.i, right.i, null); 
                 left = right;
             } while (left != hull);
 
-            for (var i = 0; i != boundariesCount; ++i) {
-                var li = boundaries[(i == 0 ? boundariesCount : i) - 1];
-                var ri = boundaries[i];
-                var l = ar[li];
-                var r = ar[ri];
+            for (int i = 0; i != boundariesCount; ++i) {
+                int li = boundaries[(i == 0 ? boundariesCount : i) - 1];
+                int ri = boundaries[i];
+                v2 l = ar[li];
+                v2 r = ar[ri];
 
-                var sy = l.x > r.x ? minY : maxY;
-                var y = sy;
-                var x = (float) x(l, r, y);
+                float sy = l.x > r.x ? minY : maxY;
+                float y = sy;
+                float x = (float) x(l, r, y);
 
                 if (x >= maxX || x <= minX) { 
                     x = l.y > r.y ? maxX : minX;
                     y = (float) y(l, r, x);
 
                     if (y == sy) { 
-                        for (var j = 0; j != 4; ++j) {
-                            var c = points[j];
+                        for (int j = 0; j != 4; ++j) {
+                            v2 c = points[j];
                             if (c.x == x && c.y == y) {
                                 validCorners[j] = false;
                                 break;
@@ -200,18 +200,18 @@ public class SingletonVD {
 
             }
 
-            for (var i = 0; i != 4; ++i) {
+            for (int i = 0; i != 4; ++i) {
                 if (validCorners[i]) {
-                    var corner = points[i];
+                    v2 corner = points[i];
 
                     double x = corner.x;
                     double y = corner.y;
 
-                    var min = boundaries[0];
-                    var distMin = Double.MAX_VALUE;
-                    for (var j = 0; j != boundariesCount; ++j) {
-                        var point = boundaries[j];
-                        var dist = distSq(x, y, ar[point]);
+                    int min = boundaries[0];
+                    double distMin = Double.MAX_VALUE;
+                    for (int j = 0; j != boundariesCount; ++j) {
+                        int point = boundaries[j];
+                        double dist = distSq(x, y, ar[point]);
                         if (dist < distMin) {
                             distMin = dist;
                             min = point;
@@ -222,7 +222,7 @@ public class SingletonVD {
                 }
             }
 
-            for (var i = 0; i < focee.length; ++i) {
+            for (int i = 0; i < focee.length; ++i) {
                 sort(i);
             }
         }
@@ -234,11 +234,11 @@ public class SingletonVD {
      * @param indexPolygon
      */
     private void sort(int indexPolygon) {
-        var size = vCount[indexPolygon];
+        int size = vCount[indexPolygon];
         if (size != 0) {
             polygon = voronoi[indexPolygon];
-            var focus = ar[indexPolygon];
-            for (var i = 0; i != size; ++i) {
+            v2 focus = ar[indexPolygon];
+            for (int i = 0; i != size; ++i) {
                 comparer[i] = angle(points[polygon[i]], focus);
             }
             quicksortPoly(0, size - 1);
@@ -247,7 +247,7 @@ public class SingletonVD {
 
     private void quicksortPoly(int low, int high) {
         int i = low, j = high;
-        var pivot = comparer[low + ((high - low) >> 1)];
+        double pivot = comparer[low + ((high - low) >> 1)];
         while (i <= j) {
             while (comparer[i] < pivot) {
                 i++;
@@ -256,10 +256,10 @@ public class SingletonVD {
                 j--;
             }
             if (i <= j) {
-                var temp = comparer[i];
+                double temp = comparer[i];
                 comparer[i] = comparer[j];
                 comparer[j] = temp;
-                var v = polygon[i];
+                int v = polygon[i];
                 polygon[i] = polygon[j];
                 polygon[j] = v;
 
@@ -281,7 +281,7 @@ public class SingletonVD {
      */
     private void quicksort(int low, int high) {
         int i = low, j = high;
-        var pivot = comparer[low + ((high - low) >> 1)];
+        double pivot = comparer[low + ((high - low) >> 1)];
         while (i <= j) {
             while (comparer[i] < pivot) {
                 i++;
@@ -290,10 +290,10 @@ public class SingletonVD {
                 j--;
             }
             if (i <= j) {
-                var temp = comparer[i];
+                double temp = comparer[i];
                 comparer[i] = comparer[j];
                 comparer[j] = temp;
-                var v = ar[i];
+                v2 v = ar[i];
                 ar[i] = ar[j];
                 ar[j] = v;
 
@@ -319,16 +319,16 @@ public class SingletonVD {
         triangC = 0;
         hull = null;
 
-        var size = Math.min(this.ar.length, 0x100);
+        int size = Math.min(this.ar.length, 0x100);
 
         if (size == 0) {
             return;
         }
 
-        var SIN = Math.sin(RND());
-        var COS = Math.cos(RND());
-        for (var i = 0; i != size; ++i) {
-            var v = this.ar[i];
+        double SIN = Math.sin(RND());
+        double COS = Math.cos(RND());
+        for (int i = 0; i != size; ++i) {
+            v2 v = this.ar[i];
             comparer[i] = SIN * v.x + COS * v.y;
         }
         quicksort(0, size - 1); 
@@ -346,9 +346,9 @@ public class SingletonVD {
 
         hull = new Hull(0);
         hull.prev = hull.next = hull;
-        for (var v = 1; v != size; ++v) {
-            var r = hull;
-            var l = hull;
+        for (int v = 1; v != size; ++v) {
+            Hull r = hull;
+            Hull l = hull;
 
             while (site(this.ar[v], this.ar[r.i], this.ar[r.prev.i]) == 1) {
                 r = r.prev;
@@ -356,21 +356,21 @@ public class SingletonVD {
             while (site(this.ar[v], this.ar[l.i], this.ar[l.next.i]) == -1) {
                 l = l.next;
             }
-            var left = edges[Edge.index(l.i, v)];
+            Edge left = edges[Edge.index(l.i, v)];
             left.init();
 
             
-            for (var k = l; k != r; k = k.prev) {
-                var lp = k.i;
-                var rp = k.prev.i;
-                var right = edges[Edge.index(rp, v)];
+            for (Hull k = l; k != r; k = k.prev) {
+                int lp = k.i;
+                int rp = k.prev.i;
+                Edge right = edges[Edge.index(rp, v)];
                 right.init();
                 addTriangle(left, right, edges[Edge.index(lp, rp)], lp, rp, v);
                 left = right;
             }
             if (r == l && hull.prev != hull) {
-                var duplicitny = new Hull(hull.i);
-                var novy = new Hull(v, duplicitny, hull);
+                Hull duplicitny = new Hull(hull.i);
+                Hull novy = new Hull(v, duplicitny, hull);
                 duplicitny.next = hull.next;
                 duplicitny.prev = novy;
                 hull.next.prev = duplicitny;
@@ -388,16 +388,16 @@ public class SingletonVD {
      * @param t
      */
     private void addBoundary(int a, int b, Triangle t) {
-        var opposite = edges[Edge.index(a, b)].get(t);
-        var va = ar[a];
-        var vb = ar[b];
-        var bx = va.x > vb.x;
-        var by = va.y > vb.y;
+        Triangle opposite = edges[Edge.index(a, b)].get(t);
+        v2 va = ar[a];
+        v2 vb = ar[b];
+        boolean bx = va.x > vb.x;
+        boolean by = va.y > vb.y;
         if (opposite != null) {
-            var x = (float) opposite.dX;
-            var y = (float) opposite.dY;
+            float x = (float) opposite.dX;
+            float y = (float) opposite.dY;
             if (bx && y <= minY || !bx && y >= maxY || by && x >= maxX || !by && x <= minX) {
-                var center = opposite.get(a, b);
+                int center = opposite.get(a, b);
                 addBoundary(a, center, opposite);
                 addBoundary(center, b, opposite);
                 return;
@@ -423,30 +423,30 @@ public class SingletonVD {
             int r,
             int v
     ) {
-        var triangle = centerEdge.get();
+        Triangle triangle = centerEdge.get();
         if (triangle == null || !triangle.inside(ar[v])) {
 
-            var newTriangle = triangles[triangC++];
+            Triangle newTriangle = triangles[triangC++];
             newTriangle.init(l, r, v, ar, triangle);
             leftEdge.add(newTriangle);
             rightEdge.add(newTriangle);
             centerEdge.add(newTriangle);
         } else {
-            var c = triangle.get(l, r);
-            var center1 = edges[Edge.index(l, c)];
-            var center2 = edges[Edge.index(r, c)];
+            int c = triangle.get(l, r);
+            Edge center1 = edges[Edge.index(l, c)];
+            Edge center2 = edges[Edge.index(r, c)];
             center1.remove(triangle);
             center2.remove(triangle);
             centerEdge.init();
 
 
-            var newCenterEdge = edges[Edge.index(c, v)];
+            Edge newCenterEdge = edges[Edge.index(c, v)];
             newCenterEdge.init();
 
 
-            var i = triangle.index;
-            var deleted = triangles[i];
-            var t = triangles[i] = triangles[--triangC];
+            int i = triangle.index;
+            Triangle deleted = triangles[i];
+            Triangle t = triangles[i] = triangles[--triangC];
             triangles[triangC] = deleted;
             deleted.index = triangC;
             t.index = i;
@@ -471,8 +471,8 @@ public class SingletonVD {
         double by = b.y;
         double vx = v.x;
         double vy = v.y;
-        var g = (bx - ax) * (vy - by);
-        var h = (vx - bx) * (by - ay);
+        double g = (bx - ax) * (vy - by);
+        double h = (vx - bx) * (by - ay);
         //noinspection UseCompareMethod
         return g > h ? 1 : g == h ? 0 : -1;
 
@@ -486,8 +486,8 @@ public class SingletonVD {
     private static double angle(v2 a, v2 b) {
         double vx = b.x - a.x;
         double vy = b.y - a.y;
-        var x = vx * vx;
-        var cos = x / (x + vy * vy);
+        double x = vx * vx;
+        double cos = x / (x + vy * vy);
         return vx > 0 ? vy > 0 ? 3 + cos : 1 - cos : vy > 0 ? 3 - cos : 1 + cos;
     }
 

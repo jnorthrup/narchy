@@ -24,10 +24,10 @@ public class dA {
 
         if (W == null) {
             this.W = new double[this.n_hidden][this.n_visible];
-            var a = 1.0 / this.n_visible;
+            double a = 1.0 / this.n_visible;
 
-            for (var i = 0; i < this.n_hidden; i++) {
-                for (var j = 0; j < this.n_visible; j++) {
+            for (int i = 0; i < this.n_hidden; i++) {
+                for (int j = 0; j < this.n_visible; j++) {
                     this.W[i][j] = utils.uniform(-a, a, rng);
                 }
             }
@@ -37,21 +37,21 @@ public class dA {
 
         if (hbias == null) {
             this.hbias = new double[this.n_hidden];
-            for (var i = 0; i < this.n_hidden; i++) this.hbias[i] = 0;
+            for (int i = 0; i < this.n_hidden; i++) this.hbias[i] = 0;
         } else {
             this.hbias = hbias;
         }
 
         if (vbias == null) {
             this.vbias = new double[this.n_visible];
-            for (var i = 0; i < this.n_visible; i++) this.vbias[i] = 0;
+            for (int i = 0; i < this.n_visible; i++) this.vbias[i] = 0;
         } else {
             this.vbias = vbias;
         }
     }
 
     public void get_corrupted_input(double[] x, double[] tilde_x, double p) {
-        for (var i = 0; i < n_visible; i++) {
+        for (int i = 0; i < n_visible; i++) {
             if (x[i] == 0) {
                 tilde_x[i] = 0;
             } else {
@@ -62,9 +62,9 @@ public class dA {
 
     
     public double[] encode(double[] x, double[] y) {
-        for (var i = 0; i < n_hidden; i++) {
+        for (int i = 0; i < n_hidden; i++) {
             y[i] = 0;
-            for (var j = 0; j < n_visible; j++) {
+            for (int j = 0; j < n_visible; j++) {
                 y[i] += W[i][j] * x[j];
             }
             y[i] += hbias[i];
@@ -75,9 +75,9 @@ public class dA {
 
     
     public void decode(double[] y, double[] z) {
-        for (var i = 0; i < n_visible; i++) {
+        for (int i = 0; i < n_visible; i++) {
             z[i] = 0;
-            for (var j = 0; j < n_hidden; j++) {
+            for (int j = 0; j < n_hidden; j++) {
                 z[i] += W[j][i] * y[j];
             }
             z[i] += vbias[i];
@@ -86,29 +86,29 @@ public class dA {
     }
 
     public double[] train(double[] x, double lr, double corruption_level) {
-        var tilde_x = new double[n_visible];
-        var y = new double[n_hidden];
-        var z = new double[n_visible];
+        double[] tilde_x = new double[n_visible];
+        double[] y = new double[n_hidden];
+        double[] z = new double[n_visible];
 
-        var L_vbias = new double[n_visible];
-        var L_hbias = new double[n_hidden];
+        double[] L_vbias = new double[n_visible];
+        double[] L_hbias = new double[n_hidden];
 
-        var p = 1 - corruption_level;
+        double p = 1 - corruption_level;
         get_corrupted_input(x, tilde_x, p);
 
         encode(tilde_x, y);
         decode(y, z);
 
         
-        for (var i = 0; i < n_visible; i++) {
+        for (int i = 0; i < n_visible; i++) {
             L_vbias[i] = x[i] - z[i];
             vbias[i] += lr * L_vbias[i];
         }
 
         
-        for (var i = 0; i < n_hidden; i++) {
+        for (int i = 0; i < n_hidden; i++) {
             L_hbias[i] = 0;
-            for (var j = 0; j < n_visible; j++) {
+            for (int j = 0; j < n_visible; j++) {
                 L_hbias[i] += W[i][j] * L_vbias[j];
             }
             L_hbias[i] *= y[i] * (1 - y[i]);
@@ -116,8 +116,8 @@ public class dA {
         }
 
         
-        for (var i = 0; i < n_hidden; i++) {
-            for (var j = 0; j < n_visible; j++) {
+        for (int i = 0; i < n_hidden; i++) {
+            for (int j = 0; j < n_visible; j++) {
                 W[i][j] += lr * (L_hbias[i] * tilde_x[j] + L_vbias[j] * y[i]);
             }
         }
@@ -125,22 +125,22 @@ public class dA {
     }
 
     public void reconstruct(double[] x, double[] z) {
-        var y = new double[n_hidden];
+        double[] y = new double[n_hidden];
 
         encode(x, y);
         decode(y, z);
     }
 
     private static void test_dA() {
-        var rng = new Random(123);
+        Random rng = new Random(123);
 
-        var learning_rate = 0.1;
-        var corruption_level = 0.3;
-        var training_epochs = 100;
+        double learning_rate = 0.1;
+        double corruption_level = 0.3;
+        int training_epochs = 100;
 
-        var train_N = 10;
-        var n_visible = 20;
-        var n_hidden = 5;
+        int train_N = 10;
+        int n_visible = 20;
+        int n_hidden = 5;
 
         double[][] train_X = {
                 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -155,11 +155,11 @@ public class dA {
                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0}
         };
 
-        var da = new dA(n_visible, n_hidden, null, null, null, rng);
+        dA da = new dA(n_visible, n_hidden, null, null, null, rng);
 
         
-        for (var epoch = 0; epoch < training_epochs; epoch++) {
-            for (var i = 0; i < train_N; i++) {
+        for (int epoch = 0; epoch < training_epochs; epoch++) {
+            for (int i = 0; i < train_N; i++) {
                 da.train(train_X[i], learning_rate, corruption_level);
             }
         }
@@ -170,13 +170,13 @@ public class dA {
                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0}
         };
 
-        var test_N = 2;
-        var reconstructed_X = new double[test_N][n_visible];
+        int test_N = 2;
+        double[][] reconstructed_X = new double[test_N][n_visible];
 
         
-        for (var i = 0; i < test_N; i++) {
+        for (int i = 0; i < test_N; i++) {
             da.reconstruct(test_X[i], reconstructed_X[i]);
-            for (var j = 0; j < n_visible; j++) {
+            for (int j = 0; j < n_visible; j++) {
                 System.out.printf("%.5f ", reconstructed_X[i][j]);
             }
             System.out.println();
@@ -188,8 +188,8 @@ public class dA {
     }
 
     public void randomize() {
-        for (var i = 0; i < n_hidden; i++) {
-            for (var j = 0; j < n_visible; j++) {
+        for (int i = 0; i < n_hidden; i++) {
+            for (int j = 0; j < n_visible; j++) {
                 W[i][j] = ((rng.nextFloat()-0.5f)*2f)/n_visible;
             }
         }

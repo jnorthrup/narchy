@@ -30,7 +30,7 @@ public class DoubleND implements HyperPoint, Serializable {
     }
 
     public static DoubleND fill(int dims, double value) {
-        var a = new double[dims];
+        double[] a = new double[dims];
         Arrays.fill(a, value);
         return new DoubleND(a);
     }
@@ -47,12 +47,12 @@ public class DoubleND implements HyperPoint, Serializable {
 
     @Override
     public double distance(HyperPoint h) {
-        var p = (DoubleND) h;
+        DoubleND p = (DoubleND) h;
         double sumSq = 0;
-        for (var i = 0; i < coord.length; i++) {
-            var x = coord[i];
-            var y = p.coord[i];
-            var xMinY = x - y;
+        for (int i = 0; i < coord.length; i++) {
+            double x = coord[i];
+            double y = p.coord[i];
+            double xMinY = x - y;
             sumSq += xMinY * xMinY;
         }
         return Math.sqrt(sumSq);
@@ -66,7 +66,7 @@ public class DoubleND implements HyperPoint, Serializable {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        var p = (DoubleND) obj;
+        DoubleND p = (DoubleND) obj;
         return Util.equals(coord, p.coord, EPSILON);
     }
 

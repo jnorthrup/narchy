@@ -36,7 +36,7 @@ public class BomberBomb extends Thread {
         /** if java runtime is Java 2 */
         if (Main.J2) {
             /** create the rendering hints for better graphics output */
-            var h = new RenderingHints(null);
+            RenderingHints h = new RenderingHints(null);
             h.put(RenderingHints.KEY_TEXT_ANTIALIASING,
                     RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             h.put(RenderingHints.KEY_FRACTIONALMETRICS,
@@ -138,7 +138,7 @@ public class BomberBomb extends Thread {
      * @param graphics graphics handle
      */
     public void paint2D(Graphics graphics) {
-        var g2 = (Graphics2D) graphics;
+        Graphics2D g2 = (Graphics2D) graphics;
         /** set the rendering hints */
         g2.setRenderingHints((RenderingHints) hints);
         g2.drawImage(images[frame], x, y,

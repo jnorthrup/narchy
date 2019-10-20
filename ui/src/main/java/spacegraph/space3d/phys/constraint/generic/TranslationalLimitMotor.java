@@ -104,8 +104,8 @@ public class TranslationalLimitMotor {
 	}
 
 	public int testLimitValue(int limitIndex, float test_value) {
-		var loLimit = VectorUtil.coord(lowerLimit, limitIndex);
-		var hiLimit = VectorUtil.coord(upperLimit, limitIndex);
+        float loLimit = VectorUtil.coord(lowerLimit, limitIndex);
+        float hiLimit = VectorUtil.coord(upperLimit, limitIndex);
 		if (loLimit > hiLimit) {
 			currentLimit[limitIndex] = 0;
 			VectorUtil.setCoord(currentLimitError, limitIndex, 0.f);
@@ -130,30 +130,30 @@ public class TranslationalLimitMotor {
 
 
 	public float solveLinearAxis(float timeStep, float jacDiagABInv, Body3D body1, v3 pointInA, Body3D body2, v3 pointInB, int limit_index, v3 axis_normal_on_a, v3 anchorPos) {
-		var tmp = new v3();
-		var tmpVec = new v3();
+        v3 tmp = new v3();
+        v3 tmpVec = new v3();
 
 
-		var rel_pos1 = new v3();
+        v3 rel_pos1 = new v3();
 
 		rel_pos1.sub(anchorPos, body1.getCenterOfMassPosition(tmpVec));
 
-		var rel_pos2 = new v3();
+        v3 rel_pos2 = new v3();
 
 		rel_pos2.sub(anchorPos, body2.getCenterOfMassPosition(tmpVec));
 
-		var vel1 = body1.getVelocityInLocalPoint(rel_pos1, new v3());
-		var vel2 = body2.getVelocityInLocalPoint(rel_pos2, new v3());
-		var vel = new v3();
+        v3 vel1 = body1.getVelocityInLocalPoint(rel_pos1, new v3());
+        v3 vel2 = body2.getVelocityInLocalPoint(rel_pos2, new v3());
+        v3 vel = new v3();
 		vel.sub(vel1, vel2);
 
-		var rel_vel = axis_normal_on_a.dot(vel);
+        float rel_vel = axis_normal_on_a.dot(vel);
 
 
-		var target_velocity = VectorUtil.coord(this.targetVelocity, limit_index);
-		var maxMotorForce = VectorUtil.coord(this.maxMotorForce, limit_index);
+        float target_velocity = VectorUtil.coord(this.targetVelocity, limit_index);
+        float maxMotorForce = VectorUtil.coord(this.maxMotorForce, limit_index);
 
-		var limErr = VectorUtil.coord(currentLimitError, limit_index);
+        float limErr = VectorUtil.coord(currentLimitError, limit_index);
 		if (currentLimit[limit_index] != 0) {
 			target_velocity = restitution * limErr / (timeStep);
 			maxMotorForce = VectorUtil.coord(maxLimitForce, limit_index);
@@ -161,13 +161,13 @@ public class TranslationalLimitMotor {
 		maxMotorForce *= timeStep;
 
 
-		var motor_relvel = limitSoftness * (target_velocity - damping * rel_vel);
+        float motor_relvel = limitSoftness * (target_velocity - damping * rel_vel);
 		if (motor_relvel < BulletGlobals.FLT_EPSILON && motor_relvel > -BulletGlobals.FLT_EPSILON) {
 			return 0.0f;
 		}
 
 
-		var unclippedMotorImpulse = motor_relvel * jacDiagABInv;
+        float unclippedMotorImpulse = motor_relvel * jacDiagABInv;
 
 
 		float clippedMotorImpulse;
@@ -179,19 +179,19 @@ public class TranslationalLimitMotor {
 			clippedMotorImpulse = Math.max(unclippedMotorImpulse, -maxMotorForce);
 		}
 
-		var normalImpulse = clippedMotorImpulse;
+        float normalImpulse = clippedMotorImpulse;
 
 
-		var lo = -1e30f;
-		var hi = 1e30f;
+        float lo = -1e30f;
+        float hi = 1e30f;
 
 
-		var oldNormalImpulse = VectorUtil.coord(accumulatedImpulse, limit_index);
-		var sum = oldNormalImpulse + normalImpulse;
+        float oldNormalImpulse = VectorUtil.coord(accumulatedImpulse, limit_index);
+        float sum = oldNormalImpulse + normalImpulse;
 		VectorUtil.setCoord(accumulatedImpulse, limit_index, sum > hi ? 0f : sum < lo ? 0f : sum);
 		normalImpulse = VectorUtil.coord(accumulatedImpulse, limit_index) - oldNormalImpulse;
 
-		var impulse_vector = new v3();
+        v3 impulse_vector = new v3();
 		impulse_vector.scale(normalImpulse, axis_normal_on_a);
 		body1.impulse(impulse_vector, rel_pos1);
 

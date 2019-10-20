@@ -63,8 +63,8 @@ public abstract class MutableWeightedCaster<X,Y> extends WeightedCaster<X,Y> imp
 //                l.weightChanged(ev);
 //            }
 //        });
-            for (var wref : weakListeners) {
-                var l = wref.get();
+            for (WeakReference<WeightChangeListener> wref : weakListeners) {
+                WeightChangeListener l = wref.get();
                 if (l == null) {
                     removeSet.add(wref);
                 } else {
@@ -80,7 +80,7 @@ public abstract class MutableWeightedCaster<X,Y> extends WeightedCaster<X,Y> imp
 //            l.weightChanged(ev);
 //        });
 
-        for (var l : listeners) {
+        for (WeightChangeListener l : listeners) {
             if (l != null) l.weightChanged(ev);
         }
     }
@@ -112,7 +112,7 @@ public abstract class MutableWeightedCaster<X,Y> extends WeightedCaster<X,Y> imp
     @Deprecated public CloseHandler addWeightChangeListener(WeightChangeListener listener) {
         if (listener == null) return new CloseHandler() {
         };
-        var fl = listener;
+        WeightChangeListener fl = listener;
         MutableWeightedCaster self = this;
         var ch = new CloseHandler() {
 
@@ -128,7 +128,7 @@ public abstract class MutableWeightedCaster<X,Y> extends WeightedCaster<X,Y> imp
             public void closeHandler() {
             }
         };
-        var fl = listener;
+        WeightChangeListener fl = listener;
         MutableWeightedCaster self = this;
         var ch = new CloseHandler() {
             WeightChangeListener l = fl;
@@ -166,8 +166,8 @@ public abstract class MutableWeightedCaster<X,Y> extends WeightedCaster<X,Y> imp
 //        });
 //        weakListeners.removeAll(removeSet);
 
-        for (var wref : weakListeners) {
-            var l = wref.get();
+        for (WeakReference<WeightChangeListener> wref : weakListeners) {
+            WeightChangeListener l = wref.get();
             if (l == null) {
                 removeSet.add(wref);
             } else {

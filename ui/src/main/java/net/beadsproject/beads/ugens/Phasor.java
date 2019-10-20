@@ -52,16 +52,16 @@ public class Phasor extends UGen {
 
     @Override
     public void gen() {
-        var bo = bufOut[0];
+        float[] bo = bufOut[0];
 
         if (frequencyUGen == null) {
-            for (var i = 0; i < bufferSize; i++) {
+            for (int i = 0; i < bufferSize; i++) {
                 phase = (((phase + one_over_sr * frequency) % 1) + 1) % 1;
                 bo[i] = (float) phase;
             }
         } else {
             frequencyUGen.update();
-            for (var i = 0; i < bufferSize; i++) {
+            for (int i = 0; i < bufferSize; i++) {
                 frequency = frequencyUGen.getValue(0, i);
                 phase = (((phase + one_over_sr * frequency) % 1) + 1) % 1;
                 bo[i] = (float) phase;

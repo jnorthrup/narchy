@@ -54,7 +54,7 @@ public class BasicPostprocessor implements Postprocessor {
     @Override
     public void elaborate(Configuration config, Results results, long timeTaken) {
 
-        var parameters = config.getPostprocessorParameters();
+        Map<String, String> parameters = config.getPostprocessorParameters();
         if(parameters!=null){
             if(parameters.containsKey(PARAMETER_NAME_POPULATE_OPTIONAL_FIELDS)){
                 this.populateOptionalFields = Boolean.parseBoolean(parameters.get(PARAMETER_NAME_POPULATE_OPTIONAL_FIELDS));
@@ -80,19 +80,19 @@ public class BasicPostprocessor implements Postprocessor {
         }
 
 
-        var training = config.getDatasetContainer().getTrainingDataset();
-        var learning = config.getDatasetContainer().getLearningDataset();
+        DataSet training = config.getDatasetContainer().getTrainingDataset();
+        DataSet learning = config.getDatasetContainer().getLearningDataset();
 
-        var numberTrainingMatches = training.getNumberMatches();
-        var numberTrainingUnmatches = training.getNumberUnmatches();
+        int numberTrainingMatches = training.getNumberMatches();
+        int numberTrainingUnmatches = training.getNumberUnmatches();
         results.setNumberTrainingMatches(numberTrainingMatches);
         results.setNumberTrainingUnmatches(numberTrainingUnmatches);
 
-        var numberMatches = learning.getNumberMatches();
-        var numberUnmatches = learning.getNumberUnmatches();
-        var numberMatchedChars = learning.getNumberMatchedChars();
-        var numberUnmatchedChars = learning.getNumberUnmatchedChars();
-        var numberAllChars = config.getDatasetContainer().getDataset().getNumberOfChars();
+        int numberMatches = learning.getNumberMatches();
+        int numberUnmatches = learning.getNumberUnmatches();
+        int numberMatchedChars = learning.getNumberMatchedChars();
+        int numberUnmatchedChars = learning.getNumberUnmatchedChars();
+        int numberAllChars = config.getDatasetContainer().getDataset().getNumberOfChars();
         results.setNumberMatches(numberMatches);
         results.setNumberUnmatches(numberUnmatches);
         results.setNumberMatchedChars(numberMatchedChars);
@@ -102,17 +102,21 @@ public class BasicPostprocessor implements Postprocessor {
     }
     
     private static List<Bounds[]> getEvaluations(String solution, Configuration configuration, Context.EvaluationPhases phase) throws TreeEvaluationException{
-        var treeEvaluator = configuration.getEvaluator();
+        TreeEvaluator treeEvaluator = configuration.getEvaluator();
         Node bestIndividualReplica = new Constant(solution);
         return treeEvaluator.evaluate(bestIndividualReplica, new Context(phase, configuration));
     }
     
     private static List<List<String>> getEvaluationsStrings(List<Bounds[]> extractions, DataSet dataset){
         List<List<String>> evaluationsStrings = new ArrayList<>();
-        var it = dataset.getExamples().iterator();
-        for (var extractionsOfExample : extractions) {
-            var example = it.next();
-            var extractionsOfExampleStrings = Arrays.stream(extractionsOfExample).map(bounds -> example.getString().substring(bounds.start, bounds.end)).collect(Collectors.toList());
+        Iterator<Example> it = dataset.getExamples().iterator();
+        for (Bounds[] extractionsOfExample : extractions) {
+            Example example = it.next();
+            List<String> extractionsOfExampleStrings = new ArrayList<>();
+            for (Bounds bounds : extractionsOfExample) {
+                String substring = example.getString().substring(bounds.start, bounds.end);
+                extractionsOfExampleStrings.add(substring);
+            }
             evaluationsStrings.add(extractionsOfExampleStrings);
         }
         return evaluationsStrings;
@@ -121,14 +125,14 @@ public class BasicPostprocessor implements Postprocessor {
     
     
     private static List<BasicStats> getEvaluationStats(List<Bounds[]> evaluation, Configuration config) {
-        var dataset = config.getDatasetContainer().getLearningDataset();
+        DataSet dataset = config.getDatasetContainer().getLearningDataset();
         List<BasicStats> statsPerExample = new LinkedList<>();
-        for (var index = 0; index < dataset.getExamples().size(); index++) {
-            var extractionsList = evaluation.get(index);
+        for (int index = 0; index < dataset.getExamples().size(); index++) {
+            Bounds[] extractionsList = evaluation.get(index);
             Set<Bounds> extractionsSet = UnifiedSet.newSetWith(extractionsList);
-            var example = dataset.getExample(index);
+            Example example = dataset.getExample(index);
             extractionsSet.removeAll(example.getMatch());
-            var exampleStats = new BasicStats();
+            BasicStats exampleStats = new BasicStats();
             exampleStats.fn = -1; 
             exampleStats.fp = extractionsSet.size();
             exampleStats.tp = extractionsList.length - exampleStats.fp;

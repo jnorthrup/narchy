@@ -64,7 +64,7 @@ public class PrologLibraries {
     public synchronized PrologLib loadClass(String className)
             throws InvalidLibraryException {
 
-        var alib = getLibrary(className);
+        PrologLib alib = getLibrary(className);
         if (alib != null) {
             if (prolog.isWarning()) {
                 prolog.notifyWarning(new WarningEvent(prolog,
@@ -74,7 +74,7 @@ public class PrologLibraries {
         }
 
         try {
-            var lib = (PrologLib) Class.forName(className).getConstructor().newInstance();
+            PrologLib lib = (PrologLib) Class.forName(className).getConstructor().newInstance();
             bindLibrary(lib);
             prolog.notifyLoadedLibrary(new LibraryEvent(prolog, className));
             return lib;
@@ -113,7 +113,7 @@ public class PrologLibraries {
                  * and therefore getResource() method can't be used to locate the files at runtime.
                  */
 
-                var dexPath = paths[0];
+                String dexPath = paths[0];
 
                 /**
                  * Description of DexClassLoader
@@ -139,10 +139,10 @@ public class PrologLibraries {
                         .newInstance(dexPath, optimizedDirectory, null, getClass().getClassLoader());
                 lib = (PrologLib) Class.forName(className, true, loader).getConstructor().newInstance();
             } else {
-                var urls = new URL[paths.length];
+                URL[] urls = new URL[paths.length];
 
-                for (var i = 0; i < paths.length; i++) {
-                    var file = new File(paths[i]);
+                for (int i = 0; i < paths.length; i++) {
+                    File file = new File(paths[i]);
                     if (paths[i].contains(".class"))
                         file = new File(paths[i].substring(0,
                                 paths[i].lastIndexOf(File.separator) + 1));
@@ -158,11 +158,11 @@ public class PrologLibraries {
 
             }
 
-            var name = lib.getName();
-            var alib = getLibrary(name);
+            String name = lib.getName();
+            PrologLib alib = getLibrary(name);
             if (alib != null) {
                 if (prolog.isWarning()) {
-                    var msg = "library " + alib.getName()
+                    String msg = "library " + alib.getName()
                             + " already loaded.";
                     prolog.notifyWarning(new WarningEvent(prolog, msg));
                 }
@@ -185,8 +185,8 @@ public class PrologLibraries {
                  * getResource() can't be used with dex files.
                  */
 
-                var file = new File(paths[0]);
-                var url = (file.toURI().toURL());
+                File file = new File(paths[0]);
+                URL url = (file.toURI().toURL());
                 externalLibraries.put(className, url);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -196,7 +196,7 @@ public class PrologLibraries {
         }
 
         bindLibrary(lib);
-        var ev = new LibraryEvent(prolog, lib.getName());
+        LibraryEvent ev = new LibraryEvent(prolog, lib.getName());
         prolog.notifyLoadedLibrary(ev);
         return lib;
     }
@@ -213,17 +213,17 @@ public class PrologLibraries {
      */
     public synchronized void load(PrologLib lib)
             throws InvalidLibraryException {
-        var name = lib.getName();
-        var alib = getLibrary(name);
+        String name = lib.getName();
+        PrologLib alib = getLibrary(name);
         if (alib != null) {
             if (prolog.isWarning()) {
-                var msg = "library " + alib.getName() + " already loaded.";
+                String msg = "library " + alib.getName() + " already loaded.";
                 prolog.notifyWarning(new WarningEvent(prolog, msg));
             }
             unload(name);
         }
         bindLibrary(lib);
-        var ev = new LibraryEvent(prolog, lib.getName());
+        LibraryEvent ev = new LibraryEvent(prolog, lib.getName());
         prolog.notifyLoadedLibrary(ev);
     }
 
@@ -235,7 +235,7 @@ public class PrologLibraries {
      * @throws InvalidLibraryException if name is not a valid loaded library
      */
     public synchronized void unload(String name) throws InvalidLibraryException {
-        var found = currentLibraries.removeIf(lib -> {
+        boolean found = currentLibraries.removeIf(lib -> {
             if (lib.getName().equals(name)) {
                 lib.dismiss();
                 prims.stop(lib);
@@ -264,13 +264,13 @@ public class PrologLibraries {
      */
     private PrologLib bindLibrary(PrologLib lib) throws InvalidLibraryException {
         try {
-            var name = lib.getName();
+            String name = lib.getName();
             lib.setProlog(prolog);
             currentLibraries.add(lib);
 
             prims.start(lib);
 
-            var th = lib.getTheory();
+            String th = lib.getTheory();
             if (th != null) {
                 theories.consult(new Theory(th), false, name);
                 theories.solveTheoryGoal();
@@ -298,23 +298,28 @@ public class PrologLibraries {
      * found
      */
     public PrologLib getLibrary(String name) {
-        return currentLibraries.stream().filter(alib -> alib.getName().equals(name)).findFirst().orElse(null);
+        for (PrologLib alib : currentLibraries) {
+            if (alib.getName().equals(name)) {
+                return alib;
+            }
+        }
+        return null;
     }
 
     public void onSolveBegin(Term g) {
-        for (var alib : currentLibraries) {
+        for (PrologLib alib : currentLibraries) {
             alib.onSolveBegin(g);
         }
     }
 
     public void onSolveHalt() {
-        for (var currentLibrary : currentLibraries) {
+        for (PrologLib currentLibrary : currentLibraries) {
             currentLibrary.onSolveHalt();
         }
     }
 
     public void onSolveEnd() {
-        for (var currentLibrary : currentLibraries) {
+        for (PrologLib currentLibrary : currentLibraries) {
             currentLibrary.onSolveEnd();
         }
     }

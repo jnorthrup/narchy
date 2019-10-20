@@ -72,10 +72,10 @@ public class WeightedQueue<T> implements BlockingQueue<T>
     public boolean offer(T t)
     {
         Preconditions.checkNotNull(t);
-        var acquired = tryAcquireWeight(t);
+        boolean acquired = tryAcquireWeight(t);
         if (acquired)
         {
-            var offered = false;
+            boolean offered = false;
             try
             {
                 offered = queue.offer(t);
@@ -99,7 +99,7 @@ public class WeightedQueue<T> implements BlockingQueue<T>
 
     public T poll()
     {
-        var retval = queue.poll();
+        T retval = queue.poll();
         releaseWeight(retval);
         return retval;
     }
@@ -118,7 +118,7 @@ public class WeightedQueue<T> implements BlockingQueue<T>
     {
         Preconditions.checkNotNull(t);
         acquireWeight(t, 0, null);
-        var put = false;
+        boolean put = false;
         try
         {
             queue.put(t);
@@ -137,10 +137,10 @@ public class WeightedQueue<T> implements BlockingQueue<T>
     {
         Preconditions.checkNotNull(t);
         Preconditions.checkNotNull(unit);
-        var acquired = acquireWeight(t, timeout, unit);
+        boolean acquired = acquireWeight(t, timeout, unit);
         if (acquired)
         {
-            var offered = false;
+            boolean offered = false;
             try
             {
                 offered = queue.offer(t, timeout, unit);
@@ -159,7 +159,7 @@ public class WeightedQueue<T> implements BlockingQueue<T>
 
     public T take() throws InterruptedException
     {
-        var retval = queue.take();
+        T retval = queue.take();
         releaseWeight(retval);
         return retval;
     }
@@ -240,7 +240,7 @@ public class WeightedQueue<T> implements BlockingQueue<T>
 
     public int drainTo(Collection<? super T> c, int maxElements)
     {
-        var count = 0;
+        int count = 0;
         T o;
         while(count < maxElements && (o = poll()) != null)
         {
@@ -280,7 +280,7 @@ public class WeightedQueue<T> implements BlockingQueue<T>
 
     boolean acquireWeight(T weighable, long timeout, TimeUnit unit) throws InterruptedException
     {
-        var weight = weigher.weigh(weighable);
+        int weight = weigher.weigh(weighable);
         if (weight < 1)
         {
             throw new IllegalArgumentException(String.format("Weighable: \"%s\" had illegal weight %d", weighable, weight));
@@ -302,7 +302,7 @@ public class WeightedQueue<T> implements BlockingQueue<T>
 
     boolean tryAcquireWeight(T weighable)
     {
-        var weight = weigher.weigh(weighable);
+        int weight = weigher.weigh(weighable);
         if (weight < 1)
         {
             throw new IllegalArgumentException(String.format("Weighable: \"%s\" had illegal weight %d", weighable, weight));
@@ -321,7 +321,7 @@ public class WeightedQueue<T> implements BlockingQueue<T>
             return;
         }
 
-        var weight = weigher.weigh(weighable);
+        int weight = weigher.weigh(weighable);
         if (weight < 1)
         {
             throw new IllegalArgumentException(String.format("Weighable: \"%s\" had illegal weight %d", weighable, weight));

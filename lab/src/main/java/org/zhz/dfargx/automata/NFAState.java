@@ -50,7 +50,7 @@ public class NFAState {
     public boolean equals(Object o) {
         if (this == o) return true;
 
-        var state = (NFAState) o;
+        NFAState state = (NFAState) o;
         return id == state.id; 
     }
 

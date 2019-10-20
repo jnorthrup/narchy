@@ -75,14 +75,14 @@ public class EstimatedHistogram {
     }
 
     public static long[] newOffsets(int size, boolean considerZeroes) {
-        var result = new long[size + (considerZeroes ? 1 : 0)];
-        var i = 0;
+        long[] result = new long[size + (considerZeroes ? 1 : 0)];
+        int i = 0;
         if (considerZeroes)
             result[i++] = 0;
         long last = 1;
         result[i++] = last;
         for (; i < result.length; i++) {
-            var next = Math.round(last * 1.2);
+            long next = Math.round(last * 1.2);
             if (next == last)
                 next++;
             result[i] = next;
@@ -93,7 +93,7 @@ public class EstimatedHistogram {
     }
 
     private static String nameOfRange(long[] bucketOffsets, int index) {
-        var sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         appendRange(sb, bucketOffsets, index);
         return sb.toString();
     }
@@ -125,7 +125,7 @@ public class EstimatedHistogram {
     }
 
     private int findIndex(long n) {
-        var index = Arrays.binarySearch(bucketOffsets, n);
+        int index = Arrays.binarySearch(bucketOffsets, n);
         if (index < 0) {
             
             index = -index - 1;
@@ -163,15 +163,15 @@ public class EstimatedHistogram {
      * @return a long[] containing the current histogram buckets
      */
     long[] getBuckets(boolean reset) {
-        var len = buckets.length();
+        int len = buckets.length();
         long[] rv;
 
         if (reset) {
-            var arr = new long[10];
-            var count = 0;
-            var bound = len;
-            for (var i = 0; i < bound; i++) {
-                var andSet = buckets.getAndSet(i, 0L);
+            long[] arr = new long[10];
+            int count = 0;
+            int bound = len;
+            for (int i = 0; i < bound; i++) {
+                long andSet = buckets.getAndSet(i, 0L);
                 if (arr.length == count) arr = Arrays.copyOf(arr, count * 2);
                 arr[count++] = andSet;
             }
@@ -179,11 +179,11 @@ public class EstimatedHistogram {
             rv = arr;
         }
         else {
-            var arr = new long[10];
-            var count = 0;
-            var bound = len;
-            for (var i = 0; i < bound; i++) {
-                var l = buckets.get(i);
+            long[] arr = new long[10];
+            int count = 0;
+            int bound = len;
+            for (int i = 0; i < bound; i++) {
+                long l = buckets.get(i);
                 if (arr.length == count) arr = Arrays.copyOf(arr, count * 2);
                 arr[count++] = l;
             }
@@ -198,8 +198,8 @@ public class EstimatedHistogram {
      * @return the smallest value that could have been added to this histogram
      */
     public long min() {
-        var n = buckets.length();
-        for (var i = 0; i < n; i++) {
+        int n = buckets.length();
+        for (int i = 0; i < n; i++) {
             if (buckets.get(i) > 0)
                 return i == 0 ? 0 : 1 + bucketOffsets[i - 1];
         }
@@ -211,11 +211,11 @@ public class EstimatedHistogram {
      * overflowed, returns Long.MAX_VALUE.
      */
     public long max() {
-        var lastBucket = buckets.length() - 1;
+        int lastBucket = buckets.length() - 1;
         if (buckets.get(lastBucket) > 0)
             return Long.MAX_VALUE;
 
-        for (var i = lastBucket - 1; i >= 0; i--) {
+        for (int i = lastBucket - 1; i >= 0; i--) {
             if (buckets.get(i) > 0)
                 return bucketOffsets[i];
         }
@@ -228,16 +228,16 @@ public class EstimatedHistogram {
      */
     public long percentile(double percentile) {
         assert percentile >= 0 && percentile <= 1.0;
-        var lastBucket = buckets.length() - 1;
+        int lastBucket = buckets.length() - 1;
         if (buckets.get(lastBucket) > 0)
             throw new IllegalStateException("Unable to compute when histogram overflowed");
 
-        var pcount = (long) Math.ceil(count() * percentile);
+        long pcount = (long) Math.ceil(count() * percentile);
         if (pcount == 0)
             return 0;
 
         long elements = 0;
-        for (var i = 0; i < lastBucket; i++) {
+        for (int i = 0; i < lastBucket; i++) {
             elements += buckets.get(i);
             if (elements >= pcount)
                 return bucketOffsets[i];
@@ -258,14 +258,14 @@ public class EstimatedHistogram {
      * @throws IllegalStateException if any values were greater than the largest bucket threshold
      */
     public double rawMean() {
-        var lastBucket = buckets.length() - 1;
+        int lastBucket = buckets.length() - 1;
         if (buckets.get(lastBucket) > 0)
             throw new IllegalStateException("Unable to compute ceiling for max when histogram overflowed");
 
         long elements = 0;
         long sum = 0;
-        for (var i = 0; i < lastBucket; i++) {
-            var bCount = buckets.get(i);
+        for (int i = 0; i < lastBucket; i++) {
+            long bCount = buckets.get(i);
             elements += bCount;
             sum += bCount * bucketOffsets[i];
         }
@@ -277,8 +277,12 @@ public class EstimatedHistogram {
      * @return the total number of non-zero values
      */
     public long count() {
-        var bound = buckets.length();
-        var sum = IntStream.range(0, bound).mapToLong(buckets::get).sum();
+        int bound = buckets.length();
+        long sum = 0L;
+        for (int i = 0; i < bound; i++) {
+            long l = buckets.get(i);
+            sum += l;
+        }
         return sum;
     }
 
@@ -308,18 +312,18 @@ public class EstimatedHistogram {
             nameCount = buckets.length() - 1;
         else
             nameCount = buckets.length();
-        var names = new String[nameCount];
+        String[] names = new String[nameCount];
 
-        var maxNameLength = 0;
-        for (var i = 0; i < nameCount; i++) {
+        int maxNameLength = 0;
+        for (int i = 0; i < nameCount; i++) {
             names[i] = nameOfRange(bucketOffsets, i);
             maxNameLength = Math.max(maxNameLength, names[i].length());
         }
 
 
-        var formatstr = "%" + maxNameLength + "s: %d";
-        for (var i = 0; i < nameCount; i++) {
-            var count = buckets.get(i);
+        String formatstr = "%" + maxNameLength + "s: %d";
+        for (int i = 0; i < nameCount; i++) {
+            long count = buckets.get(i);
             
             
             
@@ -337,7 +341,7 @@ public class EstimatedHistogram {
         if (!(o instanceof EstimatedHistogram))
             return false;
 
-        var that = (EstimatedHistogram) o;
+        EstimatedHistogram that = (EstimatedHistogram) o;
         return Arrays.equals(getBucketOffsets(), that.getBucketOffsets()) &&
                 Arrays.equals(getBuckets(false), that.getBuckets(false));
     }

@@ -26,18 +26,18 @@ public class Editor extends JFrame {
 		setSize(1400, 800);
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-		var levelPnl = new LevelPanel(this);
+        LevelPanel levelPnl = new LevelPanel(this);
 
-		var levelScroll = new JScrollPane(levelPnl);
+        JScrollPane levelScroll = new JScrollPane(levelPnl);
 		levelScroll.setMinimumSize(new Dimension(200, 100));
 
-		var groupsPnl = new GroupUI(levelPnl.level.groups, levelPnl);
+        GroupUI groupsPnl = new GroupUI(levelPnl.level.groups, levelPnl);
 		levelPnl.groupUI = groupsPnl;
 
-		var propsSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, propsPnl, groupsPnl);
+        JSplitPane propsSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, propsPnl, groupsPnl);
 		propsSplit.setDividerLocation(200);
 
-		var levelSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, levelScroll, propsSplit);
+        JSplitPane levelSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, levelScroll, propsSplit);
 		levelSplit.setDividerLocation(1100);
 
 		
@@ -72,17 +72,17 @@ public class Editor extends JFrame {
 		*/
 
 
-		var uniqueObjs = new ArrayList<LevelObject>();
-		var selectionStr = "";
-		for (var handle : selection) {
-			var obj = handle.getLevelObject();
+        ArrayList<LevelObject> uniqueObjs = new ArrayList<LevelObject>();
+        String selectionStr = "";
+		for (Handle handle : selection) {
+            LevelObject obj = handle.getLevelObject();
 			if (obj != null && !uniqueObjs.contains(obj)) {
 				uniqueObjs.add(obj);
 				selectionStr += "" + obj + " ";
 			}
 		}
 		selectionStr = "".equals(selectionStr.trim()) ? "Nothing selected" : selectionStr;
-		var lbl = (JLabel) statusBar.getComponent(0);
+        JLabel lbl = (JLabel) statusBar.getComponent(0);
 		lbl.setText(selectionStr);
 		
 

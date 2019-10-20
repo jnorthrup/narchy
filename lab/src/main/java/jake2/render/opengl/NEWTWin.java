@@ -54,7 +54,7 @@ public class NEWTWin {
 
     public List<MonitorMode> getModeList() {
         if( null != window ) {
-            var mainMonitor = window.getMainMonitor();
+            MonitorDevice mainMonitor = window.getMainMonitor();
             return mainMonitor.getSupportedModes();
         } else {        
             return screen.getMonitorModes();
@@ -62,7 +62,7 @@ public class NEWTWin {
     }
 
     public MonitorMode findDisplayMode(DimensionImmutable dim) {
-        var sml = MonitorModeUtil.filterByResolution(getModeList(), dim);
+        List<MonitorMode> sml = MonitorModeUtil.filterByResolution(getModeList(), dim);
         if(sml.size() == 0) {
             return oldDisplayMode;
         }
@@ -70,9 +70,9 @@ public class NEWTWin {
     }
 
     public static String getModeString(MonitorMode mm) {
-        var ss = mm.getSurfaceSize();
-        var m = ss.getResolution();
-        var sb = String.valueOf(m.getWidth()) +
+        SurfaceSize ss = mm.getSurfaceSize();
+        DimensionImmutable m = ss.getResolution();
+        String sb = String.valueOf(m.getWidth()) +
                 'x' +
                 m.getHeight() +
                 'x' +
@@ -91,7 +91,7 @@ public class NEWTWin {
      * @return enum Base.rserr_t
      */
     public int setMode(GLProfile glp, Dimension dim, int mode, boolean fullscreen, String driverName) {
-        var newDim = new Dimension();
+        Dimension newDim = new Dimension();
 
         VID.Printf(Defines.PRINT_ALL, "Initializing OpenGL display for profile "+glp+ '\n');
 
@@ -115,9 +115,9 @@ public class NEWTWin {
         if(null != window) {
             throw new InternalError("XXX");            
         }
-        var caps = new GLCapabilities(glp);
+        GLCapabilities caps = new GLCapabilities(glp);
         CapabilitiesChooser chooser = null;
-        var v = Cvar.Get("jogl_rgb565", "0", 0);
+        cvar_t v = Cvar.Get("jogl_rgb565", "0", 0);
         if( v.value != 0f ) {
             caps.setRedBits(5);
             caps.setGreenBits(6);
@@ -145,7 +145,7 @@ public class NEWTWin {
         animCtrl = new GameAnimatorControl();
         window.setAnimator(animCtrl);
 
-        var mainMonitor = window.getMainMonitor();
+        MonitorDevice mainMonitor = window.getMainMonitor();
         
         if (oldDisplayMode == null) {
             oldDisplayMode = mainMonitor.getCurrentMode();
@@ -212,8 +212,8 @@ public class NEWTWin {
         canvasObj = null;
 
         if (fullscreen) {
-            var mm = findDisplayMode(newDim);
-            var smDim = mm.getSurfaceSize().getResolution();
+            MonitorMode mm = findDisplayMode(newDim);
+            DimensionImmutable smDim = mm.getSurfaceSize().getResolution();
             newDim.setWidth( smDim.getWidth() );
             newDim.setHeight( smDim.getHeight() );
             mainMonitor.setCurrentMode(mm);
@@ -227,7 +227,7 @@ public class NEWTWin {
             throw new RuntimeException("NEWT window didn't not realize: "+window);
         }
         window.display();
-        var ctx = window.getContext();
+        GLContext ctx = window.getContext();
         if( !ctx.isCreated() ) {
             System.err.println("Warning: GL context not created: "+ctx);
         }
@@ -247,11 +247,11 @@ public class NEWTWin {
     
     private void propagateNewSize() {
         if( null != window ) {
-            var width = window.getWidth();
-            var height = window.getHeight();
+            int width = window.getWidth();
+            int height = window.getHeight();
             int _width;
             if ((width & 0x03) != 0) {
-                final var mask = ~0x03;
+                final int mask = ~0x03;
                 _width = ( width & mask ) + 4;
             } else {
                 _width = width;
@@ -265,9 +265,9 @@ public class NEWTWin {
     }
 
     protected final boolean activateGLContext(boolean force) {
-        var ctxCurrent = false;
+        boolean ctxCurrent = false;
         if( force || !shouldPause ) {
-            var ctx = window.getContext();
+            GLContext ctx = window.getContext();
             if ( null != ctx && GLContext.getCurrent() != ctx ) {
                 if( DEBUG ) {
                     System.err.println("GLCtx Current pause "+shouldPause+": "+Thread.currentThread().getName());
@@ -282,7 +282,7 @@ public class NEWTWin {
     }
     
     protected final void deactivateGLContext() {
-        var ctx = window.getContext();
+        GLContext ctx = window.getContext();
         if ( null != ctx && GLContext.getCurrent() == ctx) {
             if( DEBUG ) {
                 System.err.println("GLCtx Release pause "+shouldPause+": "+Thread.currentThread().getName());
@@ -307,7 +307,7 @@ public class NEWTWin {
             if( null != canvasObj && null != window ) {
                 isAnimating = false;
 
-                var NativeSurface = (NativeWindow) canvasObj;
+                NativeWindow NativeSurface = (NativeWindow) canvasObj;
                 if(null == window.getParent()) {
                     forceReleaseCtx = FORCE_RELEASE_CTX_VAL; 
                     window.reparentWindow( NativeSurface, 0, 0, 0 );
@@ -336,7 +336,7 @@ public class NEWTWin {
     private void shutdownImpl(boolean withScreen) {
         if ( null != window ) {
             deactivateGLContext();
-            var _window = window;
+            GLWindow _window = window;
             window = null;
             _window.destroy();
 
@@ -376,7 +376,7 @@ public class NEWTWin {
         final Thread thread;
         
         GameAnimatorControl() {
-            var isARM = Platform.CPUFamily.ARM == Platform.getCPUFamily();
+            boolean isARM = Platform.CPUFamily.ARM == Platform.getCPUFamily();
             fpsCounter = new FPSCounterImpl();
             fpsCounter.setUpdateFPSFrames(isARM ? 60 : 4*60, System.err);
             thread = Thread.currentThread();

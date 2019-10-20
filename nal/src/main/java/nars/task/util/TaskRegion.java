@@ -36,14 +36,14 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
 
     static Consumer<TaskRegion> asTask(Consumer<? super Task> each) {
         return r -> {
-            var x = _task(r);
+            Task x = _task(r);
             if (x != null) each.accept(x);
         };
     }
 
     static Predicate<TaskRegion> asTask(Predicate<? super Task> each) {
         return r -> {
-            var x = _task(r);
+            Task x = _task(r);
             return x == null || each.test(x);
         };
     }
@@ -122,7 +122,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
             assert (!(this instanceof Task)) : "mbr(task,task) should force creation of TasksRegion";
             return TaskRegion.mbr(this, (Task) r);
         } else {
-            var R = (TaskRegion) r;
+            TaskRegion R = (TaskRegion) r;
             if (contains(r))
                 return this;
             else if (r.contains(this))
@@ -147,7 +147,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     default   boolean intersects(HyperRegion _y) {
         if (_y == this) return true;
 
-        var y = (TaskRegion) _y;
+        TaskRegion y = (TaskRegion) _y;
         if (LongInterval.super.intersects(y)) {
         //if (y.intersects(start(), end())) {
 
@@ -161,11 +161,11 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
                     if (xt && yt)
                         return true; //HACK shortcut since tasks currently only have one flat freq but could change with piecewise linear truth
 
-                    var xcb = xt ? xca : confMaxI();
-                    var yca = yt ? ycb : y.confMinI();
+                    int xcb = xt ? xca : confMaxI();
+                    int yca = yt ? ycb : y.confMinI();
                     if (xcb >= yca) {
-                        var xfb = xt ? xfa : freqMaxI();
-                        var yfa = yt ? yfb : y.freqMinI();
+                        int xfb = xt ? xfa : freqMaxI();
+                        int yfa = yt ? yfb : y.freqMinI();
                         return (xfb >= yfa);
                     }
                 }
@@ -177,7 +177,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     @Override
     default   boolean contains(HyperRegion x) {
         if (x == this) return true;
-        var t = (TaskRegion) x;
+        TaskRegion t = (TaskRegion) x;
         if (LongInterval.super.contains(((LongInterval)t))) {
             return
                 confMinI() <= t.confMinI() &&

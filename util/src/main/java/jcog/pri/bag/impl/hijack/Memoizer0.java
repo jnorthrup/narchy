@@ -53,8 +53,8 @@ final class Memoizer0 implements InvocationHandler {
     public static Object memoize(Object origin,
                                  int maxElements, long expireMillis)
     {
-        var clazz = origin.getClass();
-        var memoizer = new Memoizer0(origin, maxElements, expireMillis);
+        Class<?> clazz = origin.getClass();
+        Memoizer0 memoizer = new Memoizer0(origin, maxElements, expireMillis);
         return Proxy.newProxyInstance(clazz.getClassLoader(), 
                 clazz.getInterfaces(), memoizer);
     }
@@ -87,15 +87,15 @@ final class Memoizer0 implements InvocationHandler {
             
             return invoke(method, args);
         } else {
-            var key = new CacheKey(method, Arrays.asList(args));
-            var cacheValue = cache.get(key);
+            CacheKey key = new CacheKey(method, Arrays.asList(args));
+            CacheValue cacheValue = cache.get(key);
             if (cacheValue != null) {
-                var ret = cacheValue.getValueIfNotExpired();
+                Object ret = cacheValue.getValueIfNotExpired();
                 if (ret != CacheValue.EXPIRED) {
                     return ret;
                 }
             }
-            var ret = invoke(method, args);
+            Object ret = invoke(method, args);
             cache.put(key, new CacheValue(ret, expireMillis));
             return ret;
         }
@@ -127,7 +127,7 @@ final class Memoizer0 implements InvocationHandler {
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof CacheKey) {
-                var o = (CacheKey) obj;
+                CacheKey o = (CacheKey) obj;
                 return o.method.equals(this.method) && 
                         o.params.equals(this.params);
             }
@@ -173,16 +173,16 @@ final class Memoizer0 implements InvocationHandler {
 
             @Override
             public String hash(String in) throws NoSuchAlgorithmException {
-                var md = MessageDigest.getInstance("SHA-512");
-                var buf = md.digest(in.getBytes(UTF8));
+                MessageDigest md = MessageDigest.getInstance("SHA-512");
+                byte[] buf = md.digest(in.getBytes(UTF8));
                 return Base64.getEncoder().encodeToString(buf);
             }
         }
 
         private static String getHeader(Class<?> b1,
                                         Class<?> b2) {
-            var s1 = b1.getSimpleName();
-            var s2 = b2.getSimpleName();
+            String s1 = b1.getSimpleName();
+            String s2 = b2.getSimpleName();
             if (s1.equals(s2))
                 return s1 + ":direct";
             return s1 + ":memoizeByte";
@@ -192,24 +192,24 @@ final class Memoizer0 implements InvocationHandler {
          * Simple Test / Benchmark
          */
         public static void main(String[] args) throws NoSuchAlgorithmException {
-            final var TOTAL = (int) 1.0e6;
-            final var TEST_TEXT = "hello world";
-            final var cacheElements = 1024;
+            final int TOTAL = (int) 1.0e6;
+            final String TEST_TEXT = "hello world";
+            final int cacheElements = 1024;
             final long cacheMillis = 1000; 
             SampleInterface[] samples = {
                     new SampleSlowImpl(), 
                     (SampleInterface) Memoizer0.memoize(new SampleSlowImpl(), cacheElements, cacheMillis)
             };
             
-            for (var k = 0; k < samples.length; k++) {
-                var base = samples[k & ~1];
-                var test = samples[k];
-                var hdr = getHeader(base.getClass(), test.getClass());
-                var ts = System.currentTimeMillis();
-                for (var i = 0; i < TOTAL; i++) {
+            for (int k = 0; k < samples.length; k++) {
+                SampleInterface base = samples[k & ~1];
+                SampleInterface test = samples[k];
+                String hdr = getHeader(base.getClass(), test.getClass());
+                long ts = System.currentTimeMillis();
+                for (int i = 0; i < TOTAL; i++) {
                     test.hash(TEST_TEXT);
                 }
-                var diff = System.currentTimeMillis() - ts;
+                long diff = System.currentTimeMillis() - ts;
                 System.out.println(hdr + '\t' + "diff=" + diff + "ms" + '\t' + 
                         test.hash(TEST_TEXT));
             }

@@ -60,7 +60,7 @@ public class M extends Applet implements Runnable {
 	private static final void loadTypeArray(int[] obj) {
 
 
-		var p = OBJECT_TYPE_BREAKOUT_POS;
+        int p = OBJECT_TYPE_BREAKOUT_POS;
 		obj[p + OBJECT_TYPE_RECORD_FLAG_INDEX] = FLAGMSK_DESTROYABLE | FLAGMSK_STOPS_TETRIS | FLAGMSK_REFLECTS_BALL;
 		obj[p + OBJECT_TYPE_RECORD_COLOR_INDEX] = PALETTE_BREAKOUT_POS;
 		obj[p + OBJECT_TYPE_RECORD_WIDTH_INDEX] = BREAKOUT_BLOCK_WIDTH;
@@ -525,11 +525,11 @@ public class M extends Applet implements Runnable {
 		int x7;
 
 
-		var image = new BufferedImage(RENDER_WIDTH, RENDER_HEIGHT, BufferedImage.TYPE_INT_RGB);
-		var ogr = image.getGraphics();
+        BufferedImage image = new BufferedImage(RENDER_WIDTH, RENDER_HEIGHT, BufferedImage.TYPE_INT_RGB);
+        Graphics ogr = image.getGraphics();
 
 
-		var OBJECT_TYPES = new int[OBJECT_TYPE_SIZE];
+        int[] OBJECT_TYPES = new int[OBJECT_TYPE_SIZE];
 		
 		loadTypeArray(OBJECT_TYPES);
 
@@ -540,7 +540,7 @@ public class M extends Applet implements Runnable {
 		OBJECT_TYPES[WALL_TYPE_WIDTH_POS] = WALL_IMAGE_BLOCK_WIDTH;
 
 
-		var COLORS = new Color[PALETTE_COUNT];
+        Color[] COLORS = new Color[PALETTE_COUNT];
 
 		
 		
@@ -550,10 +550,10 @@ public class M extends Applet implements Runnable {
 		/*y1 = 0;*/
 		/*y2 = 0;*/
 		/*y3 = 0;*/
-		var y3 = 0;
-		var y2 = 0;
-		var y1 = 0;
-		var x1 = 0;
+        int y3 = 0;
+        int y2 = 0;
+        int y1 = 0;
+        int x1 = 0;
         while (true) {
 			COLORS[x1++] = new Color(y1 << PALETTE_COMPONENT_SHL, y2 << PALETTE_COMPONENT_SHL, y3 << PALETTE_COMPONENT_SHL);
 			if (++y1 >= PALETTE_COMPONENT_MAX) {
@@ -568,24 +568,24 @@ public class M extends Applet implements Runnable {
 		}
 
 
-		var playerScore = 0;
-		var computerScore = 0;
-		var playerScoreColor = PALETTE_SCORE_NEUTRAL_POS;
-		var computerScoreColor = PALETTE_SCORE_NEUTRAL_POS;
+        int playerScore = 0;
+        int computerScore = 0;
+        int playerScoreColor = PALETTE_SCORE_NEUTRAL_POS;
+        int computerScoreColor = PALETTE_SCORE_NEUTRAL_POS;
 
 		startLife: while (true) {
 
 
-			var lastTime = System.nanoTime();
+            long lastTime = System.nanoTime();
 
 
 			y1 = WALL_START_Y;
 
 
-			var OBJECT_INST = new int[OBJECT_INST_SIZE];
+            int[] OBJECT_INST = new int[OBJECT_INST_SIZE];
             int x2;
-			var p1 = OBJECT_INST_IMAGE_BASE_START_POS;
-			var p0 = WALL_OBJECT_INST_START_POS;
+            int p1 = OBJECT_INST_IMAGE_BASE_START_POS;
+            int p0 = WALL_OBJECT_INST_START_POS;
 			for (x1 = 0; x1 < WALL_TOTAL_COUNT; x1++) {
 				
 				OBJECT_INST[p0 + OBJECT_INST_RECORD_VISIBLE_INDEX] = VISIBLE_YES;
@@ -611,7 +611,7 @@ public class M extends Applet implements Runnable {
 			}
 
 
-			var x4 = OBJECT_TYPE_BREAKOUT_POS;
+            int x4 = OBJECT_TYPE_BREAKOUT_POS;
 
 
             int x3;
@@ -679,20 +679,20 @@ public class M extends Applet implements Runnable {
 			OBJECT_INST[SPADDLE_OBJECT_INST_VISIBLE_POS] = VISIBLE_YES;
 			OBJECT_INST[BALL_OBJECT_INST_VISIBLE_POS] = VISIBLE_YES;
 
-			var objectCount = BALL_OBJECT_INST_START_INDEX + 1;
+            int objectCount = BALL_OBJECT_INST_START_INDEX + 1;
 
-			var ballSticky = true;
-			var ballReflect = false;
-			var wallRight = MAX_WALL_RIGHT;
-			var wallLeft = MIN_WALL_LEFT;
-			var wallCount = 0;
-			var reflectCount = 0;
-			var frameCount = 0;
+            boolean ballSticky = true;
+            boolean ballReflect = false;
+            int wallRight = MAX_WALL_RIGHT;
+            int wallLeft = MIN_WALL_LEFT;
+            int wallCount = 0;
+            int reflectCount = 0;
+            int frameCount = 0;
             loopGame: while (true) {
-				var sg = getGraphics();
+                Graphics sg = getGraphics();
 
 
-				var mousePressed = this.mouseClick;
+                boolean mousePressed = this.mouseClick;
 				this.mouseClick = false;
 				if (mousePressed && frameCount > 0) {
 					ballSticky = false;
@@ -901,7 +901,7 @@ public class M extends Applet implements Runnable {
 				OBJECT_TYPES[MISSILE_EXPLODE_3_TYPE_COLOR_POS] = x1;
 
 
-				var p3 = 0;
+                int p3 = 0;
 
 
                 boolean b1;
@@ -926,8 +926,8 @@ public class M extends Applet implements Runnable {
 					p0 = OBJECT_INST[p3 + OBJECT_INST_RECORD_IMAGE_POS_INDEX];
 
 
-					var nextXPos = OBJECT_INST[p3 + OBJECT_INST_RECORD_X_INDEX];
-					var nextYPos = OBJECT_INST[p3 + OBJECT_INST_RECORD_Y_INDEX];
+                    int nextXPos = OBJECT_INST[p3 + OBJECT_INST_RECORD_X_INDEX];
+                    int nextYPos = OBJECT_INST[p3 + OBJECT_INST_RECORD_Y_INDEX];
 
 
                     int y5;
@@ -1383,10 +1383,10 @@ public class M extends Applet implements Runnable {
 					if ((p1 & COLLIDES_FLAGS) != 0) {
 
 
-						var xpos = OBJECT_INST[p3 + OBJECT_INST_RECORD_X_INDEX];
-						var xdelta = nextXPos - xpos;
-						var xdir = 0;
-						var withXOverlapSubt = GR_BLOCK_WIDTH;
+                        int xpos = OBJECT_INST[p3 + OBJECT_INST_RECORD_X_INDEX];
+                        int xdelta = nextXPos - xpos;
+                        int xdir = 0;
+                        int withXOverlapSubt = GR_BLOCK_WIDTH;
 						if (xdelta > 0) {
 							xdir++;
 							withXOverlapSubt = 0;
@@ -1403,13 +1403,13 @@ public class M extends Applet implements Runnable {
 							
 						}
 
-						var ypos = OBJECT_INST[p3 + OBJECT_INST_RECORD_Y_INDEX];
-						var ydelta = nextYPos - ypos;
-						var ydir = 0;
+                        int ypos = OBJECT_INST[p3 + OBJECT_INST_RECORD_Y_INDEX];
+                        int ydelta = nextYPos - ypos;
+                        int ydir = 0;
                         if (ydelta > 0) {
 							ydir++;
 						}
-						var withYOverlapAdd = GR_BLOCK_HEIGHT;
+                        int withYOverlapAdd = GR_BLOCK_HEIGHT;
                         if (ydelta < 0) {
 							
 							
@@ -1419,20 +1419,20 @@ public class M extends Applet implements Runnable {
 							ydelta = 0 - ydelta;
 							withYOverlapAdd = 0;
 						}
-						var movementError = xdelta - ydelta;
+                        int movementError = xdelta - ydelta;
 
-						var sourceWidth = OBJECT_TYPES[y3 + OBJECT_TYPE_RECORD_WIDTH_INDEX];
-						var sourceHeight = OBJECT_TYPES[y3 + OBJECT_TYPE_RECORD_HEIGHT_INDEX];
+                        int sourceWidth = OBJECT_TYPES[y3 + OBJECT_TYPE_RECORD_WIDTH_INDEX];
+                        int sourceHeight = OBJECT_TYPES[y3 + OBJECT_TYPE_RECORD_HEIGHT_INDEX];
 
-						var maxP2 = objectCount * OBJECT_INST_RECORD_SIZE;
+                        int maxP2 = objectCount * OBJECT_INST_RECORD_SIZE;
 
 						movementLoop: while (true) {
-							var collision = false;
-							var ballReflectNow = false;
-							var collisionXPixels = 0;
-							var collisionYPixels = 0;
-							var highestTetrisPos = DISPLAY_HEIGHT;
-							var collisionPaddle = 0;
+                            boolean collision = false;
+                            boolean ballReflectNow = false;
+                            int collisionXPixels = 0;
+                            int collisionYPixels = 0;
+                            int highestTetrisPos = DISPLAY_HEIGHT;
+                            int collisionPaddle = 0;
 
 							
 							
@@ -1449,14 +1449,14 @@ public class M extends Applet implements Runnable {
 								b1 = ((p1 & FLAGMSK_CAUSES_DESTROY) != 0) && ((y1 & FLAGMSK_DESTROYABLE) != 0);
 
 
-								var b2 = ((p1 & FLAGMSK_CAUSES_DENTS) != 0) && ((y1 & FLAGMSK_DENTABLE) != 0) && !((x3 == OBJECT_TYPE_BALL_INDEX) && (p2 == SPADDLE_OBJECT_INST_START_POS))
+                                boolean b2 = ((p1 & FLAGMSK_CAUSES_DENTS) != 0) && ((y1 & FLAGMSK_DENTABLE) != 0) && !((x3 == OBJECT_TYPE_BALL_INDEX) && (p2 == SPADDLE_OBJECT_INST_START_POS))
                                         && !((x3 == OBJECT_TYPE_WALL_INDEX) && ((y1 & FLAGMSK_IS_TETRIS) != 0));
 
 
-								var b3 = (x3 == OBJECT_TYPE_BALL_INDEX) && ((y1 & FLAGMSK_REFLECTS_BALL) != 0);
+                                boolean b3 = (x3 == OBJECT_TYPE_BALL_INDEX) && ((y1 & FLAGMSK_REFLECTS_BALL) != 0);
 
 
-								var b4 = ((p1 & FLAGMSK_IS_TETRIS) != 0) && ((y1 & FLAGMSK_STOPS_TETRIS) != 0);
+                                boolean b4 = ((p1 & FLAGMSK_IS_TETRIS) != 0) && ((y1 & FLAGMSK_STOPS_TETRIS) != 0);
 
 
                                 x1 = OBJECT_INST[p2 + OBJECT_INST_RECORD_X_INDEX] /*+ withXPlane */;
@@ -1472,45 +1472,45 @@ public class M extends Applet implements Runnable {
 								if (p2 != p3 && OBJECT_INST[p2 + OBJECT_INST_RECORD_VISIBLE_INDEX] == VISIBLE_YES && (b1 || b2 || b3 || b4)) {
 
 
-									var withType = OBJECT_INST[p2 + OBJECT_INST_RECORD_TYPE_INDEX];
+                                    int withType = OBJECT_INST[p2 + OBJECT_INST_RECORD_TYPE_INDEX];
 
-									var p4 = OBJECT_INST[p2 + OBJECT_INST_RECORD_IMAGE_POS_INDEX];
+                                    int p4 = OBJECT_INST[p2 + OBJECT_INST_RECORD_IMAGE_POS_INDEX];
 
-									var withTypePos = withType * OBJECT_TYPE_RECORD_SIZE;
-									var withWidth = OBJECT_TYPES[withTypePos + OBJECT_TYPE_RECORD_WIDTH_INDEX];
-									var withHeight = OBJECT_TYPES[withTypePos + OBJECT_TYPE_RECORD_HEIGHT_INDEX];
-									var withX2 = x1 + withWidth * GR_BLOCK_WIDTH;
-									var withY2 = y1 - withHeight * GR_BLOCK_HEIGHT;
+                                    int withTypePos = withType * OBJECT_TYPE_RECORD_SIZE;
+                                    int withWidth = OBJECT_TYPES[withTypePos + OBJECT_TYPE_RECORD_WIDTH_INDEX];
+                                    int withHeight = OBJECT_TYPES[withTypePos + OBJECT_TYPE_RECORD_HEIGHT_INDEX];
+                                    int withX2 = x1 + withWidth * GR_BLOCK_WIDTH;
+                                    int withY2 = y1 - withHeight * GR_BLOCK_HEIGHT;
 
 
-									var p5 = p0;
+                                    int p5 = p0;
 
-                                    for (var sourceY = 0; sourceY < sourceHeight; sourceY++) {
+                                    for (int sourceY = 0; sourceY < sourceHeight; sourceY++) {
 										
 										y5 = ypos + sourceY * GR_BLOCK_WIDTH;
-										for (var sourceX = 0; sourceX < sourceWidth; sourceX++, p5++) {
+										for (int sourceX = 0; sourceX < sourceWidth; sourceX++, p5++) {
 											
 											x5 = xpos + sourceX * GR_BLOCK_WIDTH;
 											if (OBJECT_INST[p5] != PALETTE_BACKGROUND_POS) {
 												
 												
 												
-												for (var corner = 0; corner < 4; corner++) {
+												for (int corner = 0; corner < 4; corner++) {
 
-													var x6 = x5 + ((corner & 1) * (GR_BLOCK_WIDTH - 1));
+                                                    int x6 = x5 + ((corner & 1) * (GR_BLOCK_WIDTH - 1));
 
-													var y6 = y5 - (((corner >> 1) & 1) * (GR_BLOCK_HEIGHT - 1));
+                                                    int y6 = y5 - (((corner >> 1) & 1) * (GR_BLOCK_HEIGHT - 1));
 
 
-													var overlapX = (x6 - x1) / GR_BLOCK_WIDTH;
+                                                    int overlapX = (x6 - x1) / GR_BLOCK_WIDTH;
 													if (overlapX >= withWidth || overlapX < 0) {
 														continue;
 													}
 
-													var p6 = p4 + overlapX;
+                                                    int p6 = p4 + overlapX;
 
 
-													var overlapY = (y1 - y6) / GR_BLOCK_HEIGHT;
+                                                    int overlapY = (y1 - y6) / GR_BLOCK_HEIGHT;
 													if (overlapY >= withHeight || overlapY < 0) {
 														continue;
 													}
@@ -1530,7 +1530,7 @@ public class M extends Applet implements Runnable {
 														if (b1) {
 
 
-															var y7 = VISIBLE_DESTROY;
+                                                            int y7 = VISIBLE_DESTROY;
                                                             if (p2 < OBJECT_INST_FIRST_DESTROYABLE_POS) {
 																y7 = VISIBLE_NO;
 															}

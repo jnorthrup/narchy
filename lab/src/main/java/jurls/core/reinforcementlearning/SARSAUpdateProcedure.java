@@ -40,28 +40,28 @@ public class SARSAUpdateProcedure implements UpdateProcedure {
             stateAction = new double[s[0].length + 1];
         }
 
-        var qtm1 = Utils.q(f, stateAction, s[0], a[0]);
-        var qt = Utils.q(f, stateAction, s[1], a[1]);
+        double qtm1 = Utils.q(f, stateAction, s[0], a[0]);
+        double qt = Utils.q(f, stateAction, s[1], a[1]);
         Utils.join(stateAction, s[1], a[1]);
         f.parameterGradient(gradient, stateAction);
 
-        for (var i = 0; i < deltas.length; ++i) {
+        for (int i = 0; i < deltas.length; ++i) {
             deltas[i] = context.e[i] * (reward + rLParameters.getGamma() * qt - qtm1);
         }
 
-        var l = Utils.length(deltas);
+        double l = Utils.length(deltas);
         if (l < 1) {
             l = 1;
         }
 
-        for (var i = 0; i < deltas.length; ++i) {
+        for (int i = 0; i < deltas.length; ++i) {
             deltas[i] = approxParameters.getAlpha() * deltas[i] / l
                     + approxParameters.getMomentum() * context.previousDeltas[i];
         }
 
         f.addToParameters(deltas);
 
-        for (var i = 0; i < context.e.length; ++i) {
+        for (int i = 0; i < context.e.length; ++i) {
             context.e[i] = context.e[i] * (rLParameters.getGamma() * rLParameters.getLambda())
                     + gradient[i];
         }

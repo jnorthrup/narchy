@@ -21,7 +21,7 @@ public abstract class AbstractTermMatchPred<X> extends AbstractPred<X> {
 
     @Override
     public final boolean test(X x) {
-        var y = resolve.apply(x);
+        Term y = resolve.apply(x);
         return y!=null && match(y);
     }
 

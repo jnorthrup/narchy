@@ -27,7 +27,7 @@ public class NARAudio extends WaveIn {
     public NARAudio(Term id, NAR nar, SignalInput src, float fps) {
         super($.quote(src.toString()/*HACK*/), src, fps);
 
-        var h = new Game("hear");
+        Game h = new Game("hear");
 
         /**
          * buffer time in seconds
@@ -35,14 +35,14 @@ public class NARAudio extends WaveIn {
 //    public SignalSampling(AudioSource src, float bufferTime) {
 //            this(src::writeTo, src.sampleRate(),Math.round(src.sampleRate() * bufferTime));
 //        }
-        var hearBuf = new CircularFloatBuffer(in.data);
+        CircularFloatBuffer hearBuf = new CircularFloatBuffer(in.data);
         /* hack */
-        var hear = new FreqVectorSensor(nar, hearBuf /* hack */,
+        FreqVectorSensor hear = new FreqVectorSensor(nar, hearBuf /* hack */,
                 512, 16, f -> $.inh(id, $.the(f)));
         h.addSensor(hear);
 
         //addSensor(hear);
-        var hearView = new WaveBitmap(hearBuf, 300, 64);
+        WaveBitmap hearView = new WaveBitmap(hearBuf, 300, 64);
         h.onFrame(hearView::update);
 
         SpaceGraph.window(grid(new VectorSensorChart(hear, nar).withControls(),
@@ -56,16 +56,16 @@ public class NARAudio extends WaveIn {
 
     public static void main(String[] args) throws LineUnavailableException {
 
-        var n = NARS.tmp();//NARS.shell();
+        NAR n = NARS.tmp();//NARS.shell();
         n.log();
 
-        var audio = AudioSource.all().get(0); //HACK
-        var i = new SignalInput();
+        AudioSource audio = AudioSource.all().get(0); //HACK
+        SignalInput i = new SignalInput();
         i.set(audio, 1/30f);
 
         audio.start();
 
-        var na = new NARAudio($.quote(audio.toString()), n, i, 30f);
+        NARAudio na = new NARAudio($.quote(audio.toString()), n, i, 30f);
 
         SpaceGraph.window(new SignalView(i), 800, 800);
 

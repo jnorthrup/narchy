@@ -23,7 +23,7 @@ public class MapUnification extends DeterministicUnification {
     @Override
     protected boolean equals(DeterministicUnification obj) {
         if (obj instanceof MapUnification) {
-            var u = (MapUnification) obj;
+            MapUnification u = (MapUnification) obj;
 //            if (u.matchStructure != matchStructure)
 //                return false;
             return xy.equals(u.xy);
@@ -33,11 +33,11 @@ public class MapUnification extends DeterministicUnification {
 
     @Override
     public boolean apply(Unify u) {
-        for (var entry : xy.entrySet()) {
-            var tx = entry.getKey();
-            var ty = entry.getValue();
+        for (Map.Entry<Variable, Term> entry : xy.entrySet()) {
+            Variable tx = entry.getKey();
+            Term ty = entry.getValue();
             /*HACK*/
-            var applied = u.putXY(tx, ty);
+            boolean applied = u.putXY(tx, ty);
             assert (applied);
         }
         return true;

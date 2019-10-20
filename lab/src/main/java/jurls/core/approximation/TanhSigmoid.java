@@ -19,8 +19,8 @@ public class TanhSigmoid implements DiffableFunctionSource {
 
     @Override
     public String valueToSource(SourceEnvironment se) {
-        var xv = x.valueToSource(se);
-        var y = se.allocateVariable();
+        String xv = x.valueToSource(se);
+        String y = se.allocateVariable();
 
         se.assign(y).append("Math.tanh(").append(xv).append(");").nl();
 
@@ -29,9 +29,9 @@ public class TanhSigmoid implements DiffableFunctionSource {
 
     @Override
     public String partialDeriveToSource(SourceEnvironment se) {
-        var xv = valueToSource(se);
-        var xdv = x.partialDeriveToSource(se);
-        var y = se.allocateVariable();
+        String xv = valueToSource(se);
+        String xdv = x.partialDeriveToSource(se);
+        String y = se.allocateVariable();
 
         se.assign(y).append(xdv).append(" * (1.0 - ").append(xv).
                 append(") * (1.0 + ").append(xv).append(");").nl();

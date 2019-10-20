@@ -82,11 +82,11 @@ public final class TasksRegion extends Longerval implements TaskRegion {
 
     public static TasksRegion mbr(TaskRegion r, long xs, long xe, float _ef, float _ec) {
 
-        var S = r.start();
+        long S = r.start();
 
         assert(xs!=ETERNAL && xs!=TIMELESS && xe!=ETERNAL && xe!=TIMELESS);
 
-        var E = r.end();
+        long E = r.end();
         int f = r.freqMinI(), F = r.freqMaxI();
         int c = r.confMinI(), C = r.confMaxI();
 
@@ -117,13 +117,13 @@ public final class TasksRegion extends Longerval implements TaskRegion {
         if (this == obj) return true;
         if (!(obj instanceof TasksRegion))
             return false; //throw new TODO();
-        var r = (TasksRegion) obj;
+        TasksRegion r = (TasksRegion) obj;
         return a == r.a && b == r.b && start == r.start && end == r.end;
     }
 
     @Override public String toString() {
 
-        var decimals = 3;
+        int decimals = 3;
         return '@' +
                 Tense.tStr(start, end) +
                 '[' +

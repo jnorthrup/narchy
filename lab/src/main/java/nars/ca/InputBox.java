@@ -22,7 +22,7 @@ public class InputBox extends Dialog implements ActionListener {
 		add("North", new Label(sPrompt));
 		add("Center", txtFld);
 
-		var pnlButtons = new Panel();
+        Panel pnlButtons = new Panel();
 		pnlButtons.setLayout(new FlowLayout());
 		pnlButtons.add(btnOk = new Button("  Ok  "));
 		btnOk.addActionListener(this);
@@ -30,7 +30,7 @@ public class InputBox extends Dialog implements ActionListener {
 		btnCcl.addActionListener(this);
 		add("South", pnlButtons);
 
-		var d = getToolkit().getScreenSize();
+        Dimension d = getToolkit().getScreenSize();
 		setLocation(d.width / 4, d.height / 3);
 		pack();
 		setVisible(true);

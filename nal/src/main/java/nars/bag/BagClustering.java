@@ -99,7 +99,7 @@ public class BagClustering<X> {
 
 
     public void forEachCluster(Consumer<Centroid> c) {
-        for (var b : net.centroids) {
+        for (Centroid b : net.centroids) {
             c.accept(b);
         }
     }
@@ -112,32 +112,32 @@ public class BagClustering<X> {
     public <L extends FasterList<X>> L[] forEachCentroid(L[] centroidList, int maxCentroids, int minPerCentroid, IntToObjectFunction<L> listBuilder) {
 
 
-        var s = bag.size();
+        int s = bag.size();
         if (s == 0)
             return centroidList;
 
-        var cc = net.centroidCount();
-        var sizeBefore = centroidList.length;
+        int cc = net.centroidCount();
+        int sizeBefore = centroidList.length;
 
         if (sizeBefore != cc) {
             centroidList = Arrays.copyOf(centroidList, cc);
 
-            var meanItemsPerCentroid = (int) Math.ceil(((float) s) / cc);
-            for (var i = sizeBefore; i < cc; i++)
+            int meanItemsPerCentroid = (int) Math.ceil(((float) s) / cc);
+            for (int i = sizeBefore; i < cc; i++)
                 centroidList[i] = listBuilder.valueOf(meanItemsPerCentroid); //allocate
         }
 
-        var ll = centroidList;
-        for (var l : ll)
+        L[] ll = centroidList;
+        for (L l : ll)
             l.clear();
 
         int[] centroids = {0};
 //        for (VLink<X> x : bag) {
 //        }
         bag.sampleUnique(ThreadLocalRandom.current(), x ->{
-            var c = x.centroid;
+            int c = x.centroid;
             if (c >= 0) {
-                var llc = ll[c % cc];
+                L llc = ll[c % cc];
                 llc.add(x.id); //round robin populate the buffer
                 if (llc.size() == minPerCentroid) {
                     return ++centroids[0] != maxCentroids;
@@ -154,16 +154,16 @@ public class BagClustering<X> {
 
     public void learn(float forgetRate, int learningIterations) {
 
-            @Nullable var f = bag.forget(forgetRate);
+            @Nullable Consumer<VLink<X>> f = bag.forget(forgetRate);
             bag.commit(v -> v.update(f));
 
 //            net.alpha.setAt(0.8f / s);
-        var lambdaFactor = 1f;
+        float lambdaFactor = 1f;
             net.setLambdaPeriod((int) Math.ceil((bag.capacity()) * lambdaFactor));
 
             Consumer<VLink<X>> l = this::learn;
-            for (var i = 0; i < learningIterations; i++) {
-                for (var xvLink : bag) {
+            for (int i = 0; i < learningIterations; i++) {
+                for (VLink<X> xvLink : bag) {
                     l.accept(xvLink);
                 }
             }
@@ -200,11 +200,11 @@ public class BagClustering<X> {
 
 
     private void learn(VLink<X> x) {
-        var x0 = x.coord[0];
+        double x0 = x.coord[0];
         if (x0 != x0)
             model.coord(x.get(), x.coord);
 
-        var y = net.put(x.coord);
+        Centroid y = net.put(x.coord);
         x.centroid = y.id;
     }
 
@@ -216,7 +216,7 @@ public class BagClustering<X> {
     }
 
     public final boolean put(X x, float pri) {
-        var v = new VLink<X>(x, pri, model.dims);
+        VLink<X> v = new VLink<X>(x, pri, model.dims);
         return bag.put(v)==v;
     }
 
@@ -232,9 +232,9 @@ public class BagClustering<X> {
         //assert (x != y);
         if (x == y) return 0;
 
-        @Nullable var xx = bag.get(x);
+        @Nullable VLink<X> xx = bag.get(x);
         if (xx != null && xx.centroid >= 0) {
-            @Nullable var yy = bag.get(y);
+            @Nullable VLink<X> yy = bag.get(y);
             if (yy != null && yy.centroid >= 0) {
                 return Math.sqrt(net.distanceSq.distance(xx.coord, yy.coord));
             }
@@ -250,11 +250,11 @@ public class BagClustering<X> {
     }
 
     public Stream<VLink<X>> neighbors(X x) {
-        @Nullable var link = bag.get(x);
+        @Nullable VLink<X> link = bag.get(x);
         if (link != null) {
-            var centroid = link.centroid;
+            int centroid = link.centroid;
             if (centroid >= 0) {
-                var nodes = net.centroids;
+                Centroid[] nodes = net.centroids;
                 if (centroid < nodes.length)
                     return stream(centroid)
                             .filter(y -> !y.equals(x))

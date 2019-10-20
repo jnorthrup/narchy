@@ -157,7 +157,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
      * @throws NullPointerException if the size was specified at construction time.
      */
     public int addNode(V o) {
-        var index = node(o);
+        int index = node(o);
         switch (index) {
             case -1:
                 return _addNode(o);
@@ -168,8 +168,8 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     }
 
     private int _addNode(V o) {
-        var id = serial++;
-        var n = new Node(o, id);
+        int id = serial++;
+        Node n = new Node(o, id);
         nodes.put(n, id);
         antinodes.put(id, n);
         return id;
@@ -186,10 +186,10 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     }
 
     public boolean setEdge(V i, V j, E value) {
-        var result = false;
-        var ii = node(i);
+        boolean result = false;
+        int ii = node(i);
         if (ii != -1) {
-            var jj = node(j);
+            int jj = node(j);
             if (jj != -1) {
                 result = setEdge(ii, jj, value);
             }
@@ -199,7 +199,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
 
     @Override
     public boolean setEdge(int i, int j, E value) {
-        var ret = antinodes.get(i).e.add(j);
+        boolean ret = antinodes.get(i).e.add(j);
         if (ret && !directed) antinodes.get(j).e.add(i);
         edges.put(eid(i, j), value);
         return ret;
@@ -215,9 +215,9 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
 
     public @Nullable E edge(V i, V j) {
         @Nullable E result = null;
-        var ii = node(i);
+        int ii = node(i);
         if (ii != -1) {
-            var jj = node(j);
+            int jj = node(j);
             if (jj != -1) {
                 result = edge(ii, jj);
             }
@@ -232,19 +232,19 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     @Override
     public String toString() {
         return nodes + " * " + Joiner.on(",").join(StreamSupport.stream(edges.keyValuesView().spliterator(), false).map((e) -> {
-            var id = e.getOne();
+            long id = e.getOne();
             return (id >> 32) + "->" + (id & 0xffffffffL) + '=' + e.getTwo();
         }).collect(Collectors.toList()));
     }
 
     @Override
     public boolean removeEdge(int i, int j) {
-        var ret = antinodes.get(i).e.remove(j);
+        boolean ret = antinodes.get(i).e.remove(j);
         if (ret && !directed) {
-            var ret2 = antinodes.get(j).e.remove(i);
+            boolean ret2 = antinodes.get(j).e.remove(i);
             assert (ret2);
         }
-        var ret3 = edges.remove(eid(i, j)) != null;
+        boolean ret3 = edges.remove(eid(i, j)) != null;
         assert (ret3);
         return ret;
     }
@@ -252,7 +252,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     public final long eid(int i, int j) {
         if (!directed) {
             if (j < i) {
-                var x = j;
+                int x = j;
                 j = i;
                 i = x;
             }
@@ -284,23 +284,23 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
 
 
     public void neighborEdges(V v, BiConsumer<V,E> each) {
-        var i = node(v);
+        int i = node(v);
         if (i < 0)
             return;
         antinodes.get(i).e.forEach(ee -> {
-            var ej = edge(i, ee);
-            var nohd = antinodes.get(ee);
+            E ej = edge(i, ee);
+            Node<V> nohd = antinodes.get(ee);
             each.accept(nohd.v, ej);
         });
     }
    public void neighborEdges(V v, BiFunction<V,E,E> each) {
-       var i = node(v);
+       int i = node(v);
         if (i < 0)
             return;
         antinodes.get(i).e.forEach(ee -> {
-            var ej = edge(i, ee);
-            var nohd = antinodes.get(ee);
-            var ej2 = each.apply(nohd.v, ej);
+            E ej = edge(i, ee);
+            Node<V> nohd = antinodes.get(ee);
+            E ej2 = each.apply(nohd.v, ej);
             if (ej2!=ej)
                 setEdge(i, ee, ej2);
         });
@@ -349,7 +349,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     }
 
     public E edge(V s, V p, E ifMissing) {
-        @Nullable var existing = edge(s, p);
+        @Nullable E existing = edge(s, p);
         return Optional.ofNullable(existing).orElse(ifMissing);
     }
 
@@ -358,20 +358,20 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     }
 
     private E edge(int s, int p, Supplier<E> ifMissing) {
-        @Nullable var existing = edge(s, p);
+        @Nullable E existing = edge(s, p);
         if (existing != null)
             return existing;
         else {
-            var ee = ifMissing.get();
+            E ee = ifMissing.get();
             setEdge(s, p, ee);
             return ee;
         }
     }
 
     public boolean removeEdge(V i, V j) {
-        var ii = node(i);
+        int ii = node(i);
         if (ii != -1) {
-            var jj = node(j);
+            int jj = node(j);
             if (jj != -1) {
                 return removeEdge(ii, jj);
             }
@@ -381,10 +381,10 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
 
     private void eachNode(TriConsumer<Node<V>, Node<V>, E> edge) {
         edges.forEachKeyValue((eid, ev) -> {
-            var a = (int) (eid >> 32);
-            var b = (int) (eid);
-            var na = antinodes.get(a);
-            var nb = antinodes.get(b);
+            int a = (int) (eid >> 32);
+            int b = (int) (eid);
+            Node<V> na = antinodes.get(a);
+            Node<V> nb = antinodes.get(b);
             if (na == null || nb == null) {
                 throw new RuntimeException("oob");
             }
@@ -406,13 +406,13 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     }
 
     private AdjGraph<V, E> compact(TriFunction<V, V, E, E> retain) {
-        var g = new AdjGraph(directed);
+        AdjGraph g = new AdjGraph(directed);
         each((a, b, e) -> {
 
-            var e1 = retain.apply(a, b, e);
+            E e1 = retain.apply(a, b, e);
             if (e1 != null) {
-                var aa = g.addNode(a);
-                var bb = g.addNode(b);
+                int aa = g.addNode(a);
+                int bb = g.addNode(b);
                 g.setEdge(aa, bb, e1);
             }
         });
@@ -427,7 +427,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
 
         out.println("graph [ directed " + (directed ? "1" : "0"));
 
-        for (var k : nodes.keySet())
+        for (Node<V> k : nodes.keySet())
             out.println("node [ id " + k.id + " label \"" +
                     k.v.toString().replace('\"','\'') + "\" ]");
 

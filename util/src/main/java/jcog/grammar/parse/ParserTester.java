@@ -46,13 +46,13 @@ public abstract class ParserTester {
 	 * unambiguously parse it.
 	 */
 	private boolean canGenerateProblem(int depth) {
-		var s = p.randomInput(depth, separator());
+		String s = p.randomInput(depth, separator());
 		logTestString(s);
-		var a = assembly(s);
+		Assembly a = assembly(s);
 		a.setTarget(freshTarget());
 		Set<Assembly> in = new HashSet<>();
 		in.add(a);
-		var out = completeMatches(p.match(in));
+		Set<Assembly> out = completeMatches(p.match(in));
 		if (out.size() != 1) {
 			logProblemFound(s, out.size());
 			return true;
@@ -71,7 +71,12 @@ public abstract class ParserTester {
 	 */
 	private static Set<Assembly> completeMatches(Set<Assembly> in ) {
 		Set<Assembly> out =null==in? new HashSet<>() :in;
-		var set = out.stream().filter(ParserTester::test).collect(Collectors.toSet());
+		Set<Assembly> set = new HashSet<>();
+		for (Assembly assembly : out) {
+			if (test(assembly)) {
+				set.add(assembly);
+			}
+		}
 		return set;
 	}
 
@@ -146,9 +151,9 @@ public abstract class ParserTester {
 	 * unambiguously parse each one.
 	 */
 	public void test() {
-		for (var depth = 2; depth < 8; depth++) {
+		for (int depth = 2; depth < 8; depth++) {
 			logDepthChange(depth);
-			for (var k = 0; k < 100; k++) {
+			for (int k = 0; k < 100; k++) {
 				if (canGenerateProblem(depth)) {
 					return;
 				}

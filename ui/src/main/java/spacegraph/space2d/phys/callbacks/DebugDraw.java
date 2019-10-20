@@ -107,7 +107,7 @@ public abstract class DebugDraw {
             return;
         }
 
-        for (var i = 0; i < vertexCount - 1; i += 1) {
+        for (int i = 0; i < vertexCount - 1; i += 1) {
             drawSegment(vertices[i], vertices[i + 1], color);
         }
 
@@ -252,7 +252,7 @@ public abstract class DebugDraw {
      * @param argWorld
      */
     public v2 getWorldToScreen(v2 argWorld) {
-        var screen = new v2();
+        v2 screen = new v2();
         viewportTransform.getWorldToScreen(argWorld, screen);
         return screen;
     }
@@ -264,7 +264,7 @@ public abstract class DebugDraw {
      * @param worldY
      */
     public v2 getWorldToScreen(float worldX, float worldY) {
-        var argScreen = new v2(worldX, worldY);
+        v2 argScreen = new v2(worldX, worldY);
         viewportTransform.getWorldToScreen(argScreen, argScreen);
         return argScreen;
     }
@@ -287,7 +287,7 @@ public abstract class DebugDraw {
      * @param argScreen
      */
     public v2 getScreenToWorld(v2 argScreen) {
-        var world = new v2();
+        v2 world = new v2();
         viewportTransform.getScreenToWorld(argScreen, world);
         return world;
     }
@@ -299,7 +299,7 @@ public abstract class DebugDraw {
      * @param screenY
      */
     public v2 getScreenToWorld(float screenX, float screenY) {
-        var screen = new v2(screenX, screenY);
+        v2 screen = new v2(screenX, screenY);
         viewportTransform.getScreenToWorld(screen, screen);
         return screen;
     }

@@ -23,15 +23,15 @@ public class SineWave extends KarplusStrongString {
     public void pluck() {
         setDeltaVolume(pluckDelta);
         clear();
-        var capacity = buffer.capacity();
-        for (var i = 0; i < capacity; i++) {
+        int capacity = buffer.capacity();
+        for (int i = 0; i < capacity; i++) {
             buffer.enqueue((Math.sin(i * 2 * Math.PI / capacity)) * getMaxVolume());
         }
     }
 
     public void tic() {
         double first = buffer.dequeue();
-        var x = first * deltaVolume;
+        double x = first * deltaVolume;
 		filterOut = C * x + filterIn - C * filterOut; // allpass tuning filter
         filterIn = x;
         buffer.enqueue(filterOut * deltaVolume);

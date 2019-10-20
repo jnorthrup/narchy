@@ -106,7 +106,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
 
     //@Override
     public final int size() {
-        var x = this.array();
+        X[] x = this.array();
         //return (this.size = (x != null ? x.length : 0));
         return x.length;
     }
@@ -125,8 +125,8 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
                 }
                 return null;
             } else {
-                var ii = list.array();
-                var old = ii[index];
+                X[] ii = list.array();
+                X old = ii[index];
                 if (old!=element) {
                     ii[index] = element;
                     commit();
@@ -159,24 +159,24 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
 
     //@Override
     public void forEach(Consumer<? super X> c) {
-        for (var x : array())
+        for (X x : array())
             c.accept(x);
     }
 
     public void forEachNonNull(Consumer<? super X> c) {
-        for (var x : array()) {
+        for (X x : array()) {
             if (x!=null)
                 c.accept(x);
         }
     }
 
     public final <Y> void forEachWith(BiConsumer<? super X, ? super Y> c, Y y) {
-        for (var x : array())
+        for (X x : array())
             c.accept(x, y);
     }
 
     public final <Y> void forEachWith(Procedure2<? super X, ? super Y> c, Y y) {
-        for (var x : array())
+        for (X x : array())
             c.accept(x, y);
     }
 
@@ -188,9 +188,9 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
 
 
     public void reverseForEach(Procedure<X> c) {
-        var copy = array();
+        X[] copy = array();
 //        if (copy != null) {
-            for (var i = copy.length-1; i >= 0; i--) {
+            for (int i = copy.length-1; i >= 0; i--) {
                 c.accept(copy[i]);
             }
 //        }
@@ -198,13 +198,13 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
 
     public final X[] array() {
         //modified updateAndGet: //return copy.updateAndGet(this);
-        var prev = copy.getOpaque();
+        X[] prev = copy.getOpaque();
         return prev != null ? prev : commit(null);
     }
 
     private X[] commit(X[] prev) {
         X[] next = null;
-        var haveNext = false;
+        boolean haveNext = false;
         while(true) {
             if (!haveNext)
                 next = apply(prev);
@@ -233,7 +233,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     }
     public X remove(int index) {
         synchronized (list) {
-            var removed = list.remove(index);
+            X removed = list.remove(index);
             if (removed!=null) {
                 commit();
             }
@@ -313,19 +313,19 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
 
     //@Override
     public final X get(int index) {
-        var c = array();
+        X[] c = array();
         return c.length > index ? c[index] : null;
     }
 
     public float[] map(FloatFunction<X> f, float[] target) {
-        var c = this.array();
+        X[] c = this.array();
         if (c == null)
             return ArrayUtil.EMPTY_FLOAT_ARRAY;
-        var n = c.length;
+        int n = c.length;
         if (n != target.length) {
             target = new float[n];
         }
-        for (var i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             target[i] = f.floatValueOf(c[i]);
         }
         return target;
@@ -359,32 +359,57 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     public boolean isEmpty() { return size() == 0; }
 
     public boolean AND(Predicate<X> o) {
-        return Arrays.stream(array()).allMatch(o);
+        for (X x : array()) {
+            if (!o.test(x)) {
+                return false;
+            }
+        }
+        return true;
     }
     public boolean OR(Predicate<X> o) {
-        return Arrays.stream(array()).anyMatch(o);
+        for (X x : array()) {
+            if (o.test(x)) {
+                return true;
+            }
+        }
+        return false;
     }
     public boolean whileEach(Predicate<X> o) {
-        return Arrays.stream(array()).noneMatch(x -> x != null && !o.test(x));
+        for (X x : array()) {
+            if (x != null && !o.test(x)) {
+                return false;
+            }
+        }
+        return true;
     }
     public boolean whileEachReverse(Predicate<X> o) {
-        @Nullable var xx = this.array();
+        @Nullable X[] xx = this.array();
         return IntStream.iterate(xx.length - 1, i -> i >= 0, i -> i - 1).mapToObj(i -> xx[i]).noneMatch(x -> x != null && !o.test(x));
     }
 
     public double sumBy(FloatFunction<X> each) {
-        return Arrays.stream(array()).mapToDouble(each::floatValueOf).sum();
+        double sum = 0.0;
+        for (X x : array()) {
+            double floatValueOf = each.floatValueOf(x);
+            sum += floatValueOf;
+        }
+        return sum;
     }
     public double sumBy(ToDoubleFunction<X> each) {
-        return Arrays.stream(array()).mapToDouble(each).sum();
+        double sum = 0.0;
+        for (X x : array()) {
+            double v = each.applyAsDouble(x);
+            sum += v;
+        }
+        return sum;
     }
 
     /** NaN valued items are not included */
     public double meanBy(ToDoubleFunction<X> each) {
         double s =  0;
-        var i = 0;
-        for (var x : array()) {
-            var v = each.applyAsDouble(x);
+        int i = 0;
+        for (X x : array()) {
+            double v = each.applyAsDouble(x);
             if (v==v) {
                 s += v;
                 i++;
@@ -395,9 +420,9 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     /** NaN valued items are not included */
     public double meanByFloat(FloatFunction<X> each) {
         double s =  0;
-        var i = 0;
-        for (var x : array()) {
-            var v = each.floatValueOf(x);
+        int i = 0;
+        for (X x : array()) {
+            float v = each.floatValueOf(x);
             if (v==v) {
                 s += v;
                 i++;
@@ -407,14 +432,14 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     }
 
     public <Y> Y[] toArray(Y[] _target, Function<X, Y> f) {
-        var s = size();
+        int s = size();
         if (s == 0) return _target.length == 0 ? _target : null;
 
-        var target = _target == null || _target.length < s ? Arrays.copyOf(_target, s) : _target;
+        Y[] target = _target == null || _target.length < s ? Arrays.copyOf(_target, s) : _target;
 
-        var i = 0; //HACK this is not good. use a AND predicate iteration or just plain iterator?
+        int i = 0; //HACK this is not good. use a AND predicate iteration or just plain iterator?
 
-        for (var x : array()) {
+        for (X x : array()) {
             if (x!=null) {
                 target[i++] = f.apply(x);
                 if (i >= s)
@@ -435,7 +460,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     }
 
 	public @Nullable X get(Random random) {
-        var c = array();
+        X[] c = array();
         if (c.length == 0)
             return null;
         return c[random.nextInt(c.length)];

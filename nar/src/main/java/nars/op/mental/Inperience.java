@@ -2,8 +2,10 @@ package nars.op.mental;
 
 import jcog.math.FloatRange;
 import nars.$;
+import nars.NAR;
 import nars.Op;
 import nars.Task;
+import nars.attention.What;
 import nars.derive.Derivation;
 import nars.derive.action.TaskTransformAction;
 import nars.task.TemporalTask;
@@ -14,6 +16,7 @@ import nars.term.atom.IdempotentBool;
 import nars.term.util.Image;
 import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.VariableTransform;
+import nars.time.When;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,9 +60,9 @@ public class Inperience extends TaskTransformAction {
 
     static Term reifyBeliefOrGoal(Task t, Term self) {
 
-        var y = describe(t.term());
+        Term y = describe(t.term());
 
-        var verb = verb(t.punc());
+        Atomic verb = verb(t.punc());
 
         //return $.funcImg(verb, self, y.negIf(t.isNegative()));
         return $.func(verb, self, y.negIf(t.isNegative()));
@@ -86,13 +89,13 @@ public class Inperience extends TaskTransformAction {
     @Override
     protected Task transform(Task x, Derivation d) {
 
-        var n = d.nar;
+        NAR n = d.nar;
 
-        var volMax = n.termVolMax.intValue();
+        int volMax = n.termVolMax.intValue();
 //        int volMaxPre = volMax-VOL_SAFETY_MARGIN;
 //        Random rng = d.random;
 
-        var self = n.self();
+        Term self = n.self();
 
         //Predicate<Task> taskFilter = t -> accept(volMaxPre, t);
         //StableBloomFilter<Task> filter = Terms.newTaskBloomFilter(rng, ((TaskLinkWhat) w).links.links.size());
@@ -126,7 +129,7 @@ public class Inperience extends TaskTransformAction {
     }
 
     private @Nullable Task reflect(int volMax, Term self, Task t, Derivation d) {
-        var when = d.when;
+        When<What> when = d.when;
         long s, e;
         if (PROPAGATE_ETERNAL || !t.isEternal()) {
             s = t.start(); e = t.end();
@@ -136,9 +139,9 @@ public class Inperience extends TaskTransformAction {
 
         Task u = null;
         if (t.isBeliefOrGoal()) {
-            var r = reifyBeliefOrGoal(t, self);
+            Term r = reifyBeliefOrGoal(t, self);
             if ((r = validReification(r, volMax)) != null) {
-                var tt = t.truth();
+                Truth tt = t.truth();
                 u = new InperienceTask(r, $.t(1,
                     Math.max(d.confMin,
                         tt.conf() * tt.polarity()
@@ -148,9 +151,9 @@ public class Inperience extends TaskTransformAction {
             }
 
         } else {
-            var r = reifyQuestion(t.term(), t.punc(), self);
+            Term r = reifyQuestion(t.term(), t.punc(), self);
             if ((r = validReification(r, volMax)) != null) {
-                var beliefConfDefault = d.nar.confDefault(BELIEF);
+                float beliefConfDefault = d.nar.confDefault(BELIEF);
                 u = new InperienceTask(r, $.t(1,
                     Math.max(d.confMin, beliefConfDefault * t.priElseZero())
                 ), t, s, e);
@@ -165,9 +168,9 @@ public class Inperience extends TaskTransformAction {
 
     /** attempt to filter believe(believe(.... */
     private static boolean isRecursive(Task t, Term self) {
-        var x = t.term();
+        Term x = t.term();
          if (x.hasAll(INH.bit | PROD.bit) && x.op()==INH && x.sub(0).op()==PROD && x.sub(1).equals(verb(t.punc()))) {
-             var inperiencer = x.sub(0).sub(0);
+             Term inperiencer = x.sub(0).sub(0);
              return inperiencer instanceof nars.term.Variable || inperiencer.equals(self);
          }
          return false;

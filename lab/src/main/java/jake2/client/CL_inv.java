@@ -44,7 +44,7 @@ public class CL_inv {
 	 */
 	static void ParseInventory() {
 
-        for (var i = 0; i < Defines.MAX_ITEMS; i++)
+        for (int i = 0; i < Defines.MAX_ITEMS; i++)
 			Globals.cl.inventory[i] = MSG.ReadShort(Globals.net_message);
 	}
 
@@ -52,15 +52,15 @@ public class CL_inv {
 	 * ================ Inv_DrawString ================
 	 */
 	static void Inv_DrawString(int x, int y, String string) {
-		for (var i = 0; i < string.length(); i++) {
+		for (int i = 0; i < string.length(); i++) {
 			Globals.re.DrawChar(x, y, string.charAt(i));
 			x += 8;
 		}
 	}
 
 	static String getHighBitString(String s) {
-		var b = Lib.stringToBytes(s);
-		for (var i = 0; i < b.length; i++) {
+        byte[] b = Lib.stringToBytes(s);
+		for (int i = 0; i < b.length; i++) {
             b[i] |= 128;
 		}
 		return Lib.bytesToString(b);
@@ -73,12 +73,12 @@ public class CL_inv {
 
 	static void DrawInventory() {
 		int i;
-		var index = new int[Defines.MAX_ITEMS];
+        int[] index = new int[Defines.MAX_ITEMS];
 
         int selected = Globals.cl.frame.playerstate.stats[Defines.STAT_SELECTED_ITEM];
 
-		var num = 0;
-		var selected_num = 0;
+        int num = 0;
+        int selected_num = 0;
 		for (i = 0; i < Defines.MAX_ITEMS; i++) {
 			if (i == selected)
 				selected_num = num;
@@ -89,14 +89,14 @@ public class CL_inv {
 		}
 
 
-		var top = selected_num - DISPLAY_ITEMS / 2;
+        int top = selected_num - DISPLAY_ITEMS / 2;
 		if (num - top < DISPLAY_ITEMS)
 			top = num - DISPLAY_ITEMS;
 		if (top < 0)
 			top = 0;
 
-		var x = (Globals.viddef.getWidth() - 256) / 2;
-		var y = (Globals.viddef.getHeight() - 240) / 2;
+        int x = (Globals.viddef.getWidth() - 256) / 2;
+        int y = (Globals.viddef.getHeight() - 240) / 2;
 
 		
 		SCR.DirtyScreen();
@@ -109,18 +109,18 @@ public class CL_inv {
 		Inv_DrawString(x, y + 8, "------ --- ----");
 		y += 16;
 		for (i = top; i < num && i < top + DISPLAY_ITEMS; i++) {
-			var item = index[i];
+            int item = index[i];
 
 
-			var binding = "use " + Globals.cl.configstrings[Defines.CS_ITEMS + item];
-			var bind = "";
-            for (var j = 0; j < 256; j++)
+            String binding = "use " + Globals.cl.configstrings[Defines.CS_ITEMS + item];
+            String bind = "";
+            for (int j = 0; j < 256; j++)
 				if (Globals.keybindings[j] != null && Globals.keybindings[j].equals(binding)) {
 					bind = Key.KeynumToString(j);
 					break;
 				}
 
-			var string = Com.sprintf("%6s %3i %s", new Vargs(3).add(bind).add(Globals.cl.inventory[item]).add(
+            String string = Com.sprintf("%6s %3i %s", new Vargs(3).add(bind).add(Globals.cl.inventory[item]).add(
                     Globals.cl.configstrings[Defines.CS_ITEMS + item]));
             if (item != selected)
 				string = getHighBitString(string);

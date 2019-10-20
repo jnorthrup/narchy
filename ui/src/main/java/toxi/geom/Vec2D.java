@@ -147,7 +147,7 @@ import java.util.Random;
      * @return a new random normalized unit vector.
      */
     private static Vec2D randomVector(Random rnd) {
-        var v = new Vec2D(rnd.nextFloat() * 2 - 1, rnd.nextFloat() * 2 - 1);
+        Vec2D v = new Vec2D(rnd.nextFloat() * 2 - 1, rnd.nextFloat() * 2 - 1);
         return v.normalize();
     }
 
@@ -277,7 +277,7 @@ import java.util.Random;
         if (this.equals(o)) {
             return 0;
         }
-        var result = (this.magSquared() < o.magSquared()) ? -1 : 1;
+        int result = (this.magSquared() < o.magSquared()) ? -1 : 1;
         return result;
     }
 
@@ -293,11 +293,11 @@ import java.util.Random;
      * @return itself
      */
     public Vec2D constrain(Polygon2D poly) {
-        var minD = Float.POSITIVE_INFINITY;
+        float minD = Float.POSITIVE_INFINITY;
         Vec2D q = null;
-        for (var l : poly.getEdges()) {
-            var c = l.closestPointTo(this);
-            var d = c.distanceToSquared(this);
+        for (Line2D l : poly.getEdges()) {
+            Vec2D c = l.closestPointTo(this);
+            float d = c.distanceToSquared(this);
             if (d < minD) {
                 q = c;
                 minD = d;
@@ -352,8 +352,8 @@ import java.util.Random;
     @Override
     public final float distanceTo(ReadonlyVec2D v) {
         if (v != null) {
-            var dx = x - v.x();
-            var dy = y - v.y();
+            float dx = x - v.x();
+            float dy = y - v.y();
             return (float) Math.sqrt(dx * dx + dy * dy);
         } else {
             return Float.NaN;
@@ -363,8 +363,8 @@ import java.util.Random;
     @Override
     public final float distanceToSquared(ReadonlyVec2D v) {
         if (v != null) {
-            var dx = x - v.x();
-            var dy = y - v.y();
+            float dx = x - v.x();
+            float dy = y - v.y();
             return dx * dx + dy * dy;
         } else {
             return Float.NaN;
@@ -387,7 +387,7 @@ import java.util.Random;
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ReadonlyVec2D) {
-            var other = (ReadonlyVec2D) obj;
+            ReadonlyVec2D other = (ReadonlyVec2D) obj;
             return Util.equals(x, other.x()) && Util.equals(y, other.y());
 //            if (!((Float) x).equals(other.x())) {
 //                return false;
@@ -409,7 +409,7 @@ import java.util.Random;
 
     @Override
     public int hashCode() {
-        var hash = 7;
+        int hash = 7;
         hash = 97 * hash + Float.floatToIntBits(this.x);
         hash = 97 * hash + Float.floatToIntBits(this.y);
         return hash;
@@ -423,7 +423,7 @@ import java.util.Random;
      * @return true or false
      */
     public boolean equals(ReadonlyVec2D v) {
-        var other = v;
+        ReadonlyVec2D other = v;
             if (!((Float) x).equals(other.x())) {
                 return false;
             }
@@ -433,7 +433,7 @@ import java.util.Random;
 
     @Override
     public boolean equalsWithTolerance(ReadonlyVec2D v, float epsilon) {
-        var other = v;
+        ReadonlyVec2D other = v;
         if (this == other) return true;
         return Util.equals(x, v.x(), epsilon) && Util.equals(y, v.y(), epsilon);
     }
@@ -648,7 +648,7 @@ import java.util.Random;
 
     @Override
     public boolean isInCircle(ReadonlyVec2D sO, float sR) {
-        var d = sub(sO).magSquared();
+        float d = sub(sO).magSquared();
         return (d <= sR * sR);
     }
     
@@ -668,11 +668,11 @@ import java.util.Random;
 
     @Override
     public boolean isInTriangle(Vec2D a, Vec2D b, Vec2D c) {
-        var v1 = sub(a).normalize();
-        var v2 = sub(b).normalize();
-        var v3 = sub(c).normalize();
+        Vec2D v1 = sub(a).normalize();
+        Vec2D v2 = sub(b).normalize();
+        Vec2D v3 = sub(c).normalize();
 
-        var total_angles = Math.acos(v1.dot(v2));
+        double total_angles = Math.acos(v1.dot(v2));
         total_angles += Math.acos(v2.dot(v3));
         total_angles += Math.acos(v3.dot(v1));
 
@@ -681,9 +681,9 @@ import java.util.Random;
 
     @Override
     public final boolean isMajorAxis(float tol) {
-        var ax = Math.abs(x);
-        var ay = Math.abs(y);
-        var itol = 1 - tol;
+        float ax = Math.abs(x);
+        float ay = Math.abs(y);
+        float itol = 1 - tol;
         if (ax > itol) {
             return (ay < tol);
         } else if (ay > itol) {
@@ -797,7 +797,7 @@ import java.util.Random;
      * @return itself
      */
     public final Vec2D normalize() {
-        var mag = x * x + y * y;
+        float mag = x * x + y * y;
         if (mag > 0) {
             mag = 1f / (float) Math.sqrt(mag);
             x *= mag;
@@ -813,7 +813,7 @@ import java.util.Random;
      * @return itself
      */
     public final Vec2D normalizeTo(float len) {
-        var mag = (float) Math.sqrt(x * x + y * y);
+        float mag = (float) Math.sqrt(x * x + y * y);
         if (mag > 0) {
             mag = len / mag;
             x *= mag;
@@ -823,14 +823,14 @@ import java.util.Random;
     }
 
     final Vec2D perpendicular() {
-        var t = x;
+        float t = x;
         x = -y;
         y = t;
         return this;
     }
 
     final float positiveHeading() {
-        var dist = Math.sqrt(x * x + y * y);
+        double dist = Math.sqrt(x * x + y * y);
         if (y >= 0) {
             return (float) Math.acos(x / dist);
         } else {
@@ -855,9 +855,9 @@ import java.util.Random;
      * @return itself
      */
     public final Vec2D rotate(float theta) {
-        var co = (float) Math.cos(theta);
-        var si = (float) Math.sin(theta);
-        var xx = co * x - si * y;
+        float co = (float) Math.cos(theta);
+        float si = (float) Math.sin(theta);
+        float xx = co * x - si * y;
         y = si * x + co * y;
         x = xx;
         return this;
@@ -1073,10 +1073,10 @@ import java.util.Random;
 
     @Override
     public final Vec2D tangentNormalOfEllipse(Vec2D eO, Vec2D eR) {
-        var p = this.sub(eO);
+        Vec2D p = this.sub(eO);
 
-        var xr2 = eR.x * eR.x;
-        var yr2 = eR.y * eR.y;
+        float xr2 = eR.x * eR.x;
+        float yr2 = eR.y * eR.y;
 
         return new Vec2D(p.x / xr2, p.y / yr2).normalize();
     }
@@ -1104,14 +1104,14 @@ import java.util.Random;
     }
 
     private Vec2D toCartesian() {
-        var xx = (float) (x * Math.cos(y));
+        float xx = (float) (x * Math.cos(y));
         y = (float) (x * Math.sin(y));
         x = xx;
         return this;
     }
 
     private Vec2D toPolar() {
-        var r = (float) Math.sqrt(x * x + y * y);
+        float r = (float) Math.sqrt(x * x + y * y);
         y = (float) Math.atan2(y, x);
         x = r;
         return this;

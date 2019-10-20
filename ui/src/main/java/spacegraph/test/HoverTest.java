@@ -39,7 +39,7 @@ public class HoverTest {
 
         @Override
         public Surface finger(Finger finger) {
-            var s = super.finger(finger);
+            Surface s = super.finger(finger);
             if (s == this) {
                 finger.test(hover);
             }

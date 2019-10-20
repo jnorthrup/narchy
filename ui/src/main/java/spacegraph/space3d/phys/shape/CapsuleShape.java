@@ -60,26 +60,26 @@ public class CapsuleShape extends ConvexInternalShape {
 
 	@Override
 	public v3 localGetSupportingVertexWithoutMargin(v3 vec0, v3 out) {
-		var supVec = out;
+        v3 supVec = out;
 		supVec.set(0f, 0f, 0f);
 
-		var vec = new v3(vec0);
-		var lenSqr = vec.lengthSquared();
+        v3 vec = new v3(vec0);
+        float lenSqr = vec.lengthSquared();
 		if (lenSqr < 0.0001f) {
 			vec.set(1f, 0f, 0f);
 		}
 		else {
-			var rlen = 1f / (float) Math.sqrt(lenSqr);
+            float rlen = 1f / (float) Math.sqrt(lenSqr);
 			vec.scaled(rlen);
 		}
 
-		var vtx = new v3();
+        v3 vtx = new v3();
 
-		var radius = getRadius();
+        float radius = getRadius();
 
-		var tmp1 = new v3();
-		var tmp2 = new v3();
-		var pos = new v3();
+        v3 tmp1 = new v3();
+        v3 tmp2 = new v3();
+        v3 pos = new v3();
 
         pos.set(0f, 0f, 0f);
         VectorUtil.setCoord(pos, upAxis, getHalfHeight());
@@ -89,8 +89,8 @@ public class CapsuleShape extends ConvexInternalShape {
         tmp2.scale(getMargin(), vec);
         vtx.add(pos, tmp1);
         vtx.sub(tmp2);
-		var newDot = vec.dot(vtx);
-		var maxDot = -1e30f;
+        float newDot = vec.dot(vtx);
+        float maxDot = -1e30f;
         if (newDot > maxDot) {
             maxDot = newDot;
             supVec.set(vtx);
@@ -122,26 +122,26 @@ public class CapsuleShape extends ConvexInternalShape {
 	public void calculateLocalInertia(float mass, v3 inertia) {
 
 
-		var ident = new Transform();
+        Transform ident = new Transform();
 		ident.setIdentity();
 
-		var radius = getRadius();
+        float radius = getRadius();
 
-		var halfExtents = new v3();
+        v3 halfExtents = new v3();
 		halfExtents.set(radius, radius, radius);
 		VectorUtil.setCoord(halfExtents, upAxis, radius + getHalfHeight());
 
-		var margin = BulletGlobals.CONVEX_DISTANCE_MARGIN;
+        float margin = BulletGlobals.CONVEX_DISTANCE_MARGIN;
 
-		var lx = 2f * (halfExtents.x + margin);
-		var ly = 2f * (halfExtents.y + margin);
-		var lz = 2f * (halfExtents.z + margin);
-		var y2 = ly * ly;
-		var z2 = lz * lz;
-		var scaledmass = mass * 0.08333333f;
+        float lx = 2f * (halfExtents.x + margin);
+        float ly = 2f * (halfExtents.y + margin);
+        float lz = 2f * (halfExtents.z + margin);
+        float y2 = ly * ly;
+        float z2 = lz * lz;
+        float scaledmass = mass * 0.08333333f;
 
 		inertia.x = scaledmass * (y2 + z2);
-		var x2 = lx * lx;
+        float x2 = lx * lx;
         inertia.y = scaledmass * (x2 + z2);
 		inertia.z = scaledmass * (x2 + y2);
 	}
@@ -153,9 +153,9 @@ public class CapsuleShape extends ConvexInternalShape {
 	
 	@Override
 	public void getAabb(Transform t, v3 aabbMin, v3 aabbMax) {
-		var tmp = new v3();
+        v3 tmp = new v3();
 
-		var halfExtents = new v3();
+        v3 halfExtents = new v3();
 		halfExtents.set(getRadius(), getRadius(), getRadius());
 		VectorUtil.setCoord(halfExtents, upAxis, getRadius() + getHalfHeight());
 
@@ -163,12 +163,12 @@ public class CapsuleShape extends ConvexInternalShape {
 		halfExtents.y += getMargin();
 		halfExtents.z += getMargin();
 
-		var abs_b = new Matrix3f();
+        Matrix3f abs_b = new Matrix3f();
 		abs_b.set(t.basis);
 		MatrixUtil.absolute(abs_b);
 
 		v3 center = t;
-		var extent = new v3();
+        v3 extent = new v3();
 
 		abs_b.getRow(0, tmp);
 		extent.x = tmp.dot(halfExtents);
@@ -191,7 +191,7 @@ public class CapsuleShape extends ConvexInternalShape {
 	}
 	
 	public float getRadius() {
-		var radiusAxis = (upAxis + 2) % 3;
+        int radiusAxis = (upAxis + 2) % 3;
 		return VectorUtil.coord(implicitShapeDimensions, radiusAxis);
 	}
 

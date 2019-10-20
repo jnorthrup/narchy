@@ -61,7 +61,7 @@ public abstract class Assembly implements Iterator<Object>, PubliclyCloneable<As
 	@Override
 	public Assembly clone() {
 		try {
-			var a = (Assembly) super.clone();
+            Assembly a = (Assembly) super.clone();
 			a.stack = (Stack) stack.clone();
 			a.stackSizesBeforeMatch = (Stack<Integer>) a.stackSizesBeforeMatch.clone();
 			if (target != null) {
@@ -192,7 +192,7 @@ public abstract class Assembly implements Iterator<Object>, PubliclyCloneable<As
 
 	public List popAllMatches() {
 		int sizeBeforeMatch = stackSizesBeforeMatch.peek();
-		var remain = stack.size() - sizeBeforeMatch;
+        int remain = stack.size() - sizeBeforeMatch;
         List allMatches = new ArrayList<>(remain);
 		while (remain-- > 0) {
 			allMatches.add(0, pop());
@@ -239,7 +239,7 @@ public abstract class Assembly implements Iterator<Object>, PubliclyCloneable<As
 	 */
 	@Override
 	public String toString() {
-		var delimiter = defaultDelimiter();
+        String delimiter = defaultDelimiter();
 		return stack + "(" + (stack.size() - stackSizesBeforeMatch.peek()) + ") : " + consumed(delimiter) + '^' + remainder(delimiter);
 	}
 

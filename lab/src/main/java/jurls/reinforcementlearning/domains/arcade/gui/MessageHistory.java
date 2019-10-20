@@ -51,7 +51,7 @@ public class MessageHistory {
      * @param text The message to be added
      */
     public void addMessage(String text) {
-        var currentTime = System.currentTimeMillis();
+        long currentTime = System.currentTimeMillis();
 
         messages.addLast(new Message(text, currentTime));
     }
@@ -67,13 +67,13 @@ public class MessageHistory {
      * @param maxAge The maximum age, in milliseconds, of a message.
      */
     public void update(long maxAge) {
-        var currentTime = System.currentTimeMillis();
+        long currentTime = System.currentTimeMillis();
 
         while (!messages.isEmpty()) {
-            var m = messages.getFirst();
+            Message m = messages.getFirst();
 
 
-            var age = currentTime - m.timeStamp;
+            long age = currentTime - m.timeStamp;
             if (age > maxAge)
                 messages.removeFirst();
             else

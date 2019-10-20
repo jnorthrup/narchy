@@ -17,7 +17,7 @@ public class OsmWay extends OsmGroup {
     @Override
     public void forEach(Consumer<OsmElement> eachChild) {
         if (children!=null) {
-            for (var child : children) {
+            for (OsmElement child : children) {
                 eachChild.accept(child);
             }
         }
@@ -31,7 +31,7 @@ public class OsmWay extends OsmGroup {
 
         if (way == null || way.children == null) return;
 
-        var newChildren = way.children;
+        List<OsmElement> newChildren = way.children;
         if (this.children == null) {
             this.children = newChildren;
         } else {
@@ -43,12 +43,12 @@ public class OsmWay extends OsmGroup {
     }
 
     public boolean isFollowedBy(OsmWay way) {
-        var wc = way.children != null ? way.children.size() : 0;
+        int wc = way.children != null ? way.children.size() : 0;
         if (wc > 0) {
             if (this.children != null) {
-                var tc = this.children.size(); assert (tc > 0); /*if (!this.children.isEmpty())*/
+                int tc = this.children.size(); assert (tc > 0); /*if (!this.children.isEmpty())*/
                 {
-                    var node = (OsmNode) way.children.get(0);
+                    OsmNode node = (OsmNode) way.children.get(0);
                     return node.id == this.children.get(tc - 1).id;
                 }
             }

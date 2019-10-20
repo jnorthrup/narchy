@@ -37,12 +37,12 @@ public class SinglethreadStrategy extends AbstractExecutionStrategy {
     public void execute(Configuration configuration, ExecutionListenerFactory listenerFactory) throws Exception {
         listenerFactory.register(this);
         workThread = Thread.currentThread();
-        var parameters = configuration.getStrategyParameters();
-        var strategyClass = getStrategy(parameters);
-        var initialSeed = configuration.getInitialSeed();
-        for (var i = 0; i < configuration.getJobs() && !done; i++) {
-            var job = strategyClass.newInstance();
-            var jobConf = new Configuration(configuration);
+        Map<String, String> parameters = configuration.getStrategyParameters();
+        Class<? extends RunStrategy> strategyClass = getStrategy(parameters);
+        long initialSeed = configuration.getInitialSeed();
+        for (int i = 0; i < configuration.getJobs() && !done; i++) {
+            RunStrategy job = strategyClass.newInstance();
+            Configuration jobConf = new Configuration(configuration);
             jobConf.setJobId(i);
             jobConf.setInitialSeed(initialSeed + i);
             job.setup(jobConf, listenerFactory.getNewListener());

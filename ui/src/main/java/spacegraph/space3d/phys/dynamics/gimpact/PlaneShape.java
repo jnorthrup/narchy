@@ -40,7 +40,7 @@ import spacegraph.util.math.Vector4f;
 class PlaneShape {
 
 	private static void get_plane_equation(StaticPlaneShape shape, Vector4f equation) {
-		var tmp = new v3();
+        v3 tmp = new v3();
 		equation.set(shape.getPlaneNormal(tmp));
 		equation.w = shape.getPlaneConstant();
 	}
@@ -48,16 +48,16 @@ class PlaneShape {
 	public static void get_plane_equation_transformed(StaticPlaneShape shape, Transform trans, Vector4f equation) {
 		get_plane_equation(shape, equation);
 
-		var tmp = new v3();
+        v3 tmp = new v3();
 
 		trans.basis.getRow(0, tmp);
-		var x = VectorUtil.dot3(tmp, equation);
+        float x = VectorUtil.dot3(tmp, equation);
 		trans.basis.getRow(1, tmp);
-		var y = VectorUtil.dot3(tmp, equation);
+        float y = VectorUtil.dot3(tmp, equation);
 		trans.basis.getRow(2, tmp);
-		var z = VectorUtil.dot3(tmp, equation);
+        float z = VectorUtil.dot3(tmp, equation);
 
-		var w = VectorUtil.dot3(trans, equation) + equation.w;
+        float w = VectorUtil.dot3(trans, equation) + equation.w;
 
 		equation.set(x, y, z, w);
 	}

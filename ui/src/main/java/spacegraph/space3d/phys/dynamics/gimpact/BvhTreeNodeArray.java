@@ -45,10 +45,10 @@ class BvhTreeNodeArray {
 	}
 
 	public void resize(int newSize) {
-		var newBound = new float[newSize*6];
+        float[] newBound = new float[newSize*6];
 
         System.arraycopy(bound, 0, newBound, 0, size*6);
-		var newEIODI = new int[newSize];
+        int[] newEIODI = new int[newSize];
         System.arraycopy(escapeIndexOrDataIndex, 0, newEIODI, 0, size);
 		
 		bound = newBound;
@@ -58,8 +58,8 @@ class BvhTreeNodeArray {
 	}
 	
 	public void set(int destIdx, BvhTreeNodeArray array, int srcIdx) {
-		var dpos = destIdx*6;
-		var spos = srcIdx*6;
+        int dpos = destIdx*6;
+        int spos = srcIdx*6;
 		
 		bound[dpos] = array.bound[spos];
 		bound[dpos+1] = array.bound[spos+1];
@@ -71,8 +71,8 @@ class BvhTreeNodeArray {
 	}
 
 	public void set(int destIdx, BvhDataArray array, int srcIdx) {
-		var dpos = destIdx*6;
-		var spos = srcIdx*6;
+        int dpos = destIdx*6;
+        int spos = srcIdx*6;
 		
 		bound[dpos] = array.bound[spos];
 		bound[dpos+1] = array.bound[spos+1];
@@ -84,14 +84,14 @@ class BvhTreeNodeArray {
 	}
 	
 	public BoxCollision.AABB getBound(int nodeIndex, BoxCollision.AABB out) {
-		var pos = nodeIndex*6;
+        int pos = nodeIndex*6;
 		out.min.set(bound[pos], bound[pos+1], bound[pos+2]);
 		out.max.set(bound[pos+3], bound[pos+4], bound[pos+5]);
 		return out;
 	}
 	
 	public void setBound(int nodeIndex, BoxCollision.AABB aabb) {
-		var pos = nodeIndex*6;
+        int pos = nodeIndex*6;
 		bound[pos] = aabb.min.x;
 		bound[pos+1] = aabb.min.y;
 		bound[pos+2] = aabb.min.z;

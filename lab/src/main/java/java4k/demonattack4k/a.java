@@ -152,7 +152,7 @@ public class a extends GamePanel {
 			demonsInRows[i] = new ArrayList<>();
 		}
 
-		var S = "\u3e00\u2626\u2626\u2626\u3e26\u1c00\u1818\u1818\u1818\u1818\u3e00\u3232\u3c30\u3202\u3e32\u3e00\u3232\u1c30\u3230\u3e32\u3200\u3232\u3232\u7e32\u3030\u3e00\u0232\u303e\u3230\u3e32\u3e00\u3232\u3e02\u3232\u3e32\u3e00\u3232\u1830\u0c18\u0c0c\u3e00\u2626\u3e26\u3232\u3e32\u3e00\u3232\u3e32\u3230\u3e32\u02fc\u9112\u9191\u9291\ufc02\u00ff\u2ac5\uea2a\u2a2a\uff00\u00ff\ua598\ub585\u99a5\uff00\u403f\u924c\u8282\u4c92\u3f40\u1414\u1414\u3636\u7777\u6363\u6363\u8010\uf840\u62c4\u0032\u2000\u8e00\uc073\u0060\u4000\u980f\ue070\u00c0\u0000\uf0c0\u2428\"\u6000\u26f8\u4121\u0002\uf030\u2428\u8444\b\u0824\u2712\uf94d\u0040\u5000\u2410\u784c\u0090\u2000\u2050\ub840\u006c\u124c\u31e1\u3219\u00e4\u0e20\ue111\u1931\u00f2\u2600\u1109\uf1e1\u00f9\ue2fc\u2242\u0412\b\ue418\u24c4\u2414\u0004\u2810\uc4c4\u2224\u0020\u6000\u9090\u6090\u0000\u0000\ua0c0\u00c0\u0000\u0000\u8080\u0000\u0000\u9000\u2004\u0002\"\u1240\u2000\u1002\u0002\u0208\u0040\u0410\u0011\u2804\u1610\u0428\u0000\u0221\u0528\u2048\u0002\u4209\u0128\u2088\u0004\u3e08\u4163\u2241\u0000\u0000\u6b36\u4141\u0000\u6341\u1436\b\u0000\u0021\u0000\u0001\u0024\u0110\u0002\u4010\u0209\u0000\u2200\u0841\u0000\u0208\u4020\b\u0820\u0040\u0050\u4000\u8020\u0060\u0000\uc080\u0060";
+        String S = "\u3e00\u2626\u2626\u2626\u3e26\u1c00\u1818\u1818\u1818\u1818\u3e00\u3232\u3c30\u3202\u3e32\u3e00\u3232\u1c30\u3230\u3e32\u3200\u3232\u3232\u7e32\u3030\u3e00\u0232\u303e\u3230\u3e32\u3e00\u3232\u3e02\u3232\u3e32\u3e00\u3232\u1830\u0c18\u0c0c\u3e00\u2626\u3e26\u3232\u3e32\u3e00\u3232\u3e32\u3230\u3e32\u02fc\u9112\u9191\u9291\ufc02\u00ff\u2ac5\uea2a\u2a2a\uff00\u00ff\ua598\ub585\u99a5\uff00\u403f\u924c\u8282\u4c92\u3f40\u1414\u1414\u3636\u7777\u6363\u6363\u8010\uf840\u62c4\u0032\u2000\u8e00\uc073\u0060\u4000\u980f\ue070\u00c0\u0000\uf0c0\u2428\"\u6000\u26f8\u4121\u0002\uf030\u2428\u8444\b\u0824\u2712\uf94d\u0040\u5000\u2410\u784c\u0090\u2000\u2050\ub840\u006c\u124c\u31e1\u3219\u00e4\u0e20\ue111\u1931\u00f2\u2600\u1109\uf1e1\u00f9\ue2fc\u2242\u0412\b\ue418\u24c4\u2414\u0004\u2810\uc4c4\u2224\u0020\u6000\u9090\u6090\u0000\u0000\ua0c0\u00c0\u0000\u0000\u8080\u0000\u0000\u9000\u2004\u0002\"\u1240\u2000\u1002\u0002\u0208\u0040\u0410\u0011\u2804\u1610\u0428\u0000\u0221\u0528\u2048\u0002\u4209\u0128\u2088\u0004\u3e08\u4163\u2241\u0000\u0000\u6b36\u4141\u0000\u6341\u1436\b\u0000\u0021\u0000\u0001\u0024\u0110\u0002\u4010\u0209\u0000\u2200\u0841\u0000\u0208\u4020\b\u0820\u0040\u0050\u4000\u8020\u0060\u0000\uc080\u0060";
 
 		
 		for (i = 0; i < 15; i++) {
@@ -181,8 +181,8 @@ public class a extends GamePanel {
 				palette[i] = 0xFF;
 			}
 			for (i = 0; i < 3; i++) {
-				var offset = 6.28f * random.nextFloat();
-				var scale = 0.3f * (1 + random.nextFloat());
+                float offset = 6.28f * random.nextFloat();
+                float scale = 0.3f * (1 + random.nextFloat());
 				for (j = 0; j < 8; j++) {
 					palette[j] <<= 8;
 					palette[j] |= (int) (180 + 75 * Math.sin(scale * j + offset));
@@ -230,7 +230,7 @@ public class a extends GamePanel {
 		
 		for (i = 0; i < 120; i++) {
 			for (j = 0; j < 7; j++) {
-				var w = (float) Math.sin(6 * Math.PI * i / 119);
+                float w = (float) Math.sin(6 * Math.PI * i / 119);
 				floorColors[i][j] = new Color(Color.HSBtoRGB((234 + j - (i << 1)) / 360f, 0.51f + 0.08f * j, 0.94f - 0.06f * j - 0.25f * w * w));
 			}
 		}
@@ -242,7 +242,7 @@ public class a extends GamePanel {
 
 		
 		for (i = 0; i < 16; i++) {
-			var intensity = (float) Math.sin(0.196f * i);
+            float intensity = (float) Math.sin(0.196f * i);
 			explodingFlashColors[i] = new Color(intensity, intensity, intensity);
 		}
 
@@ -411,7 +411,7 @@ public class a extends GamePanel {
 
 			
 			for (i = bullets.size() - 1; i >= 0; i--) {
-				var bullet = bullets.get(i);
+                float[] bullet = bullets.get(i);
 				bullet[BULLET_Y] += bulletSpeed;
 				bullet[BULLET_ANGLE] += BULLET_DELTA_ANGLE;
 				bullet[BULLET_X] = bullet[BULLET_DEMON_X] + bullet[BULLET_OFFSET_X] + ((Math.sin(bullet[BULLET_ANGLE]) > 0.5) ? bullet[BULLET_RADIUS] : 0);
@@ -475,7 +475,7 @@ public class a extends GamePanel {
 						j = 16 + random.nextInt(96);
 
 
-						var demon = new float[32];
+                        float[] demon = new float[32];
 						demons.add(demon);
 						demon[DEMON_X] = -32;
 						demon[DEMON_X2] = 160;
@@ -500,7 +500,7 @@ public class a extends GamePanel {
 
 					
 					if (demonsInRows[2].size() == 1) {
-						var demon = demonsInRows[2].get(0);
+                        float[] demon = demonsInRows[2].get(0);
 						if (demon[DEMON_BIRD] == 1 && demon[DEMON_DIVING] == 0 && demonsInRows[3].size() == 0) {
 							demonsInRows[2].remove(0);
 							demonsInRows[3].add(demon);
@@ -516,7 +516,7 @@ public class a extends GamePanel {
 					for (i = 1; i >= 0; i--) {
 						if (demonsInRows[i + 1].size() == 0) {
 							for (j = demonsInRows[i].size() - 1; j >= 0; j--) {
-								var demon = demonsInRows[i].remove(j);
+                                float[] demon = demonsInRows[i].remove(j);
 								demon[DEMON_ROW]++;
 								demonsInRows[i + 1].add(demon);
 							}
@@ -534,7 +534,7 @@ public class a extends GamePanel {
 
 							
 							j = 16 + random.nextInt(96);
-							var demon = new float[32];
+                            float[] demon = new float[32];
 							demons.add(demon);
 							demon[DEMON_X] = -32;
 							demon[DEMON_X2] = 160;
@@ -555,7 +555,7 @@ public class a extends GamePanel {
 
 				
 				for (i = demons.size() - 1; i >= 0; i--) {
-					var demon = demons.get(i);
+                    float[] demon = demons.get(i);
 
 					
 					if (advanceSprite == 0) {
@@ -587,7 +587,7 @@ public class a extends GamePanel {
 									demon[DEMON_SHOOTER] = 1;
 									demon[DEMON_PERCENT_X] = 1;
 
-									var bird = new float[32];
+                                    float[] bird = new float[32];
 									demons.add(bird);
 									bird[DEMON_X] = demon[DEMON_X] + 8;
 									bird[DEMON_Y] = demon[DEMON_Y];
@@ -638,7 +638,7 @@ public class a extends GamePanel {
 
 						} else {
 
-							var shooter = demon[DEMON_ROW] == 2 && (demon[DEMON_BIRD] == 0 || demon[DEMON_SHOOTER] == 1) && demonsInRows[3].size() == 0;
+                            boolean shooter = demon[DEMON_ROW] == 2 && (demon[DEMON_BIRD] == 0 || demon[DEMON_SHOOTER] == 1) && demonsInRows[3].size() == 0;
 
 							
 							if (shooting && shooter) {
@@ -647,7 +647,7 @@ public class a extends GamePanel {
 									
 									
 									if (lasers || random.nextBoolean()) {
-										var bullet = new float[32];
+                                        float[] bullet = new float[32];
 										bullets.add(bullet);
 										bullet[BULLET_DEMON_X] = demon[DEMON_X];
 										bullet[BULLET_X] = demon[DEMON_X] + (bullet[BULLET_OFFSET_X] = (lasers || demon[DEMON_BIRD] == 0 ? 4 : 0) + (lasers ? 0 : random.nextInt(3)));
@@ -655,7 +655,7 @@ public class a extends GamePanel {
 										bullet[BULLET_RADIUS] = demon[DEMON_BIRD] == 1 ? 1 : lasers ? 0 : 1;
 
 										if (demon[DEMON_BIRD] == 0 || !lasers) {
-											var bullet2 = new float[32];
+                                            float[] bullet2 = new float[32];
 											bullets.add(bullet2);
 											bullet2[BULLET_DEMON_X] = demon[DEMON_X];
 											bullet2[BULLET_X] = demon[DEMON_X] + (bullet2[BULLET_OFFSET_X] = (demon[DEMON_BIRD] == 1 ? 0 : 4) + (lasers ? 3 : random.nextInt(3)) + 4);
@@ -663,7 +663,7 @@ public class a extends GamePanel {
 											bullet2[BULLET_RADIUS] = lasers ? 0 : 1;
 										}
 									} else {
-										var bullet = new float[32];
+                                        float[] bullet = new float[32];
 										bullets.add(bullet);
 										bullet[BULLET_DEMON_X] = demon[DEMON_X];
 										bullet[BULLET_X] = demon[DEMON_X] + (bullet[BULLET_OFFSET_X] = (demon[DEMON_BIRD] == 1 ? 0 : 4) + random.nextInt(8));
@@ -680,7 +680,7 @@ public class a extends GamePanel {
 									demon[DEMON_DELTA_PERCENT_Y] = 1.57f / (30 + random.nextInt(15));
 									demon[DEMON_START_Y] = demon[DEMON_Y];
 									demon[DEMON_DELTA_Y] = 40 + ((int) demon[DEMON_ROW] << 5) + random.nextInt(demon[DEMON_ROW] == 2 ? 14 : 30) - demon[DEMON_Y];
-									var dy = demon[DEMON_DELTA_Y] < 0 ? -demon[DEMON_DELTA_Y] : demon[DEMON_DELTA_Y];
+                                    float dy = demon[DEMON_DELTA_Y] < 0 ? -demon[DEMON_DELTA_Y] : demon[DEMON_DELTA_Y];
 									if (dy < 1) {
 										dy = 1;
 									}
@@ -710,7 +710,7 @@ public class a extends GamePanel {
 									}
 
 									demon[DEMON_DELTA_X] = x - demon[DEMON_X];
-									var dx = demon[DEMON_DELTA_X] < 0 ? -demon[DEMON_DELTA_X] : demon[DEMON_DELTA_X];
+                                    float dx = demon[DEMON_DELTA_X] < 0 ? -demon[DEMON_DELTA_X] : demon[DEMON_DELTA_X];
 									if (dx < 1) {
 										dx = 1;
 									}
@@ -762,7 +762,7 @@ public class a extends GamePanel {
 		} while (nextFrameStartTime < System.nanoTime());
 
 
-		var backgroundColor = playerExploding > 47 ? explodingFlashColors[63 - playerExploding] : Color.BLACK;
+        Color backgroundColor = playerExploding > 47 ? explodingFlashColors[63 - playerExploding] : Color.BLACK;
 		offscreenGraphics.setColor(backgroundColor);
 		offscreenGraphics.fillRect(0, 20, 160, 168);
 
@@ -771,13 +771,13 @@ public class a extends GamePanel {
 			
 			offscreenGraphics.setColor(enemyBulletColor);
 			for (i = bullets.size() - 1; i >= 0; i--) {
-				var bullet = bullets.get(i);
+                float[] bullet = bullets.get(i);
 				offscreenGraphics.fillRect((int) bullet[BULLET_X], (int) bullet[BULLET_Y], 1, 4);
 			}
 
 			
 			for (i = demons.size() - 1; i >= 0; i--) {
-				var demon = demons.get(i);
+                float[] demon = demons.get(i);
 				j = (demon[DEMON_SPRITE] == 3) ? 1 : (int) demon[DEMON_SPRITE];
 				if (demon[DEMON_EXPLODING] == 1) {
 					if (demon[DEMON_BIRD] == 1) {
@@ -859,14 +859,14 @@ public class a extends GamePanel {
 	@Override
 	public void processAWTEvent(AWTEvent e) {
 		if (e instanceof KeyEvent) {
-			var keyEvent = (KeyEvent) e;
+            KeyEvent keyEvent = (KeyEvent) e;
 
-			var k = keyEvent.getKeyCode();
+            int k = keyEvent.getKeyCode();
 			if (k > 0) {
-                final var VK_D = 0x44;
-                final var VK_A = 0x41;
-                final var VK_RIGHT = 0x27;
-                final var VK_LEFT = 0x25;
+                final int VK_D = 0x44;
+                final int VK_A = 0x41;
+                final int VK_RIGHT = 0x27;
+                final int VK_LEFT = 0x25;
                 switch (k) {
                     case VK_D:
                         k = VK_RIGHT;
@@ -875,8 +875,8 @@ public class a extends GamePanel {
                         k = VK_LEFT;
                         break;
                 }
-                final var VK_P = 0x50;
-                final var VK_SHOOT = 0x42;
+                final int VK_P = 0x50;
+                final int VK_SHOOT = 0x42;
                 a[(k == VK_LEFT || k == VK_RIGHT || k == VK_P) ? k : VK_SHOOT] = keyEvent.getID() != 402;
 			}
 		}

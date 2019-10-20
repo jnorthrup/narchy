@@ -28,12 +28,12 @@ public class Permutations {
 		
 		this.size = size;
 
-		var ind = this.ind;
+        int[] ind = this.ind;
 		if (ind == null || ind.length < size) {
 			this.ind = ind = new int[size];
 		}
 
-		for (var i = 0; i < size; i++) {
+		for (int i = 0; i < size; i++) {
 			ind[i] = i;
 		}
 		count = -1;
@@ -59,30 +59,30 @@ public class Permutations {
 	 * @return
 	 */
 	public final int[] next() {
-		var size = this.size;
+        int size = this.size;
 
-		var count = (++this.count);
+        int count = (++this.count);
 
 		if (count == (num))
 			throw new NoSuchElementException();
 
-		var ind = this.ind;
+        int[] ind = this.ind;
 
 		if (count == 0) {
 			
 			return ind;
 		}
 
-		for (var tail = size - 1; tail > 0; tail--) {
+		for (int tail = size - 1; tail > 0; tail--) {
 
-			var tailMin1 = tail - 1;
+            int tailMin1 = tail - 1;
 
-			var itm = ind[tailMin1];
+            int itm = ind[tailMin1];
 
 			if (itm < ind[tail]) {
 
 
-				var s = size - 1;
+                int s = size - 1;
 				while (itm >= ind[s])
 					s--;
 
@@ -105,7 +105,7 @@ public class Permutations {
 	}
 
 	private static void swap(int[] arr, int i, int j) {
-		var t = arr[i];
+        int t = arr[i];
 		arr[i] = arr[j];
 		arr[j] = t;
 	}

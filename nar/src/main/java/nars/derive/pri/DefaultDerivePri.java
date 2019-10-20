@@ -37,12 +37,12 @@ public class DefaultDerivePri implements DerivePri {
 
     @Override
     public float pri(Task t, Derivation d) {
-        var factorCmpl =
+        float factorCmpl =
                     factorComplexityRelative(t, d, simplicityExponent.floatValue());
                     //= factorComplexityAbsolute(t, d);
                     //= factorComplexityRelative2(t, d);
 
-        var factor = factorCmpl;
+        float factor = factorCmpl;
 
 		factor *= t.isBeliefOrGoal() ?
             factorPolarity(t.freq()) :
@@ -51,7 +51,7 @@ public class DefaultDerivePri implements DerivePri {
         factor *= //factorEviAbsolute(t,d);
                   factorMaintainRangeAndAvgEvi(t,d);
 
-        var y = postAmp(t, d.parentPri(), factor);
+        float y = postAmp(t, d.parentPri(), factor);
         return y;
     }
 
@@ -61,9 +61,9 @@ public class DefaultDerivePri implements DerivePri {
     }
 
     float factorComplexityAbsolute(Task t, Derivation d) {
-        var max = d.termVolMax + 1;
+        int max = d.termVolMax + 1;
 
-        var weight = Math.min(1, t.voluplexity() / max);
+        float weight = Math.min(1, t.voluplexity() / max);
         //float parentWeight = Math.min(1, ((d.parentVoluplexitySum / 2)/*avg*/) / max);
         //float f = (1f - Util.lerp(parentWeight,weight,parentWeight * weight));
         //return Util.lerp(simplicityImportance.floatValue(), 1f, f);
@@ -79,16 +79,16 @@ public class DefaultDerivePri implements DerivePri {
 
     float factorComplexityRelative(Task t, Derivation d, float simplicityExponent) {
 
-        var pCompl =
+        float pCompl =
                 d.single ?
                     d.taskTerm.volume()
                     :
                     ((float) (d.taskTerm.volume() + d.beliefTerm.volume())) / 2; //average
 
-        var dCompl = t.volume();
+        int dCompl = t.volume();
 
-        var basePenalty = 0.5f; //if derivation is simpler, this is the maximum complexity increase seen
-        var f = 1 - (basePenalty + Math.max(0, dCompl - pCompl)) / (basePenalty + dCompl);
+        float basePenalty = 0.5f; //if derivation is simpler, this is the maximum complexity increase seen
+        float f = 1 - (basePenalty + Math.max(0, dCompl - pCompl)) / (basePenalty + dCompl);
         f = (float) Math.pow(f, simplicityExponent);
 
 //        float f =
@@ -103,12 +103,12 @@ public class DefaultDerivePri implements DerivePri {
     }
 
     float factorPolarity(float freq) {
-        var polarity = Truth.polarity(freq);
+        float polarity = Truth.polarity(freq);
         return Util.lerp(polarityImportance.floatValue(), 1f, polarity);
     }
 
     float factorEviAbsolute(Task t, Derivation d) {
-        var rangeRatio = rangeRatio(t, d);
+        double rangeRatio = rangeRatio(t, d);
 
         double y;
 		//conf integrated
@@ -118,8 +118,8 @@ public class DefaultDerivePri implements DerivePri {
 
     private static double rangeRatio(Task t, Derivation d) {
         //eternal=1 dur
-        var taskRange = d._task.rangeIfNotEternalElse(TIMELESS);
-        var beliefRange = d.single ? taskRange : (d._belief.rangeIfNotEternalElse(TIMELESS));
+        long taskRange = d._task.rangeIfNotEternalElse(TIMELESS);
+        long beliefRange = d.single ? taskRange : (d._belief.rangeIfNotEternalElse(TIMELESS));
         long taskBeliefRange;
         if (taskRange == TIMELESS && beliefRange != TIMELESS) {
             taskBeliefRange = beliefRange;
@@ -136,20 +136,20 @@ public class DefaultDerivePri implements DerivePri {
 
 
     double factorMaintainRangeAndAvgEvi(Task t, Derivation d) {
-        var rangeRatio = rangeRatio(t, d);
+        double rangeRatio = rangeRatio(t, d);
 
         if (t.isQuestionOrQuest())
             return rangeRatio;
 
-        var eParent = d.evi();
-        var eDerived = t.evi();
+        double eParent = d.evi();
+        double eDerived = t.evi();
         if (eParent <= eDerived)
 //            throw new WTF("spontaneous belief inflation"); //not actually
             return rangeRatio;
         else {
-            var cDerived = w2cSafeDouble(eDerived);
-            var cParent = w2cSafeDouble(eParent);
-            var eRatio = (float) (1 - ((cParent - cDerived) / cParent));
+            double cDerived = w2cSafeDouble(eDerived);
+            double cParent = w2cSafeDouble(eParent);
+            float eRatio = (float) (1 - ((cParent - cDerived) / cParent));
             //double f = (float) (1 - ((eParent - eDerived) / eParent));
 
             Util.assertUnitized(eRatio);

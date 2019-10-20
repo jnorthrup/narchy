@@ -116,11 +116,11 @@ public class PrologContext {
 
     void tailCallOptimize(PrologSolve e) {
 
-        var ctx = e.currentContext;
+        PrologContext ctx = e.currentContext;
         if (!haveAlternatives) {
-            var ge = ctx.goalsToEval;
+            SubGoalStore ge = ctx.goalsToEval;
             if (ge.getCurSGId() == null && !ge.haveSubGoals()) {
-                var gn = ctx.currentGoal.name();
+                String gn = ctx.currentGoal.name();
                 switch (gn) {
                     case "catch":
                     case "java_catch":

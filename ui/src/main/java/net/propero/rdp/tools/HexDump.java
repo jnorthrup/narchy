@@ -8,18 +8,18 @@ public class HexDump {
     }
 
     private static String dumpHexString(byte[] array, int offset, int length) {
-        var result = new StringBuilder();
+        StringBuilder result = new StringBuilder();
 
         result.append("0x");
         result.append(toHexString(offset));
 
-        var lineIndex = 0;
-        var line = new byte[16];
-        for (var i = offset; i < offset + length; i++) {
+        int lineIndex = 0;
+        byte[] line = new byte[16];
+        for (int i = offset; i < offset + length; i++) {
             if (lineIndex == 16) {
                 result.append(' ');
 
-                for (var j = 0; j < 16; j++) {
+                for (int j = 0; j < 16; j++) {
                     if (line[j] > ' ' && line[j] < '~') {
                         result.append(new String(line, j, 1));
                     } else {
@@ -32,7 +32,7 @@ public class HexDump {
                 lineIndex = 0;
             }
 
-            var b = array[i];
+            byte b = array[i];
             result.append(' ');
             result.append(HEX_DIGITS[(b >>> 4) & 0x0F]);
             result.append(HEX_DIGITS[b & 0x0F]);
@@ -41,11 +41,11 @@ public class HexDump {
         }
 
         if (lineIndex != 16) {
-            var count = (16 - lineIndex) * 3;
+            int count = (16 - lineIndex) * 3;
             count++;
             result.append(" ".repeat(Math.max(0, count)));
 
-            for (var i = 0; i < lineIndex; i++) {
+            for (int i = 0; i < lineIndex; i++) {
                 if (line[i] > ' ' && line[i] < '~') {
                     result.append(new String(line, i, 1));
                 } else {
@@ -66,11 +66,11 @@ public class HexDump {
     }
 
     private static String toHexString(byte[] array, int offset, int length) {
-        var buf = new char[length * 2];
+        char[] buf = new char[length * 2];
 
-        var bufIndex = 0;
-        for (var i = offset; i < offset + length; i++) {
-            var b = array[i];
+        int bufIndex = 0;
+        for (int i = offset; i < offset + length; i++) {
+            byte b = array[i];
             buf[bufIndex++] = HEX_DIGITS[(b >>> 4) & 0x0F];
             buf[bufIndex++] = HEX_DIGITS[b & 0x0F];
         }
@@ -83,13 +83,13 @@ public class HexDump {
     }
 
     private static byte[] toByteArray(byte b) {
-        var array = new byte[1];
+        byte[] array = new byte[1];
         array[0] = b;
         return array;
     }
 
     private static byte[] toByteArray(int i) {
-        var array = new byte[4];
+        byte[] array = new byte[4];
 
         array[3] = (byte) (i & 0xFF);
         array[2] = (byte) ((i >> 8) & 0xFF);
@@ -108,10 +108,10 @@ public class HexDump {
     }
 
     public static byte[] hexStringToByteArray(String hexString) {
-        var length = hexString.length();
-        var buffer = new byte[length / 2];
+        int length = hexString.length();
+        byte[] buffer = new byte[length / 2];
 
-        for (var i = 0; i < length; i += 2) {
+        for (int i = 0; i < length; i += 2) {
             buffer[i / 2] = (byte) ((toByte(hexString.charAt(i)) << 4) | toByte(hexString.charAt(i + 1)));
         }
 

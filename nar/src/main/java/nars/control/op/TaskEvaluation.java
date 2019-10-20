@@ -42,7 +42,7 @@ final class TaskEvaluation extends Evaluation implements Predicate<Term> {
 				result = null;
 			} else {
 
-				var f = new FasterList<>(result);
+                FasterList f = new FasterList<>(result);
 				result = f;
 				f.replaceAll(yTerm -> perceiveable(this.t, (Term) yTerm, what));
 				f.removeNulls();
@@ -104,7 +104,7 @@ final class TaskEvaluation extends Evaluation implements Predicate<Term> {
 
 	private static @Nullable Task perceiveBooleanAnswer(Task x, Term y, What w) {
 
-		var punc = x.punc();
+        byte punc = x.punc();
 		if (punc == QUESTION || punc == QUEST) {
 			//conver to an answering belief/goal now that the absolute truth has been determined
 			//TODO decide if this makes sense for QUEST
@@ -136,7 +136,7 @@ final class TaskEvaluation extends Evaluation implements Predicate<Term> {
 		}
 	}
 	private static @Nullable Task rememberTransformed(Task input, Term y) {
-		var u = Task.clone(input, y);
+        Task u = Task.clone(input, y);
 		assert(u!=null);
 		return u; //recurse
 	}

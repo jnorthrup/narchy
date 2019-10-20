@@ -59,7 +59,7 @@ import java.awt.*;
          */
 
 
-        var t = System.currentTimeMillis();
+        long t = System.currentTimeMillis();
 
 
         gl.glPushMatrix();
@@ -77,12 +77,12 @@ import java.awt.*;
         
         bg = null;
 
-        var dz = 0f;
-        var charScaleY1 = 0.85f;
-        var charScaleY = charScaleY1;
-        var charScaleX1 = 0.85f;
-        var charScaleX = charScaleX1;
-        for (var row = 0; row < rows; row++) {
+        float dz = 0f;
+        float charScaleY1 = 0.85f;
+        float charScaleY = charScaleY1;
+        float charScaleX1 = 0.85f;
+        float charScaleX = charScaleX1;
+        for (int row = 0; row < rows; row++) {
 
             gl.glPushMatrix();
 
@@ -93,10 +93,10 @@ import java.awt.*;
                     dz);
 
 
-            for (var col = 0; col < cols; col++) {
+            for (int col = 0; col < cols; col++) {
 
 
-                var c = charAt(col, row);
+                TextCharacter c = charAt(col, row);
 
 
                 if (setBackgroundColor(gl, c, col, row)) {
@@ -107,13 +107,13 @@ import java.awt.*;
                 }
 
 
-                var cc = visible(c.c);
+                char cc = visible(c.c);
 
 
                 if (cc != 0) {
 
 
-                    var fg = c.fgColor;
+                    float[] fg = c.fgColor;
                     gl.glColor4f(fg[0], fg[1], fg[2], fgAlpha);
 
                     HersheyFont.textNext(gl, cc, col / charScaleX);
@@ -125,15 +125,15 @@ import java.awt.*;
             gl.glPopMatrix(); 
         }
 
-        var cursor = getCursorPos();
-        var curx = cursor[0];
-        var cury = cursor[1];
+        int[] cursor = getCursorPos();
+        int curx = cursor[0];
+        int cury = cursor[1];
 
 
-        var p = (1f + (float) Math.sin(t / 100.0)) * 0.5f;
+        float p = (1f + (float) Math.sin(t / 100.0)) * 0.5f;
         gl.glColor4f(1f, 0.7f, 0f, 0.4f + p * 0.4f);
 
-        var m = (p);
+        float m = (p);
         Draw.rect(gl,
                 (curx) + m / 2f,
                 (rows - 1 - cury),

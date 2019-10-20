@@ -171,7 +171,7 @@ public class TapOut extends UGen {
         sampDelayFloat = sampsPerMS * delay;
         sampDelayInt = (int) (sampDelayFloat + .5);
         sampDelayAPInt = (int) sampDelayFloat;
-        var frac = sampDelayFloat % 1;
+        float frac = sampDelayFloat % 1;
         g = (1 - frac) / (1 + frac);
         delayUGen = null;
         return this;

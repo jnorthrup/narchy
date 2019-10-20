@@ -29,16 +29,16 @@ public class MemoryState {
 
 
     public void backwardErrorPropagation() {
-        for (var readData : read)
+        for (ReadData readData : read)
             readData.backwardErrorPropagation();
 
         memory.backwardErrorPropagation();
-        for (var headSetting : memory.heading) {
+        for (HeadSetting headSetting : memory.heading) {
             headSetting.backwardErrorPropagation();
             headSetting.shiftedAddressing.backwardErrorPropagation();
             headSetting.shiftedAddressing.gatedAddressing.backwardErrorPropagation();
             headSetting.shiftedAddressing.gatedAddressing.content.backwardErrorPropagation();
-            for (var similarity : headSetting.shiftedAddressing.gatedAddressing.content.BetaSimilarities) {
+            for (BetaSimilarity similarity : headSetting.shiftedAddressing.gatedAddressing.content.BetaSimilarities) {
                 similarity.backwardErrorPropagation();
                 similarity.measure.backwardErrorPropagation();
             }
@@ -47,21 +47,21 @@ public class MemoryState {
 
     public void backwardErrorPropagation2() {
 
-        var ca = memory.getContentAddressing();
+        ContentAddressing[] ca = memory.getContentAddressing();
 
 
-        for (var i = 0; i < read.length; i++) {
+        for (int i = 0; i < read.length; i++) {
 
-            var readI = read[i];
-            var cai = ca[i];
+            ReadData readI = read[i];
+            ContentAddressing cai = ca[i];
 
             readI.backwardErrorPropagation();
 
-            var caiContent = cai.content;
+            UVector caiContent = cai.content;
 
-            var s = readI.head.addressingVector.size();
+            int s = readI.head.addressingVector.size();
 
-            for (var j = 0; j < s; j++) {
+            for (int j = 0; j < s; j++) {
                 caiContent.gradAddSelf(j, readI.head.addressingVector.grad[j]);
             }
 
@@ -70,24 +70,24 @@ public class MemoryState {
     }
 
     public MemoryState process(Head[] heads) {
-        var headCount = heads.length;
-        var memoryColumnsN = memory.memoryHeight;
-        var newReadDatas = new ReadData[headCount];
-        var newHeadSettings = new HeadSetting[headCount];
+        int headCount = heads.length;
+        int memoryColumnsN = memory.memoryHeight;
+        ReadData[] newReadDatas = new ReadData[headCount];
+        HeadSetting[] newHeadSettings = new HeadSetting[headCount];
 
-        var memoryData = memory.data;
+        Unit[][] memoryData = memory.data;
 
-        for (var i = 0; i < headCount; i++) {
-            var head = heads[i];
-            var similarities = new BetaSimilarity[memory.memoryHeight];
-            for (var j = 0; j < memoryColumnsN; j++) {
+        for (int i = 0; i < headCount; i++) {
+            Head head = heads[i];
+            BetaSimilarity[] similarities = new BetaSimilarity[memory.memoryHeight];
+            for (int j = 0; j < memoryColumnsN; j++) {
 
                 similarities[j] = new BetaSimilarity(head.getBeta(),
                         new SimilarityMeasure(new CosineSimilarityFunction(), head.getKeyVector(), memoryData[j]));
             }
-            var ca = new ContentAddressing(similarities);
-            var ga = new GatedAddressing(head.getGate(), ca, heading[i]);
-            var sa = new ShiftedAddressing(head.getShift(), ga);
+            ContentAddressing ca = new ContentAddressing(similarities);
+            GatedAddressing ga = new GatedAddressing(head.getGate(), ca, heading[i]);
+            ShiftedAddressing sa = new ShiftedAddressing(head.getShift(), ga);
             newHeadSettings[i] = new HeadSetting(head.getGamma(), sa);
             newReadDatas[i] = new ReadData(newHeadSettings[i], memory);
         }

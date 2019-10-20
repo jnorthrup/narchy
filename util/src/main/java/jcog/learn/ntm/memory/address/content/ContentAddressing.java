@@ -2,6 +2,8 @@ package jcog.learn.ntm.memory.address.content;
 
 import jcog.learn.ntm.control.UVector;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -15,15 +17,15 @@ public class ContentAddressing
         BetaSimilarities = betaSimilarities;
         content = new UVector(betaSimilarities.length);
 
-        var max = BetaSimilarities[0].value;
-        for(var iterationBetaSimilarity : betaSimilarities ) {
+        double max = BetaSimilarities[0].value;
+        for(BetaSimilarity iterationBetaSimilarity : betaSimilarities ) {
             max = Math.max(max, iterationBetaSimilarity.value);
         }
 
-        var sum = 0.0;
-        for (var i = 0; i < BetaSimilarities.length; i++) {
-            var unit = BetaSimilarities[i];
-            var weight = Math.exp(unit.value - max);
+        double sum = 0.0;
+        for (int i = 0; i < BetaSimilarities.length; i++) {
+            BetaSimilarity unit = BetaSimilarities[i];
+            double weight = Math.exp(unit.value - max);
             content.value(i, weight);
             sum += weight;
         }
@@ -33,15 +35,20 @@ public class ContentAddressing
     public void backwardErrorPropagation() {
 
 
-        var gradient = content.sumGradientValueProducts();
+        double gradient = content.sumGradientValueProducts();
 
-        for (var i = 0; i < content.size(); i++)        {
+        for (int i = 0; i < content.size(); i++)        {
             BetaSimilarities[i].grad += (content.grad(i) - gradient) * content.value(i);
         }
     }
 
     public static ContentAddressing[] getVector(Integer x, Function<Integer, BetaSimilarity[]> paramGetter) {
-        var vector = IntStream.range(0, x).mapToObj(i -> new ContentAddressing(paramGetter.apply(i))).toArray(ContentAddressing[]::new);
+        List<ContentAddressing> list = new ArrayList<>();
+        for (int i = 0; i < x; i++) {
+            ContentAddressing contentAddressing = new ContentAddressing(paramGetter.apply(i));
+            list.add(contentAddressing);
+        }
+        ContentAddressing[] vector = list.toArray(new ContentAddressing[0]);
         return vector;
     }
 

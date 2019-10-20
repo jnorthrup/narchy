@@ -64,10 +64,10 @@ class Poly2TriUtils {
      */
     static double orient2d(double[] pa, double[] pb, double[] pc) {
 
-        var pc0 = pc[0];
-        var pc1 = pc[1];
-        var detleft = (pa[0] - pc0) * (pb[1] - pc1);
-        var detright = (pa[1] - pc1) * (pb[0] - pc0);
+        double pc0 = pc[0];
+        double pc1 = pc[1];
+        double detleft = (pa[0] - pc0) * (pb[1] - pc1);
+        double detright = (pa[1] - pc1) * (pb[0] - pc0);
 
         return detleft - detright;
     }

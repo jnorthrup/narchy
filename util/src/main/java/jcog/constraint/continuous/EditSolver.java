@@ -25,7 +25,7 @@ class EditSolver extends ContinuousConstraintSolver {
 
         List<DoubleTerm> terms = new ArrayList<>();
         terms.add(new DoubleTerm(variable));
-        var constraint = new ContinuousConstraint(new Expression(terms), ScalarComparison.Equal, strength);
+        ContinuousConstraint constraint = new ContinuousConstraint(new Expression(terms), ScalarComparison.Equal, strength);
 
         try {
             add(constraint);
@@ -34,12 +34,12 @@ class EditSolver extends ContinuousConstraintSolver {
         }
 
 
-        var info = new EditInfo(constraint, cns.get(constraint), 0.0);
+        EditInfo info = new EditInfo(constraint, cns.get(constraint), 0.0);
         edits.put(variable, info);
     }
 
     public void removeEditVariable(DoubleSupplier variable) throws UnknownEditVariableException {
-        var edit = edits.get(variable);
+        EditInfo edit = edits.get(variable);
         if (edit == null) {
             throw new UnknownEditVariableException();
         }
@@ -58,15 +58,15 @@ class EditSolver extends ContinuousConstraintSolver {
     }
 
     public void suggestValue(DoubleSupplier variable, double value) throws UnknownEditVariableException {
-        var info = edits.get(variable);
+        EditInfo info = edits.get(variable);
         if (info == null) {
             throw new UnknownEditVariableException();
         }
 
-        var delta = value - info.constant;
+        double delta = value - info.constant;
         info.constant = value;
 
-        var row = rows.get(info.tag.marker);
+        Row row = rows.get(info.tag.marker);
         if (row != null) {
             if (row.addToConstant(-delta) < 0.0) {
                 infeasibleRows.add(info.tag.marker);
@@ -84,10 +84,10 @@ class EditSolver extends ContinuousConstraintSolver {
             return;
         }
 
-        for (var symbolRowEntry : rows.entrySet()) {
-            var currentRow = symbolRowEntry.getValue();
-            var coefficient = currentRow.coefficientFor(info.tag.marker);
-            var k = symbolRowEntry.getKey();
+        for (Map.Entry<Symbol, Row> symbolRowEntry : rows.entrySet()) {
+            Row currentRow = symbolRowEntry.getValue();
+            double coefficient = currentRow.coefficientFor(info.tag.marker);
+            Symbol k = symbolRowEntry.getKey();
             if (coefficient != 0.0 && currentRow.addToConstant(delta * coefficient) < 0.0 && k.type != Symbol.Type.EXTERNAL) {
                 infeasibleRows.add(k);
             }
@@ -98,10 +98,10 @@ class EditSolver extends ContinuousConstraintSolver {
 
     void dualOptimize() throws InternalSolverError {
         while (!infeasibleRows.isEmpty()) {
-            var leaving = infeasibleRows.remove(infeasibleRows.size() - 1);
-            var row = rows.remove(leaving);
+            Symbol leaving = infeasibleRows.remove(infeasibleRows.size() - 1);
+            Row row = rows.remove(leaving);
             if (row != null && row.getConstant() < 0.0) {
-                var entering = getDualEnteringSymbol(row);
+                Symbol entering = getDualEnteringSymbol(row);
                 if (entering.type == Symbol.Type.INVALID) {
                     throw new InternalSolverError("internal solver error");
                 }
@@ -114,14 +114,14 @@ class EditSolver extends ContinuousConstraintSolver {
 
     protected Symbol getDualEnteringSymbol(Row row) {
         Symbol entering = null;
-        var ratio = Double.MAX_VALUE;
+        double ratio = Double.MAX_VALUE;
         
-        for (var s : row.cells.keySet()) {
+        for (Symbol s : row.cells.keySet()) {
             if (s.type != Symbol.Type.DUMMY) {
                 double currentCell = row.cells.get(s);
                 if (currentCell > 0.0) {
-                    var coefficient = objective.coefficientFor(s);
-                    var r = coefficient / currentCell;
+                    double coefficient = objective.coefficientFor(s);
+                    double r = coefficient / currentCell;
                     if (r < ratio) {
                         ratio = r;
                         entering = s;

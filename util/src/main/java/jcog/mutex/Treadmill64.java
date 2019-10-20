@@ -26,13 +26,13 @@ public class Treadmill64 implements SpinMutex {
 
         restart: while (true) {
 
-            var now = mod.getAcquire();
+            int now = mod.getAcquire();
 
             /** optimistic pre-scan determined free slot */
-            var jProlly = -1;
+            int jProlly = -1;
 
-            for (var i = offset; i < size+offset; i++) {
-                var v = buf.getOpaque(i);
+            for (int i = offset; i < size+offset; i++) {
+                long v = buf.getOpaque(i);
                 if (v == hash) {
                     Thread.onSpinWait();
                     continue restart;  //collision
@@ -44,8 +44,8 @@ public class Treadmill64 implements SpinMutex {
                 if (jProlly != -1 && buf.weakCompareAndSetAcquire(jProlly, 0, hash))
                     return jProlly;
 
-                var os = offset + size;
-                for (var j = offset; j < os; j++)
+                int os = offset + size;
+                for (int j = offset; j < os; j++)
                     if (j!=jProlly && buf.weakCompareAndSetAcquire(j, 0, hash))
                         return j;
             }

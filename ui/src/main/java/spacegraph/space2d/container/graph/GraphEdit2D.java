@@ -35,6 +35,7 @@ import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.space2d.widget.windo.util.Box2DGraphEditPhysics;
 import spacegraph.space2d.widget.windo.util.GraphEditPhysics;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -82,7 +83,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
     }
 
     public static <X extends Surface> GraphEdit2D graphWindow(int w, int h) {
-        var g = new GraphEdit2D();
+        GraphEdit2D g = new GraphEdit2D();
         SpaceGraph.window(g, w, h);
         //.dev();
         return g;
@@ -127,7 +128,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
     }
 
     public Windo addUndecorated(Surface x) {
-        var w = add(x, xx -> new DependentWindow(x));
+        Windo w = add(x, xx -> new DependentWindow(x));
         return w;
     }
 
@@ -144,7 +145,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
 
     @Override
     public void doLayout(float dtS) {
-        var b = this.bounds;
+        RectFloat b = this.bounds;
         physics.below.pos(b);
         physics.above.pos(b);
         raw.pos(b);
@@ -160,7 +161,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
 
     @Override
     public ContainerSurface remove(Object key) {
-        var w = super.remove(key);
+        ContainerSurface w = super.remove(key);
         if (w != null) {
             w.delete(); //stop();
             physics.remove(w);
@@ -174,8 +175,8 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
      * uses put() semantics
      */
     public final Windo add(Surface x, Function<Surface, ContainerSurface> windowize) {
-        var w = (Windo) computeIfAbsent(x, (xx) -> {
-            var ww = windowize.apply(xx);
+        Windo w = (Windo) computeIfAbsent(x, (xx) -> {
+            ContainerSurface ww = windowize.apply(xx);
             if (ww != null) {
                 if (parent != null) {
                     ww.start(this);
@@ -188,7 +189,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
     }
 
     public final Windo add(Surface x, float w, float h) {
-        var y = add(x);
+        Windo y = add(x);
         y.resize(w, h);
         return y;
     }
@@ -235,7 +236,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
     }
 
     public Animating<Debugger> debugger() {
-        var d = new Debugger();
+        Debugger d = new Debugger();
         return new Animating<>(d, d::update, 0.25f);
     }
 
@@ -267,7 +268,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
 //    }
 
     public Iterable<FromTo<Node<spacegraph.space2d.Surface, Wire>, Wire>> edges(Surface s) {
-        var n = links.node(s);
+        Node<Surface, Wire> n = links.node(s);
         return n != null ? n.edges(true, true) : Collections.EMPTY_LIST;
     }
 
@@ -275,7 +276,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
     @Override
     public final Surface finger(Finger finger) {
 
-        var s = super.finger(finger);
+        Surface s = super.finger(finger);
 
         if (s == null) {
             if (doubleClicking.update(finger))
@@ -289,7 +290,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
 
     private void doubleClick(v2 pos) {
 
-        var z = add(
+        Windo z = add(
                 new WizardFrame(new ProtoWidget())
 //                    @Override
 //                    protected void become(Surface next) {
@@ -333,12 +334,12 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
 
         wire.preRemove();
 
-        var removed = false;
+        boolean removed = false;
         synchronized (links) {
             //Wire wire = new Wire(source, target);
-            var an = links.node(wire.a);
+            Node<Surface, Wire> an = links.node(wire.a);
             if (an != null) {
-                var bn = links.node(wire.b);
+                Node<Surface, Wire> bn = links.node(wire.b);
                 if (bn != null) {
                     removed = links.edgeRemove(new ImmutableDirectedEdge<>(
                             an, wire, bn)
@@ -384,7 +385,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
 
         @Override
         protected void onRemoved(Node<Surface, Wire> r) {
-            for (var e : r.edges(true, true)) {
+            for (FromTo<Node<Surface, Wire>, Wire> e : r.edges(true, true)) {
                 e.id().remove();
             }
         }
@@ -413,7 +414,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
 
             @Override
             protected final void paint(GL2 gl, ReSurface reSurface) {
-                var p = parent;
+                Surfacelike p = parent;
                 if (p instanceof Surface)
                     pos(((Surface) p).bounds); //inherit bounds
 
@@ -429,7 +430,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
             @Override
             protected void render(ReSurface r) {
                 if (a().parent == null || b().parent == null) {
-                    var graphParent = parentOrSelf(GraphEdit2D.class);
+                    GraphEdit2D graphParent = parentOrSelf(GraphEdit2D.class);
                     if (graphParent != null) {
                         GraphEdit2D.VisibleLink.this.remove(graphParent);
                     }
@@ -456,7 +457,11 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
         void update() {
             boundsInfo.text(GraphEdit2D.this.bounds.toString());
 
-            var list = GraphEdit2D.this.keySet().stream().map(t -> info(t, getValue(t))).collect(Collectors.toList());
+            List<String> list = new ArrayList<>();
+            for (Surface t : GraphEdit2D.this.keySet()) {
+                String info = info(t, getValue(t));
+                list.add(info);
+            }
             children.text(Joiner.on("\n").join(list));
         }
 
@@ -474,7 +479,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
         @Override
         public boolean delete() {
             if (super.delete()) {
-                var w = parentOrSelf(DependentWindow.class);
+                DependentWindow w = parentOrSelf(DependentWindow.class);
                 if (w != null)
                     w.delete();
                 return true;

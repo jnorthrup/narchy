@@ -80,7 +80,7 @@ public class MLPMap {
         }
 
         public void randomizeWeights(Random r, float scale) {
-            for (var i = 0; i < W.length; i++) {
+            for (int i = 0; i < W.length; i++) {
                 W[i] = (r.nextFloat() - 0.5f) * 2f * scale;
             }
         }
@@ -91,11 +91,11 @@ public class MLPMap {
             System.arraycopy(x, 0, in, 0, x.length);
             if (bias)
                 in[in.length - 1] = 1; //bias
-            var offs = 0;
-            var il = in.length;
-            for (var i = 0; i < out.length; i++) {
+            int offs = 0;
+            int il = in.length;
+            for (int i = 0; i < out.length; i++) {
                 double o = 0;
-                for (var j = 0; j < il; j++)
+                for (int j = 0; j < il; j++)
                     o += W[offs + j] * in[j];
                 if (activation!=null)
                     o = activation.valueOf(o);
@@ -111,22 +111,22 @@ public class MLPMap {
             float[] W = this.W, dW = this.dW, in = this.in, delta = this.delta, out = this.out;
 
             Arrays.fill(delta, 0);
-            var inLength = in.length;
+            int inLength = in.length;
 
-            var offs = 0;
-            for (var o = 0; o < out.length; o++) {
-                var gradient = incomingError[o];
+            int offs = 0;
+            for (int o = 0; o < out.length; o++) {
+                float gradient = incomingError[o];
                 if (activation!=null)
                     gradient *= activation.derivative(out[o]);
 
-                var outputDelta = gradient * learningRate;
+                float outputDelta = gradient * learningRate;
 
-                for (var i = 0; i < inLength; i++) {
-                    var ij = offs++;
+                for (int i = 0; i < inLength; i++) {
+                    int ij = offs++;
 
                     delta[i] += W[ij] * gradient;
 
-                    var dw = in[i] * outputDelta;
+                    float dw = in[i] * outputDelta;
 
                     W[ij] += (dW[ij] = (dw) + (dW[ij] * momentum));
                 }
@@ -149,9 +149,9 @@ public class MLPMap {
     public MLPMap(int inputs, Layer... layer) {
         assert(layer.length > 0);
         layers = new MLPLayer[layer.length];
-        for (var i = 0; i < layer.length; i++) {
-            var inSize = i > 0 ? layer[i-1].size : inputs;
-            var outSize = layer[i].size;
+        for (int i = 0; i < layer.length; i++) {
+            int inSize = i > 0 ? layer[i-1].size : inputs;
+            int outSize = layer[i].size;
             layers[i] = new MLPLayer(inSize, outSize, layer[i].activation);
         }
     }
@@ -161,30 +161,30 @@ public class MLPMap {
 //    }
 
     public MLPMap randomize(Random r) {
-        for (var m : layers)
+        for (MLPLayer m : layers)
             m.randomizeWeights(r);
         return this;
     }
 
     public float[] get(float[] input) {
-        var i = input;
-        for (var layer : layers)
+        float[] i = input;
+        for (MLPLayer layer : layers)
             i = layer.forward(i);
         return i;
     }
 
     /** returns the estimate for the input, prior to training */
     public float[] put(float[] input, float[] out, float learningRate) {
-        var outPredicted = get(input);
+        float[] outPredicted = get(input);
 
         if (errorOut.length!=outPredicted.length)
             errorOut = new float[outPredicted.length];
-        for (var i = 0; i < errorOut.length; i++)
+        for (int i = 0; i < errorOut.length; i++)
             errorOut[i] = out[i] - outPredicted[i];
 
         //backprop
-        var e = errorOut;
-        for (var i = layers.length - 1; i >= 0; i--)
+        float[] e = errorOut;
+        for (int i = layers.length - 1; i >= 0; i--)
             e = layers[i].reverse(e, learningRate, momentum);
 
         return outPredicted;
@@ -198,13 +198,13 @@ public class MLPMap {
     /** https://datascience.stackexchange.com/questions/5863/where-does-the-sum-of-squared-errors-function-in-neural-networks-come-from */
     public double errorSquared() {
         double err = 0;
-        for (var e : errorOut)
+        for (float e : errorOut)
             err += e*e;
         return err;
     }
     public double errorAbs() {
         double err = 0;
-        for (var e : errorOut)
+        for (float e : errorOut)
             err += Math.abs(e);
         return err;
     }

@@ -24,7 +24,7 @@ public class RuleMarg {
 		iClo = 2; 
 		isHist = true;
 		iTyp = TYPE_MS; 
-		for (var i = 0; i <= 15; i++)
+		for (int i = 0; i <= 15; i++)
 			swapArray[i] = i;
 	}
 
@@ -36,19 +36,19 @@ public class RuleMarg {
 
         ResetToDefaults();
 
-		var st = new StringTokenizer(sStr, ",", true);
+        StringTokenizer st = new StringTokenizer(sStr, ",", true);
 		while (st.hasMoreTokens()) {
-			var sTok = st.nextToken();
+            String sTok = st.nextToken();
             if (sTok.length() > 0 && sTok.charAt(0) == 'M')
 															
 			{
 				iTyp = TYPE_MS; 
 			} else if (sTok.length() > 0 && sTok.charAt(0) == 'D') 
 			{
-				var std = new StringTokenizer(sTok.substring(1), ";", false);
-				var iNum = 0;
+                StringTokenizer std = new StringTokenizer(sTok.substring(1), ";", false);
+                int iNum = 0;
                 while (std.hasMoreTokens() && (iNum <= 15)) {
-					var sSwaps = std.nextToken();
+                    String sSwaps = std.nextToken();
                     int iVal = Integer.valueOf(sSwaps);
                     if ((iVal >= 0) && (iVal <= 15))
 						swapArray[iNum] = iVal;
@@ -78,9 +78,9 @@ public class RuleMarg {
 		Validate();
 
 
-		var sBff = "MS,D";
+        String sBff = "MS,D";
 
-		for (var i = 0; i <= 14; i++)
+		for (int i = 0; i <= 14; i++)
 			sBff = sBff + swapArray[i] + ';';
 		sBff += swapArray[15];
 
@@ -96,7 +96,7 @@ public class RuleMarg {
 		else if (iClo > MJBoard.MAX_CLO)
 			iClo = MJBoard.MAX_CLO;
 
-		for (var i = 0; i <= 15; i++)
+		for (int i = 0; i <= 15; i++)
 			if ((swapArray[i] < 0) || (swapArray[i] > 15))
 				swapArray[i] = i;
 	}
@@ -106,9 +106,15 @@ public class RuleMarg {
 	private void SwapMargCells(int[] mgCells) {
 
 
-		var b = IntStream.of(0, 1, 2, 3).noneMatch(i -> (mgCells[i] >= 2));
+		boolean b = true;
+		for (int i : new int[]{0, 1, 2, 3}) {
+			if ((mgCells[i] >= 2)) {
+				b = false;
+				break;
+			}
+		}
 		if (b) {
-			var iCnt = 0;
+            int iCnt = 0;
             if (mgCells[0] > 0)
 				iCnt += 1;
 			if (mgCells[1] > 0)
@@ -117,7 +123,7 @@ public class RuleMarg {
 				iCnt += 4;
 			if (mgCells[3] > 0)
 				iCnt += 8;
-			var iNewCnt = swapArray[iCnt];
+            int iNewCnt = swapArray[iCnt];
 
             mgCells[0] = (1 & iNewCnt) > 0 ? 1 : 0;
 			mgCells[1] = (2 & iNewCnt) > 0 ? 1 : 0;
@@ -131,28 +137,28 @@ public class RuleMarg {
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState, MJBoard mjb) {
 
-		var isOdd = ((mjb.Cycle % 2) != 0);
-		var i = 0;
+        boolean isOdd = ((mjb.Cycle % 2) != 0);
+        int i = 0;
 		if (isOdd)
 			i--;
-		var mgCellsOld = new int[4];
-		var mgCells = new int[4];
-		var modCnt = 0;
+        int[] mgCellsOld = new int[4];
+        int[] mgCells = new int[4];
+        int modCnt = 0;
         while (i < sizX) {
-			var c1 = i;
+            int c1 = i;
             if (c1 < 0)
 				c1 = (isWrap) ? sizX - 1 : sizX;
-			var c2 = i + 1;
+            int c2 = i + 1;
             if (c2 >= sizX)
 				c2 = (isWrap) ? 0 : sizX;
-			var j = 0;
+            int j = 0;
             if (isOdd)
 				j--; 
 			while (j < sizY) {
-				var r1 = j;
+                int r1 = j;
                 if (r1 < 0)
 					r1 = (isWrap) ? sizY - 1 : sizY;
-				var r2 = j + 1;
+                int r2 = j + 1;
                 if (r2 >= sizY)
 					r2 = (isWrap) ? 0 : sizY;
 				mgCellsOld[0] = mgCells[0] = tmpState[c1][r1] = crrState[c1][r1]; 
@@ -160,12 +166,16 @@ public class RuleMarg {
 				mgCellsOld[2] = mgCells[2] = tmpState[c1][r2] = crrState[c1][r2]; 
 				mgCellsOld[3] = mgCells[3] = tmpState[c2][r2] = crrState[c2][r2];
 
-				var sum = IntStream.of(0, 1, 2, 3).map(v -> mgCells[v]).sum();
+				int sum = 0;
+				for (int v : new int[]{0, 1, 2, 3}) {
+					int mgCell = mgCells[v];
+					sum += mgCell;
+				}
 				if ((sum > 0)
 						|| (swapArray[0] > 0)) {
 					SwapMargCells(mgCells); 
 
-					for (var ic = 0; ic <= 3; ic++)
+					for (int ic = 0; ic <= 3; ic++)
 												
 					{
 						if (mgCellsOld[ic] != mgCells[ic]) 

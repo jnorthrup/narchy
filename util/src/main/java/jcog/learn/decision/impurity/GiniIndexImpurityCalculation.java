@@ -20,11 +20,11 @@ public class GiniIndexImpurityCalculation implements ImpurityCalculator {
      */
     @Override
     public <K, V> double impurity(K value, Supplier<Stream<Function<K , V>>> splitData) {
-        var labels = splitData.get().map((x)->x.apply(value)).distinct().collect(Collectors.toList());
-        var s = labels.size();
+        List<V> labels = splitData.get().map((x)->x.apply(value)).distinct().collect(Collectors.toList());
+        int s = labels.size();
         if (s > 1) {
             return labels.stream().mapToDouble(l -> {
-                var p = ImpurityCalculator.empiricalProb(value, splitData.get(), l);
+                double p = ImpurityCalculator.empiricalProb(value, splitData.get(), l);
                 return 2.0 * p * (1 - p);
             }).sum();
         } else if (s == 1) {

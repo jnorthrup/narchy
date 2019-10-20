@@ -21,11 +21,11 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
     LineView(BufferLine bufferLine) {
         this.bufferLine = bufferLine;
         bufferLine.addListener(this);
-        var bufferChars = bufferLine.getChars();
+        List<BufferChar> bufferChars = bufferLine.getChars();
         chars = new FastCoWList<>(bufferChars.size(), CharView[]::new);
         if (!bufferChars.isEmpty()) {
             update((c) -> {
-                for (var bc : bufferChars)
+                for (BufferChar bc : bufferChars)
                     c.add(new CharView(bc));
                 //return true;
             });
@@ -42,7 +42,7 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
 
     @Override
     public void innerDraw(GL2 gl) {
-        for (var c : chars) {
+        for (CharView c : chars) {
             if (c != null)
                 c.draw(gl);
         }
@@ -61,8 +61,8 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
 //                cc.sortThis();
 
             float width = 0;
-            for (var c : cc) {
-                var w = CharView.width() / 2;
+            for (CharView c : cc) {
+                float w = CharView.width() / 2;
                 width += w;
                 c.position.set(width, 0, 0);
                 width += w;
@@ -103,9 +103,15 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
 
     CharView leaveChar(BufferChar bc) {
 
-        var leaved = new CharView[1];
+        CharView[] leaved = new CharView[1];
         update((chars) -> {
-            var leave = chars.stream().filter(c -> c.bufferChar() == bc).findFirst().orElse(null);
+            CharView leave = null;
+            for (CharView c : chars) {
+                if (c.bufferChar() == bc) {
+                    leave = c;
+                    break;
+                }
+            }
             leaved[0] = leave;
             chars.remove(leave);
         });
@@ -141,8 +147,8 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
         gl.glColor4f(color.x, color.y, color.z, color.w);
 
         //TODO line height, margin etc
-        for (var x = x1; x < x2; x++) {
-            var c = chars.get(x);
+        for (int x = x1; x < x2; x++) {
+            CharView c = chars.get(x);
             if (c != null)
                 c.draw(gl);
         }

@@ -46,7 +46,7 @@ public enum TruthFunctions {
      * @return Truth value of the conclusion
      */
     public static Truth conversion(Truth t, float minConf) {
-        var c = (float) w2cSafe(t.freq() * t.confDouble());
+        float c = (float) w2cSafe(t.freq() * t.confDouble());
         return c >= minConf ? tt(1, c) : null;
     }
 
@@ -73,8 +73,8 @@ public enum TruthFunctions {
      * @return AnalyticTruth value of the conclusion, because it is structural
      */
     private static @Nullable Truth deductionR(Truth a, double reliance, float minConf) {
-        var f = a.freq();
-        var c = and(f, confCompose(a, reliance));
+        float f = a.freq();
+        float c = and(f, confCompose(a, reliance));
         return (c >= minConf) ? tt(f, c) : null;
     }
 
@@ -85,13 +85,13 @@ public enum TruthFunctions {
      * {<S --> M>, <M --> P>} |- <P --> S>
      */
     public static @Nullable Truth deduction(Truth x, Truth y, boolean strong, float minConf) {
-        var cxy = confCompose(x, y);
+        float cxy = confCompose(x, y);
         if (cxy < minConf)
             return null;
 
-        var fxy = and(x.freq(), y.freq());
+        float fxy = and(x.freq(), y.freq());
 
-        var c = and(fxy, cxy); if (c < minConf) return null;
+        float c = and(fxy, cxy); if (c < minConf) return null;
         if (!strong)
             c = weak(c);
 
@@ -104,7 +104,7 @@ public enum TruthFunctions {
      * stronger than deduction such that A's frequency does not reduce the output confidence
      */
     public static @Nullable Truth analogy(Truth a, float bf, double bc, float minConf) {
-        var c = and(confCompose(a, bc), bf);
+        float c = and(confCompose(a, bc), bf);
         return c >= minConf ? tt(and(a.freq(), bf), c) : null;
     }
 
@@ -118,9 +118,9 @@ public enum TruthFunctions {
      * stronger than analogy
      */
     static Truth resemblance(Truth  v1, Truth  v2, float minConf) {
-        var f1 = v1.freq();
-        var f2 = v2.freq();
-        var c = and(confCompose(v1, v2), or(f1, f2));
+        float f1 = v1.freq();
+        float f2 = v2.freq();
+        float c = and(confCompose(v1, v2), or(f1, f2));
         return c >= minConf ? tt(and(f1, f2), c) : null;
     }
 
@@ -132,9 +132,9 @@ public enum TruthFunctions {
      * @return Truth value of the conclusion, or null if either truth is analytic already
      */
     public static Truth induction(Truth a, Truth b, float minConf) {
-        var ab = confCompose(a, b);
+        float ab = confCompose(a, b);
         if (ab < minConf) return null;
-        var c = w2cSafe(ab * b.freq());
+        float c = w2cSafe(ab * b.freq());
         return c >= minConf ? $.tt(a.freq(), c) : null;
     }
 
@@ -144,27 +144,27 @@ public enum TruthFunctions {
      * {<M ==> S>, <P ==> M>} |- <S ==> P>
      */
     static Truth exemplification(Truth a, Truth b, float minConf) {
-        var c = w2cSafe(a.freq() * b.freq() * confCompose(a, b));
+        float c = w2cSafe(a.freq() * b.freq() * confCompose(a, b));
         return c >= minConf ? tt(1, c) : null;
     }
 
 
     public static @Nullable Truth comparison(Truth a, Truth b, float minConf) {
-        var f1 = a.freq();
-        var f2 = b.freq();
+        float f1 = a.freq();
+        float f2 = b.freq();
 //        if (f1 < 0.5f) {
 //            //negative polarity
 //            f1 = 1 - f1;
 //            f2 = 1 - f2;
 //        }
 
-        var f0 = or(f1, f2);
+        float f0 = or(f1, f2);
         double w = and(f0, confCompose(a,b));
-        var c = w2cSafe(w);
+        double c = w2cSafe(w);
         if (c < minConf)
             return null;
 
-        var f = (f0 < NAL.truth.TRUTH_EPSILON) ? 0 : (and(f1, f2) / f0);
+        float f = (f0 < NAL.truth.TRUTH_EPSILON) ? 0 : (and(f1, f2) / f0);
         return $.tt(f,(float)c);
     }
 
@@ -253,7 +253,7 @@ public enum TruthFunctions {
         return intersection(x, false, y, false, minConf);
     }
     public static @Nullable Truth intersection(Truth x, boolean negX, Truth y, boolean negY, float minConf) {
-        var c = confCompose(x, y);
+        float c = confCompose(x, y);
         return (c < minConf) ? null : $.tt(and(negIf(x.freq(),negX), negIf(y.freq(),negY)), c);
     }
 
@@ -269,10 +269,10 @@ public enum TruthFunctions {
      */
     @Deprecated
     static @Nullable Truth reduceConjunction(Truth a, Truth b, float minConf) {
-        var i12 = intersection(a, true, b, false, minConf);
+        Truth i12 = intersection(a, true, b, false, minConf);
         if (i12 == null) return null;
 
-        var v11 = deductionR(i12, 1.0, minConf);
+        Truth v11 = deductionR(i12, 1.0, minConf);
         if (v11 == null) return null;
 
         return v11.neg();
@@ -287,7 +287,7 @@ public enum TruthFunctions {
      * @return Truth value of the conclusion
      */
     static Truth anonymousAnalogy(Truth a, Truth b, float minConf) {
-        var v0c = w2cSafe(a.confDouble());
+        double v0c = w2cSafe(a.confDouble());
         return v0c < minConf ? null : TruthFunctions.analogy(b, a.freq(), v0c, minConf);
     }
 
@@ -315,11 +315,11 @@ public enum TruthFunctions {
 
     /** original OpenNARS desire function */
     public static Truth desire(Truth a, Truth b, float minConf, boolean strong) {
-        var f1 = a.freq();
-        var f2 = b.freq();
-        var f = and(f1, f2);
-        var c12 = confCompose(a, b);
-        var c = and(c12, f2) * (strong ? 1 : w2cSafe(1));
+        float f1 = a.freq();
+        float f2 = b.freq();
+        float f = and(f1, f2);
+        float c12 = confCompose(a, b);
+        float c = and(c12, f2) * (strong ? 1 : w2cSafe(1));
         return c > minConf ? tt(f, c) : null;
     }
 
@@ -421,7 +421,7 @@ public enum TruthFunctions {
     }
 
     public static Truth union(Truth t, Truth b, float minConf) {
-        @Nullable var z = TruthFunctions.intersection(t, true, b, true, minConf);
+        @Nullable Truth z = TruthFunctions.intersection(t, true, b, true, minConf);
         return z != null ? z.neg() : null;
     }
 

@@ -444,7 +444,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
         final Node[] getTableForAdd(CustomConcurrentHashMap cchm) {
             int len;
-            var tab = table;
+            Node[] tab = table;
             return tab == null ||
                     ((len = tab.length) - (len >>> 2)) < count.get() ? resizeTable(cchm) : tab;
         }
@@ -453,20 +453,20 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
          * See the similar code in ConcurrentHashMap for explanation.
          */
         final Node[] resizeTable(CustomConcurrentHashMap cchm) {
-            var oldTable = table;
+            Node[] oldTable = table;
             if (oldTable == null)
                 return table = new Node[cchm.initialSegmentCapacity];
 
-            var oldCapacity = oldTable.length;
+            int oldCapacity = oldTable.length;
             if (oldCapacity >= MAX_SEGMENT_CAPACITY)
                 return oldTable;
-            var newTable = new Node[oldCapacity << 1];
-            var sizeMask = newTable.length - 1;
-            var fac = cchm.factory;
-            for (var e : oldTable) {
+            Node[] newTable = new Node[oldCapacity << 1];
+            int sizeMask = newTable.length - 1;
+            NodeFactory fac = cchm.factory;
+            for (Node e : oldTable) {
                 if (e != null) {
-                    var next = e.getLinkage();
-                    var idx = e.getLocator() & sizeMask;
+                    Node next = e.getLinkage();
+                    int idx = e.getLocator() & sizeMask;
 
 
                     if (next == null)
@@ -474,12 +474,12 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
                     else {
 
-                        var lastRun = e;
-                        var lastIdx = idx;
-                        for (var last = next;
+                        Node lastRun = e;
+                        int lastIdx = idx;
+                        for (Node last = next;
                              last != null;
                              last = last.getLinkage()) {
-                            var k = last.getLocator() & sizeMask;
+                            int k = last.getLocator() & sizeMask;
                             if (k != lastIdx) {
                                 lastIdx = k;
                                 lastRun = last;
@@ -488,10 +488,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
                         newTable[lastIdx] = lastRun;
 
 
-                        for (var p = e; p != lastRun; p = p.getLinkage()) {
-                            var ph = p.getLocator();
-                            var k = ph & sizeMask;
-                            var pk = p.get();
+                        for (Node p = e; p != lastRun; p = p.getLinkage()) {
+                            int ph = p.getLocator();
+                            int k = ph & sizeMask;
+                            Object pk = p.get();
                             Object pv;
                             if (pk == null || (pv = p.getValue()) == null)
                                 count.decrementAndGet();
@@ -588,7 +588,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         this.keyEquivalence = keq;
         this.valueEquivalence = veq;
 
-        var factoryName =
+        String factoryName =
                 CustomConcurrentHashMap.class.getName() + '$' +
                         ks + "Key" +
                         vs + "ValueNodeFactory";
@@ -598,14 +598,14 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         } catch (Exception ex) {
             throw new Error("Cannot instantiate " + factoryName);
         }
-        var es = expectedSize;
+        int es = expectedSize;
         if (es == 0)
             this.initialSegmentCapacity = MIN_SEGMENT_CAPACITY;
         else {
-            var sc = (int) ((1L + (4L * es) / 3) >>> SEGMENT_BITS);
+            int sc = (int) ((1L + (4L * es) / 3) >>> SEGMENT_BITS);
             if (sc < MIN_SEGMENT_CAPACITY)
                 sc = MIN_SEGMENT_CAPACITY;
-            var capacity = MIN_SEGMENT_CAPACITY;
+            int capacity = MIN_SEGMENT_CAPACITY;
             while (capacity < sc)
                 capacity <<= 1;
             if (capacity > MAX_SEGMENT_CAPACITY)
@@ -719,8 +719,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      * @return the segment
      */
     final Segment addSegment(int hash) {
-        var segs = segments;
-        var index = (hash >>> SEGMENT_SHIFT) & SEGMENT_MASK;
+        MetalAtomicReferenceArray<Segment> segs = segments;
+        int index = (hash >>> SEGMENT_SHIFT) & SEGMENT_MASK;
         Segment seg;
         while ((seg = segs.getFast(index)) == null) {
             Segment s2;
@@ -738,11 +738,11 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      */
     final Node findNode(Object key, int hash, Segment seg) {
         if (seg != null) {
-            var tab = seg.table();
+            Node[] tab = seg.table();
             if (tab != null) {
-                var p = tab[hash & (tab.length - 1)];
+                Node p = tab[hash & (tab.length - 1)];
                 while (p != null) {
-                    var k = p.get();
+                    Object k = p.get();
                     if (k == key ||
                             (k != null &&
                                     p.getLocator() == hash &&
@@ -767,8 +767,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     public boolean containsKey(Object key) {
         if (key == null)
             throw new NullPointerException();
-        var hash = spreadHash(keyEquivalence.hash(key));
-        var r = findNode(key, hash, traversalSegment(hash));
+        int hash = spreadHash(keyEquivalence.hash(key));
+        Node r = findNode(key, hash, traversalSegment(hash));
         return r != null && r.getValue() != null;
     }
 
@@ -786,9 +786,9 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     public V get(Object key) {
         if (key == null)
             throw new NullPointerException();
-        var hash = spreadHash(keyEquivalence.hash(key));
-        var seg = traversalSegment(hash);
-        var r = findNode(key, hash, seg);
+        int hash = spreadHash(keyEquivalence.hash(key));
+        Segment seg = traversalSegment(hash);
+        Node r = findNode(key, hash, seg);
         return r == null ? null : (V) (r.getValue());
     }
 
@@ -798,12 +798,12 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     final V doPut(K key, V value, boolean onlyIfNull) {
         if (key == null || value == null)
             throw new NullPointerException();
-        var hash = spreadHash(keyEquivalence.hash(key));
-        var seg = addSegment(hash);
+        int hash = spreadHash(keyEquivalence.hash(key));
+        Segment seg = addSegment(hash);
         seg.lock();
         V oldValue = null;
         try {
-            var r = findNode(key, hash, seg);
+            Node r = findNode(key, hash, seg);
             if (r != null) {
                 oldValue = (V) (r.getValue());
                 if (!onlyIfNull || oldValue == null)
@@ -818,8 +818,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     }
 
     private void store(K key, V value, int hash, Segment seg) {
-        var tab = seg.getTableForAdd(this);
-        var i = hash & (tab.length - 1);
+        Node[] tab = seg.getTableForAdd(this);
+        int i = hash & (tab.length - 1);
         storeNode(tab, i, factory.newNode(hash, key, value, this, tab[i]), seg);
     }
 
@@ -872,12 +872,12 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         if (key == null || value == null)
             throw new NullPointerException();
         V oldValue = null;
-        var hash = spreadHash(keyEquivalence.hash(key));
-        var seg = traversalSegment(hash);
+        int hash = spreadHash(keyEquivalence.hash(key));
+        Segment seg = traversalSegment(hash);
         if (seg != null) {
             seg.lock();
             try {
-                var r = findNode(key, hash, seg);
+                Node r = findNode(key, hash, seg);
                 if (r != null) {
                     oldValue = (V) (r.getValue());
                     r.setValue(value);
@@ -900,15 +900,15 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     public boolean replace(K key, V oldValue, V newValue) {
         if (key == null || oldValue == null || newValue == null)
             throw new NullPointerException();
-        var replaced = false;
-        var hash = spreadHash(keyEquivalence.hash(key));
-        var seg = traversalSegment(hash);
+        boolean replaced = false;
+        int hash = spreadHash(keyEquivalence.hash(key));
+        Segment seg = traversalSegment(hash);
         if (seg != null) {
             seg.lock();
             try {
-                var r = findNode(key, hash, seg);
+                Node r = findNode(key, hash, seg);
                 if (r != null) {
-                    var v = (V) (r.getValue());
+                    V v = (V) (r.getValue());
                     if (v == oldValue ||
                             (v != null && valueEquivalence.equal(v, oldValue))) {
                         r.setValue(newValue);
@@ -935,19 +935,19 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         if (key == null)
             throw new NullPointerException();
         V oldValue = null;
-        var hash = spreadHash(keyEquivalence.hash(key));
-        var seg = traversalSegment(hash);
+        int hash = spreadHash(keyEquivalence.hash(key));
+        Segment seg = traversalSegment(hash);
         if (seg != null) {
             seg.lock();
             try {
-                var tab = seg.table();
+                Node[] tab = seg.table();
                 if (tab != null) {
-                    var i = hash & (tab.length - 1);
+                    int i = hash & (tab.length - 1);
                     Node pred = null;
-                    var p = tab[i];
+                    Node p = tab[i];
                     while (p != null) {
-                        var n = p.getLinkage();
-                        var k = p.get();
+                        Node n = p.getLinkage();
+                        Object k = p.get();
                         if (k == key ||
                                 (k != null &&
                                         p.getLocator() == hash &&
@@ -982,25 +982,25 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
             throw new NullPointerException();
         if (value == null)
             return false;
-        var removed = false;
-        var hash = spreadHash(keyEquivalence.hash(key));
-        var seg = traversalSegment(hash);
+        boolean removed = false;
+        int hash = spreadHash(keyEquivalence.hash(key));
+        Segment seg = traversalSegment(hash);
         if (seg != null) {
             seg.lock();
             try {
-                var tab = seg.table();
+                Node[] tab = seg.table();
                 if (tab != null) {
-                    var i = hash & (tab.length - 1);
+                    int i = hash & (tab.length - 1);
                     Node pred = null;
-                    var p = tab[i];
+                    Node p = tab[i];
                     while (p != null) {
-                        var n = p.getLinkage();
-                        var k = p.get();
+                        Node n = p.getLinkage();
+                        Object k = p.get();
                         if (k == key ||
                                 (k != null &&
                                         p.getLocator() == hash &&
                                         keyEquivalence.equal((K) k, key))) {
-                            var v = (V) (p.getValue());
+                            V v = (V) (p.getValue());
                             if (v == value ||
                                     (v != null &&
                                             valueEquivalence.equal(v, value))) {
@@ -1029,19 +1029,19 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      */
     final void removeIfReclaimed(Node r) {
         reclaim((V) r.getValue());
-        var hash = r.getLocator();
-        var seg = traversalSegment(hash);
+        int hash = r.getLocator();
+        Segment seg = traversalSegment(hash);
         if (seg != null) {
             seg.lock();
             try {
-                var tab = seg.table();
+                Node[] tab = seg.table();
                 if (tab != null) {
 
-                    var i = hash & (tab.length - 1);
+                    int i = hash & (tab.length - 1);
                     Node pred = null;
-                    var p = tab[i];
+                    Node p = tab[i];
                     while (p != null) {
-                        var n = p.getLinkage();
+                        Node n = p.getLinkage();
                         if (p.get() != null && p.getValue() != null) {
                             pred = p;
                             p = n;
@@ -1072,9 +1072,15 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      */
     @Override
     public final boolean isEmpty() {
-        var segs = this.segments;
-        var ss = segs.length();
-        return IntStream.range(0, ss).mapToObj(segs::getFast).noneMatch(seg -> seg != null && !seg.isEmpty());
+        MetalAtomicReferenceArray<Segment> segs = this.segments;
+        int ss = segs.length();
+        for (int i = 0; i < ss; i++) {
+            Segment seg = segs.getFast(i);
+            if (seg != null && !seg.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -1086,9 +1092,16 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      */
     @Override
     public final int size() {
-        var segs = this.segments;
-        var ss = segs.length();
-        var sum = IntStream.range(0, ss).mapToObj(segs::getFast).filter(Objects::nonNull).mapToLong(seg -> seg.count.getOpaque()).sum();
+        MetalAtomicReferenceArray<Segment> segs = this.segments;
+        int ss = segs.length();
+        long sum = 0L;
+        for (int i = 0; i < ss; i++) {
+            Segment seg = segs.getFast(i);
+            if (seg != null) {
+                long opaque = seg.count.getOpaque();
+                sum += opaque;
+            }
+        }
         return (sum >= Integer.MAX_VALUE) ? Integer.MAX_VALUE : (int) sum;
     }
 
@@ -1108,13 +1121,13 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     public final boolean containsValue(Object value) {
         if (value == null)
             throw new NullPointerException();
-        var segs = this.segments;
-        var ss = segs.length();
-        for (var i = 0; i < ss; ++i) {
-            var seg = segs.getFast(i);
+        MetalAtomicReferenceArray<Segment> segs = this.segments;
+        int ss = segs.length();
+        for (int i = 0; i < ss; ++i) {
+            Segment seg = segs.getFast(i);
             Node[] tab;
             if (seg != null && (tab = seg.table()) != null) {
-                for (var aTab : tab) {
+                for (Node aTab : tab) {
                     if (Stream.iterate(aTab, Objects::nonNull, Node::getLinkage).map(p -> (V) (p.getValue())).anyMatch(v -> v == value ||
                             (v != null && valueEquivalence.equal(v, value)))) {
                         return true;
@@ -1130,10 +1143,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      */
     @Override
     public final void clear() {
-        var segs = this.segments;
-        var ss = segs.length();
-        for (var i = 0; i < ss; ++i) {
-            var seg = segs.getFast(i);
+        MetalAtomicReferenceArray<Segment> segs = this.segments;
+        int ss = segs.length();
+        for (int i = 0; i < ss; ++i) {
+            Segment seg = segs.getFast(i);
             if (seg != null)
                 seg.clear();
         }
@@ -1174,9 +1187,9 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     public V computeIfAbsent(K key, MappingFunction<? super K, ? extends V> mappingFunction) {
         if (key == null || mappingFunction == null)
             throw new NullPointerException();
-        var hash = spreadHash(keyEquivalence.hash(key));
-        var seg = traversalSegment(hash);
-        var r = findNode(key, hash, seg);
+        int hash = spreadHash(keyEquivalence.hash(key));
+        Segment seg = traversalSegment(hash);
+        Node r = findNode(key, hash, seg);
         V value = null;
         if (r == null) {
             if (seg == null)
@@ -1244,17 +1257,17 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     public V compute(K key, RemappingFunction<? super K, V> remappingFunction) {
         if (key == null || remappingFunction == null)
             throw new NullPointerException();
-        var hash = spreadHash(keyEquivalence.hash(key));
-        var seg = addSegment(hash);
+        int hash = spreadHash(keyEquivalence.hash(key));
+        Segment seg = addSegment(hash);
         seg.lock();
         V value = null;
         try {
-            var tab = seg.getTableForAdd(this);
-            var i = hash & (tab.length - 1);
+            Node[] tab = seg.getTableForAdd(this);
+            int i = hash & (tab.length - 1);
             Node pred = null;
-            var p = tab[i];
+            Node p = tab[i];
             while (p != null) {
-                var k = (K) (p.get());
+                K k = (K) (p.get());
                 if (k == key ||
                         (k != null &&
                                 p.getLocator() == hash &&
@@ -1270,7 +1283,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
                 if (value != null)
                     p.setValue(value);
                 else {
-                    var n = p.getLinkage();
+                    Node n = p.getLinkage();
                     if (pred == null)
                         tab[i] = n;
                     else
@@ -1314,13 +1327,13 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
                     if ((nextKey = nextNode.get()) != null &&
                             (nextValue = nextNode.getValue()) != null)
                         return;
-                    var n = nextNode.getLinkage();
+                    Node n = nextNode.getLinkage();
                     removeIfReclaimed(nextNode);
                     nextNode = n;
                 } else if (nextTableIndex >= 0) {
                     nextNode = currentTable[nextTableIndex--];
                 } else if (nextSegmentIndex >= 0) {
-                    var seg = segments.getFast(nextSegmentIndex--);
+                    Segment seg = segments.getFast(nextSegmentIndex--);
                     Node[] t;
                     if (seg != null &&
                             (t = seg.table()) != null) {
@@ -1338,7 +1351,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         final K nextKey() {
             if (nextNode == null)
                 throw new NoSuchElementException();
-            var k = nextKey;
+            Object k = nextKey;
             advance();
             return (K) k;
         }
@@ -1346,7 +1359,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         final V nextValue() {
             if (nextNode == null)
                 throw new NoSuchElementException();
-            var v = nextValue;
+            Object v = nextValue;
             advance();
             return (V) v;
         }
@@ -1391,7 +1404,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         @Override
         public V setValue(V value) {
             if (value == null) throw new NullPointerException();
-            var v = this.value;
+            V v = this.value;
             this.value = value;
             CustomConcurrentHashMap.this.doPut(key, value, false);
             return v;
@@ -1404,7 +1417,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         public boolean equals(Object o) {
             if (!(o instanceof Map.Entry))
                 return false;
-            var e = (Map.Entry<?, ?>) o;
+            Entry<?, ?> e = (Map.Entry<?, ?>) o;
             return (keyEquivalence.equal(key, e.getKey()) &&
                     valueEquivalence.equal(value, e.getValue()));
         }
@@ -1507,8 +1520,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         public boolean contains(Object o) {
             if (!(o instanceof Map.Entry))
                 return false;
-            var e = (Map.Entry<?, ?>) o;
-            var v = CustomConcurrentHashMap.this.get(e.getKey());
+            Entry<?, ?> e = (Map.Entry<?, ?>) o;
+            V v = CustomConcurrentHashMap.this.get(e.getKey());
             return v != null &&
                     valueEquivalence.equal(v, e.getValue());
         }
@@ -1517,7 +1530,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         public boolean remove(Object o) {
             if (!(o instanceof Map.Entry))
                 return false;
-            var e = (Map.Entry<?, ?>) o;
+            Entry<?, ?> e = (Map.Entry<?, ?>) o;
             return CustomConcurrentHashMap.this.remove(e.getKey(),
                     e.getValue());
         }
@@ -1556,7 +1569,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      */
     @Override
     public Set<K> keySet() {
-        var ks = keySet;
+        Set<K> ks = keySet;
         return (ks != null) ? ks : (keySet = new KeySetView());
     }
 
@@ -1578,7 +1591,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      */
     @Override
     public Collection<V> values() {
-        var vs = values;
+        Collection<V> vs = values;
         return (vs != null) ? vs : (values = new Values());
     }
 
@@ -1600,7 +1613,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      */
     @Override
     public Set<Map.Entry<K, V>> entrySet() {
-        var es = entrySet;
+        Set<Entry<K, V>> es = entrySet;
         return (es != null) ? es : (entrySet = new EntrySet());
     }
 
@@ -1621,16 +1634,16 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
         if (!(o instanceof Map))
             return false;
-        var m = (Map<K, V>) o;
+        Map<K, V> m = (Map<K, V>) o;
         if (m.size() != size())
             return false;
 
         try {
-            for (var e : entrySet()) {
-                var key = e.getKey();
-                var value = e.getValue();
+            for (Entry<K, V> e : entrySet()) {
+                K key = e.getKey();
+                V value = e.getValue();
                 if (value != null) {
-                    var mv = m.get(key);
+                    V mv = m.get(key);
                     if (mv == null)
                         return false;
                     if (!valueEquivalence.equal(mv, value))
@@ -1652,7 +1665,11 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      * @return the hash code
      */
     public int hashCode() {
-        var h = entrySet().stream().mapToInt(Entry::hashCode).sum();
+        int h = 0;
+        for (Entry<K, V> kvEntry : entrySet()) {
+            int hashCode = kvEntry.hashCode();
+            h += hashCode;
+        }
         return h;
     }
 
@@ -1696,7 +1713,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
          * @return e, or an element equivalent to e
          */
         public K intern(K e) {
-            var oldElement = cchm.doPut(e, e, true);
+            K oldElement = cchm.doPut(e, e, true);
             return (oldElement != null) ? oldElement : e;
         }
 
@@ -1786,8 +1803,12 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
          * @return the hash code
          */
         public int hashCode() {
-            var equivalence = cchm.keyEquivalence;
-            var h = this.stream().mapToInt(equivalence::hash).sum();
+            Equivalence<? super K> equivalence = cchm.keyEquivalence;
+            int h = 0;
+            for (K k : this) {
+                int hash = equivalence.hash(k);
+                h += hash;
+            }
             return h;
         }
     }
@@ -1813,10 +1834,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
         @Override
         public void run() {
-            var q = queue;
+            ReferenceQueue<Object> q = queue;
             for (; ; ) {
                 try {
-                    var r = q.remove();
+                    Reference<?> r = q.remove();
                     if (r instanceof Reclaimable)
                         ((Reclaimable) r).onReclamation();
                 } catch (InterruptedException e) {
@@ -2137,7 +2158,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
         @Override
         public final Object getValue() {
-            var vr = valueRef;
+            EmbeddedWeakReference vr = valueRef;
             return (vr == null) ? null : vr.get();
         }
 
@@ -2226,7 +2247,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
         @Override
         public final Object getValue() {
-            var vr = valueRef;
+            EmbeddedSoftReference vr = valueRef;
             return (vr == null) ? null : vr.get();
         }
 
@@ -2563,7 +2584,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
         @Override
         public final Object getValue() {
-            var vr = valueRef;
+            EmbeddedWeakReference vr = valueRef;
             return (vr == null) ? null : vr.get();
         }
 
@@ -2645,7 +2666,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
         @Override
         public final Object getValue() {
-            var vr = valueRef;
+            EmbeddedSoftReference vr = valueRef;
             return (vr == null) ? null : vr.get();
         }
 
@@ -2982,7 +3003,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
         @Override
         public final Object getValue() {
-            var vr = valueRef;
+            EmbeddedWeakReference vr = valueRef;
             return (vr == null) ? null : vr.get();
         }
 
@@ -3065,7 +3086,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
         @Override
         public final Object getValue() {
-            var vr = valueRef;
+            EmbeddedSoftReference vr = valueRef;
             return (vr == null) ? null : vr.get();
         }
 
@@ -3404,7 +3425,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
         @Override
         public final Object getValue() {
-            var vr = valueRef;
+            EmbeddedWeakReference vr = valueRef;
             return (vr == null) ? null : vr.get();
         }
 
@@ -3491,7 +3512,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
         @Override
         public final Object getValue() {
-            var vr = valueRef;
+            EmbeddedSoftReference vr = valueRef;
             return (vr == null) ? null : vr.get();
         }
 
@@ -3566,7 +3587,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
 
     static {
-        var scale = UNSAFE.arrayIndexScale(Node[].class);
+        int scale = UNSAFE.arrayIndexScale(Node[].class);
         if ((scale & (scale - 1)) != 0)
             throw new Error("data type scale not a power of two");
         tableShift = 31 - Integer.numberOfLeadingZeros(scale);
@@ -3578,7 +3599,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static void storeNode(Node[] table,
                           int i, Node r, Segment seg) {
-        var nodeOffset = ((long) i << tableShift) + tableBase;
+        long nodeOffset = ((long) i << tableShift) + tableBase;
         UNSAFE.putOrderedObject(table, nodeOffset, r);
         seg.incrementCount();
     }

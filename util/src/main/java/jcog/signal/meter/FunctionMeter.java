@@ -6,7 +6,9 @@
 package jcog.signal.meter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -20,11 +22,21 @@ public abstract class FunctionMeter<M> implements Meters<M>, Serializable {
     private M[] vector;
 
     public static String[] newDefaultSignalIDs(String prefix, int n) {
-        var s = IntStream.range(0, n).mapToObj(i -> prefix + '_' + i).toArray(String[]::new);
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            String s1 = prefix + '_' + i;
+            list.add(s1);
+        }
+        String[] s = list.toArray(new String[0]);
         return s;
     }
     public static String[] newDefaultSignalIDs(String prefix, String... prefixes) {
-        var s = Arrays.stream(prefixes).map(item -> prefix + '_' + item).toArray(String[]::new);
+        List<String> list = new ArrayList<>();
+        for (String item : prefixes) {
+            String s1 = prefix + '_' + item;
+            list.add(s1);
+        }
+        String[] s = list.toArray(new String[0]);
         return s;
     }
     
@@ -37,12 +49,17 @@ public abstract class FunctionMeter<M> implements Meters<M>, Serializable {
     
     public FunctionMeter(String... ids) {
 
-        signals = Arrays.stream(ids).map(n -> new ScalarColumn(n, null)).collect(Collectors.toUnmodifiableList());
+        List<ScalarColumn> list = new ArrayList<>();
+        for (String n : ids) {
+            ScalarColumn scalarColumn = new ScalarColumn(n, null);
+            list.add(scalarColumn);
+        }
+        signals = Collections.unmodifiableList(list);
     }
     
     public void setUnits(String... units) {
-        var i = 0;
-        for (var s : signals)
+        int i = 0;
+        for (ScalarColumn s : signals)
             s.unit = units[i++];
     }
 
@@ -54,10 +71,10 @@ public abstract class FunctionMeter<M> implements Meters<M>, Serializable {
     public abstract M getValue(Object key, int index);
 
     protected void fillVector(Object key, int fromIndex, int toIndex) {
-        var v = this.vector;
-        var len = v.length;
+        M[] v = this.vector;
+        int len = v.length;
 
-        for (var i = 0; i < len; i++) {
+        for (int i = 0; i < len; i++) {
             v[i] = getValue(key, i);
         }
 
@@ -65,7 +82,7 @@ public abstract class FunctionMeter<M> implements Meters<M>, Serializable {
 
     @Override
     public M[] sample(Object key) {
-        var vector = this.vector;
+        M[] vector = this.vector;
 
         if (vector == null) {
             

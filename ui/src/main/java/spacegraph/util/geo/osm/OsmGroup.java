@@ -38,7 +38,7 @@ public abstract class OsmGroup extends OsmElement {
                 break;
             default:
                 bounds = children.get(0);
-                for (var i = 1; i < n; i++) {
+                for (int i = 1; i < n; i++) {
                     bounds = bounds.mbr(children.get(i));
                 }
                 break;
@@ -57,7 +57,7 @@ public abstract class OsmGroup extends OsmElement {
     }
 
     public HyperRegion bounds() {
-        var b = bounds;
+        HyperRegion b = bounds;
         if (b == null) {
             validate();
             b = bounds;

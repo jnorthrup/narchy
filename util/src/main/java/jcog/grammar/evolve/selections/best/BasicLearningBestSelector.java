@@ -46,17 +46,17 @@ public class BasicLearningBestSelector implements BestSelector {
     }
     
     private static void selectAndPopulateBest(Results results) {
-        var bestIndividualIndex = Double.NEGATIVE_INFINITY;
-        var bestLength = Integer.MAX_VALUE;
+        double bestIndividualIndex = Double.NEGATIVE_INFINITY;
+        int bestLength = Integer.MAX_VALUE;
         FinalSolution best = null;
-        for (var jobEvolutionTrace : results.getJobEvolutionTraces()) {
-            var bestOfJob = jobEvolutionTrace.getFinalGeneration().get(0);
+        for (JobEvolutionTrace jobEvolutionTrace : results.getJobEvolutionTraces()) {
+            FinalSolution bestOfJob = jobEvolutionTrace.getFinalGeneration().get(0);
             double precision = bestOfJob.getLearningPerformances().get("match precision");
             double recall = bestOfJob.getLearningPerformances().get("match recall");
-            var bestJobLength = bestOfJob.getSolution().length();
+            int bestJobLength = bestOfJob.getSolution().length();
             precision = (Double.isNaN(precision))?0:precision;
             recall = (Double.isNaN(recall))?0:recall;
-            var individualIndex = (precision+recall)/2;
+            double individualIndex = (precision+recall)/2;
             if ((individualIndex > bestIndividualIndex) || ((individualIndex == bestIndividualIndex) && (bestLength > bestJobLength))) {
                     bestLength = bestJobLength;
                     best = bestOfJob;

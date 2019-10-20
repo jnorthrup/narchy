@@ -84,7 +84,7 @@ public class BeliefAnalysis implements TermedDelegate {
 		print(true);
 	}
 	public void print(boolean beliefOrGoal) {
-		var table = table(beliefOrGoal);
+        BeliefTable table = table(beliefOrGoal);
 		System.out.println((beliefOrGoal ? "Beliefs" : "Goals") + "[@" + nar.time() + "] " + table.taskCount());
 		table.print(System.out);
 		

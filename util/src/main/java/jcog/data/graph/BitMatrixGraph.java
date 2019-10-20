@@ -65,7 +65,7 @@ public class BitMatrixGraph implements Graph {
     private BitMatrixGraph(int n, boolean directed) {
 
         sets = new ArrayList<>(n);
-        for (var i = 0; i < n; ++i) sets.add(new BitSet());
+        for (int i = 0; i < n; ++i) sets.add(new BitSet());
         this.directed = directed;
     }
 
@@ -85,10 +85,10 @@ public class BitMatrixGraph implements Graph {
     @Override
     public IntHashSet neighborsOut(int i) {
 
-        var result = new IntHashSet();
-        var neighb = sets.get(i);
-        var max = size();
-        for (var j = 0; j < max; ++j) {
+        IntHashSet result = new IntHashSet();
+        BitSet neighb = sets.get(i);
+        int max = size();
+        for (int j = 0; j < max; ++j) {
             if (neighb.get(j)) result.add(j);
         }
 
@@ -137,8 +137,8 @@ public class BitMatrixGraph implements Graph {
         if (i > size() || j > size() || i < 0 || j < 0) throw new
                 IndexOutOfBoundsException();
 
-        var neighb = sets.get(i);
-        var old = neighb.get(j);
+        BitSet neighb = sets.get(i);
+        boolean old = neighb.get(j);
         neighb.set(j);
 
         if (!old && !directed) {
@@ -157,8 +157,8 @@ public class BitMatrixGraph implements Graph {
         if (i > size() || j > size() || i < 0 || j < 0) throw new
                 IndexOutOfBoundsException();
 
-        var neighb = sets.get(i);
-        var old = neighb.get(j);
+        BitSet neighb = sets.get(i);
+        boolean old = neighb.get(j);
         neighb.clear(j);
 
         if (old && !directed) {
@@ -174,7 +174,7 @@ public class BitMatrixGraph implements Graph {
     @Override
     public int degree(int i) {
 
-        var neighb = sets.get(i);
+        BitSet neighb = sets.get(i);
         return neighb.cardinality(); 
     }
 

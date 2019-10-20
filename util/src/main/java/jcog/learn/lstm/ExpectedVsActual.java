@@ -26,7 +26,7 @@ import java.util.Arrays;
     }
 
     public static ExpectedVsActual the(double[] actual, double[] expected, boolean reset) {
-        var i = new ExpectedVsActual();
+        ExpectedVsActual i = new ExpectedVsActual();
         i.actual = actual;
         i.expected = expected;
         i.forget = reset ? 1f : 0f;

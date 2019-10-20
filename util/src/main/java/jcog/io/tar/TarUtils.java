@@ -37,10 +37,10 @@ public class TarUtils {
 		if (dir.isFile()) {
 			return entrySize(dir.length());
 		} else {
-			var subFiles = dir.listFiles();
+            File[] subFiles = dir.listFiles();
 
 			if (subFiles != null && subFiles.length > 0) {
-				for (var file : subFiles) {
+				for (File file : subFiles) {
 					if (file.isFile()) {
 						size += entrySize(file.length());
 					} else {
@@ -61,7 +61,7 @@ public class TarUtils {
 		size += TarConstants.HEADER_BLOCK; 
 		size += fileSize;
 
-		var extra = size % TarConstants.DATA_BLOCK;
+        long extra = size % TarConstants.DATA_BLOCK;
 
 		if (extra > 0) {
 			size += (TarConstants.DATA_BLOCK - extra); 
@@ -71,8 +71,8 @@ public class TarUtils {
 	}
 
 	public static String trim(String s, char c) {
-		var tmp = new StringBuilder(s);
-		for (var i = 0; i < tmp.length(); i++) {
+        StringBuilder tmp = new StringBuilder(s);
+		for (int i = 0; i < tmp.length(); i++) {
 			if (tmp.charAt(i) != c) {
 				break;
 			} else {
@@ -80,7 +80,7 @@ public class TarUtils {
 			}
 		}
 
-		for (var i = tmp.length() - 1; i >= 0; i--) {
+		for (int i = tmp.length() - 1; i >= 0; i--) {
 			if (tmp.charAt(i) != c) {
 				break;
 			} else {

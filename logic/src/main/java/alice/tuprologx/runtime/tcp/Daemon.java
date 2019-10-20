@@ -1,5 +1,7 @@
 package alice.tuprologx.runtime.tcp;
 
+import alice.tuprolog.Prolog;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -33,8 +35,8 @@ class Acceptor implements Runnable {
         System.out.println("[ User "+Thread.currentThread()+ " ] start.");
         while (true){
             try {
-                var msg=(NetMsg)inStream.readObject();
-                var m=core.getClass().getMethod(msg.methodName, inStream.getClass(), outStream.getClass());
+                NetMsg msg=(NetMsg)inStream.readObject();
+                Method m=core.getClass().getMethod(msg.methodName, inStream.getClass(), outStream.getClass());
                 m.invoke(core, inStream, outStream);
             } catch (Exception e){
                 
@@ -73,9 +75,9 @@ public class Daemon implements Runnable {
         System.out.println("prolog TCP daemon start.");
         while (true){
             try {
-                var socket=s.accept();
+                Socket socket=s.accept();
                 System.out.println("[ UserAcceptor ] accept new user.");
-                var th=new Thread(new Acceptor(socket, coreTCP));
+                Thread th=new Thread(new Acceptor(socket, coreTCP));
                 th.start();
             } catch (Exception e){
                 e.printStackTrace();
@@ -92,9 +94,9 @@ public class Daemon implements Runnable {
                 System.err.println("args: { port }.");
                 System.exit(-1);
             }
-            var core=new alice.tuprolog.Prolog();
+            Prolog core=new alice.tuprolog.Prolog();
             if (args.length>0){
-                var port=-1;
+                int port=-1;
                 try {
                     port=Integer.parseInt(args[0]);
                 } catch (Exception ex){

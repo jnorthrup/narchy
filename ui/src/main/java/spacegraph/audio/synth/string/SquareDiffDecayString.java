@@ -12,7 +12,7 @@ public class SquareDiffDecayString extends SquareString {
     }
 
     private void setDecays(double frequency) {
-        var factor = 440 / frequency;
+        double factor = 440 / frequency;
         setPluckDelta(Math.pow(pluckDelta(), factor));
         setReleaseDelta(Math.pow(releaseDelta(), factor));
     }

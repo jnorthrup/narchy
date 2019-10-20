@@ -112,7 +112,7 @@ public final class HttpUtil
         
         public static boolean readLine(StringBuilder dest, ByteBuffer buf, boolean lws)
         {
-                var crlf = lws ? findCRLFIgnoreLWS(buf, buf.position()) : findCRLF(buf, buf.position());
+            int crlf = lws ? findCRLFIgnoreLWS(buf, buf.position()) : findCRLF(buf, buf.position());
                 if (crlf < 0)
                 {
                         return false;
@@ -120,7 +120,7 @@ public final class HttpUtil
 
                 while (buf.position() < crlf)
                 {
-                        var by = buf.get();
+                    byte by = buf.get();
 
                         if (isCHAR(by))
                         {
@@ -139,8 +139,13 @@ public final class HttpUtil
         public static int findCRLF(ByteBuffer buf, int offset)
         {
 
-                var bound = buf.limit() - 1;
-                return IntStream.range(offset, bound).filter(a -> isCR(buf.get(a)) && isLF(buf.get(a + 1))).findFirst().orElse(-1);
+            int bound = buf.limit() - 1;
+            for (int a = offset; a < bound; a++) {
+                if (isCR(buf.get(a)) && isLF(buf.get(a + 1))) {
+                    return a;
+                }
+            }
+            return -1;
 
         }
 
@@ -149,16 +154,28 @@ public final class HttpUtil
         {
 
 
-                var bound = buf.limit() - 2;
-                return IntStream.range(offset, bound).filter(a -> isCR(buf.get(a)) && isLF(buf.get(a + 1))).filter(a -> !isSP(buf.get(a + 2)) && !isHT(buf.get(a + 2))).findFirst().orElse(-1);
+            int bound = buf.limit() - 2;
+            for (int a = offset; a < bound; a++) {
+                if (isCR(buf.get(a)) && isLF(buf.get(a + 1))) {
+                    if (!isSP(buf.get(a + 2)) && !isHT(buf.get(a + 2))) {
+                        return a;
+                    }
+                }
+            }
+            return -1;
 
         }
 
         
         public static int findSP(ByteBuffer buf, int offset)
         {
-                var bound = buf.limit();
-                return IntStream.range(offset, bound).filter(a -> isSP(buf.get(a))).findFirst().orElse(-1);
+            int bound = buf.limit();
+            for (int a = offset; a < bound; a++) {
+                if (isSP(buf.get(a))) {
+                    return a;
+                }
+            }
+            return -1;
 
         }
 
@@ -243,10 +260,10 @@ public final class HttpUtil
         {
 
 
-                var bytes = 0;
-                for (var a = 0; a < str.length(); ++a)
+            int bytes = 0;
+                for (int a = 0; a < str.length(); ++a)
                 {
-                        var codePoint = str.codePointAt(a);
+                    int codePoint = str.codePointAt(a);
 
                         if (codePoint <= 0x7F)
                         {
@@ -276,7 +293,7 @@ public final class HttpUtil
         {
             assert dir.isDirectory();
 
-                var ret = new File(dir.getPath() + File.separator + "index.html");
+            File ret = new File(dir.getPath() + File.separator + "index.html");
                 if (ret.isFile())
                 {
                         return ret;
@@ -348,7 +365,7 @@ public final class HttpUtil
 
             static
             {
-                    var calendar = Calendar.getInstance();
+                Calendar calendar = Calendar.getInstance();
                     calendar.setTimeZone(GMT);
                     calendar.set(2000, Calendar.JANUARY, 1, 0, 0, 0);
                     calendar.set(Calendar.MILLISECOND, 0);
@@ -425,12 +442,12 @@ public final class HttpUtil
                             dateValue = dateValue.substring(1, dateValue.length() - 1);
                     }
 
-                    for (var dateFormat : dateFormats)
+                    for (String dateFormat : dateFormats)
                     {
-                            var dateParser = DateFormatHolder.formatFor(dateFormat);
+                        SimpleDateFormat dateParser = DateFormatHolder.formatFor(dateFormat);
                             dateParser.set2DigitYearStart(startDate);
-                            var pos = new ParsePosition(0);
-                            var result = dateParser.parse(dateValue, pos);
+                        ParsePosition pos = new ParsePosition(0);
+                        Date result = dateParser.parse(dateValue, pos);
                             if (pos.getIndex() != 0)
                             {
                                     return result;
@@ -477,7 +494,7 @@ public final class HttpUtil
                             throw new IllegalArgumentException("pattern is null");
                     }
 
-                    var formatter = DateFormatHolder.formatFor(pattern);
+                SimpleDateFormat formatter = DateFormatHolder.formatFor(pattern);
                     return formatter.format(date);
             }
 
@@ -516,15 +533,15 @@ public final class HttpUtil
                      */
                     static SimpleDateFormat formatFor(String pattern)
                     {
-                            var ref = THREADLOCAL_FORMATS.get();
-                            var formats = ref.get();
+                        SoftReference<Map<String, SimpleDateFormat>> ref = THREADLOCAL_FORMATS.get();
+                        Map<String, SimpleDateFormat> formats = ref.get();
                             if (formats == null)
                             {
                                     formats = new HashMap<>();
                                     THREADLOCAL_FORMATS.set(new SoftReference<>(formats));
                             }
 
-                            var format = formats.get(pattern);
+                        SimpleDateFormat format = formats.get(pattern);
                             if (format == null)
                             {
                                     format = new SimpleDateFormat(pattern, Locale.US);

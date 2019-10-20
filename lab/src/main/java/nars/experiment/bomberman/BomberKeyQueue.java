@@ -29,7 +29,7 @@ public class BomberKeyQueue {
      */
     public void push(byte b) {
         /** create the new node object */
-        var newNode = new Node(b);
+        Node newNode = new Node(b);
         /** if list is empty then head and tail equals new object */
         if (head == null) head = tail = newNode;
         /** if list isn't empty */
@@ -75,7 +75,7 @@ public class BomberKeyQueue {
      */
     public void removeItems(byte b) {
         /** create temporary node and set it to point to head */
-        var temp = head;
+        Node temp = head;
         /** loop while end of list not reached */
         while (temp != null) {
             /** if current pointed to object's data is equal to parameter */
@@ -127,9 +127,9 @@ public class BomberKeyQueue {
      */
     public boolean contains(byte b) {
         /** setup data to be returned (default to false) */
-        var result = false;
+        boolean result = false;
         /** create temporary Node object for navigation */
-        var temp = head;
+        Node temp = head;
         /** loop till end of list is reached */
         while (temp != null) {
             /** if data found then get otta here */

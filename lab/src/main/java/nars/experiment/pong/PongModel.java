@@ -71,10 +71,10 @@ public class PongModel extends JPanel implements ActionListener, MouseListener, 
 
 
     public void movePlayer(Player player, int destination) {
-        var distance = Math.abs(player.position - destination);
+        int distance = Math.abs(player.position - destination);
 
         if (distance != 0) {
-            var direction = -(player.position - destination) / distance;
+            int direction = -(player.position - destination) / distance;
 
             if (distance > SPEED)
                 distance = SPEED;
@@ -101,7 +101,7 @@ public class PongModel extends JPanel implements ActionListener, MouseListener, 
             ball_x = getWidth() / 2;
             ball_y = getHeight() / 2;
 
-            var phase = Math.random() * Math.PI / 2 - Math.PI / 4;
+            double phase = Math.random() * Math.PI / 2 - Math.PI / 4;
             ball_x_speed = (int) (Math.cos(phase) * START_SPEED);
             ball_y_speed = (int) (Math.sin(phase) * START_SPEED);
 
@@ -141,11 +141,11 @@ public class PongModel extends JPanel implements ActionListener, MouseListener, 
         }
 
 
-        var bounceLX = PADDING + WIDTH + RADIUS;
+        int bounceLX = PADDING + WIDTH + RADIUS;
 
         if (ball_x <= bounceLX) {
-            var collision_point = ball_y + (int) (ball_y_speed / ball_x_speed * (PADDING + WIDTH + RADIUS - ball_x));
-            var dieLX = RADIUS;
+            int collision_point = ball_y + (int) (ball_y_speed / ball_x_speed * (PADDING + WIDTH + RADIUS - ball_x));
+            int dieLX = RADIUS;
             if (ball_x <= bounceLX && collision_point > player1.position - PADDLE_HEIGHT - TOLERANCE &&
                     collision_point < player1.position + PADDLE_HEIGHT + TOLERANCE) {
                 ball_x = 2 * (PADDING + WIDTH + RADIUS) - ball_x;
@@ -163,10 +163,10 @@ public class PongModel extends JPanel implements ActionListener, MouseListener, 
         }
 
 
-        var bounceRX = getWidth() - PADDING - WIDTH - RADIUS;
-        var dieRX = getWidth() - RADIUS;
+        int bounceRX = getWidth() - PADDING - WIDTH - RADIUS;
+        int dieRX = getWidth() - RADIUS;
         if (ball_x >= bounceRX) {
-            var collision_point = ball_y - (int) (ball_y_speed / ball_x_speed * (ball_x - getWidth() + PADDING + WIDTH + RADIUS));
+            int collision_point = ball_y - (int) (ball_y_speed / ball_x_speed * (ball_x - getWidth() + PADDING + WIDTH + RADIUS));
             if (ball_x >= bounceRX && collision_point > player2.position - PADDLE_HEIGHT - TOLERANCE &&
                     collision_point < player2.position + PADDLE_HEIGHT + TOLERANCE) {
                 ball_x = 2 * (bounceRX) - ball_x;

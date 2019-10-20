@@ -12,10 +12,10 @@ public class utils {
     public static double binomial(int n, double p, Random rng) {
         if(p < 0 || p > 1) return 0;
 
-        var c = 0;
+        int c = 0;
 
-        for(var i = 0; i<n; i++) {
-            var r = rng.nextDouble();
+        for(int i = 0; i<n; i++) {
+            double r = rng.nextDouble();
             if (r < p) c++;
         }
 

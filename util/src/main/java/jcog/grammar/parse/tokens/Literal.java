@@ -73,7 +73,7 @@ public class Literal extends Terminal {
 	public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != this.getClass())
 			return false;
-		var l = (Literal) obj;
+        Literal l = (Literal) obj;
 		return literal.equals(l.literal);
 	}
 

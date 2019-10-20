@@ -63,11 +63,11 @@ public class Quantiler {
         qile = new float[nq];
         qileNext = new float[nq];
 
-        for (var j = 85; j <= 165; j++) {
+        for (int j = 85; j <= 165; j++) {
             pval[j] = (j - 75f) / 100f;
         }
 
-        for (var j = 84; j >= 0; j--) {
+        for (int j = 84; j >= 0; j--) {
             pval[j] = 0.87191909f * pval[j + 1];
             pval[250 - j] = 1f - pval[j];
         }
@@ -94,19 +94,19 @@ public class Quantiler {
      * Batch update. This method is called by addAt() or quantile().
      */
     private void update() {
-        var newqile = qileNext;
+        float[] newqile = qileNext;
         Arrays.sort(dbuf, 0, nd);
         float qnew;
-        var qold = qnew = qile[0] = newqile[0] = q0;
+        float qold = qnew = qile[0] = newqile[0] = q0;
         qile[nq - 1] = newqile[nq - 1] = qm;
         pval[0] = Math.min(0.5f / (nt + nd), 0.5f * pval[1]);
         pval[nq - 1] = Math.max(1f- 0.5f / (nt + nd), 0.5f * (1f + pval[nq - 2]));
-        var tnew = 0f;
-        var told = 0f;
-        var jq = 1;
-        var jd = 0;
-        for (var iq = 1; iq < nq - 1; iq++) {
-            var target = (nt + nd) * pval[iq];
+        float tnew = 0f;
+        float told = 0f;
+        int jq = 1;
+        int jd = 0;
+        for (int iq = 1; iq < nq - 1; iq++) {
+            float target = (nt + nd) * pval[iq];
             if (tnew < target) {
                 for (;;) {
                     if (jq < nq && (jd >= nd || qile[jq] < dbuf[jd])) {
@@ -158,7 +158,7 @@ public class Quantiler {
         }
         int jl = 0, jh = nq - 1;
         while (jh - jl > 1) {
-            var j = (jh + jl) >> 1;
+            int j = (jh + jl) >> 1;
             if (p > pval[j]) {
                 jl = j;
             } else {
@@ -166,9 +166,9 @@ public class Quantiler {
             }
         }
 
-        var qjl = qile[jl];
-        var pjl = pval[jl];
-        var q = qjl + (((qile[jl + 1] - qjl) * (p - pjl)) / (pval[jl + 1] - pjl));
+        float qjl = qile[jl];
+        float pjl = pval[jl];
+        float q = qjl + (((qile[jl + 1] - qjl) * (p - pjl)) / (pval[jl + 1] - pjl));
         return Math.max(qile[0], Math.min(qile[nq - 1], q));
     }
 

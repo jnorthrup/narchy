@@ -3,6 +3,7 @@ package nars.term.util;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
+import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.*;
 import nars.term.atom.IdempotentBool;
@@ -47,7 +48,7 @@ public enum Statement {
         if (op == IMPL && dt == DTERNAL)
             dt = 0; //temporarily use dt=0
 
-        var dtConcurrent = dt != XTERNAL && Conj.concurrent(dt);
+        boolean dtConcurrent = dt != XTERNAL && Conj.concurrent(dt);
 
         if (dtConcurrent) {
             if (subject.equals(predicate))
@@ -94,7 +95,7 @@ public enum Statement {
         if (subject instanceof IdempotentBool || predicate instanceof IdempotentBool)
             return Null;
 
-        var negate = false;
+        boolean negate = false;
 
         if (op == IMPL) {
             if (predicate instanceof Neg) {
@@ -113,15 +114,15 @@ public enum Statement {
                     return Null;
 
                 case IMPL: {
-                    var predXternal = predicate.dt() == XTERNAL;
-                    var xternal = dt == XTERNAL;
-                    var bothXternal = xternal && predXternal;
+                    boolean predXternal = predicate.dt() == XTERNAL;
+                    boolean xternal = dt == XTERNAL;
+                    boolean bothXternal = xternal && predXternal;
                     if (!xternal && !predXternal || bothXternal || predXternal) {
 
                         //not when only inner xternal, since that transformation destroys temporal information
 
-                        var inner = predicate.sub(0);
-                        var newPred = predicate.sub(1);
+                        Term inner = predicate.sub(0);
+                        Term newPred = predicate.sub(1);
                         Term newSubj;
                         int newDT;
                         if (bothXternal) {
@@ -153,8 +154,8 @@ public enum Statement {
 
         if (NAL.term.INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM) {
             if (op == INH /*|| op == SIM*/) {
-                var sn = subject instanceof Neg;// && !subject.unneg().op().isAny(mobiusExcept);
-                var pn = predicate instanceof Neg;// && !predicate.unneg().op().isAny(mobiusExcept);
+                boolean sn = subject instanceof Neg;// && !subject.unneg().op().isAny(mobiusExcept);
+                boolean pn = predicate instanceof Neg;// && !predicate.unneg().op().isAny(mobiusExcept);
 
                 if (sn) {
                     negate = !negate;
@@ -173,8 +174,8 @@ public enum Statement {
 
             if (dt != XTERNAL) {
 
-                var scomp = subject instanceof Compound;
-                var pcomp = predicate instanceof Compound;
+                boolean scomp = subject instanceof Compound;
+                boolean pcomp = predicate instanceof Compound;
                 if (!scomp && !pcomp) {
                     //no validity test necessary
                 } else if (subject.dt() == XTERNAL || predicate.dt() == XTERNAL) { // && !subject.OR(x->x instanceof Ellipsis) && !predicate.OR(x->x instanceof Ellipsis) ) {
@@ -194,12 +195,12 @@ public enum Statement {
                 } else {
 
                     if (op == IMPL) {
-                        var subjRange = subject.eventRange();
+                        int subjRange = subject.eventRange();
                         long po = subjRange + dt; //predicate occurrence
 
                         //subtract any common subject components from predicate
-                        var newPredConj = ConjList.events(predicate, po);
-                        var removed = newPredConj.removeAll(subject.unneg(), 0, !(subject instanceof Neg));
+                        ConjList newPredConj = ConjList.events(predicate, po);
+                        int removed = newPredConj.removeAll(subject.unneg(), 0, !(subject instanceof Neg));
                         Term newPred;
                         switch (removed) {
                             case -1:
@@ -218,7 +219,7 @@ public enum Statement {
                                 return newPred.negIf(negate); //collapse
 
 
-                            var shift = newPredConj.shift();
+                            long shift = newPredConj.shift();
                             if (shift == ETERNAL) {
                                 //??
                                 dt = 0;
@@ -249,14 +250,14 @@ public enum Statement {
                         if (subject.dt()==DTERNAL && predicate.dt() == DTERNAL) { //TODO test earlier
                             //INH,SIM
                             //TODO swap order for optimal comparison
-                            var sConj = subject instanceof Compound && subject.opID() == CONJ.id;
-                            var pConj = predicate instanceof Compound && predicate.opID() == CONJ.id;
+                            boolean sConj = subject instanceof Compound && subject.opID() == CONJ.id;
+                            boolean pConj = predicate instanceof Compound && predicate.opID() == CONJ.id;
                             if (sConj && pConj) {
-                                var ssub = subject.subterms();
-                                var psub = predicate.subterms();
-                                var common = ssub.subsIncluding(psub::contains);
+                                Subterms ssub = subject.subterms();
+                                Subterms psub = predicate.subterms();
+                                Term[] common = ssub.subsIncluding(psub::contains);
                                 if (common != null && common.length > 0) {
-                                    var cn = common.length;
+                                    int cn = common.length;
                                     if (cn == ssub.subs() || cn == psub.subs()) {
                                         //contained entirely by the other
                                         //True; //TODO negate
@@ -268,12 +269,12 @@ public enum Statement {
                                     return statement(B, op, dt, subject, predicate, depth-1);
                                 }
                             } else if (sConj) {
-                                var ssub = subject.subterms();
+                                Subterms ssub = subject.subterms();
 //                                if (ssub.contains(predicate)) return True; //TODO negate
 //                                if (ssub.containsNeg(predicate)) return False; //TODO negate
                                 if (ssub.containsPosOrNeg(predicate)) return Null;
                             } else if (pConj) {
-                                var psub = predicate.subterms();
+                                Subterms psub = predicate.subterms();
                                 //if (psub.contains(subject)) return True; //TODO negate
                                 //if (psub.containsNeg(subject)) return False; //TODO negate
                                 if (psub.containsPosOrNeg(subject)) return Null;
@@ -316,7 +317,7 @@ public enum Statement {
         if (op == SIM) {
             if (subject.compareTo(predicate) > 0) {
                 //swap to natural order
-                var x = predicate;
+                Term x = predicate;
                 predicate = subject;
                 subject = x;
             }
@@ -325,7 +326,7 @@ public enum Statement {
 
 
         if (op == INH && (subject.hasAny(Op.IMG) || predicate.hasAny(Op.IMG))) {
-            var inhCollapsed = Image.recursionFilter(subject, predicate, B);
+            Term inhCollapsed = Image.recursionFilter(subject, predicate, B);
             if (inhCollapsed instanceof IdempotentBool)
                 return inhCollapsed;
         }
@@ -337,7 +338,7 @@ public enum Statement {
                 dt = DTERNAL; //HACK generalize to DTERNAL ==>
         }
 
-        var t = B.newCompound(op, dt, subject, predicate);
+        Term t = B.newCompound(op, dt, subject, predicate);
 
         return t.negIf(negate);
     }

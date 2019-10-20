@@ -44,7 +44,7 @@ public class MainMenu {
     public void draw(GraphicsHandler g) {
         SideScrollMinicraft.drawTileBackground(g, menu_bgTile, 32);
         SideScrollMinicraft.drawCenteredX(g, menu_logo, 70, 397, 50);
-        var tagScale = ((float) Math.abs((game.ticksRunning % 100) - 50)) / 50 + 1;
+        float tagScale = ((float) Math.abs((game.ticksRunning % 100) - 50)) / 50 + 1;
         menu_tag.draw(g, 450, 70, (int) (60 * tagScale), (int) (37 * tagScale));
 
         if (newGame) {
@@ -58,7 +58,7 @@ public class MainMenu {
         SideScrollMinicraft.drawCenteredX(g, menu_newUp, 150, 160, 64);
         SideScrollMinicraft.drawCenteredX(g, menu_loadUp, 250, 160, 64);
         SideScrollMinicraft.drawCenteredX(g, menu_quitUp, 350, 160, 64);
-        var mouseY = game.screenMousePos.y;
+        int mouseY = game.screenMousePos.y;
 
         if (mouseY >= 350 && mouseY <= 414) {
             SideScrollMinicraft.drawCenteredX(g, menu_quitDown, 350, 160, 64);
@@ -84,7 +84,7 @@ public class MainMenu {
         SideScrollMinicraft.drawCenteredX(g, menu_miniUp, 150, 160, 64);
         SideScrollMinicraft.drawCenteredX(g, menu_mediumUp, 250, 160, 64);
         SideScrollMinicraft.drawCenteredX(g, menu_bigUp, 350, 160, 64);
-        var mouseY = game.screenMousePos.y;
+        int mouseY = game.screenMousePos.y;
 
         if (mouseY >= 350 && mouseY <= 414) {
             SideScrollMinicraft.drawCenteredX(g, menu_bigDown, 350, 160, 64);

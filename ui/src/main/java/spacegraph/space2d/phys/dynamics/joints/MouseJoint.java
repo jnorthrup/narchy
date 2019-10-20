@@ -145,27 +145,27 @@ public class MouseJoint extends Joint {
         m_invIB = B.m_invI;
 
         v2 cB = data.positions[m_indexB];
-        var aB = data.positions[m_indexB].a;
+        float aB = data.positions[m_indexB].a;
         v2 vB = data.velocities[m_indexB];
-        var wB = data.velocities[m_indexB].w;
+        float wB = data.velocities[m_indexB].w;
 
-        var qB = pool.popRot();
+        Rot qB = pool.popRot();
 
         qB.set(aB);
 
-        var mass = B.getMass();
+        float mass = B.getMass();
 
 
-        var omega = 2.0f * MathUtils.PI * m_frequencyHz;
+        float omega = 2.0f * MathUtils.PI * m_frequencyHz;
 
 
-        var d = 2.0f * mass * m_dampingRatio * omega;
+        float d = 2.0f * mass * m_dampingRatio * omega;
 
 
-        var k = mass * (omega * omega);
+        float k = mass * (omega * omega);
 
 
-        var h = data.step.dt;
+        float h = data.step.dt;
         assert (d + h * k > Settings.EPSILON);
         m_gamma = h * (d + h * k);
         if (m_gamma != 0.0f) {
@@ -173,13 +173,13 @@ public class MouseJoint extends Joint {
         }
         m_beta = h * k * m_gamma;
 
-        var temp = pool.popVec2();
+        v2 temp = pool.popVec2();
 
         
         Rot.mulToOutUnsafe(qB, temp.set(m_localAnchorB).subbed(m_localCenterB), m_rB);
 
 
-        var K = pool.popMat22();
+        Mat22 K = pool.popMat22();
         K.ex.x = m_invMassB + m_invIB * m_rB.y * m_rB.y + m_gamma;
         K.ex.y = -m_invIB * m_rB.x * m_rB.y;
         K.ey.x = K.ex.y;
@@ -219,24 +219,24 @@ public class MouseJoint extends Joint {
     public void solveVelocityConstraints(SolverData data) {
 
         v2 vB = data.velocities[m_indexB];
-        var wB = data.velocities[m_indexB].w;
+        float wB = data.velocities[m_indexB].w;
 
 
-        var Cdot = pool.popVec2();
+        v2 Cdot = pool.popVec2();
         v2.crossToOutUnsafe(wB, m_rB, Cdot);
         Cdot.added(vB);
 
-        var impulse = pool.popVec2();
-        var temp = pool.popVec2();
+        v2 impulse = pool.popVec2();
+        v2 temp = pool.popVec2();
 
         temp.set(m_impulse).scaled(m_gamma).added(m_C).added(Cdot).negated();
         Mat22.mulToOutUnsafe(m_mass, temp, impulse);
 
-        var oldImpulse = temp;
+        v2 oldImpulse = temp;
         oldImpulse.set(m_impulse);
         m_impulse.added(impulse);
-        var maxImpulse = data.step.dt * m_maxForce;
-        var mImpulseLenSq = m_impulse.lengthSquared();
+        float maxImpulse = data.step.dt * m_maxForce;
+        float mImpulseLenSq = m_impulse.lengthSquared();
         if (mImpulseLenSq > maxImpulse * maxImpulse) {
             m_impulse.scaled((float) (maxImpulse / Math.sqrt(mImpulseLenSq)));
         }

@@ -120,10 +120,10 @@ final class ConcurrencyUtils {
     }
 
     public static void waitForCompletion(Future<?>[] var0) {
-        var var1 = var0.length;
+        int var1 = var0.length;
 
         try {
-            for (var future : var0) {
+            for (Future<?> future : var0) {
                 future.get();
             }
         } catch (ExecutionException | InterruptedException var3) {
@@ -141,7 +141,7 @@ final class ConcurrencyUtils {
         }
 
         public Thread newThread(Runnable var1) {
-            var var2 = defaultFactory.newThread(var1);
+            Thread var2 = defaultFactory.newThread(var1);
             var2.setUncaughtExceptionHandler(this.handler);
             return var2;
         }

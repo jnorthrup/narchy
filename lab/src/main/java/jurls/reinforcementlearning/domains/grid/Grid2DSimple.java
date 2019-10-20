@@ -23,7 +23,7 @@ public class Grid2DSimple implements World {
         this.w = x;
         this.h = y;
         this.size = x * y;
-        var VISUALIZE_PERIOD = Math.pow(10, 4);
+        double VISUALIZE_PERIOD = Math.pow(10, 4);
         this.ENERGY_COST_FACTOR = 1.0;
         this.MATCH_REWARD_FACTOR = size*1.0;
         this.REWARD_MAGNITUDE = 1;
@@ -64,32 +64,32 @@ public class Grid2DSimple implements World {
         double match = 0;        
         double energyCost = 0;
 
-        for (var x = 0; x < w; x++) {
-            for (var y = 0; y < h; y++) {
-                var a = get(action, x, y);
+        for (int x = 0; x < w; x++) {
+            for (int y = 0; y < h; y++) {
+                double a = get(action, x, y);
                 if (a > 0) {
-                    var dx = Math.abs(x - focusPositionW);
-                    var dy = Math.abs(y - focusPositionH);
+                    double dx = Math.abs(x - focusPositionW);
+                    double dy = Math.abs(y - focusPositionH);
                     match += a * 1.0/(1.0+Math.sqrt(dx*dx + dy*dy));
                     energyCost += a;                    
                 }
             }
         }
 
-        var reward = REWARD_MAGNITUDE * ((MATCH_REWARD_FACTOR * match) - (energyCost * ENERGY_COST_FACTOR));
+        double reward = REWARD_MAGNITUDE * ((MATCH_REWARD_FACTOR * match) - (energyCost * ENERGY_COST_FACTOR));
         
         /*if (reward!=0)
             System.out.println(match + " " + energyCost + " -> " + reward);*/
         
         
         
-        final var exp = 3.0;
-        for (var x = 0; x < w; x++) {
-            for (var y = 0; y < h; y++) {
-                var dx = Math.abs(x - focusPositionW);
-                var dy = Math.abs(y - focusPositionH);
-                var distScale = 1.0/(1.0+Math.sqrt(dx*dx + dy*dy));
-                var v = Math.pow(distScale, exp);
+        final double exp = 3.0;
+        for (int x = 0; x < w; x++) {
+            for (int y = 0; y < h; y++) {
+                double dx = Math.abs(x - focusPositionW);
+                double dy = Math.abs(y - focusPositionH);
+                double distScale = 1.0/(1.0+Math.sqrt(dx*dx + dy*dy));
+                double v = Math.pow(distScale, exp);
                 if (v < 0.1) v = 0;
                 set(sensor, x, y, v);
             }

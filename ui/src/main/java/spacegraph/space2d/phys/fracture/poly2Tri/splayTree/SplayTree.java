@@ -11,7 +11,7 @@ public class SplayTree {
     }
 
     public SplayTree(SplayTree rhs) {
-        var st = SplayTree.clone(rhs);
+        SplayTree st = SplayTree.clone(rhs);
         root = st.root;
         size = st.size;
     }
@@ -36,17 +36,17 @@ public class SplayTree {
     
     public void insert(SplayTreeItem x) {
 
-        var newNode = new BTreeNode();
+        BTreeNode newNode = new BTreeNode();
         newNode._data = x;
 
         if (root == null) {
             root = newNode;
             size++;
         } else {
-            var keys = x.keyValue();
+            Comparable keys = x.keyValue();
             while (true) { 
                 root = splay(keys, root);
-                var rootk = root.keyValue();
+                Comparable rootk = root.keyValue();
                 if (keys.compareTo(rootk) < 0) {
                     newNode._left = root._left;
                     newNode._right = root;
@@ -80,7 +80,7 @@ public class SplayTree {
             return null;
         }
 
-        var result = root;
+        BTreeNode result = root;
 
         BTreeNode newTree;
         if (root._left == null)
@@ -106,10 +106,10 @@ public class SplayTree {
     public BTreeNode deleteMax() {
         if (isEmpty()) return null;
 
-        var keys = Double.MAX_VALUE;
+        double keys = Double.MAX_VALUE;
         root = splay(keys, root);
 
-        var maxResult = root;
+        BTreeNode maxResult = root;
 
         BTreeNode newTree;
         if (root._left == null) newTree = root._right;
@@ -125,7 +125,7 @@ public class SplayTree {
 
     
     private static SplayTree clone(SplayTree rhs) {
-        var st = new SplayTree();
+        SplayTree st = new SplayTree();
         st.root = SplayTree.clone(rhs.root);
         st.size = rhs.size;
         return st;
@@ -152,7 +152,7 @@ public class SplayTree {
 
         if (root.data().keyValue().compareTo(keys) < 0) return root;
         else if (root._left != null) {
-            var result = root._left;
+            BTreeNode result = root._left;
             while (result._right != null) result = result._right;
             return result;
         } else {
@@ -176,8 +176,8 @@ public class SplayTree {
     
     private static int height(BTreeNode t) {
         if (t == null) return 0;
-        var lh = height(t._left);
-        var rh = height(t._right);
+        int lh = height(t._left);
+        int rh = height(t._right);
 
         return (lh > rh) ? (++lh) : (++rh);
     }
@@ -214,7 +214,7 @@ public class SplayTree {
 
     
     private static BTreeNode rotateWithLeftChild(BTreeNode k2) {
-        var k1 = k2._left;
+        BTreeNode k1 = k2._left;
         k2._left = k1._right;
         k1._right = k2;
         return k1;
@@ -222,7 +222,7 @@ public class SplayTree {
 
     
     private static BTreeNode rotateWithRightChild(BTreeNode k1) {
-        var k2 = k1._right;
+        BTreeNode k2 = k1._right;
         k1._right = k2._left;
         k2._left = k1;
         return k2;
@@ -244,10 +244,10 @@ public class SplayTree {
 
         header._left = header._right = null;
         BTreeNode _rightTreeMin;
-        var _leftTreeMax = _rightTreeMin = header;
+        BTreeNode _leftTreeMax = _rightTreeMin = header;
 
         for (; ; ) {
-            var rKey = t.keyValue();
+            Comparable rKey = t.keyValue();
             if (keys.compareTo(rKey) < 0) {
                 if (t._left == null) break;
                 if (keys.compareTo(t._left.keyValue()) < 0) t = rotateWithLeftChild(t);

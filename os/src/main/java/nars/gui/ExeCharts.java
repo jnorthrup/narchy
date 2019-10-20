@@ -41,14 +41,14 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
 public class ExeCharts {
     private static Surface metaGoalPlot2(NAR nar) {
 
-        var s = nar.control.why.size();
+        int s = nar.control.why.size();
 
         List<WhySurface> controls = new FasterList(s);
-        for (var w : nar.control.why) {
+        for (Cause w : nar.control.why) {
 			controls.add(new WhySurface(w));
         }
 
-        var g = new Gridding(controls);
+        Gridding g = new Gridding(controls);
 //        BitmapMatrixView bmp = new BitmapMatrixView(i ->
 //            //Util.tanhFast(
 //            gain.floatValue() * nar.control.why.get(i).pri()
@@ -56,7 +56,7 @@ public class ExeCharts {
 //            , s, Draw::colorBipolar);
 
         return DurSurface.get(g, nar, ()->{
-            for (var control : controls) {
+            for (WhySurface control : controls) {
                 control.update();
             }
         });
@@ -67,7 +67,7 @@ public class ExeCharts {
     	public WhySurface(Cause w) {
     		this.w = w;
     		//Draw.colorHash(w.)
-            var l = new VectorLabel(w.toString());
+            VectorLabel l = new VectorLabel(w.toString());
             set(l);
             //set(new Bordering(l)
 //                .south(new FloatSlider(0, -2, +2).on(x->{
@@ -76,7 +76,7 @@ public class ExeCharts {
 //            })));
 		}
 		public void update() {
-            var p = w.pri();
+            float p = w.pri();
             color.hsl( lerpSafe(1-p, 0.1f, 0.8f), 0.75f,
                 lerpSafe(p, 0.1f, 0.5f), 1f);
 
@@ -87,11 +87,11 @@ public class ExeCharts {
 
 	private static Surface metaGoalPlot(NAR nar) {
 
-        var s = nar.control.why.size();
+        int s = nar.control.why.size();
 
-        var gain = new FloatRange(1f, 0f, 100f);
+        FloatRange gain = new FloatRange(1f, 0f, 100f);
 
-        var bmp = new BitmapMatrixView(i ->
+        BitmapMatrixView bmp = new BitmapMatrixView(i ->
                 //Util.tanhFast(
                     gain.floatValue() * nar.control.why.get(i).pri()
                 //)
@@ -101,13 +101,13 @@ public class ExeCharts {
     }
 
     private static Surface metaGoalControls(NAR n) {
-        var auto = new CheckBox("Auto");
+        CheckBox auto = new CheckBox("Auto");
         auto.on(true);
 
-        var min = -1f;
-        var max = +1f;
+        float min = -1f;
+        float max = +1f;
 
-        var want = n.emotion.want;
+        float[] want = n.emotion.want;
         //return DurSurface.get(
          return grid( IntStream.range(0, want.length).mapToObj(
                         w -> new FloatSlider(want[w], min, max) {
@@ -131,22 +131,22 @@ public class ExeCharts {
 
     static Surface exePanel(NAR n) {
 
-        var plotHistory = 500;
-        var busyBuffer = new MetalConcurrentQueue(plotHistory);
-        var queueSize = new MetalConcurrentQueue(plotHistory);
+        int plotHistory = 500;
+        MetalConcurrentQueue busyBuffer = new MetalConcurrentQueue(plotHistory);
+        MetalConcurrentQueue queueSize = new MetalConcurrentQueue(plotHistory);
 
-        var exeQueue = new Plot2D(plotHistory, Plot2D.BarLanes)
+        Plot2D exeQueue = new Plot2D(plotHistory, Plot2D.BarLanes)
                 .add("queueSize", queueSize);
-        var busy = new Plot2D(plotHistory, Plot2D.BarLanes)
+        Plot2D busy = new Plot2D(plotHistory, Plot2D.BarLanes)
                 .add("Busy", busyBuffer);
 
 
-        var g = grid(exeQueue, busy);
-        var d = DurSurface.get(g, n, new Consumer<>() {
+        Gridding g = grid(exeQueue, busy);
+        DurSurface d = DurSurface.get(g, n, new Consumer<>() {
 
             final Off c = n.onCycle((nn) -> {
                 busyBuffer.offer(nn.emotion.busyVol.asFloat());
-                var nexe = n.exe;
+                Exec nexe = n.exe;
                 if (nexe instanceof ThreadedExec)
                     queueSize.offer((float)((ThreadedExec) nexe).queueSize());
             });
@@ -279,7 +279,7 @@ public class ExeCharts {
 
         NARLoopPanel(NARLoop loop) {
             super(loop);
-            var nar = loop.nar;
+            NAR nar = loop.nar;
             durMS.set(nar.dur());
             RealTime time;
             if (nar.time instanceof RealTime) {
@@ -302,9 +302,9 @@ public class ExeCharts {
 
             if (loop.isRunning()) {
 
-                var n = ((NARLoop) loop).nar;
+                NAR n = ((NARLoop) loop).nar;
                 if (n.time instanceof RealTime) {
-                    var actualMS = ((RealTime) n.time).durSeconds() * 1000.0;
+                    double actualMS = ((RealTime) n.time).durSeconds() * 1000.0;
                     if (!Util.equals(durMS.doubleValue(), actualMS, 0.1)) {
                         durMS.set(actualMS); //external change singificant
                     }

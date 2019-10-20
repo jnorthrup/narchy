@@ -32,12 +32,12 @@ public class M extends GamePanel {
 	@Override
 	public void start() {
 		setIgnoreRepaint(true);
-		var f = new JFrame();
+        JFrame f = new JFrame();
 		f.setSize(800,600);
 		f.setContentPane(this);
 		f.setVisible(true);
 
-		var canvas = new Canvas();
+        Canvas canvas = new Canvas();
 		add(canvas);
 		canvas.setBounds(0, 0, 712, 600);
 		canvas.createBufferStrategy(2);
@@ -134,9 +134,9 @@ public class M extends GamePanel {
 						p_defence[selP] += 2;
 					}
 					if (p_special[selP] == 4) {
-						var what = " nothing of interest";
-						var option = r.nextInt(6);
-						opts: for (var o = option; o < option + 6; o++) { switch (o % 6) {
+                        String what = " nothing of interest";
+                        int option = r.nextInt(6);
+						opts: for (int o = option; o < option + 6; o++) { switch (o % 6) {
 							case 0:
 							
 							if (e_range[selE] == 5) {
@@ -176,7 +176,7 @@ public class M extends GamePanel {
 							case 5:
 							if (!e_scanner[selE]) {
 								e_scanner[selE] = true;
-								for (var p = 0; p < 24; p++) { p_explored[p][selE] = true; }
+								for (int p = 0; p < 24; p++) { p_explored[p][selE] = true; }
 								what = " detailed planetary charts";
 								break opts;
 							}
@@ -202,16 +202,16 @@ public class M extends GamePanel {
 					break;
 				
 				case 17: case 7:
-					var victim = p_owner[selP];
+                    int victim = p_owner[selP];
 					e_msg_fromto[selE][victim] = n(selP) + " is invaded by " + e_names[selE]
 							+ ", taking $" + p_money[selP];
-					var def = p_defence[selP] * 3 / 4;
+                    int def = p_defence[selP] * 3 / 4;
 					if (e_f_pos[victim] == selP) {
 						def += e_ships[victim];
 						e_ships[victim] /= 2;
 						p_owner[selP] = selE;
 						
-						for (var p = 0; p < 24; p++) {
+						for (int p = 0; p < 24; p++) {
 							if (p_owner[p] == victim) {
 								e_f_pos[victim] = p;
 								e_msg_fromto[selE][victim] += ". Your ships fled to " + n(p);
@@ -221,7 +221,7 @@ public class M extends GamePanel {
 					}
 					p_owner[selP] = selE;
 					p_defence[selP] = p_defence[selP] * 3 / 4;
-					var shipsLost = def - e_ships[selE] / 3;
+                    int shipsLost = def - e_ships[selE] / 3;
 					e_msg_fromto[selE][selE] = "You invade " + n(selP) + ", taking " +
 						p_money[selP] + "$";
 					e_money[selE] += p_money[selP];
@@ -248,7 +248,7 @@ public class M extends GamePanel {
 				
 				case 14:
 					e_scanner[selE] = true;
-					for (var p = 0; p < 24; p++) { p_explored[p][selE] = true; }
+					for (int p = 0; p < 24; p++) { p_explored[p][selE] = true; }
 					break;
 				
 				case 15: e_transcend[selE] = true; break;
@@ -262,9 +262,9 @@ public class M extends GamePanel {
 					continue goback; 
 			} break; } 
 			
-			for (var e = 1; e < 5; e++) {
+			for (int e = 1; e < 5; e++) {
 				e_lost[e] = true;
-				for (var p = 0; p < 24; p++) {
+				for (int p = 0; p < 24; p++) {
 					if (p_owner[p] == e) {
 						e_lost[e] = false;
 						break;
@@ -272,7 +272,7 @@ public class M extends GamePanel {
 				}
 				if (!e_lost[e]) {
 					e_won[e] = true;
-					for (var p = 0; p < 24; p++) {
+					for (int p = 0; p < 24; p++) {
 						if (p_owner[p] != e && p_owner[p] != 0) {
 							e_won[e] = false;
 							break;
@@ -286,9 +286,9 @@ public class M extends GamePanel {
 
 			if (!e_won[selE]) {
 				
-				for (var p = 0; p < 24; p++) {
+				for (int p = 0; p < 24; p++) {
 					if (p_owner[p] != 0 && !p_out[p]) {
-						var money = 2;
+                        int money = 2;
 						switch (p_special[p]) {
 							
 							case 2: money = 3; break;
@@ -303,7 +303,7 @@ public class M extends GamePanel {
 				if (selE == 5) { selE = 1; }
 				selP = e_p_sel[selE];
 				
-				for (var i = 0; i < 5; i++) {
+				for (int i = 0; i < 5; i++) {
 					e_msg_fromto[selE][i] = selE == i ? e_msg_fromto[selE][i] : "";
 				}
 				antechamber = needAntechamber();
@@ -316,8 +316,8 @@ public class M extends GamePanel {
 	}
 
 	boolean allowed(int a) {
-		var result = true;
-		var finished = false;
+        boolean result = true;
+        boolean finished = false;
 		switch (a) {
 
 			case -1:
@@ -408,17 +408,17 @@ public class M extends GamePanel {
 				}
 				selP = p2;
 				return false;*/
-				var p2 = selP;
-				var best = -1;
-				var bestV = 0;
+                int p2 = selP;
+                int best = -1;
+                int bestV = 0;
 				for (selP = 0; selP < 24; selP++) {
 					if (!allowed(7)) {
 						continue;
 					}
-					var v = 300 + p_money[selP] * 3 + value(7) + p_defence[selP] * 20;
-					var losses = (p_defence[selP] + (e_f_pos[p_owner[selP]]) == selP ? e_ships[p_owner[selP]] : 0) - e_ships[selE] / 3;
-					var newFleet = e_ships[selE];
-					var enFleet = e_f_pos[p_owner[selP]] == selP ? e_ships[p_owner[selP]] / 2 : e_ships[p_owner[selP]];
+                    int v = 300 + p_money[selP] * 3 + value(7) + p_defence[selP] * 20;
+                    int losses = (p_defence[selP] + (e_f_pos[p_owner[selP]]) == selP ? e_ships[p_owner[selP]] : 0) - e_ships[selE] / 3;
+                    int newFleet = e_ships[selE];
+                    int enFleet = e_f_pos[p_owner[selP]] == selP ? e_ships[p_owner[selP]] / 2 : e_ships[p_owner[selP]];
 					if (losses > 0) {
 						v -= losses * 80;
 						newFleet -= losses;
@@ -437,7 +437,7 @@ public class M extends GamePanel {
 				}
 				selP = best;
 				if (best != -1) {
-					var losses = (p_defence[selP] + (e_f_pos[p_owner[selP]]) == selP ? e_ships[p_owner[selP]] : 0) - e_ships[selE] / 3;
+                    int losses = (p_defence[selP] + (e_f_pos[p_owner[selP]]) == selP ? e_ships[p_owner[selP]] : 0) - e_ships[selE] / 3;
 					break;
 				}
 				selP = p2;
@@ -446,15 +446,15 @@ public class M extends GamePanel {
 				break;
 
 			default:
-				var maxShips = 0;
-				for (var e = 1; e < 5; e++) {
+                int maxShips = 0;
+				for (int e = 1; e < 5; e++) {
 					if (e != selE && e_ships[e] > maxShips) {
 						maxShips = e_ships[e];
 					}
 				}
-				for (var p = 0; p < 24; p++) {
+				for (int p = 0; p < 24; p++) {
 					if (p_owner[p] == selE && p_defence[p] < maxShips + (a - 20)) {
-						var pp = selP;
+                        int pp = selP;
 						selP = p;
 						if (e_money[selE] + value(4) >= 0) {
 							finished = true;
@@ -472,16 +472,21 @@ public class M extends GamePanel {
 	}
 
 	boolean inRange() {
-		return IntStream.range(0, 24).anyMatch(p2 -> p_owner[p2] == selE &&
-				((p_x[p2] - p_x[selP]) * (p_x[p2] - p_x[selP]) + (p_y[p2] - p_y[selP]) * (p_y[p2] - p_y[selP])) <=
-						e_range[selE] * e_range[selE]);
+		for (int p2 = 0; p2 < 24; p2++) {
+			if (p_owner[p2] == selE &&
+					((p_x[p2] - p_x[selP]) * (p_x[p2] - p_x[selP]) + (p_y[p2] - p_y[selP]) * (p_y[p2] - p_y[selP])) <=
+							e_range[selE] * e_range[selE]) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	int value(int a) {
 		if (a > 19) {
 			a = 4;
 		}
-		var result = 0;
+        int result = 0;
 		switch (a) {
 
 			case -1:
@@ -500,8 +505,8 @@ public class M extends GamePanel {
 				break;
 
 			case 16:
-				var pp = selP;
-				var best = -1;
+                int pp = selP;
+                int best = -1;
 				for (selP = 0; selP < 24; selP++) {
 					if (inRange() &&
 							(best == -1 ||
@@ -626,8 +631,13 @@ public class M extends GamePanel {
 	boolean antechamber = true;
 
 	boolean needAntechamber() {
-		var count = IntStream.range(1, 5).filter(e -> e_human[e]).count();
-		var hps = (int) count;
+		long count = 0L;
+		for (int e = 1; e < 5; e++) {
+			if (e_human[e]) {
+				count++;
+			}
+		}
+		int hps = (int) count;
         return hps > 1 && e_human[selE];
 	}
 
@@ -636,9 +646,9 @@ public class M extends GamePanel {
 		int p;
 		for (p = 0; p < 24; p++) {
 			search: while (true) {
-				var x = r.nextInt(16);
-				var y = r.nextInt(16);
-				for (var i = 0; i < 24; i++) {
+                int x = r.nextInt(16);
+                int y = r.nextInt(16);
+				for (int i = 0; i < 24; i++) {
 					if (p_x[i] == x && p_y[i] == y) {
 						continue search;
 					}
@@ -665,7 +675,7 @@ public class M extends GamePanel {
 		game: while (true) {
 			try { Thread.sleep(50); } catch (Exception ex) {}
 
-			var g = (Graphics2D) strategy.getDrawGraphics();
+            Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -673,7 +683,7 @@ public class M extends GamePanel {
 
 			if (setup) {
 				if (click != null) {
-					for (var e = 1; e < 5; e++) {
+					for (int e = 1; e < 5; e++) {
 						if (click.getX() > 200 && click.getX() < 380 &&
 							click.getY() > 200 + e * 40 && click.getY() < 230 + e * 40)
 						{
@@ -691,7 +701,7 @@ public class M extends GamePanel {
 
 				g.setColor(Color.BLACK);
 				g.fillRect(0, 0, 712, 600);
-				for (var e = 1; e < 5; e++) {
+				for (int e = 1; e < 5; e++) {
 					g.setColor(e_color[e]);
 					g.fillRect(100, 200 + e * 40, 80, 30);
 					g.fill3DRect(200, 200 + e * 40, 80, 30, !e_human[e]);
@@ -752,8 +762,8 @@ public class M extends GamePanel {
 						}
 					} else {
 						while (!e_human[selE] && !e_won[selE]) {
-							ail: for (var a = 0; a < ai.length; a++) {
-								for (var pp = 0; pp < 24; pp++) {
+							ail: for (int a = 0; a < ai.length; a++) {
+								for (int pp = 0; pp < 24; pp++) {
 									selP = pp;
 									if (doAction(ai[a])) { break ail; }
 								}
@@ -828,7 +838,7 @@ public class M extends GamePanel {
 			g.drawString(e_money[selE] + "$, " + e_ships[selE] + " warships at " + n(e_f_pos[selE]), 5, 532);
 
 			
-			for (var i = 1; i < 5; i++) {
+			for (int i = 1; i < 5; i++) {
 				g.setColor(e_color[i]);
 				g.fillRect(12, 528 + i * 13, 492, 13);
 				g.setColor(Color.WHITE);
@@ -838,7 +848,7 @@ public class M extends GamePanel {
 			g.setColor(e_color[selE]);
 			g.fillRect(512, 0, 200, 600);
 			
-			for (var a = 0; a < 16; a++) {
+			for (int a = 0; a < 16; a++) {
 				if (allowed(a)) {
 					g.setColor(Color.DARK_GRAY);
 					g.fill3DRect(513, a * 32 + 1, 199, 30, true);

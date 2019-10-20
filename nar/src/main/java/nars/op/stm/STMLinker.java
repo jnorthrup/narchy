@@ -46,19 +46,19 @@ public class STMLinker extends TaskAction {
 			return false;
 
 		/* pri split bidirectionally so * 0.5 */
-		var pri = 0.5f * factor * pri(next, prev);
+        float pri = 0.5f * factor * pri(next, prev);
 
 		if (pri >= ScalarValue.EPSILON) {
-			var dt = next.minTimeTo(prev);
+            long dt = next.minTimeTo(prev);
 			if (dt > 0) {
 				pri = (float) NAL.evi(pri, dt, d.dur); //fade by time distance
 				if (pri < ScalarValue.EPSILON)
 					return true;
 			}
 
-			var w = (TaskLinkWhat) d.x;
+            TaskLinkWhat w = (TaskLinkWhat) d.x;
 
-			var WHY = why.why(prev, next /*, d*/ );
+            Termed WHY = why.why(prev, next /*, d*/ );
 
 			link(att, btt, next.punc(), pri, WHY, w);
 			link(btt, att, prev.punc(), pri, WHY, w);
@@ -75,7 +75,7 @@ public class STMLinker extends TaskAction {
 	}
 
 	static void link(Term a, Term b, byte punc, float pri, Termed why, TaskLinkWhat w) {
-		var l = AtomicTaskLink.link(a, b).priSet(punc, pri);
+        AbstractTaskLink l = AtomicTaskLink.link(a, b).priSet(punc, pri);
 		l.why = why;
 		w.links.link(l);
 	}
@@ -104,7 +104,7 @@ public class STMLinker extends TaskAction {
 //                }
 //
 //            }
-		var factor = this.strength.floatValue();
+        float factor = this.strength.floatValue();
 
 		boolean novel;
 		if (capacity == 1) {
@@ -113,10 +113,10 @@ public class STMLinker extends TaskAction {
 		} else {
 			//TODO test
 			//int i = 0;
-			var h = stm.head();
-			var acc = true;
-			var bound = capacity;
-			for (var i = 0; i < bound; i++) {
+            int h = stm.head();
+            boolean acc = true;
+            int bound = capacity;
+			for (int i = 0; i < bound; i++) {
 				acc = acc && link(x, stm.peek(h, i), factor, why, d);
 			}
 			novel= acc;

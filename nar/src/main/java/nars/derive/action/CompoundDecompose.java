@@ -31,20 +31,20 @@ public class CompoundDecompose extends NativeHow {
 
 	@Override
 	protected void run(RuleCause why, Derivation d) {
-		var srcTask = taskOrBelief ? d._task : d._belief;
+        Task srcTask = taskOrBelief ? d._task : d._belief;
 
-		var src = (Compound) srcTask.term();
+        Compound src = (Compound) srcTask.term();
 
 
-		var tgt = decompose(src, d);
+        Term tgt = decompose(src, d);
 		if (tgt!=null) {
 			assert(!(tgt instanceof Neg));
 			if (tgt.op().conceptualizable) {
 				assert(!tgt.equals(src));
 
-				var links = ((TaskLinkWhat) d.x).links;
+                TaskLinks links = ((TaskLinkWhat) d.x).links;
 
-				var l = AtomicTaskLink.link(src, tgt)
+                AbstractTaskLink l = AtomicTaskLink.link(src, tgt)
 					.priSet(srcTask.punc(), srcTask.priElseZero() * links.grow.floatValue());
 
 				//TODO lazy calculate

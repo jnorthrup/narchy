@@ -30,7 +30,7 @@ public abstract class LearnerAndActor {
         numIterations++;
         iterationsPerSecondCounter++;
 
-        var t1 = System.currentTimeMillis();
+        long t1 = System.currentTimeMillis();
         if (t1 - t0 > 1000) {
             t0 = t1;
             iterationsPerSecond = iterationsPerSecondCounter;
@@ -39,7 +39,7 @@ public abstract class LearnerAndActor {
     }
 
     public String getDebugString(int indent) {
-        var ind = Utils.makeIndent(indent);
+        String ind = Utils.makeIndent(indent);
         stringBuilder.setLength(0);
         stringBuilder.append(ind).append("@").append(numIterations);
         stringBuilder.append(" (").append(iterationsPerSecond).append("/s)\n");

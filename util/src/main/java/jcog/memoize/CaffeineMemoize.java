@@ -41,7 +41,7 @@ public class CaffeineMemoize<K, V> implements Memoize<K, V> {
 
     @Override
     public String summary() {
-        var stats = cache.stats();
+        CacheStats stats = cache.stats();
         String a;
         if (stats.hitCount() > 0)
             a = n2(stats.hitRate() * 100f) + "% hits, ";

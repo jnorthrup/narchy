@@ -43,21 +43,21 @@ public class TransformUtil {
 	}
 
 	public static void planeSpace1(v3 n, v3 p, v3 q) {
-		var ny = n.y;
-		var nz = n.z;
-		var nx = n.x;
+        float ny = n.y;
+        float nz = n.z;
+        float nx = n.x;
 		if (Math.abs(nz) > SIMDSQRT12) {
 
-			var a = ny * ny + nz * nz;
-			var k = recipSqrt(a);
+            float a = ny * ny + nz * nz;
+            float k = recipSqrt(a);
 			p.set(0, -nz * k, ny * k);
 			
 			q.set(a * k, -nx * p.z, nx * p.y);
 		}
 		else {
 
-			var a = nx * nx + ny * ny;
-			var k = recipSqrt(a);
+            float a = nx * nx + ny * ny;
+            float k = recipSqrt(a);
 			p.set(-ny * k, nx * k, 0);
 			
 			q.set(-nz * p.y, nz * p.x, a * k);
@@ -69,8 +69,8 @@ public class TransformUtil {
 		predictedTransform.scaleAdd(timeStep, linvel, curTrans);
 
 
-		var axis = new v3();
-		var fAngle = angvel.length();
+        v3 axis = new v3();
+        float fAngle = angvel.length();
 
 		
 		if (fAngle * timeStep > ANGULAR_MOTION_THRESHOLD) {
@@ -85,10 +85,10 @@ public class TransformUtil {
 			
 			axis.scale((float) Math.sin(0.5 * fAngle * timeStep) / fAngle, angvel);
 		}
-		var dorn = new Quat4f(axis.x, axis.y, axis.z, (float) Math.cos(0.5 * fAngle * timeStep));
-		var orn0 = curTrans.getRotation(new Quat4f());
+        Quat4f dorn = new Quat4f(axis.x, axis.y, axis.z, (float) Math.cos(0.5 * fAngle * timeStep));
+        Quat4f orn0 = curTrans.getRotation(new Quat4f());
 
-		var predictedOrn = new Quat4f();
+        Quat4f predictedOrn = new Quat4f();
 		predictedOrn.mul(dorn, orn0);
 		predictedOrn.normalize();
 
@@ -99,8 +99,8 @@ public class TransformUtil {
 		linVel.sub(transform1, transform0);
 		linVel.scaled(1f / timeStep);
 
-		var axis = new v3();
-		var angle = new float[1];
+        v3 axis = new v3();
+        float[] angle = new float[1];
 		calculateDiffAxisAngle(transform0, transform1, axis, angle);
 		angVel.scale(angle[0] / timeStep, axis);
 	}
@@ -108,14 +108,14 @@ public class TransformUtil {
 	private static void calculateDiffAxisAngle(Transform transform0, Transform transform1, v3 axis, float[] angle) {
 
 
-		var tmp = new Matrix3f();
+        Matrix3f tmp = new Matrix3f();
 		tmp.set(transform0.basis);
 		MatrixUtil.invert(tmp);
 
-		var dmat = new Matrix3f();
+        Matrix3f dmat = new Matrix3f();
 		dmat.mul(transform1.basis, tmp);
 
-		var dorn = new Quat4f();
+        Quat4f dorn = new Quat4f();
 		MatrixUtil.getRotation(dmat, dorn);
 
 
@@ -127,7 +127,7 @@ public class TransformUtil {
 		axis.set(dorn.x, dorn.y, dorn.z);
 
 
-		var lenSq = axis.lengthSquared();
+        float lenSq = axis.lengthSquared();
 		if (lenSq < BulletGlobals.FLT_EPSILON * BulletGlobals.FLT_EPSILON) {
 			axis.set(1f, 0f, 0f);
 		} else {

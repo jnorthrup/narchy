@@ -44,7 +44,7 @@ public class CircularArrayList<E> extends AbstractList<E> implements RandomAcces
 
     @Override
     public Iterator<E> iterator() {
-        var max = size;
+        int max = size;
         if (max == 0)
             return Util.emptyIterator;
 
@@ -59,8 +59,8 @@ public class CircularArrayList<E> extends AbstractList<E> implements RandomAcces
 
             @Override
             public E next() {
-                var p = pos;
-                var e = get(p);
+                int p = pos;
+                E e = get(p);
                 pos++;
                 return e;
             }
@@ -87,7 +87,7 @@ public class CircularArrayList<E> extends AbstractList<E> implements RandomAcces
     @Override
     public void forEach(Consumer<? super E> action) {
         /** NOTE: uses the descending iterator's semantics */
-        for (var i = size - 1; i >= 0; i--) {
+        for (int i = size - 1; i >= 0; i--) {
             action.accept(get(i--));
         }
     }
@@ -109,7 +109,7 @@ public class CircularArrayList<E> extends AbstractList<E> implements RandomAcces
     
     private void shiftBlock(int startIndex, int endIndex) {
         
-        for (var i = endIndex - 1; i >= startIndex; i--) {
+        for (int i = endIndex - 1; i >= startIndex; i--) {
             setFast(i + 1, get(i));
         }
     }
@@ -132,9 +132,9 @@ public class CircularArrayList<E> extends AbstractList<E> implements RandomAcces
     }
 
     public final E getAndSet(int i, E newValue) {
-        var ii = (head + i) % n;
-        var a = this.array;
-        var e = a[ii];
+        int ii = (head + i) % n;
+        E[] a = this.array;
+        E e = a[ii];
         a[ii] = newValue;
         return e;
     }
@@ -149,17 +149,17 @@ public class CircularArrayList<E> extends AbstractList<E> implements RandomAcces
          throw new IndexOutOfBoundsException();
          }*/
 
-        var m = (head + i) % n;
+        int m = (head + i) % n;
 
 
-        var existing = array[m];
+        E existing = array[m];
         array[m] = e;
         return existing;
     }
 
     @Override
     public void add(int i, E e) {
-        var s = size;
+        int s = size;
         /*
          if (s == n - 1) {
          throw new IllegalStateException("Cannot add element."
@@ -196,20 +196,20 @@ public class CircularArrayList<E> extends AbstractList<E> implements RandomAcces
 
     public void removeFirst(int n) {
         n = Math.min(size(), n);
-        for (var i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             removeFast(0);
         }
     }
 
     @Override
     public E remove(int i) {
-        var s = size;
+        int s = size;
         if (i < 0 || i >= s) {
             throw new IndexOutOfBoundsException();
         }
 
 
-        var e = get(i);
+        E e = get(i);
         removeFast(i);
         return e;
     }
@@ -220,8 +220,8 @@ public class CircularArrayList<E> extends AbstractList<E> implements RandomAcces
     }
 
     public boolean removeIdentity(Object o) {
-        var s = size();
-        for (var i = 0; i < s; i++) {
+        int s = size();
+        for (int i = 0; i < s; i++) {
             if (get(i) == o) {
                 removeFast(i);
                 return true;
@@ -245,8 +245,8 @@ public class CircularArrayList<E> extends AbstractList<E> implements RandomAcces
     }
 
     public void swap(int a, int b) {
-        var ap = get(a);
-        var bp = get(b);
+        E ap = get(a);
+        E bp = get(b);
         if ((ap == null) || (bp == null))
             throw new RuntimeException("illegal swap");
 
@@ -277,7 +277,7 @@ public class CircularArrayList<E> extends AbstractList<E> implements RandomAcces
 
     @Override
     public E removeLast() {
-        var s = size();
+        int s = size();
         if (s == 0)
             return null;
         return remove(size - 1);

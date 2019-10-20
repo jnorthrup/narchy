@@ -18,7 +18,7 @@ public interface ByteKey  {
     }
 
     static boolean equalsBytes(ByteKey a, ByteKey b) {
-        var l = a.length();
+        int l = a.length();
         return b.length() == l && Arrays.equals(a.array(), 0, l, b.array(), 0, l);
     }
 

@@ -60,15 +60,15 @@ public class SpinAllocator<T> {
   public SpinAllocator(ICreator<T> creator, IDisposer<T> disposer) {
     myCreator = creator;
     myDisposer = disposer;
-    for (var i = 0; i < MAX_SIMULTANEOUS_ALLOCATIONS; ++i) {
+    for (int i = 0; i < MAX_SIMULTANEOUS_ALLOCATIONS; ++i) {
       myEmployed[i] = new AtomicBoolean(false);
     }
   }
 
   public T alloc() {
-    for (var i = 0; i < MAX_SIMULTANEOUS_ALLOCATIONS; ++i) {
+    for (int i = 0; i < MAX_SIMULTANEOUS_ALLOCATIONS; ++i) {
       if (!myEmployed[i].getAndSet(true)) {
-        var result = (T)myObjects[i];
+          T result = (T)myObjects[i];
         if (result == null) {
           myObjects[i] = result = myCreator.createInstance();
         }
@@ -79,7 +79,7 @@ public class SpinAllocator<T> {
   }
 
   public void dispose(T instance) {
-    for (var i = 0; i < MAX_SIMULTANEOUS_ALLOCATIONS; ++i) {
+    for (int i = 0; i < MAX_SIMULTANEOUS_ALLOCATIONS; ++i) {
       if (myObjects[i] == instance) {
         if (!myEmployed[i].get()) {
           throw new AllocatorDisposeException("Instance is already disposed.");

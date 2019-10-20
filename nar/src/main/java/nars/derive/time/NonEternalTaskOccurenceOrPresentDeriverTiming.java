@@ -17,12 +17,12 @@ public class NonEternalTaskOccurenceOrPresentDeriverTiming implements TimeFocus 
     }
 
     @Override public long[] premise(What what, Task task, Term beliefTerm) {
-        var ts = task.start();
+        long ts = task.start();
         if (ts!=ETERNAL) {
             return new long[] {ts, task.end()};
         } else {
-            var rad = what.dur() * durRadius.floatValue()/2;
-            var now = what.time();
+            float rad = what.dur() * durRadius.floatValue()/2;
+            long now = what.time();
             return new long[] { Math.round(now - rad), Math.round(now + rad) };
         }
     }

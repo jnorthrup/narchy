@@ -28,7 +28,7 @@ public class BagView<X extends Prioritized> extends TabMenu {
                         new PushButton("print", bag::print)
                 ),
                 "stat", () -> {
-                    var budgetChart = new Plot2D(64, Plot2D.Line)
+                    Plot2D budgetChart = new Plot2D(64, Plot2D.Line)
                             .add("Mass", bag::mass)
                             .add("Pressure", bag::pressure);
 
@@ -36,12 +36,12 @@ public class BagView<X extends Prioritized> extends TabMenu {
                 },
                 "histo", () -> bagHistogram(bag, 20, nar),
                 "treechart", () -> {
-                    var b = new BagChart<X>(bag, n -> {
+                    BagChart<X> b = new BagChart<X>(bag, n -> {
                         Prioritized p = n.id;
-                        var pri = n.pri = Math.max(p.priElseZero(), 1f / (2 * bag.capacity()));
+                        float pri = n.pri = Math.max(p.priElseZero(), 1f / (2 * bag.capacity()));
                         n.color(pri, 0.25f, 0.25f);
                         if (!(n.the() instanceof PushButton)) {
-                            var label = p instanceof NLink ? ((NLink) p).get().toString() : p.toString();
+                            String label = p instanceof NLink ? ((NLink) p).get().toString() : p.toString();
                             n.set(new PushButton(new VectorLabel(label)/*.click(()->{})*/));
                         }
                     });
@@ -53,8 +53,8 @@ public class BagView<X extends Prioritized> extends TabMenu {
     }
 
     public static <X extends Prioritized> Surface bagHistogram(Iterable<X> bag, int bins, NAR n) {
-        var d = new float[bins];
-        var hc = DurSurface.get(new HistogramChart(
+        float[] d = new float[bins];
+        DurSurface hc = DurSurface.get(new HistogramChart(
                         () -> d,
                         new Color3f(0.25f, 0.5f, 0f), new Color3f(1f, 0.5f, 0.1f)),
                 n, () -> PriReference.histogram(bag, d));

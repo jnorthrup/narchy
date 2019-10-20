@@ -34,8 +34,8 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
 
     @Override
     public void forEachRemaining(Consumer<? super E> action) {
-        var a = this.array;
-        for (var i = index; i < a.length; i++)
+        E[] a = this.array;
+        for (int i = index; i < a.length; i++)
             action.accept(a[i]);
     }
     
@@ -110,7 +110,7 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
                 result = Util.emptyIterator;
                 break;
             case 1:
-                var ee = e[0];
+                E ee = e[0];
                 result = ee != null ? Iterators.singletonIterator(ee) : Util.emptyIterator;
                 break;
             default:
@@ -147,7 +147,7 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
         switch (size) {
             case 0: return Stream.empty();
             case 1: {
-                var x0 = list[0]; return x0==null ? Stream.empty() : Stream.of(x0); }
+                X x0 = list[0]; return x0==null ? Stream.empty() : Stream.of(x0); }
             case 2: { X x0 = list[0], x1 = list[1]; if (x0!=null && x1!=null) return Stream.of(x0, x1); else if (x0 == null && x1 == null) return Stream.empty(); else if (x1 == null) return Stream.of(x0); else return Stream.of(x1); }
             default:
                 return arrayStream(list, size).filter(Objects::nonNull);

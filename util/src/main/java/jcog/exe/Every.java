@@ -32,8 +32,8 @@ public class Every {
     }
 
     public void next() {
-        var now = System.currentTimeMillis();
-        var delta = now - last;
+        long now = System.currentTimeMillis();
+        long delta = now - last;
         if (delta > periodMS.intValue()) {
             last = now;
             each.accept(delta);

@@ -1,5 +1,6 @@
 package nars.op;
 
+import nars.Op;
 import nars.attention.What;
 import nars.term.Compound;
 import nars.term.Term;
@@ -31,7 +32,7 @@ public abstract class EventIntroduction extends Introduction {
 
     @Override
     protected final @Nullable Term apply(Term xx, What what) {
-        var y = applyAndNormalize(xx, what);
+        Term y = applyAndNormalize(xx, what);
         return y != xx ? y : null;
     }
 
@@ -42,7 +43,7 @@ public abstract class EventIntroduction extends Introduction {
     }
 
     private Term applyAndNormalize(Term x, What w) {
-        var y = applyUnnormalized(x, w);
+        Term y = applyUnnormalized(x, w);
         return y!=null && !x.equals(y) && y.volume() <= volMax ? y.normalize() : x;
     }
 
@@ -53,11 +54,11 @@ public abstract class EventIntroduction extends Introduction {
         if (volMax <= 0 || x instanceof Sequence)
             return x; //HACK incompatible with sequences for now
 
-        var xo = x.op();
+        Op xo = x.op();
         switch (xo) {
             case NEG:
-                var xu = x.unneg();
-                var y = applyUnnormalized(xu, volMax-1, w);
+                Term xu = x.unneg();
+                Term y = applyUnnormalized(xu, volMax-1, w);
                 return y != null && y != xu ? y.neg() : x;
             case IMPL:
                 return x; //HACK dont support IMPL since they can conflict when &&'d with the factor
@@ -71,7 +72,7 @@ public abstract class EventIntroduction extends Introduction {
                         Map<Term, Term> replacement = new UnifiedMap(1);
                         if (!x.eventsAND((when, what) -> {
                             if (what instanceof Compound && what.op() == CONJ && !Conj.isSeq(what) && what.dt()!=XTERNAL && !replacement.containsKey(what)) {
-                                var what2 = applyUnnormalized(what, volMax - (x.volume() - what.volume()) - 1, w);
+                                Term what2 = applyUnnormalized(what, volMax - (x.volume() - what.volume()) - 1, w);
                                 if (what2 != null)
                                     replacement.put(what, what2);
                             }
@@ -79,7 +80,7 @@ public abstract class EventIntroduction extends Introduction {
                         }, 0, false, true /* xternal disabled */))
                             return x; //fail
                         if (!replacement.isEmpty()) {
-                            var xx = x.replace(replacement);
+                            Term xx = x.replace(replacement);
                             if (!(xx instanceof IdempotentBool))
                                 return xx;
                         }

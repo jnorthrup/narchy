@@ -10,6 +10,7 @@ import nars.term.Term;
 import nars.truth.Truth;
 import org.apache.commons.math3.exception.OutOfRangeException;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -69,8 +70,8 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
     public static final ScalarEncoder Fluid = (v, i, indices) -> {
 
 
-        var vv = v * (indices);
-        var which = (int) Math.ceil(vv);
+        float vv = v * (indices);
+        int which = (int) Math.ceil(vv);
         float f;
         if (i < which) {
             f = 1f;
@@ -95,8 +96,8 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
      * hard
      */
     public static final ScalarEncoder Needle = (v, i, indices) -> {
-        var vv = v * indices;
-        var which = (int) Math.floor(vv);
+        float vv = v * indices;
+        int which = (int) Math.floor(vv);
         return i == which ? 1 : 0;
     };
 
@@ -110,7 +111,7 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
      */
     public static final ScalarEncoder FuzzyNeedle = (v, i, indices) -> {
 
-        var dr = 1f / (indices - 1);
+        float dr = 1f / (indices - 1);
 
         return Math.max(0, (1f - Math.abs((i * dr) - v) / dr));
     };
@@ -122,9 +123,9 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
     public static final ScalarEncoder FuzzyBinary = (v, i, indices) -> {
 
 
-        var b = v;
-        var dv = 1f;
-        for (var j = 0; j < i; j++) {
+        float b = v;
+        float dv = 1f;
+        for (int j = 0; j < i; j++) {
             dv /= 2f;
             b = Math.max(0, b - dv);
         }
@@ -143,8 +144,13 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
      * returns snapshot of the belief state of the concepts
      */
     public Truth[] belief(long when, NAR n) {
-        var s = size();
-        var f = IntStream.range(0, s).mapToObj(i -> n.beliefTruth(sensors.get(i), when)).toArray(Truth[]::new);
+        int s = size();
+        List<Truth> list = new ArrayList<>();
+        for (int i = 0; i < s; i++) {
+            Truth truth = n.beliefTruth(sensors.get(i), when);
+            list.add(truth);
+        }
+        Truth[] f = list.toArray(new Truth[0]);
         return f;
     }
 
@@ -165,15 +171,15 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
         this.input = input;
 
 
-        var defaultFreq = freqer.defaultTruth();
+        float defaultFreq = freqer.defaultTruth();
 
         assert (states.length > 1);
         this.sensors = new FasterList(states.length);
-        var i = 0;
-        for (var s : states) {
-            var ii = i++;
-            var sc = newComponent(s, () -> {
-                var x = freqer.truth(asFloat(), ii, states.length);
+        int i = 0;
+        for (Term s : states) {
+            int ii = i++;
+            ComponentSignal sc = newComponent(s, () -> {
+                float x = freqer.truth(asFloat(), ii, states.length);
                 return Util.equals(x, defaultFreq) ? Float.NaN : x;
             });
 

@@ -22,18 +22,18 @@ public class HardRockTile extends Tile {
 
     @Override
     public void render(Screen screen, Level level, int x, int y) {
-        var col = Color.get(334, 334, 223, 223);
-        var transitionColor = Color.get(001, 334, 445, level.dirtColor);
+        int col = Color.get(334, 334, 223, 223);
+        int transitionColor = Color.get(001, 334, 445, level.dirtColor);
 
-        var u = level.getTile(x, y - 1) != this;
-        var d = level.getTile(x, y + 1) != this;
-        var l = level.getTile(x - 1, y) != this;
-        var r = level.getTile(x + 1, y) != this;
+        boolean u = level.getTile(x, y - 1) != this;
+        boolean d = level.getTile(x, y + 1) != this;
+        boolean l = level.getTile(x - 1, y) != this;
+        boolean r = level.getTile(x + 1, y) != this;
 
-        var ul = level.getTile(x - 1, y - 1) != this;
-        var dl = level.getTile(x - 1, y + 1) != this;
-        var ur = level.getTile(x + 1, y - 1) != this;
-        var dr = level.getTile(x + 1, y + 1) != this;
+        boolean ul = level.getTile(x - 1, y - 1) != this;
+        boolean dl = level.getTile(x - 1, y + 1) != this;
+        boolean ur = level.getTile(x + 1, y - 1) != this;
+        boolean dr = level.getTile(x + 1, y + 1) != this;
 
         if (!u && !l) {
             if (!ul)
@@ -80,7 +80,7 @@ public class HardRockTile extends Tile {
     @Override
     public boolean interact(Level level, int xt, int yt, Player player, Item item, int attackDir) {
         if (item instanceof ToolItem) {
-            var tool = (ToolItem) item;
+            ToolItem tool = (ToolItem) item;
             if (tool.type == ToolType.pickaxe && tool.level == 4) {
                 if (player.payStamina(4 - tool.level)) {
                     hurt(level, xt, yt, random.nextInt(10) + (tool.level) * 5 + 10);
@@ -92,16 +92,16 @@ public class HardRockTile extends Tile {
     }
 
     public void hurt(Level level, int x, int y, int dmg) {
-        var damage = level.getData(x, y) + dmg;
+        int damage = level.getData(x, y) + dmg;
         level.add(new SmashParticle(x * 16 + 8, y * 16 + 8));
         level.add(new TextParticle(String.valueOf(dmg), x * 16 + 8, y * 16 + 8, Color.get(-1, 500, 500, 500)));
         if (damage >= 200) {
-            var count = random.nextInt(4) + 1;
-            for (var i = 0; i < count; i++) {
+            int count = random.nextInt(4) + 1;
+            for (int i = 0; i < count; i++) {
                 level.add(new ItemEntity(new ResourceItem(Resource.stone), x * 16 + random.nextInt(10) + 3, y * 16 + random.nextInt(10) + 3));
             }
             count = random.nextInt(2);
-            for (var i = 0; i < count; i++) {
+            for (int i = 0; i < count; i++) {
                 level.add(new ItemEntity(new ResourceItem(Resource.coal), x * 16 + random.nextInt(10) + 3, y * 16 + random.nextInt(10) + 3));
             }
             level.setTile(x, y, Tile.dirt, 0);
@@ -112,7 +112,7 @@ public class HardRockTile extends Tile {
 
     @Override
     public void tick(Level level, int xt, int yt) {
-        var damage = level.getData(xt, yt);
+        int damage = level.getData(xt, yt);
         if (damage > 0) level.setData(xt, yt, damage - 1);
     }
 }

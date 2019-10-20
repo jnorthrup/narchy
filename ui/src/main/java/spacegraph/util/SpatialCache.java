@@ -38,7 +38,7 @@ class SpatialCache<X, Y extends Spatial<X>> {
     }
 
     public Y getOrAdd(X x, Function<X, Y> materializer) {
-        var y = cache.computeIfAbsent(x, materializer);
+        Y y = cache.computeIfAbsent(x, materializer);
         y.activate();
         return y;
     }
@@ -52,7 +52,7 @@ class SpatialCache<X, Y extends Spatial<X>> {
 
 
     public void remove(X x) {
-        var y = cache.remove(x);
+        Y y = cache.remove(x);
         if (y != null) {
             space.remove(y);
         }

@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Vector;
 
 class Sftp implements Runnable {
     private static final String[] help = {
@@ -77,11 +78,11 @@ class Sftp implements Runnable {
 
     public void run() {
         try {
-            var cmds = new java.util.Vector();
-            var buf = new byte[1024];
-            var lhome = c.lpwd();
+            Vector cmds = new java.util.Vector();
+            byte[] buf = new byte[1024];
+            String lhome = c.lpwd();
 
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             while (true) {
                 
                 out.write("sftp> ".getBytes());
@@ -118,7 +119,7 @@ class Sftp implements Runnable {
                     }
                     out.flush();
 
-                    for (var j = 0; j < i; j++) {
+                    for (int j = 0; j < i; j++) {
                         sb.append((char) buf[j]);
                         if (buf[j] == 0x0d) {
                             System
@@ -144,8 +145,8 @@ class Sftp implements Runnable {
                     i--;
 
 
-                var s = 0;
-                for (var ii = 0; ii < i; ii++) {
+                int s = 0;
+                for (int ii = 0; ii < i; ii++) {
                     if (buf[ii] == ' ') {
                         if (ii - s > 0) {
                             cmds.addElement(new String(buf, s, ii - s));
@@ -164,7 +165,7 @@ class Sftp implements Runnable {
                 if (cmds.isEmpty())
                     continue;
 
-                var cmd = (String) cmds.elementAt(0);
+                String cmd = (String) cmds.elementAt(0);
                 if ("stop".equals(cmd)) {
                     c.quit();
                     break;
@@ -199,7 +200,7 @@ class Sftp implements Runnable {
                 if (List.of("rm", "rmdir", "mkdir").contains(cmd)) {
                     if (cmds.size() < 2)
                         continue;
-                    var path = (String) cmds.elementAt(1);
+                    String path = (String) cmds.elementAt(1);
                     try {
                         switch (cmd) {
                             case "rm":
@@ -223,9 +224,9 @@ class Sftp implements Runnable {
                 if ("lmkdir".equals(cmd)) {
                     if (cmds.size() < 2)
                         continue;
-                    var path = (String) cmds.elementAt(1);
+                    String path = (String) cmds.elementAt(1);
 
-                    var d = new File(c.lpwd(), path);
+                    File d = new File(c.lpwd(), path);
                     if (!d.mkdir()) {
 
                         
@@ -239,11 +240,11 @@ class Sftp implements Runnable {
                 if (List.of("chgrp", "chown", "chmod").contains(cmd)) {
                     if (cmds.size() != 3)
                         continue;
-                    var path = (String) cmds.elementAt(2);
-                    var foo = 0;
+                    String path = (String) cmds.elementAt(2);
+                    int foo = 0;
                     if ("chmod".equals(cmd)) {
-                        var bar = ((String) cmds.elementAt(1)).getBytes();
-                        for (var aBar : bar) {
+                        byte[] bar = ((String) cmds.elementAt(1)).getBytes();
+                        for (byte aBar : bar) {
                             int k = aBar;
                             if (k < '0' || k > '7') {
                                 foo = -1;
@@ -282,7 +283,7 @@ class Sftp implements Runnable {
                     continue;
                 }
                 if ("pwd".equals(cmd) || "lpwd".equals(cmd)) {
-                    var str = ("pwd".equals(cmd) ? "Remote" : "Local");
+                    String str = ("pwd".equals(cmd) ? "Remote" : "Local");
                     str += " working directory: ";
                     if ("pwd".equals(cmd))
                         str += c.pwd();
@@ -295,13 +296,13 @@ class Sftp implements Runnable {
                     continue;
                 }
                 if ("ls".equals(cmd) || "dir".equals(cmd)) {
-                    var path = ".";
+                    String path = ".";
                     if (cmds.size() == 2)
                         path = (String) cmds.elementAt(1);
                     try {
-                        var vv = c.ls(path);
+                        Vector vv = c.ls(path);
                         if (vv != null) {
-                            for (var ii = 0; ii < vv.size(); ii++) {
+                            for (int ii = 0; ii < vv.size(); ii++) {
                                 
                                 
                                 out.write(vv.elementAt(ii).toString().getBytes());
@@ -318,13 +319,13 @@ class Sftp implements Runnable {
                     continue;
                 }
                 if ("lls".equals(cmd)) {
-                    var path = c.lpwd();
+                    String path = c.lpwd();
                     if (cmds.size() == 2)
                         path = (String) cmds.elementAt(1);
                     try {
-                        var d = new File(path);
-                        var list = d.list();
-                        for (var aList : list) {
+                        File d = new File(path);
+                        String[] list = d.list();
+                        for (String aList : list) {
                             out.write(aList.getBytes());
                             out.write(lf);
                         }
@@ -340,9 +341,9 @@ class Sftp implements Runnable {
                 if ("get".equals(cmd) || "put".equals(cmd)) {
                     if (cmds.size() != 2 && cmds.size() != 3)
                         continue;
-                    var p1 = (String) cmds.elementAt(1);
+                    String p1 = (String) cmds.elementAt(1);
 
-                    var p2 = ".";
+                    String p2 = ".";
                     if (cmds.size() == 3)
                         p2 = (String) cmds.elementAt(2);
                     try {
@@ -362,8 +363,8 @@ class Sftp implements Runnable {
                 if (List.of("ln", "symlink", "rename").contains(cmd)) {
                     if (cmds.size() != 3)
                         continue;
-                    var p1 = (String) cmds.elementAt(1);
-                    var p2 = (String) cmds.elementAt(2);
+                    String p1 = (String) cmds.elementAt(1);
+                    String p2 = (String) cmds.elementAt(2);
                     try {
                         if ("rename".equals(cmd))
                             c.rename(p1, p2);
@@ -380,7 +381,7 @@ class Sftp implements Runnable {
                 if ("stat".equals(cmd) || "lstat".equals(cmd)) {
                     if (cmds.size() != 2)
                         continue;
-                    var p1 = (String) cmds.elementAt(1);
+                    String p1 = (String) cmds.elementAt(1);
                     SftpATTRS attrs = null;
                     try {
                         if ("stat".equals(cmd))
@@ -411,7 +412,7 @@ class Sftp implements Runnable {
                 }
                 if ("help".equals(cmd) || "help".equals(cmd)) {
 
-                    for (var aHelp : help) {
+                    for (String aHelp : help) {
                         out.write((aHelp).getBytes());
                         out.write(lf);
                     }

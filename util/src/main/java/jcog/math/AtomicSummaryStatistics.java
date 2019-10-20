@@ -31,14 +31,14 @@ public class AtomicSummaryStatistics implements FloatProcedure, DoubleProcedure,
             if (max < v) max = v;
 
 
-            var tmpMean = mean;
+            double tmpMean = mean;
 
-            var delta = v - tmpMean;
+            double delta = v - tmpMean;
             mean += delta / ++count;
             return ss + delta * (v - mean);
         } else {
             if (onCommit!=null) {
-                for (var c : onCommit)
+                for (Consumer<AtomicSummaryStatistics> c : onCommit)
                     c.accept(this);
             }
             count = 0;
@@ -199,7 +199,7 @@ public class AtomicSummaryStatistics implements FloatProcedure, DoubleProcedure,
      */
     @Override
     public double getStandardDeviation() {
-        var v = getVariance();
+        double v = getVariance();
         if (v == v)
             return Math.sqrt(v);
         else
@@ -213,7 +213,7 @@ public class AtomicSummaryStatistics implements FloatProcedure, DoubleProcedure,
 
     @Override
     public double getVariance() {
-        var c = count;
+        long c = count;
         if (c == 0) return Double.NaN;
         return update.doubleValue() / (c);
     }
@@ -226,7 +226,7 @@ public class AtomicSummaryStatistics implements FloatProcedure, DoubleProcedure,
 
     /** asynchronous sum integrator */
     public AtomicSummaryStatistics sumIntegrator() {
-        var i = new AtomicSummaryStatistics();
+        AtomicSummaryStatistics i = new AtomicSummaryStatistics();
         on((x) -> i.accept(x.sum));
         return i;
     }
@@ -239,12 +239,12 @@ public class AtomicSummaryStatistics implements FloatProcedure, DoubleProcedure,
 
 
     public float sumThenClear() {
-        var f = (float) sum;
+        float f = (float) sum;
         clear();
         return f;
     }
     public float meanThenClear() {
-        var f = (float) mean;
+        float f = (float) mean;
         clear();
         return f;
     }

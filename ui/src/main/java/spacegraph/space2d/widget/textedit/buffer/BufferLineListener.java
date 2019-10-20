@@ -22,21 +22,21 @@ public interface BufferLineListener {
 
     @Override
     public void update(BufferLine bl) {
-        for (var l : listeners) {
+        for (BufferLineListener l : listeners) {
             l.update(bl);
         }
     }
 
     @Override
     public void addChar(BufferChar bufferChar, int col) {
-        for (var l : listeners) {
+        for (BufferLineListener l : listeners) {
             l.addChar(bufferChar, col);
         }
     }
 
     @Override
     public void removeChar(BufferChar bufferChar) {
-        for (var l : listeners) {
+        for (BufferLineListener l : listeners) {
             l.removeChar(bufferChar);
         }
     }

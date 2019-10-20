@@ -15,12 +15,14 @@ import nars.term.util.TermTransformException;
 import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
 import org.eclipse.collections.api.iterator.LongIterator;
+import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 
 import static nars.Op.CONJ;
@@ -119,7 +121,7 @@ public class ConjTree implements ConjBuilder {
 
     private boolean addParallelN(Term n) {
         assert (n instanceof Neg);
-        var nu = n.unneg();
+        Term nu = n.unneg();
 
         if (neg.contains(nu))
             return true;
@@ -187,13 +189,13 @@ public class ConjTree implements ConjBuilder {
         //assert (nx.op() != NEG);
 
 
-        var xConj = nx.opID() == CONJ.id;
+        boolean xConj = nx.opID() == CONJ.id;
 
         FasterList<Term> toAdd = null;
         Term nxn = null;
-        for (var nyi = neg.iterator(); nyi.hasNext(); ) {
-            var ny = nyi.next();
-            var yConj = ny.opID() == CONJ.id;
+        for (Iterator<Term> nyi = neg.iterator(); nyi.hasNext(); ) {
+            Term ny = nyi.next();
+            boolean yConj = ny.opID() == CONJ.id;
             //int nys = ny.structure();
             //disj
             //                //Robbins Algebra / Huntington Reduction
@@ -237,7 +239,7 @@ public class ConjTree implements ConjBuilder {
                     //prune
                     nyi.remove();
                     if (toAdd == null) toAdd = new FasterList(1);
-                    var z = Conj.diffAll(ny, nxn);
+                    Term z = Conj.diffAll(ny, nxn);
                     if (z == True) {
                         //eliminated y
                     } else if (z == False || z == Null) {
@@ -252,28 +254,28 @@ public class ConjTree implements ConjBuilder {
                 ///return True; //absorbed necessary
                 if (Conj.eventOf(nx, ny))
                     return ny; //reduce nx to ny, so that it can be added at the correct sequence position.  for parallel this isnt needed and could return True?
-                var nyn = ny.neg();
+                Term nyn = ny.neg();
 
                 if (nx.dt()==XTERNAL) {
                     //HACK because ConjList.events doesnt decompose XTERNAL
-                    var nx2 = Conj.diffPar(nx, nyn);
+                    Term nx2 = Conj.diffPar(nx, nyn);
                     if (!nx.equals(nx2)) {
                         nx = nx2;
                         if (nx instanceof IdempotentBool)
                             return nx;
-                        var x = reinsertNN(nx, toAdd, 0);
+                        Term x = reinsertNN(nx, toAdd, 0);
                         if (x != null)
                             return x;
                     }
                 } else if (Conj.eventOf(nx, nyn)) {
-                    var nxe = ConjList.events(nx);
+                    ConjList nxe = ConjList.events(nx);
                     nxe.removeAll(nyn);
                     nx = nxe.term();
                     nxn = null; //invalidate
                     if (nx instanceof IdempotentBool)
                         return nx;
-                    var nxshift = nxe.shift();
-                    var x = reinsertNN(nx, toAdd, nxshift);
+                    long nxshift = nxe.shift();
+                    Term x = reinsertNN(nx, toAdd, nxshift);
                     if (x != null)
                         return x;
                 }
@@ -309,13 +311,13 @@ public class ConjTree implements ConjBuilder {
             return False; //contradiction
 
 
-        var xConj = x instanceof Compound && x.opID() == CONJ.id;
+        boolean xConj = x instanceof Compound && x.opID() == CONJ.id;
         if (xConj && nP_or_pN) {
-            for (var yy : y)
+            for (Term yy : y)
                 if (Conj.eventOf(x, yy, -1))
                     return yy.neg();
                 else {
-                    var z = Conj.diffAll(x, yy);
+                    Term z = Conj.diffAll(x, yy);
                     if (!z.equals(x)) {
                         if (z instanceof IdempotentBool)
                             return z.neg();
@@ -331,8 +333,8 @@ public class ConjTree implements ConjBuilder {
 
             Term xn = null;
             FasterList<Term> add = null;
-            for (var iterator = y.iterator(); iterator.hasNext(); ) {
-                var yy = iterator.next();
+            for (Iterator<Term> iterator = y.iterator(); iterator.hasNext(); ) {
+                Term yy = iterator.next();
                 // && yy.containsRecursively(x)) {
                 //short-circuit
                 //                    }
@@ -342,7 +344,7 @@ public class ConjTree implements ConjBuilder {
                         iterator.remove();
                     else {
                         //impossibility
-                        var z = Conj.diffAll(yy, x);
+                        Term z = Conj.diffAll(yy, x);
                         if (!z.equals(yy)) {
 
                             //if (Conj.eventOf(yy, b)) {
@@ -371,7 +373,7 @@ public class ConjTree implements ConjBuilder {
     }
 
     Term terminate(Term t) {
-        var x = terminal;
+        Term x = terminal;
         if (t==Null) {
             x = terminal = Null;
         } else if (t == False) {
@@ -408,8 +410,8 @@ public class ConjTree implements ConjBuilder {
 //            }
 
         } else {
-            var _xu = x.unneg();
-            var xu = _xu;
+            Term _xu = x.unneg();
+            Term xu = _xu;
 //
             if (pos.contains(xu)) {
                 terminate(False); //contradict
@@ -469,8 +471,8 @@ public class ConjTree implements ConjBuilder {
             }
 
         } else {
-            var aat = occToDT(at);
-            var s = seq.get(aat);
+            int aat = occToDT(at);
+            ConjTree s = seq.get(aat);
             if (s == null) return false;
             if (s.remove(ETERNAL, t)) {
                 if (s.isEmpty()) {
@@ -507,7 +509,7 @@ public class ConjTree implements ConjBuilder {
             return (!pos.isEmpty() ? pos.size() : 0) + (!neg.isEmpty() ? neg.size() : 0);
         else {
             if (seq != null) {
-                var s = seq.get(occToDT(when));
+                ConjTree s = seq.get(occToDT(when));
                 if (s != null)
                     return s.size();
             }
@@ -524,7 +526,7 @@ public class ConjTree implements ConjBuilder {
 
     @Override
     public boolean removeAll(Term term) {
-        var removed = removeParallel(term);
+        boolean removed = removeParallel(term);
 
         if (seq != null) if (!removed) removed = seq.countWith(ConjTree::removeAll, term) > 0;
         else
@@ -560,7 +562,7 @@ public class ConjTree implements ConjBuilder {
         if (seq != null && !seq.isEmpty()) {
 
 
-            var s = termSeq(B);
+            Term s = termSeq(B);
 
             shift(); //cache the shift before clearing seq
             seq = null;
@@ -590,7 +592,7 @@ public class ConjTree implements ConjBuilder {
         DisposableTermList PN = null;
 
         if (!pos.isEmpty()) {
-            var pp = pos.size();
+            int pp = pos.size();
             if (neg.isEmpty() && pp == 1)
                 return pos.iterator().next();
             else {
@@ -599,12 +601,12 @@ public class ConjTree implements ConjBuilder {
             }
         }
         if (!neg.isEmpty()) {
-            var nn = neg.size();
+            int nn = neg.size();
             if (pos.isEmpty() && nn == 1)
                 return neg.iterator().next().neg();
             else {
                 if (PN == null) PN = new DisposableTermList(neg.size());
-                for (var N : neg)
+                for (Term N : neg)
                     PN.add(N.neg());
             }
         }
@@ -613,7 +615,7 @@ public class ConjTree implements ConjBuilder {
         if (PN == null)
             return True;
 
-        var q = PN.arrayKeep();
+        Term[] q = PN.arrayKeep();
 
         switch (q.length) {
             case 0:
@@ -629,12 +631,12 @@ public class ConjTree implements ConjBuilder {
 
                 boolean hasConj = false, hasDisj = false;
 
-                for (var x : q) {
+                for (Term x : q) {
                     if (x instanceof Compound) {
                         if (x instanceof Neg) {
-                            var xu = x.unneg();
+                            Term xu = x.unneg();
                             if (xu.op()==CONJ) hasDisj = true;
-                            for (var y : q) {
+                            for (Term y : q) {
                                 if (y != x && !(y instanceof Neg) && y.equals(xu))
                                     return False; //simple conflict avoided
                             }
@@ -642,15 +644,15 @@ public class ConjTree implements ConjBuilder {
                             hasConj = true;
                     }
                 }
-                var simple = true;
+                boolean simple = true;
 
                 if (hasConj) {
                     ready:
-                    for (var x : q) {
+                    for (Term x : q) {
                         x = x.unneg();
                         if (x instanceof Compound && x.op() == CONJ) {
-                            var xv = x.volume();
-                            for (var y : q)
+                            int xv = x.volume();
+                            for (Term y : q)
                                 if (y != x && y.volume() < xv && x.hasAll(y.unneg().structure())) {
                                     //TODO test for disjunctive sequence contradictions
                                     boolean[] fail = {false};
@@ -662,7 +664,7 @@ public class ConjTree implements ConjBuilder {
                                         if (xx.equals(y))
                                             return true;
                                         if (xx instanceof Neg) {
-                                            var xu = xx.unneg();
+                                            Term xu = xx.unneg();
                                             if (xu instanceof Compound && xu.op() == CONJ) {
                                                 return Conj.eventOf(xu, y, +1) || Conj.eventOf(xu, y, -1);
                                             }
@@ -684,7 +686,7 @@ public class ConjTree implements ConjBuilder {
                 }
 
                 if (hasDisj) {
-                    @Nullable var qd = ConjPar.disjunctiveFactor(q, DTERNAL, B);
+                    @Nullable Term qd = ConjPar.disjunctiveFactor(q, DTERNAL, B);
                     if (qd != null)
                         return qd;
                 }
@@ -730,15 +732,15 @@ public class ConjTree implements ConjBuilder {
      */
     private @Nullable Term termSeq(TermBuilder B) {
 
-        var ss = seq.size();
+        int ss = seq.size();
 
         Term s;
         if (ss == 1) {
             //special case: degenerate sequence of 1 time point (probably @ 0)
 
 
-            var only = seq.keyValuesView().getOnly();
-            var x = only.getTwo();
+            IntObjectPair<ConjTree> only = seq.keyValuesView().getOnly();
+            ConjTree x = only.getTwo();
 
             shift = seq.keySet().min();
 
@@ -762,10 +764,10 @@ public class ConjTree implements ConjBuilder {
 
             boolean pp = !pos.isEmpty(), nn = !neg.isEmpty();
             //actual sequence
-            var events = new ConjList(ss * (1 + (pp ? pos.size() : 0) + (nn ? neg.size() : 0)));
+            ConjList events = new ConjList(ss * (1 + (pp ? pos.size() : 0) + (nn ? neg.size() : 0)));
 
-            for (var wc : seq.keyValuesView()) {
-                var x = wc.getTwo().term(B);
+            for (IntObjectPair<ConjTree> wc : seq.keyValuesView()) {
+                Term x = wc.getTwo().term(B);
                 if (x == False || x == Null) {
                     terminate(x);
                     break;
@@ -797,7 +799,7 @@ public class ConjTree implements ConjBuilder {
 
                 assert(terminal == null);
 
-                var es = events.size();
+                int es = events.size();
                 switch (es) {
                     case 0:
                         s = null; break;
@@ -845,13 +847,18 @@ public class ConjTree implements ConjBuilder {
             return addAt(at, x.term());
         else {
             if (!x.pos.isEmpty()) {
-                for (var p : x.pos) {
+                for (Term p : x.pos) {
                     if (!addParallel(p))
                         return false;
                 }
             }
             if (!x.neg.isEmpty()) {
-                return x.neg.stream().allMatch(this::addParallelNeg);
+                for (Term term : x.neg) {
+                    if (!addParallelNeg(term)) {
+                        return false;
+                    }
+                }
+                return true;
             }
         }
 //        if (x.seq!=null) {
@@ -892,8 +899,8 @@ public class ConjTree implements ConjBuilder {
 
 
     public boolean removeParallel(Iterable<Term> t) {
-        var b = false;
-        for (var x : t) {
+        boolean b = false;
+        for (Term x : t) {
             if (terminal != null)
                 return b;
             b |= removeParallel(x);

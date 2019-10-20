@@ -3,6 +3,8 @@ package jcog.learn.ntm.memory.address;
 import jcog.learn.ntm.control.Unit;
 import jcog.learn.ntm.control.UnitFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.IntStream;
@@ -68,7 +70,12 @@ public class Head
     }
 
     public static Head[] getVector(int length, UnaryOperator<Integer> constructorParamGetter) {
-        return IntStream.range(0, length).mapToObj(i -> new Head(constructorParamGetter.apply(i))).toArray(Head[]::new);
+        List<Head> list = new ArrayList<>();
+        for (int i = 0; i < length; i++) {
+            Head head = new Head(constructorParamGetter.apply(i));
+            list.add(head);
+        }
+        return list.toArray(new Head[0]);
     }
 
     public Unit get(int i) {
@@ -82,7 +89,7 @@ public class Head
             return _addVector[i - width];
         }
 
-        var width3 = width * 3;
+        int width3 = width * 3;
         if (i < width3)
         {
             return _keyVector[i - (2 * width)];

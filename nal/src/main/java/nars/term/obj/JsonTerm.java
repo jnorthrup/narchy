@@ -6,6 +6,8 @@ import nars.$;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import static nars.Op.SETe;
@@ -19,8 +21,13 @@ public enum JsonTerm { ;
     public static Term the(JsonNode j) {
 
         if (j.isArray()) {
-            var s = j.size();
-            var subterms = IntStream.range(0, s).mapToObj(i -> the(j.get(i))).toArray(Term[]::new);
+            int s = j.size();
+            List<Term> list = new ArrayList<>();
+            for (int i = 0; i < s; i++) {
+                Term the = the(j.get(i));
+                list.add(the);
+            }
+            Term[] subterms = list.toArray(new Term[0]);
             return $.p(subterms);
 
         } else if (j.isValueNode()) {
@@ -32,11 +39,11 @@ public enum JsonTerm { ;
                 throw new UnsupportedOperationException();
             }
         } else if (j.isObject()) {
-            var s = new Term[j.size()];
+            Term[] s = new Term[j.size()];
             int[] i = {0};
             j.fields().forEachRemaining(f -> {
                 Atomic k = $.quote(f.getKey());
-                var v = the(f.getValue());
+                Term v = the(f.getValue());
                 s[i[0]++] =
                         $.inh(v, k);
                         
@@ -51,7 +58,7 @@ public enum JsonTerm { ;
 
     public static Term the(String json) {
 
-        var x = Util.jsonNode(json);
+        JsonNode x = Util.jsonNode(json);
         return the(x);
 
     }

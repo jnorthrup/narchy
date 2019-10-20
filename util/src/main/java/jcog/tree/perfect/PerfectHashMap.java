@@ -71,7 +71,7 @@ public class PerfectHashMap<T>
     */
    public boolean exists( int key )
    {
-      var i = relativeIndex( key );
+       int i = relativeIndex( key );
 
       return (i >= 0 && i < values.length && values[i] != null);
    }
@@ -85,7 +85,7 @@ public class PerfectHashMap<T>
     */
    public T get( int key )
    {
-      var i = relativeIndex( key );
+       int i = relativeIndex( key );
 
       return (i < 0 || i >= values.length ? null : values[i]);
    }
@@ -109,7 +109,7 @@ public class PerfectHashMap<T>
       }
 
       T previousValue = null;
-      var i = relativeIndex( key );
+       int i = relativeIndex( key );
 
       if (i < 0)
       {
@@ -147,7 +147,7 @@ public class PerfectHashMap<T>
     */
    private void prepend( int spaces )
    {
-      var length = values.length;
+       int length = values.length;
 
       values = Arrays.copyOf( values, length + spaces );
 
@@ -201,11 +201,11 @@ public class PerfectHashMap<T>
     */
    public boolean remove( int key )
    {
-      var i = relativeIndex( key );
+       int i = relativeIndex( key );
 
       if (size == 1)
       {
-         var match = (i == 0);
+          boolean match = (i == 0);
 
          if (match)
          {
@@ -215,7 +215,7 @@ public class PerfectHashMap<T>
          return match;
       }
 
-      var valuesMax = values.length - 1;
+       int valuesMax = values.length - 1;
 
       if (i < 0 || i > valuesMax)
       {

@@ -87,8 +87,8 @@ public final class BasicStats {
     }
 
     public double fMeasure() {
-        var precision = this.precision();
-        var recall = this.recall();
+        double precision = this.precision();
+        double recall = this.recall();
         return 2 * (precision * recall) / (precision + recall);
     }
 

@@ -75,7 +75,7 @@ public class Ghost extends Entity {
 
                     if (random) {
 
-                        var dirs = getAvailableDirections();
+                        ArrayList<Direction> dirs = getAvailableDirections();
                         if (dirs.size() > 0) this.dir = dirs.get(rand.nextInt(dirs.size()));
 
                     } else if (scared || relaxed) fleeTarget();
@@ -117,7 +117,12 @@ public class Ghost extends Entity {
 
     ArrayList<Direction> getAvailableDirections() {
 
-        var dirs = Arrays.stream(Direction.values()).filter(d -> !walled(d)).collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<Direction> dirs = new ArrayList<>();
+        for (Direction d : Direction.values()) {
+            if (!walled(d)) {
+                dirs.add(d);
+            }
+        }
 
         dirs.remove(this.dir.opposite());
 
@@ -139,9 +144,15 @@ public class Ghost extends Entity {
 
     void prefer(Direction[] dirs) {
 
-        var openDirs = getAvailableDirections();
+        ArrayList<Direction> openDirs = getAvailableDirections();
 
-        var found = Arrays.stream(dirs).filter(openDirs::contains).findFirst();
+        Optional<Direction> found = Optional.empty();
+        for (Direction direction : dirs) {
+            if (openDirs.contains(direction)) {
+                found = Optional.of(direction);
+                break;
+            }
+        }
         dir = found.orElseGet(() -> this.dir);
 
     }

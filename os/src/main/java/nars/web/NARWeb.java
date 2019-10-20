@@ -48,7 +48,7 @@ public abstract class NARWeb extends EvalSocket<NAR> {
 
     @Override
     public boolean wssConnect(WebSocketConnection conn) {
-        var n = nar(conn, conn.url().getPath());
+        NAR n = nar(conn, conn.url().getPath());
         if (n != null) {
 
             //logger.info("..
@@ -97,7 +97,7 @@ public abstract class NARWeb extends EvalSocket<NAR> {
 
         NARConnection(NAR n, Off... ons) {
             this.nar = n;
-            for (var o : ons)
+            for (Off o : ons)
                 add(o);
         }
     }
@@ -127,12 +127,12 @@ public abstract class NARWeb extends EvalSocket<NAR> {
 
 //            ClientBuilder.rebuildAsync(NARWebClient.class, false);
 
-            var port = args.length > 0 ? Texts.i(args[0]) : DEFAULT_PORT;
+            int port = args.length > 0 ? Texts.i(args[0]) : DEFAULT_PORT;
 
-            var nar = NARchy.core(1);
+            NAR nar = NARchy.core(1);
             //nar.log();
 
-            var h = new HttpServer(port, new NARWeb.Single(nar));
+            HttpServer h = new HttpServer(port, new NARWeb.Single(nar));
             h.setFPS(10f);
 
             nar.startFPS(1f);
@@ -190,7 +190,7 @@ public abstract class NARWeb extends EvalSocket<NAR> {
          * create a NAR
          */
         private NAR nar(String path) {
-            var exe = nar.exe;
+            Exec exe = nar.exe;
             Exec sharedExec = new UniExec(8) {
 
 //                @Override
@@ -205,7 +205,7 @@ public abstract class NARWeb extends EvalSocket<NAR> {
 
             };
 
-            var n = new NARS().withNAL(1, 8)
+            NAR n = new NARS().withNAL(1, 8)
                     .time(new RealTime.MS()).exe(sharedExec).index(sharedIndex).get();
 
 
@@ -215,7 +215,7 @@ public abstract class NARWeb extends EvalSocket<NAR> {
 
             n.log(); //temporary
 
-            var initialFPS = 5;
+            int initialFPS = 5;
             n.startFPS(initialFPS);
 
             starting(n);
@@ -307,7 +307,7 @@ public abstract class NARWeb extends EvalSocket<NAR> {
 //                String s = buf.toString();
 //                w.send(s);
 
-                var a = Util.cborMapper.createArrayNode();
+                ArrayNode a = Util.cborMapper.createArrayNode();
                 out.clear(t -> taskify(t, a.addArray()));
                 try {
                     w.send(Util.jsonMapper.writeValueAsString(a));

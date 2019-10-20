@@ -150,7 +150,7 @@ public final class Transform extends v3 {
 	}
 	
 	public void mul(Transform tr) {
-		var vec = new v3(tr);
+        v3 vec = new v3(tr);
 		transform(vec);
 
 		basis.mul(tr.basis);
@@ -158,7 +158,7 @@ public final class Transform extends v3 {
 	}
 
 	public void mul(Transform tr1, Transform tr2) {
-		var vec = new v3(tr2);
+        v3 vec = new v3(tr2);
 		tr1.transform(vec);
 
 		basis.mul(tr1.basis, tr2.basis);
@@ -168,7 +168,7 @@ public final class Transform extends v3 {
 	public void invXform(v3 inVec, v3 out) {
 		out.sub(inVec, this);
 
-		var mat = new Matrix3f(basis);
+        Matrix3f mat = new Matrix3f(basis);
 		mat.transpose();
 		mat.transform(out);
 	}
@@ -215,13 +215,13 @@ public final class Transform extends v3 {
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (!(obj instanceof Transform)) return false;
-		var tr = (Transform)obj;
+        Transform tr = (Transform)obj;
 		return basis.equals(tr.basis) && super.equals(tr);
 	}
 
 	@Override
 	public int hashCode() {
-		var hash = 3;
+        int hash = 3;
 		hash = 41 * hash + basis.hashCode();
 		hash = 41 * hash + super.hashCode();
 		return hash;

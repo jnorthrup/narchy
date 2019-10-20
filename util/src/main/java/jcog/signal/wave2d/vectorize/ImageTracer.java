@@ -47,13 +47,13 @@ public class ImageTracer {
             } else {
 
 
-                var outfilename = args[0] + ".svg";
-                var options = new HashMap<String, Float>();
+                String outfilename = args[0] + ".svg";
+                HashMap<String, Float> options = new HashMap<String, Float>();
                 String[] parameternames = {
                         "ltres", "qtres", "pathomit", "numberofcolors", "colorquantcycles", "scale", "roundcoords", "lcpr", "qcpr", "desc", "viewbox", "outfilename", "blurammount"};
-                var j = -1;
+                int j = -1;
                 float f = -1;
-                for (var parametername : parameternames) {
+                for (String parametername : parameternames) {
                     j = arraycontains(args, parametername);
                     if (j > -1) {
                         if (parametername == "outfilename") {
@@ -70,13 +70,13 @@ public class ImageTracer {
                 }
 
 
-                var file = new File(outfilename);
+                File file = new File(outfilename);
                 
                 if (!file.exists()) {
                     file.createNewFile();
                 }
-                var fw = new FileWriter(file.getAbsoluteFile());
-                var bw = new BufferedWriter(fw);
+                FileWriter fw = new FileWriter(file.getAbsoluteFile());
+                BufferedWriter bw = new BufferedWriter(fw);
                 bw.write(imageToSVG(args[0], options));
                 bw.close();
 
@@ -89,7 +89,12 @@ public class ImageTracer {
 
 
     private static int arraycontains(String[] arr, String str) {
-        return IntStream.range(0, arr.length).filter(j -> arr[j].toLowerCase().equals(str)).findFirst().orElse(-1);
+        for (int j = 0; j < arr.length; j++) {
+            if (arr[j].toLowerCase().equals(str)) {
+                return j;
+            }
+        }
+        return -1;
     }
 
 
@@ -122,22 +127,22 @@ public class ImageTracer {
 
         protected void render(HashMap<String, Float> options, float w, float h, BiConsumer<ArrayList<Double[]>, byte[]> path) {
 
-            var zindex = new TreeMap<Double, int[]>();
+            TreeMap<Double, int[]> zindex = new TreeMap<Double, int[]>();
 
 
-            for (var k = 0; k < this.layers.size(); k++) {
+            for (int k = 0; k < this.layers.size(); k++) {
 
 
-                var lk = this.layers.get(k);
+                ArrayList<ArrayList<Double[]>> lk = this.layers.get(k);
 
-                for (var pcnt = 0; pcnt < lk.size(); pcnt++) {
+                for (int pcnt = 0; pcnt < lk.size(); pcnt++) {
 
 
-                    var lkp0 = lk.get(pcnt).get(0);
+                    Double[] lkp0 = lk.get(pcnt).get(0);
 
-                    var label = (lkp0[2] * w) + lkp0[1];
-                    var finalPcnt = pcnt;
-                    var finalK = k;
+                    double label = (lkp0[2] * w) + lkp0[1];
+                    int finalPcnt = pcnt;
+                    int finalK = k;
                     
                     zindex.computeIfAbsent(label, (l)-> new int[] {finalK, finalPcnt} );
                 }
@@ -148,8 +153,8 @@ public class ImageTracer {
 
             
             
-            for (var entry : zindex.entrySet()) {
-                var v = entry.getValue();
+            for (Map.Entry<Double, int[]> entry : zindex.entrySet()) {
+                int[] v = entry.getValue();
                 path.accept(this.layers.get(v[0]).get(v[1]), this.palette[v[0]]);
             }
 
@@ -161,8 +166,8 @@ public class ImageTracer {
             
             float w = (int) (this.width * options.get("scale")), h = (int) (this.height * options.get("scale"));
 
-            var viewboxorviewport = options.get("viewbox") != 0 ? "viewBox=\"0 0 " + w + ' ' + h + "\" " : "width=\"" + w + "\" height=\"" + h + "\" ";
-            var svgstr = new StringBuilder("<svg " + viewboxorviewport + "version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" ");
+            String viewboxorviewport = options.get("viewbox") != 0 ? "viewBox=\"0 0 " + w + ' ' + h + "\" " : "width=\"" + w + "\" height=\"" + h + "\" ";
+            StringBuilder svgstr = new StringBuilder("<svg " + viewboxorviewport + "version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" ");
             if (options.get("desc") != 0) {
                 svgstr.append("desc=\"Created with ImageTracer.java version ").append(ImageTracer.versionnumber).append("\" ");
             }
@@ -197,19 +202,19 @@ public class ImageTracer {
     }
 
     private static byte[][] getPalette(BufferedImage image, Map<String, Float> options) {
-        var numberofcolors = options.get("numberofcolors").intValue();
-        var pixels = new int[image.getWidth()][image.getHeight()];
+        int numberofcolors = options.get("numberofcolors").intValue();
+        int[][] pixels = new int[image.getWidth()][image.getHeight()];
 
-        for (var i = 0; i < image.getWidth(); i++)
-            for (var j = 0; j < image.getHeight(); j++) {
+        for (int i = 0; i < image.getWidth(); i++)
+            for (int j = 0; j < image.getHeight(); j++) {
                 pixels[i][j] = image.getRGB(i, j);
             }
-        var palette = Quantize.quantizeImage(pixels, numberofcolors);
-        var bytepalette = new byte[numberofcolors][4];
+        int[] palette = Quantize.quantizeImage(pixels, numberofcolors);
+        byte[][] bytepalette = new byte[numberofcolors][4];
 
-        for (var i = 0; i < palette.length; i++) {
+        for (int i = 0; i < palette.length; i++) {
             //TODO use Bitmap2D decode... functions rather than new Color
-            var c = new Color(palette[i]);
+            Color c = new Color(palette[i]);
             bytepalette[i][0] = (byte) c.getRed();
             bytepalette[i][1] = (byte) c.getGreen();
             bytepalette[i][2] = (byte) c.getBlue();
@@ -228,7 +233,7 @@ public class ImageTracer {
     private static String imageToSVG(String filename, HashMap<String, Float> options) throws Exception {
 
 
-        var o = checkoptions(options);
+        HashMap<String, Float> o = checkoptions(options);
 
         return new ImageData(ImageIO.read(new File(filename)))
                 .trace(o)
@@ -322,10 +327,10 @@ public class ImageTracer {
             this.image = image;
             this.width = image.getWidth();
             this.height = image.getHeight();
-            var rawdata = image.getRGB(0, 0, width, height, null, 0, width);
-            var data = new byte[rawdata.length * 4];
-            for (var i = 0; i < rawdata.length; i++) {
-                var r = rawdata[i];
+            int[] rawdata = image.getRGB(0, 0, width, height, null, 0, width);
+            byte[] data = new byte[rawdata.length * 4];
+            for (int i = 0; i < rawdata.length; i++) {
+                int r = rawdata[i];
                 data[(i * 4) + 3] = bytetrans((byte) (r >>> 24));
                 data[(i * 4)] = bytetrans((byte) (r >>> 16));
                 data[(i * 4) + 1] = bytetrans((byte) (r >>> 8));
@@ -337,16 +342,16 @@ public class ImageTracer {
 
         public IndexedImage trace(HashMap<String, Float> options) {
 
-            var palette = getPalette(image, options);
+            byte[][] palette = getPalette(image, options);
 
 
-            var ii = VectorizingUtils.colorquantization(this, palette, options);
+            IndexedImage ii = VectorizingUtils.colorquantization(this, palette, options);
 
-            var rawlayers = VectorizingUtils.layering(ii);
+            int[][][] rawlayers = VectorizingUtils.layering(ii);
 
-            var bps = VectorizingUtils.batchpathscan(rawlayers, (int) (Math.floor(options.get("pathomit"))));
+            ArrayList<ArrayList<ArrayList<Integer[]>>> bps = VectorizingUtils.batchpathscan(rawlayers, (int) (Math.floor(options.get("pathomit"))));
 
-            var bis = VectorizingUtils.batchinternodes(bps);
+            ArrayList<ArrayList<ArrayList<Double[]>>> bis = VectorizingUtils.batchinternodes(bps);
             
             ii.layers = VectorizingUtils.batchtracelayers(bis, options.get("ltres"), options.get("qtres"));
             return ii;

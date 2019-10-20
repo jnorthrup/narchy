@@ -24,6 +24,7 @@
 package jcog.data.graph.path;
 
 import jcog.data.graph.MapNodeGraph;
+import jcog.data.graph.Node;
 import jcog.data.list.FasterList;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 
@@ -57,7 +58,7 @@ public abstract class AbstractPath<N, E> implements Path<N, E> {
         if (Math.abs(beginIndex - endIndex) > 1)
             throw new IllegalArgumentException("distance beginIndex .. endIndex > 1");
 
-        var ed = edges(
+        List<E> ed = edges(
                 Math.min(beginIndex, endIndex),
                 Math.max(beginIndex, endIndex)
         );
@@ -72,27 +73,27 @@ public abstract class AbstractPath<N, E> implements Path<N, E> {
             return clone().clear();
         }
 
-        var ncnt = nodeCount();
+        int ncnt = nodeCount();
         if (ncnt == 0) {
             return clone().clear();
         }
 
-        var andiff = Math.abs(beginIdx - endExc);
+        int andiff = Math.abs(beginIdx - endExc);
 
         if (andiff == 1) {
-            var minidx = Math.min(beginIdx, endExc);
+            int minidx = Math.min(beginIdx, endExc);
             if (minidx < 0 || minidx >= ncnt)
                 return clone().clear();
 
             return spawn(node(minidx));
         }
 
-        var edges = fetch(beginIdx, endExc);
+        List<FromTo<Node<N, E>, E>> edges = fetch(beginIdx, endExc);
 
-        var path = clone().clear();
+        Path<N, E> path = clone().clear();
 
         if (edges != null) {
-            var esize = edges.size();
+            int esize = edges.size();
 
             if (esize == 1) {
                 path = path.
@@ -104,7 +105,7 @@ public abstract class AbstractPath<N, E> implements Path<N, E> {
                         spawn(edges.get(0).from().id()).
                         append(edges.get(0).id(), edges.get(0).to().id())
                 ;
-                for (var ei = 1; ei < esize; ei++) {
+                for (int ei = 1; ei < esize; ei++) {
                     path = path.append(edges.get(ei).id(), edges.get(ei).to().id());
                 }
             }
@@ -117,18 +118,18 @@ public abstract class AbstractPath<N, E> implements Path<N, E> {
     public List<Path<N, E>> cycles() {
 
         Map<N, IntArrayList> nposmap = new LinkedHashMap<>();
-        for (var ni = 0; ni < nodeCount(); ni++) {
-            var na = node(ni);
-            var npos = nposmap.computeIfAbsent(na, k -> new IntArrayList());
+        for (int ni = 0; ni < nodeCount(); ni++) {
+            N na = node(ni);
+            IntArrayList npos = nposmap.computeIfAbsent(na, k -> new IntArrayList());
             npos.add(ni);
         }
 
         List<Path<N, E>> list = new FasterList<>();
-        for (var en : nposmap.entrySet()) {
-            var npos = en.getValue();
+        for (Map.Entry<N, IntArrayList> en : nposmap.entrySet()) {
+            IntArrayList npos = en.getValue();
             if (npos.size() > 1) {
-                var from = npos.get(0);
-                var to = npos.get(npos.size() - 1);
+                int from = npos.get(0);
+                int to = npos.get(npos.size() - 1);
                 if (from < to) {
                     list.add(subPath(from, to + 1));
                 }

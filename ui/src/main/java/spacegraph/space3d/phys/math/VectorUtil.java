@@ -34,8 +34,8 @@ import spacegraph.util.math.Vector4f;
 public class VectorUtil {
 
 	public static int maxAxis(v3 v) {
-		var maxIndex = -1;
-		var maxVal = -1e30f;
+        int maxIndex = -1;
+        float maxVal = -1e30f;
 		if (v.x > maxVal) {
 			maxIndex = 0;
 			maxVal = v.x;
@@ -53,8 +53,8 @@ public class VectorUtil {
 	}
 	
 	private static int maxAxis4(Vector4f v) {
-		var maxIndex = -1;
-		var maxVal = -1e30f;
+        int maxIndex = -1;
+        float maxVal = -1e30f;
 		if (v.x > maxVal) {
 			maxIndex = 0;
 			maxVal = v.x;
@@ -76,7 +76,7 @@ public class VectorUtil {
 	}
 
 	public static int closestAxis4(Vector4f vec) {
-		var tmp = new Vector4f(vec);
+        Vector4f tmp = new Vector4f(vec);
 		tmp.absolute();
 		return maxAxis4(tmp);
 	}
@@ -109,7 +109,7 @@ public class VectorUtil {
 	}
 
 	public static void lerp(v3 ab, v3 a, v3 b, float x) {
-		var y = 1f - x;
+        float y = 1f - x;
 		ab.set(
 		y * a.x + x * b.x,
 		y * a.y + x * b.y,
@@ -192,7 +192,7 @@ public class VectorUtil {
 	}
 
 	public static void normalize3(Vector4f v) {
-		var norm = (float)(1.0/ Math.sqrt(v.x*v.x + v.y*v.y + v.z*v.z));
+        float norm = (float)(1.0/ Math.sqrt(v.x*v.x + v.y*v.y + v.z*v.z));
 		v.x *= norm;
 		v.y *= norm;
 		v.z *= norm;

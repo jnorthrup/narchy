@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -59,9 +60,9 @@ public class NARHear extends Loop {
 
     public static Loop hearText(NAR nar, String msg, String src, int wordDelayMS, float pri) {
         assert (wordDelayMS > 0);
-        var tokens = tokenize(msg);
+        List<Term> tokens = tokenize(msg);
         if (!tokens.isEmpty()) {
-            var hear = new NARHear(nar, tokens, src, wordDelayMS);
+            NARHear hear = new NARHear(nar, tokens, src, wordDelayMS);
             hear.priorityFactor = pri;
             return hear;
         } else {
@@ -102,7 +103,7 @@ public class NARHear extends Loop {
         }
             
             Term prev = null;
-            for (var x : msg) {
+            for (Term x : msg) {
                 hear(prev, x);
                 prev = x;
             }
@@ -116,7 +117,11 @@ public class NARHear extends Loop {
 
 
     public static @NotNull List<Term> tokenize(String msg) {
-        var list = Twokenize.tokenize(msg).stream().map(Twenglish::spanToTerm).collect(Collectors.toList());
+        List<Term> list = new ArrayList<>();
+        for (Twokenize.Span span : Twokenize.tokenize(msg)) {
+            Term term = Twenglish.spanToTerm(span);
+            list.add(term);
+        }
         return list;
     }
 
@@ -137,12 +142,12 @@ public class NARHear extends Loop {
 
     private void hear(Term prev, Term next) {
 
-        var term =
+        Term term =
                 context != null ?
                         $.func("hear", next, context) :
                         $.func("hear", next);
 
-        var now = nar.time();
+        long now = nar.time();
 		//            new TruthletTask(
 		//                target,
 		//                BELIEF,
@@ -160,7 +165,7 @@ public class NARHear extends Loop {
     public static void readURL(NAR nar) {
         nar.setOp(Atomic.atom("readURL"), (t, n) -> {
 
-            var args = Functor.args(t.term()).arrayClone();
+            Term[] args = Functor.args(t.term()).arrayClone();
             try {
 
 
@@ -176,10 +181,10 @@ public class NARHear extends Loop {
     public static @NotNull Task readURL(NAR n, String url) throws IOException {
 
 
-        var html = com.google.common.io.Resources.toString(new URL(url), Charset.defaultCharset());
+        String html = com.google.common.io.Resources.toString(new URL(url), Charset.defaultCharset());
 
         html = StringEscapeUtils.unescapeHtml4(html);
-        var strippedText = html.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ").toLowerCase();
+        String strippedText = html.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ").toLowerCase();
 
 
         NARHear.hear(n, strippedText, url, 250, 0.1f);

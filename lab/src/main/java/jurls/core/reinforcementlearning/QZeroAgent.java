@@ -19,7 +19,9 @@ package jurls.core.reinforcementlearning;
     import jurls.core.utils.ActionValuePair;
     import jurls.core.utils.Utils;
 
+    import java.util.ArrayList;
     import java.util.Arrays;
+    import java.util.List;
     import java.util.stream.IntStream;
 
     /**
@@ -50,8 +52,8 @@ public class QZeroAgent extends LearnerAndActor {
     @Override
     public int learnAndAction(double[] state, double reward, double[] previousState, int previousAction) {
         Utils.join(stateAction, previousState, previousAction);
-        var q0 = parameterizedFunction.value(stateAction);
-        var q = q0 + rLParameters.getAlpha() * (reward
+        double q0 = parameterizedFunction.value(stateAction);
+        double q = q0 + rLParameters.getAlpha() * (reward
                 + this.rLParameters.getGamma() * Utils.v(
                         parameterizedFunction,
                         stateAction,
@@ -65,20 +67,25 @@ public class QZeroAgent extends LearnerAndActor {
     }
 
     public ActionValuePair[] getActionProbabilities(double[] state) {
-        var bound = numActions;
-        var actionValuePairs = IntStream.range(0, bound).mapToObj(i -> new ActionValuePair(
-                i, Utils.q(parameterizedFunction, stateAction, state, i)
-        )).toArray(ActionValuePair[]::new);
+        int bound = numActions;
+        List<ActionValuePair> list = new ArrayList<>();
+        for (int i = 0; i < bound; i++) {
+            ActionValuePair actionValuePair = new ActionValuePair(
+                    i, Utils.q(parameterizedFunction, stateAction, state, i)
+            );
+            list.add(actionValuePair);
+        }
+        ActionValuePair[] actionValuePairs = list.toArray(new ActionValuePair[0]);
 
         return actionSelector.fromQValuesToProbabilities(rLParameters.getEpsilon(), actionValuePairs);
     }
 
     public int chooseAction(double[] state) {
-        var actionProbabilityPairs = getActionProbabilities(state);
+        ActionValuePair[] actionProbabilityPairs = getActionProbabilities(state);
         Arrays.sort(actionProbabilityPairs, (o1, o2) -> (int) Math.signum(o1.getV() - o2.getV()));
 
-        var x = Math.random();
-        var i = -1;
+        double x = Math.random();
+        int i = -1;
 
         while (x > 0) {
             ++i;
@@ -90,7 +97,7 @@ public class QZeroAgent extends LearnerAndActor {
 
     @Override
     public String getDebugString(int indent) {
-        var ind = Utils.makeIndent(indent);
+        String ind = Utils.makeIndent(indent);
         return ind + "Q(0)\n" + super.getDebugString(indent);
     }
 

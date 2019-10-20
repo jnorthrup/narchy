@@ -67,26 +67,26 @@ public class Add extends UGen {
     @Override
     public void gen() {
         if (adderUGen == null) {
-            for (var j = 0; j < outs; j++) {
-                var bi = bufIn[j];
-                var bo = bufOut[j];
-                for (var i = 0; i < bufferSize; i++) {
+            for (int j = 0; j < outs; j++) {
+                float[] bi = bufIn[j];
+                float[] bo = bufOut[j];
+                for (int i = 0; i < bufferSize; i++) {
                     bo[i] = bi[i] + adder;
                 }
             }
         } else {
             adderUGen.update();
             if (outs == 1) {
-                var bi = bufIn[0];
-                var bo = bufOut[0];
-                for (var i = 0; i < bufferSize; i++) {
+                float[] bi = bufIn[0];
+                float[] bo = bufOut[0];
+                for (int i = 0; i < bufferSize; i++) {
                     adder = adderUGen.getValue(0, i);
                     bo[i] = bi[i] + adder;
 
                 }
             } else {
-                for (var i = 0; i < bufferSize; i++) {
-                    for (var j = 0; j < outs; j++) {
+                for (int i = 0; i < bufferSize; i++) {
+                    for (int j = 0; j < outs; j++) {
                         adder = adderUGen.getValue(0, i);
                         bufOut[j][i] = bufIn[j][i] + adder;
                     }

@@ -53,8 +53,8 @@ public class CharacterAssembly extends Assembly {
 		if (delimiter.isEmpty()) {
 			return string.substring(0, elementsConsumed());
 		}
-		var buf = new StringBuilder();
-		for (var i = 0; i < elementsConsumed(); i++) {
+        StringBuilder buf = new StringBuilder();
+		for (int i = 0; i < elementsConsumed(); i++) {
 			if (i > 0) {
 				buf.append(delimiter);
 			}
@@ -125,8 +125,8 @@ public class CharacterAssembly extends Assembly {
 		if (delimiter.isEmpty()) {
 			return string.substring(elementsConsumed());
 		}
-		var buf = new StringBuilder();
-		for (var i = elementsConsumed(); i < string.length(); i++) {
+        StringBuilder buf = new StringBuilder();
+		for (int i = elementsConsumed(); i < string.length(); i++) {
 
 			if (i > elementsConsumed()) {
 				buf.append(delimiter);

@@ -22,7 +22,7 @@ import static nars.time.Tense.DTERNAL;
 public final class Fragment extends LightCompound {
 
     public static Term fragment(SortedSet<Term> x) {
-        var num = x.size();
+        int num = x.size();
         switch (num) {
             case 0:
                 return empty;
@@ -33,7 +33,7 @@ public final class Fragment extends LightCompound {
         }
     }
     public static Term fragment(/*@NotNull*/ Subterms y, int from, int to) {
-        var len = to-from;
+        int len = to-from;
         switch (len) {
             case 0:
                 return Fragment.empty;
@@ -79,18 +79,18 @@ public final class Fragment extends LightCompound {
 
     public static Term matchedExcept(Subterms matched, int[] except) {
 
-        var ll = matched.subs();
+        int ll = matched.subs();
         if (except.length == ll-1) {
             //choose only the unmatched subterm
-            for (var i = 0; i < ll; i++) {
+            for (int i = 0; i < ll; i++) {
                 if (ArrayUtil.indexOf(except, i)==-1)
                     return matched.sub(i);
             }
             throw new NullPointerException();
 
         } else {
-            var t = new Term[ll - except.length];
-            var j = 0;
+            Term[] t = new Term[ll - except.length];
+            int j = 0;
             for (byte i = 0; i < ll; i++) {
                 if (ArrayUtil.indexOf(except, i)==-1)
                     t[j++] = matched.sub(i);
@@ -101,16 +101,16 @@ public final class Fragment extends LightCompound {
     }
 
     public static @Nullable Term matchedExcept(Term[] matched, int... except) {
-        var ll = matched.length;
-        var ee = except.length;
-        var ml = ll - ee;
+        int ll = matched.length;
+        int ee = except.length;
+        int ml = ll - ee;
 
-        var t = new Term[ml];
+        Term[] t = new Term[ml];
 
-        var j = 0;
+        int j = 0;
         main:
-        for (var i = 0; i < ll; i++) {
-            for (var anExcept : except)
+        for (int i = 0; i < ll; i++) {
+            for (int anExcept : except)
                 if (i == anExcept)
                     continue main;
 
@@ -128,12 +128,17 @@ public final class Fragment extends LightCompound {
 
 
     public boolean linearMatch(Subterms y, int from, /*@NotNull*/ Unify subst) {
-        var s = subs();
+        int s = subs();
 
         if (s + from > y.subs())
             return false;
 
-        return IntStream.range(0, s).allMatch(i -> y.sub(i + from).unify(sub(i), subst));
+        for (int i = 0; i < s; i++) {
+            if (!y.sub(i + from).unify(sub(i), subst)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 

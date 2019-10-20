@@ -86,20 +86,20 @@ public class ClauseInfo {
     public String toString(PrologOperators op) {
         int p;
         if ((p = op.opPrio(":-xfx")) >= PrologOperators.OP_LOW) {
-            var st = indentPredicatesAsArgX(clause.sub(1), op, p);
-            var head = clause.sub(0).toStringAsArgX(op, p);
+            String st = indentPredicatesAsArgX(clause.sub(1), op, p);
+            String head = clause.sub(0).toStringAsArgX(op, p);
             return "true".equals(st) ? head + ".\n" : head + " :-\n\t" + st + ".\n";
         }
 
         if ((p = op.opPrio(":-yfx")) >= PrologOperators.OP_LOW) {
-            var st = indentPredicatesAsArgX(clause.sub(1), op, p);
-            var head = clause.sub(0).toStringAsArgY(op, p);
+            String st = indentPredicatesAsArgX(clause.sub(1), op, p);
+            String head = clause.sub(0).toStringAsArgY(op, p);
             return "true".equals(st) ? head + ".\n" : head + " :-\n\t" + st + ".\n";
         }
 
         if ((p = op.opPrio(":-xfy")) >= PrologOperators.OP_LOW) {
-            var st = indentPredicatesAsArgY(clause.sub(1), op, p);
-            var head = clause.sub(0).toStringAsArgX(op, p);
+            String st = indentPredicatesAsArgY(clause.sub(1), op, p);
+            String head = clause.sub(0).toStringAsArgX(op, p);
             return "true".equals(st) ? head + ".\n" : head + " :-\n\t" + st + ".\n";
         }
         return (clause.toString());
@@ -112,19 +112,19 @@ public class ClauseInfo {
      * @param idExecCtx Current ExecutionContext id
      */
     void copyTo(int idExecCtx, PrologContext target) {
-        var v = new IdentityHashMap<Var, Var>();
+        IdentityHashMap<Var, Var> v = new IdentityHashMap<Var, Var>();
 
-        var headCopy = (Struct) head.copy(v, idExecCtx);
+        Struct headCopy = (Struct) head.copy(v, idExecCtx);
         target.headClause = headCopy;
 
-        var bodyCopy = new SubGoalTree();
+        SubGoalTree bodyCopy = new SubGoalTree();
         bodyCopy(body, bodyCopy, v, idExecCtx);
         target.goalsToEval = new SubGoalStore(bodyCopy);
 
     }
 
     private static void bodyCopy(SubGoalTree source, SubGoalTree destination, AbstractMap<Var, Var> map, int id) {
-        for (var s : source) {
+        for (SubTree s : source) {
             if (s.isLeaf()) {
                 destination.add(((Term) s).copy(map, id));
             } else {
@@ -136,7 +136,7 @@ public class ClauseInfo {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        var ci = (ClauseInfo) obj;
+        ClauseInfo ci = (ClauseInfo) obj;
         return head.equals(ci.head) && body.equals(ci.body) && clause.equals(ci.clause);
     }
 
@@ -145,13 +145,13 @@ public class ClauseInfo {
      */
     public String toString() {
 
-        var st = indentPredicates(clause.sub(1));
+        String st = indentPredicates(clause.sub(1));
         return (clause.sub(0) + " :-\n\t" + st + ".\n");
     }
 
     private static String indentPredicates(Term t) {
         if (t instanceof Struct) {
-            var co = (Struct) t;
+            Struct co = (Struct) t;
             return ",".equals(co.name()) ? co.sub(0) + ",\n\t" + indentPredicates(co.sub(1)) : t.toString();
         } else {
             return t.toString();
@@ -190,10 +190,10 @@ public class ClauseInfo {
 
     private static String indentPredicatesAsArgX(Term t, PrologOperators op, int p) {
         if (t instanceof Struct) {
-            var co = (Struct) t;
+            Struct co = (Struct) t;
             if (",".equals(co.name())) {
-                var prio = op.opPrio(",xfy");
-                var sb = new StringBuilder(prio >= p ? "(" : "");
+                int prio = op.opPrio(",xfy");
+                StringBuilder sb = new StringBuilder(prio >= p ? "(" : "");
                 sb.append(co.sub(0).toStringAsArgX(op, prio));
                 sb.append(",\n\t");
                 sb.append(indentPredicatesAsArgY(co.sub(1), op, prio));
@@ -211,10 +211,10 @@ public class ClauseInfo {
 
     private static String indentPredicatesAsArgY(Term t, PrologOperators op, int p) {
         if (t instanceof Struct) {
-            var co = (Struct) t;
+            Struct co = (Struct) t;
             if (",".equals(co.name())) {
-                var prio = op.opPrio(",xfy");
-                var sb = new StringBuilder(prio > p ? "(" : "");
+                int prio = op.opPrio(",xfy");
+                StringBuilder sb = new StringBuilder(prio > p ? "(" : "");
                 sb.append(co.sub(0).toStringAsArgX(op, prio));
                 sb.append(",\n\t");
                 sb.append(indentPredicatesAsArgY(co.sub(1), op, prio));

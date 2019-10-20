@@ -54,7 +54,7 @@ public class FasterList<X> extends FastList<X> {
 
     public FasterList(Iterable<X> copy, int sizeEstimate) {
         super(sizeEstimate);
-        for (var x : copy) {
+        for (X x : copy) {
             add(x);
         }
     }
@@ -68,7 +68,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public FasterList(Collection<X> copy, IntFunction<X[]> arrayBuilder, int extraCapacity) {
-        var size = copy.size();
+        int size = copy.size();
         this.items = copy.toArray(arrayBuilder.apply(size + extraCapacity));
         this.size = size;
     }
@@ -140,12 +140,12 @@ public class FasterList<X> extends FastList<X> {
 
     @Override
     public void ensureCapacity(int minCapacity) {
-        var oldCapacity = this.items.length;
+        int oldCapacity = this.items.length;
         if (minCapacity > oldCapacity) {
             if (oldCapacity == 0) {
                 items = newArray(minCapacity);
             } else {
-                var newCapacity = Math.max(sizePlusFiftyPercent(oldCapacity), minCapacity);
+                int newCapacity = Math.max(sizePlusFiftyPercent(oldCapacity), minCapacity);
                 this.transferItemsToNewArrayWithCapacity(newCapacity);
             }
         }
@@ -199,8 +199,8 @@ public class FasterList<X> extends FastList<X> {
      * pop()
      */
     public X removeLast() {
-        var ii = this.items;
-        var x = ii[--size];
+        X[] ii = this.items;
+        X x = ii[--size];
         ii[size] = null;
         return x;
     }
@@ -209,7 +209,7 @@ public class FasterList<X> extends FastList<X> {
      * pop()
      */
     public void removeLastFast() {
-        var ii = this.items;
+        X[] ii = this.items;
         size--;
         ii[size] = null;
     }
@@ -232,8 +232,8 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public @Nullable X get(Random random) {
-        var s = this.size;
-        var ii = this.items;
+        int s = this.size;
+        X[] ii = this.items;
         switch (s) {
             case 0:
                 return null;
@@ -247,7 +247,7 @@ public class FasterList<X> extends FastList<X> {
     public final @Nullable X getSafe(int index) {
         if (index < 0)
             return null;
-        var items = this.items;
+        X[] items = this.items;
         if (items!=null && index < Math.min(items.length, this.size)) {
             return items[index];
         } else {
@@ -260,10 +260,15 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public int indexOf(int atOrAfter, Predicate<X> p) {
-        var s = size;
+        int s = size;
         if (s > 0) {
-            var items = this.items;
-            return IntStream.range(Math.max(0, atOrAfter), s).filter(i -> p.test(items[i])).findFirst().orElse(-1);
+            X[] items = this.items;
+            for (int i = Math.max(0, atOrAfter); i < s; i++) {
+                if (p.test(items[i])) {
+                    return i;
+                }
+            }
+            return -1;
         }
         return -1;
     }
@@ -273,9 +278,14 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public int indexOf(int atOrAfter, IntPredicate p) {
-        var s = size;
+        int s = size;
         if (s > 0) {
-            return IntStream.range(Math.max(0, atOrAfter), s).filter(p).findFirst().orElse(-1);
+            for (int i = Math.max(0, atOrAfter); i < s; i++) {
+                if (p.test(i)) {
+                    return i;
+                }
+            }
+            return -1;
         }
         return -1;
     }
@@ -286,19 +296,29 @@ public class FasterList<X> extends FastList<X> {
         if (object == null)
             return indexOfInstance(null);
 
-        var s = size;
+        int s = size;
         if (s > 0) {
-            var items = this.items;
-            return IntStream.range(0, s).filter(i -> object.equals(items[i])).findFirst().orElse(-1);
+            X[] items = this.items;
+            for (int i = 0; i < s; i++) {
+                if (object.equals(items[i])) {
+                    return i;
+                }
+            }
+            return -1;
         }
         return -1;
     }
 
     public int indexOfInstance(/*@NotNull*/ Object x) {
-        var s = size;
+        int s = size;
         if (s > 0) {
-            var items = this.items;
-            return IntStream.range(0, s).filter(i -> items[i] == x).findFirst().orElse(-1);
+            X[] items = this.items;
+            for (int i = 0; i < s; i++) {
+                if (items[i] == x) {
+                    return i;
+                }
+            }
+            return -1;
         }
         return -1;
     }
@@ -325,7 +345,7 @@ public class FasterList<X> extends FastList<X> {
 
     @Override
     public void trimToSize() {
-        var s = this.size;
+        int s = this.size;
         if (items.length!= s) {
             this.items = s == 0 ? (X[]) ArrayUtil.EMPTY_OBJECT_ARRAY : Arrays.copyOf(this.items, s);
         }
@@ -333,7 +353,7 @@ public class FasterList<X> extends FastList<X> {
 
     @Override
     public X[] toArray() {
-        var s = this.size;
+        int s = this.size;
         //return s > 0 ? Arrays.copyOf(items, s) : (X[]) ArrayUtil.EMPTY_OBJECT_ARRAY;
         return Arrays.copyOf(items, s);
     }
@@ -344,9 +364,9 @@ public class FasterList<X> extends FastList<X> {
      */
     public final <Y> Y[] array(IntFunction<Y[]> arrayBuilder) {
         Object[] i = items;
-        var s = size;
+        int s = size;
         if (i.length != s || i.getClass() == Object[].class) {
-            var x = arrayBuilder.apply(s);
+            Y[] x = arrayBuilder.apply(s);
             if (s > 0)
                 System.arraycopy(items, 0, x, 0, s);
             return x;
@@ -356,10 +376,10 @@ public class FasterList<X> extends FastList<X> {
 
 
     protected final long longify(LongObjectToLongFunction<X> f, long l) {
-        var thisSize = this.size;
+        int thisSize = this.size;
         if (thisSize > 0) {
-            var ii = this.items;
-            for (var i = 0; i < thisSize; i++) {
+            X[] ii = this.items;
+            for (int i = 0; i < thisSize; i++) {
                 l = f.longValueOf(l, ii[i]);
             }
         }
@@ -371,15 +391,15 @@ public class FasterList<X> extends FastList<X> {
      * reduce
      */
     public float reapply(FloatFunction<? super X> function, FloatFloatToFloatFunction combine) {
-        var n = size;
+        int n = size;
         switch (n) {
             case 0:
                 return Float.NaN;
             case 1:
                 return function.floatValueOf(items[0]);
             default:
-                var x = function.floatValueOf(items[0]);
-                for (var i = 1; i < n; i++) {
+                float x = function.floatValueOf(items[0]);
+                for (int i = 1; i < n; i++) {
                     x = combine.apply(x, function.floatValueOf(items[i]));
                 }
                 return x;
@@ -388,15 +408,15 @@ public class FasterList<X> extends FastList<X> {
 
     public int maxIndex(Comparator<? super X> comparator) {
         Object[] array = items;
-        var size = this.size;
+        int size = this.size;
         if (size == 0) {
             return -1;
         }
 
-        var max = (X) array[0];
-        var maxIndex = 0;
-        for (var i = 1; i < size; i++) {
-            var item = (X) array[i];
+        X max = (X) array[0];
+        int maxIndex = 0;
+        for (int i = 1; i < size; i++) {
+            X item = (X) array[i];
             if (comparator.compare(item, max) > 0) {
                 max = item;
                 maxIndex = i;
@@ -406,9 +426,9 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public float maxValue(FloatFunction<? super X> function) {
-        var max = Float.NEGATIVE_INFINITY;
+        float max = Float.NEGATIVE_INFINITY;
         for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
-            var y = function.floatValueOf(this.items[i]);
+            float y = function.floatValueOf(this.items[i]);
             if (y > max)
                 max = y;
         }
@@ -416,9 +436,9 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public long minValue(ToLongFunction<? super X> function) {
-        var min = Long.MAX_VALUE;
+        long min = Long.MAX_VALUE;
         for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
-            var y = function.applyAsLong(this.items[i]);
+            long y = function.applyAsLong(this.items[i]);
             if (y < min)
                 min = y;
         }
@@ -452,10 +472,10 @@ public class FasterList<X> extends FastList<X> {
 
     @Override
     public boolean removeIf(Predicate<? super X> filter) {
-        var s = size;
-        var ps = s;
-        var a = this.items;
-        for (var i = 0; i < s; ) {
+        int s = size;
+        int ps = s;
+        X[] a = this.items;
+        for (int i = 0; i < s; ) {
             if (filter.test(a[i])) {
                 s--;
                 System.arraycopy(a, i + 1, a, i, s - i);
@@ -508,8 +528,8 @@ public class FasterList<X> extends FastList<X> {
 
     final X[] fillArray(X[] array, boolean nullRemainder) {
 
-        var l = array.length;
-        var s = Math.min(l, size);
+        int l = array.length;
+        int s = Math.min(l, size);
         System.arraycopy(items, 0, array, 0, s);
         if (nullRemainder && s < l)
             Arrays.fill(array, s, l, null);
@@ -518,11 +538,11 @@ public class FasterList<X> extends FastList<X> {
 
     @Override
     public void forEach(Consumer c) {
-        var s = size;
+        int s = size;
         if (s > 0) {
-            var ii = items;
-            for (var i = 0; i < s; i++) {
-                var j = ii[i];
+            X[] ii = items;
+            for (int i = 0; i < s; i++) {
+                X j = ii[i];
                 if (j != null)
                     c.accept(j);
             }
@@ -537,9 +557,9 @@ public class FasterList<X> extends FastList<X> {
      * remove, but with Map.remove semantics
      */
     public X removed(/*@NotNull*/ X object) {
-        var index = this.indexOf(object);
+        int index = this.indexOf(object);
         if (index >= 0) {
-            var r = get(index);
+            X r = get(index);
             this.removeFast(index);
             return r;
         }
@@ -554,7 +574,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public void add(int index, X element) {
-        var sizeBefore = this.size;
+        int sizeBefore = this.size;
         if (index > -1 && index < sizeBefore) {
             this.addAtIndex(index, element);
         } else if (index == sizeBefore) {
@@ -565,9 +585,9 @@ public class FasterList<X> extends FastList<X> {
     }
 
     private void addAtIndex(int index, X element) {
-        var oldSize = this.size++;
+        int oldSize = this.size++;
         if (this.items.length == oldSize) {
-            var newItems = newArray(sizePlusFiftyPercent(oldSize));
+            X[] newItems = newArray(sizePlusFiftyPercent(oldSize));
             if (index > 0) {
                 System.arraycopy(this.items, 0, newItems, 0, index);
             }
@@ -593,7 +613,7 @@ public class FasterList<X> extends FastList<X> {
 
 
     public final void ensureCapacityForAdditional(int num) {
-        var ii = this.items;
+        X[] ii = this.items;
         int s = this.size + num, l = ii.length;
         if (l < s) {
             this.items =
@@ -626,7 +646,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public int forEach(int offset, IntObjectPredicate each) {
-        var n = offset;
+        int n = offset;
         for (Object j : items) {
             if (j == null)
                 break;
@@ -637,7 +657,7 @@ public class FasterList<X> extends FastList<X> {
 
     @SafeVarargs
     public final FasterList<X> addingAll(X... x) {
-        var l = x.length;
+        int l = x.length;
         if (l > 0) {
             ensureCapacityForAdditional(l);
             addAll(x);
@@ -650,8 +670,8 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public void removeFast(int index) {
-        var ii = items;
-        var totalOffset = this.size - index - 1;
+        X[] ii = items;
+        int totalOffset = this.size - index - 1;
         if (totalOffset > 0)
             System.arraycopy(ii, index + 1, ii, index, totalOffset);
         ii[--size] = null;
@@ -660,7 +680,7 @@ public class FasterList<X> extends FastList<X> {
 
     @Override
     public boolean remove(Object object) {
-        var index = this.indexOf(object);
+        int index = this.indexOf(object);
         if (index >= 0) {
             this.removeFast(index);
             return true;
@@ -675,7 +695,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public boolean containsInstance(X x) {
-        var items = this.items;
+        X[] items = this.items;
         for (int i = 0, thisSize = this.size; i < thisSize; i++) {
             if (items[i] == x)
                 return true;
@@ -689,13 +709,13 @@ public class FasterList<X> extends FastList<X> {
             return false;
 
         //TODO optimize
-        for (var i = 0; i < index; i++)
+        for (int i = 0; i < index; i++)
             remove(0);
         return true;
     }
 
     public boolean removeAbove(int index) {
-        var s = this.size;
+        int s = this.size;
         if (index >= s) {
             return false;
         } else {
@@ -738,7 +758,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public final void addAllFaster(FasterList<X> source) {
-        var s = source.size();
+        int s = source.size();
         if (s > 0) {
             this.ensureCapacityForAdditional(s);
             System.arraycopy(source.array(), 0, this.items, this.size, s);
@@ -748,15 +768,15 @@ public class FasterList<X> extends FastList<X> {
 
     public final void addFast(X[] x, int n) {
         //if (n > 0) {
-        var items = this.items;
-        var size = this.size;
+        X[] items = this.items;
+        int size = this.size;
         if (n >= 0) System.arraycopy(x, 0, items, size, n);
         this.size += n;
         //}
     }
 
     public boolean addWithoutResize(X x) {
-        var i = this.items;
+        X[] i = this.items;
         if (this.size < i.length) {
             i[this.size++] = x;
             return true;
@@ -765,7 +785,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public boolean addWithoutResize(Supplier<X> x) {
-        var i = this.items;
+        X[] i = this.items;
         if (this.size < i.length) {
             i[this.size++] = x.get();
             return true;
@@ -774,8 +794,8 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public X[] toArrayRecycled(IntFunction<X[]> ii) {
-        var a = items;
-        var s = size;
+        X[] a = items;
+        int s = size;
         if (s == a.length && a.getClass() != Object[].class)
             return a;
         else
@@ -783,7 +803,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     protected X[] toArrayCopy(@Nullable X[] target, IntFunction<X[]> ii) {
-        var s = size;
+        int s = size;
         if (s != target.length) {
             target = ii.apply(s);
         }
@@ -799,11 +819,11 @@ public class FasterList<X> extends FastList<X> {
      * @param each
      */
     public void clear(Consumer<? super X> each) {
-        var s = this.size;
+        int s = this.size;
         if (s > 0) {
-            var items = this.items;
-            for (var i = 0; i < s; i++) {
-                var ii = items[i];
+            X[] items = this.items;
+            for (int i = 0; i < s; i++) {
+                X ii = items[i];
                 if (ii != null) {
                     items[i] = null;
                     each.accept(ii);
@@ -814,11 +834,11 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public <Y> void clearWith(BiConsumer<X, Y> each, Y y) {
-        var s = this.size;
+        int s = this.size;
         if (s > 0) {
-            var items = this.items;
-            for (var i = 0; i < s; i++) {
-                var ii = items[i];
+            X[] items = this.items;
+            for (int i = 0; i < s; i++) {
+                X ii = items[i];
                 items[i] = null;
                 each.accept(ii, y);
             }
@@ -847,7 +867,7 @@ public class FasterList<X> extends FastList<X> {
 //    }
 
     public boolean clearIfChanged() {
-        var s = size;
+        int s = size;
         if (s > 0) {
             Arrays.fill(this.items, 0, s, null);
             this.size = 0;
@@ -857,7 +877,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public void reverse() {
-        var s = this.size;
+        int s = this.size;
         if (s > 1) {
             Util.reverse(items, 0, s - 1);
         }
@@ -912,7 +932,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public boolean removeFirstInstance(X x) {
-        var i = indexOfInstance(x);
+        int i = indexOfInstance(x);
         if (i != -1) {
             removeFast(i);
             return true;
@@ -927,9 +947,9 @@ public class FasterList<X> extends FastList<X> {
 
 
         MutableList<Iterable<X>> result = new FasterList((int) (Math.ceil((float) size()) / chunkSize));
-        var i = 0;
+        int i = 0;
 
-        var size = this.size();
+        int size = this.size();
         while (i < size) {
             result.add(subList(i, Math.min(i + chunkSize, this.size)));
             i += chunkSize;
@@ -953,10 +973,10 @@ public class FasterList<X> extends FastList<X> {
 
 
     public boolean removeFirst(X x) {
-        var s = this.size;
+        int s = this.size;
         if (s > 0) {
-            var ii = items;
-            for (var i = 0; i < s; i++) {
+            X[] ii = items;
+            for (int i = 0; i < s; i++) {
                 if (ii[i].equals(x)) {
                     removeFast(i);
                     return true;
@@ -971,13 +991,18 @@ public class FasterList<X> extends FastList<X> {
      */
     protected boolean nonNullEquals(FasterList<X> x) {
         if (this == x) return true;
-        var s = this.size;
+        int s = this.size;
         if (s != x.size) {
             return false;
         }
-        var a = this.items;
-        var b = x.items;
-        return IntStream.range(0, s).allMatch(i -> a[i].equals(b[i]));
+        X[] a = this.items;
+        X[] b = x.items;
+        for (int i = 0; i < s; i++) {
+            if (!a[i].equals(b[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 
 
@@ -987,10 +1012,10 @@ public class FasterList<X> extends FastList<X> {
 
     @Override
     public final <P> void forEachWith(Procedure2<? super X, ? super P> procedure, P parameter) {
-        var s = this.size;
+        int s = this.size;
         if (s > 0) {
-            var items = this.items;
-            for (var i = 0; i < s; i++)
+            X[] items = this.items;
+            for (int i = 0; i < s; i++)
                 procedure.value(items[i], parameter);
         }
     }
@@ -1006,50 +1031,75 @@ public class FasterList<X> extends FastList<X> {
     @Override
     public boolean allSatisfy(org.eclipse.collections.api.block.predicate.Predicate<? super X> predicate) {
         //return InternalArrayIterate.allSatisfy(this.items, this.size, predicate);
-        var s = size;
+        int s = size;
         if (s > 0) {
-            var items = this.items;
-            return IntStream.range(0, s).allMatch(i -> predicate.test(items[i]));
+            X[] items = this.items;
+            for (int i = 0; i < s; i++) {
+                if (!predicate.test(items[i])) {
+                    return false;
+                }
+            }
+            return true;
         }
         return true;
     }
 
     @Override
     public boolean anySatisfy(org.eclipse.collections.api.block.predicate.Predicate<? super X> predicate) {
-        var s = size;
+        int s = size;
         if (s > 0) {
-            var items = this.items;
+            X[] items = this.items;
             if (items!=null) { //if deleted
                 s = Math.min(s, items.length);
-                return IntStream.range(0, s).anyMatch(i -> predicate.accept(items[i]));
+                for (int i = 0; i < s; i++) {
+                    if (predicate.accept(items[i])) {
+                        return true;
+                    }
+                }
+                return false;
             }
         }
         return false;
     }
 
     public boolean anySatisfy(int from, int to, Predicate<? super X> predicate2) {
-        var s = size;
+        int s = size;
         if (s > 0 && s > from) {
-            var items = this.items;
-            return IntStream.range(from, to).anyMatch(i -> predicate2.test(items[i]));
+            X[] items = this.items;
+            for (int i = from; i < to; i++) {
+                if (predicate2.test(items[i])) {
+                    return true;
+                }
+            }
+            return false;
         }
         return false;
     }
 
     public <P> boolean anySatisfyWith(Predicate2<? super X, ? super P> predicate2, P parameter) {
-        var s = size;
+        int s = size;
         if (s > 0) {
-            var items = this.items;
-            return IntStream.range(0, s).anyMatch(i -> predicate2.accept(items[i], parameter));
+            X[] items = this.items;
+            for (int i = 0; i < s; i++) {
+                if (predicate2.accept(items[i], parameter)) {
+                    return true;
+                }
+            }
+            return false;
         }
         return false;
     }
 
     public <P> boolean allSatisfyWith(Predicate2<? super X, ? super P> predicate2, P parameter) {
-        var s = size;
+        int s = size;
         if (s > 0) {
-            var items = this.items;
-            return IntStream.range(0, s).allMatch(i -> predicate2.accept(items[i], parameter));
+            X[] items = this.items;
+            for (int i = 0; i < s; i++) {
+                if (!predicate2.accept(items[i], parameter)) {
+                    return false;
+                }
+            }
+            return true;
         }
         return true;
     }

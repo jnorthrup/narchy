@@ -37,8 +37,8 @@ public class BgRenderer {
     public void setCam(int xCam, int yCam) {
         xCam /= distance;
         yCam /= distance;
-        var xCamD = this.xCam - xCam;
-        var yCamD = this.yCam - yCam;
+        int xCamD = this.xCam - xCam;
+        int yCamD = this.yCam - yCam;
         this.xCam = xCam;
         this.yCam = yCam;
 
@@ -66,13 +66,13 @@ public class BgRenderer {
     private void updateArea(int x0, int y0, int w, int h) {
         g.setBackground(transparent);
         g.clearRect(x0, y0, w, h);
-        var xTileStart = (x0 + xCam) / 32;
-        var yTileStart = (y0 + yCam) / 32;
-        var xTileEnd = (x0 + xCam + w) / 32;
-        var yTileEnd = (y0 + yCam + h) / 32;
-        for (var x = xTileStart; x <= xTileEnd; x++) {
-            for (var y = yTileStart; y <= yTileEnd; y++) {
-                var b = level.getBlock(x, y) & 0xff;
+        int xTileStart = (x0 + xCam) / 32;
+        int yTileStart = (y0 + yCam) / 32;
+        int xTileEnd = (x0 + xCam + w) / 32;
+        int yTileEnd = (y0 + yCam + h) / 32;
+        for (int x = xTileStart; x <= xTileEnd; x++) {
+            for (int y = yTileStart; y <= yTileEnd; y++) {
+                int b = level.getBlock(x, y) & 0xff;
                 g.drawImage(Art.bg[b % 8][b / 8], (x << 5) - xCam, (y << 5) - yCam - 16, null);
             }
         }

@@ -17,7 +17,7 @@ public class AwtEventsHandler {
     private class MouseWheelInputHander implements MouseWheelListener {
         @Override
         public void mouseWheelMoved(MouseWheelEvent e) {
-            var notches = e.getWheelRotation();
+            int notches = e.getWheelRotation();
             game.player.inventory.hotbarIdx += notches;
             if (game.player.inventory.hotbarIdx < 0) {
                 game.player.inventory.hotbarIdx = 0;

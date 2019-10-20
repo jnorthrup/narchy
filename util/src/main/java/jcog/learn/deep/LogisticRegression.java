@@ -15,22 +15,22 @@ public class LogisticRegression {
     }
 
     public double[] train(double[] x, double[] y, double lr) {
-        var p_y_given_x = new double[n_out];
-        var dy = new double[n_out];
+        double[] p_y_given_x = new double[n_out];
+        double[] dy = new double[n_out];
 
-        for(var i = 0; i<n_out; i++) {
+        for(int i = 0; i<n_out; i++) {
             p_y_given_x[i] = 0;
-            for(var j = 0; j<n_in; j++) {
+            for(int j = 0; j<n_in; j++) {
                 p_y_given_x[i] += W[i][j] * x[j];
             }
             p_y_given_x[i] += b[i];
         }
         softmax(p_y_given_x);
 
-        for(var i = 0; i<n_out; i++) {
+        for(int i = 0; i<n_out; i++) {
             dy[i] = y[i] - p_y_given_x[i];
 
-            for(var j = 0; j<n_in; j++) {
+            for(int j = 0; j<n_in; j++) {
                 W[i][j] += lr * dy[i] * x[j];
             }
 
@@ -42,11 +42,11 @@ public class LogisticRegression {
 
     public void softmax(double[] x) {
 
-        var seen = false;
+        boolean seen = false;
         double best = 0;
-        var bound = n_out;
-        for (var j = 0; j < bound; j++) {
-            var v = x[j];
+        int bound = n_out;
+        for (int j = 0; j < bound; j++) {
+            double v = x[j];
             if (v >= 0.0) {
                 if (!seen || Double.compare(v, best) > 0) {
                     seen = true;
@@ -54,21 +54,21 @@ public class LogisticRegression {
                 }
             }
         }
-        var max = seen ? best : 0.0;
+        double max = seen ? best : 0.0;
 
-        var sum = 0.0;
-        for(var i = 0; i<n_out; i++) {
+        double sum = 0.0;
+        for(int i = 0; i<n_out; i++) {
             x[i] = Math.exp(x[i] - max);
             sum += x[i];
         }
 
-        for(var i = 0; i<n_out; i++) x[i] /= sum;
+        for(int i = 0; i<n_out; i++) x[i] /= sum;
     }
 
     public void predict(double[] x, double[] y) {
-        for(var i = 0; i<n_out; i++) {
+        for(int i = 0; i<n_out; i++) {
             y[i] = 0.;
-            for(var j = 0; j<n_in; j++) {
+            for(int j = 0; j<n_in; j++) {
                 y[i] += W[i][j] * x[j];
             }
             y[i] += b[i];
@@ -78,12 +78,12 @@ public class LogisticRegression {
     }
 
     private static void test_lr() {
-        var learning_rate = 0.1;
-        var n_epochs = 500;
+        double learning_rate = 0.1;
+        int n_epochs = 500;
 
-        var train_N = 6;
-        var n_in = 6;
-        var n_out = 2;
+        int train_N = 6;
+        int n_in = 6;
+        int n_out = 2;
 
         double[][] train_X = {
                 {1., 1., 1., 0., 0., 0.},
@@ -104,11 +104,11 @@ public class LogisticRegression {
         };
 
 
-        var classifier = new LogisticRegression(n_in, n_out);
+        LogisticRegression classifier = new LogisticRegression(n_in, n_out);
 
         
-        for(var epoch = 0; epoch<n_epochs; epoch++) {
-            for(var i = 0; i<train_N; i++) {
+        for(int epoch = 0; epoch<n_epochs; epoch++) {
+            for(int i = 0; i<train_N; i++) {
                 classifier.train(train_X[i], train_Y[i], learning_rate);
             }
             
@@ -120,14 +120,14 @@ public class LogisticRegression {
                 {0., 0., 1., 1., 1., 0.}
         };
 
-        var test_N = 2;
-        var test_Y = new double[test_N][n_out];
+        int test_N = 2;
+        double[][] test_Y = new double[test_N][n_out];
 
 
         
-        for(var i = 0; i<test_N; i++) {
+        for(int i = 0; i<test_N; i++) {
             classifier.predict(test_X[i], test_Y[i]);
-            for(var j = 0; j<n_out; j++) {
+            for(int j = 0; j<n_out; j++) {
                 System.out.print(test_Y[i][j] + " ");
             }
             System.out.println();

@@ -9,7 +9,7 @@ import java.util.EnumSet;
 public enum EnumSwitch { ;
 
     protected static ButtonSet newSwitch(ToggleButton[] b, int i2) {
-        var editPane = new ButtonSet(ButtonSet.Mode.One, b);
+        ButtonSet editPane = new ButtonSet(ButtonSet.Mode.One, b);
 
         if (i2 != -1) {
             b[i2].on(true);
@@ -23,15 +23,15 @@ public enum EnumSwitch { ;
 
         EnumSet<C> s = EnumSet.allOf(x.klass);
 
-        var initialButton = -1;
+        int initialButton = -1;
 
-        var b = new ToggleButton[s.size()];
+        ToggleButton[] b = new ToggleButton[s.size()];
 
-        var initialValue = x.get();
+        Enum initialValue = x.get();
 
-        var i = 0;
-        for (var xx : s) {
-            var tb = new CheckBox(xx.name());
+        int i = 0;
+        for (C xx : s) {
+            CheckBox tb = new CheckBox(xx.name());
             tb.on((c, enabled) -> {
                 if (enabled)
                     x.set(xx);

@@ -28,7 +28,7 @@ public class UniVersioned<X> implements Versioned<X> {
 
     @Override
     public final String toString() {
-        var v = get();
+        X v = get();
         if (v != null)
             return v.toString();
         return "null";
@@ -47,7 +47,7 @@ public class UniVersioned<X> implements Versioned<X> {
 
     @Override
     public final boolean set(X next, /*@Nullable */Versioning<X> context) {
-        var prev = value;
+        X prev = value;
         if (prev == null) {
             if (valid(next, context) && (/*context==null || */context.add(this))) {
                 value = next;

@@ -71,7 +71,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
 
     /** request focus */
     public <W extends Widget> W focus() {
-        var r = root();
+        SurfaceGraph r = root();
         if (r!=null) {
             r.keyFocus(this);
         }
@@ -83,7 +83,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         //pri decay
         //////            1 - (float) Math.exp(-(((double) dt) / n.dur()) / memoryDuration.floatValue());
         float DECAY_PERIOD = 2; //TODO use exponential decay formula
-        var decayRate = Math.exp(-(((double) r.dtS()) / DECAY_PERIOD));
+        double decayRate = Math.exp(-(((double) r.dtS()) / DECAY_PERIOD));
         pri *= decayRate;
         //float PRI_DECAY = 0.97f; //TODO use exponential decay formula
         //pri = Util.clamp(pri * PRI_DECAY, 0, 1f);
@@ -99,11 +99,11 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
             //focused indicator
             r.on((gl)->{
                 if (focused) {
-                    var p = this.pri;
+                    float p = this.pri;
                     //float th = Math.min(b.w, b.h) * (0.1f + 0.1f * t);
                     gl.glColor4f(0.5f + 0.5f * p, 0.55f, 0.35f, 0.75f);
                     //Draw.rectFrame(b, th, gl);
-                    var th = 3 + p;
+                    float th = 3 + p;
                     Draw.rectStroke(bounds, th, gl);
                 }
             });
@@ -113,8 +113,8 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
 
 
     protected void paintWidget(RectFloat bounds, GL2 gl) {
-        var dim = 1f - (dz /* + if disabled, dim further */) / 3f;
-        var bri = 0.1f * dim;
+        float dim = 1f - (dz /* + if disabled, dim further */) / 3f;
+        float bri = 0.1f * dim;
         color.set( rgb-> Util.or(rgb,bri,pri/8), gl);
         Draw.rect(bounds, gl);
     }
@@ -125,7 +125,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         else {
             //BitmapLabel hoverLabel = new BitmapLabel(s);
             //hoverLabel.backgroundColor(0.9f, 0.5f, 0f, 0.5f);
-            var hoverLabel = new VectorLabel(s);
+            VectorLabel hoverLabel = new VectorLabel(s);
             this.hover = new MyHover(hoverLabel);
         }
         return this;
@@ -134,7 +134,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
     @Override
     public Surface finger(Finger f) {
 
-        var s = super.finger(f);
+        Surface s = super.finger(f);
         if (s == null) {
 
             if (tangible() && f.intersects(bounds)) {
@@ -146,7 +146,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
                     priAtleast(0.5f);
                 }
 
-                var h = this.hover;
+                Hover<Surface, Surface> h = this.hover;
                 if (h != null) {
                     f.test(h);
                 }
@@ -222,7 +222,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
 
         @Override
         public boolean update(Finger f) {
-            var s = model.hoverTimeS;
+            float s = model.hoverTimeS;
 //            float f1 = 0.1f + (s < 4 ? (float) Math.exp(s) : 1) * 0.2f;
             //hoverLabel.alpha(Util.clamp(f1, 0.1f, 0.5f));
             return super.update(f);
@@ -235,12 +235,12 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         @Override
         public RectFloat pos() {
             //RectFloat ss = f.globalToPixel(s.bounds);
-            var bs = f.boundsScreen;
+            RectFloat bs = f.boundsScreen;
             if (bs == null)
                 return null;
-            var scale = Math.max(bs.w, bs.h);
-            var pulse = Math.cos(hoverTimeS * 6f) * 0.05f;
-            var ss = (float) (
+            float scale = Math.max(bs.w, bs.h);
+            double pulse = Math.cos(hoverTimeS * 6f) * 0.05f;
+            float ss = (float) (
                     pulse +
                             Util.clamp(Math.exp(-hoverTimeS*4f)*1.5f, 0.25f, 2f)) *
                     scale;

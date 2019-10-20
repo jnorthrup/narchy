@@ -45,10 +45,10 @@ abstract class LicenceStore {
      * @return Licence data stored in file
      */
     public byte[] load_licence() {
-        var path = Options.licence_path + "/licence." + Options.hostname;
+        String path = Options.licence_path + "/licence." + Options.hostname;
         byte[] data = null;
         try {
-            var fd = new FileInputStream(path);
+            FileInputStream fd = new FileInputStream(path);
             data = new byte[fd.available()];
             fd.read(data);
         } catch (FileNotFoundException e) {
@@ -67,13 +67,13 @@ abstract class LicenceStore {
     public void save_licence(byte[] databytes) {
         /* set and create the directory -- if it doesn't exist. */
 
-        var dirpath = Options.licence_path;
-        var filepath = dirpath + "/licence." + Options.hostname;
+        String dirpath = Options.licence_path;
+        String filepath = dirpath + "/licence." + Options.hostname;
 
-        var file = new File(dirpath);
+        File file = new File(dirpath);
         file.mkdir();
         try {
-            var fd = new FileOutputStream(filepath);
+            FileOutputStream fd = new FileOutputStream(filepath);
 
             /* write to the licence file */
             fd.write(databytes);

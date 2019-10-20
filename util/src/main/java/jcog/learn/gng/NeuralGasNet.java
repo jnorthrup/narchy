@@ -123,7 +123,7 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
     }
 
     public void forEachNode(Consumer<N> each) {
-        for (var n : centroids)
+        for (Centroid n : centroids)
             each.accept((N) n);
     }
 
@@ -131,7 +131,7 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
         edges.clear();
 
         /** nodes should begin with randomized coordinates */
-        for (var i = 0; i < centroids.length; i++) {
+        for (int i = 0; i < centroids.length; i++) {
             this.centroids[i] = newCentroid(i, dimension);
         }
     }
@@ -142,11 +142,11 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
 
     public N closest(double[] x) {
 
-        var minDistSq = Double.POSITIVE_INFINITY;
+        double minDistSq = Double.POSITIVE_INFINITY;
         Centroid closest = null;
 
 
-        for (var n : centroids) {
+        for (Centroid n : centroids) {
             double dist;
             if ((dist = distanceSq.distance(n.getDataRef(), x)) < minDistSq) {
                 closest = n;
@@ -163,7 +163,7 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
         //double[] err = new double[dimension];
 
         for (int i1 = 0, centroidsLength = centroids.length; i1 < centroidsLength; i1++) {
-            var n = centroids[i1];
+            Centroid n = centroids[i1];
             if (n.active()) {
                 if (b == null) {
                     b = new MutableHyperRectDouble(new DoubleND(n.toArray()));
@@ -183,7 +183,7 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
      * translates all nodes uniformly
      */
     public void translate(double[] x) {
-        for (var n : centroids) {
+        for (Centroid n : centroids) {
             n.add(x);
         }
     }
@@ -195,24 +195,24 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
         if (x.length != dimension)
             throw new ArrayIndexOutOfBoundsException();
 
-        var alpha = this.alpha.floatValue();
+        float alpha = this.alpha.floatValue();
         if (alpha < ScalarValue.EPSILON || lambdaPeriod == 0)
             return null;
 
 
-        var minDist = Double.POSITIVE_INFINITY;
-        var maxDist = Double.NEGATIVE_INFINITY;
+        double minDist = Double.POSITIVE_INFINITY;
+        double maxDist = Double.NEGATIVE_INFINITY;
         short closest = -1;
         short furthest = -1;
 
 
-        var nodes = maxNodes;
+        int nodes = maxNodes;
 
 
         for (short j = 0; j < nodes; j++) {
-            var nj = this.centroids[j];
+            Centroid nj = this.centroids[j];
 
-            var dd = nj.learn(x, distanceSq);
+            double dd = nj.learn(x, distanceSq);
 
             if (j == 0) {
                 furthest = closest = j;
@@ -229,14 +229,14 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
             }
         }
 
-        var minDist2 = Double.POSITIVE_INFINITY;
+        double minDist2 = Double.POSITIVE_INFINITY;
         short nextClosestNode = -1;
         for (short j = 0; j < nodes; j++) {
-            var n = this.centroids[j];
+            Centroid n = this.centroids[j];
             if (n == null)
                 continue;
             if (j == closest) continue;
-            var dd = n.localDistanceSq();
+            double dd = n.localDistanceSq();
             if (dd < minDist2) {
                 nextClosestNode = j;
                 minDist2 = dd;
@@ -272,9 +272,9 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
 
             short maxErrorID = -1;
             {
-                var maxError = Double.NEGATIVE_INFINITY;
+                double maxError = Double.NEGATIVE_INFINITY;
                 for (int i = 0, nodeLength = this.centroids.length; i < nodeLength; i++) {
-                    var n = this.centroids[i];
+                    Centroid n = this.centroids[i];
                     if (i == furthest)
                         continue;
                     if (n.localError() > maxError) {
@@ -294,7 +294,7 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
 
             edges.edgesOf(maxErrorID, (otherNodeID) -> {
 
-                var otherNode = this.centroids[otherNodeID];
+                Centroid otherNode = this.centroids[otherNodeID];
 
                 if (otherNode.localError() > maxError) {
                     _maxErrorNeighbour = otherNodeID;
@@ -304,18 +304,18 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
 
             if (_maxErrorNeighbour != -1) {
 
-                var maxErrorNeighborID = _maxErrorNeighbour;
+                short maxErrorNeighborID = _maxErrorNeighbour;
 
 
                 edges.removeEdge(maxErrorID, maxErrorNeighborID);
 
 
-                var newNode = newCentroid(furthest, dimension);
+                N newNode = newCentroid(furthest, dimension);
                 randomizeCentroid(rangeMinMax, newNode);
 
 
-                var maxErrorNeighbor = this.centroids[maxErrorNeighborID];
-                var maxErrorNode = this.centroids[maxErrorID];
+                Centroid maxErrorNeighbor = this.centroids[maxErrorNeighborID];
+                Centroid maxErrorNode = this.centroids[maxErrorID];
                 newNode.set(maxErrorNode, maxErrorNeighbor);
                 this.centroids[furthest] = newNode;
 
@@ -334,15 +334,15 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
         }
 
 
-        var beta = this.beta.floatValue();
-        for (var n : this.centroids)
+        float beta = this.beta.floatValue();
+        for (Centroid n : this.centroids)
             n.mulLocalError(beta);
 
         return node(closest);
     }
 
     public void randomizeCentroid(MutableHyperRectDouble bounds, N newNode) {
-        for (var i = 0; i < dimension; i++)
+        for (int i = 0; i < dimension; i++)
             newNode.randomizeUniform(i, bounds.coord(i, false), bounds.coord(i, true));
     }
 

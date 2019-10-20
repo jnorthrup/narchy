@@ -112,7 +112,7 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
      * @param map the map whose mappings are to be placed in this map.
      */
     public FastMap(Map map) {
-        var capacity = (map instanceof FastMap) ? ((FastMap) map).capacity() : map.size();
+        int capacity = (map instanceof FastMap) ? ((FastMap) map).capacity() : map.size();
         initialize(capacity);
         putAll(map);
     }
@@ -137,7 +137,7 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
      */
     private static int keyHash(Object key) {
         // From HashMap.hash(Object) function.
-        var hashCode = key.hashCode();
+        int hashCode = key.hashCode();
         hashCode += ~(hashCode << 9);
         hashCode ^= (hashCode >>> 14);
         hashCode += (hashCode << 4);
@@ -181,7 +181,7 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
      * @throws NullPointerException if the key is <code>null</code>.
      */
     public boolean containsKey(Object key) {
-        var entry = _entries[keyHash(key) & _mask];
+        EntryImpl entry = _entries[keyHash(key) & _mask];
         while (entry != null) {
             if (key.equals(entry._key)) {
                 return true;
@@ -199,7 +199,7 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
      * @throws NullPointerException if the key is <code>null</code>.
      */
     public boolean containsValue(Object value) {
-        var entry = _mapFirst;
+        EntryImpl entry = _mapFirst;
         while (entry != null) {
             if (value.equals(entry._value)) {
                 return true;
@@ -235,7 +235,7 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
      * @return the entry for the specified key or <code>null</code> if none.
      */
     private Map.Entry getEntry(Object key) {
-        var entry = _entries[keyHash(key) & _mask];
+        EntryImpl entry = _entries[keyHash(key) & _mask];
         while (entry != null) {
             if (key.equals(entry._key)) {
                 return entry;
@@ -257,10 +257,10 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
      * @throws NullPointerException if the key is <code>null</code>.
      */
     public Object put(Object key, Object value) {
-        var entry = _entries[keyHash(key) & _mask];
+        EntryImpl entry = _entries[keyHash(key) & _mask];
         while (entry != null) {
             if (key.equals(entry._key)) {
-                var prevValue = entry._value;
+                Object prevValue = entry._value;
                 entry._value = value;
                 return prevValue;
             }
@@ -297,7 +297,7 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
         EntryImpl<K, V> entry = _entries[keyHash(key) & _mask];
         while (entry != null) {
             if (key.equals(entry._key)) {
-                var prevValue = entry._value;
+                V prevValue = entry._value;
                 removeEntry(entry);
                 return prevValue;
             }
@@ -311,7 +311,7 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
      */
     public void clear() {
         // Clears all keys, values and buckets linked lists.
-        for (var entry = _mapFirst; entry != null; entry = entry._after) {
+        for (EntryImpl entry = _mapFirst; entry != null; entry = entry._after) {
             entry._key = null;
             entry._value = null;
             entry._before = null;
@@ -343,21 +343,21 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
      */
     private void setCapacity(int newCapacity) {
         if (newCapacity > _capacity) { // Capacity increases.
-            for (var i = _capacity; i < newCapacity; i++) {
-                var entry = new EntryImpl();
+            for (int i = _capacity; i < newCapacity; i++) {
+                EntryImpl entry = new EntryImpl();
                 entry._after = _poolFirst;
                 _poolFirst = entry;
             }
         } else if (newCapacity < _capacity) { // Capacity decreases.
-            for (var i = newCapacity; (i < _capacity) && (_poolFirst != null); i++) {
+            for (int i = newCapacity; (i < _capacity) && (_poolFirst != null); i++) {
                 // Disconnects the entry for gc to do its work.
-                var entry = _poolFirst;
+                EntryImpl entry = _poolFirst;
                 _poolFirst = entry._after;
                 entry._after = null; // All pointers are now null!
             }
         }
         // Find a power of 2 >= capacity
-        var tableLength = 16;
+        int tableLength = 16;
         while (tableLength < newCapacity) {
             tableLength <<= 1;
         }
@@ -367,14 +367,14 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
             _mask = tableLength - 1;
 
             // Repopulates the hash table.
-            var entry = _mapFirst;
+            EntryImpl entry = _mapFirst;
             while (entry != null) {
-                var index = keyHash(entry._key) & _mask;
+                int index = keyHash(entry._key) & _mask;
                 entry._index = index;
 
                 // Connects to bucket.
                 entry._previous = null; // Resets previous.
-                var next = _entries[index];
+                EntryImpl next = _entries[index];
                 entry._next = next;
                 if (next != null) {
                     next._previous = entry;
@@ -394,7 +394,7 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
      */
     public Object clone() {
         try {
-            var clone = (FastMap) super.clone();
+            FastMap clone = (FastMap) super.clone();
             clone.initialize(_capacity);
             clone.putAll(this);
             return clone;
@@ -415,9 +415,9 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
         if (obj == this) {
             return true;
         } else if (obj instanceof Map) {
-            var that = (Map) obj;
+            Map that = (Map) obj;
             if (this.size() == that.size()) {
-                var entry = _mapFirst;
+                EntryImpl entry = _mapFirst;
                 while (entry != null) {
                     if (!that.entrySet().contains(entry)) {
                         return false;
@@ -439,8 +439,8 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
      * @return the hash code value for this map.
      */
     public int hashCode() {
-        var code = 0;
-        var entry = _mapFirst;
+        int code = 0;
+        EntryImpl entry = _mapFirst;
         while (entry != null) {
             code += entry.hashCode();
             entry = entry._after;
@@ -527,7 +527,7 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
      * @param value the entry's value.
      */
     private void addEntry(Object key, Object value) {
-        var entry = _poolFirst;
+        EntryImpl entry = _poolFirst;
         if (entry != null) {
             _poolFirst = entry._after;
             entry._after = null;
@@ -538,11 +538,11 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
         // Setup entry parameters.
         entry._key = key;
         entry._value = value;
-        var index = keyHash(key) & _mask;
+        int index = keyHash(key) & _mask;
         entry._index = index;
 
         // Connects to bucket.
-        var next = _entries[index];
+        EntryImpl next = _entries[index];
         entry._next = next;
         if (next != null) {
             next._previous = entry;
@@ -571,8 +571,8 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
     private void removeEntry(EntryImpl entry) {
 
         // Removes from bucket.
-        var previous = entry._previous;
-        var next = entry._next;
+        EntryImpl previous = entry._previous;
+        EntryImpl next = entry._next;
         if (previous != null) {
             previous._next = next;
             entry._previous = null;
@@ -585,8 +585,8 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
         } // Else do nothing, no last pointer.
 
         // Removes from collection.
-        var before = entry._before;
-        var after = entry._after;
+        EntryImpl before = entry._before;
+        EntryImpl after = entry._after;
         if (before != null) {
             before._after = after;
             entry._before = null;
@@ -620,7 +620,7 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
      */
     private void initialize(int capacity) {
         // Find a power of 2 >= capacity
-        var tableLength = MIN_TABLE_LEN;
+        int tableLength = MIN_TABLE_LEN;
         while (tableLength < capacity) {
             tableLength <<= 1;
         }
@@ -638,8 +638,8 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
         _mapFirst = null;
         _mapLast = null;
         // Allocates entries.
-        for (var i = 0; i < capacity; i++) {
-            var entry = new EntryImpl();
+        for (int i = 0; i < capacity; i++) {
+            EntryImpl entry = new EntryImpl();
             entry._after = _poolFirst;
             _poolFirst = entry;
         }
@@ -654,12 +654,12 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
      */
     private void readObject(ObjectInputStream stream)
             throws IOException, ClassNotFoundException {
-        var capacity = stream.readInt();
+        int capacity = stream.readInt();
         initialize(capacity);
-        var size = stream.readInt();
-        for (var i = 0; i < size; i++) {
-            var key = stream.readObject();
-            var value = stream.readObject();
+        int size = stream.readInt();
+        for (int i = 0; i < size; i++) {
+            Object key = stream.readObject();
+            Object value = stream.readObject();
             addEntry(key, value);
         }
     }
@@ -674,8 +674,8 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
             throws IOException {
         stream.writeInt(_capacity);
         stream.writeInt(_size);
-        var count = 0;
-        var entry = _mapFirst;
+        int count = 0;
+        EntryImpl entry = _mapFirst;
         while (entry != null) {
             stream.writeObject(entry._key);
             stream.writeObject(entry._value);
@@ -753,7 +753,7 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
          * @return the previous value.
          */
         public V setValue(V value) {
-            var old = _value;
+            V old = _value;
             _value = value;
             return old;
         }
@@ -767,7 +767,7 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
         public boolean equals(Object that) {
             if (this == that) return true;
             if (that instanceof Map.Entry) {
-                var entry = (Map.Entry) that;
+                Entry entry = (Map.Entry) that;
                 return _key.equals(entry.getKey()) && Objects.equals(_value, entry.getValue());
             } else {
                 return false;
@@ -780,8 +780,8 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
          * @return this entry's hash code.
          */
         public int hashCode() {
-            var v = _value;
-            var k = _key;
+            V v = _value;
+            K k = _key;
             return k.hashCode() ^ ((v != null) ? v.hashCode() : 0);
         }
 
@@ -862,8 +862,8 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
 
         public boolean contains(Object obj) { // Optimization.
             if (obj instanceof Map.Entry) {
-                var entry = (Map.Entry) obj;
-                var mapEntry = getEntry(entry.getKey());
+                Entry entry = (Map.Entry) obj;
+                Entry mapEntry = getEntry(entry.getKey());
                 return entry.equals(mapEntry);
             } else {
                 return false;
@@ -872,8 +872,8 @@ public class FastMap<K, V> implements Map<K, V>, Cloneable, Serializable {
 
         public boolean remove(Object obj) { // Optimization.
             if (obj instanceof Map.Entry) {
-                var entry = (Map.Entry) obj;
-                var mapEntry = (EntryImpl) getEntry(entry.getKey());
+                Entry entry = (Map.Entry) obj;
+                EntryImpl mapEntry = (EntryImpl) getEntry(entry.getKey());
                 if ((mapEntry != null) && (entry.getValue()).equals(mapEntry._value)) {
                     removeEntry(mapEntry);
                     return true;

@@ -76,8 +76,8 @@ public class HashTabulka<T> extends AbstractSet<T> implements Set<T> {
         if (count >= n) { 
             realocate();
         }
-        var node = new Node<T>(value);
-        var code = node.hash & this.n;
+        Node<T> node = new Node<T>(value);
+        int code = node.hash & this.n;
         node.next = hashtable[code];
         hashtable[code] = node; 
         count++; 
@@ -95,15 +95,15 @@ public class HashTabulka<T> extends AbstractSet<T> implements Set<T> {
      */
     @Override
     public boolean remove( Object value) {
-        var code = value.hashCode() & n;
-        var zaznam = hashtable[code];
+        int code = value.hashCode() & n;
+        Node<T> zaznam = hashtable[code];
         if (zaznam != null) {
             if (zaznam.value.equals(value)) { 
                 hashtable[code] = zaznam.next;
                 count--;
                 return true;
             } else { 
-                for (var dalsi = zaznam.next; dalsi != null; zaznam = dalsi, dalsi = dalsi.next) {
+                for (Node<T> dalsi = zaznam.next; dalsi != null; zaznam = dalsi, dalsi = dalsi.next) {
                     if (dalsi.value.equals(value)) {
                         zaznam.next = dalsi.next;
                         count--;
@@ -120,7 +120,7 @@ public class HashTabulka<T> extends AbstractSet<T> implements Set<T> {
      * @return Vrati objekt, ktory vracia pri porovnavani funkciou equals true
      */
     public T get(Object o) {
-        var oh = o.hashCode();
+        int oh = o.hashCode();
         return Stream.iterate(hashtable[oh & n], Objects::nonNull, chain -> chain.next).filter(chain -> chain.hash == oh).map(chain -> chain.value).filter(v -> v.equals(o)).findFirst().orElse(null);
     }
 
@@ -156,12 +156,12 @@ public class HashTabulka<T> extends AbstractSet<T> implements Set<T> {
         if (a == null) {
             throw new NullPointerException();
         }
-        var ln = a.length;
+        int ln = a.length;
         if (ln < count) {
             a = (U[]) Array.newInstance(a.getClass().getComponentType(), count);
         }
-        var index = 0;
-        for (var n : hashtable) {
+        int index = 0;
+        for (Node<T> n : hashtable) {
             while (n != null) {
                 a[index++] = (U) n.value;
                 n = n.next;
@@ -174,7 +174,7 @@ public class HashTabulka<T> extends AbstractSet<T> implements Set<T> {
     }
 
     @Override public void forEach(Consumer<? super T> action) {
-        for (var n : hashtable) {
+        for (Node<T> n : hashtable) {
             while (n!=null) {
                 action.accept(n.value);
                 n = n.next;
@@ -188,10 +188,10 @@ public class HashTabulka<T> extends AbstractSet<T> implements Set<T> {
     private void realocate() {
         n = (n << 1) | 1; 
         Node<T>[] newTable = new Node[n + 1]; 
-        for (var chain : hashtable) {
+        for (Node<T> chain : hashtable) {
             while (chain != null) {
-                var next = chain.next;
-                var code = chain.hash & n;
+                Node<T> next = chain.next;
+                int code = chain.hash & n;
                 chain.next = newTable[code];
                 newTable[code] = chain;
                 chain = next;

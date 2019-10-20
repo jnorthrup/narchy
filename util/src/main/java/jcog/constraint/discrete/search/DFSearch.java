@@ -57,7 +57,7 @@ public class DFSearch {
 
     private boolean propagate() {
 
-        var feasible = objective == null || objective.propagate();
+        boolean feasible = objective == null || objective.propagate();
         
         return feasible && pQueue.propagate();
     }
@@ -71,7 +71,7 @@ public class DFSearch {
      * to this tree search.
      */
     public SearchStats search(BooleanFunction<List<BooleanSupplier>> heuristic, Predicate<SearchStats> stopCondition) {
-        var stats = new SearchStats();
+        SearchStats stats = new SearchStats();
 
         stats.startTime = System.currentTimeMillis();
 

@@ -69,9 +69,9 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
 		this.punc = punctuation;
 
 
-		var tt = term.term();
+        Term tt = term.term();
 		if (tt.op() == Op.NEG) {
-			var nt = tt.sub(0);
+            Term nt = tt.sub(0);
 			if (nt instanceof Compound) {
 				tt = nt;
 
@@ -98,13 +98,13 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
 		if (isDeleted())
 			throw new TaskException("Deleted", this);
 
-		var t = term;
+        Term t = term;
 
-		var punc = punc();
+        byte punc = punc();
 		if (punc == 0)
 			throw new TaskException("Unspecified punctuation", this);
 
-		var cntt = t.normalize();//.the();
+        Term cntt = t.normalize();//.the();
 		if (cntt == null)
 			throw new TaskException("Failed normalization", t);
 
@@ -124,7 +124,7 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
 					setTruth(t(1, n.confDefault(punc)));
 				} else {
 
-					var confLimit = 1f - NAL.truth.TRUTH_EPSILON;
+                    float confLimit = 1f - NAL.truth.TRUTH_EPSILON;
 					if (!isInput() && conf() > confLimit) {
 
 						setTruth(t(freq(), confLimit));
@@ -155,7 +155,7 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
 		}
 
 
-		var pp = priElseNeg1();
+        float pp = priElseNeg1();
 		if (pp < 0) {
 			pri(n.priDefault(punc));
 		}

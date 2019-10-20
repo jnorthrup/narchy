@@ -15,7 +15,7 @@ public class FloatClamped implements FloatSupplier {
 
     @Override
     public float asFloat() {
-        var v = in.asFloat();
+        float v = in.asFloat();
         return v==v ? Util.clamp(v, min, max) : Float.NaN;
     }
 }

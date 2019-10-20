@@ -38,9 +38,9 @@ public class AgentBuilder {
     final IntConsumer act = (rawAction) -> {
         //deserialize the raw action id to the appropriate action group
         // TODO do this with a stored skip count int[]
-        var rawAction1 = rawAction;
-        for (var aa: actions) {
-            var bb = aa.getOne();
+        int rawAction1 = rawAction;
+        for (IntObjectPair<? extends IntConsumer> aa: actions) {
+            int bb = aa.getOne();
             if (rawAction1 >= bb) {
                 rawAction1 -= bb;
             } else if (rawAction1 >= 0) {

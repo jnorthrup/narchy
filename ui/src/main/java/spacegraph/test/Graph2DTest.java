@@ -33,7 +33,7 @@ public enum Graph2DTest {;
         public static void main(String[] args) {
 
 
-            var sg = newSimpleGraph();
+            Graph2D<Node<Object, Object>> sg = newSimpleGraph();
 
 
             SpaceGraph.window(sg, 800, 800);
@@ -67,11 +67,11 @@ public enum Graph2DTest {;
     public static Surface newUjmpGraph() {
         MapNodeGraph<Object,Object> h = new MapNodeGraph();
 
-        var env = Matrix.Factory.systemEnvironment();
+        SystemEnvironmentMatrix env = Matrix.Factory.systemEnvironment();
         h.addNode("env");
-        for (var entry : env.entrySet()) {
-            var k = entry.getKey();
-            var v = entry.getValue();
+        for (Map.Entry<String, String> entry : env.entrySet()) {
+            String k = entry.getKey();
+            String v = entry.getValue();
             h.addNode(v);
             h.addEdgeIfNodesExist("env", k, v);
         }

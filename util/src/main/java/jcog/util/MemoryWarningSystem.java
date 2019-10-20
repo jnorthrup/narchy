@@ -60,14 +60,14 @@ public class MemoryWarningSystem {
     }
 
     public MemoryWarningSystem() {
-        var mbean = ManagementFactory.getMemoryMXBean();
+        MemoryMXBean mbean = ManagementFactory.getMemoryMXBean();
         tenuredGenPool = MemoryWarningSystem.findTenuredGenPool();
-        var emitter = (NotificationEmitter) mbean;
+        NotificationEmitter emitter = (NotificationEmitter) mbean;
         emitter.addNotificationListener((n, hb) -> {
             if (MemoryNotificationInfo.MEMORY_THRESHOLD_EXCEEDED.equals(n.getType())) {
-                var u = tenuredGenPool.getUsage();
+                MemoryUsage u = tenuredGenPool.getUsage();
                 long maxMemory = u.getMax(), usedMemory = u.getUsed();
-                for (var listener : listeners)
+                for (Listener listener : listeners)
                     listener.memoryUsageLow(usedMemory, maxMemory);
             }
         }, null, null);
@@ -86,12 +86,12 @@ public class MemoryWarningSystem {
             throw new IllegalArgumentException("Percentage not in range");
 
         double maxMemory = tenuredGenPool.getUsage().getMax();
-        var warningThreshold = Math.round(maxMemory * percentage);
+        long warningThreshold = Math.round(maxMemory * percentage);
         tenuredGenPool.setUsageThreshold(warningThreshold);
     }
 
     public double getPercentageUsageThreshold() {
-        var maxMemory = tenuredGenPool.getUsage().getMax();
+        long maxMemory = tenuredGenPool.getUsage().getMax();
         double warningThreshold = tenuredGenPool.getUsageThreshold();
         return warningThreshold / maxMemory;
     }
@@ -102,7 +102,7 @@ public class MemoryWarningSystem {
      */
     private static MemoryPoolMXBean findTenuredGenPool() {
         MemoryPoolMXBean last = null;
-        for (var pool : ManagementFactory.getMemoryPoolMXBeans()) {
+        for (MemoryPoolMXBean pool : ManagementFactory.getMemoryPoolMXBeans()) {
             // I don't know whether this approach is better, or whether
             // we should rather check for the pool name "Tenured Gen"?
             if (pool.getType() == MemoryType.HEAP && pool.isUsageThresholdSupported()) {

@@ -38,7 +38,7 @@ public class CrosshairSurface extends PaintSurface implements MouseListener {
 
         
         float g, b;
-        var r = g = b = 0.75f;
+        float r = g = b = 0.75f;
         if (pressed!=null && pressed.length > 0) {
             switch (pressed[0]) {
                 case 1:
@@ -55,11 +55,11 @@ public class CrosshairSurface extends PaintSurface implements MouseListener {
         gl.glColor4f(r, g, b, 0.6f);
 
         gl.glLineWidth(4f);
-        var ch = 175f;
-        var cw = 175f;
+        float ch = 175f;
+        float cw = 175f;
         Draw.rectStroke(smx-cw/2f, smy-ch/2f, cw, ch, gl);
 
-        var hl = 1.25f;
+        float hl = 1.25f;
         Draw.line(smx, smy-ch*hl, smx, smy+ch*hl, gl);
         Draw.line(smx-cw*hl, smy, smx+cw*hl, smy, gl);
 
@@ -102,9 +102,9 @@ public class CrosshairSurface extends PaintSurface implements MouseListener {
     }
 
     private void update(MouseEvent e) {
-        var mx = e.getX();
+        int mx = e.getX();
         smx = mx;
-        var my = e.getY();
+        int my = e.getY();
         smy = (space.getHeight() - ((float) my)) ;
 
         pressed = e.getButtonsDown();

@@ -45,15 +45,15 @@ public class BasicFlaggingLearningBestSelector implements BestSelector {
     }
     
     private static void selectAndPopulateBest(Results results) {
-        var bestIndividualIndex = Double.NEGATIVE_INFINITY;
-        var bestLength = Integer.MAX_VALUE;
+        double bestIndividualIndex = Double.NEGATIVE_INFINITY;
+        int bestLength = Integer.MAX_VALUE;
         FinalSolution best = null;
-        for (var jobEvolutionTrace : results.getJobEvolutionTraces()) {
-            var bestOfJob = jobEvolutionTrace.getFinalGeneration().get(0);
+        for (JobEvolutionTrace jobEvolutionTrace : results.getJobEvolutionTraces()) {
+            FinalSolution bestOfJob = jobEvolutionTrace.getFinalGeneration().get(0);
             double accuracy = bestOfJob.getLearningPerformances().get("flag accuracy");
-            var bestJobLength = bestOfJob.getSolution().length();
+            int bestJobLength = bestOfJob.getSolution().length();
             accuracy = (Double.isNaN(accuracy))?0:accuracy;
-            var individualIndex = accuracy;
+            double individualIndex = accuracy;
             if ((individualIndex > bestIndividualIndex) || ((individualIndex == bestIndividualIndex) && (bestLength > bestJobLength))) {
                     bestLength = bestJobLength;
                     best = bestOfJob;

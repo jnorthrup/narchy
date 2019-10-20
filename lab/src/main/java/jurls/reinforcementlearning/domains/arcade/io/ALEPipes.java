@@ -115,10 +115,10 @@ public class ALEPipes {
     public void initPipes() throws IOException {
 
 
-        var line = in.readLine();
-        var tokens = line.split("-");
-        var width = Integer.parseInt(tokens[0]);
-        var height = Integer.parseInt(tokens[1]);
+        String line = in.readLine();
+        String[] tokens = line.split("-");
+        int width = Integer.parseInt(tokens[0]);
+        int height = Integer.parseInt(tokens[1]);
 
         
         if (width <= 0 || height <= 0) {
@@ -202,9 +202,9 @@ public class ALEPipes {
         if (line.length() > 0) {
 
 
-            var tokens = line.split(":");
+            String[] tokens = line.split(":");
 
-            var tokenIndex = 0;
+            int tokenIndex = 0;
 
             
             if (updateRam)
@@ -212,7 +212,7 @@ public class ALEPipes {
 
             
             if (updateScreen) {
-                var screenString = tokens[tokenIndex++];
+                String screenString = tokens[tokenIndex++];
 
                 if (useRLE)
                     readScreenRLE(screenString);
@@ -262,7 +262,7 @@ public class ALEPipes {
     public void readRLData(String line) {
 
 
-        var tokens = line.split(",");
+        String[] tokens = line.split(",");
 
         
         rlData.isTerminal = (Integer.parseInt(tokens[0]) == 1);
@@ -273,13 +273,13 @@ public class ALEPipes {
       * @param line The RAM-part of the string sent by ALE.
       */
     public void readRam(String line) {
-        var offset = 0;
+        int offset = 0;
 
         
         
         
-        for (var ptr = 0; ptr < ConsoleRAM.RAM_SIZE; ptr++) {
-            var v = Integer.parseInt(line.substring(offset, offset + 2), 16);
+        for (int ptr = 0; ptr < ConsoleRAM.RAM_SIZE; ptr++) {
+            int v = Integer.parseInt(line.substring(offset, offset + 2), 16);
             ram.ram[ptr] = v;
             
             offset += 2;
@@ -292,12 +292,12 @@ public class ALEPipes {
      * @param line The screen part of the string sent by ALE.
      */
     public void readScreenMatrix(String line) {
-        var ptr = 0;
+        int ptr = 0;
 
         
-        for (var y = 0; y < screen.height; y++)
-            for (var x = 0; x < screen.width; x++) {
-                var v = byteAt(line, ptr);
+        for (int y = 0; y < screen.height; y++)
+            for (int x = 0; x < screen.width; x++) {
+                int v = byteAt(line, ptr);
                 screen.matrix[x][y] = v;
                 ptr += 2;
             }
@@ -318,19 +318,19 @@ public class ALEPipes {
 
     /** Read in a run-length encoded screen. ALE 0.3-0.4 */
     public void readScreenRLE(String line) {
-        var ptr = 0;
+        int ptr = 0;
 
 
-        var y = 0;
-        var x = 0;
+        int y = 0;
+        int x = 0;
 
         while (ptr < line.length()) {
 
-            var v = byteAt(line, ptr);
-            var l = byteAt(line, ptr + 2);
+            int v = byteAt(line, ptr);
+            int l = byteAt(line, ptr + 2);
             ptr += 4;
 
-            for (var i = 0; i < l; i++) {
+            for (int i = 0; i < l; i++) {
                 screen.matrix[x][y] = v;
                 if (++x >= screen.width) {
                     x = 0;

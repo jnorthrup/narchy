@@ -673,7 +673,7 @@ public class M_Infantry {
             if (GameBase.skill.value == 3)
                 return;
 
-            var n = Lib.rand() % 2;
+            int n = Lib.rand() % 2;
             if (n == 0) {
                 self.monsterinfo.currentmove = infantry_move_pain1;
                 game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
@@ -972,7 +972,7 @@ public class M_Infantry {
 
             game_import_t.sound(self, Defines.CHAN_WEAPON, sound_weapon_cock, 1,
                     Defines.ATTN_NORM, 0);
-            var n = (Lib.rand() & 15) + 3 + 7;
+            int n = (Lib.rand() & 15) + 3 + 7;
             self.monsterinfo.pausetime = GameBase.level.time + n
                     * Defines.FRAMETIME;
             return true;

@@ -34,8 +34,8 @@ public class NumberState extends TokenizerState {
 	 */
 	protected BigDecimal absorbDigits(PushbackReader r, boolean fraction) throws IOException {
 
-		var divideByPowerOfTen = 0;
-		var v = BigDecimal.ZERO;
+        int divideByPowerOfTen = 0;
+        BigDecimal v = BigDecimal.ZERO;
 		while ('0' <= c && c <= '9') {
 			gotAdigit = true;
 			v = v.multiply(new BigDecimal(10)).add(new BigDecimal(c - '0'));

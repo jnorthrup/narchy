@@ -19,10 +19,10 @@ public class BurrowsWheeler {
 		public CircularSuffixArray(byte[] input)  {
 			this.input = input;
 
-			var n = input.length;
+            int n = input.length;
 
 			index = new int[n];
-			for (var i = 0; i < n; i++)
+			for (int i = 0; i < n; i++)
 				index[i] = i;
 
 			QuickSort.quickSort(0, n, this::compare, this::swap);
@@ -38,9 +38,9 @@ public class BurrowsWheeler {
 
 			int s1 = index[a], s2 = index[b];
 			int t1 = s1, t2 = s2;
-			var input = this.input;
-			var n = input.length;
-			for (var i = 0; i < n; i++) {
+            byte[] input = this.input;
+            int n = input.length;
+			for (int i = 0; i < n; i++) {
 				byte c1 = input[t1], c2 = input[t2];
 				if (c1 < c2)
 					return -1;
@@ -58,16 +58,16 @@ public class BurrowsWheeler {
 
 	public static int encode(byte[] input, byte[] output) {
 
-		var suffixes = new CircularSuffixArray(input);
+        CircularSuffixArray suffixes = new CircularSuffixArray(input);
 
-		var n = suffixes.input.length;
-		var key = -1;
+        int n = suffixes.input.length;
+        int key = -1;
 
-		for (var i = 0; i < n; i++) {
+		for (int i = 0; i < n; i++) {
 			if (suffixes.index[i] == 0)
 				key = i;
 
-			var position = (suffixes.index[i] + n - 1) % n;
+            int position = (suffixes.index[i] + n - 1) % n;
 			if (position < 0)
 				position += n;
 
@@ -80,24 +80,24 @@ public class BurrowsWheeler {
 	public static byte[] decode(byte[] in, int key, byte[] out) {
 
 		// map list of positions for each characters 
-		var n = in.length;
-		var positions = new ByteObjectHashMap<IntArrayList>(n);
-		for (var i = 0; i < n; i++ )
+        int n = in.length;
+        ByteObjectHashMap<IntArrayList> positions = new ByteObjectHashMap<IntArrayList>(n);
+		for (int i = 0; i < n; i++ )
 			positions.getIfAbsentPut(in[i], IntArrayList::new).add(i);
 
 		Arrays.sort(in); // sort last word
 
-		var next = new int[10];
-		var count = 0;
-		for (var b : in) {
-			var removeAtIndex = positions.get(b).removeAtIndex(0);
+        int[] next = new int[10];
+        int count = 0;
+		for (byte b : in) {
+            int removeAtIndex = positions.get(b).removeAtIndex(0);
 			if (next.length == count) next = Arrays.copyOf(next, count * 2);
 			next[count++] = removeAtIndex;
 		}
 		next = Arrays.copyOfRange(next, 0, count);
 
-		var cur = key;
-		for (var i = 0; i < n; i++) {
+        int cur = key;
+		for (int i = 0; i < n; i++) {
 			out[i] = in[cur];
 			cur = next[cur];
 		}
@@ -107,13 +107,13 @@ public class BurrowsWheeler {
 
 
 	public static void main(String[] args) {
-		var i = "sdkfjklsdfklsdfj";
-		var ib = i.getBytes();
-		var eb = new byte[ib.length];
-		var key = encode(ib, eb);
-		var ob = new byte[eb.length];
+        String i = "sdkfjklsdfklsdfj";
+        byte[] ib = i.getBytes();
+        byte[] eb = new byte[ib.length];
+        int key = encode(ib, eb);
+        byte[] ob = new byte[eb.length];
 		decode(eb, key, ob);
-		var o = new String(ob);
+        String o = new String(ob);
 		System.out.println(i + " " + new String(eb) + " " + o + "\t" + i.equals(o));
 	}
 

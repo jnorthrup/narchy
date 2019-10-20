@@ -48,9 +48,9 @@ public class Scale {
   }
 
   public void updateScale(GL2 gl) {
-    var _x = x.value();
-    var _y = y.value();
-    var _z = z.value();
+      double _x = x.value();
+      double _y = y.value();
+      double _z = z.value();
     if (_x == 1 && _y == 1 && _z == 1) {
       return;
     }

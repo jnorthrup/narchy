@@ -34,7 +34,7 @@ public class NativeSpeechDispatcher {
     }
 
     public static void speak(Object x) {
-        var s = stringify(x);
+        String s = stringify(x);
         speak(s);
     }
 
@@ -42,7 +42,7 @@ public class NativeSpeechDispatcher {
         try {
 
 
-            var p = new ProcessBuilder()
+            Process p = new ProcessBuilder()
                             .command(command(s))
                             .start();
                     p.onExit().handle((z, y) -> null).exceptionally(t->{

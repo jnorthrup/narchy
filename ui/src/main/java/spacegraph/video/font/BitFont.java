@@ -30,15 +30,15 @@ public class BitFont {
         texture = decodeBitFont(theBytes);
         make();
 
-        var size = lineHeight;
+        int size = lineHeight;
         glyphs = new Glyph[256];
-        var ascii = new int[128];
+        int[] ascii = new int[128];
         Arrays.fill(ascii, -1);
-        var lazy = false;
-        var ascent = 4;
-        var descent = 4;
-        var glyphCount = 128;
-        for (var i = 0; i < 128; i++) {
+        boolean lazy = false;
+        int ascent = 4;
+        int descent = 4;
+        int glyphCount = 128;
+        for (int i = 0; i < 128; i++) {
 
 
             glyphs[i] = new Glyph();
@@ -51,10 +51,10 @@ public class BitFont {
             }
 
             glyphs[i].index = i;
-            var id = i - 32;
+            int id = i - 32;
             if (id >= 0) {
                 glyphs[i].image = new float[charWidth[id] * 9];
-                for (var n = 0; n < chars[id].length; n++) {
+                for (int n = 0; n < chars[id].length; n++) {
                     glyphs[i].image[n] = (chars[id][n] == 1) ? 0xffffffff : 0x00000000;
                 }
                 glyphs[i].height = 9;
@@ -71,16 +71,16 @@ public class BitFont {
     }
 
     static int byteArrayToInt(byte[] b) {
-        var value = 0;
-        for (var i = 0; i < 2; i++) {
-            var shift = (2 - 1 - i) * 8;
+        int value = 0;
+        for (int i = 0; i < 2; i++) {
+            int shift = (2 - 1 - i) * 8;
             value += (b[i] & 0x00FF) << shift;
         }
         return value;
     }
 
     static int getBit(int theByte, int theIndex) {
-        var bitmask = 1 << theIndex;
+        int bitmask = 1 << theIndex;
         return ((theByte & bitmask) > 0) ? 1 : 0;
     }
 
@@ -96,25 +96,25 @@ public class BitFont {
     float[] decodeBitFont(byte[] bytes) {
 
 
-        var w = byteArrayToInt(new byte[]{bytes[0], bytes[1]});
+        int w = byteArrayToInt(new byte[]{bytes[0], bytes[1]});
 
 
-        var h = byteArrayToInt(new byte[]{bytes[2], bytes[3]});
+        int h = byteArrayToInt(new byte[]{bytes[2], bytes[3]});
 
 
-        var s = byteArrayToInt(new byte[]{bytes[4], bytes[5]});
+        int s = byteArrayToInt(new byte[]{bytes[4], bytes[5]});
 
 
-        var c = byteArrayToInt(new byte[]{bytes[6], bytes[7]});
+        int c = byteArrayToInt(new byte[]{bytes[6], bytes[7]});
 
         textureWidth = w;
         textureHeight = h;
 
 
-        var off = 8 + s;
-        var tex = new float[w * h];
-        for (var i = off; i < bytes.length; i++) {
-            for (var j = 0; j < 8; j++) {
+        int off = 8 + s;
+        float[] tex = new float[w * h];
+        for (int i = off; i < bytes.length; i++) {
+            for (int j = 0; j < 8; j++) {
                 tex[(i - off) * 8 + j] = getBit(bytes[i], j) == 1 ? 0xff000000 : 0xffffffff;
             }
         }
@@ -143,9 +143,9 @@ public class BitFont {
 
         lineHeight = charHeight;
 
-        var currWidth = 0;
+        int currWidth = 0;
 
-        for (var i = 0; i < textureWidth; i++) {
+        for (int i = 0; i < textureWidth; i++) {
             currWidth++;
             if (texture[i] == 0xffff0000) {
                 charWidth[characters++] = currWidth;
@@ -155,11 +155,11 @@ public class BitFont {
 
         chars = new int[characters][];
 
-        var indent = 0;
+        int indent = 0;
 
-        for (var i = 0; i < characters; i++) {
+        for (int i = 0; i < characters; i++) {
             chars[i] = new int[charWidth[i] * charHeight];
-            for (var u = 0; u < charWidth[i] * charHeight; u++) {
+            for (int u = 0; u < charWidth[i] * charHeight; u++) {
                 chars[i][u] = texture[indent + (u / charWidth[i]) * textureWidth + (u % charWidth[i])] == 0xff000000 ? 1 : 0;
             }
             indent += charWidth[i];

@@ -53,13 +53,13 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 	private static boolean findEvictable(Space<TaskRegion> tree, RNode<TaskRegion> next, Top<Task> weakest, Top<RLeaf<TaskRegion>> mergeableLeaf) {
 		if (next instanceof RLeaf) {
 
-			var l = (RLeaf) next;
-			var data = l.data;
-			var s = l.size;
-			for (var i = 0; i < s; i++) {
-				var x = (Task) data[i];
+            RLeaf l = (RLeaf) next;
+            Object[] data = l.data;
+            short s = l.size;
+			for (int i = 0; i < s; i++) {
+                Task x = (Task) data[i];
 				if (x.isDeleted()) {
-					var removed = tree.remove(x);
+                    boolean removed = tree.remove(x);
 					assert (removed);
 					return false;
 				}
@@ -72,7 +72,15 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 		} else {
             //null-terminated
-			return Arrays.stream(((RBranch<TaskRegion>) next).data).takeWhile(Objects::nonNull).allMatch(bb -> findEvictable(tree, bb, /*closest, */weakest, mergeableLeaf));
+			for (RNode<TaskRegion> bb : ((RBranch<TaskRegion>) next).data) {
+				if (bb == null) {
+					break;
+				}
+				if (!findEvictable(tree, bb, /*closest, */weakest, mergeableLeaf)) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 		return true;
@@ -85,12 +93,12 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 	/*@NotNull*/
 	private static void compress(Space<TaskRegion> tree, Remember r) {
 
-		var now = r.time();
+        long now = r.time();
 		//long tableDur = tableDur(now);
 
-		var weakest = new Top<Task>(new FurthestWeakest(now, 1));
+        Top<Task> weakest = new Top<Task>(new FurthestWeakest(now, 1));
 
-		var mergeableLeaf = new Top<RLeaf<TaskRegion>>(
+        Top<RLeaf<TaskRegion>> mergeableLeaf = new Top<RLeaf<TaskRegion>>(
 			//WeakestTemporallyDense(now)
 			MergeableLeaf
 		);
@@ -105,12 +113,12 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 								 Top<RLeaf<TaskRegion>> mergeableLeaf,
 								 Remember r) {
 
-		var weakest = theWeakest.get();
+        Task weakest = theWeakest.get();
 		TruthProjection merging = null;
 		Task merged = null;
 
 		if (!mergeableLeaf.isEmpty()) {
-			var AB = mergeLeaf(mergeableLeaf, r);
+            Pair<Task, TruthProjection> AB = mergeLeaf(mergeableLeaf, r);
 			if (AB != null) {
 				if (!mergeOrEvict(weakest, merged = Revision.afterMerge(AB), merging = AB.getTwo(), r))
 					merged = null;
@@ -124,25 +132,25 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 	}
 
 	private static @Nullable Pair<Task, TruthProjection> mergeLeaf(Top<RLeaf<TaskRegion>> mergeableLeaf, Remember r) {
-		var leaf = mergeableLeaf.get();
+        RLeaf<TaskRegion> leaf = mergeableLeaf.get();
 		return Revision.merge(r.what.nar, false, 2, leaf.size, leaf.data);
 	}
 
 	private static boolean mergeOrEvict(Task weakest, Task merged, TruthProjection merging, Remember r) {
-		var now = r.time();
-		var weakEvictionValue = -eviFast(weakest, now);
-		var mergeValue = eviFast(merged, now) - merging.sumOfDouble(t -> eviFast(t, now));
+        long now = r.time();
+        double weakEvictionValue = -eviFast(weakest, now);
+        double mergeValue = eviFast(merged, now) - merging.sumOfDouble(t -> eviFast(t, now));
 
 		return mergeValue >= weakEvictionValue;
 	}
 
 	private static void merge(Task merged, TruthProjection merging, Remember r, Space<TaskRegion> treeRW) {
-		var ababSize = merging.size();
+        int ababSize = merging.size();
 		if (ababSize < 2)
 			throw new WTF();
-		for (var i = 0; i < ababSize; i++) {
+		for (int i = 0; i < ababSize; i++) {
 			if (merging.valid(i)) {
-				var rr = merging.get(i);
+                Task rr = merging.get(i);
 				if (!treeRW.remove(rr)) {
 					if (NAL.DEBUG)
 						throw new WTF(); //not sure what this means
@@ -180,17 +188,17 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 		//tree.readOptimistic(
 		readIfNonEmpty(t -> {
-			var n = t.size();
+            int n = t.size();
 			if (n == 0)
 				return;
 
-			var ac = a.ttl;
+            int ac = a.ttl;
 			if (n <= ac) {
 				t.forEach(((Predicate) a)::test);
 			} else {
 
 				long s = a.start, e = a.end;
-				var tRoot = t.root();
+                RNode<TaskRegion> tRoot = t.root();
 //				float confMax = Math.max(NAL.truth.TRUTH_EPSILON, ((TaskRegion) tRoot.bounds()).confMax());
 //				float confPerTime =
 //					//(float) ((1 + ((e - s) / 2.0 + a.dur)) / confMax);
@@ -198,15 +206,15 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //					(Math.max(1, a.dur) / confMax);
 				//float dur = (float) (tRoot.bounds().range(0) / (1+n));
 
-				var timeRank =
+                HyperIterator.HyperIteratorRanker<TaskRegion, TaskRegion> timeRank =
 					new HyperIterator.HyperIteratorRanker<TaskRegion, TaskRegion>(z -> z, Answer.regionNearness(s, e));
 
-				var cursorCapacity = Math.min(n,
+                int cursorCapacity = Math.min(n,
 					//ac
 					Math.max(1, (int)Math.ceil(ac / Math.max(1,(RTreeBeliefTable.MAX_TASKS_PER_LEAF/2f))))
 				);
 
-				var h = new HyperIterator<TaskRegion>(new Object[cursorCapacity], timeRank);
+                HyperIterator<TaskRegion> h = new HyperIterator<TaskRegion>(new Object[cursorCapacity], timeRank);
 //				{
 //					@Override
 //					protected void scan() {
@@ -241,7 +249,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         Task input;
         if (r.input instanceof ProxyTask) {
             //dont store TaskProxy's
-			var p = (ProxyTask) r.input;
+            ProxyTask p = (ProxyTask) r.input;
 			r.input = input = p.the();
             if (input == null)
                 throw new WTF();
@@ -264,9 +272,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 		/** TODO only enter write lock after deciding insertion is necessary (not merged with existing)
 		 *    subclass RInsertion to RConcurrentInsertion, storing Stamped Lock lock value along with it */
-		var insertion = writeWith(r, this::insert);
+        TaskInsertion insertion = writeWith(r, this::insert);
 
-		var mergeReplaced = (Task) insertion.mergeReplaced;
+        Task mergeReplaced = (Task) insertion.mergeReplaced;
 		if (mergeReplaced != null) {
 			if (mergeReplaced != input) {
 				onReject(input);
@@ -349,7 +357,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 	 */
 	@Override
 	public long tableDur(long now) {
-		var root = bounds();
+        TaskRegion root = bounds();
 		return (root == null) ? 1 :
 			1 + Math.round(Math.max(Math.abs(now - root.start()), Math.abs(now - root.end())) * NAL.TEMPORAL_BELIEF_TABLE_DUR_SCALE);
 	}
@@ -361,11 +369,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 	@Override
 	public Task[] taskArray() {
-		var s = size();
+        int s = size();
 		if (s == 0) {
 			return Task.EmptyArray;
 		} else {
-			var l = new FasterList<Task>(s + 1);
+            FasterList<Task> l = new FasterList<Task>(s + 1);
 			forEachTask(l::add);
 			return l.toArrayRecycled(Task[]::new);
 		}
@@ -402,12 +410,12 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 	@Override
 	public void removeIf(Predicate<Task> remove, long s, long e) {
 
-		var l = readLock();
+        long l = readLock();
 		try {
 
-			var deleteAfter = new FasterList<Task>();
+            FasterList<Task> deleteAfter = new FasterList<Task>();
 			tree.intersectsWhile(new TimeRange(s, e), (_t) -> {
-				var t = (Task) _t;
+                Task t = (Task) _t;
 				if (remove.test(t)) {
 					deleteAfter.add(t); //buffer the deletions because it will interfere with the iteration
 				}
@@ -455,7 +463,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 	private TaskInsertion insert(Space<TaskRegion> treeRW, Remember R) {
 
-		var ii = (TaskInsertion) treeRW.insert(R.input);
+        TaskInsertion ii = (TaskInsertion) treeRW.insert(R.input);
 		if (ii.added())
 			ensureCapacity(treeRW, R);
 
@@ -526,11 +534,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 		public @Nullable TaskRegion merge(TaskRegion existing, TaskRegion incoming, RInsertion<TaskRegion> i) {
 
 			Task ex = (Task) existing, in = (Task) incoming;
-			var t = ex.truth();
+            Truth t = ex.truth();
 			if (t.equals(in.truth())) {
-				var exT = ex.term();
+                Term exT = ex.term();
 				if (exT.equals(in.term())) {
-					var xys = Stamp.equalsOrContains(ex.stamp(), in.stamp());
+                    int xys = Stamp.equalsOrContains(ex.stamp(), in.stamp());
 					if (xys != Integer.MIN_VALUE) { //Arrays.equals(ex.stamp(), in.stamp())
 						long is = in.start(), ie = in.end();
 						long es = ex.start(), ee = ex.end();
@@ -574,7 +582,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 		@Override
 		public @Nullable TaskRegion merge(TaskRegion existing) {
-			var y = super.merge(existing);
+            TaskRegion y = super.merge(existing);
 			if (y != null)
 				mergeReplaced = y;
 			return y;
@@ -591,8 +599,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 	private static final FloatRank<RLeaf<TaskRegion>> MergeableLeaf = (l, min) -> {
 		//TODO use min parameter to early exit
-		var bounds = l.bounds;
-		var conf = bounds.coord(2, true);
+        HyperRegion bounds = l.bounds;
+        double conf = bounds.coord(2, true);
 		return -(float) (conf * bounds.range(0));
 	};
 

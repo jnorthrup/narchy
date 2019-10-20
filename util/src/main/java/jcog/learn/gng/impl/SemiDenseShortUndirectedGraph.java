@@ -20,7 +20,7 @@ public class SemiDenseShortUndirectedGraph implements ShortUndirectedGraph {
         
         adj = new MyShortIntHashMap[V];
 
-        for (var i = 0; i < V; i++) {
+        for (int i = 0; i < V; i++) {
             adj[i] = new MyShortIntHashMap(0);
         }
 
@@ -28,7 +28,7 @@ public class SemiDenseShortUndirectedGraph implements ShortUndirectedGraph {
 
     @Override
     public void compact() {
-        for (var a : adj) {
+        for (MyShortIntHashMap a : adj) {
             if (a.capacity() > 8 && a.density() <= 0.5f)
                 a.compact();
         }
@@ -36,7 +36,7 @@ public class SemiDenseShortUndirectedGraph implements ShortUndirectedGraph {
 
     @Override
     public void clear() {
-        for (var a : adj)
+        for (MyShortIntHashMap a : adj)
             a.clear();
     }
 
@@ -53,7 +53,7 @@ public class SemiDenseShortUndirectedGraph implements ShortUndirectedGraph {
     
     @Override
     public void setEdge(short first, short second, int value) {
-        var e = this.adj;
+        MyShortIntHashMap[] e = this.adj;
         e[first].put(second, value);
         e[second].put(first, value);
     }
@@ -68,16 +68,16 @@ public class SemiDenseShortUndirectedGraph implements ShortUndirectedGraph {
     }
 
     public void addToEdge(short first, short second, int deltaValue) {
-        var e = this.adj;
+        MyShortIntHashMap[] e = this.adj;
         e[first].addToValue(second, deltaValue);
         e[second].addToValue(first, deltaValue);
     }
 
     @Override
     public void removeVertex(short v) {
-        var e = this.adj;
+        MyShortIntHashMap[] e = this.adj;
         for (int i = 0, eLength = e.length; i < eLength; i++) {
-            var ii = e[i];
+            MyShortIntHashMap ii = e[i];
             if (i == v) ii.clear();
             else ii.remove(v);
         }
@@ -85,7 +85,7 @@ public class SemiDenseShortUndirectedGraph implements ShortUndirectedGraph {
 
     @Override
     public void removeEdge(short first, short second) {
-        var e = this.adj;
+        MyShortIntHashMap[] e = this.adj;
         e[first].remove(second);
         e[second].remove(first);
     }
@@ -93,8 +93,8 @@ public class SemiDenseShortUndirectedGraph implements ShortUndirectedGraph {
 
     @Override
     public void removeEdgeIf(IntPredicate filter) {
-        var e = this.adj;
-        for (var h : e) {
+        MyShortIntHashMap[] e = this.adj;
+        for (MyShortIntHashMap h : e) {
             h.filter(filter);
         }
     }

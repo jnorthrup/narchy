@@ -5,6 +5,8 @@
  */
 package jurls;
 
+import javax.swing.*;
+
 /**
  *
  * @author thorsten2
@@ -27,9 +29,9 @@ public class Demos extends javax.swing.JFrame {
     
     private void initComponents() {
 
-        var jButton1 = new javax.swing.JButton();
-        var jButton2 = new javax.swing.JButton();
-        var jButton3 = new javax.swing.JButton();
+        JButton jButton1 = new javax.swing.JButton();
+        JButton jButton2 = new javax.swing.JButton();
+        JButton jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("JURLS - Choose Demo");

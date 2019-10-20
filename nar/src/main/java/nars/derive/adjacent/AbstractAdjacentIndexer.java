@@ -37,18 +37,18 @@ public abstract class AbstractAdjacentIndexer extends AdjacentIndexer {
 
 		if (to.hasAny(ATOM)) {
 
-			var nar = d.nar;
+            NAR nar = d.nar;
 
 
-			var tangent = Snapshot.get(to, nar, id, d.time, ttl(d), (Concept targetConcept, List<Term> t) -> {
+            List<Term> tangent = Snapshot.get(to, nar, id, d.time, ttl(d), (Concept targetConcept, List<Term> t) -> {
 				//TOO SLOW, impl indexes
 
-				var bag = ((TaskLinkWhat) (d.x)).links.links;
+                TaskLinkBag bag = ((TaskLinkWhat) (d.x)).links.links;
 				int[] ttl = {Math.max(4, bag.size() / 8)}; //TODO parameter
 
-				var l = new FasterList<Term>(ttl[0]);
+                FasterList<Term> l = new FasterList<Term>(ttl[0]);
 				bag.sampleUnique(d.random, (c -> {
-					var ct = c.term();
+                    Term ct = c.term();
 					if (!ct.equals(to) && test(ct, to))
 						l.add(ct);
 					return --ttl[0] > 0;

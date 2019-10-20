@@ -29,7 +29,7 @@ public interface ConjBuilder {
                 return ConjBuilder.preSorted(u);
 
             case XTERNAL:
-                var v = ConjBuilder.preSorted(u);
+                Term[] v = ConjBuilder.preSorted(u);
                 if (v.length == 1 && !(v[0] instanceof IdempotentBool)) {
                     if (/*!(v[0] instanceof Ellipsislike) || */(u.length > 1 && u[0].equals(u[1])))
                         return new Term[]{v[0], v[0]};
@@ -43,7 +43,7 @@ public interface ConjBuilder {
 
     static Term[] preSorted(Term[] u) {
 
-        for (var t : u) {
+        for (Term t : u) {
             if (t == IdempotentBool.Null)
                 throw new NullPointerException();
                 //return Bool.Null_Array;
@@ -51,8 +51,8 @@ public interface ConjBuilder {
                 throw new NullPointerException();
         }
 
-        var trues = 0;
-        for (var t : u) {
+        int trues = 0;
+        for (Term t : u) {
 
             if (t == IdempotentBool.False)
                 return IdempotentBool.False_Array;
@@ -62,13 +62,13 @@ public interface ConjBuilder {
         if (trues > 0) {
 
 
-            var sizeAfterTrueRemoved = u.length - trues;
+            int sizeAfterTrueRemoved = u.length - trues;
             switch (sizeAfterTrueRemoved) {
                 case 0:
                     return Op.EmptyTermArray;
                 case 1: {
 
-                    for (var uu : u) {
+                    for (Term uu : u) {
                         if (uu != IdempotentBool.True) {
                             //assert (!(uu instanceof Ellipsislike)) : "if this happens, TODO";
                             return new Term[]{uu};
@@ -77,10 +77,10 @@ public interface ConjBuilder {
                     throw new RuntimeException("should have found non-True target to return");
                 }
                 default: {
-                    var y = new Term[sizeAfterTrueRemoved];
-                    var j = 0;
-                    for (var i = 0; j < y.length; i++) {
-                        var uu = u[i];
+                    Term[] y = new Term[sizeAfterTrueRemoved];
+                    int j = 0;
+                    for (int i = 0; j < y.length; i++) {
+                        Term uu = u[i];
                         if (uu != IdempotentBool.True)
                             y[j++] = uu;
                     }
@@ -125,14 +125,14 @@ public interface ConjBuilder {
     }
 
     default boolean addAll(long w, Iterable<Term> tt) {
-        for (var t : tt) {
+        for (Term t : tt) {
             if (!add(w, t))
                 return false;
         }
         return true;
     }
     default boolean addAllNeg(long w, Iterable<Term> tt) {
-        for (var t : tt) {
+        for (Term t : tt) {
             if (!add(w, t.neg()))
                 return false;
         }
@@ -171,7 +171,7 @@ public interface ConjBuilder {
      */
     default boolean addConjEvent(long at, Term x) {
 
-        var xdt = x.dt();
+        int xdt = x.dt();
 //        if (xdt == DTERNAL) {
 //            if (at == ETERNAL) {
 //
@@ -209,7 +209,7 @@ public interface ConjBuilder {
     }
 
     default long shiftOrZero() {
-        var s = shift();
+        long s = shift();
         if (s == ETERNAL)
             return 0;
         else {
@@ -219,10 +219,10 @@ public interface ConjBuilder {
     }
 
     default long shift() {
-        var min = TIMELESS;
-        var ii = eventOccIterator();
+        long min = TIMELESS;
+        LongIterator ii = eventOccIterator();
         while (ii.hasNext()) {
-            var t = ii.next();
+            long t = ii.next();
             if (t != ETERNAL) {
                 if (t < min)
                     min = t;

@@ -57,8 +57,8 @@ public enum reflect {
     }
 
     public static @Nullable Term sop(String operatorName, @NotNull Subterms c) {
-        var m = new Term[c.subs()];
-        for (var i = 0; i < c.subs(); i++) {
+        Term[] m = new Term[c.subs()];
+        for (int i = 0; i < c.subs(); i++) {
             if ((m[i] = reflect(c.sub(i))) == null)
                 return null;
         }

@@ -46,7 +46,7 @@ public class WordNetUtilities {
      */
     public static String getPOSfromKey(String sense) {
 
-        var firstUS = sense.indexOf('_');
+        int firstUS = sense.indexOf('_');
         return sense.substring(firstUS + 1, firstUS + 3);
     }
 
@@ -65,8 +65,12 @@ public class WordNetUtilities {
      */
     public static  List convertTermList(String termList) {
 
-        var list = termList.split(" ");
-        var result = Arrays.stream(list).map(WordNetUtilities::getBareSUMOTerm).collect(Collectors.toList());
+        String[] list = termList.split(" ");
+        List<String> result = new ArrayList<>();
+        for (String s : list) {
+            String bareSUMOTerm = getBareSUMOTerm(s);
+            result.add(bareSUMOTerm);
+        }
         return result;
     }
 
@@ -285,7 +289,7 @@ public class WordNetUtilities {
      */
     public static String mappingCharToName(char mappingType) {
 
-        var mapping = "";
+        String mapping = "";
         switch (mappingType) {
             case '=':
                 mapping = "equivalent";
@@ -322,8 +326,8 @@ public class WordNetUtilities {
      */
     public static String subst(String result, String match, String subst) {
 
-        var p = Pattern.compile(match);
-        var m = p.matcher(result);
+        Pattern p = Pattern.compile(match);
+        Matcher m = p.matcher(result);
         if (m.find()) {
             result = m.replaceFirst(subst);
         }
@@ -346,8 +350,8 @@ public class WordNetUtilities {
      */
     public static boolean substTest(String result, String match, String subst, Map hash) {
 
-        var p = Pattern.compile(match);
-        var m = p.matcher(result);
+        Pattern p = Pattern.compile(match);
+        Matcher m = p.matcher(result);
         if (m.find()) {
             result = m.replaceFirst(subst);
             return hash.containsKey(result);
@@ -371,8 +375,8 @@ public class WordNetUtilities {
      */
     public static String verbPlural(String verb) {
 
-        var word = verb;
-        var remainder = "";
+        String word = verb;
+        String remainder = "";
         if (verb.indexOf('_') > 0) {
             word = verb.substring(0, verb.indexOf('_'));
             remainder = verb.substring(verb.indexOf('_'));
@@ -401,11 +405,11 @@ public class WordNetUtilities {
      */
     public static String formatWords(TreeMap<String, String> words, String kbName) {
 
-        var result = new StringBuilder();
-        var count = 0;
-        var it = words.keySet().iterator();
+        StringBuilder result = new StringBuilder();
+        int count = 0;
+        Iterator<String> it = words.keySet().iterator();
         while (it.hasNext() && count < 50) {
-            var word = it.next();
+            String word = it.next();
             CharSequence synset = words.get(word);
             result.append("<a href=\"WordNet.jsp?word=");
             result.append(word);
@@ -433,13 +437,13 @@ public class WordNetUtilities {
      */
     public static String formatWordsList(TreeMap<String, ArrayList<String>> words, String kbName) {
 
-        var result = new StringBuilder();
-        var count = 0;
-        var it = words.keySet().iterator();
+        StringBuilder result = new StringBuilder();
+        int count = 0;
+        Iterator<String> it = words.keySet().iterator();
         while (it.hasNext() && count < 50) {
-            var word = it.next();
-            var synsetList = words.get(word);
-            for (var i = 0; i < synsetList.size(); i++) {
+            String word = it.next();
+            ArrayList<String> synsetList = words.get(word);
+            for (int i = 0; i < synsetList.size(); i++) {
                 CharSequence synset = synsetList.get(i);
                 result.append("<a href=\"WordNet.jsp?word=");
                 result.append(word);
@@ -475,27 +479,27 @@ public class WordNetUtilities {
         FileWriter fw = null;
         PrintWriter pw = null;
         try {
-            var kb = KBmanager.manager.getKB("SUMO");
+            KB kb = KBmanager.manager.getKB("SUMO");
 			fw = new FileWriter(KBmanager.manager.getPref("kbDir") + File.separator + fileName + "-new.txt");
             pw = new PrintWriter(fw);
 
-            var r = new FileReader(KBmanager.manager.getPref("kbDir") + File.separator + fileName + ".txt");
-            var lr = new LineNumberReader(r);
+            FileReader r = new FileReader(KBmanager.manager.getPref("kbDir") + File.separator + fileName + ".txt");
+            LineNumberReader lr = new LineNumberReader(r);
             String line;
             while ((line = lr.readLine()) != null) {
                 if (lr.getLineNumber() % 1000 == 0) {
                     System.out.print('.');
                 }
                 line = line.trim();
-                var p = Pattern.compile(pattern);
-                var m = p.matcher(line);
+                Pattern p = Pattern.compile(pattern);
+                Matcher m = p.matcher(line);
                 if (m.matches()) {
-                    var oldTerm = m.group(4);
-                    var bareOldTerm = getBareSUMOTerm(oldTerm);
-                    var synset = posNum + m.group(1);
-                    var newTerm = hm.get(synset);
+                    String oldTerm = m.group(4);
+                    String bareOldTerm = getBareSUMOTerm(oldTerm);
+                    String synset = posNum + m.group(1);
+                    String newTerm = hm.get(synset);
                     if (!bareOldTerm.contains("&%") && newTerm != null && !newTerm.isEmpty() && !newTerm.equals(bareOldTerm) && kb.childOf(newTerm, bareOldTerm)) {
-                        var mapType = oldTerm.substring(oldTerm.length() - 1);
+                        String mapType = oldTerm.substring(oldTerm.length() - 1);
                         pw.println(m.group(1) + m.group(2) + "| " + m.group(3) + " &%" + newTerm + mapType);
                         System.out.println("INFO in WordNet.processMergers(): synset, oldTerm, newterm: "
                                 + synset + ' ' + oldTerm + ' ' + newTerm);
@@ -528,23 +532,23 @@ public class WordNetUtilities {
     @SuppressWarnings("HardcodedFileSeparator")
     public static void mergeUpdates() throws IOException {
 
-        var hm = new HashMap<String, String>();
+        HashMap<String, String> hm = new HashMap<String, String>();
 
-        var dir = "/Program Files/Apache Software Foundation/Tomcat 5.5/KBs";
-        var r = new FileReader(dir + File.separator + "newMappings20.dat");
-        var lr = new LineNumberReader(r);
+        String dir = "/Program Files/Apache Software Foundation/Tomcat 5.5/KBs";
+        FileReader r = new FileReader(dir + File.separator + "newMappings20.dat");
+        LineNumberReader lr = new LineNumberReader(r);
         String line;
         while ((line = lr.readLine()) != null) {
             if (line.length() > 11) {
-                var synset = line.substring(0, 9);
-                var SUMOterm = line.substring(10);
+                String synset = line.substring(0, 9);
+                String SUMOterm = line.substring(10);
                 hm.put(synset, SUMOterm);
             }
         }
 
-        var fileName = "WordNetMappings-nouns";
-        var pattern = "^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+?)\\s(\\&\\%\\S+[\\S\\s]+)$";
-        var posNum = "1";
+        String fileName = "WordNetMappings-nouns";
+        String pattern = "^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+?)\\s(\\&\\%\\S+[\\S\\s]+)$";
+        String posNum = "1";
         processMergers(hm, fileName, pattern, posNum);
         fileName = "WordNetMappings-verbs";
         pattern = "^([0-9]{8})([^\\|]+)\\|\\s([\\S\\s]+?)\\s(\\&\\%\\S+[\\S\\s]+)$";
@@ -573,12 +577,12 @@ public class WordNetUtilities {
 
         Iterable rels = (ArrayList) WordNet.wn.relations.get(synset);
         if (rels != null) {
-            for (var rel : rels) {
-                var avp = (AVPair) rel;
+            for (Object rel : rels) {
+                AVPair avp = (AVPair) rel;
                 if ("hypernym".equals(avp.attribute) || "instance hypernym".equals(avp.attribute)) {
-                    var mappingChar = "instance hypernym".equals(avp.attribute) ? "@" : "+";
-                    var targetSynset = avp.value;
-                    var targetSUMO = WordNet.wn.getSUMOMapping(targetSynset);
+                    String mappingChar = "instance hypernym".equals(avp.attribute) ? "@" : "+";
+                    String targetSynset = avp.value;
+                    String targetSUMO = WordNet.wn.getSUMOMapping(targetSynset);
                     if (targetSUMO != null && !targetSUMO.isEmpty()) {
                         if (targetSUMO.charAt(targetSUMO.length() - 1) == '[') {
                             mappingChar = "[";
@@ -587,7 +591,7 @@ public class WordNetUtilities {
                         {
                             return "&%" + getBareSUMOTerm(targetSUMO) + mappingChar;
                         } else {
-                            var candidate = findMappingFromHypernym(targetSynset);
+                            String candidate = findMappingFromHypernym(targetSynset);
                             if (candidate != null && !candidate.isEmpty()) {
                                 return candidate;
                             }
@@ -609,26 +613,26 @@ public class WordNetUtilities {
         FileWriter fw = null;
         PrintWriter pw = null;
         try {
-            var kb = KBmanager.manager.getKB("SUMO");
+            KB kb = KBmanager.manager.getKB("SUMO");
 			fw = new FileWriter(KBmanager.manager.getPref("kbDir") + File.separator + fileName + "-new.txt");
             pw = new PrintWriter(fw);
 
-            var r = new FileReader(KBmanager.manager.getPref("kbDir") + File.separator + fileName + ".txt");
-            var lr = new LineNumberReader(r);
+            FileReader r = new FileReader(KBmanager.manager.getPref("kbDir") + File.separator + fileName + ".txt");
+            LineNumberReader lr = new LineNumberReader(r);
             String line;
             while ((line = lr.readLine()) != null) {
                 if (lr.getLineNumber() % 1000 == 0) {
                     System.out.print('.');
                 }
                 line = line.trim();
-                var p = Pattern.compile(pattern);
-                var m = p.matcher(line);
+                Pattern p = Pattern.compile(pattern);
+                Matcher m = p.matcher(line);
                 if (line.contains("&%")) {
                     pw.println(line.trim());
                 } else {
                     if (m.matches()) {
-                        var synset = posNum + m.group(1);
-                        var newTerm = findMappingFromHypernym(synset);
+                        String synset = posNum + m.group(1);
+                        String newTerm = findMappingFromHypernym(synset);
                         if (newTerm != null && !newTerm.isEmpty()) {
                             pw.println(m.group(1) + m.group(2) + "| " + m.group(3) + ' ' + newTerm);
 
@@ -665,9 +669,9 @@ public class WordNetUtilities {
     @SuppressWarnings("HardcodedFileSeparator")
     public static void deduceMissingLinks() throws IOException {
 
-        var fileName = "WordNetMappings-nouns";
-        var pattern = "^([0-9]{8})([\\S\\s_]+)\\|\\s([\\S\\s]+?)\\s*$";
-        var posNum = "1";
+        String fileName = "WordNetMappings-nouns";
+        String pattern = "^([0-9]{8})([\\S\\s_]+)\\|\\s([\\S\\s]+?)\\s*$";
+        String posNum = "1";
         processMissingLinks(fileName, pattern, posNum);
         fileName = "WordNetMappings-verbs";
         pattern = "^([0-9]{8})([^\\|]+)\\|\\s([\\S\\s]+?)\\s*$";
@@ -694,26 +698,26 @@ public class WordNetUtilities {
         FileWriter fw = null;
         PrintWriter pw = null;
         try {
-            var kb = KBmanager.manager.getKB("SUMO");
+            KB kb = KBmanager.manager.getKB("SUMO");
 			fw = new FileWriter(KBmanager.manager.getPref("kbDir") + File.separator + fileName + "-new");
             pw = new PrintWriter(fw);
 
-            var r = new FileReader(KBmanager.manager.getPref("kbDir") + File.separator + fileName);
-            var lr = new LineNumberReader(r);
+            FileReader r = new FileReader(KBmanager.manager.getPref("kbDir") + File.separator + fileName);
+            LineNumberReader lr = new LineNumberReader(r);
             String line;
             while ((line = lr.readLine()) != null) {
                 if (lr.getLineNumber() % 1000 == 0) {
                     System.out.print('.');
                 }
                 line = line.trim();
-                var p = Pattern.compile(pattern);
-                var m = p.matcher(line);
+                Pattern p = Pattern.compile(pattern);
+                Matcher m = p.matcher(line);
                 if (m.matches()) {
-                    var newsynset = posNum + m.group(1);
-                    var oldsynset = mappings.get(newsynset);
+                    String newsynset = posNum + m.group(1);
+                    String oldsynset = mappings.get(newsynset);
                     if (oldsynset != null && !oldsynset.isEmpty()) {
                         oldsynset = oldsynset.substring(1);
-                        var term = "";
+                        String term = "";
                         switch (posNum.charAt(0)) {
                             case '1':
                                 term = (String) WordNet.wn.nounSUMOHash.get(oldsynset);
@@ -763,19 +767,19 @@ public class WordNetUtilities {
     public void updateWNversionReading(String fileName, String pattern, String posNum) throws IOException {
 
         try {
-            var r = new FileReader(KBmanager.manager.getPref("kbDir") + File.separator + fileName);
-            var lr = new LineNumberReader(r);
+            FileReader r = new FileReader(KBmanager.manager.getPref("kbDir") + File.separator + fileName);
+            LineNumberReader lr = new LineNumberReader(r);
             String line;
             while ((line = lr.readLine()) != null) {
                 if (lr.getLineNumber() % 1000 == 0) {
                     System.out.print('.');
                 }
                 line = line.trim();
-                var p = Pattern.compile(pattern);
-                var m = p.matcher(line);
+                Pattern p = Pattern.compile(pattern);
+                Matcher m = p.matcher(line);
                 if (m.matches()) {
-                    var newsynset = posNum + m.group(1);
-                    var oldsynset = posNum + m.group(2);
+                    String newsynset = posNum + m.group(1);
+                    String oldsynset = posNum + m.group(2);
                     mappings.put(newsynset, oldsynset);
                 } else {
                     System.out.println("INFO in WordNetUtilities.updateWNversionReading(): no match for line: " + line);
@@ -804,9 +808,9 @@ public class WordNetUtilities {
     @SuppressWarnings("HardcodedFileSeparator")
     public void updateWNversion() throws IOException {
 
-        var fileName = "wn30-21.noun";
-        var pattern = "^(\\d+) (\\d+) .*$";
-        var posNum = "1";
+        String fileName = "wn30-21.noun";
+        String pattern = "^(\\d+) (\\d+) .*$";
+        String posNum = "1";
         updateWNversionReading(fileName, pattern, posNum);
         fileName = "wn30-21.verb";
         pattern = "^(\\d+) (\\d+) .*$";

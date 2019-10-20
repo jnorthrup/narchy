@@ -39,8 +39,8 @@ public class DefaultNearCallback extends NearCallback {
 
 	@Override
 	public void handleCollision(BroadphasePair collisionPair, DefaultIntersecter dispatcher, DispatcherInfo dispatchInfo) {
-		var colObj0 = collisionPair.pProxy0.data;
-		var colObj1 = collisionPair.pProxy1.data;
+        Collidable colObj0 = collisionPair.pProxy0.data;
+        Collidable colObj1 = collisionPair.pProxy1.data;
 
 		if (dispatcher.needsCollision(colObj0, colObj1)) {
 			
@@ -58,7 +58,7 @@ public class DefaultNearCallback extends NearCallback {
 				}
 				else {
 
-					var toi = collisionPair.algorithm.calculateTimeOfImpact(colObj0, colObj1, dispatchInfo, contactPointResult);
+                    float toi = collisionPair.algorithm.calculateTimeOfImpact(colObj0, colObj1, dispatchInfo, contactPointResult);
 					if (dispatchInfo.timeOfImpact > toi) {
 						dispatchInfo.timeOfImpact = toi;
 					}

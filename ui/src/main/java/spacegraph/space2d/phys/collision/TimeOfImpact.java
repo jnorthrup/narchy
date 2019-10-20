@@ -111,8 +111,8 @@ public class TimeOfImpact {
         output.state = TOIOutputState.UNKNOWN;
         output.t = input.tMax;
 
-        var proxyA = input.proxyA;
-        var proxyB = input.proxyB;
+        DistanceProxy proxyA = input.proxyA;
+        DistanceProxy proxyB = input.proxyB;
 
         sweepA.set(input.sweepA);
         sweepB.set(input.sweepB);
@@ -122,12 +122,12 @@ public class TimeOfImpact {
         sweepA.normalize();
         sweepB.normalize();
 
-        var tMax = input.tMax;
+        float tMax = input.tMax;
 
-        var totalRadius = proxyA.m_radius + proxyB.m_radius;
+        float totalRadius = proxyA.m_radius + proxyB.m_radius;
 
-        var target = MathUtils.max(Settings.linearSlop, totalRadius - 3.0f * Settings.linearSlop);
-        var tolerance = 0.25f * Settings.linearSlop;
+        float target = MathUtils.max(Settings.linearSlop, totalRadius - 3.0f * Settings.linearSlop);
+        float tolerance = 0.25f * Settings.linearSlop;
 
         assert (target > tolerance);
 
@@ -137,8 +137,8 @@ public class TimeOfImpact {
         distanceInput.useRadii = false;
 
 
-        var iter = 0;
-        for (var t1 = 0f; ; ) {
+        int iter = 0;
+        for (float t1 = 0f; ; ) {
             sweepA.getTransform(xfA, t1);
             sweepB.getTransform(xfB, t1);
             
@@ -173,12 +173,12 @@ public class TimeOfImpact {
             fcn.initialize(cache, proxyA, sweepA, proxyB, sweepB, t1);
 
 
-            var done = false;
-            var t2 = tMax;
-            for (var pushBackIter = 0; ; ) {
+            boolean done = false;
+            float t2 = tMax;
+            for (int pushBackIter = 0; ; ) {
 
 
-                var s2 = fcn.findMinSeparation(indexes, t2);
+                float s2 = fcn.findMinSeparation(indexes, t2);
                 
                 
                 if (s2 > target + tolerance) {
@@ -197,7 +197,7 @@ public class TimeOfImpact {
                 }
 
 
-                var s1 = fcn.evaluate(indexes[0], indexes[1], t1);
+                float s1 = fcn.evaluate(indexes[0], indexes[1], t1);
                 
                 
                 
@@ -219,7 +219,7 @@ public class TimeOfImpact {
                 }
 
 
-                var rootIterCount = 0;
+                int rootIterCount = 0;
                 float a1 = t1, a2 = t2;
                 for (; ; ) {
                     
@@ -232,7 +232,7 @@ public class TimeOfImpact {
                         t = 0.5f * (a1 + a2);
                     }
 
-                    var s = fcn.evaluate(indexes[0], indexes[1], t);
+                    float s = fcn.evaluate(indexes[0], indexes[1], t);
 
                     if (Math.abs(s - target) < tolerance) {
                         
@@ -325,7 +325,7 @@ class SeparationFunction {
                             DistanceProxy proxyB, Sweep sweepB, float t1) {
         m_proxyA = proxyA;
         m_proxyB = proxyB;
-        var count = cache.count;
+        int count = cache.count;
         assert (0 < count && count < 3);
 
         m_sweepA = sweepA;
@@ -350,7 +350,7 @@ class SeparationFunction {
             Transform.mulToOutUnsafe(xfa, localPointA, pointA);
             Transform.mulToOutUnsafe(xfb, localPointB, pointB);
             m_axis.set(pointB).subbed(pointA);
-            var s = m_axis.normalize();
+            float s = m_axis.normalize();
             return s;
         } else if (cache.indexA[0] == cache.indexA[1]) {
             
@@ -372,7 +372,7 @@ class SeparationFunction {
             Transform.mulToOutUnsafe(xfa, localPointA, pointA);
 
             temp.set(pointA).subbed(pointB);
-            var s = v2.dot(temp, normal);
+            float s = v2.dot(temp, normal);
             if (s < 0.0f) {
                 m_axis.negated();
                 s = -s;
@@ -398,7 +398,7 @@ class SeparationFunction {
             Transform.mulToOutUnsafe(xfb, localPointB, pointB);
 
             temp.set(pointB).subbed(pointA);
-            var s = v2.dot(temp, normal);
+            float s = v2.dot(temp, normal);
             if (s < 0.0f) {
                 m_axis.negated();
                 s = -s;
@@ -431,7 +431,7 @@ class SeparationFunction {
                 Transform.mulToOutUnsafe(xfa, localPointA, pointA);
                 Transform.mulToOutUnsafe(xfb, localPointB, pointB);
 
-                var separation = v2.dot(pointB.subbed(pointA), m_axis);
+                float separation = v2.dot(pointB.subbed(pointA), m_axis);
                 return separation;
             }
             case FACE_A: {
@@ -447,7 +447,7 @@ class SeparationFunction {
                 localPointB.set(m_proxyB.vertex(indexes[1]));
                 Transform.mulToOutUnsafe(xfb, localPointB, pointB);
 
-                var separation = v2.dot(pointB.subbed(pointA), normal);
+                float separation = v2.dot(pointB.subbed(pointA), normal);
                 return separation;
             }
             case FACE_B: {
@@ -463,7 +463,7 @@ class SeparationFunction {
                 localPointA.set(m_proxyA.vertex(indexes[0]));
                 Transform.mulToOutUnsafe(xfa, localPointA, pointA);
 
-                var separation = v2.dot(pointA.subbed(pointB), normal);
+                float separation = v2.dot(pointA.subbed(pointB), normal);
                 return separation;
             }
             default:
@@ -490,7 +490,7 @@ class SeparationFunction {
                 Transform.mulToOutUnsafe(xfa, localPointA, pointA);
                 Transform.mulToOutUnsafe(xfb, localPointB, pointB);
 
-                var separation = v2.dot(pointB.subbed(pointA), m_axis);
+                float separation = v2.dot(pointB.subbed(pointA), m_axis);
                 return separation;
             }
             case FACE_A: {
@@ -502,7 +502,7 @@ class SeparationFunction {
 
                 localPointB.set(m_proxyB.vertex(indexB));
                 Transform.mulToOutUnsafe(xfb, localPointB, pointB);
-                var separation = v2.dot(pointB.subbed(pointA), normal);
+                float separation = v2.dot(pointB.subbed(pointA), normal);
                 return separation;
             }
             case FACE_B: {
@@ -515,7 +515,7 @@ class SeparationFunction {
                 localPointA.set(m_proxyA.vertex(indexA));
                 Transform.mulToOutUnsafe(xfa, localPointA, pointA);
 
-                var separation = v2.dot(pointA.subbed(pointB), normal);
+                float separation = v2.dot(pointA.subbed(pointB), normal);
                 return separation;
             }
             default:

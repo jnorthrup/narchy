@@ -23,7 +23,7 @@ public class TestTimeGraphVis extends SimpleGraph3D<TimeGraph.Event> {
     }
 
     static MapNodeGraph dt() {
-        var A = new TimeGraph();
+        TimeGraph A = new TimeGraph();
         A.know($.$$("((one &&+1 two) ==>+1 (three &&+1 four))"), ETERNAL);
         A.know($.$$("one"), 1);
         A.know($.$$("two"), 20);
@@ -33,10 +33,10 @@ public class TestTimeGraphVis extends SimpleGraph3D<TimeGraph.Event> {
     public static void main(String[] args) {
 
 
-        var cs = new TestTimeGraphVis();
+        TestTimeGraphVis cs = new TestTimeGraphVis();
 
 
-        var sg = cs.show(1400, 1000, true);
+        SpaceGraph3D sg = cs.show(1400, 1000, true);
 
 
 //        sg.addAt(new SubOrtho(grid(

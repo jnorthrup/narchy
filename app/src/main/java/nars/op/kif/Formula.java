@@ -244,7 +244,7 @@ public class Formula implements Comparable, Serializable {
      */
     public ArrayList getClauses() {
 
-        var clausesWithVarMap = getTheClausalForm();
+        ArrayList clausesWithVarMap = getTheClausalForm();
         if ((clausesWithVarMap == null) || clausesWithVarMap.isEmpty())
             return null;
         return (ArrayList) clausesWithVarMap.get(0);
@@ -259,7 +259,7 @@ public class Formula implements Comparable, Serializable {
      */
     public HashMap getVarMap() {
 
-        var clausesWithVarMap = getTheClausalForm();
+        ArrayList clausesWithVarMap = getTheClausalForm();
         if ((clausesWithVarMap == null) || (clausesWithVarMap.size() < 3))
             return null;
         return (HashMap) clausesWithVarMap.get(2);
@@ -284,10 +284,10 @@ public class Formula implements Comparable, Serializable {
      */
     public String createID() {
 
-        var fname = sourceFile;
+        String fname = sourceFile;
         if (!StringUtil.emptyString(fname) && fname.lastIndexOf(File.separator) > -1)
             fname = fname.substring(fname.lastIndexOf(File.separator) + 1);
-        var hc = theFormula.hashCode();
+        int hc = theFormula.hashCode();
         String result = null;
         if (hc < 0)
             result = 'N' + (Integer.valueOf(hc)).toString().substring(1) + fname;
@@ -336,22 +336,22 @@ public class Formula implements Comparable, Serializable {
      */
     public boolean isBalancedList() {
 
-        var ans = false;
+        boolean ans = false;
         if (this.listP()) {
             if (this.empty())
                 ans = true;
             else {
-                var input = this.theFormula.trim();
+                String input = this.theFormula.trim();
                 List quoteChars = Arrays.asList('"', '\'');
-                var i = 0;
-                var len = input.length();
-                var end = len - 1;
-                var pLevel = 0;
-                var qLevel = 0;
-                var prev = '0';
-                var ch = prev;
-                var insideQuote = false;
-                var quoteCharInForce = '0';
+                int i = 0;
+                int len = input.length();
+                int end = len - 1;
+                int pLevel = 0;
+                int qLevel = 0;
+                char prev = '0';
+                char ch = prev;
+                boolean insideQuote = false;
+                char quoteCharInForce = '0';
                 while (i < len) {
                     ch = input.charAt(i);
                     if (!insideQuote) {
@@ -401,17 +401,17 @@ public class Formula implements Comparable, Serializable {
                 
                 ans = "";  
             else {
-                var input = this.theFormula.trim();
-                var sb = new StringBuilder();
+                String input = this.theFormula.trim();
+                StringBuilder sb = new StringBuilder();
                 List quoteChars = Arrays.asList('"', '\'');
-                var i = 1;
-                var len = input.length();
-                var end = len - 1;
-                var level = 0;
-                var prev = '0';
-                var ch = prev;
-                var insideQuote = false;
-                var quoteCharInForce = '0';
+                int i = 1;
+                int len = input.length();
+                int end = len - 1;
+                int level = 0;
+                char prev = '0';
+                char ch = prev;
+                boolean insideQuote = false;
+                char quoteCharInForce = '0';
                 while (i < end) {
                     ch = input.charAt(i);
                     if (!insideQuote) {
@@ -469,17 +469,17 @@ public class Formula implements Comparable, Serializable {
             if (this.empty())
                 ans = this.theFormula;
             else {
-                var input = theFormula.trim();
+                String input = theFormula.trim();
                 List quoteChars = Arrays.asList('"', '\'');
-                var i = 1;
-                var len = input.length();
-                var end = len - 1;
-                var level = 0;
-                var prev = '0';
-                var ch = prev;
-                var insideQuote = false;
-                var quoteCharInForce = '0';
-                var carCount = 0;
+                int i = 1;
+                int len = input.length();
+                int end = len - 1;
+                int level = 0;
+                char prev = '0';
+                char ch = prev;
+                boolean insideQuote = false;
+                char quoteCharInForce = '0';
+                int carCount = 0;
                 while (i < end) {
                     ch = input.charAt(i);
                     if (!insideQuote) {
@@ -520,7 +520,7 @@ public class Formula implements Comparable, Serializable {
                     i++;
                 }
                 if (carCount > 0) {
-                    var j = i + 1;
+                    int j = i + 1;
                     if (j < end)
                         ans = '(' + input.substring(j, end).trim() + ')';
                     else
@@ -547,8 +547,8 @@ public class Formula implements Comparable, Serializable {
      */
     public Formula cons(String obj) {
 
-        var ans = this;
-        var fStr = this.theFormula;
+        Formula ans = this;
+        String fStr = this.theFormula;
         if (!StringUtil.emptyString(obj) && !StringUtil.emptyString(fStr)) {
             String theNewFormula = null;
             if (this.listP()) {
@@ -587,9 +587,9 @@ public class Formula implements Comparable, Serializable {
      */
     public Formula cdrAsFormula() {
 
-        var thisCdr = this.cdr();
+        String thisCdr = this.cdr();
         if (listP(thisCdr)) {
-            var f = new Formula();
+            Formula f = new Formula();
             f.read(thisCdr);
             return f;
         }
@@ -605,9 +605,9 @@ public class Formula implements Comparable, Serializable {
      */
     public Formula carAsFormula() {
 
-        var thisCar = this.car();
+        String thisCar = this.car();
 
-        var f = new Formula();
+        Formula f = new Formula();
         f.read(thisCar);
         return f;
         
@@ -635,7 +635,7 @@ public class Formula implements Comparable, Serializable {
      */
     public String cddr() {
 
-        var fCdr = this.cdrAsFormula();
+        Formula fCdr = this.cdrAsFormula();
         if (fCdr != null)
             return fCdr.cdr();
         return null;
@@ -651,9 +651,9 @@ public class Formula implements Comparable, Serializable {
      */
     public Formula cddrAsFormula() {
 
-        var thisCddr = this.cddr();
+        String thisCddr = this.cddr();
         if (listP(thisCddr)) {
-            var f = new Formula();
+            Formula f = new Formula();
             f.read(thisCddr);
             return f;
         }
@@ -680,7 +680,7 @@ public class Formula implements Comparable, Serializable {
      */
     public Formula append(Formula f) {
 
-        var newFormula = new Formula();
+        Formula newFormula = new Formula();
         newFormula.read(theFormula);
         if (newFormula.equals("") || newFormula.atom()) {
             System.out.println("Error in KB.append(): attempt to append to non-list: " + theFormula);
@@ -691,8 +691,8 @@ public class Formula implements Comparable, Serializable {
         f.theFormula = f.theFormula.trim();
         if (!f.atom())
             f.theFormula = f.theFormula.substring(1,f.theFormula.length()-1);
-        var lastParen = theFormula.lastIndexOf(')');
-        var sep = "";
+        int lastParen = theFormula.lastIndexOf(')');
+        String sep = "";
         if (lastParen > 1)
             sep = " ";
         newFormula.theFormula = newFormula.theFormula.substring(0,lastParen) + sep + f.theFormula + ')';
@@ -704,9 +704,9 @@ public class Formula implements Comparable, Serializable {
      */
     public static boolean atom(String s) {
 
-        var ans = false;
+        boolean ans = false;
         if (!StringUtil.emptyString(s)) {
-            var str = s.trim();
+            String str = s.trim();
             ans = (StringUtil.isQuotedString(s) ||
                     (!str.contains(")") && !str.matches(".*\\s.*")) );
         }
@@ -751,9 +751,9 @@ public class Formula implements Comparable, Serializable {
      */
     public static boolean listP(String s) {
 
-        var ans = false;
+        boolean ans = false;
         if (!StringUtil.emptyString(s)) {
-            var str = s.trim();
+            String str = s.trim();
             ans = (str.startsWith("(") && str.endsWith(")"));
         }
         return ans;
@@ -766,42 +766,42 @@ public class Formula implements Comparable, Serializable {
 
         if (f.theFormula.isEmpty() || !f.listP() || f.atom() || f.empty())
             return "";
-        var pred = f.car();
-        var rest = f.cdr();
-        var restF = new Formula();
+        String pred = f.car();
+        String rest = f.cdr();
+        Formula restF = new Formula();
         restF.read(rest);
-        var argCount = 0;
+        int argCount = 0;
         while (!restF.empty()) {
             argCount++;
-            var arg = restF.car();
-            var argF = new Formula();
+            String arg = restF.car();
+            Formula argF = new Formula();
             argF.read(arg);
-            var result = validArgsRecurse(argF, filename, lineNo);
+            String result = validArgsRecurse(argF, filename, lineNo);
             if (!"".equals(result))
                 return result;
             restF.theFormula = restF.cdr();
         }
-        var location = "";
+        String location = "";
         if ((filename != null) && (lineNo != null))
             location = "near line " + lineNo + " in " + filename;
         if (pred.equals(AND) || pred.equals(OR)) {
             if (argCount < 2) {
-                var errString = "Too few arguments for 'and' or 'or' at " + location + ": " + f;
+                String errString = "Too few arguments for 'and' or 'or' at " + location + ": " + f;
                 errors.add(errString);
                 return errString;
             }
         }
         else if (pred.equals(UQUANT) || pred.equals(EQUANT)) {
             if (argCount != 2) {
-                var errString = "Wrong number of arguments for quantifer at " + location + ": " + f;
+                String errString = "Wrong number of arguments for quantifer at " + location + ": " + f;
                 errors.add(errString);
                 return errString;
             }
             else {
-                var quantF = new Formula();
+                Formula quantF = new Formula();
                 quantF.read(rest);
                 if (!listP(quantF.car())) {
-                    var errString = "No var list for quantifier at " + location + ": " + f;
+                    String errString = "No var list for quantifier at " + location + ": " + f;
                     errors.add(errString);
                     return errString;
                 }
@@ -809,14 +809,14 @@ public class Formula implements Comparable, Serializable {
         }
         else if (pred.equals(IFF) || pred.equals(IF)) {
             if (argCount != 2) {
-                var errString = "Wrong number of arguments for '<=>' or '=>' at " + location + ": " + f;
+                String errString = "Wrong number of arguments for '<=>' or '=>' at " + location + ": " + f;
                 errors.add(errString);
                 return errString;
             }
         }
         else if (pred.equals(EQUAL)) {
             if (argCount != 2) {
-                var errString = "Wrong number of arguments for 'equals' at " + location + ": " + f;
+                String errString = "Wrong number of arguments for 'equals' at " + location + ": " + f;
                 errors.add(errString);
                 return errString;
             }
@@ -824,7 +824,7 @@ public class Formula implements Comparable, Serializable {
         else if (!(isVariable(pred)) && (argCount > (MAX_PREDICATE_ARITY + 1))) {
 
 
-            var errString = "Maybe too many arguments at " + location + ": " + f;
+            String errString = "Maybe too many arguments at " + location + ": " + f;
             errors.add(errString);
             return errString;
         }
@@ -852,9 +852,9 @@ public class Formula implements Comparable, Serializable {
 
         if (theFormula == null || theFormula.isEmpty())
             return "";
-        var f = new Formula();
+        Formula f = new Formula();
         f.read(theFormula);
-        var result = validArgsRecurse(f, filename, lineNo);
+        String result = validArgsRecurse(f, filename, lineNo);
         return result;
     }
 
@@ -891,15 +891,15 @@ public class Formula implements Comparable, Serializable {
      */
     private static ArrayList<Formula> parseList(String s) {
 
-        var f = new Formula();
+        Formula f = new Formula();
         f.read('(' + s + ')');
-        var result = new ArrayList<Formula>();
+        ArrayList<Formula> result = new ArrayList<Formula>();
         if (f.empty())
             return result;
         while (!f.empty()) {
-            var car = f.car();
+            String car = f.car();
             f.read(f.cdr());
-            var newForm = new Formula();
+            Formula newForm = new Formula();
             newForm.read(car);
             result.add(newForm);
         }
@@ -918,12 +918,12 @@ public class Formula implements Comparable, Serializable {
      */
     private boolean compareFormulaSets(String s) {
 
-        var thisList = parseList(this.theFormula.substring(1,this.theFormula.length()-1));
-        var sList = parseList(s.substring(1,s.length()-1));
+        ArrayList<Formula> thisList = parseList(this.theFormula.substring(1,this.theFormula.length()-1));
+        ArrayList<Formula> sList = parseList(s.substring(1,s.length()-1));
         if (thisList.size() != sList.size())
             return false;
-        for (var formula : thisList) {
-            for (var j = 0; j < sList.size(); j++) {
+        for (Formula formula : thisList) {
+            for (int j = 0; j < sList.size(); j++) {
                 if (formula.logicallyEquals((sList.get(j)).theFormula)) {
                     sList.remove(j);
                     j = sList.size();
@@ -948,9 +948,9 @@ public class Formula implements Comparable, Serializable {
         if (atom(s) && s.compareTo(theFormula) != 0)
             return false;
 
-        var form = new Formula();
+        Formula form = new Formula();
         form.read(this.theFormula);
-        var sform = new Formula();
+        Formula sform = new Formula();
         sform.read(s);
 
         if ("and".equals(form.car().intern()) || "or".equals(form.car().intern())) {
@@ -961,9 +961,9 @@ public class Formula implements Comparable, Serializable {
             return form.compareFormulaSets(sform.theFormula);
         }
         else {
-            var newForm = new Formula();
+            Formula newForm = new Formula();
             newForm.read(form.car());
-            var newSform = new Formula();
+            Formula newSform = new Formula();
             newSform.read(sform.cdr());
             return newForm.logicallyEquals(sform.car()) &&
                     newSform.logicallyEquals(form.cdr());
@@ -976,7 +976,7 @@ public class Formula implements Comparable, Serializable {
      */
     public int hashCode() {
 
-        var thisString = Clausifier.normalizeVariables(this.theFormula).trim();
+        String thisString = Clausifier.normalizeVariables(this.theFormula).trim();
         return (thisString.hashCode());
     }
 
@@ -994,12 +994,12 @@ public class Formula implements Comparable, Serializable {
 
         if (!(o instanceof Formula))
             return false;
-        var f = (Formula) o;
+        Formula f = (Formula) o;
         if (f.theFormula == null) {
             return (this.theFormula == null);
         }
-        var thisString = Clausifier.normalizeVariables(this.theFormula).trim().replaceAll("\\s+", " ");
-        var argString = Clausifier.normalizeVariables(f.theFormula).trim().replaceAll("\\s+", " ");
+        String thisString = Clausifier.normalizeVariables(this.theFormula).trim().replaceAll("\\s+", " ");
+        String argString = Clausifier.normalizeVariables(f.theFormula).trim().replaceAll("\\s+", " ");
         return (thisString.equals(argString));
     }
 
@@ -1013,9 +1013,9 @@ public class Formula implements Comparable, Serializable {
             return false;
         }
 
-        var f = theFormula;
-        var form = new Formula();
-        var sform = new Formula();
+        String f = theFormula;
+        Formula form = new Formula();
+        Formula sform = new Formula();
 
         form.theFormula = f;
         s = Clausifier.normalizeVariables(s).intern();
@@ -1057,7 +1057,7 @@ public class Formula implements Comparable, Serializable {
      */
     public boolean logicallyEquals(Formula f) {
 
-        var equalStrings = this.equals(f);
+        boolean equalStrings = this.equals(f);
         if (equalStrings) {
             return true;
         }
@@ -1081,14 +1081,14 @@ public class Formula implements Comparable, Serializable {
      */
     public boolean unifyWith(Formula f) {
 
-        var f1 = Clausifier.clausify(this);
-        var f2 = Clausifier.clausify(f);
+        Formula f1 = Clausifier.clausify(this);
+        Formula f2 = Clausifier.clausify(f);
 
 
-        var kb = KBmanager.manager.getKB(KBmanager.manager.getPref("sumokbname"));
+        KB kb = KBmanager.manager.getKB(KBmanager.manager.getPref("sumokbname"));
 
-        var memoMap = new HashMap<FormulaUtil.FormulaMatchMemoMapKey, List<Set<VariableMapping>>>();
-        var result = mapFormulaVariables(f1, f2, kb, memoMap);
+        HashMap<FormulaUtil.FormulaMatchMemoMapKey, List<Set<VariableMapping>>> memoMap = new HashMap<FormulaUtil.FormulaMatchMemoMapKey, List<Set<VariableMapping>>>();
+        List<Set<VariableMapping>> result = mapFormulaVariables(f1, f2, kb, memoMap);
         return result != null;
     }
 
@@ -1118,7 +1118,7 @@ public class Formula implements Comparable, Serializable {
                 return false;
             }
 
-            var that = (VariableMapping) o;
+            VariableMapping that = (VariableMapping) o;
 
             if (!Objects.equals(var1, that.var1)) {
                 return false;
@@ -1131,7 +1131,7 @@ public class Formula implements Comparable, Serializable {
         @Override
         public int hashCode() {
 
-            var result = var1 != null ? var1.hashCode() : 0;
+            int result = var1 != null ? var1.hashCode() : 0;
             result = 31 * result + (var2 != null ? var2.hashCode() : 0);
             return result;
         }
@@ -1145,9 +1145,9 @@ public class Formula implements Comparable, Serializable {
                 return null;
             }
             List<Set<VariableMapping>> intersection = new LinkedList<>();
-            for (var set1 : mapList1) {
-                for (var set2 : mapList2) {
-                    var newSet = unify(set1, set2);
+            for (Set<VariableMapping> set1 : mapList1) {
+                for (Set<VariableMapping> set2 : mapList2) {
+                    Set<VariableMapping> newSet = unify(set1, set2);
                     if(newSet != null && !intersection.contains(newSet)) {
                         intersection.add(newSet);
                     }
@@ -1170,7 +1170,7 @@ public class Formula implements Comparable, Serializable {
                 union.addAll(mapList1);
             }
             if (mapList2 != null) {
-                for (var set2 : mapList2) {
+                for (Set<VariableMapping> set2 : mapList2) {
                     if ( !union.contains(set2)) {
                         union.add(set2);
                     }
@@ -1184,11 +1184,11 @@ public class Formula implements Comparable, Serializable {
         private static Set<VariableMapping> unify(Collection<VariableMapping> set1, Collection<VariableMapping> set2) {
 
             Set<VariableMapping> result = new HashSet<>(set1);
-            for(var element:set2) {
+            for(VariableMapping element:set2) {
                 
-                for(var e:result){
-                    var leftVarsEqual = e.var1.equals(element.var1);
-                    var rightVarsEqual = e.var2.equals(element.var2);
+                for(VariableMapping e:result){
+                    boolean leftVarsEqual = e.var1.equals(element.var1);
+                    boolean rightVarsEqual = e.var2.equals(element.var2);
                     if ((leftVarsEqual && !rightVarsEqual) || (!leftVarsEqual && rightVarsEqual)) {
                         return null;
                     }
@@ -1246,7 +1246,7 @@ public class Formula implements Comparable, Serializable {
                                                                  HashMap<FormulaUtil.FormulaMatchMemoMapKey, List<Set<VariableMapping>>> memoMap) {
 
 
-        var key = FormulaUtil.createFormulaMatchMemoMapKey(f1.theFormula, f2.theFormula);
+        FormulaUtil.FormulaMatchMemoMapKey key = FormulaUtil.createFormulaMatchMemoMapKey(f1.theFormula, f2.theFormula);
 
         List<Set<VariableMapping>> k;
         if ((k = memoMap.get(key))!=null)
@@ -1285,11 +1285,11 @@ public class Formula implements Comparable, Serializable {
         }
 
 
-        var head1 = new Formula();
+        Formula head1 = new Formula();
         head1.read(f1.car());
-        var head2 = new Formula();
+        Formula head2 = new Formula();
         head2.read(f2.car());
-        var headMaps = mapFormulaVariables(head1, head2, kb, memoMap);
+        List<Set<VariableMapping>> headMaps = mapFormulaVariables(head1, head2, kb, memoMap);
         memoMap.put(FormulaUtil.createFormulaMatchMemoMapKey(head1.theFormula, head2.theFormula), headMaps);
         if (headMaps == null) {
             
@@ -1297,21 +1297,21 @@ public class Formula implements Comparable, Serializable {
         }
 
 
-        var args1 = f1.complexArgumentsToArrayList(1);
-        var args2 = f2.complexArgumentsToArrayList(1);
+        ArrayList<String> args1 = f1.complexArgumentsToArrayList(1);
+        ArrayList<String> args2 = f2.complexArgumentsToArrayList(1);
         if (args1.size() != args2.size()) {
             return null;
         }
 
         if (!isCommutative(head1.theFormula) && !(kb != null && kb.isInstanceOf(head1.theFormula, "SymmetricRelation"))) {
 
-            var runningMaps = headMaps;
-            for (var i = 0; i < args1.size(); i++) {
-                var parameter1 = new Formula();
+            List<Set<VariableMapping>> runningMaps = headMaps;
+            for (int i = 0; i < args1.size(); i++) {
+                Formula parameter1 = new Formula();
                 parameter1.read(args1.get(i));
-                var parameter2 = new Formula();
+                Formula parameter2 = new Formula();
                 parameter2.read(args2.get(i));
-                var parameterMaps = mapFormulaVariables(parameter1, parameter2, kb, memoMap);
+                List<Set<VariableMapping>> parameterMaps = mapFormulaVariables(parameter1, parameter2, kb, memoMap);
                 memoMap.put(FormulaUtil.createFormulaMatchMemoMapKey(parameter1.theFormula, parameter2.theFormula), parameterMaps);
                 runningMaps = VariableMapping.intersect(runningMaps, parameterMaps);
                 if (runningMaps == null) {
@@ -1323,17 +1323,17 @@ public class Formula implements Comparable, Serializable {
         else {
             
             List<Set<VariableMapping>> unionMaps = new ArrayList<>();
-            var permutations = FormulaUtil.getPermutations(args1.size(),
+            List<int[]> permutations = FormulaUtil.getPermutations(args1.size(),
                     (a,b)-> mapFormulaVariables(new Formula(args1.get(a)), new Formula(args2.get(b)), kb, memoMap) != null);
-            for (var perm:permutations) {
-                var currentMaps = headMaps;
-                var currentPairingValid = true;
-                for (var i = 0; i < args1.size(); i++) {
-                    var parameter1 = new Formula();
+            for (int[] perm:permutations) {
+                List<Set<VariableMapping>> currentMaps = headMaps;
+                boolean currentPairingValid = true;
+                for (int i = 0; i < args1.size(); i++) {
+                    Formula parameter1 = new Formula();
                     parameter1.read(args1.get(i));
-                    var parameter2 = new Formula();
+                    Formula parameter2 = new Formula();
                     parameter2.read(args2.get(perm[i]));
-                    var parameterMaps = mapFormulaVariables(parameter1, parameter2, kb, memoMap);
+                    List<Set<VariableMapping>> parameterMaps = mapFormulaVariables(parameter1, parameter2, kb, memoMap);
                     memoMap.put(FormulaUtil.createFormulaMatchMemoMapKey(parameter1.theFormula, parameter2.theFormula), parameterMaps);
                     currentMaps = VariableMapping.intersect(currentMaps, parameterMaps);
                     if (currentMaps == null) {
@@ -1363,19 +1363,19 @@ public class Formula implements Comparable, Serializable {
             return false;
         }
 
-        var stringsEqual = Objects.equals(this.theFormula, f.theFormula);
+        boolean stringsEqual = Objects.equals(this.theFormula, f.theFormula);
         if (stringsEqual || (this.theFormula == null || f.theFormula == null)) {
             return stringsEqual;
         }
 
-        var f1 = Clausifier.clausify(this);
-        var f2 = Clausifier.clausify(f);
+        Formula f1 = Clausifier.clausify(this);
+        Formula f2 = Clausifier.clausify(f);
 
 
-        var kb = KBmanager.manager.getKB(KBmanager.manager.getPref("sumokbname"));
+        KB kb = KBmanager.manager.getKB(KBmanager.manager.getPref("sumokbname"));
 
-        var normalized1 = normalizeParameterOrder(f1.theFormula, kb, true);
-        var normalized2 = normalizeParameterOrder(f2.theFormula, kb, true);
+        String normalized1 = normalizeParameterOrder(f1.theFormula, kb, true);
+        String normalized2 = normalizeParameterOrder(f2.theFormula, kb, true);
 
         return normalized1.equals(normalized2);
     }
@@ -1404,30 +1404,34 @@ public class Formula implements Comparable, Serializable {
         }
 
 
-        var f = new Formula();
+        Formula f = new Formula();
         f.read(formula);
 
 
-        var args = f.complexArgumentsToArrayList(1);
+        ArrayList<String> args = f.complexArgumentsToArrayList(1);
         if (args == null || args.isEmpty()) {
             return formula;
         }
-        var orderedArgs = args.stream().map(s -> normalizeParameterOrder(s, kb, varPlaceholders)).collect(Collectors.toList());
+        List<String> orderedArgs = new ArrayList<>();
+        for (String s : args) {
+            String normalizeParameterOrder = normalizeParameterOrder(s, kb, varPlaceholders);
+            orderedArgs.add(normalizeParameterOrder);
+        }
 
 
-        var head = f.car();
+        String head = f.car();
         if (isCommutative(head) || (kb != null && kb.isInstanceOf(head, "SymmetricRelation"))) {
             Collections.sort(orderedArgs);
         }
 
 
-        var result = new StringBuilder(LP);
+        StringBuilder result = new StringBuilder(LP);
         if (varPlaceholders && isSkolemTerm(head)) {
             head = "?SknFn";
         }
         result.append(head);
         result.append(SPACE);
-        for (var arg:orderedArgs) {
+        for (String arg:orderedArgs) {
             result.append(arg);
             result.append(SPACE);
         }
@@ -1444,10 +1448,10 @@ public class Formula implements Comparable, Serializable {
      */
     public String getArgument(int argnum) {
 
-        var form = new Formula();
+        Formula form = new Formula();
         form.read(theFormula);
-        var ans = "";
-        for (var i = 0; form.listP(); i++) {
+        String ans = "";
+        for (int i = 0; form.listP(); i++) {
             ans = form.car();
             if (i == argnum) break;
             form.read(form.cdr());
@@ -1467,7 +1471,7 @@ public class Formula implements Comparable, Serializable {
      */
     public int listLength() {
 
-        var ans = -1;
+        int ans = -1;
         if (this.listP()) {
             ans = 0;
             while (!StringUtil.emptyString(this.getArgument(ans)))
@@ -1486,19 +1490,19 @@ public class Formula implements Comparable, Serializable {
     public ArrayList<String> argumentsToArrayList(int start) {
 
         if (theFormula.indexOf('(',1) != -1) {
-            var erList = complexArgumentsToArrayList(0);
-            for (var s : erList) {
+            ArrayList<String> erList = complexArgumentsToArrayList(0);
+            for (String s : erList) {
                 if (s.indexOf('(') != -1 && !StringUtil.quoted(s)) {
-                    var err = "Error in Formula.argumentsToArrayList() complex formula: " + this;
+                    String err = "Error in Formula.argumentsToArrayList() complex formula: " + this;
                     errors.add(err);
                     System.out.println(err);
                     return null;
                 }
             }
         }
-        var index = start;
-        var result = new ArrayList<String>();
-        var arg = getArgument(index);
+        int index = start;
+        ArrayList<String> result = new ArrayList<String>();
+        String arg = getArgument(index);
         while (arg != null && !"".equals(arg) && !arg.isEmpty()) {
             result.add(arg.intern());
             index++;
@@ -1516,9 +1520,9 @@ public class Formula implements Comparable, Serializable {
      */
     public ArrayList<String> complexArgumentsToArrayList(int start) {
 
-        var index = start;
-        var result = new ArrayList<String>();
-        var arg = getArgument(index);
+        int index = start;
+        ArrayList<String> result = new ArrayList<String>();
+        String arg = getArgument(index);
         while (arg != null && !"".equals(arg) && !arg.isEmpty()) {
             result.add(arg.intern());
             index++;
@@ -1554,11 +1558,11 @@ public class Formula implements Comparable, Serializable {
      */
     public ArrayList<ArrayList<String>> collectVariables() {
 
-        var ans = new ArrayList<ArrayList<String>>();
+        ArrayList<ArrayList<String>> ans = new ArrayList<ArrayList<String>>();
         ans.add(new ArrayList());
         ans.add(new ArrayList());
-        var unquantified = new HashSet<String>(collectAllVariables());
-        var quantified = new HashSet<String>(collectQuantifiedVariables());
+        HashSet<String> unquantified = new HashSet<String>(collectAllVariables());
+        HashSet<String> quantified = new HashSet<String>(collectQuantifiedVariables());
         unquantified.removeAll(quantified);
         ans.get(0).addAll(quantified);
         ans.get(1).addAll(unquantified);
@@ -1580,9 +1584,9 @@ public class Formula implements Comparable, Serializable {
      */
     public ArrayList<ArrayList<String>> collectQuantifiedUnquantifiedVariables() {
 
-        var unquantifiedVariables = new HashSet<String>();
-        var quantifiedVariables = new HashSet<String>();
-        var varFlag = new HashMap<String, Boolean>();
+        HashSet<String> unquantifiedVariables = new HashSet<String>();
+        HashSet<String> quantifiedVariables = new HashSet<String>();
+        HashMap<String, Boolean> varFlag = new HashMap<String, Boolean>();
         collectQuantifiedUnquantifiedVariablesRecurse
                 (this, varFlag, unquantifiedVariables, quantifiedVariables);
 
@@ -1593,7 +1597,7 @@ public class Formula implements Comparable, Serializable {
                     + ") are both quantified (" + quantifiedVariables
                     + ") and unquantified (" + unquantifiedVariables + ") in formula \n" + theFormula);
 
-        var quantifiedUnquantifiedVariables = new ArrayList<ArrayList<String>>();
+        ArrayList<ArrayList<String>> quantifiedUnquantifiedVariables = new ArrayList<ArrayList<String>>();
         quantifiedUnquantifiedVariables.add(new ArrayList(quantifiedVariables));
         quantifiedUnquantifiedVariables.add(new ArrayList(unquantifiedVariables));
 
@@ -1609,20 +1613,20 @@ public class Formula implements Comparable, Serializable {
         if (f == null || StringUtil.emptyString(f.theFormula) || f.empty())
             return;
 
-        var carstr = f.car();
+        String carstr = f.car();
         if (atom(carstr) && isLogicalOperator(carstr)) {
             if (carstr.equals(EQUANT) || carstr.equals(UQUANT)) {
-                var varString = f.getArgument(1);
-                var varArray = (varString.substring(1, varString.length()-1)).split(" ");
+                String varString = f.getArgument(1);
+                String[] varArray = (varString.substring(1, varString.length()-1)).split(" ");
                 quantifiedVariables.addAll(Arrays.asList(varArray));
 
-                for (var i = 2; i < f.listLength(); i++) {
+                for (int i = 2; i < f.listLength(); i++) {
                     collectQuantifiedUnquantifiedVariablesRecurse(new Formula(f.getArgument(i)),
                             varFlag, unquantifiedVariables, quantifiedVariables);
                 }
             }
             else {
-                for (var i = 1; i < f.listLength(); i++) {
+                for (int i = 1; i < f.listLength(); i++) {
                     collectQuantifiedUnquantifiedVariablesRecurse(new Formula(f.getArgument(i)),
                             varFlag, unquantifiedVariables, quantifiedVariables);
                 }
@@ -1630,8 +1634,8 @@ public class Formula implements Comparable, Serializable {
 
         }
         else {
-            for (var i = 0; i < f.listLength(); i++) {
-                var arg = f.getArgument(i);
+            for (int i = 0; i < f.listLength(); i++) {
+                String arg = f.getArgument(i);
                 if (arg.startsWith("?") || arg.startsWith("@")) {
                     if (!varFlag.containsKey(arg) && !quantifiedVariables.contains(arg)) {
                         unquantifiedVariables.add(arg);
@@ -1656,10 +1660,10 @@ public class Formula implements Comparable, Serializable {
     public Set<String> collectAllVariables() {
 
 
-        var resultSet = new HashSet<String>();
+        HashSet<String> resultSet = new HashSet<String>();
         if (listLength() < 1)
             return resultSet;
-        var fcar = new Formula();
+        Formula fcar = new Formula();
         fcar.read(this.car());
         if (fcar.isVariable())
             resultSet.add(fcar.theFormula);
@@ -1667,7 +1671,7 @@ public class Formula implements Comparable, Serializable {
             if (fcar.listP())
                 resultSet.addAll(fcar.collectAllVariables());
         }
-        var fcdr = new Formula();
+        Formula fcdr = new Formula();
         fcdr.read(this.cdr());
         if (fcdr.isVariable())
             resultSet.add(fcdr.theFormula);
@@ -1688,20 +1692,20 @@ public class Formula implements Comparable, Serializable {
      */
     public ArrayList<String> collectExistentiallyQuantifiedVariables() {
 
-        var result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<String>();
         if (listLength() < 1)
             return result;
-        var fcar = new Formula();
+        Formula fcar = new Formula();
         fcar.read(this.car());
         Collection<String> resultSet = new HashSet<>();
         if (fcar.theFormula.equals(EQUANT)) {
-            var remainder = new Formula();
+            Formula remainder = new Formula();
             remainder.read(this.cdr());
             if (!remainder.listP()) {
                 System.out.println("Error in Formula.collectQuantifiedVariables(): incorrect quantification: " + this);
                 return result;
             }
-            var varlist = new Formula();
+            Formula varlist = new Formula();
             varlist.read(remainder.car());
             resultSet.addAll(varlist.collectAllVariables());
             resultSet.addAll(remainder.cdrAsFormula().collectExistentiallyQuantifiedVariables());
@@ -1724,20 +1728,20 @@ public class Formula implements Comparable, Serializable {
      */
     public ArrayList<String> collectQuantifiedVariables() {
 
-        var result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<String>();
         if (listLength() < 1)
             return result;
-        var fcar = new Formula();
+        Formula fcar = new Formula();
         fcar.read(this.car());
         Collection<String> resultSet = new HashSet<>();
         if (fcar.theFormula.equals(UQUANT) || fcar.theFormula.equals(EQUANT)) {
-            var remainder = new Formula();
+            Formula remainder = new Formula();
             remainder.read(this.cdr());
             if (!remainder.listP()) {
                 System.out.println("Error in Formula.collectQuantifiedVariables(): incorrect quantification: " + this);
                 return result;
             }
-            var varlist = new Formula();
+            Formula varlist = new Formula();
             varlist.read(remainder.car());
             resultSet.addAll(varlist.collectAllVariables());
             resultSet.addAll(remainder.cdrAsFormula().collectQuantifiedVariables());
@@ -1769,17 +1773,17 @@ public class Formula implements Comparable, Serializable {
             return null;
         }
 
-        var resultSet = new HashSet<String>();
+        HashSet<String> resultSet = new HashSet<String>();
         if (this.empty())
             return resultSet;
 
         if (this.atom())
             resultSet.add(theFormula);
         else {
-            var f = new Formula();
+            Formula f = new Formula();
             f.read(theFormula);
             while (!f.empty() && f.theFormula != null && !"".equals(f.theFormula)) {
-                var f2 = new Formula();
+                Formula f2 = new Formula();
                 f2.read(f.car());
                 resultSet.addAll(f2.collectTerms());
                 f.read(f.cdr());
@@ -1794,7 +1798,7 @@ public class Formula implements Comparable, Serializable {
      */
     public Formula substituteVariables(Map<String,String> m) {
 
-        var newFormula = new Formula();
+        Formula newFormula = new Formula();
         newFormula.read("()");
         if (atom()) {
             if (m.containsKey(theFormula)) {
@@ -1805,13 +1809,13 @@ public class Formula implements Comparable, Serializable {
             return this;
         }
         if (!empty()) {
-            var f1 = new Formula();
+            Formula f1 = new Formula();
             f1.read(this.car());
             if (f1.listP())
                 newFormula = newFormula.cons(f1.substituteVariables(m));
             else
                 newFormula = newFormula.append(f1.substituteVariables(m));
-            var f2 = new Formula();
+            Formula f2 = new Formula();
             f2.read(this.cdr());
             newFormula = newFormula.append(f2.substituteVariables(m));
         }
@@ -1828,17 +1832,17 @@ public class Formula implements Comparable, Serializable {
      */
     public String makeQuantifiersExplicit(boolean query) {
 
-        var result = this.theFormula;
-        var arg0 = this.car();
-        var vpair = collectVariables();
-        var quantVariables = vpair.get(0);
-        var unquantVariables = vpair.get(1);
+        String result = this.theFormula;
+        String arg0 = this.car();
+        ArrayList<ArrayList<String>> vpair = collectVariables();
+        ArrayList<String> quantVariables = vpair.get(0);
+        ArrayList<String> unquantVariables = vpair.get(1);
 
         if (!unquantVariables.isEmpty()) {
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb.append((query ? "(exists (" : "(forall ("));
-            var afterTheFirst = false;
-            for (var unquantVariable : unquantVariables) {
+            boolean afterTheFirst = false;
+            for (String unquantVariable : unquantVariables) {
                 if (afterTheFirst) sb.append(' ');
                 sb.append(unquantVariable);
                 afterTheFirst = true;
@@ -1864,16 +1868,16 @@ public class Formula implements Comparable, Serializable {
      */
     public Formula renameVariableArityRelations(KB kb, TreeMap<String,String> relationMap) {
 
-        var result = this;
+        Formula result = this;
         if (this.listP()) {
-            var sb = new StringBuilder();
-            var f = new Formula();
+            StringBuilder sb = new StringBuilder();
+            Formula f = new Formula();
             f.read(this.theFormula);
-            var flen = f.listLength();
+            int flen = f.listLength();
             sb.append('(');
             String arg = null;
-            var suffix = ("_" + (flen - 1));
-            for (var i = 0; i < flen ; i++) {
+            String suffix = ("_" + (flen - 1));
+            for (int i = 0; i < flen ; i++) {
                 arg = f.getArgument(i);
                 if (i > 0)
                     sb.append(' ');
@@ -1882,7 +1886,7 @@ public class Formula implements Comparable, Serializable {
                     arg += suffix;
                 }
                 else if (listP(arg)) {
-                    var argF = new Formula();
+                    Formula argF = new Formula();
                     argF.read(arg);
                     arg = argF.renameVariableArityRelations(kb,relationMap).theFormula;
                 }
@@ -1919,12 +1923,16 @@ public class Formula implements Comparable, Serializable {
      */
     public  Map<String,  ? extends List > gatherRelationsWithArgTypes(KB kb) {
 
-        var argtypemap = new HashMap<String,    List>();
+        HashMap<String, List> argtypemap = new HashMap<String,    List>();
         Set<String> relations = gatherRelationConstants();
 
-        for (var r : relations) {
-            var atlen = (MAX_PREDICATE_ARITY + 1);
-            var argtypes = IntStream.range(0, atlen).mapToObj(i -> kb.getArgType(r, i)).collect(Collectors.toCollection(ArrayList::new));
+        for (String r : relations) {
+            int atlen = (MAX_PREDICATE_ARITY + 1);
+            ArrayList<String> argtypes = new ArrayList<>();
+            for (int i = 0; i < atlen; i++) {
+                String argType = kb.getArgType(r, i);
+                argtypes.add(argType);
+            }
             argtypemap.put(r, argtypes);
         }
         return argtypemap;
@@ -1945,19 +1953,19 @@ public class Formula implements Comparable, Serializable {
             accumulator.add(this.theFormula);
         Collection<String> kifLists = new ArrayList<>();
         Formula f = null;
-        var relations = new HashSet<String>();
+        HashSet<String> relations = new HashSet<String>();
         while (!accumulator.isEmpty()) {
             kifLists.clear();
             kifLists.addAll(accumulator);
             accumulator.clear();
             String klist = null;
-            for (var kifList : kifLists) {
+            for (String kifList : kifLists) {
                 klist = kifList;
                 if (listP(klist)) {
                     f = new Formula();
                     f.read(klist);
-                    for (var i = 0; !f.empty(); i++) {
-                        var arg = f.car();
+                    for (int i = 0; !f.empty(); i++) {
+                        String arg = f.car();
                         if (listP(arg)) {
                             if (!empty(arg)) accumulator.add(arg);
                         } else if (isQuantifier(arg)) {
@@ -1985,9 +1993,9 @@ public class Formula implements Comparable, Serializable {
      */
     public boolean isFunctionalTerm() {
 
-        var ans = false;
+        boolean ans = false;
         if (this.listP()) {
-            var pred = this.car();
+            String pred = this.car();
             ans = ((pred.length() > 2) && pred.endsWith(FN_SUFF));
         }
         return ans;
@@ -1998,7 +2006,7 @@ public class Formula implements Comparable, Serializable {
      */
     public static boolean isFunctionalTerm(String s) {
 
-        var f = new Formula();
+        Formula f = new Formula();
         f.read(s);
         return f.isFunctionalTerm();
     }
@@ -2010,12 +2018,12 @@ public class Formula implements Comparable, Serializable {
     public boolean isHigherOrder() {
 
         if (this.listP()) {
-            var pred = this.car();
-            var logop = isLogicalOperator(pred);
-            var al = literalToArrayList();
-            for (var i = 1; i < al.size(); i++) {
-                var arg = al.get(i);
-                var f = new Formula();
+            String pred = this.car();
+            boolean logop = isLogicalOperator(pred);
+            ArrayList<String> al = literalToArrayList();
+            for (int i = 1; i < al.size(); i++) {
+                String arg = al.get(i);
+                Formula f = new Formula();
                 f.read(arg);
                 if (!atom(arg) && !f.isFunctionalTerm()) {
                     if (logop) {
@@ -2063,13 +2071,13 @@ public class Formula implements Comparable, Serializable {
      */
     public boolean isRule() {
 
-        var ans = false;
+        boolean ans = false;
         if (this.listP()) {
-            var arg0 = this.car();
+            String arg0 = this.car();
             if (isQuantifier(arg0)) {
-                var arg2 = this.getArgument(2);
+                String arg2 = this.getArgument(2);
                 if (listP(arg2)) {
-                    var newF = new Formula();
+                    Formula newF = new Formula();
                     newF.read(arg2);
                     ans = newF.isRule();
                 }
@@ -2095,10 +2103,10 @@ public class Formula implements Comparable, Serializable {
         if (theFormula.contains("exists") || theFormula.contains("forall"))
             return false;
 
-        var antecedent = cdrAsFormula().carAsFormula();
+        Formula antecedent = cdrAsFormula().carAsFormula();
         if (!antecedent.isSimpleClause(kb) && !"and".equals(antecedent.car()))
             return false;
-        var consequent = cdrAsFormula().cdrAsFormula().carAsFormula();
+        Formula consequent = cdrAsFormula().cdrAsFormula().carAsFormula();
         return consequent.isSimpleClause(kb) || "and".equals(consequent.car());
     }
 
@@ -2122,12 +2130,12 @@ public class Formula implements Comparable, Serializable {
         if (!Formula.atom(car()))
             return false;
         String arg = null;
-        var argnum = 1;
+        int argnum = 1;
         do {
             arg = getArgument(argnum);
             argnum++;
             if (Formula.listP(arg)) {
-                var f = new Formula(arg);
+                Formula f = new Formula(arg);
                 if (!kb.isFunction(f.car()))
                     return false;
             }
@@ -2143,7 +2151,7 @@ public class Formula implements Comparable, Serializable {
 
         if (!Formula.listP(theFormula))
             return false;
-        var f = new Formula();
+        Formula f = new Formula();
         f.read(theFormula);
         if ("not".equals(f.car())) {
             f.read(f.cdr());
@@ -2222,7 +2230,7 @@ public class Formula implements Comparable, Serializable {
                     {Formula.LOG_TRUE, Formula.LOG_FALSE},
                     {Formula.LOG_FALSE, Formula.LOG_TRUE}
             };
-            for (var dual : duals) if (op.equals(dual[0])) ans = dual[1];
+            for (String[] dual : duals) if (op.equals(dual[0])) ans = dual[1];
         }
         return ans;
     }
@@ -2248,8 +2256,13 @@ public class Formula implements Comparable, Serializable {
 
         if (!StringUtil.emptyString(term) && !Formula.listP(term) &&
                 Character.isJavaIdentifierStart(term.charAt(0))) {
-            var bound = term.length();
-            return IntStream.range(0, bound).allMatch(i -> Character.isJavaIdentifierPart(term.charAt(i)));
+            int bound = term.length();
+            for (int i = 0; i < bound; i++) {
+                if (!Character.isJavaIdentifierPart(term.charAt(i))) {
+                    return false;
+                }
+            }
+            return true;
         }
         else
             return false;
@@ -2287,8 +2300,8 @@ public class Formula implements Comparable, Serializable {
             return false;
         if (!form.contains("\""))
             return (!form.contains("?") && !form.contains("@"));
-        var inQuote = false;
-        for (var i = 0; i < form.length(); i++) {
+        boolean inQuote = false;
+        for (int i = 0; i < form.length(); i++) {
             if (form.charAt(i) == '"')
                 inQuote = !inQuote;
             if ((form.charAt(i) == '?' || form.charAt(i) == '@') && !inQuote)
@@ -2311,7 +2324,7 @@ public class Formula implements Comparable, Serializable {
      */
     public boolean isBinary() {
 
-        var l = argumentsToArrayList(0);
+        ArrayList<String> l = argumentsToArrayList(0);
         if (l == null)
             return false;
         return argumentsToArrayList(0).size() == 3;
@@ -2350,8 +2363,8 @@ public class Formula implements Comparable, Serializable {
      */
     public ArrayList<String> literalToArrayList() {
 
-        var tuple = new ArrayList<String>();
-        var f = this;
+        ArrayList<String> tuple = new ArrayList<String>();
+        Formula f = this;
         if (f.listP()) {
             while (!f.empty()) {
                 tuple.add(f.car());
@@ -2374,7 +2387,7 @@ public class Formula implements Comparable, Serializable {
         
         if (StringUtil.emptyString(theFormula) || empty())
             return this;
-        var newFormula = new Formula();
+        Formula newFormula = new Formula();
         newFormula.read("()");
         if (isVariable()) {
             if (theFormula.equals(v))
@@ -2384,14 +2397,14 @@ public class Formula implements Comparable, Serializable {
         if (atom())
             return this;
         if (!empty()) {
-            var f1 = new Formula();
+            Formula f1 = new Formula();
             f1.read(car());
             
             if (f1.listP())
                 newFormula = newFormula.cons(f1.replaceVar(v,term));
             else
                 newFormula = newFormula.append(f1.replaceVar(v,term));
-            var f2 = new Formula();
+            Formula f2 = new Formula();
             f2.read(cdr());
             
             newFormula = newFormula.append(f2.replaceVar(v,term));
@@ -2411,16 +2424,16 @@ public class Formula implements Comparable, Serializable {
             throw new Exception("The formula is not properly quantified: " + this);
         }
 
-        var param = new Formula();
+        Formula param = new Formula();
         param.read(cadr());
-        var existVars = param.complexArgumentsToArrayList(0);
+        ArrayList<String> existVars = param.complexArgumentsToArrayList(0);
 
         if (existVars.size() != vars.size()) {
             throw new Exception("Wrong number of variables: " + vars + " to substitute in existentially quantified formula: " + this);
         }
 
-        var result = this;
-        for (var i = 0; i < existVars.size(); i++) {
+        Formula result = this;
+        for (int i = 0; i < existVars.size(); i++) {
             result = result.replaceVar(existVars.get(i), vars.get(i));
         }
 
@@ -2433,9 +2446,9 @@ public class Formula implements Comparable, Serializable {
      */
     public static boolean isQuery(String query, String formula) {
 
-        var f = new Formula();
+        Formula f = new Formula();
         f.read(formula);
-        var result = f.equals(query);
+        boolean result = f.equals(query);
         return result;
     }
 
@@ -2445,10 +2458,10 @@ public class Formula implements Comparable, Serializable {
      */
     public static boolean isNegatedQuery(String query, String formulaString) {
 
-        var result = false;
-        var fstr = formulaString.trim();
+        boolean result = false;
+        String fstr = formulaString.trim();
         if (fstr.startsWith("(not")) {
-            var f = new Formula();
+            Formula f = new Formula();
             f.read(fstr);
             result = query.equals(f.getArgument(1));
         }
@@ -2483,22 +2496,22 @@ public class Formula implements Comparable, Serializable {
             theFormula = theFormula.trim();
         if (atom())
             return theFormula;
-        var legalTermChars = "-:";
-        var varStartChars = "?@";
-        var quantifiers = "forall|exists";
-        var token = new StringBuilder();
-        var formatted = new StringBuilder();
-        var indentLevel = 0;
-        var inQuantifier = false;
-        var inToken = false;
-        var inVariable = false;
-        var inVarlist = false;
-        var inComment = false;
+        String legalTermChars = "-:";
+        String varStartChars = "?@";
+        String quantifiers = "forall|exists";
+        StringBuilder token = new StringBuilder();
+        StringBuilder formatted = new StringBuilder();
+        int indentLevel = 0;
+        boolean inQuantifier = false;
+        boolean inToken = false;
+        boolean inVariable = false;
+        boolean inVarlist = false;
+        boolean inComment = false;
 
-        var flen = theFormula.length();
-        var pch = '0';
-        var ch = '0';
-        for (var i = 0; i < flen; i++) {
+        int flen = theFormula.length();
+        char pch = '0';
+        char ch = '0';
+        for (int i = 0; i < flen; i++) {
             
             ch = theFormula.charAt(i);
             if (inComment) {     
@@ -2593,7 +2606,7 @@ public class Formula implements Comparable, Serializable {
             else
                 formatted.append(token);
         }
-        var result = formatted.toString();
+        String result = formatted.toString();
         return result;
     }
 
@@ -2602,7 +2615,7 @@ public class Formula implements Comparable, Serializable {
      */
     public static String textFormat(String input) {
 
-        var f = new Formula(input);
+        Formula f = new Formula(input);
         return f.format("", "  ", Character.valueOf((char) 10).toString());
     }
 
@@ -2636,8 +2649,8 @@ public class Formula implements Comparable, Serializable {
      */
     public String htmlFormat(KB kb, String href) {
 
-        var kbHref = (href + "/sigma/Browse.jsp?kb=" + kb.name);
-        var fKbHref = format(kbHref, "&nbsp;&nbsp;&nbsp;&nbsp;", "<br>\n");
+        String kbHref = (href + "/sigma/Browse.jsp?kb=" + kb.name);
+        String fKbHref = format(kbHref, "&nbsp;&nbsp;&nbsp;&nbsp;", "<br>\n");
         return fKbHref;
     }
 
@@ -2657,9 +2670,9 @@ public class Formula implements Comparable, Serializable {
             System.out.println("Error in Formula.toProlog(): Empty formula: " + theFormula);
             return null;
         }
-        var result = new StringBuilder();
-        var relation = car();
-        var f = new Formula();
+        StringBuilder result = new StringBuilder();
+        String relation = car();
+        Formula f = new Formula();
         f.theFormula = cdr();
         if (!Formula.atom(relation)) {
             System.out.println("Error in Formula.toProlog(): Relation not an atom: " + relation);
@@ -2669,7 +2682,7 @@ public class Formula implements Comparable, Serializable {
         System.out.println("INFO in Formula.toProlog(): result so far: " + result);
         System.out.println("INFO in Formula.toProlog(): remaining formula: " + f);
         while (!f.empty()) {
-            var arg = f.car();
+            String arg = f.car();
             System.out.println("INFO in Formula.toProlog(): argForm: " + arg);
             f.theFormula = f.cdr();
             if (!Formula.atom(arg)) {
@@ -2677,7 +2690,7 @@ public class Formula implements Comparable, Serializable {
                 return null;
             }
             if (Formula.isVariable(arg)) {
-                var newVar = Character.toUpperCase(arg.charAt(1)) + arg.substring(2);
+                String newVar = Character.toUpperCase(arg.charAt(1)) + arg.substring(2);
                 result.append(newVar);
             }
             else if (StringUtil.isQuotedString(arg))
@@ -2697,7 +2710,7 @@ public class Formula implements Comparable, Serializable {
      */
     public Formula rename(String term2, String term1) {
 
-        var newFormula = new Formula();
+        Formula newFormula = new Formula();
         newFormula.read("()");
         if (atom()) {
             if (theFormula.equals(term2))
@@ -2705,13 +2718,13 @@ public class Formula implements Comparable, Serializable {
             return this;
         }
         if (!empty()) {
-            var f1 = new Formula();
+            Formula f1 = new Formula();
             f1.read(car());
             if (f1.listP())
                 newFormula = newFormula.cons(f1.rename(term2,term1));
             else
                 newFormula = newFormula.append(f1.rename(term2,term1));
-            var f2 = new Formula();
+            Formula f2 = new Formula();
             f2.read(cdr());
             newFormula = newFormula.append(f2.rename(term2,term1));
         }
@@ -2788,7 +2801,7 @@ public class Formula implements Comparable, Serializable {
      */
     public static void testCollectVariables() {
 
-        var f = new Formula();
+        Formula f = new Formula();
         f.read("(=> " +
                 "  (and " +
                 "    (attribute ?H Muslim) " +
@@ -2820,8 +2833,8 @@ public class Formula implements Comparable, Serializable {
     public static void testIsSimpleClause() {
 
         KBmanager.manager.initializeOnce();
-        var kb = KBmanager.manager.getKB(KBmanager.manager.getPref("sumokbname"));
-        var f1 = new Formula();
+        KB kb = KBmanager.manager.getKB(KBmanager.manager.getPref("sumokbname"));
+        Formula f1 = new Formula();
         f1.read("(not (instance ?X Human))");
         System.out.println("Simple clause? : " + f1.isSimpleClause(kb) + '\n' + f1 + '\n');
         f1.read("(instance ?X Human)");
@@ -2842,7 +2855,7 @@ public class Formula implements Comparable, Serializable {
      */
     public static void testReplaceVar() {
 
-        var f1 = new Formula();
+        Formula f1 = new Formula();
         f1.read("(<=> (instance ?REL TransitiveRelation) (forall (?INST1 ?INST2 ?INST3) " +
                 " (=> (and (?REL ?INST1 ?INST2) (?REL ?INST2 ?INST3)) (?REL ?INST1 ?INST3))))");
         System.out.println("Input: " + f1);
@@ -2854,7 +2867,7 @@ public class Formula implements Comparable, Serializable {
      */
     public static void testComplexArgs() {
 
-        var f1 = new Formula();
+        Formula f1 = new Formula();
         f1.read("(during ?Y (WhenFn ?H))");
         System.out.println("Input: " + f1);
         System.out.println(f1.complexArgumentsToArrayList(1));
@@ -2865,7 +2878,7 @@ public class Formula implements Comparable, Serializable {
      */
     public static void testBigArgs() {
 
-        var f1 = new Formula();
+        Formula f1 = new Formula();
         f1.read("(=>   (instance ?AT AutomobileTransmission)  (hasPurpose ?AT    (exists (?C ?D ?A ?R1 ?N1 ?R2 ?R3 ?R4 ?N2 ?N3)      (and        (instance ?C Crankshaft)        (instance ?D Driveshaft)        (instance ?A Automobile)        (part ?D ?A)        (part ?AT ?A)        (part ?C ?A)        (connectedEngineeringComponents ?C ?AT)        (connectedEngineeringComponents ?D ?AT)        (instance ?R1 Rotating)        (instance ?R2 Rotating)               (instance ?R3 Rotating)        (instance ?R4 Rotating)        (patient ?R1 ?C)        (patient ?R2 ?C)        (patient ?R3 ?D)        (patient ?R4 ?D)        (causes ?R1 ?R3)        (causes ?R2 ?R4)        (not          (equal ?R1 ?R2))        (holdsDuring ?R1          (measure ?C (RotationFn ?N1 MinuteDuration)))        (holdsDuring ?R2          (measure ?C (RotationFn ?N1 MinuteDuration)))        (holdsDuring ?R3          (measure ?D (RotationFn ?N2 MinuteDuration)))        (holdsDuring ?R4          (measure ?D (RotationFn ?N3 MinuteDuration)))        (not          (equal ?N2 ?N3))))))");
         System.out.println("Input: " + f1);
         System.out.println(f1.validArgs());
@@ -2876,7 +2889,7 @@ public class Formula implements Comparable, Serializable {
      */
     public static void testCar1() {
 
-        var f1 = new Formula();
+        Formula f1 = new Formula();
         f1.read("(=>   (instance ?AT AutomobileTransmission)  (hasPurpose ?AT    (exists (?C ?D ?A ?R1 ?N1 ?R2 ?R3 ?R4 ?N2 ?N3)      (and        (instance ?C Crankshaft)        (instance ?D Driveshaft)        (instance ?A Automobile)        (part ?D ?A)        (part ?AT ?A)        (part ?C ?A)        (connectedEngineeringComponents ?C ?AT)        (connectedEngineeringComponents ?D ?AT)        (instance ?R1 Rotating)        (instance ?R2 Rotating)               (instance ?R3 Rotating)        (instance ?R4 Rotating)        (patient ?R1 ?C)        (patient ?R2 ?C)        (patient ?R3 ?D)        (patient ?R4 ?D)        (causes ?R1 ?R3)        (causes ?R2 ?R4)        (not          (equal ?R1 ?R2))        (holdsDuring ?R1          (measure ?C (RotationFn ?N1 MinuteDuration)))        (holdsDuring ?R2          (measure ?C (RotationFn ?N1 MinuteDuration)))        (holdsDuring ?R3          (measure ?D (RotationFn ?N2 MinuteDuration)))        (holdsDuring ?R4          (measure ?D (RotationFn ?N3 MinuteDuration)))        (not          (equal ?N2 ?N3))))))");
         System.out.println("Input: " + f1);
         System.out.println(f1.validArgs());
@@ -2888,8 +2901,8 @@ public class Formula implements Comparable, Serializable {
     public static void testArg2ArrayList() {
 
         System.out.println("testArg2ArrayList(): ");
-        var f = "(termFormat EnglishLanguage experimentalControlProcess \"experimental control (process)\")";
-        var form = new Formula(f);
+        String f = "(termFormat EnglishLanguage experimentalControlProcess \"experimental control (process)\")";
+        Formula form = new Formula(f);
         System.out.println(form.argumentsToArrayList(0));
     }
 

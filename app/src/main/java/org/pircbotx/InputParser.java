@@ -98,11 +98,11 @@ public class InputParser implements Closeable {
 		@Override
 		public void handleMode(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, PeekingIterator<String> params, boolean adding, boolean dispatchEvent) {
 			if (adding) {
-				var key = params.next();
+                String key = params.next();
 				channel.setChannelKey(key);
 				if (dispatchEvent) Utils.dispatchEvent(bot, new SetChannelKeyEvent(bot, channel, sourceHostmask, sourceUser, key));
 			} else {
-				var key = params.hasNext() ? params.next() : null;
+                String key = params.hasNext() ? params.next() : null;
 				channel.setChannelKey(null);
 				if (dispatchEvent) Utils.dispatchEvent(bot, new RemoveChannelKeyEvent(bot, channel, sourceHostmask, sourceUser, key));
 			}
@@ -113,7 +113,7 @@ public class InputParser implements Closeable {
 		@Override
 		public void handleMode(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, PeekingIterator<String> params, boolean adding, boolean dispatchEvent) {
 			if (adding) {
-				var limit = Integer.parseInt(params.next());
+                int limit = Integer.parseInt(params.next());
 				channel.setChannelLimit(limit);
 				if (dispatchEvent) Utils.dispatchEvent(bot, new SetChannelLimitEvent(bot, channel, sourceHostmask, sourceUser, limit));
 			} else {
@@ -127,7 +127,7 @@ public class InputParser implements Closeable {
 		@Override
 		public void handleMode(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, PeekingIterator<String> params, boolean adding, boolean dispatchEvent) {
 			if (dispatchEvent) {
-				var banHostmask = bot.getConfiguration().getBotFactory().createUserHostmask(bot, params.next());
+                UserHostmask banHostmask = bot.getConfiguration().getBotFactory().createUserHostmask(bot, params.next());
 				if (adding) Utils.dispatchEvent(bot, new SetChannelBanEvent(bot, channel, sourceHostmask, sourceUser, banHostmask)); else Utils.dispatchEvent(bot, new RemoveChannelBanEvent(bot, channel, sourceHostmask, sourceUser, banHostmask));
 			}
 		}
@@ -211,29 +211,29 @@ public class InputParser implements Closeable {
 		if (rawLine == null) {
 			throw new java.lang.NullPointerException("rawLine");
 		}
-		var line = rawLine.trim(); //CharMatcher.WHITESPACE.trimFrom(rawLine);
+        String line = rawLine.trim(); //CharMatcher.WHITESPACE.trimFrom(rawLine);
 		log.info(INPUT_MARKER, line);
 		// Parse out v3Tags before
 		ImmutableMap.Builder<String, String> tags = ImmutableMap.builder();
 		if (line.startsWith("@")) {
 			//This message has IRCv3 tags
-			var v3Tags = line.substring(1, line.indexOf(" "));
+            String v3Tags = line.substring(1, line.indexOf(" "));
 			line = line.substring(line.indexOf(" ") + 1);
-			var tokenizer = new StringTokenizer(v3Tags);
+            StringTokenizer tokenizer = new StringTokenizer(v3Tags);
 			while (tokenizer.hasMoreTokens()) {
-				var tag = tokenizer.nextToken(";");
+                String tag = tokenizer.nextToken(";");
 				if (tag.contains("=")) {
-					var parts = tag.split("=");
+                    String[] parts = tag.split("=");
 					tags.put(parts[0], (parts.length == 2 ? parts[1] : ""));
 				} else {
 					tags.put(tag, "");
 				}
 			}
 		}
-		var parsedLine = tokenizeLine(line);
-		var sourceRaw = "";
+        List<String> parsedLine = tokenizeLine(line);
+        String sourceRaw = "";
 		if (parsedLine.get(0).charAt(0) == ':') sourceRaw = parsedLine.remove(0);
-		var command = parsedLine.remove(0).toUpperCase(configuration.getLocale());
+        String command = parsedLine.remove(0).toUpperCase(configuration.getLocale());
 		// Check for server pings.
 		if ("PING".equals(command)) {
 			// Respond to the ping and return immediately.
@@ -244,7 +244,7 @@ public class InputParser implements Closeable {
 			bot.close();
 			return;
 		}
-		var target = (parsedLine.isEmpty()) ? "" : parsedLine.get(0);
+        String target = (parsedLine.isEmpty()) ? "" : parsedLine.get(0);
 		if (target.startsWith(":")) target = target.substring(1);
 		//Make sure this is a valid IRC line
 		if (!sourceRaw.startsWith(":")) {
@@ -252,20 +252,20 @@ public class InputParser implements Closeable {
 			configuration.getListenerManager().onEvent(new UnknownEvent(bot, line));
 			if (!bot.loggedIn) 
 			//Pass to CapHandlers, could be important
-			for (var curCapHandler : configuration.getCapHandlers()) if (curCapHandler.handleUnknown(bot, line)) addCapHandlerFinished(curCapHandler);
+			for (CapHandler curCapHandler : configuration.getCapHandlers()) if (curCapHandler.handleUnknown(bot, line)) addCapHandlerFinished(curCapHandler);
 			//Do not continue
 			return;
 		}
 		if (!bot.loggedIn) processConnect(line, command, target, parsedLine);
 		//Might be a backend code 
-		var code = Utils.tryParseInt(command, -1);
+        int code = Utils.tryParseInt(command, -1);
 		if (code != -1) {
 			processServerResponse(code, line, parsedLine);
 			//Do not continue
 			return;
 		}
 		//Must be from user
-		var source = bot.getConfiguration().getBotFactory().createUserHostmask(bot, sourceRaw.substring(1));
+        UserHostmask source = bot.getConfiguration().getBotFactory().createUserHostmask(bot, sourceRaw.substring(1));
 		processCommand(target, source, command, line, parsedLine, tags.build());
 	}
 	public static List<String> tokenizeLine(String input) {
@@ -278,7 +278,7 @@ public class InputParser implements Closeable {
 		//Heavily optimized string split by space with all characters after :
 		//added as a single entry. Under benchmarks, this is faster than
 		//StringTokenizer, String.split, toCharArray, and charAt
-		var trimmedInput = input.trim(); //CharMatcher.WHITESPACE.trimFrom(input);
+        String trimmedInput = input.trim(); //CharMatcher.WHITESPACE.trimFrom(input);
 		int pos = 0, end;
 		while ((end = trimmedInput.indexOf(' ', pos)) >= 0) {
 			stringParts.add(trimmedInput.substring(pos, end));
@@ -313,9 +313,9 @@ public class InputParser implements Closeable {
 			configuration.getListenerManager().onEvent(new ConnectEvent(bot));
 			//Handle automatic on connect stuff
 			if (configuration.getNickservPassword() != null) bot.sendIRC().identify(configuration.getNickservPassword());
-			var autoConnectChannels = bot.reconnectChannels();
+            ImmutableMap<String, String> autoConnectChannels = bot.reconnectChannels();
 			if (autoConnectChannels == null) if (configuration.isNickservDelayJoin()) autoConnectChannels = ImmutableMap.of(); else autoConnectChannels = configuration.getAutoJoinChannels();
-			for (var channelEntry : autoConnectChannels.entrySet()) bot.sendIRC().joinChannel(channelEntry.getKey(), channelEntry.getValue());
+			for (Map.Entry<String, String> channelEntry : autoConnectChannels.entrySet()) bot.sendIRC().joinChannel(channelEntry.getKey(), channelEntry.getValue());
 		} else if ("439".equals(code))
 		//EXAMPLE: PircBotX: Target change too fast. Please wait 104 seconds
 		// No action required.
@@ -335,43 +335,43 @@ public class InputParser implements Closeable {
 		throw new IrcException(IrcException.Reason.CannotLogin, "Received error: " + rawLine); else if ("670".equals(code)) {
 			//Server is saying that we can upgrade to TLS
 			log.debug("Upgrading to TLS connection");
-			var sslSocketFactory = ((SSLSocketFactory)SSLSocketFactory.getDefault());
-			for (var curCapHandler : configuration.getCapHandlers()) if (curCapHandler instanceof TLSCapHandler) sslSocketFactory = ((TLSCapHandler)curCapHandler).getSslSocketFactory();
-			var sslSocket = (SSLSocket)sslSocketFactory.createSocket(bot.getSocket(), bot.getLocalAddress().getHostAddress(), bot.getSocket().getPort(), true);
+            SSLSocketFactory sslSocketFactory = ((SSLSocketFactory)SSLSocketFactory.getDefault());
+			for (CapHandler curCapHandler : configuration.getCapHandlers()) if (curCapHandler instanceof TLSCapHandler) sslSocketFactory = ((TLSCapHandler)curCapHandler).getSslSocketFactory();
+            SSLSocket sslSocket = (SSLSocket)sslSocketFactory.createSocket(bot.getSocket(), bot.getLocalAddress().getHostAddress(), bot.getSocket().getPort(), true);
 			sslSocket.startHandshake();
 			bot.changeSocket(sslSocket);
 			//Notify CAP Handlers
-			for (var curCapHandler : configuration.getCapHandlers()) if (curCapHandler.handleUnknown(bot, rawLine)) addCapHandlerFinished(curCapHandler);
+			for (CapHandler curCapHandler : configuration.getCapHandlers()) if (curCapHandler.handleUnknown(bot, rawLine)) addCapHandlerFinished(curCapHandler);
 		} else if ("CAP".equals(code) && configuration.isCapEnabled()) {
 			//Handle CAP Code; remove extra from params
-			var capCommand = parsedLine.get(1);
-			var capParams = ImmutableList.copyOf(StringUtils.split(parsedLine.get(2)));
+            String capCommand = parsedLine.get(1);
+            ImmutableList<String> capParams = ImmutableList.copyOf(StringUtils.split(parsedLine.get(2)));
             switch (capCommand) {
                 case "LS":
                     log.debug("Starting Cap Handlers {}", getCapHandlersRemaining());
-                    for (var curCapHandler : getCapHandlersRemaining()) {
+                    for (CapHandler curCapHandler : getCapHandlersRemaining()) {
                         if (curCapHandler.handleLS(bot, capParams)) addCapHandlerFinished(curCapHandler);
                     }
                     break;
                 case "ACK":
                     //Server is enabling a capability, store that
                     bot.getEnabledCapabilities().addAll(capParams);
-                    for (var curCapHandler : getCapHandlersRemaining())
+                    for (CapHandler curCapHandler : getCapHandlersRemaining())
                         if (curCapHandler.handleACK(bot, capParams)) addCapHandlerFinished(curCapHandler);
                     break;
                 case "NAK":
-                    for (var curCapHandler : getCapHandlersRemaining())
+                    for (CapHandler curCapHandler : getCapHandlersRemaining())
                         if (curCapHandler.handleNAK(bot, capParams)) addCapHandlerFinished(curCapHandler);
                     break;
                 default:
                     //Maybe the CapHandlers know how to use it
-                    for (var curCapHandler : getCapHandlersRemaining())
+                    for (CapHandler curCapHandler : getCapHandlersRemaining())
                         if (curCapHandler.handleUnknown(bot, rawLine)) addCapHandlerFinished(curCapHandler);
                     break;
             }
 		} else 
 		//Pass to CapHandlers, could be important
-		for (var curCapHandler : getCapHandlersRemaining()) if (curCapHandler.handleUnknown(bot, rawLine)) addCapHandlerFinished(curCapHandler);
+		for (CapHandler curCapHandler : getCapHandlersRemaining()) if (curCapHandler.handleUnknown(bot, rawLine)) addCapHandlerFinished(curCapHandler);
 	}
 
 	protected List<CapHandler> getCapHandlersRemaining() {
@@ -392,14 +392,14 @@ public class InputParser implements Closeable {
 
 	public void processCommand(String target, UserHostmask source, String command, String line, List<String> parsedLine, ImmutableMap<String, String> tags) throws IOException {
 		//If the channel matches a prefix, then its a channel
-		var channel = (target.length() != 0 && bot.getUserChannelDao().containsChannel(target)) ? bot.getUserChannelDao().getChannel(target) : null;
-		var message = parsedLine.size() >= 2 ? parsedLine.get(1) : "";
+        Channel channel = (target.length() != 0 && bot.getUserChannelDao().containsChannel(target)) ? bot.getUserChannelDao().getChannel(target) : null;
+        String message = parsedLine.size() >= 2 ? parsedLine.get(1) : "";
 		//Try to load the source user if it exists
-		var sourceUser = bot.getUserChannelDao().containsUser(source) ? bot.getUserChannelDao().getUser(source) : null;
+        User sourceUser = bot.getUserChannelDao().containsUser(source) ? bot.getUserChannelDao().getUser(source) : null;
 		// Check for CTCP requests.
 		if ("PRIVMSG".equals(command) && message.startsWith("\001") && message.endsWith("\001")) {
 			sourceUser = createUserIfNull(sourceUser, source);
-			var request = message.substring(1, message.length() - 1);
+            String request = message.substring(1, message.length() - 1);
 			if ("VERSION".equals(request))
 			// VERSION request
 			configuration.getListenerManager().onEvent(new VersionEvent(bot, source, sourceUser, channel)); else if (request.startsWith("ACTION ")) 
@@ -412,7 +412,7 @@ public class InputParser implements Closeable {
 			// FINGER request
 			configuration.getListenerManager().onEvent(new FingerEvent(bot, source, sourceUser, channel)); else if (request.startsWith("DCC ")) {
 				// This is a DCC request.
-				var success = bot.getDccHandler().processDcc(source, sourceUser, request);
+                boolean success = bot.getDccHandler().processDcc(source, sourceUser, request);
 				if (!success) 
 				// The DccManager didn't know what to do with the line.
 				configuration.getListenerManager().onEvent(new UnknownEvent(bot, line));
@@ -464,7 +464,7 @@ public class InputParser implements Closeable {
 		} else if ("NICK".equals(command)) {
 			// Somebody is changing their nick.
 			sourceUser = createUserIfNull(sourceUser, source);
-			var newNick = target;
+            String newNick = target;
 			bot.getUserChannelDao().renameUser(sourceUser, newNick);
 			if (source.getNick().equals(bot.getNick())) 
 			// Update our nick if it was us that changed nick.
@@ -488,12 +488,12 @@ public class InputParser implements Closeable {
 			if (!source.getNick().equals(bot.getNick())) 
 			//Someone else
 			bot.getUserChannelDao().removeUser(sourceUser);
-			var reason = target;
+            String reason = target;
             configuration.getListenerManager().onEvent(new QuitEvent(bot, daoSnapshot, source, sourceSnapshot, reason));
 		} else if ("KICK".equals(command)) {
 			// Somebody has been kicked from a channel.
-			var recipientHostmask = bot.getConfiguration().getBotFactory().createUserHostmask(bot, message);
-			var recipient = bot.getUserChannelDao().getUser(message);
+            UserHostmask recipientHostmask = bot.getConfiguration().getBotFactory().createUserHostmask(bot, message);
+            User recipient = bot.getUserChannelDao().getUser(message);
 			if (recipient.getNick().equals(bot.getNick())) 
 			//We were just kicked
 			bot.getUserChannelDao().removeChannel(channel); else 
@@ -502,7 +502,7 @@ public class InputParser implements Closeable {
 			configuration.getListenerManager().onEvent(new KickEvent(bot, channel, source, sourceUser, recipientHostmask, recipient, parsedLine.get(2)));
 		} else if ("MODE".equals(command)) {
 			// Somebody is changing the mode on a channel or user (Use long form since mode isn't after a : )
-			var mode = line.substring(line.indexOf(target, 2) + target.length() + 1);
+            String mode = line.substring(line.indexOf(target, 2) + target.length() + 1);
 			if (mode.startsWith(":")) mode = mode.substring(1);
 			//TODO: ummm... what does this do?
 			//Handle situations where source doesn't have a full username (IE server setting user mode on connect)
@@ -512,8 +512,8 @@ public class InputParser implements Closeable {
 			processMode(source, sourceUser, target, mode);
 		} else if ("TOPIC".equals(command)) {
 			// Someone is changing the topic.
-			var currentTime = System.currentTimeMillis();
-			var oldTopic = channel.getTopic();
+            long currentTime = System.currentTimeMillis();
+            String oldTopic = channel.getTopic();
 			channel.setTopic(message);
 			channel.setTopicSetter(source);
 			channel.setTopicTimestamp(currentTime);
@@ -541,7 +541,7 @@ public class InputParser implements Closeable {
 	 * @param code The three-digit numerical code for the response.
 	 */
 	public void processServerResponse(int code, String rawResponse, List<String> parsedResponseOrig) {
-		var parsedResponse = ImmutableList.copyOf(parsedResponseOrig);
+        ImmutableList<String> parsedResponse = ImmutableList.copyOf(parsedResponseOrig);
 		//Parsed response format: Everything after code
         switch (code) {
             case 433:
@@ -549,9 +549,9 @@ public class InputParser implements Closeable {
                 //EXAMPLE: AnAlreadyUsedName :Nickname already in use (spec)
                 //TODO: When output parsing is implemented intercept outgoing NICK?
                 //Nickname in use, rename
-				var autoNickChange = configuration.isAutoNickChange();
+                boolean autoNickChange = configuration.isAutoNickChange();
                 String usedNick = null;
-				var doAutoNickChange = false;
+                boolean doAutoNickChange = false;
                 //Ignore cases where we already have a valid nick but changed to a used one
                 if (parsedResponse.size() == 3) {
                     usedNick = parsedResponse.get(1);
@@ -584,9 +584,9 @@ public class InputParser implements Closeable {
             case RPL_LIST: {
                 //This is part of a full channel listing as part of /LIST
                 //EXAMPLE: 322 lordquackstar #xomb 12 :xomb exokernel project @ www.xomb.org
-				var channel = parsedResponse.get(1);
-				var userCount = Utils.tryParseInt(parsedResponse.get(2), -1);
-				var topic = parsedResponse.get(3);
+                String channel = parsedResponse.get(1);
+                int userCount = Utils.tryParseInt(parsedResponse.get(2), -1);
+                String topic = parsedResponse.get(3);
                 channelListBuilder.add(new ChannelListEntry(channel, userCount, topic));
                 break;
             }
@@ -600,17 +600,17 @@ public class InputParser implements Closeable {
             case RPL_TOPIC: {
                 //EXAMPLE: 332 PircBotX #aChannel :I'm some random topic
                 //This is topic about a channel we've just joined. From /JOIN or /TOPIC
-				var channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
-				var topic = parsedResponse.get(2);
+                Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
+                String topic = parsedResponse.get(2);
                 channel.setTopic(topic);
                 break;
             }
             case RPL_TOPICINFO: {
                 //EXAMPLE: 333 PircBotX #aChannel ISetTopic 1564842512
                 //This is information on the topic of the channel we've just joined. From /JOIN or /TOPIC
-				var channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
-				var setBy = configuration.getBotFactory().createUserHostmask(bot, parsedResponse.get(2));
-				var date = Utils.tryParseLong(parsedResponse.get(3), -1);
+                Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
+                UserHostmask setBy = configuration.getBotFactory().createUserHostmask(bot, parsedResponse.get(2));
+                long date = Utils.tryParseLong(parsedResponse.get(3), -1);
                 channel.setTopicTimestamp(date * 1000);
                 channel.setTopicSetter(setBy);
                 configuration.getListenerManager().onEvent(new TopicEvent(bot, channel, null, channel.getTopic(), setBy, date, false));
@@ -619,17 +619,17 @@ public class InputParser implements Closeable {
             case RPL_WHOREPLY: {
                 //EXAMPLE: 352 PircBotX #aChannel ~someName 74.56.56.56.my.Hostmask wolfe.freenode.net someNick H :0 Full Name
                 //Part of a WHO reply on information on individual users
-				var channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
+                Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
                 //Setup user
-				var nick = parsedResponse.get(5);
-				var curUser = bot.getUserChannelDao().containsUser(nick) ? bot.getUserChannelDao().getUser(nick) : null;
-				var curUserHostmask = bot.getConfiguration().getBotFactory().createUserHostmask(bot, null, nick, parsedResponse.get(2), parsedResponse.get(3));
+                String nick = parsedResponse.get(5);
+                User curUser = bot.getUserChannelDao().containsUser(nick) ? bot.getUserChannelDao().getUser(nick) : null;
+                UserHostmask curUserHostmask = bot.getConfiguration().getBotFactory().createUserHostmask(bot, null, nick, parsedResponse.get(2), parsedResponse.get(3));
                 curUser = createUserIfNull(curUser, curUserHostmask);
                 curUser.setServer(parsedResponse.get(4));
                 processUserStatus(channel, curUser, parsedResponse.get(6));
                 //Extra parsing needed since tokenizer stopped at :
-				var rawEnding = parsedResponse.get(7);
-				var rawEndingSpaceIndex = rawEnding.indexOf(' ');
+                String rawEnding = parsedResponse.get(7);
+                int rawEndingSpaceIndex = rawEnding.indexOf(' ');
                 if (rawEndingSpaceIndex == -1) {
                     //parsedResponse data is trimmed, so if the index == -1, then there was no real name given and the space separating hops from real name was trimmed.
                     curUser.setHops(Integer.parseInt(rawEnding));
@@ -646,16 +646,16 @@ public class InputParser implements Closeable {
             case RPL_ENDOFWHO: {
                 //EXAMPLE: 315 PircBotX #aChannel :End of /WHO list
                 //End of the WHO reply
-				var channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
+                Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
                 configuration.getListenerManager().onEvent(new UserListEvent(bot, channel, bot.getUserChannelDao().getUsers(channel), true));
                 break;
             }
             case RPL_CHANNELMODEIS: {
                 //EXAMPLE: 324 PircBotX #aChannel +cnt
                 //Full channel mode (In response to MODE <channel>)
-				var channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
-				var modeParsed = parsedResponse.subList(2, parsedResponse.size());
-				var mode = StringUtils.join(modeParsed, ' ');
+                Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
+                ImmutableList<String> modeParsed = parsedResponse.subList(2, parsedResponse.size());
+                String mode = StringUtils.join(modeParsed, ' ');
                 channel.setMode(mode, modeParsed);
                 configuration.getListenerManager().onEvent(new ModeEvent(bot, channel, null, null, mode, modeParsed));
                 break;
@@ -663,8 +663,8 @@ public class InputParser implements Closeable {
             case 329: {
                 //EXAMPLE: 329 lordquackstar #botters 1199140245
                 //Tells when channel was created. From /JOIN
-				var channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
-				var createDate = Utils.tryParseInt(parsedResponse.get(2), -1);
+                Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
+                int createDate = Utils.tryParseInt(parsedResponse.get(2), -1);
                 //Set in channel
                 channel.setCreateTimestamp(createDate);
                 break;
@@ -682,7 +682,7 @@ public class InputParser implements Closeable {
             case RPL_ENDOFMOTD:
                 //Example: PircBotX :End of /MOTD command.
                 //End of MOTD, clean it and dispatch MotdEvent
-				var serverInfo = bot.getServerInfo();
+                ServerInfo serverInfo = bot.getServerInfo();
                 serverInfo.setMotd(motdBuilder.toString().trim());
                 motdBuilder = null;
                 configuration.getListenerManager().onEvent(new MotdEvent(bot, serverInfo.getMotd()));
@@ -691,10 +691,10 @@ public class InputParser implements Closeable {
             case 5:
                 //Example: 004 PircBotX sendak.freenode.net ircd-seven-1.1.3 DOQRSZaghilopswz CFILMPQbcefgijklmnopqrstvz bkloveqjfI
                 //Server info line, remove ending comment and let ServerInfo class parse it
-				var endCommentIndex = rawResponse.lastIndexOf(" :");
+                int endCommentIndex = rawResponse.lastIndexOf(" :");
                 if (endCommentIndex > 1) {
-					var endComment = rawResponse.substring(endCommentIndex + 2);
-					var lastIndex = parsedResponseOrig.size() - 1;
+                    String endComment = rawResponse.substring(endCommentIndex + 2);
+                    int lastIndex = parsedResponseOrig.size() - 1;
                     if (endComment.equals(parsedResponseOrig.get(lastIndex))) parsedResponseOrig.remove(lastIndex);
                 }
                 bot.getServerInfo().parse(code, parsedResponseOrig);
@@ -702,8 +702,8 @@ public class InputParser implements Closeable {
             case RPL_WHOISUSER: {
                 //Example: 311 TheLQ Plazma ~Plazma freenode/staff/plazma * :Plazma Rooolz!
                 //New whois is starting
-				var whoisNick = parsedResponse.get(1);
-				var builder = WhoisEvent.builder();
+                String whoisNick = parsedResponse.get(1);
+                WhoisEvent.Builder builder = WhoisEvent.builder();
                 builder.nick(whoisNick);
                 builder.login(parsedResponse.get(2));
                 builder.hostname(parsedResponse.get(3));
@@ -714,8 +714,8 @@ public class InputParser implements Closeable {
             case RPL_AWAY: {
                 //Example: 301 PircBotXUser TheLQ_ :I'm away, sorry
                 //Can be sent during whois
-				var nick = parsedResponse.get(1);
-				var awayMessage = parsedResponse.get(2);
+                String nick = parsedResponse.get(1);
+                String awayMessage = parsedResponse.get(2);
                 if (bot.getUserChannelDao().containsUser(nick))
                     bot.getUserChannelDao().getUser(nick).setAwayMessage(awayMessage);
                 if (whoisBuilder.containsKey(nick)) whoisBuilder.get(nick).awayMessage(awayMessage);
@@ -724,15 +724,15 @@ public class InputParser implements Closeable {
             case RPL_WHOISCHANNELS: {
                 //Example: 319 TheLQ Plazma :+#freenode
                 //Channel list from whois. Re-tokenize since they're after the :
-				var whoisNick = parsedResponse.get(1);
-				var parsedChannels = ImmutableList.copyOf(Utils.tokenizeLine(parsedResponse.get(2)));
+                String whoisNick = parsedResponse.get(1);
+                ImmutableList<String> parsedChannels = ImmutableList.copyOf(Utils.tokenizeLine(parsedResponse.get(2)));
                 whoisBuilder.get(whoisNick).channels(parsedChannels);
                 break;
             }
             case RPL_WHOISSERVER: {
                 //Server info from whois
                 //312 TheLQ Plazma leguin.freenode.net :Ume?, SE, EU
-				var whoisNick = parsedResponse.get(1);
+                String whoisNick = parsedResponse.get(1);
                 whoisBuilder.get(whoisNick).server(parsedResponse.get(2));
                 whoisBuilder.get(whoisNick).serverInfo(parsedResponse.get(3));
                 break;
@@ -740,7 +740,7 @@ public class InputParser implements Closeable {
             case RPL_WHOISIDLE: {
                 //Idle time from whois
                 //317 TheLQ md_5 6077 1347373349 :seconds idle, signon time
-				var whoisNick = parsedResponse.get(1);
+                String whoisNick = parsedResponse.get(1);
                 whoisBuilder.get(whoisNick).idleSeconds(Long.parseLong(parsedResponse.get(2)));
                 whoisBuilder.get(whoisNick).signOnTime(Long.parseLong(parsedResponse.get(3)));
                 break;
@@ -749,7 +749,7 @@ public class InputParser implements Closeable {
                 //RPL_WHOISACCOUNT: Extra Whois info
                 //330 TheLQ Utoxin Utoxin :is logged in as
                 //Make sure we set registered as to the nick, not to the note after the colon
-				var registeredNick = "";
+                String registeredNick = "";
                 if (!rawResponse.endsWith(':' + parsedResponse.get(2))) registeredNick = parsedResponse.get(2);
                 whoisBuilder.get(parsedResponse.get(1)).registeredAs(registeredNick);
                 break;
@@ -761,15 +761,15 @@ public class InputParser implements Closeable {
             case ERR_NOSUCHSERVER: {
                 //Whois failed when doing "WHOIS invaliduser invaliduser"
                 //402 TheLQ asdfasdf :No such server
-				var whoisNick = parsedResponse.get(1);
-				var event = WhoisEvent.builder().nick(whoisNick).exists(false).generateEvent(bot);
+                String whoisNick = parsedResponse.get(1);
+                WhoisEvent event = WhoisEvent.builder().nick(whoisNick).exists(false).generateEvent(bot);
                 configuration.getListenerManager().onEvent(event);
                 break;
             }
             case RPL_ENDOFWHOIS: {
                 //End of whois
                 //318 TheLQ Plazma :End of /WHOIS list.
-				var whoisNick = parsedResponse.get(1);
+                String whoisNick = parsedResponse.get(1);
                 WhoisEvent.Builder builder;
                 if (whoisBuilder.containsKey(whoisNick)) {
                     builder = whoisBuilder.get(whoisNick);
@@ -786,10 +786,10 @@ public class InputParser implements Closeable {
             case 367: {
                 //Ban list entry
                 //367 TheLQ #aChannel *!*@test1.host TheLQ!~quackstar@some.host 1415143822
-				var channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
-				var recipient = bot.getConfiguration().getBotFactory().createUserHostmask(bot, parsedResponse.get(2));
-				var source = bot.getConfiguration().getBotFactory().createUserHostmask(bot, parsedResponse.get(3));
-				var time = Long.parseLong(parsedResponse.get(4));
+                Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
+                UserHostmask recipient = bot.getConfiguration().getBotFactory().createUserHostmask(bot, parsedResponse.get(2));
+                UserHostmask source = bot.getConfiguration().getBotFactory().createUserHostmask(bot, parsedResponse.get(3));
+                long time = Long.parseLong(parsedResponse.get(4));
                 banListBuilder.put(channel, new BanListEvent.Entry(recipient, source, time));
                 log.debug("Adding entry");
                 break;
@@ -797,8 +797,8 @@ public class InputParser implements Closeable {
             case 368: {
                 //Ban list is finished
                 //368 TheLQ #aChannel :End of Channel Ban List
-				var channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
-				var entries = ImmutableList.copyOf(banListBuilder.removeAll(channel));
+                Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
+                ImmutableList<BanListEvent.Entry> entries = ImmutableList.copyOf(banListBuilder.removeAll(channel));
                 log.debug("Dispatching event");
                 configuration.getListenerManager().onEvent(new BanListEvent(bot, channel, entries));
                 break;
@@ -806,9 +806,9 @@ public class InputParser implements Closeable {
             case 353:
                 //NAMES response
                 //353 PircBotXUser = #aChannel :aUser1 aUser2
-                for (var curUser : StringUtils.split(parsedResponse.get(3))) {
+                for (String curUser : StringUtils.split(parsedResponse.get(3))) {
                     //Siphon off any levels this user has
-					var nick = curUser;
+                    String nick = curUser;
                     List<UserLevel> levels = Lists.newArrayList();
                     UserLevel parsedLevel;
                     while ((parsedLevel = UserLevel.fromSymbol(nick.charAt(0))) != null) {
@@ -820,10 +820,10 @@ public class InputParser implements Closeable {
                         //Create user with nick only
                         user = bot.getUserChannelDao().createUser(new UserHostmask(bot, nick));
                     else user = bot.getUserChannelDao().getUser(nick);
-					var chan = bot.getUserChannelDao().getChannel(parsedResponse.get(2));
+                    Channel chan = bot.getUserChannelDao().getChannel(parsedResponse.get(2));
                     bot.getUserChannelDao().addUserToChannel(user, chan);
                     //Now that the user is created, add them to the appropiate levels
-                    for (var curLevel : levels) {
+                    for (UserLevel curLevel : levels) {
                         bot.getUserChannelDao().addUserToLevel(curLevel, user, chan);
                     }
                 }
@@ -831,7 +831,7 @@ public class InputParser implements Closeable {
             case 366: {
                 //NAMES response finished
                 //366 PircBotXUser #aChannel :End of /NAMES list.
-				var channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
+                Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
                 configuration.getListenerManager().onEvent(new UserListEvent(bot, channel, bot.getUserChannelDao().getUsers(channel), false));
                 break;
             }
@@ -853,15 +853,15 @@ public class InputParser implements Closeable {
 	public void processMode(UserHostmask userHostmask, User user, String target, String mode) {
 		if (configuration.getChannelPrefixes().indexOf(target.charAt(0)) >= 0) {
 			// The mode of a channel is being changed.
-			var channel = bot.getUserChannelDao().getChannel(target);
+            Channel channel = bot.getUserChannelDao().getChannel(target);
 			channel.parseMode(mode);
-			var modeParsed = ImmutableList.copyOf(StringUtils.split(mode, ' '));
-			var params = Iterators.peekingIterator(modeParsed.iterator());
+            ImmutableList<String> modeParsed = ImmutableList.copyOf(StringUtils.split(mode, ' '));
+            PeekingIterator<String> params = Iterators.peekingIterator(modeParsed.iterator());
 			//Process modes letter by letter, grabbing paramaters as needed
-			var adding = true;
-			var modeLetters = params.next();
-			for (var i = 0; i < modeLetters.length(); i++) {
-				var curModeChar = modeLetters.charAt(i);
+            boolean adding = true;
+            String modeLetters = params.next();
+			for (int i = 0; i < modeLetters.length(); i++) {
+                char curModeChar = modeLetters.charAt(i);
                 switch (curModeChar) {
                     case '+':
                         adding = true;
@@ -870,7 +870,7 @@ public class InputParser implements Closeable {
                         adding = false;
                         break;
                     default:
-						var modeHandler = configuration.getChannelModeHandlers().get(curModeChar);
+                        ChannelModeHandler modeHandler = configuration.getChannelModeHandlers().get(curModeChar);
                         if (modeHandler != null)
                             modeHandler.handleMode(bot, channel, userHostmask, user, params, adding, true);
                         break;
@@ -879,15 +879,15 @@ public class InputParser implements Closeable {
 			configuration.getListenerManager().onEvent(new ModeEvent(bot, channel, userHostmask, user, mode, modeParsed));
 		} else {
 			// The mode of a user is being changed.
-			var targetHostmask = bot.getConfiguration().getBotFactory().createUserHostmask(bot, target);
-			var targetUser = bot.getUserChannelDao().getUser(target);
+            UserHostmask targetHostmask = bot.getConfiguration().getBotFactory().createUserHostmask(bot, target);
+            User targetUser = bot.getUserChannelDao().getUser(target);
 			configuration.getListenerManager().onEvent(new UserModeEvent(bot, userHostmask, user, targetHostmask, targetUser, mode));
 		}
 	}
 
 	public void processUserStatus(Channel chan, User user, String prefix) {
-		for (var prefixChar : prefix.toCharArray()) {
-			var level = UserLevel.fromSymbol(prefixChar);
+		for (char prefixChar : prefix.toCharArray()) {
+            UserLevel level = UserLevel.fromSymbol(prefixChar);
 			if (level != null) bot.getUserChannelDao().addUserToLevel(level, user, chan);
 		}
 		//Assume here (H) if there is no G
@@ -929,8 +929,8 @@ public class InputParser implements Closeable {
 
 		@Override
 		public void handleMode(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, PeekingIterator<String> params, boolean adding, boolean dispatchEvent) {
-			var recipient = params.next();
-			var recipientHostmask = bot.getConfiguration().getBotFactory().createUserHostmask(bot, recipient);
+            String recipient = params.next();
+            UserHostmask recipientHostmask = bot.getConfiguration().getBotFactory().createUserHostmask(bot, recipient);
 			User recipientUser = null;
 			if (bot.getUserChannelDao().containsUser(recipient)) {
 				recipientUser = bot.getUserChannelDao().getUser(recipient);

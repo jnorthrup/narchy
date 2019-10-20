@@ -53,16 +53,16 @@ public class PrecisionCharmaskLengthObjective implements Objective {
     @Override
     public double[] fitness(Node individual) {
 
-        var dataSetView = this.context.getCurrentDataSet();
-        var evaluator = context.getConfiguration().getEvaluator();
-        var fitness = new double[3];
+        DataSet dataSetView = this.context.getCurrentDataSet();
+        TreeEvaluator evaluator = context.getConfiguration().getEvaluator();
+        double[] fitness = new double[3];
 
         double fitnessLenght;
 
         List<Bounds[]> evaluate;
         try {
             evaluate = evaluator.evaluate(individual, context);
-            var builder = new StringBuilder();
+            StringBuilder builder = new StringBuilder();
             individual.describe(builder);
             fitnessLenght = builder.length();
         } catch (TreeEvaluationException ex) {
@@ -72,19 +72,19 @@ public class PrecisionCharmaskLengthObjective implements Objective {
         }
 
 
-        var statsOverall = new BasicStats();
+        BasicStats statsOverall = new BasicStats();
 
 
-        var statsCharsOverall = new BasicStats();
+        BasicStats statsCharsOverall = new BasicStats();
 
-        var i = 0;
-        for (var result : evaluate) {
-            var stats = new BasicStats();
-            var statsChars = new BasicStats();
+        int i = 0;
+        for (Bounds[] result : evaluate) {
+            BasicStats stats = new BasicStats();
+            BasicStats statsChars = new BasicStats();
 
-            var example = dataSetView.getExample(i);
-            var expectedMatchMask = example.getMatch();
-            var expectedUnmatchMask = example.getUnmatch();
+            Example example = dataSetView.getExample(i);
+            List<Bounds> expectedMatchMask = example.getMatch();
+            List<Bounds> expectedUnmatchMask = example.getUnmatch();
             List<Bounds> annotatedMask = new ArrayList<>(expectedMatchMask);
             annotatedMask.addAll(expectedUnmatchMask);
 
@@ -110,8 +110,13 @@ public class PrecisionCharmaskLengthObjective implements Objective {
 
     
     private static int intersection(Bounds[] extractedRanges, List<Bounds> expectedRanges) {
-        var overallNumChars = Arrays.stream(extractedRanges).mapToInt(extractedBounds -> {
-            var sum = expectedRanges.stream().mapToInt(expectedBounds -> Math.min(extractedBounds.end, expectedBounds.end) - Math.max(extractedBounds.start, expectedBounds.start)).map(numChars -> Math.max(0, numChars)).sum();
+        int overallNumChars = Arrays.stream(extractedRanges).mapToInt(extractedBounds -> {
+            int sum = 0;
+            for (Bounds expectedBounds : expectedRanges) {
+                int numChars = Math.min(extractedBounds.end, expectedBounds.end) - Math.max(extractedBounds.start, expectedBounds.start);
+                int max = Math.max(0, numChars);
+                sum += max;
+            }
             return sum;
         }).sum();
 
@@ -120,7 +125,14 @@ public class PrecisionCharmaskLengthObjective implements Objective {
 
     
     private static int countIdenticalRanges(Bounds[] rangesA, List<Bounds> rangesB) {
-        var identicalRanges = (int) Arrays.stream(rangesA).filter(boundsA -> rangesB.stream().anyMatch(boundsA::equals)).count();
+        int identicalRanges = (int) Arrays.stream(rangesA).filter(boundsA -> {
+            for (Bounds bounds : rangesB) {
+                if (boundsA.equals(bounds)) {
+                    return true;
+                }
+            }
+            return false;
+        }).count();
 
         return identicalRanges;
     }

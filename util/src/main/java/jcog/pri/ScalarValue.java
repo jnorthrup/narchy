@@ -54,7 +54,7 @@ public interface ScalarValue extends Prioritized {
 
 
     default float[] priDelta(FloatFloatToFloatFunction update, float x) {
-        var beforeAfter = new float[2];
+        float[] beforeAfter = new float[2];
         beforeAfter[1] = pri((xx,yy)-> {
             beforeAfter[0] = xx;
             return update.apply(xx, yy);
@@ -67,7 +67,7 @@ public interface ScalarValue extends Prioritized {
      * returns false if already deleted (allowing overriding subclasses to know if they shold also delete)
      */
     default boolean delete() {
-        var p = pri();
+        float p = pri();
         if (p==p) {
             this.pri(Float.NaN);
             return true;
@@ -125,17 +125,17 @@ public interface ScalarValue extends Prioritized {
 //    }
 
     default float priGetAndSetZero() {
-        var p = pri();
+        float p = pri();
         pri(0);
         return p;
     }
     default float priGetAndSet(float next) {
-        var p = pri();
+        float p = pri();
         pri(next);
         return p;
     }
     default float priGetAndDelete() {
-        var p = pri();
+        float p = pri();
         delete();
         return p;
     }

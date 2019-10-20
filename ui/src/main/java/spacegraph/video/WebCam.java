@@ -52,7 +52,7 @@ public class WebCam extends VideoSource implements WebcamListener {
 
         if (!webcam.isOpen()) {
 
-            var sizes = webcam.getViewSizes();
+            Dimension[] sizes = webcam.getViewSizes();
             webcam.setViewSize(sizes[sizes.length - 1] /* assume largest is last */);
 
             if (!webcam.open(auto))
@@ -75,16 +75,16 @@ public class WebCam extends VideoSource implements WebcamListener {
 
 //        new WebcamViewer();
 
-        var defaultf = Webcam.getDefault();
+        Webcam defaultf = Webcam.getDefault();
         return defaultf == null ? null : new WebCam(defaultf);
     }
 
     public static WebCam[] theFirst(int n) {
         assert (n > 0);
-        var wc = new WebCam[n];
-        var j = 0;
+        WebCam[] wc = new WebCam[n];
+        int j = 0;
         synchronized (WebCam.class) {
-            for (var w : com.github.sarxos.webcam.Webcam.getWebcams()) {
+            for (Webcam w : com.github.sarxos.webcam.Webcam.getWebcams()) {
                 try {
                     if (j == 0 || !deviceName(w).equals(deviceName(wc[j - 1].webcam))) {
                         wc[j++] = new WebCam(w);
@@ -144,11 +144,11 @@ public class WebCam extends VideoSource implements WebcamListener {
         ChannelView(VideoSource cam) {
             this.cam = cam;
 
-            var bmp = new BitmapMatrixView(cam.width, cam.height, (x, y) -> {
-                var c = current;
+            BitmapMatrixView bmp = new BitmapMatrixView(cam.width, cam.height, (x, y) -> {
+                Tensor c = current;
                 if (c != null) {
                     mixed.update((RGBBufImgBitmap2D) current);
-                    var intensity = //c.get(x, y, channel);
+                    float intensity = //c.get(x, y, channel);
                             mixed.get(x, y);
                     return Draw.rgbInt(intensity, intensity, intensity);
 //                    switch (channel) {
@@ -179,7 +179,7 @@ public class WebCam extends VideoSource implements WebcamListener {
         public static void main(String[] args) {
             VideoSource wc = the();
 
-            var menu = new Gridding();
+            Gridding menu = new Gridding();
             menu.add(new PushButton("++").clicked(() -> SpaceGraph.window(new ChannelView(wc), 400, 400)));
 
             SpaceGraph.window(new Splitting(new Gridding(menu, new ObjectSurface(wc)), 0.9f, new VideoSurface(wc)), 1000, 1000);

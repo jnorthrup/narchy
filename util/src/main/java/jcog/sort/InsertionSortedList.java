@@ -52,14 +52,14 @@ public class InsertionSortedList<E extends Comparable> extends FasterList<E> /* 
     public final boolean add(E x) {
 
 
-        var s = size;
+        int s = size;
         if (s > 0) {
             int low = 0, high = s - 1;
 
             while (low <= high) {
-                var mid = (low + high) / 2;
+                int mid = (low + high) / 2;
 
-                var cmp = x.compareTo(get(mid));
+                int cmp = x.compareTo(get(mid));
 
                 if (cmp > 0) {
                     low = mid + 1;

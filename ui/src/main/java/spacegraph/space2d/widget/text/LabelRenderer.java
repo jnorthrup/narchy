@@ -27,15 +27,15 @@ public interface LabelRenderer extends BiConsumer<VectorLabel, GL2> {
 
         label.fgColor.apply(gl);
         //gl.glLineWidth(0.5f);
-        var b = label.bounds;
-        var x = b.x;
-        var y = b.y;
-        var W = b.w;
-        var H = b.h;
-        var w = W * label.textScaleX * label.text.length();
-        var h = H * label.textScaleY;
-        var wm = (W - w) / 2;
-        var hm = (H - h) / 2;
+        RectFloat b = label.bounds;
+        float x = b.x;
+        float y = b.y;
+        float W = b.w;
+        float H = b.h;
+        float w = W * label.textScaleX * label.text.length();
+        float h = H * label.textScaleY;
+        float wm = (W - w) / 2;
+        float hm = (H - h) / 2;
         Draw.rect(x + wm, y + hm, w, h, gl);
 
     };

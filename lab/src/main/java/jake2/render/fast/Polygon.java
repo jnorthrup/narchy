@@ -54,13 +54,13 @@ public final class Polygon extends glpoly_t {
 
     private static final Polygon[] polyCache = new Polygon[MAX_POLYS];
     static {
-        for (var i = 0; i < polyCache.length; i++) {
+        for (int i = 0; i < polyCache.length; i++) {
             polyCache[i] = new Polygon();
         }
     }
 
     static glpoly_t create(int numverts) {
-        var poly = polyCache[polyCount++];
+        Polygon poly = polyCache[polyCount++];
         poly.clear();
         poly.numverts = numverts;
         poly.pos = bufferIndex;
@@ -165,8 +165,8 @@ public final class Polygon extends glpoly_t {
 
     @Override
     public final void beginScrolling(float scroll) {
-        var index = pos * STRIDE;
-        for (var i = 0; i < numverts; i++, index += STRIDE) {
+        int index = pos * STRIDE;
+        for (int i = 0; i < numverts; i++, index += STRIDE) {
             scroll += s1_old[i] = buffer.get(index);
             buffer.put(index, scroll);
         }
@@ -174,8 +174,8 @@ public final class Polygon extends glpoly_t {
 
     @Override
     public final void endScrolling() {
-        var index = pos * STRIDE;
-        for (var i = 0; i < numverts; i++, index += STRIDE) {
+        int index = pos * STRIDE;
+        for (int i = 0; i < numverts; i++, index += STRIDE) {
             buffer.put(index, s1_old[i]);
         }
     }

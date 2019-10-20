@@ -59,7 +59,7 @@ public class Tex {
     }
 
     void paint(GL2 gl, RectFloat bounds, float repeatScale, float alpha) {
-        var t = commit(gl);
+        Texture t = commit(gl);
         if (t != null)
             Draw.rectTex(gl, t,
                     bounds.x, bounds.y, bounds.w, bounds.h,
@@ -75,9 +75,9 @@ public class Tex {
 
         ready(gl);
 
-        var data = this.data;
+        TextureData data = this.data;
         if (data != null) {
-            var texture = this.texture;
+            Texture texture = this.texture;
             if (texture == null) {
                 texture = this.texture = TextureIO.newTexture(gl, data);
             }
@@ -106,15 +106,15 @@ public class Tex {
 
     public boolean set(BufferedImage i) {
 
-        var gl = this.gl;
+        GL2 gl = this.gl;
         if (gl!=null) {
-            var x = i.getRaster().getDataBuffer();
+            DataBuffer x = i.getRaster().getDataBuffer();
 
             Object y = x instanceof DataBufferInt ?
                 ((DataBufferInt) x).getData() :
                 ((DataBufferByte)x).getData();
 
-            var data = this.data;
+            TextureData data = this.data;
             if (src != y || (data!=null && (data.getWidth()!=i.getWidth() || data.getHeight()!=i.getHeight()) )) {
                 _set(y, i.getWidth(), i.getHeight(), i.getColorModel(), gl);
                 this.src = y;
@@ -157,7 +157,7 @@ public class Tex {
                 data.setBuffer(buffer);
             } else */{
 
-            var profile = gl.getGLProfile();
+            GLProfile profile = gl.getGLProfile();
                 if (color.getNumColorComponents()==1) {
                     //grayscale
 
@@ -179,7 +179,7 @@ public class Tex {
                     //assume RGB/RGBA
 
                     if (x instanceof int[]) {
-                        var alpha = color.hasAlpha();
+                        boolean alpha = color.hasAlpha();
 
                         data = new TextureData(profile, alpha ? GL_RGBA : GL_RGB,
                                 width, height,
@@ -256,8 +256,8 @@ public class Tex {
     }
 
     public void delete() {
-        var tt = this.texture;
-        var gl = this.gl;
+        Texture tt = this.texture;
+        GL2 gl = this.gl;
         if (gl != null && tt != null) {
             tt.destroy(gl);
         }
@@ -278,7 +278,7 @@ public class Tex {
 
         @Override
         protected void paint(GL2 gl, ReSurface reSurface) {
-            var t = this.tex;
+            Tex t = this.tex;
             if (t != null && t.data == null)
                 t.set(b);
             super.paint(gl, reSurface);

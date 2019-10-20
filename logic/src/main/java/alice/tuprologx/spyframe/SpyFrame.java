@@ -40,17 +40,17 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener {
         @Override
         public Node makeTreeFrom(List<PrologContext> eclist) {
             Term result = null;
-            var levels = eclist.size();
+            int levels = eclist.size();
             if (levels >= 1) {
                 Term bottom = null;
-                for (var i = 0; i < levels; i++) {
-                    var ec = eclist.get(i);
+                for (int i = 0; i < levels; i++) {
+                    PrologContext ec = eclist.get(i);
                     Term c = ec.getClause();
                     if (c instanceof Struct) {
-                        var s = (Struct) c;
-                        var name = s.name();
-                        var sub = new ArrayList<Term>();
-                        for (var sgt : ec.getSubGoalStore().getSubGoals()) {
+                        Struct s = (Struct) c;
+                        String name = s.name();
+                        ArrayList<Term> sub = new ArrayList<Term>();
+                        for (SubTree sgt : ec.getSubGoalStore().getSubGoals()) {
                             if (!sgt.isLeaf()) {
 
                                 cerca(sgt);
@@ -71,11 +71,11 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener {
                                 name = null;
                                 break;
                         }
-                        var pos = sub.indexOf(ec.getCurrentGoal());
+                        int pos = sub.indexOf(ec.getCurrentGoal());
                         if (bottom != null) sub.set(pos, bottom);
                         if (name == null) bottom = sub.get(0);
                         else {
-                            var subt = new Term[sub.size()];
+                            Term[] subt = new Term[sub.size()];
                             bottom = new Struct(name, sub.toArray(subt));
                         }
                     } else bottom = c;
@@ -87,9 +87,9 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener {
 
         private void cerca(SubTree sgt) {
             elementi = new ArrayList<>();
-            var dim = ((SubGoalTree) sgt).size();
-            for (var i = 0; i < dim; i++) {
-                var ab = ((SubGoalTree) sgt).get(i);
+            int dim = ((SubGoalTree) sgt).size();
+            for (int i = 0; i < dim; i++) {
+                SubTree ab = ((SubGoalTree) sgt).get(i);
                 if (ab.isLeaf()) {
                     elementi.add((Term) ab);
                 } else {
@@ -118,9 +118,9 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener {
     public SpyFrame(Theory theory, Term goal) throws InvalidTheoryException {
 
         super("SpyFrame");
-        var c = getContentPane();
+        Container c = getContentPane();
 
-        var topp = new JPanel();
+        JPanel topp = new JPanel();
 
         topp.add(new JLabel("Number of steps to jump"));
         number = new JTextField("1", 2);
@@ -136,7 +136,7 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener {
 
         tree = new Tree<>(SpyFrame.contexts2tree);
         results = new JTextArea("", 4, 40);
-        var jsp = new JSplitPane(
+        JSplitPane jsp = new JSplitPane(
                 JSplitPane.VERTICAL_SPLIT,
                 new JScrollPane(tree),
                 new JScrollPane(results)
@@ -144,9 +144,9 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener {
         c.add(jsp, BorderLayout.CENTER);
 
 
-        var screen = Toolkit.getDefaultToolkit().getScreenSize();
-        var h = screen.height - (screen.height / 4);
-        var l = screen.width - (screen.width / 2);
+        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+        int h = screen.height - (screen.height / 4);
+        int l = screen.width - (screen.width / 2);
         jsp.setDividerLocation(h - 250);
         setSize(l, h);
 
@@ -158,11 +158,11 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener {
         prolog.addSpyListener(this);
         prolog.setSpy(true);
         pprocess = new Thread(() -> {
-            var sinfo = prolog.solve(goal);
+            Solution sinfo = prolog.solve(goal);
             if (sinfo != null) {
                 while (sinfo.isSuccess())
                     try {
-                        var sol = sinfo.getSolution();
+                        Term sol = sinfo.getSolution();
                         results.append("\nsolution: " + sol);
                         results.append("\ninfo:     " + sinfo);
                         if (sinfo.hasOpenAlternatives()) sinfo = prolog.solveNext();
@@ -185,11 +185,11 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener {
      * @throws Exception if the theory or the goal are nonsense.
      */
     public static void main(String... args) throws Exception {
-        var theory = new Theory(new FileInputStream(args[0]));
-        var goal = Term.term(args[1]);
+        Theory theory = new Theory(new FileInputStream(args[0]));
+        Term goal = Term.term(args[1]);
         System.out.println("goal:" + goal);
         System.out.println("in given theory\n---------------\n" + theory);
-        var tf = new SpyFrame(theory, goal);
+        SpyFrame tf = new SpyFrame(theory, goal);
         tf.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
@@ -215,7 +215,7 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener {
 
     @Override
     public synchronized void onSpy(SpyEvent e) {
-        var engine = e.getSnapshot();
+        PrologSolve engine = e.getSnapshot();
         if (null != engine)
             if ("Call".equals(engine.getNextStateName()) && --steps <= 0) {
                 tree.setStructure(engine.getExecutionStack());

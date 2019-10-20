@@ -60,13 +60,13 @@ public class Follow1DTwoPoint implements RLEnvironment {
                     0, 0, getWidth(), getHeight());
 
             g.setColor(Color.green);
-            var i = 0;
-            var prevY = 0;
-            var prevX = 0;
-            final var margin = 10;
+            int i = 0;
+            int prevY = 0;
+            int prevX = 0;
+            final int margin = 10;
             for (double _y : _targets) {
-                var x = i * getWidth() / history;
-                var y = (int) (_y * (getHeight()-margin) / maxPos) + margin/2;
+                int x = i * getWidth() / history;
+                int y = (int) (_y * (getHeight()-margin) / maxPos) + margin/2;
                 g.drawLine(prevX, prevY, x, y);
                 ++i;
                 prevX = x;
@@ -79,8 +79,8 @@ public class Follow1DTwoPoint implements RLEnvironment {
 
             g.setColor(Color.white);
             for (double _y : _positions) {
-                var x = i * getWidth() / history;
-                var y = (int) (_y * (getHeight()-margin) / maxPos) + margin/2;
+                int x = i * getWidth() / history;
+                int y = (int) (_y * (getHeight()-margin) / maxPos) + margin/2;
                 g.drawLine(prevX, prevY, x, y);
                 ++i;
                 prevX = x;
@@ -109,8 +109,8 @@ public class Follow1DTwoPoint implements RLEnvironment {
 
         double target = 0;
         double my = 0;
-        for (var i = 0; i < historyPoints;) {
-            var j = positions.size() - 1 - (i * historyInterval);
+        for (int i = 0; i < historyPoints;) {
+            int j = positions.size() - 1 - (i * historyInterval);
             my = positions.get(j);
             target = targets.get(j);
             
@@ -134,7 +134,7 @@ public class Follow1DTwoPoint implements RLEnvironment {
     }
 
     public double getRewardDelta() {
-        var dist = Math.abs(myPos - targetPos) / maxPos;
+        double dist = Math.abs(myPos - targetPos) / maxPos;
 
         double delta;
         if (!Double.isFinite(lastDist)) {
@@ -146,7 +146,7 @@ public class Follow1DTwoPoint implements RLEnvironment {
 
         lastDist = dist;
 
-        var reward = -delta * 10;
+        double reward = -delta * 10;
         return reward;
     }
 
@@ -159,7 +159,7 @@ public class Follow1DTwoPoint implements RLEnvironment {
 
     public double getRewardAbsolute() {
 
-        var dist = Math.abs(myPos - targetPos) / maxPos;
+        double dist = Math.abs(myPos - targetPos) / maxPos;
         if (dist < closeThresh) {
             return closeThresh-dist;
         }
@@ -177,25 +177,25 @@ public class Follow1DTwoPoint implements RLEnvironment {
             
     public void updateTargetRandom(int cycle) {
         targetPos += targetV * speed;
-        final var targetAcceleration = 0.002;
+        final double targetAcceleration = 0.002;
         targetV += (Math.random() - 0.5) * targetAcceleration;
     }
     public void updateTargetXOR(int cycle) {
-        var complexity = 10;
-        var scale = 1.0;
-        var v = ( ((int)(speed * targetSpeed * cycle )%complexity ^ 0xf3f24f)%complexity * scale / complexity);
+        int complexity = 10;
+        double scale = 1.0;
+        double v = ( ((int)(speed * targetSpeed * cycle )%complexity ^ 0xf3f24f)%complexity * scale / complexity);
         targetPos = v;
     }
 
     public void updateTargetSine(int cycle) {
         double scale = 1.0f;
-        var v = (0.5f + 0.5f * Math.sin( (speed * cycle / (Math.PI*2)) )) * scale;
+        double v = (0.5f + 0.5f * Math.sin( (speed * cycle / (Math.PI*2)) )) * scale;
         targetPos = v;
     }
 
     @Override
     public boolean takeAction(int action) {
-        var direction = action == 0 ? -1: 1;
+        int direction = action == 0 ? -1: 1;
         return takeActionVelocity(direction);
     }
 

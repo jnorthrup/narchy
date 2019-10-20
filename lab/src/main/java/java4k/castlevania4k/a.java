@@ -218,14 +218,14 @@ public class a extends GamePanel {
 		for (z = 0; z < 256; z++) {
 			for (i = k = 0; i < SPRITES; i++) {
 				j = S.charAt(k++);
-				var width = j >> 8;
-				var height = j & 0xFF;
+                int width = j >> 8;
+                int height = j & 0xFF;
 				alphaSprites[z][i] = new BufferedImage(width, height, 2);
 				for (y = 0; y < height; y++) {
                     if (width != 8 || (y & 1) == 0) {
 						j = S.charAt(k++);
 					}
-					var pixels = new int[16];
+                    int[] pixels = new int[16];
                     for (x = 0; x < width; x++) {
 						if ((j & 1) == 1) {
 							pixels[x] = z << 24;
@@ -307,7 +307,7 @@ public class a extends GamePanel {
 
 
                                 if (draculaPower >= 22 || (draculaPower > 10 && draculaPower < 16) || (draculaPower < 6)) {
-									var fireball = new float[32];
+                                    float[] fireball = new float[32];
                                     queue.add(fireball);
                                     fireball[OBJ_X] = draculaX;
                                     fireball[OBJ_Y] = 156 + (random.nextInt(2) << 3);
@@ -330,7 +330,7 @@ public class a extends GamePanel {
 
                                     j = 8 + (random.nextInt(8) << 4);
                                     for (i = 0; i < 2; i++) {
-										var igor = new float[32];
+                                        float[] igor = new float[32];
                                         queue.add(igor);
                                         igor[OBJ_X] = j + (i << 7);
                                         igor[OBJ_Y] = 64;
@@ -346,7 +346,7 @@ public class a extends GamePanel {
 
                                     j = random.nextInt(4);
                                     for (i = 0; i < 4; i++) {
-										var brick = new float[32];
+                                        float[] brick = new float[32];
                                         queue.add(brick);
                                         brick[OBJ_X] = (j + (i << 2)) << 4;
                                         brick[OBJ_Y] = 32;
@@ -392,7 +392,7 @@ public class a extends GamePanel {
 
 
                                 if ((draculaCounter & 7) == 7) {
-									var flame = new float[32];
+                                    float[] flame = new float[32];
                                     queue.add(flame);
                                     flame[OBJ_X] = 120 + random.nextInt(12);
                                     flame[OBJ_Y] = 128 + random.nextInt(32);
@@ -499,7 +499,7 @@ public class a extends GamePanel {
 					if (--playerWhipping < WHIP_THROW && playerThrowing) {
 						
 						playerWhipping = 0;
-						var cross = new float[32];
+                        float[] cross = new float[32];
 						queue.add(cross);
 						crosses.add(cross);
 						if (playerReversed) {
@@ -592,7 +592,7 @@ public class a extends GamePanel {
 
 			
 			o: for (i = queue.size() - 1; i >= 0; i--) {
-				var object = queue.get(i);
+                float[] object = queue.get(i);
 				if (object[OBJ_TYPE] == TYPE_CROSS) {
 					
 					object[OBJ_ANGLE] += object[OBJ_VX] * CROSS_RATIO;
@@ -641,7 +641,7 @@ public class a extends GamePanel {
 					if (object[OBJ_Y] >= 160) {
 						
 						queue.remove(i);
-						var flame = new float[32];
+                        float[] flame = new float[32];
 						queue.add(flame);
 						flame[OBJ_X] = object[OBJ_X] + 4;
 						flame[OBJ_Y] = object[OBJ_Y] - 4;
@@ -682,10 +682,16 @@ public class a extends GamePanel {
 								}
 							} else {
 								if (playerStunned == 0) {
-									var b = IntStream.of(TYPE_FIREBALL, TYPE_BRICK, TYPE_IGOR).anyMatch(v -> object[OBJ_TYPE] == v);
+									boolean b = false;
+									for (int v : new int[]{TYPE_FIREBALL, TYPE_BRICK, TYPE_IGOR}) {
+										if (object[OBJ_TYPE] == v) {
+											b = true;
+											break;
+										}
+									}
 									if (b) {
 										queue.remove(i);
-										var flame = new float[32];
+                                        float[] flame = new float[32];
 										queue.add(flame);
 										flame[OBJ_X] = object[OBJ_X] + object[OBJ_X1] + ((object[OBJ_X2] - object[OBJ_X1] - 8) / 2);
 										flame[OBJ_Y] = object[OBJ_Y] + object[OBJ_Y1] + ((object[OBJ_Y2] - object[OBJ_Y1] - 24) / 2);
@@ -705,10 +711,16 @@ public class a extends GamePanel {
 						
 						if (playerWhipping > 0 && playerWhipping <= WHIP_EXTENDED && !playerThrowing && whipX2 >= object[OBJ_X] + object[OBJ_X1] && whipX1 <= object[OBJ_X] + object[OBJ_X2]
 								&& whipY2 >= object[OBJ_Y] + object[OBJ_Y1] && whipY1 <= object[OBJ_Y] + object[OBJ_Y2]) {
-							var b = IntStream.of(TYPE_FIREBALL, TYPE_DRACULA_HEAD, TYPE_IGOR).anyMatch(v -> object[OBJ_TYPE] == v);
+							boolean b = false;
+							for (int v : new int[]{TYPE_FIREBALL, TYPE_DRACULA_HEAD, TYPE_IGOR}) {
+								if (object[OBJ_TYPE] == v) {
+									b = true;
+									break;
+								}
+							}
 							if (b) {
 								queue.remove(i);
-								var flame = new float[32];
+                                float[] flame = new float[32];
 								queue.add(flame);
 								flame[OBJ_X] = object[OBJ_X] + object[OBJ_X1] + ((object[OBJ_X2] - object[OBJ_X1] - 8) / 2);
 								flame[OBJ_Y] = object[OBJ_Y] + object[OBJ_Y1] + ((object[OBJ_Y2] - object[OBJ_Y1] - 24) / 2);
@@ -722,14 +734,20 @@ public class a extends GamePanel {
 						}
 
 
-						var b = IntStream.of(TYPE_FIREBALL, TYPE_DRACULA_HEAD, TYPE_IGOR).anyMatch(v -> object[OBJ_TYPE] == v);
+						boolean b = false;
+						for (int v : new int[]{TYPE_FIREBALL, TYPE_DRACULA_HEAD, TYPE_IGOR}) {
+							if (object[OBJ_TYPE] == v) {
+								b = true;
+								break;
+							}
+						}
 						if (b) {
 							for (j = 0; j < crosses.size(); j++) {
-								var cross = crosses.get(j);
+                                float[] cross = crosses.get(j);
 								if (cross[OBJ_X] + cross[OBJ_X2] >= object[OBJ_X] + object[OBJ_X1] && cross[OBJ_X] + cross[OBJ_X1] <= object[OBJ_X] + object[OBJ_X2]
 										&& cross[OBJ_Y] + cross[OBJ_Y2] >= object[OBJ_Y] + object[OBJ_Y1] && cross[OBJ_Y] + cross[OBJ_Y1] <= object[OBJ_Y] + object[OBJ_Y2]) {
 									queue.remove(i);
-									var flame = new float[32];
+                                    float[] flame = new float[32];
 									queue.add(flame);
 									flame[OBJ_X] = object[OBJ_X] + object[OBJ_X1] + ((object[OBJ_X2] - object[OBJ_X1] - 8) / 2);
 									flame[OBJ_Y] = object[OBJ_Y] + object[OBJ_Y1] + ((object[OBJ_Y2] - object[OBJ_Y1] - 24) / 2);
@@ -891,7 +909,7 @@ public class a extends GamePanel {
 
 		
 		for (i = 0; i < queue.size(); i++) {
-			var object = queue.get(i);
+            float[] object = queue.get(i);
 			if (object[OBJ_SPRITE] >= 0) {
 				offscreenGraphics.translate((int) object[OBJ_X], (int) object[OBJ_Y]);
 
@@ -922,16 +940,16 @@ public class a extends GamePanel {
 	@Override
 	public void processAWTEvent(AWTEvent e) {
 		if (e instanceof KeyEvent) {
-			var keyEvent = (KeyEvent) e;
+            KeyEvent keyEvent = (KeyEvent) e;
 
-			var k = keyEvent.getKeyCode();
+            int k = keyEvent.getKeyCode();
 			if (k > 0) {
-                final var VK_JUMP = 1;
-                final var VK_SUBWEAPON = 0x41;
-                final var VK_WHIP = 0x53;
-                final var VK_DOWN = 0x28;
-                final var VK_RIGHT = 0x27;
-                final var VK_LEFT = 0x25;
+                final int VK_JUMP = 1;
+                final int VK_SUBWEAPON = 0x41;
+                final int VK_WHIP = 0x53;
+                final int VK_DOWN = 0x28;
+                final int VK_RIGHT = 0x27;
+                final int VK_LEFT = 0x25;
                 a[(k == VK_LEFT || k == VK_RIGHT || k == VK_DOWN || k == VK_WHIP || k == VK_SUBWEAPON) ? k : VK_JUMP] = keyEvent.getID() != 402;
 			}
 		}

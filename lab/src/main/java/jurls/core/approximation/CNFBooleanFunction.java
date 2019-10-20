@@ -30,9 +30,9 @@ public class CNFBooleanFunction implements ParameterizedFunction {
         variables = new long[numInputBits];
         numBitsPerVariable = new int[numInputs];
 
-        var error = 0;
-        var sum = 0;
-        for (var i = 0; i < numBitsPerVariable.length; ++i) {
+        int error = 0;
+        int sum = 0;
+        for (int i = 0; i < numBitsPerVariable.length; ++i) {
             numBitsPerVariable[i] = 0;
             while (error < numInputBits && sum < numInputBits) {
                 numBitsPerVariable[i]++;
@@ -42,23 +42,23 @@ public class CNFBooleanFunction implements ParameterizedFunction {
             error -= numBitsPerVariable[i] * numInputs;
         }
 
-        var cnf2 = new ArrayList<List<Integer>>();
+        ArrayList<List<Integer>> cnf2 = new ArrayList<List<Integer>>();
 
         int[] indices = {1, 2, 3};
         do {
             List<List<Integer>> clauses = new ArrayList<>();
             clauses.add(new ArrayList<>());
-            for (var k : indices) {
+            for (int k : indices) {
                 clauses = extend(clauses, k);
             }
             cnf2.addAll(clauses);
         } while (increment(indices, indices.length - 1, numInputBits));
 
         cnf = new int[cnf2.size()][];
-        for (var i = 0; i < cnf.length; ++i) {
-            var maxTerm = cnf2.get(i);
+        for (int i = 0; i < cnf.length; ++i) {
+            List<Integer> maxTerm = cnf2.get(i);
             cnf[i] = new int[maxTerm.size()];
-            for (var j = 0; j < maxTerm.size(); ++j) {
+            for (int j = 0; j < maxTerm.size(); ++j) {
                 cnf[i][j] = maxTerm.get(j);
             }
         }
@@ -86,7 +86,7 @@ public class CNFBooleanFunction implements ParameterizedFunction {
     private static List<List<Integer>> extend(List<List<Integer>> xs, int k) {
         List<List<Integer>> ys = new ArrayList<>();
 
-        for (var i = 0; i < xs.size(); ++i) {
+        for (int i = 0; i < xs.size(); ++i) {
             List<Integer> is = new ArrayList<>(xs.get(i));
             is.add(-k);
             ys.add(is);
@@ -100,10 +100,10 @@ public class CNFBooleanFunction implements ParameterizedFunction {
 
     private long compute(int clauseIndex) {
         long b = 0;
-        var maxTerm = cnf[clauseIndex];
+        int[] maxTerm = cnf[clauseIndex];
 
-        for (var i = 0; i < maxTerm.length; ++i) {
-            var literal = maxTerm[i];
+        for (int i = 0; i < maxTerm.length; ++i) {
+            int literal = maxTerm[i];
             if (literal > 0) {
                 b |= variables[literal - 1];
             } else {
@@ -116,10 +116,10 @@ public class CNFBooleanFunction implements ParameterizedFunction {
     }
 
     private long compute() {
-        var a = ~0l;
+        long a = ~0l;
 
-        for (var j = 0; j < cnf.length; ++j) {
-            var b = compute(j);
+        for (int j = 0; j < cnf.length; ++j) {
+            long b = compute(j);
             intermediates[j] = b;
             a &= b;
         }
@@ -130,12 +130,12 @@ public class CNFBooleanFunction implements ParameterizedFunction {
 
     @Override
     public double value(double[] xs) {
-        var j = 0;
+        int j = 0;
 
-        for (var i = 0; i < xs.length; ++i) {
-            var v = Math.round(((1l << numBitsPerVariable[i]) - 1) * xs[i]);
+        for (int i = 0; i < xs.length; ++i) {
+            long v = Math.round(((1l << numBitsPerVariable[i]) - 1) * xs[i]);
 
-            for (var k = 0; k < numBitsPerVariable[i]; ++k, ++j) {
+            for (int k = 0; k < numBitsPerVariable[i]; ++k, ++j) {
                 if (((v >> k) & 1) == 1) {
                     variables[j] = ~0l;
                 } else {
@@ -149,22 +149,22 @@ public class CNFBooleanFunction implements ParameterizedFunction {
 
     @Override
     public void learn(double[] xs, double y) {
-        var currents = Math.round(value(xs) * ((1l << numOutputBits) - 1));
-        var targets = Math.round(y * ((1l << numOutputBits) - 1));
+        long currents = Math.round(value(xs) * ((1l << numOutputBits) - 1));
+        long targets = Math.round(y * ((1l << numOutputBits) - 1));
 
-        var ps = new ArrayList<Integer>(numOutputBits);
-        for (var i = 0; i < numOutputBits; ++i) {
-            var target = ((targets >> i) & 1) == 1;
-            var current = ((currents >> i) & 1) == 1;
+        ArrayList<Integer> ps = new ArrayList<Integer>(numOutputBits);
+        for (int i = 0; i < numOutputBits; ++i) {
+            boolean target = ((targets >> i) & 1) == 1;
+            boolean current = ((currents >> i) & 1) == 1;
             ps.clear();
             if (target && !current) {
-                for (var j = 0; j < intermediates.length; ++j) {
+                for (int j = 0; j < intermediates.length; ++j) {
                     if (((intermediates[j] >> i) & 1) == 0) {
                         ps.add(j);
                     }
                 }
             } else if (!target && current) {
-                for (var j = 0; j < parameters.length; ++j) {
+                for (int j = 0; j < parameters.length; ++j) {
                     parameters[j] ^= 1l << i;
                     if (((compute(j) >> i) & 1) == 0) {
                         ps.add(j);

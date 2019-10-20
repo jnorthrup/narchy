@@ -27,7 +27,7 @@ public class MJFavourities extends Dialog implements ActionListener {
 		add("North", lblPrompt);
 		add("Center", LstFiles);
 
-		var pnlButtons = new Panel();
+        Panel pnlButtons = new Panel();
 		pnlButtons.setLayout(new FlowLayout());
 		pnlButtons.add(btnLoad = new Button(" Load "));
 		btnLoad.addActionListener(this);
@@ -35,7 +35,7 @@ public class MJFavourities extends Dialog implements ActionListener {
 		btnCcl.addActionListener(this);
 		add("South", pnlButtons);
 
-		var d = getToolkit().getScreenSize();
+        Dimension d = getToolkit().getScreenSize();
 		setLocation(d.width / 4, d.height / 3);
 		setSize(d.width / 6, d.height / 3);
 		setVisible(false);
@@ -51,10 +51,10 @@ public class MJFavourities extends Dialog implements ActionListener {
 
 		LstFiles.clear();
 
-		var vLines = new Vector();
-		var mjT = new MJTools();
+        Vector vLines = new Vector();
+        MJTools mjT = new MJTools();
 		if (MJTools.LoadResTextFile("fav.txt", vLines)) {
-			for (var i = 0; i < vLines.size(); i++) {
+			for (int i = 0; i < vLines.size(); i++) {
 				if (!((String) vLines.elementAt(i)).startsWith("//"))
 					LstFiles.add((String) vLines.elementAt(i));
 			}
@@ -67,16 +67,16 @@ public class MJFavourities extends Dialog implements ActionListener {
 	private void LoadCurrentPattern() {
 
         if (LstFiles.getSelectedIndex() >= 0) {
-			var sItem = LstFiles.getSelectedItem();
-			var whereSlash = sItem.lastIndexOf('/');
-			var sPattName = "";
-			var sRuleName = "";
-			var sGameName = "";
+            String sItem = LstFiles.getSelectedItem();
+            int whereSlash = sItem.lastIndexOf('/');
+            String sPattName = "";
+            String sRuleName = "";
+            String sGameName = "";
             if (whereSlash > 0) {
 				sPattName = sItem.substring(whereSlash + 1); 
 
 				sItem = sItem.substring(0, whereSlash);
-				var whereSep = sItem.lastIndexOf('|');
+                int whereSep = sItem.lastIndexOf('|');
 				if (whereSep > 0) {
 					sGameName = sItem.substring(0, whereSep); 
 					sRuleName = sItem.substring(whereSep + 1); 

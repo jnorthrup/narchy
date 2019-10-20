@@ -17,7 +17,7 @@ public enum Base122 { ;
 
     static {
         ByteByteHashMap ILLEGAL_BYTES_fwd = new ByteByteHashMap(16), ILLEGAL_BYTES_rev = new ByteByteHashMap(16);
-        for (var b : new byte[]{
+        for (byte b : new byte[]{
             0  //null
             , 10 // newline
             , 13 // carriage return
@@ -26,7 +26,7 @@ public enum Base122 { ;
             , 92 // backslash
         }) {
           illegal.set(b);
-            var bi = (byte) ILLEGAL_BYTES_fwd.size();
+            byte bi = (byte) ILLEGAL_BYTES_fwd.size();
             ILLEGAL_BYTES_fwd.put(b, bi);
             ILLEGAL_BYTES_rev.put(bi, b);
         }
@@ -62,8 +62,8 @@ public enum Base122 { ;
                 }
 
                 // Shift, mask, unshift to get first part.
-                var firstByte = rawData[curIndex];
-                var firstPart = ((0b11111110 >>> curBit) & firstByte) << curBit;
+                byte firstByte = rawData[curIndex];
+                int firstPart = ((0b11111110 >>> curBit) & firstByte) << curBit;
                 // Align it to a seven bit chunk.
                 firstPart >>>= 1;
                 // Check if we need to go to the next byte for more bits.
@@ -73,8 +73,8 @@ public enum Base122 { ;
                 curIndex++;
                 // Now we want bits [0..curBit] of the next byte if it exists.
                 if (curIndex >= rawData.length) return (byte) firstPart;
-                var secondByte = rawData[curIndex];
-                var secondPart = ((0xFF00 >>> curBit) & secondByte) & 0xFF;
+                byte secondByte = rawData[curIndex];
+                int secondPart = ((0xFF00 >>> curBit) & secondByte) & 0xFF;
                 // Align it.
                 secondPart >>>= 8 - curBit;
                 return (byte) (firstPart | secondPart);
@@ -86,14 +86,14 @@ public enum Base122 { ;
 
         String encode() {
             byte sevenBits;
-            var outputStream = new ByteArrayOutputStream(rawData.length + (rawData.length / 8) + 1);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream(rawData.length + (rawData.length / 8) + 1);
             while ((sevenBits = next7Bit()) != STOP_BYTE) {
                 int illegalIndex;
                 if ((illegalIndex = isIllegalCharacter(sevenBits)) != -1) {
                     // Since this will be a two-byte character, get the next chunk of seven bits.
-                    var nextSevenBits = next7Bit();
+                    byte nextSevenBits = next7Bit();
 
-                    var b1 = (byte) 0b11000010;
+                    byte b1 = (byte) 0b11000010;
                     if (nextSevenBits == STOP_BYTE) {
                         b1 |= (0b111 & kShortened) << 2;
                         nextSevenBits = sevenBits; // Encode these bits after the shortened signifier.
@@ -102,9 +102,9 @@ public enum Base122 { ;
                     }
 
                     // Push first bit onto first byte, remaining 6 onto second.
-                    var firstBit = (byte) ((nextSevenBits & 0b01000000) > 0 ? 1 : 0);
+                    byte firstBit = (byte) ((nextSevenBits & 0b01000000) > 0 ? 1 : 0);
                     b1 |= firstBit;
-                    var b2 = (byte) 0b10000000;
+                    byte b2 = (byte) 0b10000000;
                     b2 |= nextSevenBits & 0b00111111;
                     outputStream.write(b1);
                     outputStream.write(b2);
@@ -141,17 +141,17 @@ public enum Base122 { ;
         }
 
         byte[] decode(String base122Data) {
-            var utf8Bytes = base122Data.getBytes(StandardCharsets.UTF_8);
+            byte[] utf8Bytes = base122Data.getBytes(StandardCharsets.UTF_8);
             return decode(utf8Bytes);
         }
 
         byte[] decode(byte[] utf8Bytes) {
-            for (var i = 0; i < utf8Bytes.length; i++) {
+            for (int i = 0; i < utf8Bytes.length; i++) {
                 // Check if this is a two-byte character.
                 if (utf8Bytes[i] > 127) {
                     // Note, the charCodeAt will give the codePoint, thus
                     // 0b110xxxxx 0b10yyyyyy will give => xxxxxyyyyyy
-                    var illegalIndex = (utf8Bytes[i] >>> 8) & 7; // 7 = 0b111.
+                    int illegalIndex = (utf8Bytes[i] >>> 8) & 7; // 7 = 0b111.
                     // We have to first check if this is a shortened two-byte character, i.e. if it only
                     // encodes <= 7 bits.
                     if (illegalIndex != kShortened) pushNext7(illegalRev.get((byte)illegalIndex));

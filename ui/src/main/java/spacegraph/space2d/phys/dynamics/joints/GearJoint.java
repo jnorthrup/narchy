@@ -121,13 +121,13 @@ public class GearJoint extends Joint {
 
         
         Transform xfA = A;
-        var aA = A.sweep.a;
+        float aA = A.sweep.a;
         Transform xfC = m_bodyC;
-        var aC = m_bodyC.sweep.a;
+        float aC = m_bodyC.sweep.a;
 
         float coordinateA;
         if (m_typeA == JointType.REVOLUTE) {
-            var revolute = (RevoluteJoint) def.joint1;
+            RevoluteJoint revolute = (RevoluteJoint) def.joint1;
             m_localAnchorC.set(revolute.localAnchorA);
             m_localAnchorA.set(revolute.localAnchorB);
             m_referenceAngleA = revolute.m_referenceAngle;
@@ -135,15 +135,15 @@ public class GearJoint extends Joint {
 
             coordinateA = aA - aC - m_referenceAngleA;
         } else {
-            var pA = pool.popVec2();
-            var temp = pool.popVec2();
-            var prismatic = (PrismaticJoint) def.joint1;
+            v2 pA = pool.popVec2();
+            v2 temp = pool.popVec2();
+            PrismaticJoint prismatic = (PrismaticJoint) def.joint1;
             m_localAnchorC.set(prismatic.m_localAnchorA);
             m_localAnchorA.set(prismatic.m_localAnchorB);
             m_referenceAngleA = prismatic.m_referenceAngle;
             m_localAxisC.set(prismatic.m_localXAxisA);
 
-            var pC = m_localAnchorC;
+            v2 pC = m_localAnchorC;
             Rot.mulToOutUnsafe(xfA, m_localAnchorA, temp);
             temp.added(xfA.pos).subbed(xfC.pos);
             Rot.mulTransUnsafe(xfC, temp, pA);
@@ -156,13 +156,13 @@ public class GearJoint extends Joint {
 
         
         Transform xfB = B;
-        var aB = B.sweep.a;
+        float aB = B.sweep.a;
         Transform xfD = m_bodyD;
-        var aD = m_bodyD.sweep.a;
+        float aD = m_bodyD.sweep.a;
 
         float coordinateB;
         if (m_typeB == JointType.REVOLUTE) {
-            var revolute = (RevoluteJoint) def.joint2;
+            RevoluteJoint revolute = (RevoluteJoint) def.joint2;
             m_localAnchorD.set(revolute.localAnchorA);
             m_localAnchorB.set(revolute.localAnchorB);
             m_referenceAngleB = revolute.m_referenceAngle;
@@ -170,15 +170,15 @@ public class GearJoint extends Joint {
 
             coordinateB = aB - aD - m_referenceAngleB;
         } else {
-            var pB = pool.popVec2();
-            var temp = pool.popVec2();
-            var prismatic = (PrismaticJoint) def.joint2;
+            v2 pB = pool.popVec2();
+            v2 temp = pool.popVec2();
+            PrismaticJoint prismatic = (PrismaticJoint) def.joint2;
             m_localAnchorD.set(prismatic.m_localAnchorA);
             m_localAnchorB.set(prismatic.m_localAnchorB);
             m_referenceAngleB = prismatic.m_referenceAngle;
             m_localAxisD.set(prismatic.m_localXAxisA);
 
-            var pD = m_localAnchorD;
+            v2 pD = m_localAnchorD;
             Rot.mulToOutUnsafe(xfB, m_localAnchorB, temp);
             temp.added(xfB.pos).subbed(xfD.pos);
             Rot.mulTransUnsafe(xfD, temp, pB);
@@ -211,7 +211,7 @@ public class GearJoint extends Joint {
 
     @Override
     public float getReactionTorque(float inv_dt) {
-        var L = m_impulse * m_JwA;
+        float L = m_impulse * m_JwA;
         return inv_dt * L;
     }
 
@@ -243,24 +243,24 @@ public class GearJoint extends Joint {
         m_iD = m_bodyD.m_invI;
 
 
-        var aA = data.positions[m_indexA].a;
+        float aA = data.positions[m_indexA].a;
         v2 vA = data.velocities[m_indexA];
-        var wA = data.velocities[m_indexA].w;
+        float wA = data.velocities[m_indexA].w;
 
 
-        var aB = data.positions[m_indexB].a;
+        float aB = data.positions[m_indexB].a;
         v2 vB = data.velocities[m_indexB];
-        var wB = data.velocities[m_indexB].w;
+        float wB = data.velocities[m_indexB].w;
 
 
-        var aC = data.positions[m_indexC].a;
+        float aC = data.positions[m_indexC].a;
         v2 vC = data.velocities[m_indexC];
-        var wC = data.velocities[m_indexC].w;
+        float wC = data.velocities[m_indexC].w;
 
 
-        var aD = data.positions[m_indexD].a;
+        float aD = data.positions[m_indexD].a;
         v2 vD = data.velocities[m_indexD];
-        var wD = data.velocities[m_indexD].w;
+        float wD = data.velocities[m_indexD].w;
 
         Rot qA = pool.popRot(), qB = pool.popRot(), qC = pool.popRot(), qD = pool.popRot();
         qA.set(aA);
@@ -270,7 +270,7 @@ public class GearJoint extends Joint {
 
         m_mass = 0.0f;
 
-        var temp = pool.popVec2();
+        v2 temp = pool.popVec2();
 
         if (m_typeA == JointType.REVOLUTE) {
             m_JvAC.setZero();
@@ -278,8 +278,8 @@ public class GearJoint extends Joint {
             m_JwC = 1.0f;
             m_mass += m_iA + m_iC;
         } else {
-            var rC = pool.popVec2();
-            var rA = pool.popVec2();
+            v2 rC = pool.popVec2();
+            v2 rA = pool.popVec2();
             Rot.mulToOutUnsafe(qC, m_localAxisC, m_JvAC);
             Rot.mulToOutUnsafe(qC, temp.set(m_localAnchorC).subbed(m_lcC), rC);
             Rot.mulToOutUnsafe(qA, temp.set(m_localAnchorA).subbed(m_lcA), rA);
@@ -295,9 +295,9 @@ public class GearJoint extends Joint {
             m_JwD = m_ratio;
             m_mass += m_ratio * m_ratio * (m_iB + m_iD);
         } else {
-            var u = pool.popVec2();
-            var rD = pool.popVec2();
-            var rB = pool.popVec2();
+            v2 u = pool.popVec2();
+            v2 rD = pool.popVec2();
+            v2 rB = pool.popVec2();
             Rot.mulToOutUnsafe(qD, m_localAxisD, u);
             Rot.mulToOutUnsafe(qD, temp.set(m_localAnchorD).subbed(m_lcD), rD);
             Rot.mulToOutUnsafe(qB, temp.set(m_localAnchorB).subbed(m_lcB), rB);
@@ -346,22 +346,22 @@ public class GearJoint extends Joint {
     @Override
     public void solveVelocityConstraints(SolverData data) {
         v2 vA = data.velocities[m_indexA];
-        var wA = data.velocities[m_indexA].w;
+        float wA = data.velocities[m_indexA].w;
         v2 vB = data.velocities[m_indexB];
-        var wB = data.velocities[m_indexB].w;
+        float wB = data.velocities[m_indexB].w;
         v2 vC = data.velocities[m_indexC];
-        var wC = data.velocities[m_indexC].w;
+        float wC = data.velocities[m_indexC].w;
         v2 vD = data.velocities[m_indexD];
-        var wD = data.velocities[m_indexD].w;
+        float wD = data.velocities[m_indexD].w;
 
-        var temp1 = pool.popVec2();
-        var temp2 = pool.popVec2();
-        var Cdot =
+        v2 temp1 = pool.popVec2();
+        v2 temp2 = pool.popVec2();
+        float Cdot =
                 v2.dot(m_JvAC, temp1.set(vA).subbed(vC)) + v2.dot(m_JvBD, temp2.set(vB).subbed(vD));
         Cdot += (m_JwA * wA - m_JwC * wC) + (m_JwB * wB - m_JwD * wD);
         pool.pushVec2(2);
 
-        var impulse = -m_mass * Cdot;
+        float impulse = -m_mass * Cdot;
         m_impulse += impulse;
 
         vA.x += (m_mA * impulse) * m_JvAC.x;
@@ -402,13 +402,13 @@ public class GearJoint extends Joint {
     @Override
     public boolean solvePositionConstraints(SolverData data) {
         v2 cA = data.positions[m_indexA];
-        var aA = data.positions[m_indexA].a;
+        float aA = data.positions[m_indexA].a;
         v2 cB = data.positions[m_indexB];
-        var aB = data.positions[m_indexB].a;
+        float aB = data.positions[m_indexB].a;
         v2 cC = data.positions[m_indexC];
-        var aC = data.positions[m_indexC].a;
+        float aC = data.positions[m_indexC].a;
         v2 cD = data.positions[m_indexD];
-        var aD = data.positions[m_indexD].a;
+        float aD = data.positions[m_indexD].a;
 
         Rot qA = pool.popRot(), qB = pool.popRot(), qC = pool.popRot(), qD = pool.popRot();
         qA.set(aA);
@@ -418,11 +418,11 @@ public class GearJoint extends Joint {
 
         float coordinateA;
 
-        var temp = pool.popVec2();
-        var JvAC = pool.popVec2();
-        var JvBD = pool.popVec2();
+        v2 temp = pool.popVec2();
+        v2 JvAC = pool.popVec2();
+        v2 JvBD = pool.popVec2();
         float JwA, JwC;
-        var mass = 0.0f;
+        float mass = 0.0f;
 
         if (m_typeA == JointType.REVOLUTE) {
             JvAC.setZero();
@@ -432,10 +432,10 @@ public class GearJoint extends Joint {
 
             coordinateA = aA - aC - m_referenceAngleA;
         } else {
-            var rC = pool.popVec2();
-            var rA = pool.popVec2();
-            var pC = pool.popVec2();
-            var pA = pool.popVec2();
+            v2 rC = pool.popVec2();
+            v2 rA = pool.popVec2();
+            v2 pC = pool.popVec2();
+            v2 pA = pool.popVec2();
             Rot.mulToOutUnsafe(qC, m_localAxisC, JvAC);
             Rot.mulToOutUnsafe(qC, temp.set(m_localAnchorC).subbed(m_lcC), rC);
             Rot.mulToOutUnsafe(qA, temp.set(m_localAnchorA).subbed(m_lcA), rA);
@@ -460,11 +460,11 @@ public class GearJoint extends Joint {
 
             coordinateB = aB - aD - m_referenceAngleB;
         } else {
-            var u = pool.popVec2();
-            var rD = pool.popVec2();
-            var rB = pool.popVec2();
-            var pD = pool.popVec2();
-            var pB = pool.popVec2();
+            v2 u = pool.popVec2();
+            v2 rD = pool.popVec2();
+            v2 rB = pool.popVec2();
+            v2 pD = pool.popVec2();
+            v2 pB = pool.popVec2();
             Rot.mulToOutUnsafe(qD, m_localAxisD, u);
             Rot.mulToOutUnsafe(qD, temp.set(m_localAnchorD).subbed(m_lcD), rD);
             Rot.mulToOutUnsafe(qB, temp.set(m_localAnchorB).subbed(m_lcB), rB);
@@ -479,9 +479,9 @@ public class GearJoint extends Joint {
             pool.pushVec2(5);
         }
 
-        var C = (coordinateA + m_ratio * coordinateB) - m_constant;
+        float C = (coordinateA + m_ratio * coordinateB) - m_constant;
 
-        var impulse = 0.0f;
+        float impulse = 0.0f;
         if (mass > 0.0f) {
             impulse = -C / mass;
         }
@@ -514,7 +514,7 @@ public class GearJoint extends Joint {
         data.positions[m_indexD].a = aD;
 
 
-        var linearError = 0.0f;
+        float linearError = 0.0f;
         return linearError < Settings.linearSlop;
     }
 }

@@ -58,7 +58,7 @@ public class UGenChain extends UGen {
      * @param targetUGen      The UGen to which to add the Chain input.
      */
     public void drawFromChainInput(int chainInputIndex, UGen targetUGen) {
-        for (var i = 0; i < targetUGen.ins; i++) {
+        for (int i = 0; i < targetUGen.ins; i++) {
             targetUGen.addInput(i, chainIn, chainInputIndex);
         }
     }
@@ -91,7 +91,7 @@ public class UGenChain extends UGen {
      * @param sourceUGen       The source UGen.
      */
     protected void addToChainOutput(int chainOutputIndex, UGen sourceUGen) {
-        for (var i = 0; i < sourceUGen.outs; i++) {
+        for (int i = 0; i < sourceUGen.outs; i++) {
             addToChainOutput(chainOutputIndex, sourceUGen, i);
         }
     }

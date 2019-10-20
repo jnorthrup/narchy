@@ -29,7 +29,7 @@ public abstract class Overlay extends PaintSurface {
     @Override
     protected final void paint(GL2 gl, ReSurface reSurface) {
 
-        var t = target();
+        Surface t = target();
 
         if (t!=null) {
             if (!t.showing())
@@ -78,7 +78,7 @@ public abstract class Overlay extends PaintSurface {
 //    }
 
     public void drawBoundsFrame(Surface t, GL2 gl) {
-        var pq = cam.globalToPixel(t.bounds);
+        RectFloat pq = cam.globalToPixel(t.bounds);
         if (pq.w > Float.MIN_NORMAL && pq.h > Float.MIN_NORMAL) {
             color.apply(gl);
             gl.glLineWidth(thick);

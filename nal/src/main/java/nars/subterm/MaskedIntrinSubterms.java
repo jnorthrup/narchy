@@ -13,8 +13,8 @@ public abstract class MaskedIntrinSubterms extends ProxySubterms<IntrinSubterms>
 
     @Override
     public Term sub(int i) {
-        var x = ref.subRaw(i);
-        var ax = x < 0 ? (short) -x : x;
+        short x = ref.subRaw(i);
+        short ax = x < 0 ? (short) -x : x;
         Term y;
 		y = Intrin.group(ax) == ANOMs ? atom((ax & 0xff) - 1) : Intrin._term(ax);
         return y.negIf(x < 0);

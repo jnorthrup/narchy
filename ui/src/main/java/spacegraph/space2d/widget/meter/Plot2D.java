@@ -48,7 +48,7 @@ public class Plot2D extends Widget {
 
     private static void plotLine(List<Series> series, GL2 gl, float minValue, float maxValue, boolean lanes, boolean filled) {
         if (minValue == maxValue) {
-            var center = minValue;
+            float center = minValue;
             minValue = center - (center / 2);
             maxValue = center + (center / 2);
         }
@@ -57,20 +57,20 @@ public class Plot2D extends Widget {
 
         gl.glLineWidth(2);
 
-        var W = 1.0f;
+        float W = 1.0f;
         Draw.line(0, 0, W, 0, gl);
-        var H = 1.0f;
+        float H = 1.0f;
         Draw.line(0, H, W, H, gl);
 
         HersheyFont.hersheyText(gl, Texts.n(minValue, 7), 0.04f, 0, 0, 0, Draw.TextAlignment.Left);
         HersheyFont.hersheyText(gl, Texts.n(maxValue, 7), 0.04f, 0, H, 0, Draw.TextAlignment.Left);
 
-        var seriesSize = series.size();
-        var textScale = 1f / (seriesSize) * 0.5f;
-        var range = maxValue - minValue;
-        var laneHeight = 1f / seriesSize;
+        int seriesSize = series.size();
+        float textScale = 1f / (seriesSize) * 0.5f;
+        float range = maxValue - minValue;
+        float laneHeight = 1f / seriesSize;
 
-        for (var i = 0; i < seriesSize; i++)
+        for (int i = 0; i < seriesSize; i++)
             lineplot(gl, minValue, filled, W, textScale, range, laneHeight, i, series.get(i));
     }
 
@@ -78,15 +78,15 @@ public class Plot2D extends Widget {
         //float mid = ypos((s.minValue() + s.maxValue()) / 2f, lanes, sn, seriesSize, maxValue-minValue, minValue);
 //            float base = ypos(s.minValue(), lanes, i, seriesSize,
 //                    maxValue-minValue, minValue);
-        var Y = NaN;
-        var baseY = i * laneHeight;
+        float Y = NaN;
+        float baseY = i * laneHeight;
 
         if (range > Float.MIN_NORMAL) {
 
             int histSize = s.size(), histCap = s.capacity();
 
 
-            var color = s.color();
+            float[] color = s.color();
             float r = color[0], g = color[1], b = color[2];
 
             if (!filled) {
@@ -94,19 +94,19 @@ public class Plot2D extends Widget {
                 gl.glBegin(GL.GL_LINE_STRIP);
             }
 
-            var laneOffset = laneHeight * i;
+            float laneOffset = laneHeight * i;
 
             float a = 0;
-            var dx = (w / histCap);
-            var x = (histCap - histSize) * dx;
-            for (var j = 0; j < histSize; j++) {
+            float dx = (w / histCap);
+            float x = (histCap - histSize) * dx;
+            for (int j = 0; j < histSize; j++) {
 
-                var y = s.get(j);
+                float y = s.get(j);
                 if (y == y) {
 
                     Y = ypos(y, minValue, range) * laneHeight + laneOffset;
 
-                    var nextA = Util.lerpSafe(((y - minValue) / range), 0.5f, 0.95f);
+                    float nextA = Util.lerpSafe(((y - minValue) / range), 0.5f, 0.95f);
                     if (!Util.equals(a, nextA, 1f/256f)) {
                         gl.glColor4f(r, g, b, a = nextA);
                     }
@@ -129,11 +129,11 @@ public class Plot2D extends Widget {
 
 
             //draw mean line
-            var mean = s.meanValue();
+            float mean = s.meanValue();
             if (mean == mean) {
                 gl.glColor4f(color[0], color[1], color[2], 0.5f);
-                var yMean = ypos(mean, minValue, range) * laneHeight + laneOffset;
-                var t = 0.1f;
+                float yMean = ypos(mean, minValue, range) * laneHeight + laneOffset;
+                float t = 0.1f;
                 Draw.rect(0, yMean - laneHeight * t/2, w, laneHeight * t/2, gl);
             }
 
@@ -241,7 +241,7 @@ public class Plot2D extends Widget {
         add(s = new RingTensorSeries(name, maxHistory) {
             @Override
             public void update() {
-                var v = valueFunc.getAsDouble();
+                double v = valueFunc.getAsDouble();
 
                 limit();
                 if (v != v) {
@@ -306,7 +306,7 @@ public class Plot2D extends Widget {
             invalid = false;
         }
 
-        var series = this.series;
+        List<Series> series = this.series;
 
 
         if (series.isEmpty()) {
@@ -342,12 +342,12 @@ public class Plot2D extends Widget {
 
             float[] minValue = {Float.POSITIVE_INFINITY};
             float[] maxValue = {Float.NEGATIVE_INFINITY};
-            for (var s : series) {
+            for (Series s : series) {
                 s.update();
 
-                var min = s.minValue();
+                float min = s.minValue();
                 if (min == min) {
-                    var max = s.maxValue();
+                    float max = s.maxValue();
                     if (max == max) {
                         minValue[0] = Math.min(minValue[0], min);
                         maxValue[0] = Math.max(maxValue[0], max);
@@ -449,8 +449,8 @@ public class Plot2D extends Widget {
 
         @Override
         void limit() {
-            var over = data.size() - (ArraySeries.this.capacity - 1);
-            for (var i = 0; i < over; i++)
+            int over = data.size() - (ArraySeries.this.capacity - 1);
+            for (int i = 0; i < over; i++)
                 data.removeAtIndex(0);
         }
 
@@ -470,7 +470,7 @@ public class Plot2D extends Widget {
 
             @Override
             public float get(int index) {
-                var ii = this.items;
+                float[] ii = this.items;
                 if (ii.length > index)
                     return ii[index];
                 else
@@ -491,7 +491,7 @@ public class Plot2D extends Widget {
 
         public RingTensorSeries(String name, float[] data) {
             this(name, data.length);
-            for (var f : data)
+            for (float f : data)
                 add(f);
         }
 
@@ -752,7 +752,7 @@ public class Plot2D extends Widget {
 
             forEach(autoRange.restart());
 
-            var n = autoRange.count[0];
+            int n = autoRange.count[0];
             if (n == 0) {
                 this.minValue = this.maxValue = this.meanValue = Float.NaN;
                 return this;

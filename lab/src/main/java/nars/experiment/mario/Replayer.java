@@ -12,7 +12,7 @@ public class Replayer {
     private int tickCount = -99999999;
 
     public Replayer(byte[] bytes) {
-        var bais = new ByteArrayInputStream(bytes);
+        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         dis = new DataInputStream(bais);
     }
 

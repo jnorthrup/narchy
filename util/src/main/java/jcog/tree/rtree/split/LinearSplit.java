@@ -39,40 +39,40 @@ public class LinearSplit<X> implements Split<X> {
 
 
 
-        final var MIN = 0;
-        final var MAX = 1;
-        final var NRANGE = 2;
-        var data = leaf.data;
-        var nD = m.bounds(data[0]).dim();
-        var r = new int[nD][NRANGE][NRANGE];
+        final int MIN = 0;
+        final int MAX = 1;
+        final int NRANGE = 2;
+        X[] data = leaf.data;
+        int nD = m.bounds(data[0]).dim();
+        int[][][] r = new int[nD][NRANGE][NRANGE];
 
-        var separation = new double[nD];
+        double[] separation = new double[nD];
 
-        var size = leaf.size;
-        for (var d = 0; d < nD; d++) {
-            var rd = r[d];
-            var iiMin = rd[MIN];
-            var daa = m.bounds(data[iiMin[MIN]]).coord(d, false);
-            var dba = m.bounds(data[iiMin[MAX]]).coord(d, false);
-            var iiMax = rd[MAX];
-            var dab = m.bounds(data[iiMax[MIN]]).coord(d, true);
-            var dbb = m.bounds(data[iiMax[MAX]]).coord(d, true);
+        short size = leaf.size;
+        for (int d = 0; d < nD; d++) {
+            int[][] rd = r[d];
+            int[] iiMin = rd[MIN];
+            double daa = m.bounds(data[iiMin[MIN]]).coord(d, false);
+            double dba = m.bounds(data[iiMin[MAX]]).coord(d, false);
+            int[] iiMax = rd[MAX];
+            double dab = m.bounds(data[iiMax[MIN]]).coord(d, true);
+            double dbb = m.bounds(data[iiMax[MAX]]).coord(d, true);
 
-            for (var j = 1; j < size; j++) {
+            for (int j = 1; j < size; j++) {
 
-                var rj = m.bounds(data[j]);
+                HyperRegion rj = m.bounds(data[j]);
 
-                var rjMin = rj.coord(d, false);
+                double rjMin = rj.coord(d, false);
                 if (daa > rjMin) iiMin[MIN] = j;
                 if (dba < rjMin) iiMin[MAX] = j;
 
-                var rjMax = rj.coord(d, true);
+                double rjMax = rj.coord(d, true);
                 if (dab > rjMax) iiMax[MIN] = j;
                 if (dbb < rjMax) iiMax[MAX] = j;
             }
 
 
-            var width = Math.abs(
+            double width = Math.abs(
                     m.bounds(data[rd[MAX][MAX]]).coord(d, true) -
                     m.bounds(data[rd[MIN][MIN]]).coord(d, false)
             );
@@ -84,8 +84,8 @@ public class LinearSplit<X> implements Split<X> {
         }
 
         int r1Max = -1, r2Max = -1;
-        var sepMax = Double.NEGATIVE_INFINITY;
-        for (var d = 0; d < nD; d++) {
+        double sepMax = Double.NEGATIVE_INFINITY;
+        for (int d = 0; d < nD; d++) {
             if (separation[d] > sepMax) {
                 sepMax = separation[d];
                 r1Max = r[d][MAX][MIN];

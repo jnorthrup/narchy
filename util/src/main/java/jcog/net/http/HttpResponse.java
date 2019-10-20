@@ -47,9 +47,9 @@ class HttpResponse {
     public void prepare(HttpConnection con) {
         assert this.headers == null;
 
-        var headerString = new StringBuilder();
+        StringBuilder headerString = new StringBuilder();
 
-        var sendFile = false;
+        boolean sendFile = false;
 
         if (file != null) {
             if (file.isDirectory()) {
@@ -72,10 +72,10 @@ class HttpResponse {
         if (sendFile) {
             lastModified = new Date(file.lastModified());
 
-            var ifModifiedSince = con.request.get("if-modified-since");
+            String ifModifiedSince = con.request.get("if-modified-since");
             if (ifModifiedSince != null) {
                 try {
-                    var ifModifiedSinceDate = HttpUtil.HttpDateUtils.parseDate(ifModifiedSince);
+                    Date ifModifiedSinceDate = HttpUtil.HttpDateUtils.parseDate(ifModifiedSince);
 
                     if (lastModified.after(ifModifiedSinceDate)) {
                         sendFile = false;
@@ -126,17 +126,17 @@ class HttpResponse {
                 logger.warn("Error reading file: {}", ex);
             }
 
-            var rangeValue = con.request.get("range");
+            String rangeValue = con.request.get("range");
 
 
             if (sendFile && rangeValue != null) {
 
-                var rangeMatcher = HttpUtil.simpleRange.matcher(rangeValue);
+                Matcher rangeMatcher = HttpUtil.simpleRange.matcher(rangeValue);
                 if (rangeMatcher.matches()) {
                     range = true;
                     try {
-                        var start = rangeMatcher.group(1);
-                        var end = rangeMatcher.group(2);
+                        String start = rangeMatcher.group(1);
+                        String end = rangeMatcher.group(2);
 
                         if (start != null && start.isEmpty()) {
                             start = null;
@@ -212,7 +212,7 @@ class HttpResponse {
 
         if (!sendFile) {
             headerString.append("Content-Type: ");
-            var contentType = statusMessage.startsWith("<html") ? "text/html" : "text/plain";
+            String contentType = statusMessage.startsWith("<html") ? "text/html" : "text/plain";
             headerString.append(contentType);
             headerString.append(" charset=UTF-8\r\n");
 
@@ -292,7 +292,7 @@ class HttpResponse {
 
             while (true) {
                 if (!fileBuffer.hasRemaining()) {
-                    var read = raf.read(fileBuffer.array());
+                    int read = raf.read(fileBuffer.array());
                     if (read == -1) {
                         raf.close();
                         return true;
@@ -303,7 +303,7 @@ class HttpResponse {
 
                 if (fileBuffer.hasRemaining()) {
                     if (range) {
-                        var limit = rangeLength - fileBytesSent;
+                        long limit = rangeLength - fileBytesSent;
                         if (fileBuffer.limit() > limit) {
                             fileBuffer.limit((int) limit);
                         }

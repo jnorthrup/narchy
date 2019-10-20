@@ -28,7 +28,7 @@ public class Snapshot<X> {
 
 	/** concept()'s the given term in the given NAR */
     public static @Nullable <X> X get(Term src, NAR nar, String id, long now, int ttl, BiFunction<Concept, X, X> updater) {
-		var c = nar.conceptualize(src);
+        Concept c = nar.conceptualize(src);
 		return c != null ? get(c, id, now, ttl, updater) : null;
 	}
 
@@ -39,7 +39,7 @@ public class Snapshot<X> {
 
 
 	public @Nullable X get() {
-		var v = value;
+        Object v = value;
 		return v instanceof Reference ? ((Reference<X>) v).get() : (X) v;
 	}
 
@@ -51,11 +51,11 @@ public class Snapshot<X> {
 	/** ttl = cycles of cached value before next expiration ( >= 0 )
 	 * 			or -1 to never expire */
 	public X get(long now, int ttl,  UnaryOperator<X> updater) {
-		var e = expires;
-		var current = get();
+        long e = expires;
+        X current = get();
 		if ((now >= e || current == null) && busy.compareAndSet(false, true)) {
 			try {
-				var nextX = updater.apply(current);
+                X nextX = updater.apply(current);
 				this.expires = ttl >= 0 ? now + ttl : Tense.TIMELESS /* forever */;
 				this.value = wrap(nextX);
 				return nextX;

@@ -64,7 +64,7 @@ public class BitmapMatrixView extends TexSurface {
 
     public BitmapMatrixView(Bitmap2D tex) {
         this(tex.width(), tex.height(), (x, y)->{
-            var a = tex.brightness(x, y);
+            float a = tex.brightness(x, y);
             return Draw.rgbInt(a,a,a);
         });
     }
@@ -80,7 +80,7 @@ public class BitmapMatrixView extends TexSurface {
 
     private BitmapMatrixView(float[] d, int stride, ViewFunction1D view) {
         this((int) Math.floor(((float) d.length) / stride), stride, (x, y) -> {
-            var i = y * stride + x;
+            int i = y * stride + x;
             return i < d.length ? view.update(d[i]) : 0;
         });
     }
@@ -91,21 +91,21 @@ public class BitmapMatrixView extends TexSurface {
 
     public BitmapMatrixView(IntToFloatFunction d, int len, int stride, ViewFunction1D view) {
         this((int) Math.floor(((float) len) / stride), stride, (x, y) -> {
-            var i = y * stride + x;
+            int i = y * stride + x;
             return i < len ? view.update(d.valueOf(i)) : 0;
         });
     }
 
     public BitmapMatrixView(double[] d, int stride, ViewFunction1D view) {
         this((int) Math.floor(((float) d.length) / stride), stride, (x, y) -> {
-            var i = y * stride + x;
+            int i = y * stride + x;
             return i < d.length ? view.update((float) d[i]) : 0;
         });
     }
 
     public <P extends FloatSupplier> BitmapMatrixView(P[] d, int stride, ViewFunction1D view) {
         this((int) Math.floor(((float) d.length) / stride), stride, (x, y) -> {
-            var i = y * stride + x;
+            int i = y * stride + x;
             return i < d.length ? view.update(d[i].asFloat()) : 0;
         });
     }
@@ -117,10 +117,10 @@ public class BitmapMatrixView extends TexSurface {
 
     public BitmapMatrixView(Supplier<double[]> e, int len, int stride, ViewFunction1D view) {
         this((int) Math.floor(((float) len) / stride), stride, (x, y) -> {
-            var d = e.get();
+            double[] d = e.get();
             if (d != null) {
 
-                var i = y * stride + x;
+                int i = y * stride + x;
                 if (i < d.length)
                     return view.update((float) d[i]);
             }
@@ -142,15 +142,15 @@ public class BitmapMatrixView extends TexSurface {
 
     public static ViewFunction2D arrayRenderer(float[][] ww) {
         return (x, y) -> {
-            var v = ww[x][y];
+            float v = ww[x][y];
             return Draw.colorBipolar(v);
         };
     }
 
     public static BitmapMatrixView get(ArrayTensor t, int stride, ViewFunction1D view) {
-        var d = t.data;
+        float[] d = t.data;
         return new BitmapMatrixView((int) Math.floor(((float) t.volume()) / stride), stride, (x, y) -> {
-            var v = d[x * stride + y];
+            float v = d[x * stride + y];
             return view.update(v);
         });
     }
@@ -164,7 +164,7 @@ public class BitmapMatrixView extends TexSurface {
 
     public boolean updateTouch(Finger finger) {
 
-        var r = finger.posRelative(bounds);
+        v2 r = finger.posRelative(bounds);
         if (r.inUnit()) {
             r.scaleInto(w, h, touchPos);
 
@@ -194,10 +194,10 @@ public class BitmapMatrixView extends TexSurface {
      * the position of a cell's center
      */
     private v2 cell(float x, float y) {
-        var W = w();
-        var xx = ((x + 0.5f) / (w)) * W;
-        var H = h();
-        var yy = (1f - ((y + 0.5f) / (h))) * H;
+        float W = w();
+        float xx = ((x + 0.5f) / (w)) * W;
+        float H = h();
+        float yy = (1f - ((y + 0.5f) / (h))) * H;
         return new v2(xx, yy);
     }
 
@@ -205,9 +205,9 @@ public class BitmapMatrixView extends TexSurface {
      * the prw, prh represent a rectangular size proportional to the displayed cell size
      */
     public RectFloat cellRect(float x, float y, float prw, float prh) {
-        var pw = prw / this.w;
-        var ph = prh / this.h;
-        var c = cell(x, y);
+        float pw = prw / this.w;
+        float ph = prh / this.h;
+        v2 c = cell(x, y);
         return RectFloat.XYWH(c.x, c.y, pw * w(), ph * h());
     }
 
@@ -289,9 +289,9 @@ public class BitmapMatrixView extends TexSurface {
 
         default void color(BufferedImage buf, int[] pix) {
             int w = buf.getWidth(), h = buf.getHeight();
-            var i = 0;
-            for (var y = 0; y < h; y++) {
-                for (var x = 0; x < w; x++) {
+            int i = 0;
+            for (int y = 0; y < h; y++) {
+                for (int x = 0; x < w; x++) {
                     pix[i++] = color(x, y);
                 }
             }

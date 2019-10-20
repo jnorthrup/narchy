@@ -98,9 +98,9 @@ public class SimpleBoxShape extends PolyhedralConvexShape {
 	}
 
 	public v3 getHalfExtentsWithMargin(v3 out) {
-		var halfExtents = getHalfExtentsWithoutMargin(out);
+        v3 halfExtents = getHalfExtentsWithoutMargin(out);
 
-		var m = getMargin();
+        float m = getMargin();
 		if (m!=0) {
 			halfExtents.add(m, m, m);
 		}
@@ -121,12 +121,12 @@ public class SimpleBoxShape extends PolyhedralConvexShape {
 
 	@Override
 	public v3 localGetSupportingVertex(v3 vec, v3 out) {
-		var halfExtents = implicitShapeDimensions;
+        v3 halfExtents = implicitShapeDimensions;
 
 
-		var hx = halfExtents.x;
-		var hy = halfExtents.y;
-		var hz = halfExtents.z;
+        float hx = halfExtents.x;
+        float hy = halfExtents.y;
+        float hz = halfExtents.z;
 		out.set(
 				ScalarUtil.fsel(vec.x, hx, -hx),
 				ScalarUtil.fsel(vec.y, hy, -hy),
@@ -137,10 +137,10 @@ public class SimpleBoxShape extends PolyhedralConvexShape {
 	@Override
 	public v3 localGetSupportingVertexWithoutMargin(v3 vec, v3 out) {
 
-		var halfExtents = this.implicitShapeDimensions;
-		var hx = halfExtents.x;
-		var hy = halfExtents.y;
-		var hz = halfExtents.z;
+        v3 halfExtents = this.implicitShapeDimensions;
+        float hx = halfExtents.x;
+        float hy = halfExtents.y;
+        float hz = halfExtents.z;
 
 		out.set(
 				ScalarUtil.fsel(vec.x, hx, -hx),
@@ -152,13 +152,13 @@ public class SimpleBoxShape extends PolyhedralConvexShape {
 	@Override
 	public void batchedUnitVectorGetSupportingVertexWithoutMargin(v3[] vectors, v3[] supportVerticesOut, int numVectors) {
 
-		var halfExtents = this.implicitShapeDimensions;
-		var hx = halfExtents.x;
-		var hy = halfExtents.y;
-		var hz = halfExtents.z;
+        v3 halfExtents = this.implicitShapeDimensions;
+        float hx = halfExtents.x;
+        float hy = halfExtents.y;
+        float hz = halfExtents.z;
 
-		for (var i = 0; i < numVectors; i++) {
-			var vec = vectors[i];
+		for (int i = 0; i < numVectors; i++) {
+            v3 vec = vectors[i];
 			supportVerticesOut[i].set(ScalarUtil.fsel(vec.x, hx, -hx),
 					ScalarUtil.fsel(vec.y, hy, -hy),
 					ScalarUtil.fsel(vec.z, hz, -hz));
@@ -216,11 +216,11 @@ public class SimpleBoxShape extends PolyhedralConvexShape {
 	@Override
 	public void calculateLocalInertia(float mass, v3 inertia) {
 
-		var halfExtents = implicitShapeDimensions;
+        v3 halfExtents = implicitShapeDimensions;
 
-		var lx2 = Util.sqr(2f * halfExtents.x);
-		var ly2 = Util.sqr(2f * halfExtents.y);
-		var lz2 = Util.sqr(2f * halfExtents.z);
+        float lx2 = Util.sqr(2f * halfExtents.x);
+        float ly2 = Util.sqr(2f * halfExtents.y);
+        float lz2 = Util.sqr(2f * halfExtents.z);
 
 		inertia.set(
 				mass / 12f * (ly2 + lz2),
@@ -231,8 +231,8 @@ public class SimpleBoxShape extends PolyhedralConvexShape {
 	@Override
 	public void getPlane(v3 planeNormal, v3 planeSupport, int i) {
 
-		var plane = new Vector4f();
-		var tmp = new v3(implicitShapeDimensions);
+        Vector4f plane = new Vector4f();
+        v3 tmp = new v3(implicitShapeDimensions);
 		getPlaneEquation(plane, i, tmp);
 		planeNormal.set(plane.x, plane.y, plane.z);
 
@@ -257,18 +257,18 @@ public class SimpleBoxShape extends PolyhedralConvexShape {
 
 	@Override
 	public void getVertex(int i, v3 vtx) {
-		var halfExtents = implicitShapeDimensions;
+        v3 halfExtents = implicitShapeDimensions;
 
-		var hx = halfExtents.x;
-		var hy = halfExtents.y;
-		var hz = halfExtents.z;
+        float hx = halfExtents.x;
+        float hy = halfExtents.y;
+        float hz = halfExtents.z;
 		vtx.set(hx * (1 - (i & 1)) - hx * (i & 1),
 				hy * (1 - ((i & 2) >> 1)) - hy * ((i & 2) >> 1),
 				hz * (1 - ((i & 4) >> 2)) - hz * ((i & 4) >> 2));
 	}
 	
 	void getPlaneEquation(Vector4f plane, int i, v3 tmp) {
-		var halfExtents = getHalfExtentsWithoutMargin(tmp);
+        v3 halfExtents = getHalfExtentsWithoutMargin(tmp);
 
 		switch (i) {
 			case 0:
@@ -296,8 +296,8 @@ public class SimpleBoxShape extends PolyhedralConvexShape {
 
 	@Override
 	public void getEdge(int i, v3 pa, v3 pb) {
-		var edgeVert0 = 0;
-		var edgeVert1 = 0;
+        int edgeVert0 = 0;
+        int edgeVert1 = 0;
 
 		switch (i) {
 			case 0:
@@ -360,18 +360,18 @@ public class SimpleBoxShape extends PolyhedralConvexShape {
 
 	@Override
 	public final boolean isInside(v3 pt, float tolerance) {
-		var halfExtents = getHalfExtentsWithoutMargin();
+        v3 halfExtents = getHalfExtentsWithoutMargin();
 
-		var px = pt.x;
-		var hx = halfExtents.x;
+        float px = pt.x;
+        float hx = halfExtents.x;
 		if (px <= (hx + tolerance)) {
 			if (px >= (-hx - tolerance)) {
-				var py = pt.y;
-				var hy = halfExtents.y;
+                float py = pt.y;
+                float hy = halfExtents.y;
 				if (py <= (hy + tolerance)) {
 					if (py >= (-hy - tolerance)) {
-						var pz = pt.z;
-						var hz = halfExtents.z;
+                        float pz = pt.z;
+                        float hz = halfExtents.z;
 						if (pz <= (hz + tolerance)) {
                             return pz >= (-hz - tolerance);
 						}

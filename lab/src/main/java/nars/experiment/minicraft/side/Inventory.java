@@ -33,8 +33,8 @@ public class Inventory implements java.io.Serializable {
 
     public Inventory(int width, int height, int craftingHeight) {
         inventoryItems = new InventoryItem[width][height + craftingHeight];
-        for (var i = 0; i < width; i++) {
-            for (var j = 0; j < height + craftingHeight; j++) {
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height + craftingHeight; j++) {
                 inventoryItems[i][j] = new InventoryItem(null);
             }
         }
@@ -45,14 +45,14 @@ public class Inventory implements java.io.Serializable {
 
     public void addItem(Item item, int count) {
 
-        var itemsToGo = inventoryItems[0][playerRow].add(item, count);
-        for (var i = 0; i < inventoryItems.length && itemsToGo > 0; i++) {
+        int itemsToGo = inventoryItems[0][playerRow].add(item, count);
+        for (int i = 0; i < inventoryItems.length && itemsToGo > 0; i++) {
             itemsToGo = inventoryItems[i][playerRow].add(item, count);
         }
 
 
-        for (var i = 0; i < inventoryItems.length && itemsToGo > 0; i++) {
-            for (var j = 0; j < inventoryItems[0].length - 1 && itemsToGo > 0; j++) {
+        for (int i = 0; i < inventoryItems.length && itemsToGo > 0; i++) {
+            for (int j = 0; j < inventoryItems[0].length - 1 && itemsToGo > 0; j++) {
                 if ((j < craftingHeight && i < inventoryItems.length - tableSizeAvailable)
                         || (craftingHeight != tableSizeAvailable && j == tableSizeAvailable)) {
                     continue;
@@ -77,13 +77,13 @@ public class Inventory implements java.io.Serializable {
             return false;
         }
 
-        var tileSize = 16;
-        var seperation = 15;
+        int tileSize = 16;
+        int seperation = 15;
 
-        var panelWidth = inventoryItems.length * (tileSize + seperation) + seperation;
-        var panelHeight = inventoryItems[0].length * (tileSize + seperation) + seperation;
-        var x = screenWidth / 2 - panelWidth / 2;
-        var y = screenHeight / 2 - panelHeight / 2;
+        int panelWidth = inventoryItems.length * (tileSize + seperation) + seperation;
+        int panelHeight = inventoryItems[0].length * (tileSize + seperation) + seperation;
+        int x = screenWidth / 2 - panelWidth / 2;
+        int y = screenHeight / 2 - panelHeight / 2;
 
         if (mousePos.x < x || mousePos.x > x + panelWidth
                 || mousePos.y < y || mousePos.y > y + panelHeight) {
@@ -96,7 +96,7 @@ public class Inventory implements java.io.Serializable {
             return true;
         }
 
-        var position = mouseToCoor(mousePos.x - x, mousePos.y - y, seperation, tileSize);
+        Int2 position = mouseToCoor(mousePos.x - x, mousePos.y - y, seperation, tileSize);
         if (position != null) {
             if (holding.isEmpty()) {
                 if (rightClick && inventoryItems[position.x][position.y].count > 1) {
@@ -149,8 +149,8 @@ public class Inventory implements java.io.Serializable {
 
                 }
             } else {
-                var item = inventoryItems[position.x][position.y].item;
-                var count = inventoryItems[position.x][position.y].count;
+                Item item = inventoryItems[position.x][position.y].item;
+                int count = inventoryItems[position.x][position.y].count;
                 inventoryItems[position.x][position.y].item = holding.item;
                 inventoryItems[position.x][position.y].count = holding.count;
                 holding.item = item;
@@ -163,7 +163,7 @@ public class Inventory implements java.io.Serializable {
         x = x + (inventoryItems.length - tableSizeAvailable - 1) * (tileSize + seperation) - 5;
         y = y + seperation * 2 + tileSize - 5;
 
-        var craftThisUpdate = false;
+        boolean craftThisUpdate = false;
         if (mousePos.x >= x && mousePos.x <= x + tileSize + 10 && mousePos.y >= y
                 && mousePos.y <= y + tileSize * 2 + 10) {
             craftThisUpdate = true;
@@ -173,12 +173,12 @@ public class Inventory implements java.io.Serializable {
         craftable.item = null;
         craftable.count = 0;
 
-        var keepChecking = true;
+        boolean keepChecking = true;
         while (keepChecking) {
             keepChecking = false;
 
-            var currentTable = computeCraftTable();
-            for (var entry : Constants.itemTypes.values()) {
+            char[][] currentTable = computeCraftTable();
+            for (Item entry : Constants.itemTypes.values()) {
                 craftable.item = null;
                 craftable.count = 0;
                 if (entry.template.compare(currentTable)) {
@@ -192,8 +192,8 @@ public class Inventory implements java.io.Serializable {
                         keepChecking = true;
                         craftable.item = null;
                         craftable.count = 0;
-                        for (var i = 0; i < tableSizeAvailable; i++) {
-                            for (var j = 0; j < tableSizeAvailable; j++) {
+                        for (int i = 0; i < tableSizeAvailable; i++) {
+                            for (int j = 0; j < tableSizeAvailable; j++) {
                                 inventoryItems[i + inventoryItems.length - tableSizeAvailable][j].count -= 1;
                                 if (inventoryItems[i + inventoryItems.length - tableSizeAvailable][j].count <= 0) {
                                     inventoryItems[i + inventoryItems.length - tableSizeAvailable][j].item = null;
@@ -201,7 +201,7 @@ public class Inventory implements java.io.Serializable {
                                 }
                             }
                         }
-                        var count = entry.template.outCount;
+                        int count = entry.template.outCount;
                         holding.add(entry.clone(), count);
                     }
                     break;
@@ -220,9 +220,9 @@ public class Inventory implements java.io.Serializable {
             currentTable = tableThree;
         }
 
-        for (var i = 0; i < tableSizeAvailable; i++) {
-            for (var j = 0; j < tableSizeAvailable; j++) {
-                var item = inventoryItems[i + inventoryItems.length - tableSizeAvailable][j].item;
+        for (int i = 0; i < tableSizeAvailable; i++) {
+            for (int j = 0; j < tableSizeAvailable; j++) {
+                Item item = inventoryItems[i + inventoryItems.length - tableSizeAvailable][j].item;
                 if (item != null) {
                     currentTable[j][i] = (char) item.item_id;
                 } else {
@@ -249,19 +249,19 @@ public class Inventory implements java.io.Serializable {
     }
 
     public void draw(GraphicsHandler g, int screenWidth, int screenHeight) {
-        var tileSize = 16;
-        var seperation = 10;
+        int tileSize = 16;
+        int seperation = 10;
 
-        var panelWidth = inventoryItems.length * (tileSize + seperation) + seperation;
-        var panelHeight = tileSize + seperation * 2;
-        var x = screenWidth / 2 - panelWidth / 2;
-        var y = screenHeight - panelHeight - seperation;
+        int panelWidth = inventoryItems.length * (tileSize + seperation) + seperation;
+        int panelHeight = tileSize + seperation * 2;
+        int x = screenWidth / 2 - panelWidth / 2;
+        int y = screenHeight - panelHeight - seperation;
 
         g.setColor(Color.gray);
         g.fillRect(x, y, panelWidth, panelHeight);
 
-        for (var j = 0; j < inventoryItems.length; j++) {
-            var current = inventoryItems[j][playerRow];
+        for (int j = 0; j < inventoryItems.length; j++) {
+            InventoryItem current = inventoryItems[j][playerRow];
             if (hotbarIdx == j) {
                 g.setColor(Color.blue);
                 g.fillRect(x + seperation - 2, y + seperation - 2, tileSize + 4, tileSize + 4);
@@ -292,9 +292,9 @@ public class Inventory implements java.io.Serializable {
                 tableSizeAvailable * (tileSize + seperation) + seperation, tableSizeAvailable
                         * (tileSize + seperation) + seperation);
 
-        for (var i = 0; i < inventoryItems[0].length; i++) {
+        for (int i = 0; i < inventoryItems[0].length; i++) {
             x = screenWidth / 2 - panelWidth / 2;
-            for (var j = 0; j < inventoryItems.length; j++) {
+            for (int j = 0; j < inventoryItems.length; j++) {
                 if ((i < craftingHeight && j < inventoryItems.length - tableSizeAvailable)
                         || (craftingHeight != tableSizeAvailable && i == tableSizeAvailable)) {
                     x += tileSize + seperation;
@@ -303,7 +303,7 @@ public class Inventory implements java.io.Serializable {
 
                 g.setColor(Color.LIGHT_GRAY);
                 g.fillRect(x + seperation - 2, y + seperation - 2, tileSize + 4, tileSize + 4);
-                var current = inventoryItems[j][i];
+                InventoryItem current = inventoryItems[j][i];
                 current.draw(g, x + seperation, y + seperation, tileSize);
                 x += tileSize + seperation;
             }

@@ -70,7 +70,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
         Term a = xFixed.get(0), b = xFixed.get(1);
         boolean av = u.var(a), bv = u.var(b);
         if (!av || !bv) {
-            var yy = $.sFast(yFree);
+            Compound yy = $.sFast(yFree);
             if (!av && !Subterms.possiblyUnifiableAssumingNotEqual(a, yy, u.varBits) ||
                 (!bv && !Subterms.possiblyUnifiableAssumingNotEqual(b, yy, u.varBits))) {
                 return null;
@@ -97,21 +97,21 @@ public class Choose2 extends Termutator.AbstractTermutator {
 //                return null; //assigned to less arity than required
 //            }
 //        }
-        var _x = x();
+        Subterms _x = x();
         Subterms x = u.resolveListIfChanged(_x, true);
-        var _y = y();
+        Subterms _y = y();
         Subterms y = u.resolveListIfChanged(_y, true);
         if (x!=null || y!=null) {
 
             //TODO move most of this to Choose2.choose2(..)
 
             if (y==null) y = _y;
-            var yy = y.toSetSorted();
+            SortedSet<Term> yy = y.toSetSorted();
 
             if (x==null) x = _x;
             else {
-                var a = x.sub(0);
-                var b = x.sub(1);
+                Term a = x.sub(0);
+                Term b = x.sub(1);
                 if (!(a instanceof Variable)) {
                     //check if impossible to match any of Y
                     if (yy.remove(a))
@@ -147,23 +147,23 @@ public class Choose2 extends Termutator.AbstractTermutator {
     public void mutate(Termutator[] chain, int current, Unify u) {
 
 
-        var x = x();
-        var yFree = y();
+        Subterms x = x();
+        Subterms yFree = y();
 
-        var ccc = new Combinations(yFree.subs(), 2);
+        Combinations ccc = new Combinations(yFree.subs(), 2);
 
-        var start = u.size();
-        var yy = new ShuffledSubterms(yFree, u.random);
+        int start = u.size();
+        ShuffledSubterms yy = new ShuffledSubterms(yFree, u.random);
 
 
-        var xEllipsis = u.resolveTerm(this.xEllipsis);
+        Term xEllipsis = u.resolveTerm(this.xEllipsis);
 
-        var tl = new TermList(2);
+        TermList tl = new TermList(2);
         tl.setSize(2);
-        var tll = tl.array();
+        Term[] tll = tl.array();
 
         int[] c = null;
-        var phase = true;
+        boolean phase = true;
         while (ccc.hasNext() || !phase) {
 
             c = phase ? ccc.next() : c;

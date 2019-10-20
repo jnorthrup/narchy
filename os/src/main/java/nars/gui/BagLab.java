@@ -46,9 +46,9 @@ public class BagLab {
 
         this.uniques = bag.capacity() * 2;
 
-        var inputs = 10;
+        int inputs = 10;
         inputSliders = $.newArrayList(inputs);
-        for (var i = 0; i < inputs; i++)
+        for (int i = 0; i < inputs; i++)
             inputSliders.add(new FloatSlider(0.5f, 0, 1));
 
 
@@ -98,8 +98,8 @@ public class BagLab {
 
     public static void main(String[] arg) {
 
-        var capacity = 512;
-        var bagLab = new BagLab(
+        int capacity = 512;
+        BagLab bagLab = new BagLab(
                 new PLinkArrayBag(
                         //PriMerge.plus,
                         PriMerge.or,
@@ -137,30 +137,30 @@ public class BagLab {
     }
 
     private void measure() {
-        var bins = selectionHistogram.length;
+        int bins = selectionHistogram.length;
 
         if (iteration++ % histogramResetPeriod == 0)
             Arrays.fill(selectionHistogram, 0);
 
-        var seed = System.nanoTime();
+        long seed = System.nanoTime();
 
         Random rng = //new XorShift128PlusRandom(seed);
                 //new XoRoShiRo128PlusRandom(seed);
                 ThreadLocalRandom.current();
 
         List<PriReference<Integer>> sampled = $.newArrayList(1024);
-        var batchSize = 32;
+        int batchSize = 32;
         float sampleBatches = 1;
-        for (var i = 0; i < (int) sampleBatches; i++) {
+        for (int i = 0; i < (int) sampleBatches; i++) {
             sampled.clear();
 
 
             bag.sample(rng, batchSize, (Consumer<PriReference<Integer>>) sampled::add);
 
 
-            for (var sample : sampled) {
+            for (PriReference<Integer> sample : sampled) {
                 if (sample != null) {
-                    var p = sample.priElseZero();
+                    float p = sample.priElseZero();
                     selectionHistogram[Util.bin(p, bins - 1)]++;
                 } else {
                     break;
@@ -177,16 +177,20 @@ public class BagLab {
 //        if (!bag.isEmpty())
 //            return; //assume done already
 
-        var sum = inputSliders.stream().mapToDouble(FloatSlider::get).sum();
-        var totalInputs = (float) sum;
+        double sum = 0.0;
+        for (FloatSlider inputSlider : inputSliders) {
+            double v = inputSlider.get();
+            sum += v;
+        }
+        float totalInputs = (float) sum;
         if (totalInputs < 0.01f)
             return;
 
         int currentSlider = 0, sliderRemain = -1;
-        var cap = bag.capacity();
-        var n = inputSliders.size();
-        var r = 0;
-        for (var i = 0; i < cap && currentSlider < n; i++) {
+        int cap = bag.capacity();
+        int n = inputSliders.size();
+        int r = 0;
+        for (int i = 0; i < cap && currentSlider < n; i++) {
             if (sliderRemain == -1) {
                 r = sliderRemain = Math.round((inputSliders.get(currentSlider++).get()/totalInputs)  * cap);
             }
@@ -196,12 +200,12 @@ public class BagLab {
     }
 
     private void inputStochastic() {
-        var n = inputSliders.size();
-        var inputRate = n*n;
-        for (var j = 0; j < inputRate; j++) {
-            for (var i = 0; i < n; i++) {
+        int n = inputSliders.size();
+        int inputRate = n*n;
+        for (int j = 0; j < inputRate; j++) {
+            for (int i = 0; i < n; i++) {
                 if (Math.random() < inputSliders.get(i).get()) {
-                    var p = 0.1f;
+                    float p = 0.1f;
                             //(i /* + (float) Math.random()*/) / (n - 1);
 
                     bag.put(new PLink<>((int) Math.floor(Math.random() * uniques), p));

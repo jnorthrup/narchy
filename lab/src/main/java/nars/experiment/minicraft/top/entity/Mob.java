@@ -73,7 +73,7 @@ public class Mob extends Entity {
     }
 
     protected boolean isSwimming() {
-        var tile = level.getTile(x >> 4, y >> 4);
+        Tile tile = level.getTile(x >> 4, y >> 4);
         return tile == Tile.water || tile == Tile.lava;
     }
 
@@ -84,7 +84,7 @@ public class Mob extends Entity {
 
     @Override
     public void hurt(Tile tile, int x, int y, int damage) {
-        var attackDir = dir ^ 1;
+        int attackDir = dir ^ 1;
         doHurt(damage, attackDir);
     }
 
@@ -105,8 +105,8 @@ public class Mob extends Entity {
         if (hurtTime > 0) return;
 
         if (level.player != null) {
-            var xd = level.player.x - x;
-            var yd = level.player.y - y;
+            int xd = level.player.x - x;
+            int yd = level.player.y - y;
             if (xd * xd + yd * yd < 80 * 80) {
                 Sound.monsterHurt.play();
             }
@@ -122,18 +122,18 @@ public class Mob extends Entity {
     }
 
     public boolean findStartPos(Level level) {
-        var x = random.nextInt(level.w);
-        var y = random.nextInt(level.h);
-        var xx = x * 16 + 8;
-        var yy = y * 16 + 8;
+        int x = random.nextInt(level.w);
+        int y = random.nextInt(level.h);
+        int xx = x * 16 + 8;
+        int yy = y * 16 + 8;
 
         if (level.player != null) {
-            var xd = level.player.x - xx;
-            var yd = level.player.y - yy;
+            int xd = level.player.x - xx;
+            int yd = level.player.y - yy;
             if (xd * xd + yd * yd < 80 * 80) return false;
         }
 
-        var r = level.monsterDensity * 16;
+        int r = level.monsterDensity * 16;
         if (!level.getEntities(xx - r, yy - r, xx + r, yy + r).isEmpty()) return false;
 
         if (level.getTile(x, y).mayPass(level, x, y, this)) {

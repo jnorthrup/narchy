@@ -809,7 +809,7 @@ public class M_Supertank {
         public boolean think(edict_t self) {
             float[] dir = { 0, 0, 0 };
 
-            var flash_number = Defines.MZ2_SUPERTANK_MACHINEGUN_1
+            int flash_number = Defines.MZ2_SUPERTANK_MACHINEGUN_1
                     + (self.s.frame - FRAME_attak1_1);
 
             
@@ -850,7 +850,7 @@ public class M_Supertank {
 
 
             Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, vec);
-            var range = Math3D.VectorLength(vec);
+            float range = Math3D.VectorLength(vec);
 
             
 

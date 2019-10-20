@@ -27,12 +27,12 @@ public class MJTools {
 			return false;
 		}
 
-		var fRetVal = false;
+        boolean fRetVal = false;
         try {
 			vLines.removeAllElements();
 
-			var theFile = new DataInputStream(theUrl.openStream());
-			var br = new BufferedReader(new InputStreamReader(
+            DataInputStream theFile = new DataInputStream(theUrl.openStream());
+            BufferedReader br = new BufferedReader(new InputStreamReader(
 					theFile));
 
 
@@ -55,12 +55,12 @@ public class MJTools {
 	
 	
 	public static boolean LoadResTextFile(String sPath, Vector vLines) {
-		var fRetVal = false;
+        boolean fRetVal = false;
 
         try {
-			var in = MJCell.class.getResourceAsStream(sPath);
+            InputStream in = MJCell.class.getResourceAsStream(sPath);
 			if (in != null) {
-				var br = new BufferedReader(
+                BufferedReader br = new BufferedReader(
 						new InputStreamReader(in));
 
 

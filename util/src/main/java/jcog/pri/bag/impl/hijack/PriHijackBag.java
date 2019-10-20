@@ -23,7 +23,7 @@ public abstract class PriHijackBag<K,V extends UnitPrioritizable> extends Hijack
 
     @Override
     protected V merge(V existing, V incoming, NumberX overflowing) {
-        var overflow = merge().merge(existing, ((Prioritized) incoming).pri(), PriReturn.Overflow);
+        float overflow = merge().merge(existing, ((Prioritized) incoming).pri(), PriReturn.Overflow);
         if (overflow > Float.MIN_NORMAL) {
             if (overflowing!=null) overflowing.add(overflow);
         }

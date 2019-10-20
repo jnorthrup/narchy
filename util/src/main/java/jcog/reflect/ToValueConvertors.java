@@ -41,9 +41,9 @@ public class ToValueConvertors
 
     public ToValueConvertors(Map<Class, Function<String, Object>> src) {
         if (src != null) {
-            for (var e : src.entrySet()) {
-                var cls = e.getKey();
-                var conv = e.getValue();
+            for (Entry<Class, Function<String, Object>> e : src.entrySet()) {
+                Class cls = e.getKey();
+                Function<String, Object> conv = e.getValue();
                 this.put(cls, conv);
             }
         }

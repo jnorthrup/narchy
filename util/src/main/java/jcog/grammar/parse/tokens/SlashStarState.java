@@ -29,8 +29,8 @@ public class SlashStarState extends TokenizerState {
 	@Override
 	public Token nextToken(PushbackReader r, int theStar, Tokenizer t) throws IOException {
 
-		var c = 0;
-		var lastc = 0;
+        int c = 0;
+        int lastc = 0;
 		while (c >= 0) {
 			if ((lastc == '*') && (c == '/')) {
 				break;

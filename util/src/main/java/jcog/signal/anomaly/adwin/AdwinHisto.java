@@ -62,7 +62,7 @@ class AdwinHisto {
 
     public void add(double element) {
 
-        var newBucket = new Bucket(element, 0, 1);
+        Bucket newBucket = new Bucket(element, 0, 1);
         head.addBucket(newBucket);
         numBuckets++;
         numElements++;
@@ -74,22 +74,22 @@ class AdwinHisto {
     }
 
     private void addEmptyTailBucketContainer() {
-        var newTail = new BucketContainer(tail, null, capacity, tail.elemsPerBucket() * 2);
+        BucketContainer newTail = new BucketContainer(tail, null, capacity, tail.elemsPerBucket() * 2);
         tail.setNext(newTail);
         tail = newTail;
         numBucketContainers++;
     }
 
     private void compress() {
-        var pointer = head;
+        BucketContainer pointer = head;
         while (pointer != null) {
 //            BucketContainer n = pointer.next();
             if (pointer.size() == pointer.capacity()) {
                 if (pointer.next() == null) {
                     addEmptyTailBucketContainer();
                 }
-                var removedBuckets = pointer.removeBuckets(2);
-                var newBucket = compressBuckets(removedBuckets[0], removedBuckets[1]);
+                Bucket[] removedBuckets = pointer.removeBuckets(2);
+                Bucket newBucket = compressBuckets(removedBuckets[0], removedBuckets[1]);
                 pointer.next().addBucket(newBucket);
                 numBuckets -= 1;
             }
@@ -99,17 +99,17 @@ class AdwinHisto {
 
     private static Bucket compressBuckets(Bucket firstBucket, Bucket secondBucket) {
         assert firstBucket.size() == secondBucket.size();
-        var elementsPerBucket = firstBucket.size();
-        var newTotal = firstBucket.sum() + secondBucket.sum();
-        var varianceIncrease = Math.pow(firstBucket.sum() - secondBucket.sum(), 2) / (2 * elementsPerBucket);
-        var newVariance = firstBucket.variance() + secondBucket.variance() + varianceIncrease;
+        int elementsPerBucket = firstBucket.size();
+        double newTotal = firstBucket.sum() + secondBucket.sum();
+        double varianceIncrease = Math.pow(firstBucket.sum() - secondBucket.sum(), 2) / (2 * elementsPerBucket);
+        double newVariance = firstBucket.variance() + secondBucket.variance() + varianceIncrease;
         return new Bucket(newTotal, newVariance, 2 * elementsPerBucket);
     }
 
     public void removeBuckets(int num) {
         while (num > 0) {
             Bucket[] removedBuckets;
-            var s = tail.size();
+            int s = tail.size();
             if (num >= s) {
                 num -= s;
                 removedBuckets = tail.removeBuckets(s);
@@ -120,8 +120,8 @@ class AdwinHisto {
                 removedBuckets = tail.removeBuckets(num);
                 num = 0;
             }
-            for (var bucket : removedBuckets) {
-                var bs = bucket.size();
+            for (Bucket bucket : removedBuckets) {
+                int bs = bucket.size();
                 numElements -= bs;
                 numBuckets--;
                 sum -= bucket.sum();

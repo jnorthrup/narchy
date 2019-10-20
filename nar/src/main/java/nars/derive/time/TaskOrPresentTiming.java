@@ -20,8 +20,8 @@ public class TaskOrPresentTiming implements TriFunction<What, Task, Term, long[]
         long[] tt;
         if (task.isEternal() || what.random().nextBoolean()) {
             //present
-            var now = what.time();
-            var dur = Math.round((float) 1 * what.dur());
+            long now = what.time();
+            int dur = Math.round((float) 1 * what.dur());
             tt = new long[]{now - dur / 2, now + dur / 2};
         } else {
             //task

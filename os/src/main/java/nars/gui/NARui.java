@@ -25,10 +25,12 @@ import nars.gui.concept.ConceptSurface;
 import nars.gui.graph.run.BagregateConceptGraph2D;
 import nars.link.TaskLink;
 import nars.link.TaskLinkSnapshot;
+import nars.link.TaskLinks;
 import nars.op.stm.ConjClustering;
 import nars.task.util.PriBuffer;
 import nars.term.Termed;
 import nars.time.part.DurLoop;
+import nars.truth.Truth;
 import nars.util.MemorySnapshot;
 import net.beadsproject.beads.data.Pitch;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -246,14 +248,14 @@ public class NARui {
 	}
 
 	public static Surface memSave(NAR nar) {
-		var path = new TextEdit(40);
+		TextEdit path = new TextEdit(40);
 		try {
 			path.text(Files.createTempFile(nar.self().toString(), "" + System.currentTimeMillis()).toAbsolutePath().toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		Object currentMode = null;
-		var mode = new ButtonSet(ButtonSet.Mode.One,
+		ButtonSet mode = new ButtonSet(ButtonSet.Mode.One,
 			new CheckBox("txt"), new CheckBox("bin")
 		);
 		return new Gridding(
@@ -303,7 +305,7 @@ public class NARui {
 				if (on) {
 					ff.add(f);
 				} else {
-					var rem = ff.remove(f);
+					boolean rem = ff.remove(f);
 					assert (rem);
 				}
 			}
@@ -443,30 +445,34 @@ public class NARui {
 		BiConsumer<Concept, spacegraph.space2d.phys.common.Color3f> colorize = (concept, color) -> {
 			if (concept != null) {
 
-				@Nullable var b = nar.beliefTruth(concept, nar.time());
+				@Nullable Truth b = nar.beliefTruth(concept, nar.time());
 				if (b != null) {
-					var f = b.freq();
-					var conf = b.conf();
-					var a = 0.25f + conf * 0.75f;
+					float f = b.freq();
+					float conf = b.conf();
+					float a = 0.25f + conf * 0.75f;
 					color.set((1 - f) * a, f * a, 0);
 					return;
 				}
 			}
 			color.set(0.5f, 0.5f, 0.5f);
 		};
-		var d = c.stream().map(x -> new ConceptColorIcon(x.term(), nar, colorize)).collect(Collectors.toCollection(ArrayList::new));
+		ArrayList<ConceptColorIcon> d = new ArrayList<>();
+		for (Termed x : c) {
+			ConceptColorIcon conceptColorIcon = new ConceptColorIcon(x.term(), nar, colorize);
+			d.add(conceptColorIcon);
+		}
 		return grid((Iterable<ConceptColorIcon>) d.iterator());
 	}
 
 	public static TextEdit newNarseseInput(NAR n, Consumer<Task> onTask, Consumer<Exception> onException) {
-		var input = new TextEdit(16, 1);
+		TextEdit input = new TextEdit(16, 1);
 		input.onKeyPress((k) -> {
 			if (k.getKeyCode() == VK_ENTER) {
-				var s = input.text();
+				String s = input.text();
 				input.text("");
 				try {
-					var t = n.input(s);
-					for (var task : t) {
+					List<Task> t = n.input(s);
+					for (Task task : t) {
 						onTask.accept(task);
 					}
 				} catch (Narsese.NarseseException e) {
@@ -492,7 +498,7 @@ public class NARui {
 
 			@Override
 			public void coord(VLink<Task> v, float[] target) {
-				var t = v.get();
+				Task t = v.get();
 				target[0] = t.mid() - now; //to be certain of accuracy with 32-bit reduced precision assigned from long
 				target[1] = t.priElseZero();
 			}
@@ -511,9 +517,9 @@ public class NARui {
 
 			@Override
 			public void colorize(VLink<Task> v, NodeVis<VLink<Task>> node) {
-				var centroid = v.centroid;
+				int centroid = v.centroid;
 
-				var a = 0.8f;//v.priElseZero() * 0.5f + 0.5f;
+				float a = 0.8f;//v.priElseZero() * 0.5f + 0.5f;
 				if (centroid >= 0) {
 					Draw.colorHash(centroid, c, 1, 0.75f + 0.25f * v.priElseZero(), a);
 					node.color(c[0], c[1], c[2], c[3]);
@@ -524,7 +530,7 @@ public class NARui {
 
 			@Override
 			public float width(VLink<Task> v, int population) {
-				var t = v.get();
+				Task t = v.get();
 				return (t.term().eventRange() + t.range()) / (population * 50f);
 				//return (0.5f + v.get().priElseZero()) * 1/20f;
 			}
@@ -535,7 +541,7 @@ public class NARui {
 			}
 		};
 
-		var s = new ScatterPlot2D<>(model);
+		ScatterPlot2D<VLink<Task>> s = new ScatterPlot2D<>(model);
 		return DurSurface.get(s, n, () -> {
 
 			s.set(c.data.bag); //Iterable Concat the Centroids as dynamic VLink's
@@ -544,9 +550,9 @@ public class NARui {
 	}
 
 	public static Surface taskBufferView(PriBuffer b, NAR n) {
-		var plot = new Plot2D(256, Plot2D.Line).add("load", b::load, 0, 1);
-		var plotSurface = DurSurface.get(plot, n, plot::commit);
-		var g = new Gridding(
+		Plot2D plot = new Plot2D(256, Plot2D.Line).add("load", b::load, 0, 1);
+		DurSurface plotSurface = DurSurface.get(plot, n, plot::commit);
+		Gridding g = new Gridding(
 			plotSurface,
 			new MetaFrame(b),
 			new Gridding(
@@ -585,17 +591,17 @@ public class NARui {
 
 
 		Map<String, Supplier<Surface>> attentions = new HashMap();
-		for (var v : n.what) {
+		for (What v : n.what) {
 			attentions.put(v.id.toString(), () -> attentionUI(v));
 		}
-		var atMenu = new TabMenu(attentions);
+		TabMenu atMenu = new TabMenu(attentions);
 		return new Splitting(new TabMenu(global), 0.25f, atMenu).horizontal(true).resizeable();
 	}
 
 	public static Surface attentionUI(What w) {
-		var m = new Bordering();
-		var n = w.nar;
-		var attn = ((TaskLinkWhat) w).links;
+		Bordering m = new Bordering();
+		NAR n = w.nar;
+		TaskLinks attn = ((TaskLinkWhat) w).links;
 		m.center(new TabMenu(Map.of(
 			"Input", () -> taskBufferView(w.inBuffer, n),
 			"Spectrum", () -> tasklinkSpectrogram(w, 300),
@@ -626,12 +632,12 @@ public class NARui {
 	public static Surface tasklinkSpectrogram(NAR n, Table<?, nars.link.TaskLink> active, int history, int width) {
 
 		//mode select menu
-		var m = new Gridding();
+		Gridding m = new Gridding();
 
-		var s = new Spectrogram(true, history, width);
+		Spectrogram s = new Spectrogram(true, history, width);
 
 
-		var Z = new Bordering(s).west(m);
+		Bordering Z = new Bordering(s).west(m);
 
 		var tls = new TaskLinkSnapshot(active) {
 			final int[] opColors = new int[]{
@@ -653,25 +659,25 @@ public class NARui {
 				Draw.rgbInt(0.5f, 0.5f, 0.5f)
 			};
 			final IntToIntFunction opColor = _x -> {
-				var x = items[_x];
+				TaskLink x = items[_x];
 				if (x == null) return 0;
-				var o = x.term().op();
+				Op o = x.term().op();
 				return opColors[o.id];
 			};
 			final IntToIntFunction volColor = _x -> {
-				var x = items[_x];
+				TaskLink x = items[_x];
 				if (x == null) return 0;
-				var v = (float) Math.log(1 + x.term().volume());
+				float v = (float) Math.log(1 + x.term().volume());
 				return Draw.colorHSB(v / 10f, 0.5f + 0.5f * v / 10f, v / 10f); //TODO
 			};
 			final IntToIntFunction puncColor = _x -> {
-				var x = items[_x];
+				TaskLink x = items[_x];
 				if (x == null)
 					return 0;
 
-				var r = x.priPunc(BELIEF);
-				var g = x.priPunc(GOAL);
-				var b = (x.priPunc(QUESTION) + x.priPunc(QUEST)) / 2;
+				float r = x.priPunc(BELIEF);
+				float g = x.priPunc(GOAL);
+				float b = (x.priPunc(QUESTION) + x.priPunc(QUEST)) / 2;
 				return Draw.rgbInt(r, g, b);
 			};
 
@@ -710,25 +716,25 @@ public class NARui {
 						filter.setFrequency(filterFreq.asFloat());
 
 
-						var ii = items;
-						var n = ii.length;
+						TaskLink[] ii = items;
+						int n = ii.length;
 						Random rng = ThreadLocalRandom.current();
-						var baseFreq = freqSlider.asFloat();
-						var vol = ampSlider.asFloat();
-						for (var i = 0; i < n; i++) {
-							var x = items[i];
+						float baseFreq = freqSlider.asFloat();
+						float vol = ampSlider.asFloat();
+						for (int i = 0; i < n; i++) {
+							TaskLink x = items[i];
 							if (x == null) continue;
-							var amp = vol * (float) ((Math.exp(x.pri() * 10) - 1) / Util.sqrt(n));
-							var o = x.op();
+							float amp = vol * (float) ((Math.exp(x.pri() * 10) - 1) / Util.sqrt(n));
+							Op o = x.op();
 
 							//stupid grain synth
-							var f = baseFreq * (1 + Pitch.forceToScale(o.id + 1, Pitch.dorian));
-							var grainTime = Util.lerp(Math.min(1, x.term().volume() / 30f), 0.1f, 0.33f);
-							var sw = Math.round(buf.length * grainTime);
-							var ss = (int) (rng.nextFloat() * (buf.length - sw - 1));
-							var se = ss + sw;
-							for (var s = ss; s < se; s++) {
-								var env = 2 * Math.min(Math.abs(s - ss), Math.abs(s - se)) / (sw + 1f); //triangular
+							float f = baseFreq * (1 + Pitch.forceToScale(o.id + 1, Pitch.dorian));
+							float grainTime = Util.lerp(Math.min(1, x.term().volume() / 30f), 0.1f, 0.33f);
+							int sw = Math.round(buf.length * grainTime);
+							int ss = (int) (rng.nextFloat() * (buf.length - sw - 1));
+							int se = ss + sw;
+							for (int s = ss; s < se; s++) {
+								float env = 2 * Math.min(Math.abs(s - ss), Math.abs(s - se)) / (sw + 1f); //triangular
 								buf[s] += amp * (float) Math.sin(f * s * 2 * 1f / readRate) * env;
 							}
 						}
@@ -760,10 +766,10 @@ public class NARui {
 //                        }
 //                ).collect(toList()));
 
-		var plot = new Plot2D(200, Plot2D.Line);
-		var charts = new Gridding();
+		Plot2D plot = new Plot2D(200, Plot2D.Line);
+		Gridding charts = new Gridding();
 		if (rlb.agent instanceof HaiQae) {
-			var q = (HaiQae) rlb.agent;
+			HaiQae q = (HaiQae) rlb.agent;
 			charts.add(
 				new ObjectSurface(q),
 				new Gridding(VERTICAL,
@@ -779,7 +785,7 @@ public class NARui {
 			);
 		}
 		if (rlb.agent instanceof DQN3) {
-			var d = (DQN3) rlb.agent;
+			DQN3 d = (DQN3) rlb.agent;
 			charts.add(
 				new ObjectSurface(d),
 				new Gridding(VERTICAL,
@@ -792,12 +798,12 @@ public class NARui {
 //                            matrix(d.W2.dw)
 				)
 			);
-			var dqn3Plot = new Plot2D(200, Plot2D.Line);
+			Plot2D dqn3Plot = new Plot2D(200, Plot2D.Line);
 			dqn3Plot.add("DQN3 Err", () -> d.lastErr);
 			charts.add(dqn3Plot);
 			rlb.env.onFrame(dqn3Plot::commit);
 		}
-		var rewardSum = new AtomicDouble();
+		AtomicDouble rewardSum = new AtomicDouble();
 		plot.add("Reward", () -> {
 			return rewardSum.getAndSet(0); //clear
 		}, 0, +1);
@@ -1002,12 +1008,12 @@ public class NARui {
 
 	public static <X> Surface focusPanel(Iterable<X> all, FloatFunction<X> pri, Function<X, String> str, NAR nar) {
 
-		var s = new Graph2D<X>().render((node, g) -> {
-			var c = node.id;
+		Graph2D<X> s = new Graph2D<X>().render((node, g) -> {
+			X c = node.id;
 
 			//float p = Math.max(Math.max(epsilon, c.pri()), epsilon);
-			var p = pri.floatValueOf(c);
-			var v = p; //TODO support separate color fucntion
+			float p = pri.floatValueOf(c);
+			float v = p; //TODO support separate color fucntion
 			node.color(p, v, 0.25f);
 
 
@@ -1015,7 +1021,7 @@ public class NARui {
 //                float parentRadius = node.parent(Graph2D.class).radius(); //TODO cache ref
 //                float r = (float) ((parentRadius * 0.5f) * (sqrt(p) + 0.1f));
 
-			final var epsilon = 0.01f;
+			final float epsilon = 0.01f;
 			node.pri = Math.max(epsilon, p);
 		})
 			//.layout(fd)

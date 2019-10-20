@@ -36,7 +36,7 @@ public class Gradius extends GameX {
 
     public static void main(String[] args) {
         GameX.Companion.initFn(40f, nar -> {
-            var g = new Gradius(nar);
+            Gradius g = new Gradius(nar);
             nar.add(g);
 //            g.what().onTask(t -> {
 //                if (t instanceof DerivedTask && t.isGoal())
@@ -93,11 +93,11 @@ public class Gradius extends GameX {
 
             Atomic big = Atomic.atom("C");
             Atomic small = Atomic.atom("c");
-            for (var i = 0; i < dx; i++)
-                for (var j = 0; j < dy; j++) {
-                    var ii = i;
-                    var jj = j;
-                    var Pbig = //$.p(big, $.p($.the(ii), $.the(jj)));
+            for (int i = 0; i < dx; i++)
+                for (int j = 0; j < dy; j++) {
+                    int ii = i;
+                    int jj = j;
+                    Term Pbig = //$.p(big, $.p($.the(ii), $.the(jj)));
                         $.p(Atomic.atom("c" + ii),Atomic.atom("c" + jj));
 
                     //Term subSection = $.p(id, $.the(ii), $.the(jj));
@@ -125,8 +125,8 @@ public class Gradius extends GameX {
 
         float width = g.getWidth();
         float height = g.getHeight();
-        var gpsDigits = 3;
-        var gpsRes = 0.05f;
+        int gpsDigits = 3;
+        float gpsRes = 0.05f;
         senseNumber(gpsDigits, DigitizedScalar.FuzzyNeedle, () -> g.player[OBJ_Y] / height, level -> $.p($.the(level), $.p(id, $.the("y")))
         ).resolution(gpsRes);
         senseNumber(gpsDigits, DigitizedScalar.FuzzyNeedle, () -> g.player[OBJ_X] / width, level -> $.p($.the(level), $.p(id, $.the("x")))
@@ -163,7 +163,7 @@ public class Gradius extends GameX {
 
             if (g.paused) return Float.NaN;
 
-            var nextScore = g.score;
+            int nextScore = g.score;
 
             float r = nextScore - lastScore;
 
@@ -192,16 +192,16 @@ public class Gradius extends GameX {
 
     void initToggle() {
         //TODO boundary feedback
-        var X = $.the("x");
-        var Y = $.the("y");
-        var left =  $.inh(id, $.p(X, NEG));
-        var right =  $.inh(id, $.p(X, POS));
-        var down =  $.inh(id, $.p(Y, NEG));
-        var up =  $.inh(id, $.p(Y, POS));
-        var lr = actionPushButtonMutex(left, right,
+        Atomic X = $.the("x");
+        Atomic Y = $.the("y");
+        Term left =  $.inh(id, $.p(X, NEG));
+        Term right =  $.inh(id, $.p(X, POS));
+        Term down =  $.inh(id, $.p(Y, NEG));
+        Term up =  $.inh(id, $.p(Y, POS));
+        GoalActionConcept[] lr = actionPushButtonMutex(left, right,
                 (BooleanPredicate) b -> g.keys[VK_LEFT] = b,
                 (BooleanPredicate) b -> g.keys[VK_RIGHT] = b);
-        var ud = actionPushButtonMutex(down, up,
+        GoalActionConcept[] ud = actionPushButtonMutex(down, up,
                 (BooleanPredicate) b -> g.keys[VK_DOWN] = b,
                 (BooleanPredicate) b -> g.keys[VK_UP] = b);
 
@@ -211,7 +211,7 @@ public class Gradius extends GameX {
 
     void initBipolar() {
 
-        var thresh = 0.1f;
+        float thresh = 0.1f;
         actionBipolar($.inh(id, $.p($$("y"), $.varQuery(1))), dy -> {
             if (dy < -thresh) {
                 g.keys[VK_UP] = false;

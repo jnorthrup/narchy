@@ -38,13 +38,13 @@ public abstract class StridingMeshInterface {
 	private final v3 scaling = new v3(1f, 1f, 1f);
 	
 	public void internalProcessAllTriangles(InternalTriangleIndexCallback callback, v3 aabbMin, v3 aabbMax) {
-		var graphicssubparts = getNumSubParts();
+        int graphicssubparts = getNumSubParts();
 		v3[] triangle/*[3]*/ = { new v3(), new v3(), new v3() };
 
-		var meshScaling = getScaling(new v3());
+        v3 meshScaling = getScaling(new v3());
 
-		for (var part = 0; part<graphicssubparts; part++) {
-			var data = getLockedReadOnlyVertexIndexBase(part);
+		for (int part = 0; part<graphicssubparts; part++) {
+            VertexData data = getLockedReadOnlyVertexIndexBase(part);
 
 			for (int i=0, cnt=data.getIndexCount()/3; i<cnt; i++) {
 				data.getTriangle(i*3, meshScaling, triangle);
@@ -72,7 +72,7 @@ public abstract class StridingMeshInterface {
 	
 	public void calculateAabbBruteForce(v3 aabbMin, v3 aabbMax) {
 
-		var aabbCallback = new AabbCalculationCallback();
+        AabbCalculationCallback aabbCallback = new AabbCalculationCallback();
 		aabbMin.set(-1e30f, -1e30f, -1e30f);
 		aabbMax.set(1e30f, 1e30f, 1e30f);
 		internalProcessAllTriangles(aabbCallback, aabbMin, aabbMax);

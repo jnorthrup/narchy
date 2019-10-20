@@ -62,25 +62,25 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 	
 	@Override
 	public v3 localGetSupportingVertexWithoutMargin(v3 vec0, v3 out) {
-		var supVec = out;
+        v3 supVec = out;
 		supVec.set(0f, 0f, 0f);
 
-		var vec = new v3(vec0);
-		var lenSqr = vec.lengthSquared();
+        v3 vec = new v3(vec0);
+        float lenSqr = vec.lengthSquared();
 		if (lenSqr < 0.0001f) {
 			vec.set(1f, 0f, 0f);
 		}
 		else {
-			var rlen = 1f / (float) Math.sqrt(lenSqr);
+            float rlen = 1f / (float) Math.sqrt(lenSqr);
 			vec.scaled(rlen);
 		}
 
-		var vtx = new v3();
+        v3 vtx = new v3();
 
-		var maxDot = -1e30f;
-        for (var i = 0; i < getNumVertices(); i++) {
+        float maxDot = -1e30f;
+        for (int i = 0; i < getNumVertices(); i++) {
 			getVertex(i, vtx);
-			var newDot = vec.dot(vtx);
+            float newDot = vec.dot(vtx);
             if (newDot > maxDot) {
 				maxDot = newDot;
 				supVec = vtx;
@@ -94,10 +94,10 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 	public void batchedUnitVectorGetSupportingVertexWithoutMargin(v3[] vectors, v3[] supportVerticesOut, int numVectors) {
 		int i;
 
-		var vtx = new v3();
+        v3 vtx = new v3();
 
 
-		var wcoords = new float[numVectors];
+        float[] wcoords = new float[numVectors];
 
 		for (i = 0; i < numVectors; i++) {
 			
@@ -105,12 +105,12 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 			wcoords[i] = -1e30f;
 		}
 
-		for (var j = 0; j < numVectors; j++) {
-			var vec = vectors[j];
+		for (int j = 0; j < numVectors; j++) {
+            v3 vec = vectors[j];
 
 			for (i = 0; i < getNumVertices(); i++) {
 				getVertex(i, vtx);
-				var newDot = vec.dot(vtx);
+                float newDot = vec.dot(vtx);
 
                 if (newDot > wcoords[j]) {
 					
@@ -126,26 +126,26 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 	public void calculateLocalInertia(float mass, v3 inertia) {
 
 
-		var margin = getMargin();
+        float margin = getMargin();
 
-		var ident = new Transform();
+        Transform ident = new Transform();
 		ident.setIdentity();
 		v3 aabbMin = new v3(), aabbMax = new v3();
 		getAabb(ident, aabbMin, aabbMax);
 
-		var halfExtents = new v3();
+        v3 halfExtents = new v3();
 		halfExtents.sub(aabbMax, aabbMin);
 		halfExtents.scaled(0.5f);
 
-		var lx = 2f * (halfExtents.x + margin);
-		var ly = 2f * (halfExtents.y + margin);
-		var lz = 2f * (halfExtents.z + margin);
-		var x2 = lx * lx;
-		var y2 = ly * ly;
-		var z2 = lz * lz;
+        float lx = 2f * (halfExtents.x + margin);
+        float ly = 2f * (halfExtents.y + margin);
+        float lz = 2f * (halfExtents.z + margin);
+        float x2 = lx * lx;
+        float y2 = ly * ly;
+        float z2 = lz * lz;
 
         inertia.set(y2 + z2, x2 + z2, x2 + y2);
-		var scaledmass = mass * 0.08333333f;
+        float scaledmass = mass * 0.08333333f;
         inertia.scaled(scaledmass);
 	}
 
@@ -172,7 +172,7 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 
 		batchedUnitVectorGetSupportingVertexWithoutMargin(_directions, _supporting, 6);
 
-		for (var i = 0; i<3; i++) {
+		for (int i = 0; i<3; i++) {
 			VectorUtil.setCoord(localAabbMax, i, VectorUtil.coord(_supporting[i], i) + collisionMargin);
 			VectorUtil.setCoord(localAabbMin, i, VectorUtil.coord(_supporting[i + 3], i) - collisionMargin);
 		}

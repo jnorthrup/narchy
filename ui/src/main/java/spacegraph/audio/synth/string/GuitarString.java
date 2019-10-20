@@ -14,7 +14,7 @@ public class GuitarString extends KarplusStrongString {
         super(frequency, 1);
 
         this.seedNoise = new double[buffer.capacity()];
-        for (var i = 0; i < seedNoise.length; i++)
+        for (int i = 0; i < seedNoise.length; i++)
             seedNoise[i] = -1 + 2*Math.random();
 
 
@@ -36,8 +36,8 @@ public class GuitarString extends KarplusStrongString {
     public void pluck() {
         setDeltaVolume(pluckDelta);
         clear();
-        var c = buffer.capacity();
-        for (var i = 0; i < c; i++) {
+        int c = buffer.capacity();
+        for (int i = 0; i < c; i++) {
             buffer.enqueue(
                     (Math.random() - 0.5) * 2
                     //rng.nextGaussian()/2
@@ -52,7 +52,7 @@ public class GuitarString extends KarplusStrongString {
     public void tic() {
         double first = buffer.dequeue();
         double second = buffer.peek();
-        var x = (first + second) / 2; // lowpass filter
+        double x = (first + second) / 2; // lowpass filter
         filterOut = C * x + filterIn - C * filterOut; // allpass tuning filter
         filterIn = x;
         buffer.enqueue(filterOut * deltaVolume);

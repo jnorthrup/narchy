@@ -25,7 +25,7 @@ public class Concepts3D extends DynamicConceptSpace {
     private Concepts3D(NAR nar, Iterable<Concept> concepts, int maxNodes, int maxEdgesPerNodeMax) {
         super(nar, concepts, maxNodes, maxEdgesPerNodeMax);
 
-        var sg = show(1400, 1000, false);
+        SpaceGraph3D sg = show(1400, 1000, false);
 
 
 //        sg.addAt(new SubOrtho(grid(
@@ -34,7 +34,7 @@ public class Concepts3D extends DynamicConceptSpace {
 //        )).posWindow(0.5f, 0.1f, 1f, 0.2f));
 
 
-        var cpts = this.concepts;
+        Bagregate<Concept> cpts = this.concepts;
         /*inputbox = */
         //nar.reset();
         //                        try {
@@ -94,11 +94,11 @@ public class Concepts3D extends DynamicConceptSpace {
     public static void main(String[] args) {
 
 
-        var n = NARS.threadSafe();
+        NAR n = NARS.threadSafe();
         new Deriver(Derivers.nal(n, 1, 8));
 
 
-        var g = new Concepts3D(n,
+        Concepts3D g = new Concepts3D(n,
                 /* TODO */ 128, 5);
 
         try {

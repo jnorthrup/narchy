@@ -3,6 +3,8 @@ package jcog.learn.ntm.memory;
 import jcog.learn.ntm.control.UVector;
 import jcog.learn.ntm.control.Unit;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 /** TODO extend UVector for 'read' */
@@ -20,9 +22,9 @@ public class ReadData  {
         cellHeight = memory.memoryHeight;
 
         read = new Unit[cellWidth];
-        for (var i = 0; i < cellWidth; i++) {
-            var temp = 0.0;
-            for (var j = 0; j < cellHeight; j++) {
+        for (int i = 0; i < cellWidth; i++) {
+            double temp = 0.0;
+            for (int j = 0; j < cellHeight; j++) {
                 temp += head.addressingVector.value[j] * mem.data[j][i].value;
             }
             
@@ -34,23 +36,23 @@ public class ReadData  {
     }
 
     public void backwardErrorPropagation() {
-        var addressingVectorUnit = head.addressingVector;
+        UVector addressingVectorUnit = head.addressingVector;
 
-        var memData = memory.data;
+        Unit[][] memData = memory.data;
 
-        var h = this.cellHeight;
-        var w = this.cellWidth;
-        var read = this.read;
+        int h = this.cellHeight;
+        int w = this.cellWidth;
+        Unit[] read = this.read;
 
-        for (var i = 0; i < h; i++) {
-            var gradient = 0.0;
+        for (int i = 0; i < h; i++) {
+            double gradient = 0.0;
 
-            var dataVector = memData[i];
+            Unit[] dataVector = memData[i];
 
-            for (var j = 0; j < w; j++) {
+            for (int j = 0; j < w; j++) {
 
-                var readUnitGradient = read[j].grad;
-                var dataUnit = dataVector[j];
+                double readUnitGradient = read[j].grad;
+                Unit dataUnit = dataVector[j];
                 gradient += readUnitGradient * dataUnit.value;
                 dataUnit.grad += readUnitGradient * addressingVectorUnit.value[i];
             }
@@ -60,9 +62,14 @@ public class ReadData  {
 
     /** TODO return UMatrix of ReadData UVector's */
     public static ReadData[] getVector(NTMMemory memory, HeadSetting[] h) {
-        var x = memory.headNum();
+        int x = memory.headNum();
 
-        var vector = IntStream.range(0, x).mapToObj(i -> new ReadData(h[i], memory)).toArray(ReadData[]::new);
+        List<ReadData> list = new ArrayList<>();
+        for (int i = 0; i < x; i++) {
+            ReadData readData = new ReadData(h[i], memory);
+            list.add(readData);
+        }
+        ReadData[] vector = list.toArray(new ReadData[0]);
         return vector;
     }
 

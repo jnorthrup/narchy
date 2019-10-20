@@ -5,8 +5,10 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.attention.What;
+import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.op.Remember;
+import nars.subterm.Subterms;
 import nars.task.proxy.SpecialTermTask;
 import nars.task.util.Answer;
 import nars.term.Term;
@@ -33,7 +35,7 @@ public class ImageBeliefTable extends DynamicTaskTable {
     public ImageBeliefTable(Term image, boolean beliefOrGoal) {
         super(image, beliefOrGoal);
 
-        var imageNormalized = Image.imageNormalize(image);
+        Term imageNormalized = Image.imageNormalize(image);
         if (image.isNormalized())
             imageNormalized = imageNormalized.normalize();
         //if (!(imageNormalized.op() == INH && !image.equals(imageNormalized)))
@@ -51,12 +53,12 @@ public class ImageBeliefTable extends DynamicTaskTable {
 
         assert(r.link && r.notify): "TODO save these to tmp var";
 
-        var imaged = r.input;
-        var normal = Image.imageNormalize(imaged.term());
+        Task imaged = r.input;
+        Term normal = Image.imageNormalize(imaged.term());
 
         if (r.store) {
             //r.link = r.notify = false; //proxy store
-            var c = (TaskConcept) r.nar().conceptualize(normal);
+            TaskConcept c = (TaskConcept) r.nar().conceptualize(normal);
             if (c == null)
                 return;
             Task normalized;
@@ -79,7 +81,7 @@ public class ImageBeliefTable extends DynamicTaskTable {
      */
     @Override
     public @Nullable Task match(long start, long end, boolean forceProject, @Nullable Term template, Predicate<Task> filter, float dur, NAR nar, boolean ditherTruth) {
-        var t = super.match(start, end, forceProject, template, filter, dur, nar, ditherTruth);
+        Task t = super.match(start, end, forceProject, template, filter, dur, nar, ditherTruth);
         return transformFromTemplate(t);
     }
 
@@ -102,8 +104,8 @@ public class ImageBeliefTable extends DynamicTaskTable {
     private @Nullable Task transformFromTemplate(@Nullable Task x) {
         if (x == null) return null;
         try {
-            var xx = x.term();
-            var y = transformTermFromTemplate(xx);
+            Term xx = x.term();
+            Term y = transformTermFromTemplate(xx);
             if (y instanceof IdempotentBool)
                 throw new TermException("invalid recursive image", xx);
 
@@ -124,7 +126,7 @@ public class ImageBeliefTable extends DynamicTaskTable {
 //        if (!x.hasAny(Op.Temporal))
 //            return template; //template should equal the expected result
 
-        var tt = this.term.subterms();
+        Subterms tt = this.term.subterms();
         Term subj = tt.sub(0), pred = tt.sub(1);
         if (subj.contains(Op.ImgInt)) {
             //Term y = x.sub(1).sub(normal.sub(1).subIndexFirst(z -> z.equals(pred)));
@@ -141,11 +143,11 @@ public class ImageBeliefTable extends DynamicTaskTable {
     @Override
     public void match(Answer a) {
         //forward to the host concept's appropriate table
-        var h = a.nar.conceptualizeDynamic(normal);
+        Concept h = a.nar.conceptualizeDynamic(normal);
         if (!(h instanceof TaskConcept))
             return; //TODO if this happens: may be a NodeConcept in certain cases involving $ vars.  investigate
 
-        var termOriginal = a.term();  a.term(normal); //push
+        Term termOriginal = a.term();  a.term(normal); //push
 
         (beliefOrGoal ? h.beliefs() : h.goals()).match(a);
 

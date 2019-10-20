@@ -195,15 +195,15 @@ public class Clock extends UGen implements IntegerBead {
     @Override
     public void gen() {
         intervalEnvelope.update();
-        for (var i = 0; i < bufferSize; i++) {
+        for (int i = 0; i < bufferSize; i++) {
             subticks[i] = point;
-            var interval = intervalEnvelope.getValueDouble(0, i);
-            var value = Math.max(1.0, Math.abs(interval) / ticksPerBeat);
-            var backwards = interval < 0;
+            double interval = intervalEnvelope.getValueDouble(0, i);
+            double value = Math.max(1.0, Math.abs(interval) / ticksPerBeat);
+            boolean backwards = interval < 0;
             if (backwards) value *= -1;
             point += 1.0 / context.msToSamples(value);
 
-            var sign = Math.signum(interval);
+            double sign = Math.signum(interval);
             while (!backwards && point >= count + 1) {
                 tick();
                 count += sign;

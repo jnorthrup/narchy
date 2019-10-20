@@ -185,7 +185,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     @Override
     public Surface finger(Finger f) {
 
-        var x = super.finger(f);
+        Surface x = super.finger(f);
         if (x == null || x == this) {
             if (f.test(new Wiring(WIRING_BUTTON, this)))
                 return this;
@@ -232,7 +232,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     @Override
     public boolean canRender(ReSurface r) {
         if (super.canRender(r)) {
-            var u = this.updater;
+            FloatObjectProcedure<Port<X>> u = this.updater;
             if (u != null)
                 u.value(r.dtS(), this);
 
@@ -256,13 +256,13 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     protected void starting() {
         super.starting();
 
-        var graph = parentOrSelf(GraphEdit2D.class);
+        GraphEdit2D graph = parentOrSelf(GraphEdit2D.class);
         if (graph != null)
             this.node = graph.links.addNode(this);
 //        else
 //            this.node = EditGraph2D.staticLinks.addNode(this); //HACK
 
-        var u = this.updater;
+        FloatObjectProcedure<Port<X>> u = this.updater;
         if (u != null)
             u.value(0, this);
 
@@ -272,7 +272,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     protected void stopping() {
         node = null;
         enabled = false;
-        var p = parentOrSelf(GraphEdit2D.class);
+        GraphEdit2D p = parentOrSelf(GraphEdit2D.class);
         if (p != null)
             p.links.removeNode(this);
         super.stopping();
@@ -280,12 +280,12 @@ public class Port<X> extends Widget implements Wiring.Wireable {
 
     protected final boolean out(Port<?> sender, X x) {
         if (enabled) {
-            var n = this.node;
+            Node<Surface, Wire> n = this.node;
             if (n != null) {
-                for (var iterator = n.edgeIterator(true, true); iterator.hasNext(); ) {
-                    var t = iterator.next();
-                    var wire = t.id();
-                    var recv = ((Port) wire.other(Port.this));
+                for (Iterator<FromTo<Node<Surface, Wire>, Wire>> iterator = n.edgeIterator(true, true); iterator.hasNext(); ) {
+                    FromTo<Node<Surface, Wire>, Wire> t = iterator.next();
+                    Wire wire = t.id();
+                    Port recv = ((Port) wire.other(Port.this));
                     if (recv != sender) //1-level cycle block
                         wire.send(this, recv, x);
                 }
@@ -300,13 +300,13 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         if (!enabled) {
             in.accept(null, s);
 		} else {
-            var in = this.in;
+            In<? super X> in = this.in;
             if (in != null) {
                 try {
                     in.accept(from, s);
                     return true;
                 } catch (Throwable t) {
-                    var r = root();
+                    SurfaceGraph r = root();
                     if (r != null)
                         r.error(this, 1f, t);
                     else

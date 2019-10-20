@@ -21,15 +21,15 @@ public final class SpinMutexArray implements SpinMutex {
         assert(stripeWidth < (1 << 15));
         mutex = new SpinMutex[stripes];
 
-        var buf = new AtomicLongArray(stripes * stripeWidth);
-        for (var i = 0; i < stripes; i++)
+        AtomicLongArray buf = new AtomicLongArray(stripes * stripeWidth);
+        for (int i = 0; i < stripes; i++)
             mutex[i] = new Treadmill64(buf, stripeWidth, i*stripeWidth);
     }
 
 
     @Override
     public int start(long hash) {
-        var s = (Long.hashCode(hash) & (~(1 << 31))) % mutex.length;
+        int s = (Long.hashCode(hash) & (~(1 << 31))) % mutex.length;
         return mutex[s].start(hash) | (s << 16);
     }
 

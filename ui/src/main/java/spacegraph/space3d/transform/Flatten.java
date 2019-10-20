@@ -33,15 +33,15 @@ public class Flatten<X> implements SpaceTransform<X>, Consumer<Spatial<X>> {
     public void accept(Spatial<X> ss) {
 
         if (ss instanceof SimpleSpatial) {
-            var s = (SimpleSpatial) ss;
+            SimpleSpatial s = (SimpleSpatial) ss;
 
 
-            var b = s.body;
+            Body3D b = s.body;
             if (b == null)
                 return;
 
-            var tz = b.transform.z;
-            var zTolerance = 5f;
+            float tz = b.transform.z;
+            float zTolerance = 5f;
             if (Math.abs(tz) > zTolerance) {
 
 

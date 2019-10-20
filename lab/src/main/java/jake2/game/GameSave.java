@@ -32,14 +32,14 @@ public class GameSave {
 
     public static void CreateEdicts() {
         GameBase.g_edicts = new edict_t[GameBase.game.maxentities];
-        for (var i = 0; i < GameBase.game.maxentities; i++)
+        for (int i = 0; i < GameBase.game.maxentities; i++)
             GameBase.g_edicts[i] = new edict_t(i);
         
     }
 
     public static void CreateClients() {
         GameBase.game.clients = new gclient_t[GameBase.game.maxclients];
-        for (var i = 0; i < GameBase.game.maxclients; i++)
+        for (int i = 0; i < GameBase.game.maxclients; i++)
             GameBase.game.clients[i] = new gclient_t(i);
 
     }
@@ -122,7 +122,7 @@ public class GameSave {
         game_import_t.dprintf("==== InitGame ====\n");
 
         
-        for (var n = 0; n < preloadclasslist.length; n++)
+        for (int n = 0; n < preloadclasslist.length; n++)
         {
         	try
 			{
@@ -236,7 +236,7 @@ public class GameSave {
             if (!autosave)
                 PlayerClient.SaveClientData();
 
-            var f = new QuakeFile(filename, "rw");
+            QuakeFile f = new QuakeFile(filename, "rw");
 
             if (f == null)
                 game_import_t.error("Couldn't write to " + filename);
@@ -245,7 +245,7 @@ public class GameSave {
             GameBase.game.write(f);
             GameBase.game.autosaved = false;
 
-            for (var i = 0; i < GameBase.game.maxclients; i++)
+            for (int i = 0; i < GameBase.game.maxclients; i++)
                 GameBase.game.clients[i].write(f);
 
             Lib.fclose(f);
@@ -258,12 +258,12 @@ public class GameSave {
 
         try {
 
-            var f = new QuakeFile(filename, "r");
+            QuakeFile f = new QuakeFile(filename, "r");
             CreateEdicts();
 
             GameBase.game.load(f);
 
-            for (var i = 0; i < GameBase.game.maxclients; i++) {
+            for (int i = 0; i < GameBase.game.maxclients; i++) {
                 GameBase.game.clients[i] = new gclient_t(i);
                 GameBase.game.clients[i].read(f);
             }
@@ -282,7 +282,7 @@ public class GameSave {
     public static void WriteLevel(String filename) {
         try {
 
-            var f = new QuakeFile(filename, "rw");
+            QuakeFile f = new QuakeFile(filename, "rw");
             if (f == null)
                 game_import_t.error("Couldn't open for writing: " + filename);
 
@@ -292,7 +292,7 @@ public class GameSave {
 
             int i;
             for (i = 0; i < GameBase.num_edicts; i++) {
-                var ent = GameBase.g_edicts[i];
+                edict_t ent = GameBase.g_edicts[i];
                 if (!ent.inuse)
                     continue;
                 f.writeInt(i);
@@ -324,7 +324,7 @@ public class GameSave {
     public static void ReadLevel(String filename) {
         try {
 
-            var f = new QuakeFile(filename, "r");
+            QuakeFile f = new QuakeFile(filename, "r");
 
             if (f == null)
                 game_import_t.error("Couldn't read level file " + filename);
@@ -340,7 +340,7 @@ public class GameSave {
 
             edict_t ent;
             while (true) {
-                var entnum = f.readInt();
+                int entnum = f.readInt();
                 if (entnum == -1)
                     break;
 
@@ -356,14 +356,14 @@ public class GameSave {
             Lib.fclose(f);
 
             
-            for (var i = 0; i < GameBase.maxclients.value; i++) {
+            for (int i = 0; i < GameBase.maxclients.value; i++) {
                 ent = GameBase.g_edicts[i + 1];
                 ent.client = GameBase.game.clients[i];
                 ent.client.pers.connected = false;
             }
 
             
-            for (var i = 0; i < GameBase.num_edicts; i++) {
+            for (int i = 0; i < GameBase.num_edicts; i++) {
                 ent = GameBase.g_edicts[i];
 
                 if (!ent.inuse)

@@ -54,22 +54,22 @@ public class JRdpLoader {
             System.exit(-1);
         }
 
-        var launchFile = args[0];
+        String launchFile = args[0];
 
         try {
-            var outArgs = "";
+            String outArgs = "";
 
 
-            var fstream = new FileInputStream(launchFile);
-            var in = new DataInputStream(fstream);
-            var port = "";
-            var server = "";
+            FileInputStream fstream = new FileInputStream(launchFile);
+            DataInputStream in = new DataInputStream(fstream);
+            String port = "";
+            String server = "";
             while (in.available() != 0) {
-                var line = in.readLine();
-                var stok = new StringTokenizer(line);
+                String line = in.readLine();
+                StringTokenizer stok = new StringTokenizer(line);
                 if (stok.hasMoreTokens()) {
-                    var identifier = stok.nextToken();
-                    var value = "";
+                    String identifier = stok.nextToken();
+                    String value = "";
                     while (stok.hasMoreTokens()) {
                         value += stok.nextToken();
                         if (stok.hasMoreTokens())
@@ -84,7 +84,7 @@ public class JRdpLoader {
                             port = value;
                             break;
                         default:
-                            var p = getParam(identifier);
+                            String p = getParam(identifier);
                             if (p != null)
                                 outArgs += p + ' ' + value + ' ';
                             break;
@@ -98,7 +98,7 @@ public class JRdpLoader {
                     outArgs += ':' + port;
 
 
-                var finArgs = Utilities_Localised.split(outArgs, " ");
+                String[] finArgs = Utilities_Localised.split(outArgs, " ");
 
                 Rdesktop.main(finArgs);
                 in.close();
@@ -118,7 +118,7 @@ public class JRdpLoader {
     }
 
     private static String getParam(String identifier) {
-        for (var i = 0; i < identifiers.length; i++) {
+        for (int i = 0; i < identifiers.length; i++) {
             if (identifier.equals(identifiers[i])) {
                 return pairs[i];
             }

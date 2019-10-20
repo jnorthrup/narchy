@@ -21,7 +21,7 @@ public class NARchy extends NARS {
     public static NAR core(int threads) {
 
 
-        var nar = new DefaultNAR(0, true)
+        NAR nar = new DefaultNAR(0, true)
 
                 .index(CaffeineMemory.soft())
                 //.index(new HijackConceptIndex(32*1024, 4))
@@ -49,7 +49,7 @@ public class NARchy extends NARS {
 
     public static NAR ui() {
         /** TODO differentiate this from UI, for use in embeddeds/servers without GUI */
-        var nar = core();
+        NAR nar = core();
         nar.exe.throttle(0.1f);
         
         nar.runLater(()->{
@@ -59,12 +59,12 @@ public class NARchy extends NARS {
             NARHear.readURL(nar);
 
             {
-                var s = new NARSpeak(nar);
+                NARSpeak s = new NARSpeak(nar);
                 s.spoken.on(  NativeSpeechDispatcher ::speak);
                 
             }
 
-            var i = new InterNAR(nar);
+            InterNAR i = new InterNAR(nar);
             i.fps(2);
 
 

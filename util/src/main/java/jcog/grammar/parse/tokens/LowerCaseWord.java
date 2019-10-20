@@ -9,7 +9,7 @@ public class LowerCaseWord extends Word {
 	protected boolean qualifies(Object o) {
 		if (!super.qualifies(o))
 			return false;
-		var t = (Token) o;
+        Token t = (Token) o;
 		return Character.isLowerCase(t.sval().charAt(0));
 	}
 

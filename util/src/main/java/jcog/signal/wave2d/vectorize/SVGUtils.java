@@ -15,7 +15,7 @@ public class SVGUtils {
 	
 
 	public static float roundtodec(float val, int places){
-		var scale = (float) Math.pow(10, places);
+        float scale = (float) Math.pow(10, places);
 		return Math.round(val * scale) / scale;
 	}
 
@@ -23,12 +23,12 @@ public class SVGUtils {
 	
 	public static void svgpathstring (StringBuilder sb, String desc, List<Double[]> segments, String colorstr, HashMap<String,Float> options){
 		float scale = options.get("scale"), lcpr = options.get("lcpr"), qcpr = options.get("qcpr");
-		var roundcoords = (int) Math.floor(options.get("roundcoords"));
+        int roundcoords = (int) Math.floor(options.get("roundcoords"));
 		
 		sb.append("<path ").append(desc).append(colorstr).append("d=\"" ).append("M ").append(segments.get(0)[1]*scale).append(' ').append(segments.get(0)[2]*scale).append(' ');
 
 		if( roundcoords == -1 ){
-			for (var segment : segments) {
+			for (Double[] segment : segments) {
 				if (segment[0] == 1.0) {
 					sb.append("L ").append(segment[3] * scale).append(' ').append(segment[4] * scale).append(' ');
 				} else {
@@ -36,7 +36,7 @@ public class SVGUtils {
 				}
 			}
 		}else{
-			for (var segment : segments) {
+			for (Double[] segment : segments) {
 				if (segment[0] == 1.0) {
 					sb.append("L ").append(roundtodec((float) (segment[3] * scale), roundcoords)).append(' ')
 							.append(roundtodec((float) (segment[4] * scale), roundcoords)).append(' ');
@@ -52,7 +52,7 @@ public class SVGUtils {
 		sb.append("Z\" />");
 
 
-		for (var segment : segments) {
+		for (Double[] segment : segments) {
 			if ((lcpr > 0) && (segment[0] == 1.0)) {
 				sb.append("<circle cx=\"").append(segment[3] * scale).append("\" cy=\"").append(segment[4] * scale).append("\" r=\"").append(lcpr).append("\" fill=\"white\" stroke-width=\"").append(lcpr * 0.2).append("\" stroke=\"black\" />");
 			}

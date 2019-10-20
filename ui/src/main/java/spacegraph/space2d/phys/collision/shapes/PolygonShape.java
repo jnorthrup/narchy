@@ -77,11 +77,11 @@ public class PolygonShape extends Shape {
 
         vertices = 0;
         vertex = new v2[maxVertices];
-        for (var i = 0; i < vertex.length; i++) {
+        for (int i = 0; i < vertex.length; i++) {
             vertex[i] = new v2(0, 0);
         }
         normals = new v2[maxVertices];
-        for (var i = 0; i < normals.length; i++) {
+        for (int i = 0; i < normals.length; i++) {
             normals[i] = new v2(0, 0);
         }
         setSkinRadius(Settings.polygonRadius);
@@ -90,18 +90,18 @@ public class PolygonShape extends Shape {
 
     public PolygonShape(float... xy) {
         this(xy.length / 2);
-        var t = new v2[xy.length / 2];
-        var j = 0;
-        for (var i = 0; i < xy.length; i += 2) {
+        v2[] t = new v2[xy.length / 2];
+        int j = 0;
+        for (int i = 0; i < xy.length; i += 2) {
             t[j++] = new v2(xy[i], xy[i + 1]);
         }
         set(t, xy.length / 2);
     }
 
     public final Shape clone() {
-        var shape = new PolygonShape(vertex.length);
+        PolygonShape shape = new PolygonShape(vertex.length);
         shape.centroid.set(this.centroid);
-        for (var i = 0; i < shape.normals.length; i++) {
+        for (int i = 0; i < shape.normals.length; i++) {
             shape.normals[i].set(normals[i]);
             shape.vertex[i].set(vertex[i]);
         }
@@ -124,33 +124,33 @@ public class PolygonShape extends Shape {
 
         v2 pool1 = new v2(), pool2 = new v2();
 
-        var i0 = 0;
-        var x0 = verts[0].x;
-        for (var i = 1; i < num; ++i) {
-            var x = verts[i].x;
+        int i0 = 0;
+        float x0 = verts[0].x;
+        for (int i = 1; i < num; ++i) {
+            float x = verts[i].x;
             if (x > x0 || (x == x0 && verts[i].y < verts[i0].y)) {
                 i0 = i;
                 x0 = x;
             }
         }
 
-        var hull = new int[Settings.maxPolygonVertices];
-        var m = 0;
-        var ih = i0;
+        int[] hull = new int[Settings.maxPolygonVertices];
+        int m = 0;
+        int ih = i0;
 
         while (true) {
             hull[m] = ih;
 
-            var ie = 0;
-            for (var j = 1; j < num; ++j) {
+            int ie = 0;
+            for (int j = 1; j < num; ++j) {
                 if (ie == ih) {
                     ie = j;
                     continue;
                 }
 
-                var r = pool1.set(verts[ie]).subbed(verts[hull[m]]);
-                var v = pool2.set(verts[j]).subbed(verts[hull[m]]);
-                var c = v2.cross(r, v);
+                v2 r = pool1.set(verts[ie]).subbed(verts[hull[m]]);
+                v2 v = pool2.set(verts[j]).subbed(verts[hull[m]]);
+                float c = v2.cross(r, v);
                 if (c < 0.0f) {
                     ie = j;
                 }
@@ -172,16 +172,16 @@ public class PolygonShape extends Shape {
         this.vertices = m;
 
 
-        for (var i = 0; i < vertices; ++i) {
+        for (int i = 0; i < vertices; ++i) {
             if (vertex[i] == null)
                 vertex[i] = new v2();
             vertex[i].set(verts[hull[i]]);
         }
 
-        var edge = pool1;
-        for (var i = 0; i < vertices; ++i) {
-            var i1 = i;
-            var i2 = i + 1 < vertices ? i + 1 : 0;
+        v2 edge = pool1;
+        for (int i = 0; i < vertices; ++i) {
+            int i1 = i;
+            int i2 = i + 1 < vertices ? i + 1 : 0;
             edge.set(vertex[i2]).subbed(vertex[i1]);
 
             //assert (edge.lengthSquared() > Settings.EPSILONsqr);
@@ -226,10 +226,10 @@ public class PolygonShape extends Shape {
 
 
     public static spacegraph.space2d.phys.collision.shapes.PolygonShape regular(int n, float r) {
-        var p = new PolygonShape(n);
+        PolygonShape p = new PolygonShape(n);
         p.vertices = n;
-        for (var i = 0; i < n; i++) {
-            var theta = i / (float) n * 2 * Math.PI;
+        for (int i = 0; i < n; i++) {
+            double theta = i / (float) n * 2 * Math.PI;
             p.vertex[i].set((float) (r * Math.cos(theta)), ((float) (r * Math.sin(theta))));
         }
         p.centroid.setZero();
@@ -257,12 +257,12 @@ public class PolygonShape extends Shape {
         normals[3].set(-1.0f, 0.0f);
         centroid.set(center);
 
-        var xf = poolt1;
+        Transform xf = poolt1;
         xf.pos.set(center);
         xf.set(angle);
 
 
-        for (var i = 0; i < vertices; ++i) {
+        for (int i = 0; i < vertices; ++i) {
             Transform.mulToOut(xf, vertex[i], vertex[i]);
             Rot.mulToOut(xf, normals[i], normals[i]);
         }
@@ -280,15 +280,15 @@ public class PolygonShape extends Shape {
         normals[2].set(0.0f, 1.0f);
         normals[3].set(-1.0f, 0.0f);
 
-        var center = new v2((x1 + x2) / 2, (y1 + y2) / 2);
+        v2 center = new v2((x1 + x2) / 2, (y1 + y2) / 2);
         centroid.set(center);
 
-        var xf = poolt1;
+        Transform xf = poolt1;
         xf.pos.set(center);
         xf.set(0);
 
 
-        for (var i = 0; i < vertices; ++i) {
+        for (int i = 0; i < vertices; ++i) {
             Transform.mulToOut(xf, vertex[i], vertex[i]);
             Rot.mulToOut(xf, normals[i], normals[i]);
         }
@@ -303,26 +303,26 @@ public class PolygonShape extends Shape {
     public final boolean testPoint(Transform xf, v2 p) {
         Rot xfq = xf;
 
-        var tempx = p.x - xf.pos.x;
-        var tempy = p.y - xf.pos.y;
-        var pLocalx = xfq.c * tempx + xfq.s * tempy;
-        var pLocaly = -xfq.s * tempx + xfq.c * tempy;
+        float tempx = p.x - xf.pos.x;
+        float tempy = p.y - xf.pos.y;
+        float pLocalx = xfq.c * tempx + xfq.s * tempy;
+        float pLocaly = -xfq.s * tempx + xfq.c * tempy;
 
         if (m_debug) {
             System.out.println("--testPoint debug--");
             System.out.println("Vertices: ");
-            for (var i = 0; i < vertices; ++i) {
+            for (int i = 0; i < vertices; ++i) {
                 System.out.println(vertex[i]);
             }
             System.out.println("pLocal: " + pLocalx + ", " + pLocaly);
         }
 
-        for (var i = 0; i < vertices; ++i) {
-            var vertex = this.vertex[i];
-            var normal = normals[i];
+        for (int i = 0; i < vertices; ++i) {
+            v2 vertex = this.vertex[i];
+            v2 normal = normals[i];
             tempx = pLocalx - vertex.x;
             tempy = pLocaly - vertex.y;
-            var dot = normal.x * tempx + normal.y * tempy;
+            float dot = normal.x * tempx + normal.y * tempy;
             if (dot > 0.0f) {
                 return false;
             }
@@ -333,23 +333,23 @@ public class PolygonShape extends Shape {
 
     @Override
     public final void computeAABB(AABB aabb, Transform xf, int childIndex) {
-        var lower = aabb.lowerBound;
-        var upper = aabb.upperBound;
-        var v1 = vertex[0];
-        var xfqc = xf.c;
-        var xfqs = xf.s;
-        var xfpx = xf.pos.x;
-        var xfpy = xf.pos.y;
+        v2 lower = aabb.lowerBound;
+        v2 upper = aabb.upperBound;
+        v2 v1 = vertex[0];
+        float xfqc = xf.c;
+        float xfqs = xf.s;
+        float xfpx = xf.pos.x;
+        float xfpy = xf.pos.y;
         lower.x = (xfqc * v1.x - xfqs * v1.y) + xfpx;
         lower.y = (xfqs * v1.x + xfqc * v1.y) + xfpy;
         upper.x = lower.x;
         upper.y = lower.y;
 
-        for (var i = 1; i < vertices; ++i) {
-            var v2 = vertex[i];
+        for (int i = 1; i < vertices; ++i) {
+            v2 v2 = vertex[i];
 
-            var vx = (xfqc * v2.x - xfqs * v2.y) + xfpx;
-            var vy = (xfqs * v2.x + xfqc * v2.y) + xfpy;
+            float vx = (xfqc * v2.x - xfqs * v2.y) + xfpx;
+            float vy = (xfqs * v2.x + xfqc * v2.y) + xfpy;
             lower.x = Math.min(lower.x, vx);
             lower.y = Math.min(lower.y, vy);
             upper.x = Math.max(upper.x, vx);
@@ -384,23 +384,23 @@ public class PolygonShape extends Shape {
 
     @Override
     public float distance(Transform xf, v2 p, int childIndex, v2 normalOut) {
-        var xfqc = xf.c;
-        var xfqs = xf.s;
-        var tx = p.x - xf.pos.x;
-        var ty = p.y - xf.pos.y;
-        var pLocalx = xfqc * tx + xfqs * ty;
-        var pLocaly = -xfqs * tx + xfqc * ty;
+        float xfqc = xf.c;
+        float xfqs = xf.s;
+        float tx = p.x - xf.pos.x;
+        float ty = p.y - xf.pos.y;
+        float pLocalx = xfqc * tx + xfqs * ty;
+        float pLocaly = -xfqs * tx + xfqc * ty;
 
-        var maxDistance = -Float.MAX_VALUE;
-        var normalForMaxDistanceX = pLocalx;
-        var normalForMaxDistanceY = pLocaly;
+        float maxDistance = -Float.MAX_VALUE;
+        float normalForMaxDistanceX = pLocalx;
+        float normalForMaxDistanceY = pLocaly;
 
-        for (var i = 0; i < vertices; ++i) {
-            var vertex = this.vertex[i];
-            var normal = normals[i];
+        for (int i = 0; i < vertices; ++i) {
+            v2 vertex = this.vertex[i];
+            v2 normal = normals[i];
             tx = pLocalx - vertex.x;
             ty = pLocaly - vertex.y;
-            var dot = normal.x * tx + normal.y * ty;
+            float dot = normal.x * tx + normal.y * ty;
             if (dot > maxDistance) {
                 maxDistance = dot;
                 normalForMaxDistanceX = normal.x;
@@ -410,14 +410,14 @@ public class PolygonShape extends Shape {
 
         float distance;
         if (maxDistance > 0) {
-            var minDistanceX = normalForMaxDistanceX;
-            var minDistanceY = normalForMaxDistanceY;
-            var minDistance2 = maxDistance * maxDistance;
-            for (var i = 0; i < vertices; ++i) {
-                var vertex = this.vertex[i];
-                var distanceVecX = pLocalx - vertex.x;
-                var distanceVecY = pLocaly - vertex.y;
-                var distance2 = (distanceVecX * distanceVecX + distanceVecY * distanceVecY);
+            float minDistanceX = normalForMaxDistanceX;
+            float minDistanceY = normalForMaxDistanceY;
+            float minDistance2 = maxDistance * maxDistance;
+            for (int i = 0; i < vertices; ++i) {
+                v2 vertex = this.vertex[i];
+                float distanceVecX = pLocalx - vertex.x;
+                float distanceVecY = pLocaly - vertex.y;
+                float distance2 = (distanceVecX * distanceVecX + distanceVecY * distanceVecY);
                 if (minDistance2 > distance2) {
                     minDistanceX = distanceVecX;
                     minDistanceY = distanceVecY;
@@ -440,37 +440,37 @@ public class PolygonShape extends Shape {
     @Override
     public final boolean raycast(RayCastOutput output, RayCastInput input, Transform xf,
                                  int childIndex) {
-        var xfqc = xf.c;
-        var xfqs = xf.s;
-        var xfp = xf.pos;
+        float xfqc = xf.c;
+        float xfqs = xf.s;
+        v2 xfp = xf.pos;
 
 
-        var tempx = input.p1.x - xfp.x;
-        var tempy = input.p1.y - xfp.y;
-        var p1x = xfqc * tempx + xfqs * tempy;
-        var p1y = -xfqs * tempx + xfqc * tempy;
+        float tempx = input.p1.x - xfp.x;
+        float tempy = input.p1.y - xfp.y;
+        float p1x = xfqc * tempx + xfqs * tempy;
+        float p1y = -xfqs * tempx + xfqc * tempy;
 
         tempx = input.p2.x - xfp.x;
         tempy = input.p2.y - xfp.y;
-        var p2x = xfqc * tempx + xfqs * tempy;
-        var p2y = -xfqs * tempx + xfqc * tempy;
+        float p2x = xfqc * tempx + xfqs * tempy;
+        float p2y = -xfqs * tempx + xfqc * tempy;
 
-        var dx = p2x - p1x;
-        var dy = p2y - p1y;
+        float dx = p2x - p1x;
+        float dy = p2y - p1y;
 
         float lower = 0, upper = input.maxFraction;
 
-        var index = -1;
+        int index = -1;
 
-        for (var i = 0; i < vertices; ++i) {
-            var normal = normals[i];
-            var vertex = this.vertex[i];
+        for (int i = 0; i < vertices; ++i) {
+            v2 normal = normals[i];
+            v2 vertex = this.vertex[i];
 
 
-            var tempxn = vertex.x - p1x;
-            var tempyn = vertex.y - p1y;
-            var numerator = normal.x * tempxn + normal.y * tempyn;
-            var denominator = normal.x * dx + normal.y * dy;
+            float tempxn = vertex.x - p1x;
+            float tempyn = vertex.y - p1y;
+            float numerator = normal.x * tempxn + normal.y * tempyn;
+            float denominator = normal.x * dx + normal.y * dy;
 
             if (denominator == 0.0f) {
                 if (numerator < 0.0f) {
@@ -501,8 +501,8 @@ public class PolygonShape extends Shape {
         if (index >= 0) {
             output.fraction = lower;
 
-            var normal = normals[index];
-            var out = output.normal;
+            v2 normal = normals[index];
+            v2 out = output.normal;
             out.x = xfqc * normal.x - xfqs * normal.y;
             out.y = xfqs * normal.x + xfqc * normal.y;
             return true;
@@ -517,27 +517,27 @@ public class PolygonShape extends Shape {
 
         v2 pool1 = new v2(), pool2 = new v2(), pool3 = new v2();
 
-        var pRef = pool1;
+        v2 pRef = pool1;
         pRef.setZero();
 
-        var e1 = pool2;
-        var e2 = pool3;
+        v2 e1 = pool2;
+        v2 e2 = pool3;
 
-        final var inv3 = 1.0f / 3.0f;
+        final float inv3 = 1.0f / 3.0f;
 
-        var area = 0.0f;
-        for (var i = 0; i < count; ++i) {
+        float area = 0.0f;
+        for (int i = 0; i < count; ++i) {
 
-            var p1 = pRef;
-            var p2 = vs[i];
-            var p3 = i + 1 < count ? vs[i + 1] : vs[0];
+            v2 p1 = pRef;
+            v2 p2 = vs[i];
+            v2 p3 = i + 1 < count ? vs[i + 1] : vs[0];
 
             e1.set(p2).subbed(p1);
             e2.set(p3).subbed(p1);
 
-            var D = v2.cross(e1, e2);
+            float D = v2.cross(e1, e2);
 
-            var triangleArea = 0.5f * D;
+            float triangleArea = 0.5f * D;
             area += triangleArea;
 
 
@@ -556,33 +556,33 @@ public class PolygonShape extends Shape {
 
         assert (vertices >= 3);
 
-        var center = pool1;
+        v2 center = pool1;
         center.setZero();
 
 
-        var s = pool2;
+        v2 s = pool2;
         s.setZero();
 
-        for (var i = 0; i < vertices; ++i) {
+        for (int i = 0; i < vertices; ++i) {
             s.added(vertex[i]);
         }
         s.scaled(1.0f / vertices);
 
-        final var k_inv3 = 1.0f / 3.0f;
+        final float k_inv3 = 1.0f / 3.0f;
 
-        var e1 = pool3;
-        var e2 = pool4;
+        v2 e1 = pool3;
+        v2 e2 = pool4;
 
-        var I = 0.0f;
-        var area = 0.0f;
-        for (var i = 0; i < vertices; ++i) {
+        float I = 0.0f;
+        float area = 0.0f;
+        for (int i = 0; i < vertices; ++i) {
 
             e1.set(vertex[i]).subbed(s);
             e2.set(s).negated().added(i + 1 < vertices ? vertex[i + 1] : vertex[0]);
 
-            var D = v2.cross(e1, e2);
+            float D = v2.cross(e1, e2);
 
-            var triangleArea = 0.5f * D;
+            float triangleArea = 0.5f * D;
             area += triangleArea;
 
 
@@ -592,8 +592,8 @@ public class PolygonShape extends Shape {
             float ex1 = e1.x, ey1 = e1.y;
             float ex2 = e2.x, ey2 = e2.y;
 
-            var intx2 = ex1 * ex1 + ex2 * ex1 + ex2 * ex2;
-            var inty2 = ey1 * ey1 + ey2 * ey1 + ey2 * ey2;
+            float intx2 = ex1 * ex1 + ex2 * ex1 + ex2 * ex2;
+            float inty2 = ey1 * ey1 + ey2 * ey1 + ey2 * ey2;
 
             I += (0.25f * k_inv3 * D) * (intx2 + inty2);
         }
@@ -619,16 +619,20 @@ public class PolygonShape extends Shape {
 
         v2 pool1 = new v2(), pool2 = new v2();
 
-        for (var i = 0; i < vertices; ++i) {
-            var i1 = i;
-            var i2 = i < vertices - 1 ? i1 + 1 : 0;
-            var p = vertex[i1];
+        for (int i = 0; i < vertices; ++i) {
+            int i1 = i;
+            int i2 = i < vertices - 1 ? i1 + 1 : 0;
+            v2 p = vertex[i1];
 
-            var e = pool1.set(vertex[i2]).subbed(p);
+            v2 e = pool1.set(vertex[i2]).subbed(p);
 
-            var bound = vertices;
-            if (IntStream.range(0, bound).filter(j -> j != i1 && j != i2).anyMatch(j -> v2.cross(e, pool2.set(vertex[j]).subbed(p)) < 0.0f)) {
-                return false;
+            int bound = vertices;
+            for (int j = 0; j < bound; j++) {
+                if (j != i1 && j != i2) {
+                    if (v2.cross(e, pool2.set(vertex[j]).subbed(p)) < 0.0f) {
+                        return false;
+                    }
+                }
             }
         }
 

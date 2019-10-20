@@ -38,7 +38,7 @@ public class RuleReference extends Parser {
 
 	@Override
 	public String toString() {
-		var result = new StringBuilder();
+        StringBuilder result = new StringBuilder();
 		if (name != null) {
 			result.append(name);
 			result.append(": ");
@@ -76,7 +76,7 @@ public class RuleReference extends Parser {
 	public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != this.getClass())
 			return false;
-		var other = (RuleReference) obj;
+        RuleReference other = (RuleReference) obj;
 		return other.referencedRuleName.equals(referencedRuleName) && (other.grammar == grammar);
 	}
 

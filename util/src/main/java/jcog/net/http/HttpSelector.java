@@ -54,7 +54,7 @@ class HttpSelector implements ConnectionStateChangeListener {
                 conn.key.cancel();
 
                 if (conn.websocket && upgradeWebSocketHandler != null) {
-                    var rawHead = conn.rawHead;
+                    ByteBuffer rawHead = conn.rawHead;
                     conn.rawHead = null;
                     rawHead.flip();
                     upgradeWebSocketHandler.upgradeWebSocketHandler(conn, rawHead);
@@ -101,7 +101,7 @@ class HttpSelector implements ConnectionStateChangeListener {
                 try {
                     sChannel.configureBlocking(false);
                     sChannel.socket().setTcpNoDelay(false);
-                    var key = sChannel.register(selector, SelectionKey.OP_READ);
+                    SelectionKey key = sChannel.register(selector, SelectionKey.OP_READ);
                     key.attach(new HttpConnection(this, model, key, sChannel));
                 } catch (IOException e) {
                     logger.error("connect {}", e);
@@ -110,11 +110,11 @@ class HttpSelector implements ConnectionStateChangeListener {
         }
 
 
-        var now = System.nanoTime();
+        long now = System.nanoTime();
 
         {
-			for (var key : selector.keys()) {
-                var conn = (HttpConnection) key.attachment();
+			for (SelectionKey key : selector.keys()) {
+                HttpConnection conn = (HttpConnection) key.attachment();
 				if (now - conn.lastReceivedNS >= TIMEOUT_PERIOD_ms * 1_000_000L) {
 					key.attach(null);
 					key.cancel();
@@ -124,11 +124,11 @@ class HttpSelector implements ConnectionStateChangeListener {
         }
 
         {
-            var it = selector.selectedKeys().iterator();
+            Iterator<SelectionKey> it = selector.selectedKeys().iterator();
             while (it.hasNext()) {
-                var key = it.next();
+                SelectionKey key = it.next();
 
-                var conn = (HttpConnection) key.attachment();
+                HttpConnection conn = (HttpConnection) key.attachment();
 
                 it.remove();
 

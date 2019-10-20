@@ -237,14 +237,14 @@ public class Secure {
             throws IOException, RdesktopException,
             CryptoException, OrderException {
         if (Options.hostname.isEmpty()) {
-            var localhost = InetAddress.getLocalHost();
-            var name = localhost.getHostName();
-            var tok = new StringTokenizer(name, ".");
+            InetAddress localhost = InetAddress.getLocalHost();
+            String name = localhost.getHostName();
+            StringTokenizer tok = new StringTokenizer(name, ".");
             Options.hostname = tok.nextToken();
             Options.hostname.trim();
         }
 
-        var mcs_data = this.sendMcsData();
+        RdpPacket_Localised mcs_data = this.sendMcsData();
         McsLayer.connect(host, port, mcs_data);
 
         this.processMcsData(mcs_data);
@@ -282,16 +282,16 @@ public class Secure {
     private RdpPacket_Localised sendMcsData() {
         logger.debug("Secure.sendMcsData");
 
-        var buffer = new RdpPacket_Localised(512);
+        RdpPacket_Localised buffer = new RdpPacket_Localised(512);
 
-        var hostlen = 2 * (Options.hostname == null ? 0 : Options.hostname
+        int hostlen = 2 * (Options.hostname == null ? 0 : Options.hostname
                 .length());
 
         if (hostlen > 30) {
             hostlen = 30;
         }
 
-        var length = 162 + 76 + 12 + 4;
+        int length = 162 + 76 + 12 + 4;
 
         if (Options.use_rdp5 && (channels.num_channels() > 0))
             length += channels.num_channels() * 12 + 8;
@@ -352,7 +352,7 @@ public class Secure {
         buffer.setLittleEndian16(SEC_TAG_CLI_4); 
         buffer.setLittleEndian16(12);
 
-        var cluster_flags = 0;
+        int cluster_flags = 0;
         cluster_flags |= SEC_CC_REDIRECTION_SUPPORTED;
         cluster_flags |= (SEC_CC_REDIRECT_VERSION_3 << 2);
         if (Options.console_session) {
@@ -377,7 +377,7 @@ public class Secure {
             
             
             
-            for (var i = 0; i < channels.num_channels(); i++) {
+            for (int i = 0; i < channels.num_channels(); i++) {
                 logger.debug("Requesting channel {}", channels.channel(i).name());
                 buffer.out_uint8p(channels.channel(i).name(), 8); 
                 
@@ -402,15 +402,15 @@ public class Secure {
         logger.debug("Secure.processMcsData");
 
         mcs_data.incrementPosition(21);
-        var len = mcs_data.get8();
+        int len = mcs_data.get8();
 
         if ((len & 0x00000080) != 0) {
             len = mcs_data.get8();
         }
 
-        var nexttag = 0;
-        var length = 0;
-        var tag = 0;
+        int nexttag = 0;
+        int length = 0;
+        int tag = 0;
         while (mcs_data.getPosition() < mcs_data.getEnd()) {
             tag = mcs_data.getLittleEndian16();
             length = mcs_data.getLittleEndian16();
@@ -446,18 +446,18 @@ public class Secure {
     private void establishKey() throws RdesktopException, IOException,
             CryptoException {
         RdpPacket_Localised buffer;
-        var flags = SEC_CLIENT_RANDOM;
+        int flags = SEC_CLIENT_RANDOM;
         if (readCert) {
 
             buffer = this.init(flags, 76);
 
-            var length = SEC_MODULUS_SIZE + SEC_PADDING_SIZE;
+            int length = SEC_MODULUS_SIZE + SEC_PADDING_SIZE;
             buffer.setLittleEndian32(length);
 
             buffer.copyFromByteArray(this.sec_crypted_random, 0, buffer.getPosition(), SEC_MODULUS_SIZE);
             buffer.incrementPosition(SEC_MODULUS_SIZE);
         } else {
-            var length = server_public_key_len + SEC_PADDING_SIZE;
+            int length = server_public_key_len + SEC_PADDING_SIZE;
             buffer = this.init(flags, length + 4);
 
             buffer.setLittleEndian32(length);
@@ -474,7 +474,7 @@ public class Secure {
     private void processCryptInfo(RdpPacket_Localised data)
             throws RdesktopException, CryptoException {
 
-        var rc4_key_size = this.parseCryptInfo(data);
+        int rc4_key_size = this.parseCryptInfo(data);
         if (rc4_key_size == 0) {
             return;
         }
@@ -523,14 +523,14 @@ public class Secure {
      * @throws RdesktopException
      */
     public RdpPacket_Localised init(int flags, int length) throws RdesktopException {
-        var headerlength = 0;
+        int headerlength = 0;
 
         if (!this.licenceIssued)
             headerlength = ((flags & SEC_ENCRYPT) != 0) ? 12 : 4;
         else
             headerlength = ((flags & SEC_ENCRYPT) != 0) ? 12 : 0;
 
-        var buffer = MCS.init(length + headerlength);
+        RdpPacket_Localised buffer = MCS.init(length + headerlength);
         buffer.pushLayer(RdpPacket.SECURE_HEADER, headerlength);
         
         
@@ -572,8 +572,8 @@ public class Secure {
         }
 
         if (Options.debug_hexdump) {
-            var length = sec_data.getEnd() - sec_data.getPosition();
-            var packet = new byte[length];
+            int length = sec_data.getEnd() - sec_data.getPosition();
+            byte[] packet = new byte[length];
             sec_data.copyToByteArray(packet, 0, sec_data.getPosition(), sec_data.getEnd() - sec_data.getPosition());
             System.out.println("Sending packet:");
             System.out.println(net.propero.rdp.tools.HexDump.dumpHexString(packet));
@@ -581,14 +581,14 @@ public class Secure {
 
         if ((flags & SEC_ENCRYPT) != 0) {
             flags &= ~SEC_ENCRYPT;
-            var datalength = sec_data.getEnd() - sec_data.getPosition() - 8;
-            var data = new byte[datalength];
+            int datalength = sec_data.getEnd() - sec_data.getPosition() - 8;
+            byte[] data = new byte[datalength];
             sec_data.copyToByteArray(data, 0, sec_data.getPosition() + 8,
                     datalength);
-            var signature = this.sign(this.sec_sign_key, 8, this.keylength, data,
+            byte[] signature = this.sign(this.sec_sign_key, 8, this.keylength, data,
                     datalength);
 
-            var buffer = this.encrypt(data, datalength);
+            byte[] buffer = this.encrypt(data, datalength);
 
             sec_data.copyFromByteArray(signature, 0, sec_data.getPosition(), 8);
             sec_data.copyFromByteArray(buffer, 0, sec_data.getPosition() + 8,
@@ -612,25 +612,25 @@ public class Secure {
      */
     public byte[] sign(byte[] session_key, int length, int keylen, byte[] data,
                        int datalength) {
-        var lenhdr = new byte[4];
+        byte[] lenhdr = new byte[4];
 
         Secure.setLittleEndian32(lenhdr, datalength);
 
-        var signature = new byte[length];
+        byte[] signature = new byte[length];
         synchronized (digestLock) {
             sha1.reset();
             sha1.update(session_key, 0, keylen);
             sha1.update(pad_54, 0, 40);
             sha1.update(lenhdr, 0, 4);
             sha1.update(data, 0, datalength);
-            var shasig = sha1.digest();
+            byte[] shasig = sha1.digest();
             sha1.reset();
 
             md5.reset();
             md5.update(session_key, 0, keylen/* length */);
             md5.update(pad_92, 0, 48);
             md5.update(shasig, 0, 20);
-            var md5sig = md5.digest();
+            byte[] md5sig = md5.digest();
             md5.reset();
 
             System.arraycopy(md5sig, 0, signature, 0, length);
@@ -651,14 +651,14 @@ public class Secure {
             if (this.enc_count == 4096) {
                 sec_encrypt_key = this.update(this.sec_encrypt_key,
                         this.sec_encrypt_update_key);
-                var key = new byte[this.keylength];
+                byte[] key = new byte[this.keylength];
                 System.arraycopy(this.sec_encrypt_key, 0, key, 0, this.keylength);
                 this.rc4_enc.engineInitEncrypt(key);
                 
                 this.enc_count = 0;
             }
 
-            var buffer = this.rc4_enc.crypt(data, 0, length);
+            byte[] buffer = this.rc4_enc.crypt(data, 0, length);
             this.enc_count++;
             return buffer;
         }
@@ -676,7 +676,7 @@ public class Secure {
             if (this.enc_count == 4096) {
                 sec_encrypt_key = this.update(this.sec_encrypt_key,
                         this.sec_encrypt_update_key);
-                var key = new byte[this.keylength];
+                byte[] key = new byte[this.keylength];
                 System.arraycopy(this.sec_encrypt_key, 0, key, 0, this.keylength);
                 this.rc4_enc.engineInitEncrypt(key);
                 
@@ -684,7 +684,7 @@ public class Secure {
             }
 
 
-            var buffer = this.rc4_enc.crypt(data);
+            byte[] buffer = this.rc4_enc.crypt(data);
             this.enc_count++;
             return buffer;
         }
@@ -703,14 +703,14 @@ public class Secure {
             if (this.dec_count == 4096) {
                 sec_decrypt_key = this.update(this.sec_decrypt_key,
                         this.sec_decrypt_update_key);
-                var key = new byte[this.keylength];
+                byte[] key = new byte[this.keylength];
                 System.arraycopy(this.sec_decrypt_key, 0, key, 0, this.keylength);
                 this.rc4_dec.engineInitDecrypt(key);
                 
                 this.dec_count = 0;
             }
 
-            var buffer = this.rc4_dec.crypt(data, 0, length);
+            byte[] buffer = this.rc4_dec.crypt(data, 0, length);
             this.dec_count++;
             return buffer;
         }
@@ -728,7 +728,7 @@ public class Secure {
             if (this.dec_count == 4096) {
                 sec_decrypt_key = this.update(this.sec_decrypt_key,
                         this.sec_decrypt_update_key);
-                var key = new byte[this.keylength];
+                byte[] key = new byte[this.keylength];
                 System.arraycopy(this.sec_decrypt_key, 0, key, 0, this.keylength);
                 this.rc4_dec.engineInitDecrypt(key);
                 
@@ -736,7 +736,7 @@ public class Secure {
             }
 
 
-            var buffer = this.rc4_dec.crypt(data);
+            byte[] buffer = this.rc4_dec.crypt(data);
             this.dec_count++;
             return buffer;
         }
@@ -754,14 +754,14 @@ public class Secure {
             throws RdesktopException {
         logger.debug("Secure.parseCryptInfo");
 
-        var rc4_key_size = data.getLittleEndian32();
-        var encryption_level = data.getLittleEndian32();
+        int rc4_key_size = data.getLittleEndian32();
+        int encryption_level = data.getLittleEndian32();
         
         if (encryption_level == 0) { 
             return 0;
         }
-        var random_length = data.getLittleEndian32();
-        var RSA_info_length = data.getLittleEndian32();
+        int random_length = data.getLittleEndian32();
+        int RSA_info_length = data.getLittleEndian32();
 
         if (random_length != SEC_RANDOM_SIZE) {
             throw new RdesktopException("Wrong Size of Random! Got"
@@ -772,7 +772,7 @@ public class Secure {
                 random_length);
         data.incrementPosition(random_length);
 
-        var end = data.getPosition() + RSA_info_length;
+        int end = data.getPosition() + RSA_info_length;
 
         if (end > data.getEnd()) {
             logger.debug("Reached end of crypt info prematurely ");
@@ -780,7 +780,7 @@ public class Secure {
         }
 
 
-        var flags = data.getLittleEndian32();
+        int flags = data.getLittleEndian32();
         
         
         logger.debug("Flags = 0x{}", Integer.toHexString(flags));
@@ -788,9 +788,9 @@ public class Secure {
             logger.debug(("We're going for the RDP4-style encryption"));
             data.incrementPosition(8);
 
-            var next_tag = 0;
-            var length = 0;
-            var tag = 0;
+            int next_tag = 0;
+            int length = 0;
+            int tag = 0;
             while (data.getPosition() < data.getEnd()) {
                 tag = data.getLittleEndian16();
                 length = data.getLittleEndian16();
@@ -827,11 +827,11 @@ public class Secure {
         } else {
             logger.debug(("We're going for the RDP5-style encryption"));
 
-            var num_certs = data.getLittleEndian32();
+            int num_certs = data.getLittleEndian32();
 
-            var cacert_len = data.getLittleEndian32();
+            int cacert_len = data.getLittleEndian32();
             data.incrementPosition(cacert_len);
-            var cert_len = data.getLittleEndian32();
+            int cert_len = data.getLittleEndian32();
             data.incrementPosition(cert_len);
 
             readCert = true;
@@ -862,7 +862,7 @@ public class Secure {
     private void generateRandom() {
 
         try {
-            var random = SecureRandom.getInstance("SHA1PRNG");
+            SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
             random.nextBytes(this.sec_crypted_random);
             random.nextBytes(this.client_random);
         } catch (NoSuchAlgorithmException e) {
@@ -876,13 +876,13 @@ public class Secure {
 
         Secure.reverse(this.exponent);
         Secure.reverse(this.modulus);
-        var inr = new byte[length];
+        byte[] inr = new byte[length];
         System.arraycopy(this.client_random, 0, inr, 0, length);
         Secure.reverse(inr);
 
         BigInteger mod = null;
         if ((this.modulus[0] & 0x80) != 0) {
-            var temp = new byte[this.modulus.length + 1];
+            byte[] temp = new byte[this.modulus.length + 1];
             System.arraycopy(this.modulus, 0, temp, 1, this.modulus.length);
             temp[0] = 0;
             mod = new BigInteger(temp);
@@ -891,7 +891,7 @@ public class Secure {
         }
         BigInteger exp = null;
         if ((this.exponent[0] & 0x80) != 0) {
-            var temp = new byte[this.exponent.length + 1];
+            byte[] temp = new byte[this.exponent.length + 1];
             System.arraycopy(this.exponent, 0, temp, 1, this.exponent.length);
             temp[0] = 0;
             exp = new BigInteger(temp);
@@ -900,7 +900,7 @@ public class Secure {
         }
         BigInteger x = null;
         if ((inr[0] & 0x80) != 0) {
-            var temp = new byte[inr.length + 1];
+            byte[] temp = new byte[inr.length + 1];
             System.arraycopy(inr, 0, temp, 1, inr.length);
             temp[0] = 0;
             x = new BigInteger(temp);
@@ -908,7 +908,7 @@ public class Secure {
             x = new BigInteger(inr);
         }
 
-        var y = x.modPow(exp, mod);
+        BigInteger y = x.modPow(exp, mod);
         this.sec_crypted_random = y.toByteArray();
 
         if ((this.sec_crypted_random[0] & 0x80) != 0) {
@@ -922,10 +922,10 @@ public class Secure {
         Secure.reverse(this.sec_crypted_random);
 
         if (this.sec_crypted_random.length < modulus_size) {
-            var temp = new byte[SEC_MAX_MODULUS_SIZE];
+            byte[] temp = new byte[SEC_MAX_MODULUS_SIZE];
             System.arraycopy(this.sec_crypted_random, 0, temp, 0,
                     this.sec_crypted_random.length);
-            for (var i = this.sec_crypted_random.length; i < temp.length; i++) {
+            for (int i = this.sec_crypted_random.length; i < temp.length; i++) {
                 temp[i] = 0;
             }
             this.sec_crypted_random = temp;
@@ -945,14 +945,14 @@ public class Secure {
     private boolean parsePublicKey(RdpPacket_Localised data)
             throws RdesktopException {
 
-        var magic = data.getLittleEndian32();
+        int magic = data.getLittleEndian32();
 
         if (magic != SEC_RSA_MAGIC) {
             throw new RdesktopException("Wrong magic! Expected" + SEC_RSA_MAGIC
                     + "got:" + magic);
         }
 
-        var modulus_length = data.getLittleEndian32() - SEC_PADDING_SIZE;
+        int modulus_length = data.getLittleEndian32() - SEC_PADDING_SIZE;
 
         if (modulus_length < 64 || modulus_length > SEC_MAX_MODULUS_SIZE) {
             throw new RdesktopException("Bad server public key size ("
@@ -975,16 +975,16 @@ public class Secure {
     }
 
     public byte[] hash48(byte[] in, byte[] salt1, byte[] salt2, int salt) {
-        var out = new byte[48];
+        byte[] out = new byte[48];
 
         synchronized (digestLock) {
             sha1.reset();
             md5.reset();
-            var i = 0;
-            var pad = new byte[4];
-            var shasig = new byte[20];
+            int i = 0;
+            byte[] pad = new byte[4];
+            byte[] shasig = new byte[20];
             for (i = 0; i < 3; i++) {
-                for (var j = 0; j <= i; j++) {
+                for (int j = 0; j <= i; j++) {
                     pad[j] = (byte) (salt + i);
                 }
                 sha1.update(pad, 0, i + 1);
@@ -1020,9 +1020,9 @@ public class Secure {
      * @throws CryptoException
      */
     private byte[] update(byte[] key, byte[] update_key) throws CryptoException {
-        var update = new byte[this.keylength];
+        byte[] update = new byte[this.keylength];
 
-        var thekey = new byte[key.length];
+        byte[] thekey = new byte[key.length];
 
         synchronized (digestLock) {
             sha1.reset();
@@ -1030,7 +1030,7 @@ public class Secure {
             sha1.update(pad_54, 0, 40);
             sha1.update(key, 0, keylength);
 
-            var shasig = sha1.digest();
+            byte[] shasig = sha1.digest();
             sha1.reset();
 
             md5.reset();
@@ -1066,10 +1066,10 @@ public class Secure {
      */
     public RdpPacket_Localised receive() throws RdesktopException, IOException,
             CryptoException, OrderException {
-        var sec_flags = 0;
+        int sec_flags = 0;
         RdpPacket_Localised buffer = null;
         while (true) {
-            var channel = new int[1];
+            int[] channel = new int[1];
             buffer = McsLayer.receive(channel);
             if (buffer == null)
                 return null;
@@ -1084,10 +1084,10 @@ public class Secure {
                 }
                 if ((sec_flags & SEC_ENCRYPT) != 0) {
                     buffer.incrementPosition(8);
-                    var data = new byte[buffer.size() - buffer.getPosition()];
+                    byte[] data = new byte[buffer.size() - buffer.getPosition()];
                     buffer.copyToByteArray(data, 0, buffer.getPosition(),
                             data.length);
-                    var packet = this.decrypt(data);
+                    byte[] packet = this.decrypt(data);
 
                     buffer.copyFromByteArray(packet, 0, buffer.getPosition(),
                             packet.length);
@@ -1115,14 +1115,14 @@ public class Secure {
      * @throws CryptoException
      */
     private void generate_keys(int rc4_key_size) throws CryptoException {
-        var input = new byte[48];
+        byte[] input = new byte[48];
 
         System.arraycopy(this.client_random, 0, input, 0, 24);
         System.arraycopy(this.server_random, 0, input, 24, 24);
 
-        var temp_hash = this.hash48(input, this.client_random, this.server_random,
+        byte[] temp_hash = this.hash48(input, this.client_random, this.server_random,
                 65);
-        var session_key = this.hash48(temp_hash, this.client_random,
+        byte[] session_key = this.hash48(temp_hash, this.client_random,
                 this.server_random, 88);
 
         System.arraycopy(session_key, 0, this.sec_sign_key, 0, 16);
@@ -1149,7 +1149,7 @@ public class Secure {
         System.arraycopy(this.sec_encrypt_key, 0, this.sec_encrypt_update_key,
                 0, 16);
 
-        var key = new byte[this.keylength];
+        byte[] key = new byte[this.keylength];
         System.arraycopy(this.sec_encrypt_key, 0, key, 0, this.keylength);
         rc4_enc.engineInitEncrypt(key);
         System.arraycopy(this.sec_decrypt_key, 0, key, 0, this.keylength);

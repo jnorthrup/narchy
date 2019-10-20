@@ -60,7 +60,7 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
     public WaveBitmap(Tensor wave, float sampleRate, int pixWidth, int pixHeight) {
         this(pixWidth, pixHeight, (s,e)->{
             double ss = s * sampleRate, ee = e * sampleRate;
-            var sum = Util.interpSum(wave::getAt, wave.volume(),
+            double sum = Util.interpSum(wave::getAt, wave.volume(),
                     ss, ee, false);
             return (float) (sum / (1+(ee - ss)));
         });
@@ -74,8 +74,8 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
     public void setTime(long tStart, long tEnd) {
 
         synchronized (this) {
-            var end = (tEnd);
-            var start = (tStart);
+            long end = (tEnd);
+            long start = (tStart);
             if (update || !Util.equals(start, this.start) || !Util.equals(end, this.end)) {
                 this.start = start;
                 this.end = end;
@@ -119,7 +119,7 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
 
     private void position(BitmapMatrixView bmp) {
         if (bmp!=null) {
-            var h = height.get();
+            float h = height.get();
             bmp.pos(bounds.scale(1, h).move(0, h/2 /* center vertical align */));
         }
     }
@@ -154,12 +154,12 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
         ((Graphics2D)gfx).setBackground(transparent);
         gfx.clearRect(0, 0, w, h);
 
-        var w = this.w;
-        var h = this.h;
+        int w = this.w;
+        int h = this.h;
         float minValue = this.yMin, maxValue = this.yMax;
 
 //        float yRange = ((maxValue) - (minValue));
-        var absRange = Math.max(Math.abs(maxValue), Math.abs(minValue));
+        float absRange = Math.max(Math.abs(maxValue), Math.abs(minValue));
         if (absRange < Float.MIN_NORMAL) {
             //no signal
             //TODO display message
@@ -181,23 +181,23 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
 
         //System.out.println(first + " "+ last);
 
-        var range = end - start;
+        double range = end - start;
         float W = w;
 
 //        float[] rgba = new float[4];
 //        float alpha = this.alpha.get();
-        for (var x = 0; x < w; x++) {
+        for (int x = 0; x < w; x++) {
 
-            var sStart = start + range * (x/ W);
-            var sEnd = start + range * ((x+1)/ W);
+            double sStart = start + range * (x/ W);
+            double sEnd = start + range * ((x+1)/ W);
 
-            var amp = buffer.amplitude(sStart,sEnd);
+            float amp = buffer.amplitude(sStart,sEnd);
 
-            var intensity = unitizeSafe(Math.abs(amp) / absRange);
+            float intensity = unitizeSafe(Math.abs(amp) / absRange);
 
 //            Draw.hsb(rgba, intensity, 0.9f, 0.1f*intensity + 0.9f, alpha);
-            var ic = intensity * 0.9f + 0.1f;
-            var c = //new Color(unitizeSafe(rgba[0]), unitizeSafe(rgba[1]), unitizeSafe(rgba[2]), unitizeSafe(rgba[3]));
+            float ic = intensity * 0.9f + 0.1f;
+            Color c = //new Color(unitizeSafe(rgba[0]), unitizeSafe(rgba[1]), unitizeSafe(rgba[2]), unitizeSafe(rgba[3]));
                     new Color(ic, 1-ic, 0);
             gfx.setColor(c);
 
@@ -206,9 +206,9 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
             //float iBase = Util.unitize(intensity / 2 + 0.5f);
             //gfx.setColor(new Color(sc[0] * iBase, sc[1] * iBase, sc[2] * iBase, alpha));
 
-            var ampNormalized = (amp) / absRange;
+            float ampNormalized = (amp) / absRange;
 
-            var ah = Math.round(ampNormalized * h);
+            int ah = Math.round(ampNormalized * h);
             gfx.drawLine(x, h / 2 - ah / 2, x, h / 2 + ah / 2);
         }
     }

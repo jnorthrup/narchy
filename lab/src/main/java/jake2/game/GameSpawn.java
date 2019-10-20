@@ -334,11 +334,11 @@ public class GameSpawn {
      */
     static String ED_NewString(String string) {
 
-        var l = string.length();
-        var newb = new StringBuilder(l);
+        int l = string.length();
+        StringBuilder newb = new StringBuilder(l);
 
-        for (var i = 0; i < l; i++) {
-            var c = string.charAt(i);
+        for (int i = 0; i < l; i++) {
+            char c = string.charAt(i);
             if (c == '\\' && i < l - 1) {
                 c = string.charAt(++i);
                 if (c == 'n')
@@ -378,18 +378,18 @@ public class GameSpawn {
     static void ED_ParseEdict(Com.ParseHelp ph, edict_t ent) {
 
         GameBase.st = new spawn_temp_t();
-        var init = false;
+        boolean init = false;
         while (true) {
 
 
-            var com_token = Com.Parse(ph);
+            String com_token = Com.Parse(ph);
             if ("}".equals(com_token))
                 break;
 
             if (ph.isEof())
                 game_import_t.error("ED_ParseEntity: EOF without closing brace");
 
-            var keyname = com_token;
+            String keyname = com_token;
 
 
             com_token = Com.Parse(ph);
@@ -426,10 +426,10 @@ public class GameSpawn {
      */
 
     static void G_FindTeams() {
-        var c = 0;
-        var c2 = 0;
-        for (var i = 1; i < GameBase.num_edicts; i++) {
-            var e = GameBase.g_edicts[i];
+        int c = 0;
+        int c2 = 0;
+        for (int i = 1; i < GameBase.num_edicts; i++) {
+            edict_t e = GameBase.g_edicts[i];
 
             if (!e.inuse)
                 continue;
@@ -437,13 +437,13 @@ public class GameSpawn {
                 continue;
             if ((e.flags & Defines.FL_TEAMSLAVE) != 0)
                 continue;
-            var chain = e;
+            edict_t chain = e;
             e.teammaster = e;
             c++;
             c2++;
             
-            for (var j = i + 1; j < GameBase.num_edicts; j++) {
-                var e2 = GameBase.g_edicts[j];
+            for (int j = i + 1; j < GameBase.num_edicts; j++) {
+                edict_t e2 = GameBase.g_edicts[j];
                 if (!e2.inuse)
                     continue;
                 if (null == e2.team)
@@ -474,7 +474,7 @@ public class GameSpawn {
         
         Com.dprintln("SpawnEntities(), mapname=" + mapname);
 
-        var skill_level = (float) Math.floor(GameBase.skill.value);
+        float skill_level = (float) Math.floor(GameBase.skill.value);
 
         if (skill_level < 0)
             skill_level = 0;
@@ -486,7 +486,7 @@ public class GameSpawn {
         PlayerClient.SaveClientData();
 
         GameBase.level = new level_locals_t();
-        for (var n = 0; n < GameBase.game.maxentities; n++) {
+        for (int n = 0; n < GameBase.game.maxentities; n++) {
             GameBase.g_edicts[n] = new edict_t(n);
         }
         
@@ -499,13 +499,13 @@ public class GameSpawn {
             GameBase.g_edicts[i + 1].client = GameBase.game.clients[i];
 
         edict_t ent = null;
-        var inhibit = 0;
+        int inhibit = 0;
 
-        var ph = new Com.ParseHelp(entities);
+        Com.ParseHelp ph = new Com.ParseHelp(entities);
 
         while (true) {
 
-            var com_token = Com.Parse(ph);
+            String com_token = Com.Parse(ph);
             if (ph.isEof())
                 break;
             if (!com_token.startsWith("{"))
@@ -1340,7 +1340,7 @@ public class GameSpawn {
         int i;
         for (i = 1; i < GameBase.game.num_items; i++) {
 
-            var item = GameItemList.itemlist[i];
+            gitem_t item = GameItemList.itemlist[i];
 
             if (item == null)
                 game_import_t.error("ED_CallSpawn: null item in pos " + i);

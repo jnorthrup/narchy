@@ -99,7 +99,7 @@ public class ConjClustering extends TaskAction {
 
             @Override
             public void coord(Task t, double[] c) {
-                var tt = t.truth();
+                Truth tt = t.truth();
                 long s = t.start(), e = t.end();
                 c[0] = (s + e) / 2; //mid
 
@@ -112,7 +112,7 @@ public class ConjClustering extends TaskAction {
             @Override
             public double distanceSq(double[] a, double[] b) {
 
-                var range = 1 + Math.max(a[3], b[3]);
+                double range = 1 + Math.max(a[3], b[3]);
                 return (1 + Math.abs(a[0] - b[0]) / range) //dMid  (div by range to normalize against scale)
                         *
                         (1 + Math.abs(a[3] - b[3]) / range) //dRange
@@ -180,7 +180,7 @@ public class ConjClustering extends TaskAction {
     @Override
     protected void accept(Task x, RuleCause why, Derivation d) {
 
-        var nar = d.nar;
+        NAR nar = d.nar;
 
         if (!filter(x)) return;
 
@@ -189,20 +189,20 @@ public class ConjClustering extends TaskAction {
 
         tryLearn(d);
 
-        var conjoiner = this.conjoiners.get();
+        CentroidConjoiner conjoiner = this.conjoiners.get();
 
         //round-robin visit each centroid one task at a time.  dont finish a centroid completely and then test kontinue, it is unfair
 
-        var iterations = ITERATIONS;
+        int iterations = ITERATIONS;
         conjoiner.centroids = data.forEachCentroid(conjoiner.centroids, iterations, tasksPerIterationPerCentroid * eventBatchMin, TaskList::new    /* TODO by volume, ie volMax */);
-        var centroids = conjoiner.centroids;
-        var N = centroids.length;
+        TaskList[] centroids = conjoiner.centroids;
+        int N = centroids.length;
 
         //HACK this should be computed in forEachCentroid
-        var nonEmpty = 0;
+        int nonEmpty = 0;
         for (int i = 0, centroidsLength = N; i < centroidsLength; i++) {
-            var tt = centroids[i];
-            var tts = tt.size();
+            TaskList tt = centroids[i];
+            int tts = tt.size();
             switch (tts) {
                 case 0: break;
                 case 1: tt.clear(); break;
@@ -218,13 +218,13 @@ public class ConjClustering extends TaskAction {
 
 
         //round robin
-        var next = 0; //start with first centroid in the array (which has been sorted already)
-        var empty = 0;
+        int next = 0; //start with first centroid in the array (which has been sorted already)
+        int empty = 0;
         do {
 
-            var i = centroids[next];
+            TaskList i = centroids[next];
 
-            var ii = i.size();
+            int ii = i.size();
             if (ii > 1) {
 
 
@@ -251,7 +251,7 @@ public class ConjClustering extends TaskAction {
         if (busy.compareAndSet(false, true)) {
             try {
                 //called by only one thread at a time:
-                var nar = d.nar;
+                NAR nar = d.nar;
                 //TODO adjust update rate according to value
                 if (d.time - lastLearn >= minDurationsPerLearning * d.dur) {
                     _update(d.time);
@@ -296,7 +296,7 @@ public class ConjClustering extends TaskAction {
     @Override
     public final float pri(Derivation d) {
         //prefilter
-        var t = d._task;
+        Task t = d._task;
         if (t.isEternal())
             return 0;
 
@@ -343,12 +343,12 @@ public class ConjClustering extends TaskAction {
 
         private int conjoinCentroid(int limit, FasterList<Task> in, RuleCause why, Derivation d) {
 
-            var s = in.size();
+            int s = in.size();
             if (s < 2)
                 return 0;
 
 
-            var confMinThresh = confMin + d.nar.confResolution.floatValue()/2f;
+            float confMinThresh = confMin + d.nar.confResolution.floatValue()/2f;
 
             /** only an estimate to determine when threshold is being approached;
              * the actual conf will be computed more exactly but it wont exceed this */
@@ -358,13 +358,13 @@ public class ConjClustering extends TaskAction {
 
 //            System.out.println(items.size());
 
-            var i = ArrayUtil.cycle(in);
-            var volEstimate = 1;
+            ListIterator<Task> i = ArrayUtil.cycle(in);
+            int volEstimate = 1;
             double conf = 1;
-            var reset = true;
-            var active = true;
-            var count = 0;
-            main: for (var start = Long.MAX_VALUE; i.hasNext(); ) {
+            boolean reset = true;
+            boolean active = true;
+            int count = 0;
+            main: for (long start = Long.MAX_VALUE; i.hasNext(); ) {
 
 
                 if (--s < 0)
@@ -378,7 +378,7 @@ public class ConjClustering extends TaskAction {
 
                     s = in.size();
 
-                    var ts = tried.size();
+                    int ts = tried.size();
                     if (ts > 0) {
                         in.addAll(tried);
                         tried.clear();
@@ -397,33 +397,33 @@ public class ConjClustering extends TaskAction {
                 }
 
 
-                var t = i.next();
+                Task t = i.next();
 
-                var tx = t.truth();
-                var tc = tx.conf();
-                var nextConf = confCompose(conf, tc);
+                Truth tx = t.truth();
+                float tc = tx.conf();
+                float nextConf = confCompose(conf, tc);
                 if (nextConf < confMin)
                     continue; //try next
 
-                var term = t.term();
-                var taskNeg = tx.isNegative();
+                Term term = t.term();
+                boolean taskNeg = tx.isNegative();
                 if (taskNeg)
                     term = term.neg();
 
-                var xtv = term.volume();
+                int xtv = term.volume();
 
                 if (volEstimate + xtv <= volMax) {
 
                     if (!Stamp.overlap(t, 0, trying.size(), tryer)) {
 
-                        var tStart = t.start();
+                        long tStart = t.start();
                         //                        if (vv.isEmpty() || !vv.containsKey(pair(tStart, term.neg()))) {
 //
 //                            if (null == vv.putIfAbsent(pair(tStart, term), t)) {
 
 
                         /** HACK */
-                        var volEstimateInflationFactor = 2;
+                        int volEstimateInflationFactor = 2;
                         volEstimate += ((xtv+1) * volEstimateInflationFactor);
 
                         if (start > tStart) start = tStart;
@@ -439,21 +439,21 @@ public class ConjClustering extends TaskAction {
                         if (trying.size() > 1) {
 
                             if (in.isEmpty() || (conf <= confMinThresh) || (volEstimate  >= volMax) || (trying.size() >= NAL.STAMP_CAPACITY)) {
-                                var x = trying.toArray(Task.EmptyArray);
+                                Task[] x = trying.toArray(Task.EmptyArray);
                                 trying.clear();
 
                                 active = true;
 
-                                var y = conjoin(x, start);
+                                Task y = conjoin(x, start);
 
                                 if (y != null) {
 
 
                                     s -= x.length;
 
-                                    var popConjoinedTasks = false;
+                                    boolean popConjoinedTasks = false;
                                     if (popConjoinedTasks) {
-                                        for (var aa : x)
+                                        for (Task aa : x)
                                             data.remove(aa);
                                     }
 
@@ -485,10 +485,10 @@ public class ConjClustering extends TaskAction {
 
         private Task conjoin(Task[] x, long start) {
 
-            var d = new DynTaskify(DynamicConjTruth.ConjIntersection, x[0].isBelief() /* else goal */,
+            DynTaskify d = new DynTaskify(DynamicConjTruth.ConjIntersection, x[0].isBelief() /* else goal */,
                 false, null, 0, null, nar
             );
-            var cp = d.componentPolarity;
+            MetalBitSet cp = d.componentPolarity;
             for (int i = 0, xLength = x.length; i < xLength; i++) {
                 if (x[i].isNegative())
                     cp.clear(i);

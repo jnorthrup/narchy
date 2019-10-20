@@ -39,7 +39,7 @@ public abstract class SpriteStore {
             try {
 
 
-                var url = this.getClass().getResource(ref);
+                URL url = this.getClass().getResource(ref);
 
                 if (url == null) {
                     fail("Can't find ref: " + ref);
@@ -52,7 +52,7 @@ public abstract class SpriteStore {
             }
 
 
-            var gc = GraphicsEnvironment.getLocalGraphicsEnvironment()
+            GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment()
                     .getDefaultScreenDevice().getDefaultConfiguration();
             Image image = gc.createCompatibleImage(sourceImage.getWidth(), sourceImage.getHeight(),
                     Transparency.BITMASK);
@@ -98,7 +98,7 @@ public abstract class SpriteStore {
 
 
         public AwtSprite() {
-            var s = (AwtSprite) SpriteStore.get().getSprite(ref);
+            AwtSprite s = (AwtSprite) SpriteStore.get().getSprite(ref);
             this.image = s.image;
         }
 
@@ -203,7 +203,7 @@ public abstract class SpriteStore {
         }
 
 
-        var sprite = loadSprite(ref);
+        Sprite sprite = loadSprite(ref);
         sprites.put(ref, sprite);
 
         return sprite;

@@ -28,7 +28,7 @@ public class UnifyAny extends Unify {
 
     public boolean unifies(Term x, Term y) {
         clear();
-        var matchesBefore = matches;
+        int matchesBefore = matches;
         return unify(x, y) && matchesBefore < matches;
     }
 

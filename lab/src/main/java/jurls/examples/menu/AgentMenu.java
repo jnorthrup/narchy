@@ -36,7 +36,7 @@ public class AgentMenu extends RLMenu {
     public AgentMenu(String prefix, int depth) {
         super(prefix + "RL Agent");
 
-        var bg = new ButtonGroup();
+        ButtonGroup bg = new ButtonGroup();
         bg.add(haiq);
         bg.add(qlambda);
         bg.add(sarsalambda);
@@ -84,7 +84,7 @@ public class AgentMenu extends RLMenu {
         if (sarsalambda.isSelected()) {
             up = new SARSAUpdateProcedure();
         }
-        var pfg = approximatorMenu.getFunctionGenerator(approxParameters);
+        ParameterizedFunctionGenerator pfg = approximatorMenu.getFunctionGenerator(approxParameters);
 
         if (qlambda.isSelected() || sarsalambda.isSelected()) {
             return new RLAgent(

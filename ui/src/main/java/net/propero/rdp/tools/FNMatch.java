@@ -60,13 +60,13 @@ class FNMatch {
      */
     private static boolean fnmatch(String pattern, String string,
                                    int flags) {
-        var result = FNM_NOMATCH;
-        var finished = false;
+        boolean result = FNM_NOMATCH;
+        boolean finished = false;
 
-        var len = pattern.length();
-        var n = 0;
-                                       for (var p = 0; p < len; p++) {
-                                           var c = pattern.charAt(p);
+        int len = pattern.length();
+        int n = 0;
+                                       for (int p = 0; p < len; p++) {
+                                           char c = pattern.charAt(p);
                                            c = fold(c, flags);
                                            char c1;
                                            switch (c) {
@@ -152,13 +152,13 @@ class FNMatch {
                                                        finished = true;
                                                        break;
                                                    }
-                                                   var not = (pattern.charAt(p) == '!' || pattern.charAt(p) == '^');
+                                                   boolean not = (pattern.charAt(p) == '!' || pattern.charAt(p) == '^');
                                                    if (not)
                                                        ++p;
 
 
                                                    c = pattern.charAt(++p);
-                                                   var matched = false;
+                                                   boolean matched = false;
                                                    for (; ; ) {
                                                        char cstart = c, cend = c;
                                                        if ((flags & FNM_NOESCAPE) == 0 && c == '\\')

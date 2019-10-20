@@ -115,7 +115,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     @Override
     protected void onCapacityChange(int oldCap, int newCap) {
 
-        var s = Math.max(reprobes, size());
+        int s = Math.max(reprobes, size());
 
         newCap = Math.min(s, newCap);
 
@@ -159,11 +159,11 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     @Override
     public void clear() {
 
-        var current = MAP.get(this);
+        MetalAtomicReferenceArray current = MAP.get(this);
         MetalAtomicReferenceArray<V> x = (current == null || reshrink(space())) ? reset(spaceMin()) : current;
 
-        for (var i = 0; i < x.length(); i++) {
-            var xi = x.getAndSet(i, null);
+        for (int i = 0; i < x.length(); i++) {
+            V xi = x.getAndSet(i, null);
             if (xi!=null) {
                 onRemove(xi);
             }
@@ -183,7 +183,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     private @Nullable MetalAtomicReferenceArray<V> reset(int space) {
 
         if (SIZE.getAndSet(this, 0) != 0) {
-            var newMap = new MetalAtomicReferenceArray<V>(space);
+            MetalAtomicReferenceArray<V> newMap = new MetalAtomicReferenceArray<V>(space);
 
             MetalAtomicReferenceArray<V> prevMap = MAP.getAndSet(this, newMap);
 
@@ -205,10 +205,15 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     }
 
     public float density() {
-        var m = map;
-        var mm = m.length();
-        var count = IntStream.range(0, mm).filter(i -> m.getFast(i) != null).count();
-        var filled = (int) count;
+        MetalAtomicReferenceArray<V> m = map;
+        int mm = m.length();
+        long count = 0L;
+        for (int i = 0; i < mm; i++) {
+            if (m.getFast(i) != null) {
+                count++;
+            }
+        }
+        int filled = (int) count;
         return ((float) filled) / mm;
     }
 
@@ -224,12 +229,12 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     private V update(/*@NotNull*/ Object k, @Nullable V incoming /* null to remove */, Mode mode, @Nullable NumberX overflowing) {
 
         MetalAtomicReferenceArray<V> map = MAP.get(this);
-        var c = map.length();
+        int c = map.length();
         if (c == 0)
             return null;
 
-        var kHash = hash(k);
-        var start = index(kHash, c);
+        int kHash = hash(k);
+        int start = index(kHash, c);
 
         float incomingPri;
         if (mode == PUT) {
@@ -240,9 +245,9 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
             incomingPri = Float.POSITIVE_INFINITY; /* shouldnt be used */
         }
 
-        var mutexTicket = -1;
+        int mutexTicket = -1;
 
-        var locking = (mode != GET) && !unsafe();
+        boolean locking = (mode != GET) && !unsafe();
         if (locking) {
             if (mode == PUT && optimisticPut()) {
                 Object exist = _get(k, kHash, start, c, map);
@@ -270,7 +275,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
                     return _get(k, kHash, start, c, map);
                 case REMOVE:
                     for (int i = start, j = reprobes; j > 0; j--) {
-                        var v = map.getFast(i);
+                        V v = map.getFast(i);
                         if (v != null && keyEquals(k, kHash, v)) {
                             if (map.compareAndSetFast(i, v, null)) {
                                 toReturn = toRemove = v;
@@ -284,15 +289,15 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
                     break;
                 case PUT:
 
-                    var retriesRemain = PUT_ATTEMPTS;
+                    int retriesRemain = PUT_ATTEMPTS;
                     do {
-                        var victimIndex = -1;
-                        var victimPri = Float.POSITIVE_INFINITY;
+                        int victimIndex = -1;
+                        float victimPri = Float.POSITIVE_INFINITY;
                         V victimValue = null;
 
                         for (int i = start, j = reprobes; j > 0; j--) {
 
-                            var v = map.getFast(i);
+                            V v = map.getFast(i);
                             if (v == null) {
                                 if (victimPri > NEGATIVE_INFINITY) {
                                     victimIndex = i;
@@ -304,9 +309,9 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
                                 break;
                             } else if (keyEquals(k, kHash, v)) {
 
-                                var before = pri(v);
-                                var next = merge(v, incoming, overflowing);
-                                var after = pri(v);
+                                float before = pri(v);
+                                V next = merge(v, incoming, overflowing);
+                                float after = pri(v);
                                 depressurize(Math.max(0, incomingPri - (after - before)));
 
                                 assert (next != null);
@@ -373,9 +378,9 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         }
 
         if (toAdd!=null || toRemove!=null) {
-            var dSize = (toAdd != null ? +1 : 0) + (toRemove != null ? -1 : 0);
+            int dSize = (toAdd != null ? +1 : 0) + (toRemove != null ? -1 : 0);
             //only used if toAdd!=null
-            var size = SIZE.addAndGet(this, dSize);
+            int size = SIZE.addAndGet(this, dSize);
 
             if (toAdd != null) {
                 _onAdded(toAdd);
@@ -404,7 +409,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
     private V _get(Object k, int kHash, int start, int c, MetalAtomicReferenceArray<V> map) {
         for (int i = start, j = reprobes; j > 0; j--) {
-            var v = map.getFast(i);
+            V v = map.getFast(i);
             if (v != null && keyEquals(k, kHash, v))
                 return v;
 
@@ -432,7 +437,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         //      causes insertion to underestimate the priority allowing disproportionate replacement
         //      in some low probability of cases, allowing more item churn
         if (VICTIM_NOISE> 0) {
-            var victimNoise = VICTIM_NOISE / (reprobes * reprobes);
+            float victimNoise = VICTIM_NOISE / (reprobes * reprobes);
             currentVictimPri *= victimNoise > 0 ? (1 - (random().nextFloat() * victimNoise)) : 1;
         }
 
@@ -441,7 +446,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     }
 
     private float priElseNegInfinity(V x) {
-        var p = pri(x);
+        float p = pri(x);
         if (p == p)
             return p;
         else
@@ -554,7 +559,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         newPri = newPri * newPri * reprobes;
         oldPri = oldPri * oldPri * reprobes;
         if (oldPri > 2 * Float.MIN_NORMAL) {
-            var thresh = 1.0f - (1.0f - (oldPri / (newPri + oldPri)));
+            float thresh = 1.0f - (1.0f - (oldPri / (newPri + oldPri)));
             return random.nextFloat() > thresh;
         } else {
             return (newPri >= Float.MIN_NORMAL) || random.nextBoolean();
@@ -568,11 +573,11 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     @Override
     public final V put(/*@NotNull*/ V potentialVictimPri,  /* TODO */ NumberX overflowing) {
 
-        var k = key(potentialVictimPri);
+        K k = key(potentialVictimPri);
         if (k == null)
             return null;
 
-        var x = update(k, potentialVictimPri, PUT, overflowing);
+        V x = update(k, potentialVictimPri, PUT, overflowing);
 
         if (x == null)
             onReject(potentialVictimPri);
@@ -595,38 +600,38 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
         restart:
         while ((s = size()) > 0) {
-            var map = this.map;
-            var c = map.length();
+            MetalAtomicReferenceArray<V> map = this.map;
+            int c = map.length();
             if (c == 0)
                 break;
 
-            var i = random.nextInt(c);
+            int i = random.nextInt(c);
 
 
-            var direction = random.nextBoolean();
+            boolean direction = random.nextBoolean();
 
-            var windowCap = Math.min(s,
+            int windowCap = Math.min(s,
 
                     //(1 + reprobes)
                     Math.min(s, 2 * reprobes)
             );
 
-            var wPri = new float[windowCap];
-            var wVal = new Object[windowCap];
+            float[] wPri = new float[windowCap];
+            Object[] wVal = new Object[windowCap];
 
             /** emergency null counter, in case map becomes totally null avoids infinite loop*/
-            var mapNullSeen = 0;
+            int mapNullSeen = 0;
 
             IntToFloatFunction weight = (k) -> wPri[k];
             //MutableRoulette roulette = new MutableRoulette(windowCap, weight, random);
 
-            var windowSize = 0;
+            int windowSize = 0;
 
             while ((mapNullSeen + windowSize) < c /*&& size > 0*/) {
-                var v = map.getFast(i);
+                V v = map.getFast(i);
 
                 if (v != null) {
-                    var p = priElse(v, 0);
+                    float p = priElse(v, 0);
                     if (p != p) {
                         evict(map, i, v);
                         mapNullSeen++;
@@ -655,14 +660,14 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
                 //System.out.println(n2(wPri) + "\t" + Arrays.toString(wVal));
 
                 //int which = roulette.reweigh(weight).next();
-                var which = Roulette.selectRoulette(windowSize, weight, random);
+                int which = Roulette.selectRoulette(windowSize, weight, random);
 
-                var v = (V) wVal[which];
+                V v = (V) wVal[which];
                 if (v == null)
                     continue; //assert(v!=null);
 
 
-                var next = each.apply(v);
+                SampleReaction next = each.apply(v);
 
                 if (next.stop) {
                     break restart;
@@ -685,7 +690,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
                 //shift window
 
                 mapNullSeen = 0;
-                var p = Float.NaN;
+                float p = Float.NaN;
                 V v0;
                 do {
                     v0 = map.getFast(i = Util.next(i, direction, c));
@@ -758,7 +763,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
     @Override
     public Stream<V> stream() {
-        var map = this.map;
+        MetalAtomicReferenceArray<V> map = this.map;
         return IntStream.range(0, map.length())
                 .mapToObj(map::getFast).filter(Objects::nonNull);
     }
@@ -768,11 +773,11 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
      * encountered or null if totally empty
      */
     public V next(int offset, Predicate<V> each) {
-        var map = this.map;
-        var n = map.length();
+        MetalAtomicReferenceArray<V> map = this.map;
+        int n = map.length();
         V xx = null;
-        for (var i = offset; i < n; i++) {
-            var x = map.getFast(i);
+        for (int i = offset; i < n; i++) {
+            V x = map.getFast(i);
             if (x != null) {
                 if (!each.test(xx = x)) {
                     break;
@@ -799,21 +804,21 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
 
         float mass = 0;
-        var min = Float.POSITIVE_INFINITY;
-        var max = NEGATIVE_INFINITY;
+        float min = Float.POSITIVE_INFINITY;
+        float max = NEGATIVE_INFINITY;
 
-        var count = 0;
+        int count = 0;
 
-        var map = this.map;
+        MetalAtomicReferenceArray<V> map = this.map;
 
-        var len = map.length();
-        for (var i = 0; i < len; i++) {
-            var f = map.getFast(i);
+        int len = map.length();
+        for (int i = 0; i < len; i++) {
+            V f = map.getFast(i);
 
             if (f == null)
                 continue;
 
-            var p = pri(f);
+            float p = pri(f);
 
             if (update != null && p == p) {
                 update.accept(f);
@@ -856,9 +861,9 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
 
         if (s >= (loadFactor * sp)) {
-            var cp = capacity();
+            int cp = capacity();
             if (sp < cp) {
-                var ns =
+                int ns =
                     Math.min(cp, Math.round(sp * growthRate));
                 if (ns != sp) {
                     resize(ns);
@@ -880,8 +885,15 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     }
 
     public static <X> List<X> list(AtomicReferenceArray<X> a) {
-        var bound = a.length();
-        return IntStream.range(0, bound).mapToObj(a::get).filter(Objects::nonNull).collect(Collectors.toList());
+        int bound = a.length();
+        List<X> list = new ArrayList<>();
+        for (int i = 0; i < bound; i++) {
+            X x = a.get(i);
+            if (x != null) {
+                list.add(x);
+            }
+        }
+        return list;
     }
 
 

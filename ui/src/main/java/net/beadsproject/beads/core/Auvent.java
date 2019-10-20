@@ -76,7 +76,7 @@ public abstract class Auvent<M extends Auvent> {
      */
     @Override
     public String toString() {
-        var name = this.name;
+        String name = this.name;
         return name != null ? getClass() + " name=" + name : getClass().toString();
     }
 
@@ -114,7 +114,7 @@ public abstract class Auvent<M extends Auvent> {
     public void stop() {
         if (!deleted) {
             deleted = true;
-            var killListener = this.after;
+            Auvent killListener = this.after;
             if (killListener != null) {
                 killListener.accept(this);
             }

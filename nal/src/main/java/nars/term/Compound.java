@@ -61,8 +61,8 @@ public interface Compound extends Term, IPair, Subterms {
         if (A == b) return true;
 
         if (((b instanceof Compound) && (!compareHashCode || (A.hashCode() == b.hashCode())))) {
-            var B = (Compound) b;
-            var ao = A.opID();
+            Compound B = (Compound) b;
+            int ao = A.opID();
             return
                 (ao == B.opID()) &&
                 equalSubs(A, B) &&
@@ -85,7 +85,7 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
     static StringBuilder toStringBuilder(Compound c) {
-        var sb = new StringBuilder(
+        StringBuilder sb = new StringBuilder(
                 ///* conservative estimate */ c.volume() * 2
                 64
         );
@@ -162,11 +162,11 @@ public interface Compound extends Term, IPair, Subterms {
             if (!hasAny(Op.Variable) /*&& xv > volume()*/)
                 return false; //TODO check
 
-            var u = new UnifyAny();
+            UnifyAny u = new UnifyAny();
 
             //if (u.unifies(this, x)) return true;
 
-            var xOp = x.opID();
+            int xOp = x.opID();
             return !subterms().recurseTerms(s->s.hasAny(1<<xOp)/*t->t.volume()>=xv*/, s->{
                 if (s instanceof Compound && s.opID()==xOp) {
                     return !preFilter.test(s) || !x.unify(s, u);
@@ -269,11 +269,11 @@ public interface Compound extends Term, IPair, Subterms {
 
     default boolean unifySubterms(Compound y, Unify u) {
 
-        var x = this;
-        var xx = x.subterms();
-        var yy = y.subterms();
+        Compound x = this;
+        Subterms xx = x.subterms();
+        Subterms yy = y.subterms();
 
-        var o = op();
+        Op o = op();
         if (o.temporal) {
             if (!u.unifyDT(x, y))
                 return false;
@@ -286,7 +286,7 @@ public interface Compound extends Term, IPair, Subterms {
         }
 
 
-        var xs = xx.subs();
+        int xs = xx.subs();
         if (xs != yy.subs())
             return false;
 
@@ -317,7 +317,7 @@ public interface Compound extends Term, IPair, Subterms {
      */
     @Override
     default @Nullable Object _cdr() {
-        var len = subs();
+        int len = subs();
         switch (len) {
             case 1:
                 throw new RuntimeException("Pair fault");
@@ -331,7 +331,7 @@ public interface Compound extends Term, IPair, Subterms {
 
 
         Pair p = null;
-        for (var i = len - 2; i >= 0; i--) {
+        for (int i = len - 2; i >= 0; i--) {
             p = new Pair(sub(i), p == null ? sub(i + 1) : p);
         }
         return p;
@@ -491,23 +491,23 @@ public interface Compound extends Term, IPair, Subterms {
 
                 case DTERNAL:
                     if (ConjSeq.isFactoredSeq(this)) {
-                        var ss = subterms();
+                        Subterms ss = subterms();
 
                         //distribute the factored inner sequence
-                        var eteComponents = ConjSeq.seqEternalComponents(ss);
-                        var seq = ConjSeq.seqTemporal(ss, eteComponents);
+                        MetalBitSet eteComponents = ConjSeq.seqEternalComponents(ss);
+                        Term seq = ConjSeq.seqTemporal(ss, eteComponents);
 
-                        var sdt = seq.dt();
+                        int sdt = seq.dt();
                         //non-special sequence
-                        var unfactor = sdt != XTERNAL || decomposeXternal;
+                        boolean unfactor = sdt != XTERNAL || decomposeXternal;
                         if (unfactor) {
-                            var factor = ConjSeq.seqEternal(ss, eteComponents);
+                            Term factor = ConjSeq.seqEternal(ss, eteComponents);
 
                             return seq.eventsAND(
                                     (!decomposeConjDTernal) ?
                                             (when, what) -> {
                                                 //combine the component with the eternal factor
-                                                var distributed = CONJ.the(what, factor);
+                                                Term distributed = CONJ.the(what, factor);
 
                                                 if (distributed.op() != CONJ)
                                                     throw new TermTransformException(Compound.this, distributed, "invalid conjunction factorization"
@@ -547,11 +547,11 @@ public interface Compound extends Term, IPair, Subterms {
             return each.accept(offset, this);
         } else {
 
-            var ee = subterms();
+            Subterms ee = subterms();
 
-            var t = offset;
+            long t = offset;
 
-            var changeDT = dt != 0 && t != ETERNAL && t != TIMELESS /* motionless in time */;
+            boolean changeDT = dt != 0 && t != ETERNAL && t != TIMELESS /* motionless in time */;
 
 
             boolean fwd;
@@ -563,9 +563,9 @@ public interface Compound extends Term, IPair, Subterms {
                 fwd = true;
             }
 
-            var s = ee.subs() - 1;
-            for (var i = 0; i <= s; i++) {
-                var ei = ee.sub(fwd ? i : s - i);
+            int s = ee.subs() - 1;
+            for (int i = 0; i <= s; i++) {
+                Term ei = ee.sub(fwd ? i : s - i);
                 if (!ei.eventsAND(each, t, decomposeConjDTernal, decomposeXternal))
                     return false;
 
@@ -600,12 +600,12 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     default int eventRange() {
         if (op() == CONJ) {
-            var dt = dt();
+            int dt = dt();
             if (dt == XTERNAL)
                 return 0; //unknown actual range; logically must be considered as point-like event
 
-            var tt = subterms();
-            var l = tt.subs();
+            Subterms tt = subterms();
+            int l = tt.subs();
             if (l == 2) {
 
                 switch (dt) {
@@ -621,10 +621,10 @@ public interface Compound extends Term, IPair, Subterms {
                 return tt.subEventRange(0) + (dt) + tt.subEventRange(1);
 
             } else {
-                var s = 0;
+                int s = 0;
 
 
-                for (var i = 0; i < l; i++) {
+                for (int i = 0; i < l; i++) {
                     s = Math.max(s, tt.subEventRange(i));
                 }
 
@@ -703,7 +703,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     default Term eventFirst() {
         if (Conj.isSeq(this)) {
-            var first = new Term[1];
+            Term[] first = new Term[1];
             eventsAND((when, what) -> {
                 first[0] = what;
                 return false; //done got first
@@ -718,7 +718,7 @@ public interface Compound extends Term, IPair, Subterms {
      */
     default Term eventLast() {
         if (Conj.isSeq(this)) {
-            var last = new Term[1];
+            Term[] last = new Term[1];
             eventsAND((when, what) -> {
                 last[0] = what;
                 return true; //HACK keep going to end

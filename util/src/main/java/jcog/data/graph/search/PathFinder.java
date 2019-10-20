@@ -89,9 +89,9 @@ public class PathFinder<N, E> extends RankedN<Path<N,E>> {
         this.direction = direction;
         //this.validator = createValidtor();
 
-        var next = getNextEdges(start);
-        for (var iterator = next; iterator.hasNext(); ) {
-            var e = iterator.next();
+        Iterator<FromTo<Node<N, E>, E>> next = getNextEdges(start);
+        for (Iterator<FromTo<Node<N, E>, E>> iterator = next; iterator.hasNext(); ) {
+            FromTo<Node<N, E>, E> e = iterator.next();
             /*direction*/
             Path<N, E> bp = new BasicPath<>(graph, start);
             bp = bp.append(e.id(), Path.secondNode(e, direction));
@@ -132,8 +132,8 @@ public class PathFinder<N, E> extends RankedN<Path<N,E>> {
         this.direction = direction;
         //this.validator = createValidtor();
 
-        for (var iterator = getNextEdges(start); iterator.hasNext(); ) {
-            var e = iterator.next();
+        for (Iterator<FromTo<Node<N, E>, E>> iterator = getNextEdges(start); iterator.hasNext(); ) {
+            FromTo<Node<N, E>, E> e = iterator.next();
             /*direction*/
             Path<N, E> bp = new BasicPath<>(graph, start);
             bp = bp.append(e.id(), Path.secondNode(e, direction));
@@ -214,7 +214,7 @@ public class PathFinder<N, E> extends RankedN<Path<N,E>> {
      * @return Ребра/дуги направления движения.
      */
     protected Iterator<FromTo<Node<N, E>,E>> getNextEdges(N n) {
-        var N = graph.node(n);
+        Node<N, E> N = graph.node(n);
         return direction.equals(Path.Direction.AB)
                 ? N.edgeIterator(false, true)
                 : N.edgeIterator(true, false);
@@ -233,14 +233,14 @@ public class PathFinder<N, E> extends RankedN<Path<N,E>> {
     public Path<N, E> next() {
         if (isEmpty()) return null;
 
-        var p = pop();
+        Path<N, E> p = pop();
 
         if (p.nodeCount() > 0) {
-            var last = p.node(-1);
+            N last = p.node(-1);
             if (!p.hasCycles()) {
 
-                for (var iterator = getNextEdges(last); iterator.hasNext(); ) {
-                    var e = iterator.next();
+                for (Iterator<FromTo<Node<N, E>, E>> iterator = getNextEdges(last); iterator.hasNext(); ) {
+                    FromTo<Node<N, E>, E> e = iterator.next();
                     add(append(p, e));
                 }
 

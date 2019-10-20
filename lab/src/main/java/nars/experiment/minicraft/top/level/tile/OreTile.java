@@ -47,7 +47,7 @@ public class OreTile extends Tile {
     @Override
     public boolean interact(Level level, int xt, int yt, Player player, Item item, int attackDir) {
         if (item instanceof ToolItem) {
-            var tool = (ToolItem) item;
+            ToolItem tool = (ToolItem) item;
             if (tool.type == ToolType.pickaxe) {
                 if (player.payStamina(6 - tool.level)) {
                     hurt(level, xt, yt, 1);
@@ -59,18 +59,18 @@ public class OreTile extends Tile {
     }
 
     public void hurt(Level level, int x, int y, int dmg) {
-        var damage = level.getData(x, y) + 1;
+        int damage = level.getData(x, y) + 1;
         level.add(new SmashParticle(x * 16 + 8, y * 16 + 8));
         level.add(new TextParticle(String.valueOf(dmg), x * 16 + 8, y * 16 + 8, Color.get(-1, 500, 500, 500)));
         if (dmg > 0) {
-            var count = random.nextInt(2);
+            int count = random.nextInt(2);
             if (damage >= random.nextInt(10) + 3) {
                 level.setTile(x, y, Tile.dirt, 0);
                 count += 2;
             } else {
                 level.setData(x, y, damage);
             }
-            for (var i = 0; i < count; i++) {
+            for (int i = 0; i < count; i++) {
                 level.add(new ItemEntity(new ResourceItem(toDrop), x * 16 + random.nextInt(10) + 3, y * 16 + random.nextInt(10) + 3));
             }
         }

@@ -39,11 +39,11 @@ public abstract class MutableStack<E> implements IDynamicStack<E> {
     }
 
     private void extendStack(int argSize) {
-        var newStack = newArray(argSize);
+        E[] newStack = newArray(argSize);
         if (stack != null) {
             System.arraycopy(stack, 0, newStack, 0, size);
         }
-        for (var i = 0; i < newStack.length; i++) {
+        for (int i = 0; i < newStack.length; i++) {
             newStack[i] = newInstance();
         }
         stack = newStack;

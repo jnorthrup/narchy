@@ -72,7 +72,7 @@ public class ScaleMap {
      * @return mapped value
      */
     public double getClippedValueFor(double val) {
-        var t = MathUtils.clipNormalized((val - in.min) / interval);
+        double t = MathUtils.clipNormalized((val - in.min) / interval);
         if (Double.isNaN(t)) {
             t = 0;
         }
@@ -110,7 +110,7 @@ public class ScaleMap {
      * @return mapped value
      */
     public double getMappedValueFor(double val) {
-        var t = ((val - in.min) / interval);
+        double t = ((val - in.min) / interval);
         if (Double.isNaN(t)) {
             t = 0;
         }

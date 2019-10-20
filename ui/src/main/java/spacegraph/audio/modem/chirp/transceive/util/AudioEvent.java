@@ -31,9 +31,9 @@ public class AudioEvent {
     }
 
     private static double calculateRMS(float[] var0) {
-        var var1 = 0.0D;
+        double var1 = 0.0D;
 
-        for (var v : var0) {
+        for (float v : var0) {
             var1 += v * v;
         }
 
@@ -43,12 +43,12 @@ public class AudioEvent {
     }
 
     private static double localEnergy(float[] var1) {
-        var var2 = 0.0D;
-        var var4 = var1;
-        var var5 = var1.length;
+        double var2 = 0.0D;
+        float[] var4 = var1;
+        int var5 = var1.length;
 
-        for (var var6 = 0; var6 < var5; ++var6) {
-            var var7 = var4[var6];
+        for (int var6 = 0; var6 < var5; ++var6) {
+            float var7 = var4[var6];
             var2 += var7 * var7;
         }
 
@@ -130,7 +130,7 @@ public class AudioEvent {
     }
 
     private static double soundPressureLevel(float[] var1) {
-        var var2 = Math.pow(AudioEvent.localEnergy(var1), 0.5D);
+        double var2 = Math.pow(AudioEvent.localEnergy(var1), 0.5D);
         var2 /= var1.length;
         return AudioEvent.linearToDecibel(var2);
     }

@@ -44,11 +44,11 @@ public class UnionFind2 {
     public void sortIslands() {
 
 
-        var elements = this.ele;
-        var n = this.numElements;
-        for (var i = 0; i < n; i++) {
+        int[][] elements = this.ele;
+        int n = this.numElements;
+        for (int i = 0; i < n; i++) {
 
-            var e = elements[i];
+            int[] e = elements[i];
             e[0] = find(i);
             e[1] = i;
         }
@@ -69,16 +69,16 @@ public class UnionFind2 {
 
         numElements = N;
 
-        var ee = this.ele;
-        for (var i = 0; i < N; i++) {
-            var e = ee[i];
+        int[][] ee = this.ele;
+        for (int i = 0; i < N; i++) {
+            int[] e = ee[i];
             e[0] = i;
             e[1] = 1;
         }
 
         
-        for (var j = N; j < ele.length; j++) {
-            var e = ee[j];
+        for (int j = N; j < ele.length; j++) {
+            int[] e = ee[j];
             e[0] = -1;
             e[1] = -1;
         }
@@ -111,7 +111,7 @@ public class UnionFind2 {
         }
 
 
-        var ei = ele[i];
+        int[] ei = ele[i];
 
         ei[0] = j;
         
@@ -123,14 +123,14 @@ public class UnionFind2 {
     public int find(int x) {
 
 
-        var numElements = this.numElements;
+        int numElements = this.numElements;
 
 
-        var e = this.ele;
+        int[][] e = this.ele;
         while (x != e[x][0]) {
 
 
-            var i = e[x][0];
+            int i = e[x][0];
             if (!valid(i, numElements))
                 return x;
 

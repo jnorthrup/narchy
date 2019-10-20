@@ -59,33 +59,33 @@ public class GjkConvexCast extends ConvexCast {
 		simplexSolver.reset();
 
 
-        var linVelA = new v3();
-        var linVelB = new v3();
+        v3 linVelA = new v3();
+        v3 linVelB = new v3();
 
 		linVelA.sub(toA, fromA);
 		linVelB.sub(toB, fromB);
 
-        var v = new v3();
+        v3 v = new v3();
 		v.set(1f, 0f, 0f);
 
-        var n = new v3();
+        v3 n = new v3();
 		n.set(0f, 0f, 0f);
-        var c = new v3();
-        var r = new v3();
+        v3 c = new v3();
+        v3 r = new v3();
 		r.sub(linVelA, linVelB);
 
-        var lambda = 0f;
-        var lastLambda = lambda;
+        float lambda = 0f;
+        float lastLambda = lambda;
 
 
-        var identityTrans = new Transform();
+        Transform identityTrans = new Transform();
 		identityTrans.setIdentity();
 
 
-        var pointCollector = new PointCollector();
+        PointCollector pointCollector = new PointCollector();
 
 		gjk.init(convexA, convexB, simplexSolver, null);
-        var input = new DiscreteCollisionDetectorInterface.ClosestPointInput();
+        DiscreteCollisionDetectorInterface.ClosestPointInput input = new DiscreteCollisionDetectorInterface.ClosestPointInput();
 		input.init();
 		
 		
@@ -94,26 +94,26 @@ public class GjkConvexCast extends ConvexCast {
 		input.transformB.set(fromB);
 		gjk.getClosestPoints(input, pointCollector);
 
-        var hasResult = pointCollector.hasResult;
+        boolean hasResult = pointCollector.hasResult;
 		c.set(pointCollector.pointInWorld);
 
 		if (hasResult) {
-            var dist = pointCollector.distance;
+            float dist = pointCollector.distance;
             n.set(pointCollector.normalOnBInWorld);
 
 
-            var numIter = 0;
-            var maxIter = MAX_ITERATIONS;
-            var radius = 0.001f;
+            int numIter = 0;
+            int maxIter = MAX_ITERATIONS;
+            float radius = 0.001f;
             while (dist > radius) {
                 numIter++;
                 if (numIter > maxIter) {
                     return false; 
                 }
 
-                var projectedLinearVelocity = r.dot(n);
+                float projectedLinearVelocity = r.dot(n);
 
-                var dLambda = dist / (projectedLinearVelocity);
+                float dLambda = dist / (projectedLinearVelocity);
 
                 lambda -= dLambda;
 

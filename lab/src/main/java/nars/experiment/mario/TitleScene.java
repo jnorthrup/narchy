@@ -31,15 +31,15 @@ public class TitleScene extends Scene {
         bgLayer0.render(g, tick, alpha);
 
 
-        var yo = 16 - Math.abs((int) (Math.sin((tick + alpha) / 6.0) * 8));
+        int yo = 16 - Math.abs((int) (Math.sin((tick + alpha) / 6.0) * 8));
         g.drawImage(Art.logo, 0, yo, null);
         g.drawImage(Art.titleScreen, 0, 120, null);
     }
 
     @SuppressWarnings("unused")
     private static void drawString(Graphics g, String text, int x, int y, int c) {
-        var ch = text.toCharArray();
-        for (var i = 0; i < ch.length; i++) {
+        char[] ch = text.toCharArray();
+        for (int i = 0; i < ch.length; i++) {
             g.drawImage(Art.font[ch[i] - 32][c], x + i * 8, y, null);
         }
     }

@@ -95,9 +95,9 @@ public class Math3D {
 	}
 	public static final float VectorNormalize(float[] v) {
 
-		var length = VectorLength(v);
+        float length = VectorLength(v);
 		if (length != 0.0f) {
-			var ilength = 1.0f / length;
+            float ilength = 1.0f / length;
 			v[0] *= ilength;
 			v[1] *= ilength;
 			v[2] *= ilength;
@@ -158,7 +158,7 @@ public class Math3D {
 			if (yaw < 0)
 				yaw += 360;
 
-			var forward = (float) Math.sqrt(value1[0] * value1[0] + value1[1] * value1[1]);
+            float forward = (float) Math.sqrt(value1[0] * value1[0] + value1[1] * value1[1]);
 			pitch = (int) (Math.atan2(value1[2], forward) * 180 / Math.PI);
 			if (pitch < 0)
 				pitch += 360;
@@ -208,7 +208,7 @@ public class Math3D {
 		im[2][1] = m[1][2];
 		im[2][2] = m[2][2];
 
-		var zrot = Math3D.zrot;
+        float[][] zrot = Math3D.zrot;
 		zrot[0][2] = zrot[1][2] = zrot[2][0] = zrot[2][1] = 0.0f;
 
 		zrot[2][2] = 1.0F;
@@ -220,8 +220,8 @@ public class Math3D {
 		R_ConcatRotations(m, zrot, tmpmat);
 		R_ConcatRotations(tmpmat, im, zrot);
 
-		for (var i = 0; i < 3; i++) {
-			var zr = zrot[i];
+		for (int i = 0; i < 3; i++) {
+            float[] zr = zrot[i];
 			dst[i] = zr[0] * point[0] + zr[1] * point[1] + zr[2] * point[2];
 		}
 	}
@@ -233,7 +233,7 @@ public class Math3D {
 		right[2] = forward[1];
 		right[0] = forward[2];
 
-		var d = DotProduct(right, forward);
+        float d = DotProduct(right, forward);
 		VectorMA(right, -d, forward, right);
 		VectorNormalize(right);
 		CrossProduct(right, forward, up);
@@ -264,29 +264,29 @@ public class Math3D {
 	 * concatenates 2 matrices each [3][3].
 	 */
 	public static void R_ConcatRotations(float[][] in1, float[][] in2, float[][] out) {
-		var in1_0 = in1[0];
-		var out0 = out[0];
+        float[] in1_0 = in1[0];
+        float[] out0 = out[0];
 		out0[0] = in1_0[0] * in2[0][0] + in1_0[1] * in2[1][0] + in1_0[2] * in2[2][0];
 		out0[1] = in1_0[0] * in2[0][1] + in1_0[1] * in2[1][1] + in1_0[2] * in2[2][1];
 		out0[2] = in1_0[0] * in2[0][2] + in1_0[1] * in2[1][2] + in1_0[2] * in2[2][2];
 
-		var out1 = out[1];
-		var in1_1 = in1[1];
+        float[] out1 = out[1];
+        float[] in1_1 = in1[1];
 		out1[0] = in1_1[0] * in2[0][0] + in1_1[1] * in2[1][0] + in1_1[2] * in2[2][0];
 		out1[1] = in1_1[0] * in2[0][1] + in1_1[1] * in2[1][1] + in1_1[2] * in2[2][1];
 		out1[2] = in1_1[0] * in2[0][2] + in1_1[1] * in2[1][2] + in1_1[2] * in2[2][2];
 
-		var out2 = out[2];
-		var in1_2 = in1[2];
+        float[] out2 = out[2];
+        float[] in1_2 = in1[2];
 		out2[0] = in1_2[0] * in2[0][0] + in1_2[1] * in2[1][0] + in1_2[2] * in2[2][0];
 		out2[1] = in1_2[0] * in2[0][1] + in1_2[1] * in2[1][1] + in1_2[2] * in2[2][1];
 		out2[2] = in1_2[0] * in2[0][2] + in1_2[1] * in2[1][2] + in1_2[2] * in2[2][2];
 	}
 	public static void ProjectPointOnPlane(float[] dst, float[] p, float[] normal) {
 
-		var inv_denom = 1.0F / DotProduct(normal, normal);
+        float inv_denom = 1.0F / DotProduct(normal, normal);
 
-		var d = DotProduct(normal, p) * inv_denom;
+        float d = DotProduct(normal, p) * inv_denom;
 
 		dst[0] = normal[0] * inv_denom;
 		dst[1] = normal[1] * inv_denom;
@@ -303,7 +303,7 @@ public class Math3D {
 	public static void PerpendicularVector(float[] dst, float[] src) {
 		int pos;
 		int i;
-		var minelem = 1.0F;
+        float minelem = 1.0F;
 
 		
 		for (pos = 0, i = 0; i < 3; i++) {
@@ -328,8 +328,8 @@ public class Math3D {
 		assert(emins.length == 3 && emaxs.length == 3) : "vec3_t bug";
 
 
-		var ptype = p.type;
-		var pDist = p.dist;
+        byte ptype = p.type;
+        float pDist = p.dist;
 		if (ptype < 3) {
 			if (pDist <= emins[ptype])
 				return 1;
@@ -339,16 +339,16 @@ public class Math3D {
 		}
 
 
-		var normal = p.normal;
-		var n0 = normal[0];
-		var n1 = normal[1];
-		var n2 = normal[2];
-		var max0 = emaxs[0];
-		var max1 = emaxs[1];
-		var max2 = emaxs[2];
-		var min0 = emins[0];
-		var min1 = emins[1];
-		var min2 = emins[2];
+        float[] normal = p.normal;
+        float n0 = normal[0];
+        float n1 = normal[1];
+        float n2 = normal[2];
+        float max0 = emaxs[0];
+        float max1 = emaxs[1];
+        float max2 = emaxs[2];
+        float min0 = emins[0];
+        float min1 = emins[1];
+        float min2 = emins[2];
         float dist2;
         float dist1;
         switch (p.signbits) {
@@ -390,7 +390,7 @@ public class Math3D {
 				break;
 		}
 
-		var sides = 0;
+        int sides = 0;
 		if (dist1 >= pDist)
 			sides = 1;
 		if (dist2 < pDist)
@@ -429,14 +429,14 @@ public class Math3D {
 
 	public static void AngleVectors(float[] angles, float[] forward, float[] right, float[] up) {
 
-		var cr = 2.0f * piratio;
+        float cr = 2.0f * piratio;
 
-		var angle = angles[Defines.YAW] * (cr);
-		var sy = (float) Math.sin(angle);
-		var cy = (float) Math.cos(angle);
-		var angle2 = angles[Defines.PITCH] * (cr);
-		var sp = (float) Math.sin(angle2);
-		var cp = (float) Math.cos(angle2);
+        float angle = angles[Defines.YAW] * (cr);
+        float sy = (float) Math.sin(angle);
+        float cy = (float) Math.cos(angle);
+        float angle2 = angles[Defines.PITCH] * (cr);
+        float sp = (float) Math.sin(angle2);
+        float cp = (float) Math.cos(angle2);
 
 		if (forward != null) {
 			forward[0] = cp * cy;
@@ -445,8 +445,8 @@ public class Math3D {
 		}
 
 		if (right != null || up != null) {
-			var angle3 = angles[Defines.ROLL] * (cr);
-			var sr = (float) Math.sin(angle3);
+            float angle3 = angles[Defines.ROLL] * (cr);
+            float sr = (float) Math.sin(angle3);
 			cr = (float) Math.cos(angle3);
 
 			if (right != null) {
@@ -475,19 +475,19 @@ public class Math3D {
 		return x[0] * y[0] + x[1] * y[1] + x[2] * y[2];
 	}
 	public static void CrossProduct(float[] v1, float[] v2, float[] cross) {
-		var v11 = v1[1];
-		var v12 = v1[2];
-		var v22 = v2[2];
-		var v21 = v2[1];
+        float v11 = v1[1];
+        float v12 = v1[2];
+        float v22 = v2[2];
+        float v21 = v2[1];
 		cross[0] = v11 * v22 - v12 * v21;
-		var v10 = v1[0];
-		var v20 = v2[0];
+        float v10 = v1[0];
+        float v20 = v2[0];
 		cross[1] = v12 * v20 - v10 * v22;
 		cross[2] = v10 * v21 - v11 * v20;
 	}
 
 	public static int Q_log2(int val) {
-		var answer = 0;
+        int answer = 0;
 		while ((val >>= 1) > 0)
 			answer++;
 		return answer;

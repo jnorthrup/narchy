@@ -10,11 +10,11 @@ import static org.ejml.dense.row.CommonOps_DDRM.sumCols;
 public class EjmlOps {
 
 	public static void maximize(DMatrix p, double minval) {
-		var rows = p.getNumRows();
-		var cols = p.getNumCols();
-		for (var i = 0; i < rows; i++) {
-			for (var j = 0; j < cols; j++) {
-				var val = p.get(i, j);
+        int rows = p.getNumRows();
+        int cols = p.getNumCols();
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+                double val = p.get(i, j);
 				if(val<minval) p.unsafe_set(j, j, minval);
 			}
 		}
@@ -29,9 +29,9 @@ public class EjmlOps {
 	 * @return new matrix with booelans with values matrix1[i,j] == matrix2[i,j]
 	 */
 	public static boolean [][] biggerThan(DMatrixRMaj matrix, double value) {
-		var equals = new boolean[matrix.numRows][matrix.numCols];
-		for (var i = 0; i < matrix.numRows; i++) {
-			for (var j = 0; j < matrix.numCols; j++) {
+        boolean[][] equals = new boolean[matrix.numRows][matrix.numCols];
+		for (int i = 0; i < matrix.numRows; i++) {
+			for (int j = 0; j < matrix.numCols; j++) {
 				equals[i][j] = Double.compare(matrix.get(i,j), value) == 1;
 			}
 		}
@@ -49,7 +49,7 @@ public class EjmlOps {
 	 * @param diagElems
 	 */
 	public static void setDiag(DMatrixRMaj diag, double[] diagElems) {
-		var idx = 0;
+        int idx = 0;
 		while(idx<diag.numCols&&idx<diag.numRows&&idx<diagElems.length) {
 			diag.set(idx, idx, diagElems[idx++]);
 		}
@@ -67,13 +67,13 @@ public class EjmlOps {
 	 * @param data 2D array representation of the matrix. Not modified.
 	 */
 	public static void setData(DMatrixRMaj target, double[][] data) {
-		var numRows = data.length;
-		var numCols = data[0].length;
+        int numRows = data.length;
+        int numCols = data[0].length;
 
-		var targetData = new double[ numRows*numCols ];
+        double[] targetData = new double[ numRows*numCols ];
 
-		var pos = 0;
-        for (var row : data) {
+        int pos = 0;
+        for (double[] row : data) {
             if (row.length != numCols) {
                 throw new IllegalArgumentException("All rows must have the same length");
             }
@@ -92,8 +92,8 @@ public class EjmlOps {
 	 * @return
 	 */
 	public static void replaceNaN(DMatrixRMaj matrix, double repl) {
-		for (var i = 0; i < matrix.numRows; i++) {
-			for (var j = 0; j < matrix.numCols; j++) {
+		for (int i = 0; i < matrix.numRows; i++) {
+			for (int j = 0; j < matrix.numCols; j++) {
 				if(Double.isNaN(matrix.get(i,j))) {
 					matrix.set(i,j,repl);
 				} 
@@ -102,11 +102,11 @@ public class EjmlOps {
 	}
 
 	public static DMatrixRMaj fillWithRow(DMatrixRMaj matrix, int setrow) {
-		var rows = matrix.numRows;
-		var cols = matrix.numCols;
-		var result = new DMatrixRMaj(rows,cols);
-		for (var row = 0; row < rows; row++) {
-			for (var col = 0; col < cols; col++) {
+        int rows = matrix.numRows;
+        int cols = matrix.numCols;
+        DMatrixRMaj result = new DMatrixRMaj(rows,cols);
+		for (int row = 0; row < rows; row++) {
+			for (int col = 0; col < cols; col++) {
 				result.set(row,col, matrix.get(setrow,col));				
 			}
 		}
@@ -114,11 +114,11 @@ public class EjmlOps {
 	}
 
 	public static DMatrixRMaj tile(DMatrixRMaj matrix, int rowtimes, int coltimes) {
-		var result = new DMatrixRMaj(matrix.numRows*rowtimes,matrix.numCols*coltimes);
+        DMatrixRMaj result = new DMatrixRMaj(matrix.numRows*rowtimes,matrix.numCols*coltimes);
 		for (int i = 0, resultrow = 0; i < rowtimes; i++) {
-			for (var j = 0; j < matrix.numRows; j++) {
+			for (int j = 0; j < matrix.numRows; j++) {
 				for (int k = 0, resultcol = 0; k < coltimes; k++) {
-					for (var l = 0; l < matrix.numCols; l++) {
+					for (int l = 0; l < matrix.numCols; l++) {
 						result.set(resultrow,resultcol++,matrix.get(j,l));
 					}
 				}
@@ -137,8 +137,8 @@ public class EjmlOps {
 	 * @return
 	 */
 	public static void assignAllLessThan(DMatrixRMaj matrix, double lessthan, double assign) {
-		for (var i = 0; i < matrix.numRows; i++) {
-			for (var j = 0; j < matrix.numCols; j++) {
+		for (int i = 0; i < matrix.numRows; i++) {
+			for (int j = 0; j < matrix.numCols; j++) {
 				if( matrix.get(i,j) < lessthan) {
 					matrix.set(i,j,assign);
 				}
@@ -147,32 +147,32 @@ public class EjmlOps {
 	}
 
 	public static DMatrixRMaj colMean(DMatrixRMaj y, int i) {
-		var colmean = new DMatrixRMaj(1,y.numCols);
+        DMatrixRMaj colmean = new DMatrixRMaj(1,y.numCols);
 		sumCols(y,colmean);
 		divide(colmean, y.numRows);
 		return colmean;
 	}
 
 	public static void addRowVector(DMatrixRMaj matrix, DMatrix rowvector) {
-		for (var i = 0; i < matrix.numRows; i++) {
-			for (var j = 0; j < matrix.numCols; j++) {
+		for (int i = 0; i < matrix.numRows; i++) {
+			for (int j = 0; j < matrix.numCols; j++) {
 				matrix.set(i,j,matrix.get(i,j) + rowvector.get(0,j));
 			}
 		}
 	}
 
 	public static void assignAtIndex(DMatrix num, int[] range, int[] range1, double value) {
-		for (var j = 0; j < range.length; j++) {
+		for (int j = 0; j < range.length; j++) {
 			num.set(range[j], range1[j], value);
 		}
 	}
 
 	public static double [][] extractDoubleArray(DMatrix p) {
-		var rows = p.getNumRows();
-		var cols = p.getNumCols();
-		var result = new double[rows][cols];
-		for (var i = 0; i < rows; i++) {
-			for (var j = 0; j < cols; j++) {
+        int rows = p.getNumRows();
+        int cols = p.getNumCols();
+        double[][] result = new double[rows][cols];
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
 				result[i][j] = p.get(i, j);
 			}
 		}

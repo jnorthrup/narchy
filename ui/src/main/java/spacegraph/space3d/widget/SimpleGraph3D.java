@@ -11,10 +11,7 @@ import spacegraph.space3d.Spatial;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.video.Draw;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -97,7 +94,7 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
 
         @Override
         public Body3D newBody(boolean collidesWithOthersLikeThis) {
-            var d = super.newBody(collidesWithOthersLikeThis);
+            Body3D d = super.newBody(collidesWithOthersLikeThis);
             d.setMass(100);
             d.setDamping(0.9f, 0.1f);
             return d;
@@ -124,7 +121,11 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
     }
 
     public SimpleGraph3D<X> commit(MapNodeGraph<X,Object> g) {
-        var list = g.nodes().stream().map(Node::id).collect(Collectors.toList());
+        List<X> list = new ArrayList<>();
+        for (Node<X, Object> xObjectNode : g.nodes()) {
+            X id = xObjectNode.id();
+            list.add(id);
+        }
         return commit(
                 list,
                 x-> StreamSupport.stream(g.node(x).edges(false, true).spliterator(), false).map(zz -> zz.to().id())
@@ -138,10 +139,10 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
     private SimpleGraph3D<X> update(Iterable<X> nodes, Function<X, Iterable<X>> edges, boolean addOrReplace) {
         List<Spatial<X>> n2 = new FasterList();
 
-        for (var x : nodes) {
-            var src = cache.computeIfAbsent(x, DefaultSpaceWidget::new);
+        for (X x : nodes) {
+            DefaultSpaceWidget<X> src = cache.computeIfAbsent(x, DefaultSpaceWidget::new);
 
-            for (var edge : edges.apply(x)) {
+            for (X edge : edges.apply(x)) {
                 src.edges.add(new EDraw<>(
                         src, cache.computeIfAbsent(edge, DefaultSpaceWidget::new)
                         , 0.5f));

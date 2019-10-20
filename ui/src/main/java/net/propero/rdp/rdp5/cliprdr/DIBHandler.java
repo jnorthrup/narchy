@@ -66,7 +66,7 @@ public class DIBHandler extends TypeHandler implements ImageObserver {
     @Override
     public void handleData(RdpPacket data, int length, ClipInterface c) {
 
-        var t = new BMPToImageThread(data, length, c);
+        BMPToImageThread t = new BMPToImageThread(data, length, c);
         t.start();
     }
 
@@ -77,11 +77,11 @@ public class DIBHandler extends TypeHandler implements ImageObserver {
             if (in != null
                     && in
                     .isDataFlavorSupported(Utilities_Localised.imageFlavor)) {
-                var img = (Image) in
+                Image img = (Image) in
                         .getTransferData(Utilities_Localised.imageFlavor);
-                var b = new ClipBMP();
+                ClipBMP b = new ClipBMP();
 
-                var mediaTracker = new MediaTracker(new Frame());
+                MediaTracker mediaTracker = new MediaTracker(new Frame());
                 mediaTracker.addImage(img, 0);
 
                 try {
@@ -94,9 +94,9 @@ public class DIBHandler extends TypeHandler implements ImageObserver {
                 if (img == null)
                     return;
 
-                var width = img.getWidth(this);
-                var height = img.getHeight(this);
-                var out = b.getBitmapAsBytes(img, width, height);
+                int width = img.getWidth(this);
+                int height = img.getHeight(this);
+                byte[] out = b.getBitmapAsBytes(img, width, height);
 
                 c.send_data(out, out.length);
             }

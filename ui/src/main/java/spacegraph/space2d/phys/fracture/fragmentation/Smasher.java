@@ -64,31 +64,31 @@ public class Smasher {
         this.focee = focee;
         this.p = p;
 
-        var list = getVoronoi();
+        List<Fragment> list = getVoronoi();
 
         List<EdgePolygon> polygonEdgesList = new FasterList<>();
-        var polygonEdges = new HashTabulka<EdgePolygon>();
+        HashTabulka<EdgePolygon> polygonEdges = new HashTabulka<EdgePolygon>();
 
 
-        var count = p.size();
-        for (var i = 1; i <= count; i++) {
-            var p1 = p.get(i - 1);
-            var p2 = p.get(i == count ? 0 : i);
-            var e = new EdgePolygon(p1, p2);
+        int count = p.size();
+        for (int i = 1; i <= count; i++) {
+            v2 p1 = p.get(i - 1);
+            v2 p2 = p.get(i == count ? 0 : i);
+            EdgePolygon e = new EdgePolygon(p1, p2);
             polygonEdges.add(e);
             polygonEdgesList.add(e);
         }
 
 
-        var diagramEdges = new HashTabulka<EdgeDiagram>();
-        for (var pp : list) {
+        HashTabulka<EdgeDiagram> diagramEdges = new HashTabulka<EdgeDiagram>();
+        for (Fragment pp : list) {
             count = pp.size();
-            for (var i = 1; i <= count; i++) {
-                var p1 = pp.get(i - 1);
-                var p2 = pp.get(i == count ? 0 : i);
+            for (int i = 1; i <= count; i++) {
+                v2 p1 = pp.get(i - 1);
+                v2 p2 = pp.get(i == count ? 0 : i);
 
-                var e = new EdgeDiagram(p1, p2);
-                var alternative = diagramEdges.get(e);
+                EdgeDiagram e = new EdgeDiagram(p1, p2);
+                EdgeDiagram alternative = diagramEdges.get(e);
                 if (alternative == null) {
                     diagramEdges.add(e);
                     e.d1 = pp;
@@ -108,10 +108,10 @@ public class Smasher {
 
         List<EVec2> vectorList = new FasterList<>();
 
-        for (var array : allEdges) {
-            for (var e : array) {
-                var v1 = new EVec2(e.p1);
-                var v2 = new EVec2(e.p2);
+        for (AEdge[] array : allEdges) {
+            for (AEdge e : array) {
+                EVec2 v1 = new EVec2(e.p1);
+                EVec2 v2 = new EVec2(e.p2);
                 v1.e = e;
                 v2.e = e;
                 if (v1.p.y < v2.p.y) {
@@ -124,19 +124,19 @@ public class Smasher {
             }
         }
 
-        var vectors = vectorList.toArray(new EVec2[0]);
+        EVec2[] vectors = vectorList.toArray(new EVec2[0]);
 
         Arrays.sort(vectors);
 
 
-        for (var e : vectors) {
+        for (EVec2 e : vectors) {
             if (e.e instanceof EdgeDiagram) {
                 if (e.start) {
-                    var ex = (EdgeDiagram) e.e;
+                    EdgeDiagram ex = (EdgeDiagram) e.e;
                     diagramEdges.add(ex);
 
 
-                    for (var px : polygonEdges) {
+                    for (EdgePolygon px : polygonEdges) {
                         process(px, ex);
                     }
 
@@ -145,10 +145,10 @@ public class Smasher {
                 }
             } else {
                 if (e.start) {
-                    var px = (EdgePolygon) e.e;
+                    EdgePolygon px = (EdgePolygon) e.e;
                     polygonEdges.add(px);
 
-                    for (var ex : diagramEdges) {
+                    for (EdgeDiagram ex : diagramEdges) {
                         process(px, ex);
                     }
 
@@ -159,13 +159,13 @@ public class Smasher {
             }
         }
 
-        for (var pol : list) {
+        for (Fragment pol : list) {
             pol.resort();
-            var pn = pol.size();
-            for (var i = 0; i < pn; i++) {
-                var v = pol.get(i);
+            int pn = pol.size();
+            for (int i = 0; i < pn; i++) {
+                v2 v = pol.get(i);
                 if (v instanceof Vec2Intersect) {
-                    var vi = (Vec2Intersect) v;
+                    Vec2Intersect vi = (Vec2Intersect) v;
                     if (vi.p1 == pol) {
                         vi.i1 = i;
                     } else {
@@ -175,17 +175,17 @@ public class Smasher {
             }
         }
 
-        var polygonAll = new Polygon();
+        Polygon polygonAll = new Polygon();
 
 
-        for (var ex : polygonEdgesList) {
+        for (EdgePolygon ex : polygonEdgesList) {
             polygonAll.add(ex.p1);
             ex.list.sort(c);
             polygonAll.add(ex.list);
         }
 
-        for (var i = 0; i < polygonAll.size(); i++) {
-            var v = polygonAll.get(i);
+        for (int i = 0; i < polygonAll.size(); i++) {
+            v2 v = polygonAll.get(i);
             if (v instanceof Vec2Intersect) {
                 ((Vec2Intersect) v).index = i;
             }
@@ -194,9 +194,9 @@ public class Smasher {
 
         precalc_values();
 
-        var allIntersections = new MyList<Fragment>();
-        for (var ppp : list) {
-            var intsc = getIntersections(ppp, polygonAll);
+        MyList<Fragment> allIntersections = new MyList<Fragment>();
+        for (Fragment ppp : list) {
+            List<Fragment> intsc = getIntersections(ppp, polygonAll);
             if (intsc == null) {
                 fragments = new Polygon[]{p};
                 return;
@@ -207,12 +207,12 @@ public class Smasher {
         table.clear();
 
 
-        for (var f : allIntersections) {
-            for (var i = 0; i < f.size(); ++i) {
-                var v1 = f.get(i);
-                var v2 = f.cycleGet(i + 1);
-                var e = new EdgeDiagram(v1, v2);
-                var e2 = table.get(e);
+        for (Fragment f : allIntersections) {
+            for (int i = 0; i < f.size(); ++i) {
+                v2 v1 = f.get(i);
+                v2 v2 = f.cycleGet(i + 1);
+                EdgeDiagram e = new EdgeDiagram(v1, v2);
+                EdgeDiagram e2 = table.get(e);
                 if (e2 != null) {
                     e = e2;
                     e.d2 = f;
@@ -227,12 +227,12 @@ public class Smasher {
         double[] distance = {Double.MAX_VALUE};
         Fragment[] startPolygon = {null};
         v2[] kolmicovyBod = {null};
-        var allEdgesPolygon = new MyList<EdgeDiagram>();
+        MyList<EdgeDiagram> allEdgesPolygon = new MyList<EdgeDiagram>();
 
 
-        for (var edgeDiagram : table) {
+        for (EdgeDiagram edgeDiagram : table) {
             if (edgeDiagram.d2 == null) {
-                var vv = edgeDiagram.kolmicovyBod(contactPoint);
+                v2 vv = edgeDiagram.kolmicovyBod(contactPoint);
                 double newDistance = contactPoint.distanceSq(vv);
                 if (newDistance <= distance[0]) {
                     distance[0] = newDistance;
@@ -243,29 +243,35 @@ public class Smasher {
             }
         }
 
-        var ppx = new MyList<Fragment>();
+        MyList<Fragment> ppx = new MyList<Fragment>();
         ppx.add(startPolygon[0]);
-        var epx = new EdgeDiagram(null, null);
+        EdgeDiagram epx = new EdgeDiagram(null, null);
         startPolygon[0].visited = true;
 
-        var vysledneFragmenty = new HashTabulka<Fragment>();
+        HashTabulka<Fragment> vysledneFragmenty = new HashTabulka<Fragment>();
         while (!ppx.isEmpty()) {
-            var px = ppx.get(0);
+            Fragment px = ppx.get(0);
             vysledneFragmenty.add(px);
 
-            for (var i = 0; i < px.size(); ++i) {
-                var v1 = px.get(i);
-                var v2 = px.cycleGet(i + 1);
+            for (int i = 0; i < px.size(); ++i) {
+                v2 v1 = px.get(i);
+                v2 v2 = px.cycleGet(i + 1);
                 epx.p1 = v1;
                 epx.p2 = v2;
-                var ep = table.get(epx);
-                var opposite = ep.d1 == px ? ep.d2 : ep.d1;
+                EdgeDiagram ep = table.get(epx);
+                Fragment opposite = ep.d1 == px ? ep.d2 : ep.d1;
 
                 if (opposite != null && !opposite.visited) {
-                    var centroid = opposite.centroid();
+                    jcog.math.v2 centroid = opposite.centroid();
                     opposite.visited = true;
                     if (ic.contains(centroid)) {
-                        var intersection = allEdgesPolygon.stream().anyMatch(edge -> edge.d1 != startPolygon[0] && edge.d2 != startPolygon[0] && edge.intersectAre(centroid, kolmicovyBod[0]));
+                        boolean intersection = false;
+                        for (EdgeDiagram edge : allEdgesPolygon) {
+                            if (edge.d1 != startPolygon[0] && edge.d2 != startPolygon[0] && edge.intersectAre(centroid, kolmicovyBod[0])) {
+                                intersection = true;
+                                break;
+                            }
+                        }
 
 
                         if (!intersection) {
@@ -279,10 +285,15 @@ public class Smasher {
             ppx.removeAt(0);
         }
 
-        var fragmentsArray = vysledneFragmenty.toArray(new Fragment[0]);
-        var fragmentsBody = allIntersections.stream().filter(fx -> !vysledneFragmenty.contains(fx)).collect(Collectors.toCollection(MyList::new));
+        Fragment[] fragmentsArray = vysledneFragmenty.toArray(new Fragment[0]);
+        MyList<Fragment> fragmentsBody = new MyList<>();
+        for (Fragment fx : allIntersections) {
+            if (!vysledneFragmenty.contains(fx)) {
+                fragmentsBody.add(fx);
+            }
+        }
 
-        var result = zjednotenie(fragmentsBody);
+        MyList<Polygon> result = zjednotenie(fragmentsBody);
 
         result.add(fragmentsArray);
         fragments = new Polygon[result.size()];
@@ -292,7 +303,7 @@ public class Smasher {
     public void addFracture(Fracture fracture) {
 
 
-        var f = fractures.get(fracture);
+        Fracture f = fractures.get(fracture);
         if (f != null) {
             if (f.normalImpulse < fracture.normalImpulse) {
                 fractures.remove(f);
@@ -315,8 +326,8 @@ public class Smasher {
      * @param w
      */
     public void init(Contact contact, ContactImpulse impulse) {
-        var f1 = contact.aFixture;
-        var f2 = contact.bFixture;
+        Fixture f1 = contact.aFixture;
+        Fixture f2 = contact.bFixture;
 
 //        if (f1.getBody().getType()!=DYNAMIC && f2.getBody().getType()!=DYNAMIC) {
 //            contact.setEnabled(false);
@@ -325,10 +336,10 @@ public class Smasher {
 //            return;
 //        }
 
-        var impulses = impulse.normalImpulses;
-        for (var i = 0; i < impulse.count; ++i) {
+        float[] impulses = impulse.normalImpulses;
+        for (int i = 0; i < impulse.count; ++i) {
 
-            var iml = impulses[i];
+            float iml = impulses[i];
 
 
             tryFracture(f1, f2, iml, contact, i);
@@ -340,11 +351,11 @@ public class Smasher {
     private void tryFracture(Fixture f1, Fixture f2, float iml, Contact contact, int i) {
 
 
-        var m = f1.material;
+        Material m = f1.material;
         if (m != null && m.m_rigidity < iml) {
             f1.body.m_fractureTransformUpdate = f2.body.m_fractureTransformUpdate = false;
             if (f1.body.m_massArea >= Material.MASS_DESTRUCTABLE_MIN) {
-                var wm = new WorldManifold();
+                WorldManifold wm = new WorldManifold();
                 contact.getWorldManifold(wm);
                 addFracture(new Fracture(f1, f2, m, contact, iml, new v2(wm.points[i])));
             } else if (f1.body.type != DYNAMIC) {
@@ -356,8 +367,8 @@ public class Smasher {
     }
 
     private static final Comparator<Vec2Intersect> c = (o1, o2) -> {
-        var v1 = o1;
-        var v2 = o2;
+        Vec2Intersect v1 = o1;
+        Vec2Intersect v2 = o2;
         return Double.compare(v1.k, v2.k);
     };
 
@@ -369,12 +380,12 @@ public class Smasher {
     private List<Fragment> getIntersections(Fragment p1, Polygon p2) {
         Vec2Intersect firstV = null;
 
-        for (var v : p1) {
+        for (v2 v : p1) {
             if (v instanceof Vec2Intersect) {
                 firstV = (Vec2Intersect) v;
 
-                var p2Next = p2.cycleGet(firstV.index + 1);
-                var p1Back = p1.cycleGet((firstV.p1 == p1 ? firstV.i1 : firstV.i2) + 1);
+                v2 p2Next = p2.cycleGet(firstV.index + 1);
+                v2 p1Back = p1.cycleGet((firstV.p1 == p1 ? firstV.i1 : firstV.i2) + 1);
 
                 if (PlatformMathUtils.siteDef(p1Back, firstV, p2Next) >= 0) {
                     break;
@@ -394,13 +405,13 @@ public class Smasher {
 
         v2 start = firstV;
 
-        var iterationPolygon = p2;
-        var index = firstV.index;
+        Polygon iterationPolygon = p2;
+        int index = firstV.index;
 
-        var idemPoKonvexnom = false;
+        boolean idemPoKonvexnom = false;
         cyklus:
-        for (var exI = 0; ; ) {
-            var prienik = new Fragment();
+        for (int exI = 0; ; ) {
+            Fragment prienik = new Fragment();
             v2 iterator;
             do {
                 exI++;
@@ -410,7 +421,7 @@ public class Smasher {
 
                 iterator = iterationPolygon.cycleGet(++index);
                 if (iterator instanceof Vec2Intersect) {
-                    var intersect = (Vec2Intersect) iterator;
+                    Vec2Intersect intersect = (Vec2Intersect) iterator;
                     prienik.add(intersect.vec2);
                     intersect.visited = true;
                     idemPoKonvexnom = !idemPoKonvexnom;
@@ -444,9 +455,9 @@ public class Smasher {
 
             }
         }
-        for (var v : p1) {
+        for (v2 v : p1) {
             if (v instanceof Vec2Intersect) {
-                var vi = (Vec2Intersect) v;
+                Vec2Intersect vi = (Vec2Intersect) v;
                 vi.visited = false;
             }
         }
@@ -458,19 +469,19 @@ public class Smasher {
      * ohnisk z clenskej premennej focee.
      */
     private List<Fragment> getVoronoi() {
-        var min = new v2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
-        var max = new v2(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
+        v2 min = new v2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+        v2 max = new v2(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
 
-        for (var v : p) {
+        for (v2 v : p) {
             min = v2.min(min, v);
             max = v2.max(max, v);
         }
-        for (var v : focee) {
+        for (v2 v : focee) {
             min = v2.min(min, v);
             max = v2.max(max, v);
         }
 
-        var deficit = new v2(1, 1);
+        v2 deficit = new v2(1, 1);
         min.subbed(deficit);
         max.added(deficit);
 
@@ -478,16 +489,21 @@ public class Smasher {
 
         List<Fragment> fragmentList = new FasterList<>(focee.length);
 
-        var bound = factory.pCount;
-        var pp = IntStream.range(0, bound).mapToObj(i1 -> new v2(factory.points[i1])).toArray(v2[]::new);
+        int bound = factory.pCount;
+        List<v2> list = new ArrayList<>();
+        for (int i1 = 0; i1 < bound; i1++) {
+            v2 v2 = new v2(factory.points[i1]);
+            list.add(v2);
+        }
+        v2[] pp = list.toArray(new v2[0]);
 
-        for (var i = 0; i < focee.length; i++) {
+        for (int i = 0; i < focee.length; i++) {
 
-            var n = factory.vCount[i];
-            var ppx = factory.voronoi[i];
+            int n = factory.vCount[i];
+            int[] ppx = factory.voronoi[i];
 
-            var f = new Fragment(n);
-            for (var j = 0; j < n; ++j) {
+            Fragment f = new Fragment(n);
+            for (int j = 0; j < n; ++j) {
                 f.add(pp[ppx[j]]);
             }
             f.focus = focee[i];
@@ -505,11 +521,11 @@ public class Smasher {
      * @return Vrati List zjednotenych polygonov.
      */
     private static MyList<Polygon> zjednotenie(MyList<Fragment> polygony) {
-        var graf = new HashTabulka<GraphVertex>();
+        HashTabulka<GraphVertex> graf = new HashTabulka<GraphVertex>();
         for (Polygon p : polygony) {
-            for (var i = 1; i <= p.size(); ++i) {
-                var v = p.cycleGet(i);
-                var vertex = graf.get(v);
+            for (int i = 1; i <= p.size(); ++i) {
+                v2 v = p.cycleGet(i);
+                GraphVertex vertex = graf.get(v);
                 if (vertex == null) {
                     vertex = new GraphVertex(v);
                     graf.add(vertex);
@@ -522,9 +538,9 @@ public class Smasher {
         }
 
         for (Polygon p : polygony) {
-            for (var i = 0; i < p.size(); ++i) {
-                var v1 = graf.get(p.get(i));
-                var v2 = graf.get(p.cycleGet(i + 1));
+            for (int i = 0; i < p.size(); ++i) {
+                GraphVertex v1 = graf.get(p.get(i));
+                GraphVertex v2 = graf.get(p.cycleGet(i + 1));
                 if (v1.polygonCount == 1 || v2.polygonCount == 1 || (v1.polygonCount <= 2 && v2.polygonCount <= 2 && !((v1.first == v2.first && v1.second == v2.second) || (v1.first == v2.second && v1.second == v2.first)))) {
                     v1.next = v2;
                     v2.prev = v1;
@@ -532,13 +548,13 @@ public class Smasher {
             }
         }
 
-        var vysledok = new MyList<Polygon>();
+        MyList<Polygon> vysledok = new MyList<Polygon>();
 
-        var arr = graf.toArray(new GraphVertex[0]);
-        for (var v : arr) {
+        GraphVertex[] arr = graf.toArray(new GraphVertex[0]);
+        for (GraphVertex v : arr) {
             if (v.next != null && !v.visited) {
-                var p = new Polygon();
-                for (var iterator = v; !iterator.visited; iterator = iterator.next) {
+                Polygon p = new Polygon();
+                for (GraphVertex iterator = v; !iterator.visited; iterator = iterator.next) {
                     if (PlatformMathUtils.siteDef(iterator.next.value, iterator.value, iterator.prev.value) != 0) {
                         p.add(iterator.value);
                     }
@@ -558,7 +574,7 @@ public class Smasher {
      * @param b Hrana vo voronoi diagrame
      */
     private static void process(EdgePolygon a, EdgeDiagram b) {
-        var p = AEdge.intersect(a, b);
+        Vec2Intersect p = AEdge.intersect(a, b);
         if (p != null) {
             p.p1 = b.d1;
             p.p2 = b.d2;
@@ -572,13 +588,13 @@ public class Smasher {
      * Predpocita hodnoty pre zistovanie prieniku polygonu s bodmi
      */
     private void precalc_values() {
-        var n = p.size();
+        int n = p.size();
         multiple = new float[n];
         constant = new float[n];
-        var j = n - 1;
-        for (var i = 0; i < n; i++) {
-            var vi = p.get(i);
-            var vj = p.get(j);
+        int j = n - 1;
+        for (int i = 0; i < n; i++) {
+            v2 vi = p.get(i);
+            v2 vj = p.get(j);
             multiple[i] = (vj.x - vi.x) / (vj.y - vi.y);
             constant[i] = vi.x - vi.y * multiple[i];
             j = i;
@@ -591,14 +607,14 @@ public class Smasher {
      * predpocitane hodnoty primarneho polygonu metodou precalc_values().
      */
     private boolean pointInPolygon(v2 v) {
-        var x = v.x;
-        var y = v.y;
-        var n = p.size();
-        var j = n - 1;
-        var b = false;
-        for (var i = 0; i < n; i++) {
-            var vi = p.get(i);
-            var vj = p.get(j);
+        float x = v.x;
+        float y = v.y;
+        int n = p.size();
+        int j = n - 1;
+        boolean b = false;
+        for (int i = 0; i < n; i++) {
+            v2 vi = p.get(i);
+            v2 vj = p.get(j);
             if ((vi.y < y && vj.y >= y || vj.y < y && vi.y >= y) && y * multiple[i] + constant[i] < x) {
                 b = !b;
             }
@@ -608,9 +624,9 @@ public class Smasher {
     }
 
     public void update(Dynamics2D dyn, float dt) {
-        fractures.forEach(f ->
-            f.smash(this, dt, dyn)
-        );
+        for (Fracture f : fractures) {
+            f.smash(this, dt, dyn);
+        }
         fractures.clear();
     }
 }

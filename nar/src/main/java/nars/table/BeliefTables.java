@@ -43,24 +43,24 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
 
     @Override
     public void match(Answer a) {
-        var size = this.size;
+        int size = this.size;
         if (size != 0) {
-            var items = this.items;
+            BeliefTable[] items = this.items;
             if (size == 1) {
                 items[0].match(a);
             } else {
-                var nonEmpty = new IntArrayList(size);
-                for (var i = 0; i < size; i++) {
+                IntArrayList nonEmpty = new IntArrayList(size);
+                for (int i = 0; i < size; i++) {
                     if (!items[i].isEmpty())
                         nonEmpty.add(i);
                 }
-                var N = nonEmpty.size();
+                int N = nonEmpty.size();
                 if (N ==1) {
                     items[nonEmpty.get(0)].match(a);
                 } else {
                     switch (matchMode) {
                         case ORDERED: {
-                            for (var i = 0; i < N; i++) {
+                            for (int i = 0; i < N; i++) {
                                 items[nonEmpty.get(i)].match(a);
                                 if (a.ttl <= 0)
                                     break;
@@ -69,9 +69,9 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
                         }
 
                         case SHUFFLE_FIRST_COME_FIRST_SERVE: {
-                            var ne = nonEmpty.toIntArray();
+                            int[] ne = nonEmpty.toIntArray();
                             ArrayUtil.shuffle(ne, a.random());
-                            for (var i = 0; i < N; i++) {
+                            for (int i = 0; i < N; i++) {
                                 items[ne[i]].match(a);
                                 if (a.ttl <= 0)
                                     break;
@@ -81,16 +81,16 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
 
                         case SHUFFLE_ROUND_ROBIN: {
                             //fair round robin
-                            var ttlStart = a.ttl;
+                            int ttlStart = a.ttl;
                             assert (ttlStart > 0);
-                            var ttlFair = Math.max(1,
+                            int ttlFair = Math.max(1,
                                 (int)Math.ceil(((float)ttlStart) / N)
                                 //ttlStart
                             );
-                            var ne = nonEmpty.toIntArray();
+                            int[] ne = nonEmpty.toIntArray();
                             ArrayUtil.shuffle(ne, a.random());
-                            var ttlUsed = 0;
-                            for (var i = 0; i < N; i++) {
+                            int ttlUsed = 0;
+                            for (int i = 0; i < N; i++) {
                                 a.ttl = ttlFair;
                                 items[ne[i]].match(a);
                                 ttlUsed += ttlFair - a.ttl;
@@ -180,7 +180,7 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
 
     /** stops after the first table accepts it */
     @Override public void remember(Remember r) {
-        var items = this.items;
+        BeliefTable[] items = this.items;
         for (int i = 0, thisSize = this.size; i < thisSize; i++) {
             items[i].remember(r);
             if (r.complete())
@@ -229,7 +229,7 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
 
     /** gets first matching table of the provided type */
     public @Nullable <X extends TaskTable> X tableFirst(Class<? extends X> t) {
-        for (var beliefTable : this) {
+        for (BeliefTable beliefTable : this) {
             if (t.isInstance(beliefTable)) {
                 return (X) beliefTable;
             }

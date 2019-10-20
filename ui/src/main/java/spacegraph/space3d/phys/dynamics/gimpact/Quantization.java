@@ -38,22 +38,22 @@ class Quantization {
 
 	public static void bt_calc_quantization_parameters(v3 outMinBound, v3 outMaxBound, v3 bvhQuantization, v3 srcMinBound, v3 srcMaxBound, float quantizationMargin) {
 
-		var clampValue = new v3();
+        v3 clampValue = new v3();
 		clampValue.set(quantizationMargin, quantizationMargin, quantizationMargin);
 		outMinBound.sub(srcMinBound, clampValue);
 		outMaxBound.add(srcMaxBound, clampValue);
-		var aabbSize = new v3();
+        v3 aabbSize = new v3();
 		aabbSize.sub(outMaxBound, outMinBound);
 		bvhQuantization.set(65535.0f, 65535.0f, 65535.0f);
 		VectorUtil.div(bvhQuantization, bvhQuantization, aabbSize);
 	}
 
 	public static void bt_quantize_clamp(short[] out, v3 point, v3 min_bound, v3 max_bound, v3 bvhQuantization) {
-		var clampedPoint = new v3(point);
+        v3 clampedPoint = new v3(point);
 		VectorUtil.setMax(clampedPoint, min_bound);
 		VectorUtil.setMin(clampedPoint, max_bound);
 
-		var v = new v3();
+        v3 v = new v3();
 		v.sub(clampedPoint, min_bound);
 		VectorUtil.mul(v, v, bvhQuantization);
 

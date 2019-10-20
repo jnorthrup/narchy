@@ -13,16 +13,16 @@ public class PMI implements CorrelationFunction{
 	@Override
     public double calculateCorrelation(double p_x, double p_y, double p_x_y) {
 
-		var isZero = Double.compare(p_x_y, 0.0);
+        int isZero = Double.compare(p_x_y, 0.0);
 
         if (isZero == 0)
 			return -num;
 
-		var isOne = Double.compare(p_x_y, 1.0);
+        int isOne = Double.compare(p_x_y, 1.0);
         if (isOne == 0)
 			return num;
 
-		var log2 = Math.log(2);
+        double log2 = Math.log(2);
 		/*double ex = - p_x * Math.log(p_x)/log2;
 		double ey = - p_y * Math.log(p_y)/log2;
 		double exy = - p_x_y * Math.log(p_x_y)/log2;

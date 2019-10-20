@@ -125,7 +125,7 @@ public class IOLibrary extends PrologLib {
             throw PrologError.type_error(prolog, 1, "atom",
                     arg);
         }
-        var arg0 = (Struct) arg.term();
+        Struct arg0 = (Struct) arg.term();
         if (inputStream != stdIn) /* If the current inputStream is the StandardInput it will not be closed */
             try {
                 inputStream.close();
@@ -173,7 +173,7 @@ public class IOLibrary extends PrologLib {
             throw PrologError.type_error(prolog, 1, "atom",
                     arg);
         }
-        var arg0 = (Struct) arg.term();
+        Struct arg0 = (Struct) arg.term();
         if (outputStream != stdOut) /* If the current outputStream is the StandardOutput it will not be closed */
 
             outputStream.close();
@@ -218,8 +218,8 @@ public class IOLibrary extends PrologLib {
             throw PrologError.type_error(prolog, 1,
                     "character", arg);
         } else {
-            var arg0 = (Struct) arg.term();
-            var ch = arg0.name();
+            Struct arg0 = (Struct) arg.term();
+            String ch = arg0.name();
             if (ch.length() > 1) {
                 throw PrologError.type_error(prolog, 1,
                         "character", arg);
@@ -241,7 +241,7 @@ public class IOLibrary extends PrologLib {
     }
 
     public boolean get0_1(Term arg0) throws PrologError {
-        var ch = -2;
+        int ch = -2;
         try {
             ch = inputStream.read();
         } catch (IOException e) {
@@ -253,7 +253,7 @@ public class IOLibrary extends PrologLib {
     }
 
     public boolean get_1(Term arg0) throws PrologError {
-        var ch = 0;
+        int ch = 0;
         do {
             try {
                 ch = inputStream.read();
@@ -274,13 +274,13 @@ public class IOLibrary extends PrologLib {
             throw PrologError.type_error(prolog, 1,
                     "integer", arg);
 
-        var n = ((NumberTerm.Int) arg.term()).intValue();
+        int n = ((NumberTerm.Int) arg.term()).intValue();
         if (outputStreamName.equals(STDOUT_NAME)) { /* Changed from STDOUT_NAME to STDOUT_NAME */
-            for (var i = 0; i < n; i++) {
+            for (int i = 0; i < n; i++) {
                 prolog.output(" ");
             }
         } else {
-            for (var i = 0; i < n; i++) {
+            for (int i = 0; i < n; i++) {
 
                 outputStream.write(0x20);
 
@@ -295,14 +295,14 @@ public class IOLibrary extends PrologLib {
 
     public boolean read_1(Term arg0) throws PrologError {
         arg0 = arg0.term();
-        var ch = 0;
+        int ch = 0;
 
-        var open_apices = false;
+        boolean open_apices = false;
 
-        var open_apices2 = false;
+        boolean open_apices2 = false;
 
 
-        var st = "";
+        String st = "";
         label:
         do {
             try {
@@ -333,7 +333,7 @@ public class IOLibrary extends PrologLib {
                     break;
             }
 
-            var can_add = true;
+            boolean can_add = true;
             if (can_add) {
                 st += Character.toString(((char) ch));
             }
@@ -419,8 +419,8 @@ public class IOLibrary extends PrologLib {
         if (!file_name.isAtomic())
             throw PrologError.type_error(prolog, 1, "atom",
                     file_name);
-        var fileName = (Struct) file_name.term();
-        var path = alice.util.Tools.removeApostrophes(fileName.toString());
+        Struct fileName = (Struct) file_name.term();
+        String path = alice.util.Tools.removeApostrophes(fileName.toString());
         if (!new File(path).isAbsolute()) {
             path = prolog.getCurrentDirectory() + File.separator + path;
         }
@@ -448,7 +448,7 @@ public class IOLibrary extends PrologLib {
         if (!(t instanceof NumberTerm)) {
             throw PrologError.type_error(prolog, 1, "Integer Number", t);
         }
-        var seed = (NumberTerm) t;
+        NumberTerm seed = (NumberTerm) t;
         if (!seed.isInteger()) {
             throw PrologError.type_error(prolog, 1, "Integer Number", t);
         }
@@ -461,7 +461,7 @@ public class IOLibrary extends PrologLib {
     }
 
     public boolean rand_int_2(Term argNum, Term num) {
-        var arg = (NumberTerm) argNum.term();
+        NumberTerm arg = (NumberTerm) argNum.term();
         return unify(num, new NumberTerm.Int(gen.nextInt(arg.intValue())));
     }
 
@@ -491,8 +491,8 @@ public class IOLibrary extends PrologLib {
     
 
     private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-        var inputStreamBak = inputStream;
-        var outputStreamBak = outputStream;
+        InputStream inputStreamBak = inputStream;
+        PrintStream outputStreamBak = outputStream;
         inputStream = null;
         outputStream = null;
         try {

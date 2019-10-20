@@ -103,7 +103,7 @@ public class client_persistant_t {
 		savedFlags= f.readInt();
 		selected_item= f.readInt();
 
-		for (var n = 0; n < Defines.MAX_ITEMS; n++)
+		for (int n = 0; n < Defines.MAX_ITEMS; n++)
 			inventory[n]= f.readInt();
 
 		max_bullets= f.readInt();
@@ -138,7 +138,7 @@ public class client_persistant_t {
 		f.writeInt(savedFlags);
 		f.writeInt(selected_item);
 
-		for (var n = 0; n < Defines.MAX_ITEMS; n++)
+		for (int n = 0; n < Defines.MAX_ITEMS; n++)
 			f.writeInt(inventory[n]);
 
 		f.writeInt(max_bullets);

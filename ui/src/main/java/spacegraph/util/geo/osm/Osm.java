@@ -86,7 +86,7 @@ public class Osm {
 
     /** TODO make static so it can customize/optimize the returned instance */
     public Osm load(InputStream fis) throws SAXException, IOException, ParserConfigurationException {
-        var factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
 
         factory.setNamespaceAware(false);
@@ -96,22 +96,22 @@ public class Osm {
         factory.setCoalescing(true);
 
 
-        var documentBuilder = factory.newDocumentBuilder();
+        DocumentBuilder documentBuilder = factory.newDocumentBuilder();
 
 
-        var document = documentBuilder.parse(fis);
+        Document document = documentBuilder.parse(fis);
 
 
         Collection<Element> relationElements = new FasterList<>();
 
-        var childNodes = document.getDocumentElement().getChildNodes();
-        var cl = childNodes.getLength();
-        for (var i = 0; i < cl; i++) {
-            var n = childNodes.item(i);
+        NodeList childNodes = document.getDocumentElement().getChildNodes();
+        int cl = childNodes.getLength();
+        for (int i = 0; i < cl; i++) {
+            Node n = childNodes.item(i);
 
             switch (n.getNodeName()) {
                 case "bounds": {
-                    var e = ((Element) n);
+                    Element e = ((Element) n);
                     assert(this.geoBounds == null);
                     this.geoBounds = RectFloat.XYXY(
                             (float) parseDouble(e.getAttribute("minlon")),
@@ -122,18 +122,18 @@ public class Osm {
                     break;
                 }
                 case "node": {
-                    var childElement = (Element) n;
-                    var id = l(childElement.getAttribute("id"));
+                    Element childElement = (Element) n;
+                    long id = l(childElement.getAttribute("id"));
 
                     Map<String, String> osmTags = null;
-                    var nodeChildren = ((Element) n).getElementsByTagName("tag") /*childNode.getChildNodes()*/;
-                    var nnc = nodeChildren.getLength();
-                    for (var j = 0; j < nnc; j++) {
-                        var nodeChild = nodeChildren.item(j);
+                    NodeList nodeChildren = ((Element) n).getElementsByTagName("tag") /*childNode.getChildNodes()*/;
+                    int nnc = nodeChildren.getLength();
+                    for (int j = 0; j < nnc; j++) {
+                        Node nodeChild = nodeChildren.item(j);
                         /*if ("tag".equals(nodeChild.getNodeName()))*/
                         {
-                            var ne = (Element) nodeChild;
-                            var key = ne.getAttribute("k");
+                            Element ne = (Element) nodeChild;
+                            String key = ne.getAttribute("k");
                             if (!filteredKeys.contains(key)) {
                                 if (osmTags == null)
                                     osmTags = new UnifiedMap(1);
@@ -143,33 +143,33 @@ public class Osm {
                     }
 
 
-                    var oo = new OsmNode(id, new GeoVec3(childElement), osmTags);
+                    OsmNode oo = new OsmNode(id, new GeoVec3(childElement), osmTags);
                     this.nodes.put(id, oo);
 
 
                     break;
                 }
                 case "way": {
-                    var childElement = (Element) n;
-                    var id = l(childElement.getAttribute("id"));
+                    Element childElement = (Element) n;
+                    long id = l(childElement.getAttribute("id"));
 
                     List<OsmElement> refOsmNodes = new FasterList<>();
                     Map<String, String> osmTags = null;
 
-                    var wayChildren = n.getChildNodes();
-                    var l = wayChildren.getLength();
-                    for (var j = 0; j < l; j++) {
-                        var wayChild = wayChildren.item(j);
-                        var node = wayChild.getNodeName();
+                    NodeList wayChildren = n.getChildNodes();
+                    int l = wayChildren.getLength();
+                    for (int j = 0; j < l; j++) {
+                        Node wayChild = wayChildren.item(j);
+                        String node = wayChild.getNodeName();
                         switch (node) {
                             case "nd":
-                                var wayChildElement = (Element) wayChild;
+                                Element wayChildElement = (Element) wayChild;
                                 refOsmNodes.add(
                                         this.nodes.get(l(wayChildElement.getAttribute("ref")))
                                 );
                                 break;
                             case "tag":
-                                var nodeChildElement = (Element) wayChild;
+                                Element nodeChildElement = (Element) wayChild;
                                 if (osmTags == null)
                                     osmTags = new UnifiedMap<>(1);
                                 osmTags.put(nodeChildElement.getAttribute("k"), nodeChildElement.getAttribute("v"));
@@ -177,31 +177,31 @@ public class Osm {
                         }
                     }
 
-                    var ow = new OsmWay(id, refOsmNodes, osmTags);
+                    OsmWay ow = new OsmWay(id, refOsmNodes, osmTags);
                     this.ways.put(id, ow);
 
 
                     break;
                 }
                 case "relation":
-                    var childElement = (Element) n;
-                    var id = l(childElement.getAttribute("id"));
+                    Element childElement = (Element) n;
+                    long id = l(childElement.getAttribute("id"));
 
-                    var relationChildren = childElement.getElementsByTagName("tag");
+                    NodeList relationChildren = childElement.getElementsByTagName("tag");
                     Map<String, String> osmTags = null;
-                    var l = relationChildren.getLength();
-                    for (var j = 0; j < l; j++) {
-                        var relationChild = relationChildren.item(j);
+                    int l = relationChildren.getLength();
+                    for (int j = 0; j < l; j++) {
+                        Node relationChild = relationChildren.item(j);
                         /*if ("tag".equals(relationChild.getNodeName()))*/
                         {
-                            var e = (Element) relationChild;
+                            Element e = (Element) relationChild;
                             if (osmTags == null)
                                 osmTags = new UnifiedMap<>(1);
                             osmTags.put(e.getAttribute("k"), e.getAttribute("v"));
                         }
                     }
 
-                    var or = new OsmRelation(id, null, osmTags);
+                    OsmRelation or = new OsmRelation(id, null, osmTags);
                     this.relations.put(id, or);
                     relationElements.add(childElement);
                     break;
@@ -210,12 +210,12 @@ public class Osm {
 
 
         
-        for (var relationElement : relationElements) {
-            var id = l(relationElement.getAttribute("id"));
+        for (Element relationElement : relationElements) {
+            long id = l(relationElement.getAttribute("id"));
 
-            var osmRelation = this.relations.get(id);
+            OsmRelation osmRelation = this.relations.get(id);
 
-            var tags = osmRelation.tags;
+            Map<String, String> tags = osmRelation.tags;
 //            String highway, natural, building, building_part, landuse;
 //            if (tags.isEmpty()) {
 //                highway = natural = building = building_part = landuse = null;
@@ -227,16 +227,16 @@ public class Osm {
 //                landuse = tags.get("landuse");
 //            }
 
-            var relationChildren = relationElement.getElementsByTagName("member");
+            NodeList relationChildren = relationElement.getElementsByTagName("member");
             List<OsmElement> osmMembers = null;
-            var l = relationChildren.getLength();
-            for (var j = 0; j < l; j++) {
-                var relationChild = relationChildren.item(j);
+            int l = relationChildren.getLength();
+            for (int j = 0; j < l; j++) {
+                Node relationChild = relationChildren.item(j);
                 /*if ("member".equals(relationChild.getNodeName()))*/
                 {
-                    var r = (Element) relationChild;
-                    var type = r.getAttribute("type");
-                    var ref = l(r.getAttribute("ref"));
+                    Element r = (Element) relationChild;
+                    String type = r.getAttribute("type");
+                    long ref = l(r.getAttribute("ref"));
 
                     OsmElement member = null;
                     switch (type) {
@@ -281,36 +281,36 @@ public class Osm {
 
         
         
-        for (var relationElement : relationElements) {
-            var id = l(relationElement.getAttribute("id"));
+        for (Element relationElement : relationElements) {
+            long id = l(relationElement.getAttribute("id"));
 
-            var osmRelation = this.relations.get(id);
+            OsmRelation osmRelation = this.relations.get(id);
 
-            var tags = osmRelation.tags;
-            var type = tags.get("type");
+            Map<String, String> tags = osmRelation.tags;
+            String type = tags.get("type");
 
             if (!"multipolygon".equals(type))
                 continue;
 
             List<? extends OsmElement> oc = osmRelation.children;
             for (int i = 0, ocSize = oc.size(); i < ocSize; i++) {
-                var e1 = oc.get(i);
+                OsmElement e1 = oc.get(i);
 
                 if (e1 == null || e1.getClass() != OsmWay.class)
                     return this;
 
-                var w1 = (OsmWay) e1;
+                OsmWay w1 = (OsmWay) e1;
                 if (w1.isLoop())
                     return this;
 
                 {
                     ListIterator<? extends OsmElement> ii = osmRelation.children.listIterator(i);
                     while (ii.hasNext()) {
-                        var e2 = ii.next();
+                        OsmElement e2 = ii.next();
                         if (e2 == null || e2.getClass() != OsmWay.class)
                             continue;
 
-                        var w2 = (OsmWay) e2;
+                        OsmWay w2 = (OsmWay) e2;
 
                         if (w1.isFollowedBy(w2)) {
                             w1.addOsmWay(w2);
@@ -342,8 +342,8 @@ public class Osm {
     }
 
     private static void printTags(Map<String, String> tags, int indent) {
-        for (var stringStringEntry : tags.entrySet()) {
-            var v = stringStringEntry.getValue();
+        for (Map.Entry<String, String> stringStringEntry : tags.entrySet()) {
+            String v = stringStringEntry.getValue();
             printIndent(indent);
             System.out.printf("%s=%s\n", stringStringEntry.getKey(), v);
         }
@@ -360,7 +360,7 @@ public class Osm {
     }
 
     private static void printOsmNode(OsmNode osmNode, int indent) {
-        var pos = osmNode.pos;
+        GeoVec3 pos = osmNode.pos;
         printIndent(indent);
         System.out.printf("<node id=%s, lat=%f, lon=%f>\n", osmNode.id, pos.getLatitude(), pos.getLongitude());
         printTags(osmNode.tags, indent + 1);
@@ -371,7 +371,7 @@ public class Osm {
     }
 
     private static void printOsmWays(Iterable<OsmWay> osmWays, int indent) {
-        for (var osmWay : osmWays) {
+        for (OsmWay osmWay : osmWays) {
             printOsmWay(osmWay, indent);
         }
     }
@@ -388,7 +388,7 @@ public class Osm {
     }
 
     private static void printOsmRelations(Iterable<OsmRelation> osmRelations, int indent) {
-        for (var osmRelation : osmRelations) {
+        for (OsmRelation osmRelation : osmRelations) {
             printOsmRelation(osmRelation, indent);
         }
     }
@@ -413,7 +413,7 @@ public class Osm {
     }
 
     private static void printIndent(int indent) {
-        for (var i = 0; i < indent; i++) {
+        for (int i = 0; i < indent; i++) {
             System.out.print("  ");
         }
     }
@@ -423,21 +423,21 @@ public class Osm {
             return;
         }
 
-        for (var i = 0; i < indent; i++) {
+        for (int i = 0; i < indent; i++) {
             System.out.print("  ");
         }
         System.out.print(node.getNodeName());
 
-        var nodeMap = node.getAttributes();
-        for (var i = 0; i < nodeMap.getLength(); i++) {
-            var attr = nodeMap.item(i);
+        NamedNodeMap nodeMap = node.getAttributes();
+        for (int i = 0; i < nodeMap.getLength(); i++) {
+            Node attr = nodeMap.item(i);
             System.out.print(", " + attr.getNodeName() + '=' + attr.getNodeValue());
         }
         System.out.println();
 
-        var childNodes = node.getChildNodes();
-        var l = childNodes.getLength();
-        for (var i = 0; i < l; i++) {
+        NodeList childNodes = node.getChildNodes();
+        int l = childNodes.getLength();
+        for (int i = 0; i < l; i++) {
             printNode(indent + 1, childNodes.item(i));
         }
     }

@@ -49,7 +49,7 @@ class TriangleContact {
     public final v3[] points = new v3[MAX_TRI_CLIPPING];
 
 	public TriangleContact() {
-		for (var i = 0; i<points.length; i++) {
+		for (int i = 0; i<points.length; i++) {
 			points[i] = new v3();
 		}
 	}
@@ -66,7 +66,7 @@ class TriangleContact {
 		penetration_depth = other.penetration_depth;
 		separating_normal.set(other.separating_normal);
 		point_count = other.point_count;
-		var i = point_count;
+		int i = point_count;
 		while ((i--) != 0) {
 			points[i].set(other.points[i]);
 		}
@@ -79,13 +79,13 @@ class TriangleContact {
 		this.point_count = 0;
 		penetration_depth = -1000.0f;
 
-		var point_indices = new short[Math.min(pointsPending, MAX_TRI_CLIPPING)];
+		short[] point_indices = new short[Math.min(pointsPending, MAX_TRI_CLIPPING)];
 
-		var penetratinDepthMinusEpsilon = penetration_depth - SIMD_EPSILON;
+		float penetratinDepthMinusEpsilon = penetration_depth - SIMD_EPSILON;
 
 		for (short _k = 0; _k < pointsPending; _k++) {
 
-			var _dist = -ClipPolygon.distance_point_plane(plane, points.get(_k)) + margin;
+			float _dist = -ClipPolygon.distance_point_plane(plane, points.get(_k)) + margin;
 
 			if (_dist >= 0.0f) {
 				int target;
@@ -103,7 +103,7 @@ class TriangleContact {
 			}
 		}
 
-		for (var _k = 0; _k < this.point_count; _k++) {
+		for (int _k = 0; _k < this.point_count; _k++) {
             
             this.points[_k].set(points.get(point_indices[_k]));
 		}

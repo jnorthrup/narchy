@@ -71,13 +71,13 @@ public class HiddenLayer {
 
 	public void forwardPropagation(double[] i, ReadData[] d) {
 
-		var nv = neurons.value;
+        double[] nv = neurons.value;
 
-		var hlt = hiddenLayerThresholds.value;
+        double[] hlt = hiddenLayerThresholds.value;
 
-		var N = neurons();
+        int N = neurons();
 
-		for (var n = 0; n < N; n++) {
+		for (int n = 0; n < N; n++) {
 			nv[n] = activation.valueOf(
 			    readDataContributionToHiddenLayer(n, d) +
                 inputContributionToHiddenLayer(n, i) +
@@ -86,15 +86,19 @@ public class HiddenLayer {
 	}
 
 	private double readDataContributionToHiddenLayer(int neuronIndex, ReadData[] readData) {
-		var readWeightsForEachHead = readDataToHiddenLayerWeights[neuronIndex];
+        Unit[][] readWeightsForEachHead = readDataToHiddenLayerWeights[neuronIndex];
 		double tempSum = 0;
-		for (var headIndex = 0; headIndex < heads; headIndex++) {
-			var headWeights = readWeightsForEachHead[headIndex];
-			var read = readData[headIndex];
-			var r = read.read;
-			var bound = memoryUnitSizeM;
-			var sum = IntStream.range(0, bound).mapToDouble(memoryCellIndex -> headWeights[memoryCellIndex].value * r[memoryCellIndex].value).sum();
-            tempSum += sum;
+		for (int headIndex = 0; headIndex < heads; headIndex++) {
+            Unit[] headWeights = readWeightsForEachHead[headIndex];
+            ReadData read = readData[headIndex];
+            Unit[] r = read.read;
+            int bound = memoryUnitSizeM;
+			double sum = 0.0;
+			for (int memoryCellIndex = 0; memoryCellIndex < bound; memoryCellIndex++) {
+				double v = headWeights[memoryCellIndex].value * r[memoryCellIndex].value;
+				sum += v;
+			}
+			tempSum += sum;
 		}
 		return tempSum;
 	}
@@ -111,21 +115,21 @@ public class HiddenLayer {
 	}
 
 	public void backwardErrorPropagation(double[] input, ReadData[] reads) {
-		var hiddenLayerGradients = calculateHiddenLayerGradinets();
+        double[] hiddenLayerGradients = calculateHiddenLayerGradinets();
 		updateReadDataGradient(hiddenLayerGradients, reads);
 		updateInputToHiddenWeightsGradients(hiddenLayerGradients, input);
 		updateHiddenLayerThresholdsGradients(hiddenLayerGradients);
 	}
 
 	private double[] calculateHiddenLayerGradinets() {
-		var n = neurons();
-		var g = this.neurons.grad;
-		var v = this.neurons.value;
-		var a = this.activation;
-		var hiddenLayerGradients = new double[10];
-		var count = 0;
-        for (var i = 0; i < n; i++) {
-			var derivative = a.derivative(g[i], v[i]);
+        int n = neurons();
+        double[] g = this.neurons.grad;
+        double[] v = this.neurons.value;
+        IDifferentiableFunction a = this.activation;
+        double[] hiddenLayerGradients = new double[10];
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            double derivative = a.derivative(g[i], v[i]);
             if (hiddenLayerGradients.length == count)
                 hiddenLayerGradients = Arrays.copyOf(hiddenLayerGradients, count * 2);
             hiddenLayerGradients[count++] = derivative;
@@ -136,14 +140,14 @@ public class HiddenLayer {
 
 	private void updateReadDataGradient(double[] hiddenLayerGradients, ReadData[] reads) {
         int n = neurons(), h = heads, m = memoryUnitSizeM;
-        for (var neuronIndex = 0; neuronIndex < n; neuronIndex++) {
-			var neuronToReadDataWeights = readDataToHiddenLayerWeights[neuronIndex];
-			var hiddenLayerGradient = hiddenLayerGradients[neuronIndex];
-			for (var headIndex = 0; headIndex < h; headIndex++) {
-				var readData = reads[headIndex];
-				var neuronToHeadReadDataWeights = neuronToReadDataWeights[headIndex];
-				var r = readData.read;
-				for (var memoryCellIndex = 0; memoryCellIndex < m; memoryCellIndex++) {
+        for (int neuronIndex = 0; neuronIndex < n; neuronIndex++) {
+            Unit[][] neuronToReadDataWeights = readDataToHiddenLayerWeights[neuronIndex];
+            double hiddenLayerGradient = hiddenLayerGradients[neuronIndex];
+			for (int headIndex = 0; headIndex < h; headIndex++) {
+                ReadData readData = reads[headIndex];
+                Unit[] neuronToHeadReadDataWeights = neuronToReadDataWeights[headIndex];
+                Unit[] r = readData.read;
+				for (int memoryCellIndex = 0; memoryCellIndex < m; memoryCellIndex++) {
 					r[memoryCellIndex].grad += hiddenLayerGradient * neuronToHeadReadDataWeights[memoryCellIndex].value;
 					neuronToHeadReadDataWeights[memoryCellIndex].grad += hiddenLayerGradient * r[memoryCellIndex].value;
 				}
@@ -152,25 +156,25 @@ public class HiddenLayer {
 	}
 
 	private void updateInputToHiddenWeightsGradients(double[] hiddenLayerGradients, double[] input) {
-		var n = neurons();
-		var inputToHiddenLayerWeights = this.inputToHiddenLayerWeights.row;
-		for (var i = 0; i < n; i++) {
-			var hiddenGradient = hiddenLayerGradients[i];
+        int n = neurons();
+        UVector[] inputToHiddenLayerWeights = this.inputToHiddenLayerWeights.row;
+		for (int i = 0; i < n; i++) {
+            double hiddenGradient = hiddenLayerGradients[i];
 			updateInputGradient(hiddenGradient, inputToHiddenLayerWeights[i], input);
 		}
 	}
 
 	private void updateInputGradient(double hiddenLayerGradient, UVector inputToHiddenNeuronWeights, double[] input) {
-		var g = inputToHiddenNeuronWeights.grad;
-		var n = this.inputs;
-		for (var i = 0; i < n; i++)
+        double[] g = inputToHiddenNeuronWeights.grad;
+        int n = this.inputs;
+		for (int i = 0; i < n; i++)
 			g[i] += hiddenLayerGradient * input[i];
 	}
 
 	private void updateHiddenLayerThresholdsGradients(double[] hiddenLayerGradients) {
-		var hgrad = hiddenLayerThresholds.grad;
-		var n = neurons();
-		for (var i = 0; i < n; i++)
+        double[] hgrad = hiddenLayerThresholds.grad;
+        int n = neurons();
+		for (int i = 0; i < n; i++)
 			hgrad[i] += hiddenLayerGradients[i];
 	}
 

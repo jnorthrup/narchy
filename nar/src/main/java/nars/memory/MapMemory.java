@@ -59,9 +59,9 @@ public class MapMemory extends Memory {
 
     @Override
     public void forEach(Consumer<? super Concept> c) {
-        for (var entry : map.entrySet()) {
-            var k = entry.getKey();
-            var v = entry.getValue();
+        for (Map.Entry<Term, Concept> entry : map.entrySet()) {
+            Term k = entry.getKey();
+            Concept v = entry.getValue();
             c.accept(v);
         }
     }

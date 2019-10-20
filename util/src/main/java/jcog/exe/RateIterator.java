@@ -38,7 +38,7 @@ public class RateIterator<X> implements Iterator<X> {
 
     @Override
     public X next() {
-        var x = iter.next();
+        X x = iter.next();
         rate.acquire(cost(x));
         return x;
     }

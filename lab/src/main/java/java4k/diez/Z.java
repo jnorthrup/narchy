@@ -319,8 +319,8 @@ public class Z extends GamePanel {
 
 		
 		try {
-			var audioFormat = new AudioFormat(RATE, 16, 1, true, true);
-			var info = new DataLine.Info(Clip.class, audioFormat);
+            AudioFormat audioFormat = new AudioFormat(RATE, 16, 1, true, true);
+            DataLine.Info info = new DataLine.Info(Clip.class, audioFormat);
 			for (i = 0; i < SOUNDS; i++) {
 				audio[i] = (Clip) AudioSystem.getLine(info);
 				audio[i].open(audioFormat, audioData[i], 0, audioData[i].length);
@@ -392,7 +392,7 @@ public class Z extends GamePanel {
 		}
 
 
-		var zombie = "000000844444000oDDDDDDDDDDDD00oDDDDDEEGGGGFjo"
+        String zombie = "000000844444000oDDDDDDDDDDDD00oDDDDDEEGGGGFjo"
 		
 		
 		
@@ -1048,7 +1048,7 @@ public class Z extends GamePanel {
 	@Override
 	public void processAWTEvent(AWTEvent awtEvent) {
 		if (awtEvent instanceof KeyEvent) {
-			var e = (KeyEvent) awtEvent;
+            KeyEvent e = (KeyEvent) awtEvent;
 			if (e.getID() == KeyEvent.KEY_PRESSED) {
 				keyboard[e.getKeyChar()] = true;
 			} else if (e.getID() == KeyEvent.KEY_RELEASED) {

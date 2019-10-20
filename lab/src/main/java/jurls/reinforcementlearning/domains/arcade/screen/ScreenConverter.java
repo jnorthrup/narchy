@@ -43,13 +43,13 @@ public class ScreenConverter {
      */
     public BufferedImage convert(ScreenMatrix m) {
 
-        var img = new BufferedImage(m.width, m.height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(m.width, m.height, BufferedImage.TYPE_INT_RGB);
 
         
-        for (var x = 0; x < m.width; x++)
-            for (var y = 0; y < m.height; y++) {
-                var index = m.matrix[x][y];
-                var c = colorMap.get(index);
+        for (int x = 0; x < m.width; x++)
+            for (int y = 0; y < m.height; y++) {
+                int index = m.matrix[x][y];
+                Color c = colorMap.get(index);
                 img.setRGB(x, y, c.getRGB());
             }
 

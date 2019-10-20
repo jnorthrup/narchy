@@ -28,8 +28,8 @@ public class PriReferenceArrayBag<X,Y extends PriReference<X>> extends ArrayBag<
     }
 
     @Deprecated public List<Y> listCopy() {
-        var l = new FasterList<Y>(size());
-        for (var y : this) {
+        FasterList<Y> l = new FasterList<Y>(size());
+        for (Y y : this) {
             l.addFast(y);
         }
         return l;

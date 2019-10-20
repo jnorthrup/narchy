@@ -101,7 +101,7 @@ public class MD4 extends MessageDigest implements Cloneable {
 		context[2] = 0x98BADCFE;
 		context[3] = 0x10325476;
 		count = 0L;
-		for (var i = 0; i < BLOCK_LENGTH; i++)
+		for (int i = 0; i < BLOCK_LENGTH; i++)
 			buffer[i] = 0;
 	}
 
@@ -111,7 +111,7 @@ public class MD4 extends MessageDigest implements Cloneable {
 	@Override
     public void engineUpdate(byte b) {
 
-		var i = (int) (count % BLOCK_LENGTH);
+        int i = (int) (count % BLOCK_LENGTH);
 		count++; 
 		buffer[i] = b;
 		if (i == BLOCK_LENGTH - 1)
@@ -137,10 +137,10 @@ public class MD4 extends MessageDigest implements Cloneable {
 			throw new ArrayIndexOutOfBoundsException();
 
 
-		var bufferNdx = (int) (count % BLOCK_LENGTH);
+        int bufferNdx = (int) (count % BLOCK_LENGTH);
 		count += len;
-		var partLen = BLOCK_LENGTH - bufferNdx;
-		var i = 0;
+        int partLen = BLOCK_LENGTH - bufferNdx;
+        int i = 0;
 		if (len >= partLen) {
 			System.arraycopy(input, offset, buffer, bufferNdx, partLen);
 
@@ -165,25 +165,25 @@ public class MD4 extends MessageDigest implements Cloneable {
 	@Override
     public byte[] engineDigest() {
 
-		var bufferNdx = (int) (count % BLOCK_LENGTH);
-		var padLen = (bufferNdx < 56) ? (56 - bufferNdx) : (120 - bufferNdx);
+        int bufferNdx = (int) (count % BLOCK_LENGTH);
+        int padLen = (bufferNdx < 56) ? (56 - bufferNdx) : (120 - bufferNdx);
 
 
-		var tail = new byte[padLen + 8];
+        byte[] tail = new byte[padLen + 8];
 		tail[0] = (byte) 0x80;
 
 		
 		
 		
-		for (var i = 0; i < 8; i++)
+		for (int i = 0; i < 8; i++)
 			tail[padLen + i] = (byte) ((count * 8) >>> (8 * i));
 
 		engineUpdate(tail, 0, tail.length);
 
-		var result = new byte[16];
+        byte[] result = new byte[16];
 		
-		for (var i = 0; i < 4; i++)
-			for (var j = 0; j < 4; j++)
+		for (int i = 0; i < 4; i++)
+			for (int j = 0; j < 4; j++)
 				result[i * 4 + j] = (byte) (context[i] >>> (8 * j));
 
 		
@@ -207,17 +207,17 @@ public class MD4 extends MessageDigest implements Cloneable {
 
 		
 		
-		for (var i = 0; i < 16; i++)
+		for (int i = 0; i < 16; i++)
 			X[i] =
 				(block[offset++] & 0xFF) | (block[offset++] & 0xFF)
 					<< 8 | (block[offset++] & 0xFF)
 					<< 16 | (block[offset++] & 0xFF)
 					<< 24;
 
-		var A = context[0];
-		var B = context[1];
-		var C = context[2];
-		var D = context[3];
+        int A = context[0];
+        int B = context[1];
+        int C = context[2];
+        int D = context[3];
 
 		A = FF(A, B, C, D, X[0], 3);
 		D = FF(D, A, B, C, X[1], 7);
@@ -279,17 +279,17 @@ public class MD4 extends MessageDigest implements Cloneable {
 	
 
 	private static int FF(int a, int b, int c, int d, int x, int s) {
-		var t = a + ((b & c) | (~b & d)) + x;
+        int t = a + ((b & c) | (~b & d)) + x;
 		return t << s | t >>> (32 - s);
 	}
 	
 	private static int GG(int a, int b, int c, int d, int x, int s) {
-		var t = a + ((b & (c | d)) | (c & d)) + x + 0x5A827999;
+        int t = a + ((b & (c | d)) | (c & d)) + x + 0x5A827999;
 		return t << s | t >>> (32 - s);
 	}
 	
 	private static int HH(int a, int b, int c, int d, int x, int s) {
-		var t = a + (b ^ c ^ d) + x + 0x6ED9EBA1;
+        int t = a + (b ^ c ^ d) + x + 0x6ED9EBA1;
 		return t << s | t >>> (32 - s);
 	}
 
@@ -298,13 +298,13 @@ public class MD4 extends MessageDigest implements Cloneable {
 	 */
 	public static int Com_BlockChecksum(byte[] buffer, int length) {
 
-		var md4 = new MD4();
+        MD4 md4 = new MD4();
 
 		md4.engineUpdate(buffer, 0, length);
-		var data = md4.engineDigest();
-		var bb = ByteBuffer.wrap(data);
+        byte[] data = md4.engineDigest();
+        ByteBuffer bb = ByteBuffer.wrap(data);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
-		var val = bb.getInt() ^ bb.getInt() ^ bb.getInt() ^ bb.getInt();
+        int val = bb.getInt() ^ bb.getInt() ^ bb.getInt() ^ bb.getInt();
 		return val;
 	}
 }

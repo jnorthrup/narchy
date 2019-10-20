@@ -45,7 +45,7 @@ public interface Prioritized extends Deleteable {
 
     
     static StringBuilder toStringBuilder(@Nullable StringBuilder sb, String priorityString) {
-        var c = 1 + priorityString.length();
+        int c = 1 + priorityString.length();
         if (sb == null)
             sb = new StringBuilder(c);
         else {
@@ -57,7 +57,7 @@ public interface Prioritized extends Deleteable {
 
     
     static Ansi.Color budgetSummaryColor(Prioritized tv) {
-        var s = (int) Math.floor(tv.priElseZero() * 5);
+        int s = (int) Math.floor(tv.priElseZero() * 5);
         switch (s) {
             default:
                 return Ansi.Color.DEFAULT;
@@ -74,7 +74,7 @@ public interface Prioritized extends Deleteable {
 
 
     default float priElse(float valueIfDeleted) {
-        var p = pri();
+        float p = pri();
         return p == p ? p : valueIfDeleted;
     }
 
@@ -88,7 +88,7 @@ public interface Prioritized extends Deleteable {
 
     /** deleted if pri()==NaN */
     @Override default boolean isDeleted() {
-        var p = pri();
+        float p = pri();
         return p!=p; 
     }
 

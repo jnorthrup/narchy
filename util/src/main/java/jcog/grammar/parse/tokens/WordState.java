@@ -63,7 +63,7 @@ public class WordState extends TokenizerState {
 	 */
 	@Override
 	public Token nextToken(PushbackReader r, int unicode, Tokenizer t) throws IOException {
-		var word = new StringBuilder();
+        StringBuilder word = new StringBuilder();
 		do {
 			word.append((char) unicode);
 			unicode = r.read();
@@ -90,7 +90,7 @@ public class WordState extends TokenizerState {
 	 *        range as part of a word
 	 */
 	public void setWordChars(int fromUnicode, int toUnicode, boolean allowedInWord) {
-		for (var i = fromUnicode; i <= toUnicode; i++) {
+		for (int i = fromUnicode; i <= toUnicode; i++) {
 			setWordChar(i, allowedInWord);
 		}
 	}

@@ -66,8 +66,8 @@ final class StdAudio {
     private static void init() {
         try {
             // 44,100 samples per second, 16-bit audio, mono, signed PCM, little Endian
-            var format = new AudioFormat(SAMPLE_RATE, BITS_PER_SAMPLE, 1, true, false);
-            var info = new DataLine.Info(SourceDataLine.class, format);
+            AudioFormat format = new AudioFormat(SAMPLE_RATE, BITS_PER_SAMPLE, 1, true, false);
+            DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
 
             line = (SourceDataLine) AudioSystem.getLine(info);
             line.open(format, SAMPLE_BUFFER_SIZE * BYTES_PER_SAMPLE);
@@ -109,7 +109,7 @@ final class StdAudio {
 //        if (sample > +1.0) sample = +1.0;
 
         // convert to bytes
-        var s = (short) (MAX_16_BIT * sample);
+        short s = (short) (MAX_16_BIT * sample);
         buffer[bufferSize++] = (byte) s;
         buffer[bufferSize++] = (byte) (s >> 8);   // little Endian
 
@@ -129,7 +129,7 @@ final class StdAudio {
      */
     private static void play(double[] samples) {
         if (samples == null) throw new NullPointerException("argument to play() is null");
-        for (var sample : samples) {
+        for (double sample : samples) {
             play(sample);
         }
     }
@@ -142,13 +142,13 @@ final class StdAudio {
      * @return the array of samples
      */
     public static double[] read(String filename) {
-        var data = readByte(filename);
-        var N = data.length;
-        var d = new double[10];
-        var count = 0;
-        var bound = N / 2;
-        for (var i = 0; i < bound; i++) {
-            var v = ((short) (((data[2 * i + 1] & 0xFF) << 8) + (data[2 * i] & 0xFF))) / MAX_16_BIT;
+        byte[] data = readByte(filename);
+        int N = data.length;
+        double[] d = new double[10];
+        int count = 0;
+        int bound = N / 2;
+        for (int i = 0; i < bound; i++) {
+            double v = ((short) (((data[2 * i + 1] & 0xFF) << 8) + (data[2 * i] & 0xFF))) / MAX_16_BIT;
             if (d.length == count) d = Arrays.copyOf(d, count * 2);
             d[count++] = v;
         }
@@ -164,14 +164,14 @@ final class StdAudio {
     public static void play(String filename) {
         URL url = null;
         try {
-            var file = new File(filename);
+            File file = new File(filename);
             if (file.canRead()) url = file.toURI().toURL();
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
         // URL url = StdAudio.class.getResource(filename);
         if (url == null) throw new RuntimeException("audio " + filename + " not found");
-        var clip = Applet.newAudioClip(url);
+        AudioClip clip = Applet.newAudioClip(url);
         clip.play();
     }
 
@@ -183,14 +183,14 @@ final class StdAudio {
     public static void loop(String filename) {
         URL url = null;
         try {
-            var file = new File(filename);
+            File file = new File(filename);
             if (file.canRead()) url = file.toURI().toURL();
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
         // URL url = StdAudio.class.getResource(filename);
         if (url == null) throw new RuntimeException("audio " + filename + " not found");
-        var clip = Applet.newAudioClip(url);
+        AudioClip clip = Applet.newAudioClip(url);
         clip.loop();
     }
 
@@ -201,7 +201,7 @@ final class StdAudio {
         try {
 
             // try to read from file
-            var file = new File(filename);
+            File file = new File(filename);
             AudioInputStream ais = null;
             if (file.exists()) {
                 ais = AudioSystem.getAudioInputStream(file);
@@ -211,7 +211,7 @@ final class StdAudio {
 
             // try to read from URL
             else {
-                var url = StdAudio.class.getResource(filename);
+                URL url = StdAudio.class.getResource(filename);
                 ais = AudioSystem.getAudioInputStream(url);
                 data = new byte[ais.available()];
                 ais.read(data);
@@ -238,9 +238,9 @@ final class StdAudio {
 
         // assumes 44,100 samples per second
         // use 16-bit audio, mono, signed PCM, little Endian
-        var format = new AudioFormat(SAMPLE_RATE, 16, 1, true, false);
-        var data = new byte[2 * samples.length];
-        for (var i = 0; i < samples.length; i++) {
+        AudioFormat format = new AudioFormat(SAMPLE_RATE, 16, 1, true, false);
+        byte[] data = new byte[2 * samples.length];
+        for (int i = 0; i < samples.length; i++) {
             int temp = (short) (samples[i] * MAX_16_BIT);
             data[2 * i] = (byte) temp;
             data[2 * i + 1] = (byte) (temp >> 8);
@@ -248,8 +248,8 @@ final class StdAudio {
 
         // now save the file
         try {
-            var bais = new ByteArrayInputStream(data);
-            var ais = new AudioInputStream(bais, format, samples.length);
+            ByteArrayInputStream bais = new ByteArrayInputStream(data);
+            AudioInputStream ais = new AudioInputStream(bais, format, samples.length);
             if (filename.endsWith(".wav") || filename.endsWith(".WAV")) {
                 AudioSystem.write(ais, AudioFileFormat.Type.WAVE, new File(filename));
             } else if (filename.endsWith(".au") || filename.endsWith(".AU")) {
@@ -271,10 +271,10 @@ final class StdAudio {
     // create a note (sine wave) of the given frequency (Hz), for the given
     // duration (seconds) scaled to the given volume (amplitude)
     private static double[] note(double hz, double duration, double amplitude) {
-        var N = (int) (StdAudio.SAMPLE_RATE * duration);
-        var a = new double[N + 1];
-        var f = 2 * Math.PI * hz / StdAudio.SAMPLE_RATE;
-        for (var i = 0; i <= N; i++)
+        int N = (int) (StdAudio.SAMPLE_RATE * duration);
+        double[] a = new double[N + 1];
+        double f = 2 * Math.PI * hz / StdAudio.SAMPLE_RATE;
+        for (int i = 0; i <= N; i++)
             a[i] = amplitude * Math.sin(i * f);
         return a;
     }

@@ -30,7 +30,7 @@ public class PIDChip extends Widget {
     }
 
     protected void update() {
-        var a = actual.getAsDouble();
+        double a = actual.getAsDouble();
         if (a == a)
             this.out.out((float) this.pid.out(a));
     }

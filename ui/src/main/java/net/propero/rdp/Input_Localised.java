@@ -99,7 +99,7 @@ public class Input_Localised extends Input {
         logger.debug("doLockKeys");
 
         try {
-            var tk = Toolkit.getDefaultToolkit();
+            Toolkit tk = Toolkit.getDefaultToolkit();
             if (tk.getLockingKeyState(KeyEvent.VK_CAPS_LOCK) != capsLockOn) {
                 capsLockOn = !capsLockOn;
                 logger.debug("CAPS LOCK toggle");
@@ -163,7 +163,7 @@ public class Input_Localised extends Input {
     private class RdesktopMouseWheelAdapter implements MouseWheelListener {
         @Override
         public void mouseWheelMoved(MouseWheelEvent e) {
-            var time = getTime();
+            int time = getTime();
             
             if (rdp != null) {
                 if (e.getWheelRotation() < 0) { 

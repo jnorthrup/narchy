@@ -11,14 +11,14 @@ public class LeftRecursionChecker {
 	}
 
 	public void check() {
-		var allParsers = ParserCollector.collectAllReferencedParsers(grammar.startParser());
-		for (var each : allParsers) {
+        Set<Parser> allParsers = ParserCollector.collectAllReferencedParsers(grammar.startParser());
+		for (Parser each : allParsers) {
 			checkLeftRecursionFor(each);
 		}
 	}
 
 	private static void checkLeftRecursionFor(Parser candidate) {
-		var allLeftChildren = ParserCollector.collectLeftChildren(candidate);
+        Set<Parser> allLeftChildren = ParserCollector.collectLeftChildren(candidate);
 		if (allLeftChildren.contains(candidate))
 			throw new GrammarException("Left recursion detected for: " + candidate);
 	}

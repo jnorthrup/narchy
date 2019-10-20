@@ -86,28 +86,28 @@ public class SRN  {
     }
 
     protected static double[][] copy(double[][] original) {
-        var copy = new double[original.length][original[0].length];
-        for (var i = 0; i < original.length; i++) {
+        double[][] copy = new double[original.length][original[0].length];
+        for (int i = 0; i < original.length; i++) {
             System.arraycopy(original[i], 0, copy[i], 0, original[i].length);
         }
         return copy;
     }
 
     protected void mutate(double[] array) {
-        for (var i = 0; i < array.length; i++) {
+        for (int i = 0; i < array.length; i++) {
             array[i] += random.nextGaussian() * mutationMagnitude;
         }
     }
 
     protected void mutate(double[][] array) {
-        for (var anArray : array) {
+        for (double[] anArray : array) {
             mutate(anArray);
         }
     }
 
     protected static void propagateOneStep(double[] fromLayer, double[] toLayer, double[][] connections) {
-        for (var from = 0; from < fromLayer.length; from++) {
-            for (var to = 0; to < toLayer.length; to++) {
+        for (int from = 0; from < fromLayer.length; from++) {
+            for (int to = 0; to < toLayer.length; to++) {
                 toLayer[to] += fromLayer[from] * connections[from][to];
             }
         }
@@ -118,7 +118,7 @@ public class SRN  {
     }
 
     protected static void tanh(double[] array) {
-        for (var i = 0; i < array.length; i++) {
+        for (int i = 0; i < array.length; i++) {
             array[i] = Math.tanh(array[i]);
         }
     }

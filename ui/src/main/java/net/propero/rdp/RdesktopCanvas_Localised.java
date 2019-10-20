@@ -44,7 +44,7 @@ public class RdesktopCanvas_Localised extends RdesktopCanvas {
 
     RdesktopCanvas_Localised(int width, int height) {
         super(width, height);
-        var apex_backstore = new BufferedImage(width, height,
+        BufferedImage apex_backstore = new BufferedImage(width, height,
                 BufferedImage.TYPE_INT_RGB);
     }
 
@@ -52,15 +52,15 @@ public class RdesktopCanvas_Localised extends RdesktopCanvas {
         if (Options.server_bpp == 8)
             return;
 
-        var img = new BufferedImage(image.getWidth(null), image.getHeight(null),
+        BufferedImage img = new BufferedImage(image.getWidth(null), image.getHeight(null),
                 BufferedImage.TYPE_INT_RGB);
-        var g = img.getGraphics();
+        Graphics g = img.getGraphics();
         g.drawImage(image, 0, 0, null);
 
         
         try {
 
-            var file = new File("./testimages/" + Options.imgCount + ".jpg");
+            File file = new File("./testimages/" + Options.imgCount + ".jpg");
             Options.imgCount++;
             ImageIO.write(img, "jpg", file);
         } catch (IOException e) {
@@ -71,7 +71,7 @@ public class RdesktopCanvas_Localised extends RdesktopCanvas {
 
     @Override
     public void movePointer(int x, int y) {
-        var p = this.getLocationOnScreen();
+        Point p = this.getLocationOnScreen();
         x += p.x;
         y += p.y;
         robot.mouseMove(x, y);
@@ -99,7 +99,7 @@ public class RdesktopCanvas_Localised extends RdesktopCanvas {
     @Override
     public void update(Graphics g) {
 
-        var r = g.getClipBounds();
+        Rectangle r = g.getClipBounds();
         g.drawImage(backstore.getSubimage(r.x, r.y, r.width, r.height), r.x,
                 r.y, null);
 

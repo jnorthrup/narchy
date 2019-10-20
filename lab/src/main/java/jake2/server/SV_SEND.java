@@ -47,7 +47,7 @@ public class SV_SEND {
 	public static void SV_FlushRedirect(int sv_redirected, byte[] outputbuf) {
 		switch (sv_redirected) {
 			case Defines.RD_PACKET:
-				var s = ("print\n" + Lib.CtoJava(outputbuf));
+                String s = ("print\n" + Lib.CtoJava(outputbuf));
 				Netchan.Netchan_OutOfBand(Defines.NS_SERVER, Globals.net_from, s.length(), Lib.stringToBytes(s));
 				break;
 			case Defines.RD_CLIENT:
@@ -96,8 +96,8 @@ public class SV_SEND {
 			Com.Printf(s);
 		}
 
-		for (var i = 0; i < SV_MAIN.maxclients.value; i++) {
-			var cl = SV_INIT.svs.clients[i];
+		for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+            client_t cl = SV_INIT.svs.clients[i];
             if (level < cl.messagelevel)
 				continue;
 			if (cl.state != Defines.cs_spawned)
@@ -152,7 +152,7 @@ public class SV_SEND {
 		if (SV_INIT.svs.demofile != null)
 			SZ.Write(SV_INIT.svs.demo_multicast, SV_INIT.sv.multicast.data, SV_INIT.sv.multicast.cursize);
 
-		var reliable = false;
+        boolean reliable = false;
         int cluster;
         byte[] mask;
         switch (to) {
@@ -185,8 +185,8 @@ public class SV_SEND {
 		}
 
 		
-		for (var j = 0; j < SV_MAIN.maxclients.value; j++) {
-			var client = SV_INIT.svs.clients[j];
+		for (int j = 0; j < SV_MAIN.maxclients.value; j++) {
+            client_t client = SV_INIT.svs.clients[j];
 
             if (client.state == Defines.cs_free || client.state == Defines.cs_zombie)
 				continue;
@@ -196,7 +196,7 @@ public class SV_SEND {
 			if (mask != null) {
 				leafnum = CM.CM_PointLeafnum(client.edict.s.origin);
 				cluster = CM.CM_LeafCluster(leafnum);
-				var area2 = CM.CM_LeafArea(leafnum);
+                int area2 = CM.CM_LeafArea(leafnum);
                 if (!CM.CM_AreasConnected(area1, area2))
 					continue;
 
@@ -264,7 +264,7 @@ public class SV_SEND {
 		if (timeofs < 0 || timeofs > 0.255)
 			Com.Error(Defines.ERR_FATAL, "SV_StartSound: timeofs = " + timeofs);
 
-		var ent = entity.index;
+        int ent = entity.index;
 
 
         boolean use_phs;
@@ -275,9 +275,9 @@ public class SV_SEND {
 		else
 			use_phs = true;
 
-		var sendchan = (ent << 3) | (channel & 7);
+        int sendchan = (ent << 3) | (channel & 7);
 
-		var flags = 0;
+        int flags = 0;
 		if (volume != Defines.DEFAULT_SOUND_PACKET_VOLUME)
 			flags |= Defines.SND_VOLUME;
 		if (attenuation != Defines.DEFAULT_SOUND_PACKET_ATTENUATION)
@@ -298,7 +298,7 @@ public class SV_SEND {
 		if (origin == null) {
 			origin = origin_v;
 			if (entity.solid == Defines.SOLID_BSP) {
-				for (var i = 0; i < 3; i++)
+				for (int i = 0; i < 3; i++)
 					origin_v[i] = entity.s.origin[i] + 0.5f * (entity.mins[i] + entity.maxs[i]);
 			}
 			else {
@@ -421,9 +421,9 @@ public class SV_SEND {
         if (c.netchan.remote_address.type == Defines.NA_LOOPBACK)
 			return false;
 
-		var total = 0;
+        int total = 0;
 
-		for (var i = 0; i < Defines.RATE_MESSAGES; i++) {
+		for (int i = 0; i < Defines.RATE_MESSAGES; i++) {
 			total += c.message_size[i];
 		}
 
@@ -445,7 +445,7 @@ public class SV_SEND {
 	*/
 	public static void SV_SendClientMessages() {
 
-		var msglen = 0;
+        int msglen = 0;
 
 		
 		if (SV_INIT.sv.state == Defines.ss_demo && SV_INIT.sv.demofile != null) {
@@ -471,7 +471,7 @@ public class SV_SEND {
 					Com.Error(Defines.ERR_DROP, "SV_SendClientMessages: msglen > MAX_MSGLEN");
 
 
-				var r = 0;
+                int r = 0;
                 try {
 					r = SV_INIT.sv.demofile.read(msgbuf, 0, msglen);
 				}
@@ -486,8 +486,8 @@ public class SV_SEND {
 		}
 
 		
-		for (var i = 0; i < SV_MAIN.maxclients.value; i++) {
-			var c = SV_INIT.svs.clients[i];
+		for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+            client_t c = SV_INIT.svs.clients[i];
 
             if (c.state == 0)
 				continue;
@@ -500,7 +500,13 @@ public class SV_SEND {
 				SV_MAIN.SV_DropClient(c);
 			}
 
-			var b = IntStream.of(Defines.ss_cinematic, Defines.ss_demo, Defines.ss_pic).anyMatch(v -> SV_INIT.sv.state == v);
+			boolean b = false;
+			for (int v : new int[]{Defines.ss_cinematic, Defines.ss_demo, Defines.ss_pic}) {
+				if (SV_INIT.sv.state == v) {
+					b = true;
+					break;
+				}
+			}
 			if (b)
 				Netchan.Transmit(c.netchan, msglen, msgbuf);
 			else if (c.state == Defines.cs_spawned) {

@@ -126,12 +126,12 @@ public class Blobs {
             throw new IllegalArgumentException("input must not be null!");
         }
         prepare();
-        var tempFile = File.createTempFile("Blob", ".tmp", baseDirectory);
+        File tempFile = File.createTempFile("Blob", ".tmp", baseDirectory);
         if (logger.isDebugEnabled()) logger.debug("Created temporary file '{}'.", tempFile);
 
-        var hashString = copyAndHash(input, tempFile);
+        String hashString = copyAndHash(input, tempFile);
 
-        var tempLength = tempFile.length();
+        long tempLength = tempFile.length();
         if (tempLength == 0) {
             if (tempFile.delete()) {
                 if (logger.isDebugEnabled()) logger.debug("Deleted empty file '{}'.");
@@ -141,10 +141,10 @@ public class Blobs {
             }
             throw new IllegalArgumentException("input must not be empty!");
         }
-        var destinationFile = prepareFile(hashString);
+        File destinationFile = prepareFile(hashString);
 
         if (destinationFile.isFile()) {
-            var destinationLength = destinationFile.length();
+            long destinationLength = destinationFile.length();
             if (destinationLength == tempLength) {
                 if (logger.isInfoEnabled()) logger.info("Blob {} did already exist.", hashString);
                 deleteTempFile(tempFile);
@@ -191,7 +191,7 @@ public class Blobs {
             throws AmbiguousIdException, FileNotFoundException {
         prepare();
         id = prepareId(id);
-        var file = getFileFor(id);
+        File file = getFileFor(id);
         if (file == null) {
             return null;
         }
@@ -214,11 +214,11 @@ public class Blobs {
             throws AmbiguousIdException {
         prepare();
         id = prepareId(id);
-        var file = getFileFor(id);
+        File file = getFileFor(id);
         if (file == null) {
             return false;
         }
-        var parent = file.getParentFile();
+        File parent = file.getParentFile();
         if (file.delete()) {
             if (logger.isInfoEnabled()) logger.info("Deleted blob {}{}.", parent.getName(), file.getName());
             deleteIfEmpty(parent);
@@ -262,7 +262,7 @@ public class Blobs {
          * @return the ids of possible blob candidates.
          */
         public String[] getCandidates() {
-            var result = new String[this.candidates.length];
+            String[] result = new String[this.candidates.length];
             System.arraycopy(this.candidates, 0, result, 0, this.candidates.length);
             return result;
         }
@@ -284,7 +284,7 @@ public class Blobs {
     public long sizeOf(String id) throws AmbiguousIdException {
         prepare();
         id = prepareId(id);
-        var file = getFileFor(id);
+        File file = getFileFor(id);
         if (file == null) {
             return -1;
         }
@@ -297,10 +297,10 @@ public class Blobs {
     public Set<String> idSet() {
         prepare();
         Set<String> result = new HashSet<>();
-        var subDirs = baseDirectory.listFiles(new MatchingDirectoriesFileFilter());
-        for (var current : subDirs) {
-            var contained = current.listFiles(new MatchingFilesFileFilter());
-            for (var curBlob : contained) {
+        File[] subDirs = baseDirectory.listFiles(new MatchingDirectoriesFileFilter());
+        for (File current : subDirs) {
+            File[] contained = current.listFiles(new MatchingFilesFileFilter());
+            for (File curBlob : contained) {
                 result.add(current.getName() + curBlob.getName());
             }
         }
@@ -312,20 +312,20 @@ public class Blobs {
 
     private void prepare() {
         if (baseDirectory == null) {
-            var message = "baseDirectory must not be null!";
+            String message = "baseDirectory must not be null!";
             if (logger.isErrorEnabled()) logger.error(message);
             throw new IllegalStateException(message);
         }
         if (!baseDirectory.exists()) {
             if (!baseDirectory.mkdirs()) {
-                var message = "Couldn't create directory '" + baseDirectory.getAbsolutePath() + "'!";
+                String message = "Couldn't create directory '" + baseDirectory.getAbsolutePath() + "'!";
                 if (logger.isWarnEnabled()) logger.warn(message);
             } else {
                 if (logger.isDebugEnabled()) logger.debug("Created directory '{}'.", baseDirectory.getAbsolutePath());
             }
         }
         if (!baseDirectory.isDirectory()) {
-            var message = "baseDirectory '" + baseDirectory.getAbsolutePath() + " is not a directory!";
+            String message = "baseDirectory '" + baseDirectory.getAbsolutePath() + " is not a directory!";
             if (logger.isErrorEnabled()) logger.error(message);
             throw new IllegalStateException(message);
         }
@@ -340,32 +340,32 @@ public class Blobs {
         if (id.length() < HASH_DIRECTORY_NAME_LENGTH) {
             throw new IllegalArgumentException("id must have at least " + HASH_DIRECTORY_NAME_LENGTH + " characters!");
         }
-        var hashStart = id.substring(0, HASH_DIRECTORY_NAME_LENGTH);
-        var parent = new File(baseDirectory, hashStart);
+        String hashStart = id.substring(0, HASH_DIRECTORY_NAME_LENGTH);
+        File parent = new File(baseDirectory, hashStart);
         if (!parent.isDirectory()) {
             return null;
         }
-        var hashRest = id.substring(HASH_DIRECTORY_NAME_LENGTH);
+        String hashRest = id.substring(HASH_DIRECTORY_NAME_LENGTH);
         if (hashRest.length() < HASH_REMAINDER_NAME_LENGTH) {
             if (logger.isDebugEnabled())
                 logger.debug("Searching for candidates - HashStart='{}', hashRest='{}'", hashStart, hashRest);
-            var files = parent.listFiles(new StartsWithFileFilter(hashRest));
-            var count = files.length;
+            File[] files = parent.listFiles(new StartsWithFileFilter(hashRest));
+            int count = files.length;
             if (count == 0) {
                 return null;
             }
             if (count == 1) {
                 return files[0];
             }
-            var candidates = new String[count];
-            for (var i = 0; i < count; i++) {
-                var current = files[i];
+            String[] candidates = new String[count];
+            for (int i = 0; i < count; i++) {
+                File current = files[i];
                 candidates[i] = current.getParentFile().getName() + current.getName();
             }
             Arrays.sort(candidates);
             throw new AmbiguousIdException(id, candidates);
         }
-        var result = new File(parent, hashRest);
+        File result = new File(parent, hashRest);
         if (result.isFile()) {
             try {
                 if (result.getCanonicalPath().endsWith(hashRest)) {
@@ -402,11 +402,11 @@ public class Blobs {
 
     private File prepareFile(String id) {
         if (logger.isDebugEnabled()) logger.debug("Hash: {}", id);
-        var hashStart = id.substring(0, HASH_DIRECTORY_NAME_LENGTH);
-        var hashRest = id.substring(HASH_DIRECTORY_NAME_LENGTH);
+        String hashStart = id.substring(0, HASH_DIRECTORY_NAME_LENGTH);
+        String hashRest = id.substring(HASH_DIRECTORY_NAME_LENGTH);
         if (logger.isDebugEnabled()) logger.debug("HashStart='{}', hashRest='{}'", hashStart, hashRest);
 
-        var parentFile = new File(baseDirectory, hashStart);
+        File parentFile = new File(baseDirectory, hashStart);
         if (parentFile.mkdirs()) {
             if (logger.isDebugEnabled()) logger.debug("Created directory {}.", parentFile.getAbsolutePath());
         }
@@ -418,7 +418,7 @@ public class Blobs {
         try {
             digest = MessageDigest.getInstance(ALGORITHM);
         } catch (NoSuchAlgorithmException ex) {
-            var message = "Can't generate hash! Algorithm " + ALGORITHM + " does not exist!";
+            String message = "Can't generate hash! Algorithm " + ALGORITHM + " does not exist!";
             if (logger.isErrorEnabled()) logger.error(message, ex);
             throw new IllegalStateException(message, ex);
         }
@@ -429,20 +429,20 @@ public class Blobs {
         if (!validating) {
             return true;
         }
-        var digest = createMessageDigest();
+        MessageDigest digest = createMessageDigest();
 
         FileInputStream input = null;
         try {
             input = new FileInputStream(file);
-            var dis = new DigestInputStream(input, digest);
+            DigestInputStream dis = new DigestInputStream(input, digest);
             for (; ; ) {
                 if (dis.read() < 0) {
                     break;
                 }
             }
-            var hash = digest.digest();
-            var formatter = new Formatter();
-            for (var b : hash) {
+            byte[] hash = digest.digest();
+            Formatter formatter = new Formatter();
+            for (byte b : hash) {
                 formatter.format("%02x", b);
             }
             return formatter.toString().equals(id);
@@ -456,17 +456,17 @@ public class Blobs {
 
     private String copyAndHash(InputStream input, File into)
             throws IOException {
-        var digest = createMessageDigest();
+        MessageDigest digest = createMessageDigest();
 
-        var dis = new DigestInputStream(input, digest);
+        DigestInputStream dis = new DigestInputStream(input, digest);
         IOException ex;
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(into);
             ByteStreams.copy(dis, fos);
-            var hash = digest.digest();
-            var formatter = new Formatter();
-            for (var b : hash) {
+            byte[] hash = digest.digest();
+            Formatter formatter = new Formatter();
+            for (byte b : hash) {
                 formatter.format("%02x", b);
             }
             return formatter.toString();
@@ -488,7 +488,7 @@ public class Blobs {
 
 
     private void deleteIfEmpty(File parent) {
-        var files = parent.listFiles();
+        File[] files = parent.listFiles();
         if (files == null) {
             if (logger.isWarnEnabled()) logger.warn("File {} isn't a directory!", parent.getAbsolutePath());
             return;

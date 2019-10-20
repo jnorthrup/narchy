@@ -128,7 +128,7 @@ public class TarHeader {
 		this.name = new StringBuilder();
 		this.linkName = new StringBuilder();
 
-		var user = System.getProperty("user.name", "");
+        String user = System.getProperty("user.name", "");
 
 		if (user.length() > 31)
 			user = user.substring(0, 31);
@@ -152,10 +152,10 @@ public class TarHeader {
 	 * @return The header's entry name.
 	 */
 	public static StringBuilder parseName(byte[] header, int offset, int length) {
-		var result = new StringBuilder(length);
+        StringBuilder result = new StringBuilder(length);
 
-		var end = offset + length;
-		for (var i = offset; i < end; ++i) {
+        int end = offset + length;
+		for (int i = offset; i < end; ++i) {
 			if (header[i] == 0)
 				break;
 			result.append((char) header[i]);
@@ -203,10 +203,10 @@ public class TarHeader {
 	 *            Is directory
 	 */
 	public static TarHeader createHeader(String entryName, long size, long modTime, boolean dir, int permissions) {
-		var name = entryName;
+        String name = entryName;
 		name = TarUtils.trim(name.replace(File.separatorChar, '/'), '/');
 
-		var header = new TarHeader();
+        TarHeader header = new TarHeader();
 		header.linkName = new StringBuilder();
 		header.mode = permissions;
 

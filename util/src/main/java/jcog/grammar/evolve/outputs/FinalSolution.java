@@ -39,7 +39,7 @@ public class FinalSolution extends Solution{
     }
    
     private static String getDescriptionJavascript(Node node){
-        var sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         node.describe(sb, new DescriptionContext(), Node.RegexFlavour.JS);
         return sb.toString();
     }

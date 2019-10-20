@@ -62,8 +62,8 @@ public abstract class AbstractSpace<X>  {
     /** needs to call update(space) for each active item */
     public void update(SpaceGraph3D<X> s, long dtMS) {
 
-        var ll = this.transforms;
-        for (var aLl : ll) aLl.update(s, dtMS);
+        List<SpaceTransform<X>> ll = this.transforms;
+        for (SpaceTransform<X> aLl : ll) aLl.update(s, dtMS);
 
     }
 

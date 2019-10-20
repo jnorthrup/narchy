@@ -93,7 +93,7 @@ public class MJCell extends Applet {
         mjcUI = new MJCellUI(this);
 
 
-		var isApplet = true;
+        boolean isApplet = true;
         try {
 			sBaseURL = getCodeBase().toString();
 			if (sBaseURL.length() > 0 && sBaseURL.charAt(sBaseURL.length() - 1) == '.')
@@ -109,37 +109,37 @@ public class MJCell extends Applet {
 		
 		if (isApplet) {
 
-			var sBtnLabel = getParameter("ButtonLabel");
+            String sBtnLabel = getParameter("ButtonLabel");
 			if (sBtnLabel == null)
 				sBtnLabel = "Start MJCell";
 			btnStart.setLabel("  " + sBtnLabel + "  ");
 
 
-			var sColor = getParameter("Background");
+            String sColor = getParameter("Background");
 			if (sColor != null)
 				setBackground(Color.decode(sColor));
 
 
-			var sFamily = getParameter("Family");
+            String sFamily = getParameter("Family");
 			if (sFamily != null)
 				mjcUI.sInitGame = sFamily;
 
 
-			var sRule = getParameter("Rule");
+            String sRule = getParameter("Rule");
 			if (sRule != null)
 				mjcUI.sInitRule = sRule;
 
 
-			var sPattern = getParameter("Pattern");
+            String sPattern = getParameter("Pattern");
 			if (sPattern != null)
 				mjcUI.sInitPatt = sPattern;
 
 
-			var sInitPanelLeft = getParameter("ViewPanelControls");
+            String sInitPanelLeft = getParameter("ViewPanelControls");
 			if (sInitPanelLeft != null)
 				mjcUI.bInitPanelLeft = sInitPanelLeft.compareTo("1") == 0;
 
-			var sInitPanelBotm = getParameter("ViewPanelSeeding");
+            String sInitPanelBotm = getParameter("ViewPanelSeeding");
 			if (sInitPanelBotm != null)
 				mjcUI.bInitPanelBotm = sInitPanelBotm.compareTo("1") == 0;
 		} else {

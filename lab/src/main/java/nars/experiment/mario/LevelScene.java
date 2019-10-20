@@ -94,11 +94,11 @@ public class LevelScene extends Scene implements SpriteContext {
         Sprite.spriteContext = this;
         sprites.clear();
         layer = new LevelRenderer(level, graphicsConfiguration, 320, 240);
-        for (var i = 0; i < 2; i++) {
-            var scrollSpeed = 4 >> i;
-            var w = ((level.width * 16) - 320) / scrollSpeed + 320;
-            var h = ((level.height * 16) - 240) / scrollSpeed + 240;
-            var bgLevel = BgLevelGenerator.createLevel(w / 32 + 1, h / 32 + 1, i == 0, levelType);
+        for (int i = 0; i < 2; i++) {
+            int scrollSpeed = 4 >> i;
+            int w = ((level.width * 16) - 320) / scrollSpeed + 320;
+            int h = ((level.height * 16) - 240) / scrollSpeed + 240;
+            Level bgLevel = BgLevelGenerator.createLevel(w / 32 + 1, h / 32 + 1, i == 0, levelType);
             bgLayer[i] = new BgRenderer(bgLevel, graphicsConfiguration, 320, 240, scrollSpeed);
         }
         sprites.add(mario);
@@ -136,7 +136,7 @@ public class LevelScene extends Scene implements SpriteContext {
             startTime++;
         }
 
-        var targetXCam = mario.x - 160;
+        float targetXCam = mario.x - 160;
 
         xCam = targetXCam;
 
@@ -158,10 +158,10 @@ public class LevelScene extends Scene implements SpriteContext {
 
         fireballsOnScreen = 0;
 
-        for (var sprite : sprites) {
+        for (Sprite sprite : sprites) {
             if (sprite != mario) {
-                var xd = sprite.x - xCam;
-                var yd = sprite.y - yCam;
+                float xd = sprite.x - xCam;
+                float yd = sprite.y - yCam;
                 if (xd < -64 || xd > 320 + 64 || yd < -64 || yd > 240 + 64) {
                     removeSprite(sprite);
                 } else {
@@ -173,7 +173,7 @@ public class LevelScene extends Scene implements SpriteContext {
         }
 
         if (paused) {
-            for (var sprite : sprites) {
+            for (Sprite sprite : sprites) {
                 if (sprite == mario) {
                     sprite.tick();
                 } else {
@@ -184,20 +184,20 @@ public class LevelScene extends Scene implements SpriteContext {
             tick++;
             level.tick();
 
-            var hasShotCannon = false;
-            var xCannon = 0;
+            boolean hasShotCannon = false;
+            int xCannon = 0;
 
 //            if (layer == null)
 //                return;
 
-            for (var x = (int) xCam / 16 - 1; x <= (int) (xCam + layer.width) / 16 + 1; x++)
-                for (var y = (int) yCam / 16 - 1; y <= (int) (yCam + layer.height) / 16 + 1; y++) {
-                    var dir = 0;
+            for (int x = (int) xCam / 16 - 1; x <= (int) (xCam + layer.width) / 16 + 1; x++)
+                for (int y = (int) yCam / 16 - 1; y <= (int) (yCam + layer.height) / 16 + 1; y++) {
+                    int dir = 0;
 
                     if (x * 16 + 8 > mario.x + 16) dir = -1;
                     if (x * 16 + 8 < mario.x - 16) dir = 1;
 
-                    var st = level.getSpriteTemplate(x, y);
+                    SpriteTemplate st = level.getSpriteTemplate(x, y);
 
                     if (st != null) {
                         if (st.lastVisibleTick != tick - 1) {
@@ -210,12 +210,12 @@ public class LevelScene extends Scene implements SpriteContext {
                     }
 
                     if (dir != 0) {
-                        var b = level.getBlock(x, y);
+                        byte b = level.getBlock(x, y);
                         if (((Level.TILE_BEHAVIORS[b & 0xff]) & Level.BIT_ANIMATED) != 0) {
                             if ((b % 16) / 4 == 3 && b / 16 == 0) {
                                 if ((tick - x * 2) % 100 == 0) {
                                     xCannon = x;
-                                    for (var i = 0; i < 8; i++) {
+                                    for (int i = 0; i < 8; i++) {
                                         addSprite(new Sparkle(x * 16 + 8, y * 16 + (int) (Math.random() * 16), (float) Math.random() * dir, 0, 0, 1, 5));
                                     }
                                     addSprite(new BulletBill(this, x * 16 + 8 + dir * 8, y * 16 + 15, dir));
@@ -230,16 +230,16 @@ public class LevelScene extends Scene implements SpriteContext {
 
             }
 
-            for (var sprite : sprites) {
+            for (Sprite sprite : sprites) {
                 sprite.tick();
             }
 
-            for (var sprite : sprites) {
+            for (Sprite sprite : sprites) {
                 sprite.collideCheck();
             }
 
-            for (var shell : shellsToCheck) {
-                for (var sprite : sprites) {
+            for (Shell shell : shellsToCheck) {
+                for (Sprite sprite : sprites) {
                     if (sprite != shell && !shell.dead) {
                         if (sprite.shellCollideCheck(shell)) {
                             if (mario.carried == shell && !shell.dead) {
@@ -252,8 +252,8 @@ public class LevelScene extends Scene implements SpriteContext {
             }
             shellsToCheck.clear();
 
-            for (var fireball : fireballsToCheck) {
-                for (var sprite : sprites) {
+            for (Fireball fireball : fireballsToCheck) {
+                for (Sprite sprite : sprites) {
                     if (sprite != fireball && !fireball.dead) {
                         if (sprite.fireballCollideCheck(fireball)) {
                             fireball.die();
@@ -275,12 +275,12 @@ public class LevelScene extends Scene implements SpriteContext {
 
     @Override
     public void render(Graphics g, float alpha) {
-        var layer = this.layer;
+        LevelRenderer layer = this.layer;
 //        if (level == null || layer == null)
 //            return;
 
-        var xCam = (int) (mario.xOld + (mario.x - mario.xOld) * alpha) - 160;
-        var yCam = (int) (mario.yOld + (mario.y - mario.yOld) * alpha) - 120;
+        int xCam = (int) (mario.xOld + (mario.x - mario.xOld) * alpha) - 160;
+        int yCam = (int) (mario.yOld + (mario.y - mario.yOld) * alpha) - 120;
 
 
         if (xCam < 0) xCam = 0;
@@ -289,16 +289,16 @@ public class LevelScene extends Scene implements SpriteContext {
         if (yCam > level.height * 16 - 240) yCam = level.height * 16 - 240;
 
 
-        var renderBackground = false;
+        boolean renderBackground = false;
         if (renderBackground) {
-            for (var i = 0; i < 2; i++) {
+            for (int i = 0; i < 2; i++) {
                 bgLayer[i].setCam(xCam, yCam);
                 bgLayer[i].render(g, tick, alpha);
             }
         }
 
         g.translate(-xCam, -yCam);
-        for (var sprite : sprites) {
+        for (Sprite sprite : sprites) {
             if (sprite.layer == 0) sprite.render(g, alpha);
         }
         g.translate(xCam, yCam);
@@ -308,7 +308,7 @@ public class LevelScene extends Scene implements SpriteContext {
         layer.renderExit0(g, tick, paused ? 0 : alpha, mario.winTime == 0);
 
         g.translate(-xCam, -yCam);
-        for (var sprite : sprites) {
+        for (Sprite sprite : sprites) {
             if (sprite.layer == 1) sprite.render(g, alpha);
         }
         g.translate(xCam, yCam);
@@ -325,19 +325,19 @@ public class LevelScene extends Scene implements SpriteContext {
         drawStringDropShadow(g, " " + Mario.levelString, 24, 1, 7);
 
         drawStringDropShadow(g, "TIME", 35, 0, 7);
-        var time = (timeLeft + 15 - 1) / 15;
+        int time = (timeLeft + 15 - 1) / 15;
         if (time < 0) time = 0;
         drawStringDropShadow(g, " " + df2.format(time), 35, 1, 7);
 
 
         if (startTime > 0) {
-            var t = startTime + alpha - 2;
+            float t = startTime + alpha - 2;
             t = t * t * 0.6f;
 //            renderBlackout(g, 160, 120, (int) (t));
         }
 
         if (mario.winTime > 0) {
-            var t = mario.winTime + alpha;
+            float t = mario.winTime + alpha;
             t = t * t * 0.2f;
 
             if (t > 900) {
@@ -367,8 +367,8 @@ public class LevelScene extends Scene implements SpriteContext {
     }
 
     private static void drawString(Graphics g, String text, int x, int y, int c) {
-        var ch = text.toCharArray();
-        for (var i = 0; i < ch.length; i++) {
+        char[] ch = text.toCharArray();
+        for (int i = 0; i < ch.length; i++) {
             g.drawImage(Art.font[ch[i] - 32][c], x + i * 8, y, null);
         }
     }
@@ -376,9 +376,9 @@ public class LevelScene extends Scene implements SpriteContext {
     private static void renderBlackout(Graphics g, int x, int y, int radius) {
         if (radius > 320) return;
 
-        var xp = new int[20];
-        var yp = new int[20];
-        for (var i = 0; i < 16; i++) {
+        int[] xp = new int[20];
+        int[] yp = new int[20];
+        for (int i = 0; i < 16; i++) {
             xp[i] = x + (int) (Math.cos(i * Math.PI / 15) * radius);
             yp[i] = y + (int) (Math.sin(i * Math.PI / 15) * radius);
         }
@@ -392,7 +392,7 @@ public class LevelScene extends Scene implements SpriteContext {
         yp[19] = y;
         g.fillPolygon(xp, yp, xp.length);
 
-        for (var i = 0; i < 16; i++) {
+        for (int i = 0; i < 16; i++) {
             xp[i] = x - (int) (Math.cos(i * Math.PI / 15) * radius);
             yp[i] = y - (int) (Math.sin(i * Math.PI / 15) * radius);
         }
@@ -422,7 +422,7 @@ public class LevelScene extends Scene implements SpriteContext {
 
     @Override
     public float getX(float alpha) {
-        var xCam = (int) (mario.xOld + (mario.x - mario.xOld) * alpha) - 160;
+        int xCam = (int) (mario.xOld + (mario.x - mario.xOld) * alpha) - 160;
 
 
         if (xCam < 0) xCam = 0;
@@ -437,7 +437,7 @@ public class LevelScene extends Scene implements SpriteContext {
     }
 
     public void bump(int x, int y, boolean canBreakBricks) {
-        var block = level.getBlock(x, y);
+        byte block = level.getBlock(x, y);
 
         if ((Level.TILE_BEHAVIORS[block & 0xff] & Level.BIT_BUMPABLE) > 0) {
             bumpInto(x, y - 1);
@@ -463,8 +463,8 @@ public class LevelScene extends Scene implements SpriteContext {
             if (canBreakBricks) {
 
                 level.setBlock(x, y, (byte) 0);
-                for (var xx = 0; xx < 2; xx++)
-                    for (var yy = 0; yy < 2; yy++)
+                for (int xx = 0; xx < 2; xx++)
+                    for (int yy = 0; yy < 2; yy++)
                         addSprite(new Particle(x * 16 + xx * 8 + 4, y * 16 + yy * 8 + 4, (xx * 2 - 1) * 4, (yy * 2 - 1) * 4 - 8));
             } else {
                 level.setBlockData(x, y, (byte) 4);
@@ -473,7 +473,7 @@ public class LevelScene extends Scene implements SpriteContext {
     }
 
     public void bumpInto(int x, int y) {
-        var block = level.getBlock(x, y);
+        byte block = level.getBlock(x, y);
         if (((Level.TILE_BEHAVIORS[block & 0xff]) & Level.BIT_PICKUPABLE) != 0) {
             Mario.getCoin();
 
@@ -481,7 +481,7 @@ public class LevelScene extends Scene implements SpriteContext {
             addSprite(new CoinAnim(x, y + 1));
         }
 
-        for (var sprite : sprites) {
+        for (Sprite sprite : sprites) {
             sprite.bumpCheck(x, y);
         }
     }

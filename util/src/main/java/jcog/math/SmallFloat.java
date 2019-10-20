@@ -21,9 +21,9 @@ public enum SmallFloat {
   public static byte floatToByte(float f, int numMantissaBits, int zeroExp) {
 
 
-    var fzero = (63-zeroExp)<<numMantissaBits;
-    var bits = Float.floatToRawIntBits(f);
-    var smallfloat = bits >> (24-numMantissaBits);
+      int fzero = (63-zeroExp)<<numMantissaBits;
+      int bits = Float.floatToRawIntBits(f);
+      int smallfloat = bits >> (24-numMantissaBits);
     if (smallfloat <= fzero) {
       return (byte) (bits <= 0 ? 0 : 1);  
     } else if (smallfloat >= fzero + 0x100) {
@@ -38,7 +38,7 @@ public enum SmallFloat {
     
     
     if (b == 0) return 0.0f;
-    var bits = (b&0xff) << (24-numMantissaBits);
+      int bits = (b&0xff) << (24-numMantissaBits);
     bits += (63-zeroExp) << 24;
     return Float.intBitsToFloat(bits);
   }
@@ -56,8 +56,8 @@ public enum SmallFloat {
    * <br>epsilon = 0.125
    */
   public static byte floatToByte315(float f) {
-    var bits = Float.floatToRawIntBits(f);
-    var smallfloat = bits >> (24-3);
+      int bits = Float.floatToRawIntBits(f);
+      int smallfloat = bits >> (24-3);
     if (smallfloat <= ((63-15)<<3)) {
       return (byte) (bits <= 0 ? 0 : 1);
     }
@@ -72,7 +72,7 @@ public enum SmallFloat {
     
     
     if (b == 0) return 0.0f;
-    var bits = (b&0xff) << (24-3);
+      int bits = (b&0xff) << (24-3);
     bits += (63-15) << 24;
     return Float.intBitsToFloat(bits);
   }
@@ -84,8 +84,8 @@ public enum SmallFloat {
    * <br>epsilon = 0.03125
    */
   public static byte floatToByte52(float f) {
-    var bits = Float.floatToRawIntBits(f);
-    var smallfloat = bits >> (24-5);
+      int bits = Float.floatToRawIntBits(f);
+      int smallfloat = bits >> (24-5);
     if (smallfloat <= (63-2)<<5) {
       return (byte) (bits <= 0 ? 0 : 1);
     }
@@ -100,7 +100,7 @@ public enum SmallFloat {
     
     
     if (b == 0) return 0.0f;
-    var bits = (b&0xff) << (24-5);
+      int bits = (b&0xff) << (24-5);
     bits += (63-2) << 24;
     return Float.intBitsToFloat(bits);
   }

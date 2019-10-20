@@ -54,13 +54,13 @@ public class Galois implements Settings {
     static void init_exp_table() {
         int p2, p3, p4, p5, p6, p7, p8;
 
-        var pinit = p2 = p3 = p4 = p5 = p6 = p7 = p8 = 0;
+        int pinit = p2 = p3 = p4 = p5 = p6 = p7 = p8 = 0;
 
         gexp[0] = 1;
         gexp[255] = gexp[0];
         glog[0] = 0; /* shouldn't log[0] be an error? */
 
-        var p1 = 1;
+        int p1 = 1;
         int i;
         for (i = 1; i < 256; i++) {
             pinit = p8;
@@ -77,7 +77,7 @@ public class Galois implements Settings {
         }
 
         for (i = 1; i < 256; i++) {
-            for (var z = 0; z < 256; z++) {
+            for (int z = 0; z < 256; z++) {
                 if (gexp[z] == i) {
                     glog[i] = z;
                     break;
@@ -90,8 +90,8 @@ public class Galois implements Settings {
     static int gmult(int a, int b) {
         if (a == 0 || b == 0)
             return (0);
-        var i = glog[a];
-        var j = glog[b];
+        int i = glog[a];
+        int j = glog[b];
         return (gexp[i + j]);
     }
 

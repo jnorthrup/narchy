@@ -67,7 +67,7 @@ public class AirModem {
                 if (haveCorrectBroadcast) {
                     resetTimeout(false);
                 } else {
-                    var tSOS = playSOS();
+                    long tSOS = playSOS();
 
                     if (tSOS > -1)
                         // start listening when playing is finished
@@ -80,14 +80,14 @@ public class AirModem {
                 if (haveCorrectBroadcast) {
                     resetTimeout(true);
 
-                    var tWait = (long) (Constants.kSetupJitter * Constants.kSamplesPerDuration / Constants.kSamplingFrequency * 1000);
+                    long tWait = (long) (Constants.kSetupJitter * Constants.kSamplesPerDuration / Constants.kSamplingFrequency * 1000);
 
                     mTimer.schedule(new TimerTask() {
                         @Override public void run() {
                             playData(correctBroadcast, SessionStatus.HELPING);
 
 
-                            var tHelp = tWait;
+                            long tHelp = tWait;
 
                             mTimer.schedule(new StatusUpdateTimerTask(SessionStatus.LISTENING), tHelp);
                         }
@@ -134,15 +134,15 @@ public class AirModem {
 
             // try to play the file
 //            System.out.println("Performing " + input);
-            var inputBytes = input.getBytes();
+            byte[] inputBytes = input.getBytes();
 
 
-            var inputEncoded = Encoder.appendCRC(inputBytes);
+            byte[] inputEncoded = Encoder.appendCRC(inputBytes);
 
-            var baos = new ByteArrayOutputStream();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
             Encoder.encodeStream(new ByteArrayInputStream(inputEncoded), baos);
-            var outBytes = baos.toByteArray();
+            byte[] outBytes = baos.toByteArray();
 
             AudioUtils.performData(outBytes);
 
@@ -200,7 +200,7 @@ public class AirModem {
 
 		mTimer.purge();
 
-        var tPlay = playData(correctBroadcast, SessionStatus.PLAYING);
+        long tPlay = playData(correctBroadcast, SessionStatus.PLAYING);
 
         if (tPlay > -1)
             // start listening when playing is finished
@@ -226,7 +226,7 @@ public class AirModem {
     }
 
     private void setTimeout(String input, boolean afterPlay) {
-        var secondsPlay = (int) ((Constants.kPlayJitter + Constants.kDurationsPerHail + Constants.kBytesPerDuration * input.length() + Constants.kDurationsPerCRC)
+        int secondsPlay = (int) ((Constants.kPlayJitter + Constants.kDurationsPerHail + Constants.kBytesPerDuration * input.length() + Constants.kDurationsPerCRC)
                 * Constants.kSamplesPerDuration / Constants.kSamplingFrequency);
         // set timeout to be 3x time to play the broadcast
         sessionTimeout = 3 * secondsPlay;

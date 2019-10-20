@@ -63,7 +63,7 @@ public class TrackXY  {
         grid.set((x, y) -> {
 
 
-            var distOther = (float) (Util.sqr((tx - x)/((double)W)) + Util.sqr((ty - y)/((double)H)));
+            float distOther = (float) (Util.sqr((tx - x)/((double)W)) + Util.sqr((ty - y)/((double)H)));
             //return distOther > visionContrast.floatValue() ? 0 : 1;
             //float distSelf = (float) Math.sqrt(Util.sqr(sx - x) + Util.sqr(sy - y));
             return unitize(1 - distOther * Math.max(W,H) * visionContrast.floatValue());
@@ -107,9 +107,9 @@ public class TrackXY  {
         RandomTarget {
             @Override
             public void accept(TrackXY t) {
-                var targetSpeed = t.targetSpeed.floatValue();
+                float targetSpeed = t.targetSpeed.floatValue();
                 float ty;
-                var tx = Util.clamp(t.tx + 2 * targetSpeed * (TrackXY.random().nextFloat() - 0.5f), 0, t.W - 1);
+                float tx = Util.clamp(t.tx + 2 * targetSpeed * (TrackXY.random().nextFloat() - 0.5f), 0, t.W - 1);
                 if (t.H > 1) {
                     ty = Util.clamp(t.ty + 2 * targetSpeed * (TrackXY.random().nextFloat() - 0.5f), 0, t.H - 1);
                 } else {

@@ -143,18 +143,18 @@ public class Compressor extends UGen implements DataBeadReceiver {
         float target = 1;
         if (channels == 1) {
 
-            var bi = bufIn[0];
-            var bo = bufOut[0];
-            var dm = delayMem[0];
+            float[] bi = bufIn[0];
+            float[] bo = bufOut[0];
+            float[] dm = delayMem[0];
 
-            for (var i = 0; i < bufferSize; i++) {
-                var p = pf.getValue(0, i);
+            for (int i = 0; i < bufferSize; i++) {
+                float p = pf.getValue(0, i);
                 if (p <= tok) {
                     target = 1;
                 } else if (p >= kt) {
                     target = ((p - threshold) * ratio + threshold) / p;
                 } else {
-                    var x1 = (p - tok) * ikp1 + tok;
+                    float x1 = (p - tok) * ikp1 + tok;
                     target = ((ktrm1 * x1 + tt1mr) * (p - x1)
                             / (x1 * (knee - 1)) + x1)
                             / p;
@@ -175,14 +175,14 @@ public class Compressor extends UGen implements DataBeadReceiver {
                 index = (index + 1) % memSize;
             }
         } else {
-            for (var i = 0; i < bufferSize; i++) {
-                var p = pf.getValue(0, i);
+            for (int i = 0; i < bufferSize; i++) {
+                float p = pf.getValue(0, i);
                 if (p <= tok) {
                     target = 1;
                 } else if (p >= kt) {
                     target = ((p - threshold) * ratio + threshold) / p;
                 } else {
-                    var x1 = (p - tok) * ikp1 + tok;
+                    float x1 = (p - tok) * ikp1 + tok;
                     target = (ktrm1 * x1 + tt1mr) * (p - x1)
                             / (x1 * (knee - 1)) + x1;
                 }
@@ -197,8 +197,8 @@ public class Compressor extends UGen implements DataBeadReceiver {
                         currval = target;
                 }
 
-                var delIndex = (index + delaySamps) % memSize;
-                for (var j = 0; j < channels; j++) {
+                int delIndex = (index + delaySamps) % memSize;
+                for (int j = 0; j < channels; j++) {
                     delayMem[j][index] = bufIn[j][i];
                     bufOut[j][i] = delayMem[j][delIndex] * currval;
                 }
@@ -389,7 +389,7 @@ public class Compressor extends UGen implements DataBeadReceiver {
      * @return The
      */
     public DataAuvent getParams() {
-        var db = new DataAuvent();
+        DataAuvent db = new DataAuvent();
         db.put("threshold", getThreshold());
         db.put("ratio", getRatio());
         db.put("attack", getAttack());

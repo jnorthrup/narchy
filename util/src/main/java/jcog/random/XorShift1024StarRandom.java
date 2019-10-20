@@ -82,11 +82,11 @@ public class XorShift1024StarRandom extends Random {
 
     @Override
     public final long nextLong() {
-        var s = this.s;
-        var p = this.p;
+        long[] s = this.s;
+        int p = this.p;
 
-        var s0 = s[p];
-        var s1 = s[p = (p + 1) & 15];
+        long s0 = s[p];
+        long s1 = s[p = (p + 1) & 15];
         s1 ^= s1 << 31;
 
         return (s[this.p = p] = s1 ^ s0 ^ (s1 >>> 11) ^ (s0 >>> 30)) * 1181783497276652981L;
@@ -116,8 +116,8 @@ public class XorShift1024StarRandom extends Random {
         if (n <= 0) throw new IllegalArgumentException();
         
         while (true) {
-            var bits = nextLong() >>> 1;
-            var value = bits % n;
+            long bits = nextLong() >>> 1;
+            long value = bits % n;
             if (bits - value + (n - 1) >= 0) return value;
         }
     }
@@ -139,10 +139,10 @@ public class XorShift1024StarRandom extends Random {
 
     @Override
     public void nextBytes(byte[] bytes) {
-        var i = bytes.length;
+        int i = bytes.length;
         while (i != 0) {
-            var n = Math.min(i, 8);
-            for (var bits = nextLong(); n-- != 0; bits >>= 8) bytes[--i] = (byte) bits;
+            int n = Math.min(i, 8);
+            for (long bits = nextLong(); n-- != 0; bits >>= 8) bytes[--i] = (byte) bits;
         }
     }
 
@@ -158,11 +158,11 @@ public class XorShift1024StarRandom extends Random {
      */
     @Override
     public void setSeed(long seed) {
-        var s = this.s;
+        long[] s = this.s;
         if (this.s == null) s = this.s = new long[16];
         p = 0;
-        var r = new SplitMix64RandomGenerator(seed);
-        for (var i = s.length; i-- != 0; ) s[i] = r.nextLong();
+        SplitMix64RandomGenerator r = new SplitMix64RandomGenerator(seed);
+        for (int i = s.length; i-- != 0; ) s[i] = r.nextLong();
     }
 
     /**
@@ -284,8 +284,8 @@ public class XorShift1024StarRandom extends Random {
             if (n <= 0) throw new IllegalArgumentException();
             
             while (true) {
-                var bits = staffordMix13(x += PHI) >>> 1;
-                var value = bits % n;
+                long bits = staffordMix13(x += PHI) >>> 1;
+                long value = bits % n;
                 if (bits - value + (n - 1) >= 0) return value;
             }
         }
@@ -307,10 +307,10 @@ public class XorShift1024StarRandom extends Random {
 
         @Override
         public void nextBytes(byte[] bytes) {
-            var i = bytes.length;
+            int i = bytes.length;
             while (i != 0) {
-                var n = Math.min(i, 8);
-                for (var bits = staffordMix13(x += PHI); n-- != 0; bits >>= 8) bytes[--i] = (byte) bits;
+                int n = Math.min(i, 8);
+                for (long bits = staffordMix13(x += PHI); n-- != 0; bits >>= 8) bytes[--i] = (byte) bits;
             }
         }
 

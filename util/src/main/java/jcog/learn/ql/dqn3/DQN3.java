@@ -57,14 +57,14 @@ public class DQN3 extends Agent {
         this.alpha = config.getOrDefault(Option.ALPHA, 0.01);
 
         /* estimate */
-        var numHiddenUnits = (int) Math.round(config.getOrDefault(Option.NUM_HIDDEN_UNITS, (double) inputs * numActions /* estimate */));
+        int numHiddenUnits = (int) Math.round(config.getOrDefault(Option.NUM_HIDDEN_UNITS, (double) inputs * numActions /* estimate */));
 
         this.experienceAddProb = 1f/(int) Math.round(config.getOrDefault(Option.EXPERIENCE_ADD_EVERY, 25.0));
         this.experienceSize = (int) Math.round(config.getOrDefault(Option.EXPERIENCE_SIZE, 64.0 /* 1024 */));
         this.experienceLearnedPerIteration = (int) Math.round(config.getOrDefault(Option.LEARNING_STEPS_PER_ITERATION, 4.0));
         this.tdErrorClamp = config.getOrDefault(Option.TD_ERROR_CLAMP, 1.0);
 
-        var rngRange =
+        float rngRange =
                 (float) (this.alpha / numHiddenUnits);
                 //0.5f;
                 //0.01f;
@@ -94,7 +94,7 @@ public class DQN3 extends Agent {
 //        for (int i = 0, actionFeedbackLength = actionFeedback.length; i < actionFeedbackLength; i++)
 //            actionFeedback[i] = (actionFeedback[i]-0.5f)*2;
 
-        var err = learn(actionFeedback, reward);
+        double err = learn(actionFeedback, reward);
 
 
         lastErr = err;
@@ -103,7 +103,7 @@ public class DQN3 extends Agent {
     }
 
     private static Mat matRandom(Random rand, int n, int d, float range) {
-        var mat = new Mat(n, d);
+        Mat mat = new Mat(n, d);
         Arrays.setAll(mat.w, i -> rand.nextGaussian() * range);
         return mat;
     }
@@ -116,7 +116,7 @@ public class DQN3 extends Agent {
 
         if(g==null) g = new MatrixTransform(false);
 
-        var m = g.add(g.mul(W2, g.tanh(g.add(g.mul(W1, s), B1))), B2);
+        Mat m = g.add(g.mul(W2, g.tanh(g.add(g.mul(W1, s), B1))), B2);
         //Mat m = g.add(g.tanh(g.mul(W2, g.tanh(g.add(g.mul(W1, s), B1)))), B2);
         //Mat m = g.add(g.tanh(g.mul(W2, g.add(g.mul(W1, s), B1))), B2);
 
@@ -126,9 +126,9 @@ public class DQN3 extends Agent {
 
     public int act(double[] stateArr) {
         this.input = stateArr;
-        var state = new Mat(this.inputs, 1, stateArr);
+        Mat state = new Mat(this.inputs, 1, stateArr);
 
-        var action = decide(state);
+        int action = decide(state);
 
         this.lastState = this.currentState;
 //        this.lastAction = this.currentAction;
@@ -138,7 +138,7 @@ public class DQN3 extends Agent {
     }
 
     protected int decide(Mat state) {
-        var qq = this.calcQ(state).w;
+        double[] qq = this.calcQ(state).w;
         return actionDecider.applyAsInt(qq);
     }
 
@@ -148,8 +148,8 @@ public class DQN3 extends Agent {
             return reward;
         }
 
-        var x = new Experience(this.lastState, actionFeedback.clone(), this.lastReward, this.currentState);
-        var err = this.learn(x);
+        Experience x = new Experience(this.lastState, actionFeedback.clone(), this.lastReward, this.currentState);
+        double err = this.learn(x);
         this.lastReward = reward;
 
         rememberPlayBack(x);
@@ -160,8 +160,8 @@ public class DQN3 extends Agent {
     }
 
     void learnPlayBack(Experience x) {
-        var e = Math.min(experience.size(), this.experienceLearnedPerIteration);
-        for (var i = 0; i < e; i++)
+        int e = Math.min(experience.size(), this.experienceLearnedPerIteration);
+        for (int i = 0; i < e; i++)
             learn(this.experience.get(rng));
     }
 
@@ -185,13 +185,13 @@ public class DQN3 extends Agent {
     /** returns total error */
     private double learn(Experience exp) {
 
-        var next = this.calcQ(exp.currentState);
+        Mat next = this.calcQ(exp.currentState);
 
 
         //final double qMax = exp.lastReward + this.gamma * next.w[Util.argmax(next.w)];
 
-        var g = new MatrixTransform(true);
-        var pred = this.calcQ(exp.lastState, g);
+        MatrixTransform g = new MatrixTransform(true);
+        Mat pred = this.calcQ(exp.lastState, g);
 
         float actionNorm = 1; //assume already normalized
 //        float actionNorm = Util.sum(exp.lastAction);
@@ -199,14 +199,14 @@ public class DQN3 extends Agent {
 //            actionNorm = 1;
 
         double errTotal = 0;
-        var lastAction = exp.lastAction;
+        float[] lastAction = exp.lastAction;
         double[] w = pred.w, dw = pred.dw;
-        for (var i = 0; i < lastAction.length; i++) {
+        for (int i = 0; i < lastAction.length; i++) {
             //var qmax = r0 + this.gamma * tmat.w[R.maxi(tmat.w)];
-            var qMax = exp.lastReward + this.gamma * next.w[i];
+            double qMax = exp.lastReward + this.gamma * next.w[i];
 
-            var err = (w[i] - qMax) * lastAction[i]/actionNorm;
-            var tdError = Util.clamp(err, -tdErrorClamp, tdErrorClamp);
+            double err = (w[i] - qMax) * lastAction[i]/actionNorm;
+            double tdError = Util.clamp(err, -tdErrorClamp, tdErrorClamp);
             dw[i] = tdError;
             errTotal += Math.abs(err);
             //errTotal += Math.abs(tdError);

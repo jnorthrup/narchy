@@ -46,7 +46,7 @@ public class VariableNormalization extends VariableTransform {
     protected Variable newVariable(/*@NotNull*/ Variable x) {
 
 
-        var vid = this.count + offset;
+        int vid = this.count + offset;
 
         return x.normalizedVariable((byte)vid);
 

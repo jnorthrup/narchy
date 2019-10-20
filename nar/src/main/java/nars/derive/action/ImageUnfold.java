@@ -29,7 +29,7 @@ public class ImageUnfold extends NativeHow {
 	@Override protected void run(RuleCause why, Derivation d) {
 		//if (task.isCyclic()) return; //TODO can this be trie predicate
 
-		var t = d._taskTerm;
+        Term t = d._taskTerm;
 
 		Term t0 = t.sub(0), t1 = t.sub(1);
 		boolean
@@ -43,10 +43,10 @@ public class ImageUnfold extends NativeHow {
 	}
 
 	static boolean unfold(RuleCause why, Derivation d, Term t, Term t0, Term t1, boolean subjOrPred) {
-		var p = (Compound) (subjOrPred ? t0 : t1);
-		var forward = DynamicTermDecomposer.OnePolarized.decompose(p, d.random); //TODO if t0 && t1 choose randomly
+        Compound p = (Compound) (subjOrPred ? t0 : t1);
+        Term forward = DynamicTermDecomposer.OnePolarized.decompose(p, d.random); //TODO if t0 && t1 choose randomly
 		if (forward != null) {
-			var y = subjOrPred ? Image.imageExt(t, forward) : Image.imageInt(t, forward);
+            Term y = subjOrPred ? Image.imageExt(t, forward) : Image.imageInt(t, forward);
 			if (y instanceof Compound) {
 				if (y instanceof Neg) {
 					y = y.unneg();
@@ -55,9 +55,9 @@ public class ImageUnfold extends NativeHow {
 				}
 				if (y.op().conceptualizable) {
 
-					var task = d._task;
+                    Task task = d._task;
 
-					var l = AtomicTaskLink.link(y/*, d._beliefTerm*/).priSet(task.punc(),
+                    AbstractTaskLink l = AtomicTaskLink.link(y/*, d._beliefTerm*/).priSet(task.punc(),
 						task.pri() * ((TaskLinkWhat) d.x).links.grow.floatValue());
 
 					//TODO lazy calculate

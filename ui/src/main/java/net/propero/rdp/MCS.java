@@ -112,7 +112,7 @@ public class MCS {
      * @return
      */
     private static int berHeaderSize(int tagval, int length) {
-        var total = 0;
+        int total = 0;
         if (tagval > 0xff) {
             total += 2;
         } else {
@@ -174,7 +174,11 @@ public class MCS {
      */
     private static int domainParamSize(int max_channels, int max_users,
                                        int max_tokens, int max_pdusize) {
-        var endSize = IntStream.of(max_channels, max_users, max_tokens, 1, 0, 1, max_pdusize, 2).map(MCS::BERIntSize).sum();
+        int endSize = 0;
+        for (int i : new int[]{max_channels, max_users, max_tokens, 1, 0, 1, max_pdusize, 2}) {
+            int berIntSize = BERIntSize(i);
+            endSize += berIntSize;
+        }
         return berHeaderSize(TAG_DOMAIN_PARAMS, endSize) + endSize;
     }
 
@@ -188,7 +192,7 @@ public class MCS {
      */
     private static int berParseHeader(RdpPacket_Localised data, int tagval)
             throws RdesktopException {
-        var tag = 0;
+        int tag = 0;
 
         if (tagval > 0x000000ff) {
             tag = data.getBigEndian16();
@@ -201,9 +205,9 @@ public class MCS {
                     + " expected " + tagval);
         }
 
-        var len = data.get8();
+        int len = data.get8();
 
-        var length = 0;
+        int length = 0;
         if ((len & 0x00000080) != 0) {
             len &= ~0x00000080; 
             length = 0;
@@ -248,7 +252,7 @@ public class MCS {
         send_cjrq(MCS_GLOBAL_CHANNEL);
         receive_cjcf();
 
-        for (var i = 0; i < channels.num_channels(); i++) {
+        for (int i = 0; i < channels.num_channels(); i++) {
             send_cjrq(VChannels.mcs_id(i));
             receive_cjcf();
         }
@@ -272,7 +276,7 @@ public class MCS {
      * @throws RdesktopException
      */
     public static RdpPacket_Localised init(int length) throws RdesktopException {
-        var data = ISO.init(length + 8);
+        RdpPacket_Localised data = ISO.init(length + 8);
         
         data.setHeader(RdpPacket.MCS_HEADER);
         data.incrementPosition(8);
@@ -304,7 +308,7 @@ public class MCS {
             throws RdesktopException, IOException {
         buffer.setPosition(buffer.getHeader(RdpPacket.MCS_HEADER));
 
-        var length = buffer.getEnd() - buffer.getHeader(RdpPacket.MCS_HEADER) - 8;
+        int length = buffer.getEnd() - buffer.getHeader(RdpPacket.MCS_HEADER) - 8;
         length |= 0x8000;
 
         buffer.set8((SDRQ << 2));
@@ -328,13 +332,13 @@ public class MCS {
     public RdpPacket_Localised receive(int[] channel) throws IOException,
             RdesktopException, OrderException, CryptoException {
         logger.debug("receive");
-        var buffer = IsoLayer.receive();
+        RdpPacket_Localised buffer = IsoLayer.receive();
         if (buffer == null)
             return null;
         buffer.setHeader(RdpPacket.MCS_HEADER);
-        var opcode = buffer.get8();
+        int opcode = buffer.get8();
 
-        var appid = opcode >> 2;
+        int appid = opcode >> 2;
 
         if (appid != SDIN) {
             if (appid != DPUM) {
@@ -348,7 +352,7 @@ public class MCS {
         logger.debug("Channel ID = {}", channel[0]);
         buffer.incrementPosition(1);
 
-        var length = buffer.get8();
+        int length = buffer.get8();
 
         if ((length & 0x80) != 0) {
             buffer.incrementPosition(1);
@@ -398,13 +402,13 @@ public class MCS {
             throws IOException, RdesktopException {
         logger.debug("MCS.sendConnectInitial");
 
-        var datalen = data.getEnd();
+        int datalen = data.getEnd();
 
 
-        var length = 9 + 3 * 34 + 4 + datalen;
+        int length = 9 + 3 * 34 + 4 + datalen;
 
 
-        var buffer = ISO.init(length + 5);
+        RdpPacket_Localised buffer = ISO.init(length + 5);
 
         sendBerHeader(buffer, CONNECT_INITIAL, length);
         sendBerHeader(buffer, BER_TAG_OCTET_STRING, 1); 
@@ -444,12 +448,12 @@ public class MCS {
 
         logger.debug("MCS.receiveConnectResponse");
 
-        var buffer = IsoLayer.receive();
+        RdpPacket_Localised buffer = IsoLayer.receive();
         logger.debug("Received buffer");
-        var length = berParseHeader(buffer, CONNECT_RESPONSE);
+        int length = berParseHeader(buffer, CONNECT_RESPONSE);
         length = berParseHeader(buffer, BER_TAG_RESULT);
 
-        var result = buffer.get8();
+        int result = buffer.get8();
         if (result != 0) {
             String[] connect_results = {"Successful", "Domain Merging",
                     "Domain not Hierarchical", "No Such Channel", "No Such Domain",
@@ -486,7 +490,7 @@ public class MCS {
      */
     private void send_edrq() throws IOException, RdesktopException {
         logger.debug("send_edrq");
-        var buffer = ISO.init(5);
+        RdpPacket_Localised buffer = ISO.init(5);
         buffer.set8(EDRQ << 2);
         buffer.setBigEndian16(1); 
         buffer.setBigEndian16(1); 
@@ -502,7 +506,7 @@ public class MCS {
      * @throws RdesktopException
      */
     private void send_cjrq(int channelid) throws IOException, RdesktopException {
-        var buffer = ISO.init(5);
+        RdpPacket_Localised buffer = ISO.init(5);
         buffer.set8(CJRQ << 2);
         buffer.setBigEndian16(this.McsUserID); 
         buffer.setBigEndian16(channelid); 
@@ -517,7 +521,7 @@ public class MCS {
      * @throws RdesktopException
      */
     public void send_aucf() throws IOException, RdesktopException {
-        var buffer = ISO.init(2);
+        RdpPacket_Localised buffer = ISO.init(2);
 
         buffer.set8(AUCF << 2);
         buffer.set8(0);
@@ -532,7 +536,7 @@ public class MCS {
      * @throws RdesktopException
      */
     private void send_aurq() throws IOException, RdesktopException {
-        var buffer = ISO.init(1);
+        RdpPacket_Localised buffer = ISO.init(1);
 
         buffer.set8(AURQ << 2);
         buffer.markEnd();
@@ -548,14 +552,14 @@ public class MCS {
     private void receive_cjcf() throws IOException, RdesktopException,
             OrderException, CryptoException {
         logger.debug("receive_cjcf");
-        var buffer = IsoLayer.receive();
+        RdpPacket_Localised buffer = IsoLayer.receive();
 
-        var opcode = buffer.get8();
+        int opcode = buffer.get8();
         if ((opcode >> 2) != CJCF) {
             throw new RdesktopException("Expected CJCF got" + opcode);
         }
 
-        var result = buffer.get8();
+        int result = buffer.get8();
         if (result != 0) {
             throw new RdesktopException("Expected CJRQ got " + result);
         }
@@ -583,19 +587,19 @@ public class MCS {
     private int receive_aucf() throws IOException, RdesktopException,
             OrderException, CryptoException {
         logger.debug("receive_aucf");
-        var buffer = IsoLayer.receive();
+        RdpPacket_Localised buffer = IsoLayer.receive();
 
-        var opcode = buffer.get8();
+        int opcode = buffer.get8();
         if ((opcode >> 2) != AUCF) {
             throw new RdesktopException("Expected AUCF got " + opcode);
         }
 
-        var result = buffer.get8();
+        int result = buffer.get8();
         if (result != 0) {
             throw new RdesktopException("Expected AURQ got " + result);
         }
 
-        var UserID = 0;
+        int UserID = 0;
         if ((opcode & 2) != 0) {
             UserID = buffer.getBigEndian16();
         }
@@ -615,7 +619,7 @@ public class MCS {
     private static void parseDomainParams(RdpPacket_Localised data)
             throws RdesktopException {
 
-        var length = MCS.berParseHeader(data, TAG_DOMAIN_PARAMS);
+        int length = MCS.berParseHeader(data, TAG_DOMAIN_PARAMS);
         data.incrementPosition(length);
 
         if (data.getPosition() > data.getEnd()) {

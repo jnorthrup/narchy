@@ -131,7 +131,7 @@ public class SpaceGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>>
     protected void initLighting(GL2 gl) {
         gl.glLightModelf(GL_LIGHT_MODEL_AMBIENT, 0.6f);
 
-        final var a = 0.7f;
+        final float a = 0.7f;
         float[] light_ambient = {a, a, a, 1.0f};
 
         /* light_position is NOT default value */
@@ -142,7 +142,7 @@ public class SpaceGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>>
         gl.glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse, 0);
         float[] light_specular = {0.5f, 0.5f, 0.5f, 0.5f};
         gl.glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular, 0);
-        var distance = 25f;
+        float distance = 25f;
         float[] light_position0 = {0f, 0f, distance, 0.0f};
         gl.glLightfv(GL_LIGHT0, GL_POSITION, light_position0, 0);
         gl.glEnable(GL_LIGHTING);
@@ -158,13 +158,13 @@ public class SpaceGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>>
 
         inputs.forEach((anIi) -> anIi.update(this, dtMS));
 
-        var simulating = true;
+        boolean simulating = true;
         if (simulating) {
 
             /**
              * 0 for variable timing
              */
-            var maxSubsteps = 0;
+            int maxSubsteps = 0;
             dyn.update(
 
                     Math.max(dtMS / 1000f, 1000000f / video.renderFPS)
@@ -182,15 +182,15 @@ public class SpaceGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>>
         //perspective(gl, aspect);
 
 
-        var dtMS = Math.max(1, Math.round(1000 * dtS));
+        int dtMS = Math.max(1, Math.round(1000 * dtS));
 
         update(dtMS);
 
-        for (var xSpatial : this) {
+        for (Spatial<X> xSpatial : this) {
             xSpatial.renderAbsolute(gl, dtMS);
         }
 
-        for (var s : this) {
+        for (Spatial<X> s : this) {
             s.forEachBody(body -> {
 
                 gl.glPushMatrix();
@@ -230,15 +230,15 @@ public class SpaceGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>>
                 new float[]{1.0f, 1.0f, 1.0f, 1.0f},
                 0);
         if (tHv == null) {
-            var t = new Tex();
+            Tex t = new Tex();
 
             int w = 33, h = 33;
-            var bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-            var g = (Graphics2D) bi.getGraphics();
-            var on = Bitmap2D.encodeRGB8b(0.3f, 0.3f, 0.3f);
-            var off = Bitmap2D.encodeRGB8b(0f, 0f, 0f);
-            for (var x = 0; x < w; x++) {
-                for (var y = 0; y < h; y++) {
+            BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g = (Graphics2D) bi.getGraphics();
+            int on = Bitmap2D.encodeRGB8b(0.3f, 0.3f, 0.3f);
+            int off = Bitmap2D.encodeRGB8b(0f, 0f, 0f);
+            for (int x = 0; x < w; x++) {
+                for (int y = 0; y < h; y++) {
                     bi.setRGB(x, y, (x ^ y) % 2 == 0 ? on : off);
                 }
             }

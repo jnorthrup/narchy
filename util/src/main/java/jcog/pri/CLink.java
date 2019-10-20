@@ -10,7 +10,7 @@ public class CLink<X extends Prioritizable> extends RoaringBitmap implements Pri
     public CLink(X ref, int... initialBits) {
         super();
         this.ref = ref;
-        for (var i : initialBits)
+        for (int i : initialBits)
             add(i);
     }
 
@@ -28,7 +28,7 @@ public class CLink<X extends Prioritizable> extends RoaringBitmap implements Pri
     public boolean equals(Object o) {
         if (this == o) return true;
         if (this.ref == o) return true;
-        var c = (CLink)o;
+        CLink c = (CLink)o;
         return ref.equals(c.ref);
     }
 

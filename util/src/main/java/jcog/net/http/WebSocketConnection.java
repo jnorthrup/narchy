@@ -30,7 +30,7 @@ public class WebSocketConnection extends WebSocketImpl {
         this.http = newChannel.http;
         this.hash = serial.incrementAndGet();
 
-        var chan = http.channel;
+        SocketChannel chan = http.channel;
         chan.configureBlocking(false);
         chan.socket().setTcpNoDelay(true);
 
@@ -39,7 +39,7 @@ public class WebSocketConnection extends WebSocketImpl {
         if (ws.listener.wssConnect(this)) {
             setChannel(chan);
 
-            var prependData = newChannel.prependData;
+            ByteBuffer prependData = newChannel.prependData;
             newChannel.prependData = null;
 
             decode(prependData);

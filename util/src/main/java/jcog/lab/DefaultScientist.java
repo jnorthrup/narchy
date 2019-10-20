@@ -40,12 +40,12 @@ public class DefaultScientist<S,E> extends Scientist<S,E> {
     }
 
     protected void conclude() {
-        var out = System.out;
-        for (var entry : best.entrySet()) {
-            var experiment = entry.getKey();
-            var b = entry.getValue();
+        PrintStream out = System.out;
+        for (Map.Entry<String, TopN<FloatObjectPair<String>>> entry : best.entrySet()) {
+            String experiment = entry.getKey();
+            TopN<FloatObjectPair<String>> b = entry.getValue();
             out.println(experiment);
-            for (var bb : b) {
+            for (FloatObjectPair<String> bb : b) {
                 out.println(bb.getTwo());
             }
             out.println();
@@ -61,20 +61,20 @@ public class DefaultScientist<S,E> extends Scientist<S,E> {
     @Override
     public void analyze(Optimize<S, E> results) {
 
-        var b = bestsTable(results);
-        for (var r : results.data) {
-            var score = (float) r.getDouble(0);
+        TopN<FloatObjectPair<String>> b = bestsTable(results);
+        for (Row r : results.data) {
+            float score = (float) r.getDouble(0);
             if (score > b.minValueIfFull()) {
-                var report = r.toString();
+                String report = r.toString();
                 b.accept(pair(score, report));
             }
         }
 
-        var out = System.out;
+        PrintStream out = System.out;
 
         //current.print(out);
 
-        var tree = results.tree(2, 6);
+        RealDecisionTree tree = results.tree(2, 6);
         tree.print(out);
         tree.printExplanations(out);
 
@@ -100,7 +100,7 @@ public class DefaultScientist<S,E> extends Scientist<S,E> {
             return vars;
         } else  {
             //random subset
-            var v = vars.toArray(new Var[0]);
+            Var[] v = vars.toArray(new Var[0]);
             ArrayUtil.shuffle(v, random);
             return List.of(ArrayUtil.subarray(v, 0, maxVars));
         }

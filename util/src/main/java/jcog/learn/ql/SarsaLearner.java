@@ -75,7 +75,7 @@ public class SarsaLearner {
      */
     public void setAlpha(double alpha) {
         this.alpha = alpha;
-        for (var a = 0; a < numActions; a++)
+        for (int a = 0; a < numActions; a++)
             valueFunction[a].setAlpha(alpha);
     }
 
@@ -149,7 +149,7 @@ public class SarsaLearner {
     public void learn(double[] lastFeatures, int lastAction,
             double reward, double[] features, int action) {
 
-        var oldValue = valueFunction[lastAction].predict(lastFeatures);
+        double oldValue = valueFunction[lastAction].predict(lastFeatures);
 
         
         if (Double.isNaN(oldValue) || oldValue >= 10E7)
@@ -165,14 +165,14 @@ public class SarsaLearner {
             newValue = 0;
 
 
-        var delta = reward + gamma * newValue - oldValue;
+        double delta = reward + gamma * newValue - oldValue;
 
         
         updateTraces(lastFeatures, lastAction);
 
         
-        for (var a = 0; a < numActions; a++) {
-            var model = valueFunction[a];
+        for (int a = 0; a < numActions; a++) {
+            LinearModel model = valueFunction[a];
             
             model.updateWeightsDelta(traces[a], delta);
         }
@@ -190,12 +190,12 @@ public class SarsaLearner {
             traces = new double[numActions][];
             traces[lastAction] = features.clone();
 
-            for (var a = 0; a < numActions; a++)
+            for (int a = 0; a < numActions; a++)
                 if (a != lastAction)
                     traces[a] = new double[features.length];
         }
         else {
-            for (var a = 0; a < numActions; a++) {
+            for (int a = 0; a < numActions; a++) {
                 
                 
                 if (a != lastAction)
@@ -212,7 +212,7 @@ public class SarsaLearner {
      * @param factor
      */
     protected static void decayTraces(double[] traces, double factor) {
-        for (var f = 0; f < traces.length; f++)
+        for (int f = 0; f < traces.length; f++)
             traces[f] *= factor;
     }
 
@@ -223,7 +223,7 @@ public class SarsaLearner {
      * @param state
      */
     protected static void replaceTraces(double[] traces, double factor, double[] state) {
-        for (var f = 0; f < traces.length; f++) {
+        for (int f = 0; f < traces.length; f++) {
             
             if (state[f] == 0)
                 traces[f] *= factor;
@@ -238,21 +238,21 @@ public class SarsaLearner {
      * @return
      */
     public int selectAction(double[] pState) {
-        var values = new double[numActions];
+        double[] values = new double[numActions];
 
 
         if (Math.random() < epsilon) {
-            var r = (int)(Math.random() * numActions);
+            int r = (int)(Math.random() * numActions);
             return r;
         }
 
 
-        var ties = new ArrayList<Integer>();
-        var bestAction = -1;
-        var worstValue = Double.POSITIVE_INFINITY;
-        var bestValue = Double.NEGATIVE_INFINITY;
-        for (var a = 0; a < numActions; a++) {
-            var v = valueFunction[a].predict(pState);
+        ArrayList<Integer> ties = new ArrayList<Integer>();
+        int bestAction = -1;
+        double worstValue = Double.POSITIVE_INFINITY;
+        double bestValue = Double.NEGATIVE_INFINITY;
+        for (int a = 0; a < numActions; a++) {
+            double v = valueFunction[a].predict(pState);
 
             values[a] = v;
             if (v > bestValue) {
@@ -271,7 +271,7 @@ public class SarsaLearner {
 
         
         if (ties.size() > 1) {
-            var r = (int)(Math.random() * ties.size());
+            int r = (int)(Math.random() * ties.size());
             bestAction = ties.get(r);
         }
 
@@ -286,7 +286,7 @@ public class SarsaLearner {
     protected final void createModels(int numActions, int numFeatures) {
         valueFunction = new LinearModel[numActions];
 
-        for (var a = 0; a < numActions; a++) {
+        for (int a = 0; a < numActions; a++) {
             valueFunction[a] = new LinearModel(numFeatures, true);
             valueFunction[a].setAlpha(alpha);
         }
@@ -366,7 +366,7 @@ public class SarsaLearner {
             prediction = 0;
 
 
-            for (var i = 0; i < features.length; i++) {
+            for (int i = 0; i < features.length; i++) {
                 prediction += weights[i] * features[i];
             }
 
@@ -390,8 +390,8 @@ public class SarsaLearner {
             }
 
 
-            for (var index = 0; index < lastFeatures.length; index++) {
-                var value = lastFeatures[index];
+            for (int index = 0; index < lastFeatures.length; index++) {
+                double value = lastFeatures[index];
 
                 weights[index] += alpha * (delta * value);
             }

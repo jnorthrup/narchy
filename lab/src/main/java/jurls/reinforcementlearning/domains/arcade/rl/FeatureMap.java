@@ -63,46 +63,46 @@ public class FeatureMap {
      */
     public double[] getFeatures(FrameHistory history) {
 
-        var screen = history.getLastFrame(0);
+        ScreenMatrix screen = history.getLastFrame(0);
 
-        var blockWidth = screen.width / numColumns;
-        var blockHeight = screen.height / numRows;
+        int blockWidth = screen.width / numColumns;
+        int blockHeight = screen.height / numRows;
 
-        var featuresPerBlock = numColors;
+        int featuresPerBlock = numColors;
 
-        var blockIndex = 0;
+        int blockIndex = 0;
 
-        var numColors = this.numColors;
+        int numColors = this.numColors;
 
-        var features = this.features;
-        var matrix = screen.matrix;
+        double[] features = this.features;
+        int[][] matrix = screen.matrix;
 
-        var rr = numRows;
-        var cc = numColumns;
+        int rr = numRows;
+        int cc = numColumns;
 
 
-        var hasColor = this.hasColor;
+        boolean[] hasColor = this.hasColor;
 
-        for (var by = 0; by < rr; by++) {
+        for (int by = 0; by < rr; by++) {
 
-            var yo = by * blockHeight;
+            int yo = by * blockHeight;
 
-            for (var bx = 0; bx < cc; bx++) {
+            for (int bx = 0; bx < cc; bx++) {
                 Arrays.fill(hasColor, false);
-                var xo = bx * blockWidth;
+                int xo = bx * blockWidth;
 
 
                 
-                for (var x = xo; x < xo + blockWidth; x++) {
-                    var sm = matrix[x];
-                    for (var y = yo; y < yo + blockHeight; y++) {
-                        var pixelColor = sm[y];
+                for (int x = xo; x < xo + blockWidth; x++) {
+                    int[] sm = matrix[x];
+                    for (int y = yo; y < yo + blockHeight; y++) {
+                        int pixelColor = sm[y];
                         hasColor[encode(pixelColor)] = true;
                     }
                 }
 
                 
-                for (var c = 0; c < numColors; c++)
+                for (int c = 0; c < numColors; c++)
                     if (hasColor[c])
                         features[c + blockIndex] = 1.0;
 

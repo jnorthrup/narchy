@@ -64,8 +64,8 @@ public class SV_ENTS {
         else
             from_num_entities = from.num_entities;
 
-        var newindex = 0;
-        var oldindex = 0;
+        int newindex = 0;
+        int oldindex = 0;
         entity_state_t newent = null;
         entity_state_t oldent = null;
         while (newindex < to.num_entities || oldindex < from_num_entities) {
@@ -111,7 +111,7 @@ public class SV_ENTS {
 
             if (newnum > oldnum) {
 
-                var bits = Defines.U_REMOVE;
+                int bits = Defines.U_REMOVE;
                 if (oldnum >= 256)
                     bits |= Defines.U_NUMBER16 | Defines.U_MOREBITS1;
 
@@ -141,17 +141,17 @@ public class SV_ENTS {
         
         player_state_t ops;
 
-        var ps = to.ps;
+        player_state_t ps = to.ps;
         if (from == null) {
 
-            var dummy = new player_state_t();
+            player_state_t dummy = new player_state_t();
             ops = dummy;
         } else {
             ops = from.ps;
         }
 
 
-        var pflags = 0;
+        int pflags = 0;
 
         if (ps.pmove.pm_type != ops.pmove.pm_type)
             pflags |= Defines.PS_M_TYPE;
@@ -290,10 +290,16 @@ public class SV_ENTS {
             MSG.WriteByte(msg, ps.rdflags);
 
 
-        var bound = Defines.MAX_STATS;
-        var statbits = IntStream.range(0, bound).filter(i1 -> ps.stats[i1] != ops.stats[i1]).map(i1 -> 1 << i1).reduce(0, (a, b) -> a | b);
+        int bound = Defines.MAX_STATS;
+        int statbits = 0;
+        for (int i1 = 0; i1 < bound; i1++) {
+            if (ps.stats[i1] != ops.stats[i1]) {
+                int i2 = 1 << i1;
+                statbits = statbits | i2;
+            }
+        }
         MSG.WriteLong(msg, statbits);
-        for (var i = 0; i < Defines.MAX_STATS; i++)
+        for (int i = 0; i < Defines.MAX_STATS; i++)
             if ((statbits & (1 << i)) != 0)
                 MSG.WriteShort(msg, ps.stats[i]);
     }
@@ -307,7 +313,7 @@ public class SV_ENTS {
         int lastframe;
 
 
-        var frame = client.frames[SV_INIT.sv.framenum & Defines.UPDATE_MASK];
+        client_frame_t frame = client.frames[SV_INIT.sv.framenum & Defines.UPDATE_MASK];
         if (client.lastframe <= 0) { 
             oldframe = null;
             lastframe = -1;
@@ -352,13 +358,13 @@ public class SV_ENTS {
             maxs[i] = org[i] + 8;
         }
 
-        var leafs = new int[64];
-        var count = CM.CM_BoxLeafnums(mins, maxs, leafs, 64, null);
+        int[] leafs = new int[64];
+        int count = CM.CM_BoxLeafnums(mins, maxs, leafs, 64, null);
 
         if (count < 1)
             Com.Error(Defines.ERR_FATAL, "SV_FatPVS: count < 1");
 
-        var longs = (CM.CM_NumClusters() + 31) >> 5;
+        int longs = (CM.CM_NumClusters() + 31) >> 5;
 
         
         for (i = 0; i < count; i++)
@@ -375,10 +381,10 @@ public class SV_ENTS {
             if (j != i)
                 continue;
 
-            var src = CM.CM_ClusterPVS(leafs[i]);
+            byte[] src = CM.CM_ClusterPVS(leafs[i]);
 
 
-            var k = 0;
+            int k = 0;
             for (j = 0; j < longs; j++) {
                 SV_ENTS.fatpvs[k] |= src[k++];
                 SV_ENTS.fatpvs[k] |= src[k++];
@@ -394,12 +400,12 @@ public class SV_ENTS {
      */
     public static void SV_BuildClientFrame(client_t client) {
 
-        var clent = client.edict;
+        edict_t clent = client.edict;
         if (clent.client == null)
             return;
 
 
-        var frame = client.frames[SV_INIT.sv.framenum & Defines.UPDATE_MASK];
+        client_frame_t frame = client.frames[SV_INIT.sv.framenum & Defines.UPDATE_MASK];
 
         frame.senttime = SV_INIT.svs.realtime;
 
@@ -410,9 +416,9 @@ public class SV_ENTS {
             org[i] = clent.client.ps.pmove.origin[i] * 0.125f
                     + clent.client.ps.viewoffset[i];
 
-        var leafnum = CM.CM_PointLeafnum(org);
-        var clientarea = CM.CM_LeafArea(leafnum);
-        var clientcluster = CM.CM_LeafCluster(leafnum);
+        int leafnum = CM.CM_PointLeafnum(org);
+        int clientarea = CM.CM_LeafArea(leafnum);
+        int clientcluster = CM.CM_LeafCluster(leafnum);
 
         
         frame.areabytes = CM.CM_WriteAreaBits(frame.areabits, clientarea);
@@ -421,16 +427,16 @@ public class SV_ENTS {
         frame.ps.set(clent.client.ps);
 
         SV_FatPVS(org);
-        var clientphs = CM.CM_ClusterPHS(clientcluster);
+        byte[] clientphs = CM.CM_ClusterPHS(clientcluster);
 
         
         frame.num_entities = 0;
         frame.first_entity = SV_INIT.svs.next_client_entities;
 
-        var c_fullsend = 0;
+        int c_fullsend = 0;
 
-        for (var e = 1; e < GameBase.num_edicts; e++) {
-            var ent = GameBase.g_edicts[e];
+        for (int e = 1; e < GameBase.num_edicts; e++) {
+            edict_t ent = GameBase.g_edicts[e];
 
 
             if ((ent.svflags & Defines.SVF_NOCLIENT) != 0)
@@ -486,7 +492,7 @@ public class SV_ENTS {
                         float[] delta = { 0, 0, 0 };
 
                         Math3D.VectorSubtract(org, ent.s.origin, delta);
-                        var len = Math3D.VectorLength(delta);
+                        float len = Math3D.VectorLength(delta);
                         if (len > 400)
                             continue;
                     }
@@ -494,9 +500,9 @@ public class SV_ENTS {
             }
 
 
-            var ix = SV_INIT.svs.next_client_entities
+            int ix = SV_INIT.svs.next_client_entities
                     % SV_INIT.svs.num_client_entities;
-            var state = SV_INIT.svs.client_entities[ix];
+            entity_state_t state = SV_INIT.svs.client_entities[ix];
             if (ent.s.number != e) {
                 Com.DPrintf("FIXING ENT.S.NUMBER!!!\n");
                 ent.s.number = e;
@@ -526,8 +532,8 @@ public class SV_ENTS {
             return;
 
 
-        var nostate = new entity_state_t(null);
-        var buf = new sizebuf_t();
+        entity_state_t nostate = new entity_state_t(null);
+        sizebuf_t buf = new sizebuf_t();
         SZ.Init(buf, buf_data, buf_data.length);
 
         
@@ -536,8 +542,8 @@ public class SV_ENTS {
 
         MSG.WriteByte(buf, Defines.svc_packetentities);
 
-        var e = 1;
-        var ent = GameBase.g_edicts[e];
+        int e = 1;
+        edict_t ent = GameBase.g_edicts[e];
 
         while (e < GameBase.num_edicts) {
             
@@ -560,7 +566,7 @@ public class SV_ENTS {
         SZ.Clear(SV_INIT.svs.demo_multicast);
 
 
-        var len = EndianHandler.swapInt(buf.cursize);
+        int len = EndianHandler.swapInt(buf.cursize);
 
         try {
             

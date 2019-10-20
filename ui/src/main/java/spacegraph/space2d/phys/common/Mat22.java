@@ -41,7 +41,7 @@ public class Mat22 implements Serializable {
      */
     @Override
     public String toString() {
-        var s = "";
+        String s = "";
         s += "[" + ex.x + ',' + ey.x + "]\n";
         s += "[" + ex.y + ',' + ey.y + ']';
         return s;
@@ -170,8 +170,8 @@ public class Mat22 implements Serializable {
      */
     public final Mat22 invert() {
         float a = ex.x, b = ey.x, c = ex.y, d = ey.y;
-        var B = new Mat22();
-        var det = a * d - b * c;
+        Mat22 B = new Mat22();
+        float det = a * d - b * c;
         if (Math.abs(det) > Float.MIN_NORMAL) {
             det = 1.0f / det;
         }
@@ -184,7 +184,7 @@ public class Mat22 implements Serializable {
 
     public final Mat22 invertLocal() {
         float a = ex.x, b = ey.x, c = ex.y, d = ey.y;
-        var det = a * d - b * c;
+        float det = a * d - b * c;
         if (Math.abs(det) > Float.MIN_NORMAL) {
             det = 1.0f / det;
         }
@@ -197,7 +197,7 @@ public class Mat22 implements Serializable {
 
     public final void invertToOut(Mat22 out) {
         float a = ex.x, b = ey.x, c = ex.y, d = ey.y;
-        var det = a * d - b * c;
+        float det = a * d - b * c;
         
         det = 1.0f / det;
         out.ex.x = det * d;
@@ -251,7 +251,7 @@ public class Mat22 implements Serializable {
     }
 
     public final void mulToOut(v2 v, v2 out) {
-        var tempy = ex.y * v.x + ey.y * v.y;
+        float tempy = ex.y * v.x + ey.y * v.y;
         out.x = ex.x * v.x + ey.x * v.y;
         out.y = tempy;
     }
@@ -273,7 +273,7 @@ public class Mat22 implements Serializable {
         /*
          * Mat22 C = new Mat22();C.setAt(this.mul(R.ex), this.mul(R.ey));return C;
          */
-        var C = new Mat22();
+        Mat22 C = new Mat22();
         C.ex.x = ex.x * R.ex.x + ey.x * R.ex.y;
         C.ex.y = ex.y * R.ex.x + ey.y * R.ex.y;
         C.ey.x = ex.x * R.ey.x + ey.x * R.ey.y;
@@ -288,12 +288,12 @@ public class Mat22 implements Serializable {
     }
 
     private void mulToOut(Mat22 R, Mat22 out) {
-        var tempy1 = this.ex.y * R.ex.x + this.ey.y * R.ex.y;
-        var tempx1 = this.ex.x * R.ex.x + this.ey.x * R.ex.y;
+        float tempy1 = this.ex.y * R.ex.x + this.ey.y * R.ex.y;
+        float tempx1 = this.ex.x * R.ex.x + this.ey.x * R.ex.y;
         out.ex.x = tempx1;
         out.ex.y = tempy1;
-        var tempy2 = this.ex.y * R.ey.x + this.ey.y * R.ey.y;
-        var tempx2 = this.ex.x * R.ey.x + this.ey.x * R.ey.y;
+        float tempy2 = this.ex.y * R.ey.x + this.ey.y * R.ey.y;
+        float tempx2 = this.ex.x * R.ey.x + this.ey.x * R.ey.y;
         out.ey.x = tempx2;
         out.ey.y = tempy2;
     }
@@ -320,7 +320,7 @@ public class Mat22 implements Serializable {
          * Vec2(Vec2.dot(this.ex, B.ey), Vec2.dot(this.ey, B.ey)); Mat22 C = new Mat22(); C.setAt(c1, c2);
          * return C;
          */
-        var C = new Mat22();
+        Mat22 C = new Mat22();
 
         C.ex.x = v2.dot(this.ex, B.ex);
         C.ex.y = v2.dot(this.ey, B.ex);
@@ -340,10 +340,10 @@ public class Mat22 implements Serializable {
          * out.ex.x = Vec2.dot(this.ex, B.ex); out.ex.y = Vec2.dot(this.ey, B.ex); out.ey.x =
          * Vec2.dot(this.ex, B.ey); out.ey.y = Vec2.dot(this.ey, B.ey);
          */
-        var x1 = this.ex.x * B.ex.x + this.ex.y * B.ex.y;
-        var y1 = this.ey.x * B.ex.x + this.ey.y * B.ex.y;
-        var x2 = this.ex.x * B.ey.x + this.ex.y * B.ey.y;
-        var y2 = this.ey.x * B.ey.x + this.ey.y * B.ey.y;
+        float x1 = this.ex.x * B.ex.x + this.ex.y * B.ex.y;
+        float y1 = this.ey.x * B.ex.x + this.ey.y * B.ex.y;
+        float x2 = this.ex.x * B.ey.x + this.ex.y * B.ey.y;
+        float y2 = this.ey.x * B.ey.x + this.ey.y * B.ey.y;
         out.ex.x = x1;
         out.ey.x = x2;
         out.ex.y = y1;
@@ -375,7 +375,7 @@ public class Mat22 implements Serializable {
         /*
          * out.x = Vec2.dot(v, ex); out.y = Vec2.dot(v, col2);
          */
-        var tempx = v.x * ex.x + v.y * ex.y;
+        float tempx = v.x * ex.x + v.y * ex.y;
         out.y = v.x * ey.x + v.y * ey.y;
         out.x = tempx;
     }
@@ -388,7 +388,7 @@ public class Mat22 implements Serializable {
      */
     public final Mat22 add(Mat22 B) {
 
-        var m = new Mat22();
+        Mat22 m = new Mat22();
         m.ex.x = ex.x + B.ex.x;
         m.ex.y = ex.y + B.ex.y;
         m.ey.x = ey.x + B.ey.x;
@@ -419,21 +419,21 @@ public class Mat22 implements Serializable {
      */
     public final v2 solve(v2 b) {
         float a11 = ex.x, a12 = ey.x, a21 = ex.y, a22 = ey.y;
-        var det = a11 * a22 - a12 * a21;
+        float det = a11 * a22 - a12 * a21;
         if (Math.abs(det) > Float.MIN_NORMAL) {
             det = 1.0f / det;
         }
-        var x = new v2(det * (a22 * b.x - a12 * b.y), det * (a11 * b.y - a21 * b.x));
+        v2 x = new v2(det * (a22 * b.x - a12 * b.y), det * (a11 * b.y - a21 * b.x));
         return x;
     }
 
     public final void solveToOut(v2 b, v2 out) {
         float a11 = ex.x, a12 = ey.x, a21 = ex.y, a22 = ey.y;
-        var det = a11 * a22 - a12 * a21;
+        float det = a11 * a22 - a12 * a21;
         if (Math.abs(det) > Float.MIN_NORMAL) {
             det = 1.0f / det;
         }
-        var tempy = det * (a11 * b.y - a21 * b.x);
+        float tempy = det * (a11 * b.y - a21 * b.x);
         out.x = det * (a22 * b.x - a12 * b.y);
         out.y = tempy;
     }
@@ -444,7 +444,7 @@ public class Mat22 implements Serializable {
     }
 
     public static void mulToOut(Mat22 R, v2 v, v2 out) {
-        var tempy = R.ex.y * v.x + R.ey.y * v.y;
+        float tempy = R.ex.y * v.x + R.ey.y * v.y;
         out.x = R.ex.x * v.x + R.ey.x * v.y;
         out.y = tempy;
     }
@@ -457,7 +457,7 @@ public class Mat22 implements Serializable {
 
     public static Mat22 mul(Mat22 A, Mat22 B) {
 
-        var C = new Mat22();
+        Mat22 C = new Mat22();
         C.ex.x = A.ex.x * B.ex.x + A.ey.x * B.ex.y;
         C.ex.y = A.ex.y * B.ex.x + A.ey.y * B.ex.y;
         C.ey.x = A.ex.x * B.ey.x + A.ey.x * B.ey.y;
@@ -466,10 +466,10 @@ public class Mat22 implements Serializable {
     }
 
     public static void mulToOut(Mat22 A, Mat22 B, Mat22 out) {
-        var tempy1 = A.ex.y * B.ex.x + A.ey.y * B.ex.y;
-        var tempx1 = A.ex.x * B.ex.x + A.ey.x * B.ex.y;
-        var tempy2 = A.ex.y * B.ey.x + A.ey.y * B.ey.y;
-        var tempx2 = A.ex.x * B.ey.x + A.ey.x * B.ey.y;
+        float tempy1 = A.ex.y * B.ex.x + A.ey.y * B.ex.y;
+        float tempx1 = A.ex.x * B.ex.x + A.ey.x * B.ex.y;
+        float tempy2 = A.ex.y * B.ey.x + A.ey.y * B.ey.y;
+        float tempx2 = A.ex.x * B.ey.x + A.ey.x * B.ey.y;
         out.ex.x = tempx1;
         out.ex.y = tempy1;
         out.ey.x = tempx2;
@@ -490,7 +490,7 @@ public class Mat22 implements Serializable {
     }
 
     public static void mulTransToOut(Mat22 R, v2 v, v2 out) {
-        var outx = v.x * R.ex.x + v.y * R.ex.y;
+        float outx = v.x * R.ex.x + v.y * R.ex.y;
         out.y = v.x * R.ey.x + v.y * R.ey.y;
         out.x = outx;
     }
@@ -502,7 +502,7 @@ public class Mat22 implements Serializable {
     }
 
     public static Mat22 mulTrans(Mat22 A, Mat22 B) {
-        var C = new Mat22();
+        Mat22 C = new Mat22();
         C.ex.x = A.ex.x * B.ex.x + A.ex.y * B.ex.y;
         C.ex.y = A.ey.x * B.ex.x + A.ey.y * B.ex.y;
         C.ey.x = A.ex.x * B.ey.x + A.ex.y * B.ey.y;
@@ -511,10 +511,10 @@ public class Mat22 implements Serializable {
     }
 
     public static void mulTransToOut(Mat22 A, Mat22 B, Mat22 out) {
-        var x1 = A.ex.x * B.ex.x + A.ex.y * B.ex.y;
-        var y1 = A.ey.x * B.ex.x + A.ey.y * B.ex.y;
-        var x2 = A.ex.x * B.ey.x + A.ex.y * B.ey.y;
-        var y2 = A.ey.x * B.ey.x + A.ey.y * B.ey.y;
+        float x1 = A.ex.x * B.ex.x + A.ex.y * B.ex.y;
+        float y1 = A.ey.x * B.ex.x + A.ey.y * B.ex.y;
+        float x2 = A.ex.x * B.ey.x + A.ex.y * B.ey.y;
+        float y2 = A.ey.x * B.ey.x + A.ey.y * B.ey.y;
 
         out.ex.x = x1;
         out.ex.y = y1;
@@ -532,10 +532,10 @@ public class Mat22 implements Serializable {
     }
 
     public static Mat22 createRotationalTransform(float angle) {
-        var mat = new Mat22();
+        Mat22 mat = new Mat22();
 
-        var c = (float) Math.cos(angle);
-        var s = (float) Math.sin(angle);
+        float c = (float) Math.cos(angle);
+        float s = (float) Math.sin(angle);
         mat.ex.x = c;
         mat.ey.x = -s;
         mat.ex.y = s;
@@ -545,8 +545,8 @@ public class Mat22 implements Serializable {
 
     public static void createRotationalTransform(float angle, Mat22 out) {
 
-        var c = (float) Math.cos(angle);
-        var s = (float) Math.sin(angle);
+        float c = (float) Math.cos(angle);
+        float s = (float) Math.sin(angle);
         out.ex.x = c;
         out.ey.x = -s;
         out.ex.y = s;
@@ -554,7 +554,7 @@ public class Mat22 implements Serializable {
     }
 
     public static Mat22 createScaleTransform(float scale) {
-        var mat = new Mat22();
+        Mat22 mat = new Mat22();
         mat.ex.x = scale;
         mat.ey.y = scale;
         return mat;
@@ -567,8 +567,8 @@ public class Mat22 implements Serializable {
 
     @Override
     public int hashCode() {
-        final var prime = 31;
-        var result = 1;
+        final int prime = 31;
+        int result = 1;
         result = prime * result + ((ex == null) ? 0 : ex.hashCode());
         result = prime * result + ((ey == null) ? 0 : ey.hashCode());
         return result;
@@ -579,7 +579,7 @@ public class Mat22 implements Serializable {
         if (this == obj) return true;
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
-        var other = (Mat22) obj;
+        Mat22 other = (Mat22) obj;
         if (ex == null) {
             if (other.ex != null) return false;
         } else if (!ex.equals(other.ex)) return false;

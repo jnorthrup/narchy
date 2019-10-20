@@ -21,13 +21,13 @@ public class WinScene extends Scene {
         g.setColor(Color.decode("#8080a0"));
         g.fillRect(0, 0, 320, 240);
         g.drawImage(Art.endScene[tick / 24 % 2][0], 160 - 48, 100 - 48, null);
-        var scrollMessage = "Thank you for saving me, Mario!";
+        String scrollMessage = "Thank you for saving me, Mario!";
         drawString(g, scrollMessage, 160 - scrollMessage.length() * 4, 160, 0);
     }
 
     private static void drawString(Graphics g, String text, int x, int y, int c) {
-        var ch = text.toCharArray();
-        for (var i = 0; i < ch.length; i++) {
+        char[] ch = text.toCharArray();
+        for (int i = 0; i < ch.length; i++) {
             g.drawImage(Art.font[ch[i] - 32][c], x + i * 8, y, null);
         }
     }

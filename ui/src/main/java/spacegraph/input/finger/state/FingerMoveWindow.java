@@ -25,7 +25,7 @@ public abstract class FingerMoveWindow extends FingerMove {
 
     @Override
     protected boolean starting(Finger f) {
-        var w = window();
+        JoglDisplay w = window();
         windowStartX = w.video.getX();
         windowStartY = w.video.getY();
         return super.starting(f);

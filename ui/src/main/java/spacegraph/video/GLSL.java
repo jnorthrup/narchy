@@ -25,7 +25,7 @@ public class GLSL extends PaintSurface {
     private ShaderState st;
 
     public static void main(String[] args) {
-        var r = RectFloat.XYXY((float) 1, (float) 1, (float) 500, (float) 500);
+        RectFloat r = RectFloat.XYXY((float) 1, (float) 1, (float) 500, (float) 500);
         SpaceGraph.window(new GLSL().pos(r), 800, 600);
     }
 
@@ -45,10 +45,10 @@ public class GLSL extends PaintSurface {
 
 
     private String[] loadShaderSrc(String name) {
-        var sb = "";
+        String sb = "";
         try {
-            var is = getClass().getResourceAsStream(name);
-            var br = new BufferedReader(new InputStreamReader(is));
+            InputStream is = getClass().getResourceAsStream(name);
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
             sb = br.lines().map(line -> line + '\n').collect(Collectors.joining());
             is.close();
         } catch (Exception e) {
@@ -86,10 +86,10 @@ public class GLSL extends PaintSurface {
 
 
         /*vp0, */
-        var fp0 = new ShaderCode(GL_FRAGMENT_SHADER, 1, new CharSequence[][]{{fsrc}});
+        ShaderCode fp0 = new ShaderCode(GL_FRAGMENT_SHADER, 1, new CharSequence[][]{{fsrc}});
         
         fp0.defaultShaderCustomization(gl, true, true);
-        var sp0 = new ShaderProgram();
+        ShaderProgram sp0 = new ShaderProgram();
         
         sp0.add(gl, fp0, System.err);
         st.attachShaderProgram(gl, sp0, true);

@@ -43,7 +43,7 @@ public enum IntifySmoothSort {
 
 		while (pshift != 1 || p != 1) {
 			if (pshift <= 1) {
-				var trail = Integer.numberOfTrailingZeros(p & ~1);
+                int trail = Integer.numberOfTrailingZeros(p & ~1);
 				p >>>= trail;
 				pshift += trail;
 			} else {
@@ -60,20 +60,20 @@ public enum IntifySmoothSort {
 	}
 
 	private static <X> void trinkle(X[] m, int p, int pshift, int head, boolean trusty, ToIntFunction<X> i) {
-		var val = m[head];
-		var vval = i.applyAsInt(val);
+        X val = m[head];
+        int vval = i.applyAsInt(val);
 
 		while (p != 1) {
-			var stepson = head - LP[pshift];
-			var mstepson = m[stepson];
+            int stepson = head - LP[pshift];
+            X mstepson = m[stepson];
 
-			var vstepson = i.applyAsInt(mstepson);
+            int vstepson = i.applyAsInt(mstepson);
 			if (vstepson >= vval)
 				break;
 
 			if (!trusty && pshift > 1) {
-				var rt = head - 1;
-				var lf = head - 1 - LP[pshift - 2];
+                int rt = head - 1;
+                int lf = head - 1 - LP[pshift - 2];
 				if (i.applyAsInt(m[rt]) <= vstepson || i.applyAsInt(m[lf]) <= vstepson)
 					break;
 			}
@@ -81,7 +81,7 @@ public enum IntifySmoothSort {
 			m[head] = mstepson;
 
 			head = stepson;
-			var trail = Integer.numberOfTrailingZeros(p & ~1);
+            int trail = Integer.numberOfTrailingZeros(p & ~1);
 			p >>>= trail;
 			pshift += trail;
 			trusty = false;
@@ -94,12 +94,12 @@ public enum IntifySmoothSort {
 	}
 
 	private static <X> void sift(X[] m, int pshift, int head, ToIntFunction<X> i) {
-		var val = m[head];
-		var vval = i.applyAsInt(val);
+        X val = m[head];
+        int vval = i.applyAsInt(val);
 
 		while (pshift > 1) {
-			var rt = head - 1;
-			var lf = head - 1 - LP[pshift - 2];
+            int rt = head - 1;
+            int lf = head - 1 - LP[pshift - 2];
 
 			X mlf = m[lf], mrt = m[rt];
 			int vlf = i.applyAsInt(mlf), vrt = i.applyAsInt(mrt);

@@ -44,7 +44,7 @@ public class PlaySound {
 	
 	private static final PlaySound[] backbuffer = new PlaySound[MAX_PLAYSOUNDS];
 	static {
-	    for (var i = 0; i < backbuffer.length; i++) {
+	    for (int i = 0; i < backbuffer.length; i++) {
 	        backbuffer[i] = new PlaySound();
         }
 	    
@@ -88,8 +88,8 @@ public class PlaySound {
         playableList.next = playableList.prev = playableList;
 
 
-        for (var i = 0; i < backbuffer.length; i++) {
-            var ps = backbuffer[i];
+        for (int i = 0; i < backbuffer.length; i++) {
+            PlaySound ps = backbuffer[i];
             ps.clear();
 	        ps.prev = freeList;
             ps.next = freeList.next;
@@ -100,7 +100,7 @@ public class PlaySound {
     
     static PlaySound nextPlayableSound() {
 
-        var ps = playableList.next;
+        PlaySound ps = playableList.next;
             if (ps == playableList || ps.beginTime > Globals.cl.time)
                 return null;
             PlaySound.release(ps);
@@ -109,7 +109,7 @@ public class PlaySound {
     }
     
     private static PlaySound get() {
-        var ps = freeList.next;
+        PlaySound ps = freeList.next;
         if (ps == freeList)
             return null;
         
@@ -120,7 +120,7 @@ public class PlaySound {
 
     private static void add(PlaySound ps) {
 
-        var sort = playableList.next;
+        PlaySound sort = playableList.next;
         
         for (; sort != playableList && sort.beginTime < ps.beginTime; sort = sort.next);
         ps.next = sort;
@@ -142,7 +142,7 @@ public class PlaySound {
     static void allocate(float[] origin, int entnum, int entchannel,
             int bufferId, float volume, float attenuation, float timeoffset) {
 
-        var ps = PlaySound.get();
+        PlaySound ps = PlaySound.get();
 
         if (ps != null) {
             

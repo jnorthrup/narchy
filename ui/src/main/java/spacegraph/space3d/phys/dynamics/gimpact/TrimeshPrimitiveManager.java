@@ -123,7 +123,7 @@ public class TrimeshPrimitiveManager extends PrimitiveManagerBase {
 	
 	@Override
 	public void get_primitive_box(int prim_index, AABB primbox) {
-		var triangle = new PrimitiveTriangle();
+        PrimitiveTriangle triangle = new PrimitiveTriangle();
 		get_primitive_triangle(prim_index, triangle);
 		primbox.calc_from_triangle_margin(
 				triangle.vertices[0],

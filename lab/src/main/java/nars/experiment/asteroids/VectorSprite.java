@@ -52,7 +52,7 @@ public class VectorSprite {
     public void updatePosition(int w, int h) {
         counter++;
 
-        var eternal = true;
+        boolean eternal = true;
         if (!eternal)
             invincCounter++;
 
@@ -61,7 +61,7 @@ public class VectorSprite {
 
         int y;
         int x;
-        for (var i = 0; i < shape.npoints; i++) {
+        for (int i = 0; i < shape.npoints; i++) {
 
             x = (int) Math.round(shape.xpoints[i] * Math.cos(angle) - shape.ypoints[i] * Math.sin(angle));
             y = (int) Math.round(shape.xpoints[i] * Math.sin(angle) + shape.ypoints[i] * Math.cos(angle));

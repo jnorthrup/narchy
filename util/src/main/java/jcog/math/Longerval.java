@@ -61,7 +61,7 @@ public class Longerval implements LongInterval, Comparable<Longerval> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        var other = (Longerval) o;
+        Longerval other = (Longerval) o;
         return this.start == other.start && this.end == other.end;
     }
 
@@ -73,12 +73,12 @@ public class Longerval implements LongInterval, Comparable<Longerval> {
 
     public Longerval union(Longerval other) {
         if (this == other) return this;
-        var u = union(other.start, other.end);
+        Longerval u = union(other.start, other.end);
         return u.equals(other) ? other : u; //equality to this is already tested
     }
 
     public final Longerval union(long bs, long be) {
-        var as = this.start;
+        long as = this.start;
         if (as == ETERNAL || bs == ETERNAL)
             return Longerval.Eternal;
         if (as == TIMELESS || bs == TIMELESS)
@@ -87,13 +87,13 @@ public class Longerval implements LongInterval, Comparable<Longerval> {
     }
 
     public final @Nullable Longerval intersection(long bs, long be) {
-        var as = this.start;
+        long as = this.start;
         if (as == ETERNAL || bs == ETERNAL)
             return Longerval.Eternal;
         if (as == TIMELESS || bs == TIMELESS)
             throw new UnsupportedOperationException();
 
-        var ae = this.end;
+        long ae = this.end;
         long s = max(as, bs), e = min(ae, be);
         return s > e ? null : ((s == as && e == ae) ? this : new Longerval(s, e));
     }
@@ -114,7 +114,7 @@ public class Longerval implements LongInterval, Comparable<Longerval> {
     }
 
     public static @Nullable long[] intersectionArray(long myA, long myB, long otherA, long otherB, @Nullable long[] target) {
-        @Nullable var x = Longerval.intersection(myA, myB, otherA, otherB);
+        @Nullable Longerval x = Longerval.intersection(myA, myB, otherA, otherB);
         return x == null ? null : x.intervalArray(target);
     }
 

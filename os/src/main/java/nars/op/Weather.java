@@ -61,7 +61,7 @@ public class Weather extends NARPart {
     protected void update() {
 
         synchronized (events) {
-            for (var event : events) {
+            for (Task event : events) {
                 event.delete();
             }
             events.clear();
@@ -69,7 +69,7 @@ public class Weather extends NARPart {
             updateSunRiseSetTime();
             updateWeatherGov();
 
-            for (var x : events) {
+            for (Task x : events) {
                 x.pri(nar);
             }
 
@@ -79,10 +79,10 @@ public class Weather extends NARPart {
 
     private void updateSunRiseSetTime() {
         //https://sunrise-sunset.org/api
-        var url = "https://api.sunrise-sunset.org/json?lat=" + lonLat.y + "&lng=" + lonLat.x;
+        String url = "https://api.sunrise-sunset.org/json?lat=" + lonLat.y + "&lng=" + lonLat.x;
         try {
 
-            var w = json(url);
+            JsonNode w = json(url);
 
             synchronized (events) {
 
@@ -120,27 +120,27 @@ public class Weather extends NARPart {
 
         //TODO https://api.weather.gov/points/39.7456,-97.0892
         //https://www.weather.gov/documentation/services-web-api
-        var url =
+        String url =
                 "https://marine.weather.gov/MapClick.php?lat=" +
                         lonLat.y + "&lon=" + lonLat.x +
                         "&unit=0&lg=english&FcstType=json";
         try {
 
-            var w = json(url);
+            JsonNode w = json(url);
 
             synchronized (events) {
 
                 //System.out.println(Util.jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(w));
 
                 //parse temperature forecast
-                var times = w.get("time").get("startValidTime");
-                var temperatures = w.get("data").get("temperature");
-                var n = times.size();
+                JsonNode times = w.get("time").get("startValidTime");
+                JsonNode temperatures = w.get("data").get("temperature");
+                int n = times.size();
                 DateTimeFormatter df = null; //TODO DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
                 //2018-11-05T18:00:00-05:00
 
                 //12 hour intervals
-                for (var i = 0; i < n; i++) {
+                for (int i = 0; i < n; i++) {
                     Date ww = null; //TODO df.parseDateTime(times.get(i).asText()).toDate();
                     int tempFahrenheit = Integer.valueOf(temperatures.get(i).asText()); //a string really??
 

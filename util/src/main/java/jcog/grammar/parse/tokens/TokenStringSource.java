@@ -102,11 +102,11 @@ public class TokenStringSource {
 	 * the source is out of tokens.
 	 */
 	private void loadCache() {
-		var tokenList = nextVector();
+        List<Token> tokenList = nextVector();
 		if (tokenList.isEmpty()) {
 			cachedTokenString = null;
 		} else {
-			var tokens = new Token[tokenList.size()];
+            Token[] tokens = new Token[tokenList.size()];
 			tokenList.toArray(tokens);
 			cachedTokenString = new TokenString(tokens);
 		}
@@ -120,7 +120,7 @@ public class TokenStringSource {
 	 */
 	public TokenString nextTokenString() {
 		ensureCacheIsLoaded();
-		var returnTokenString = cachedTokenString;
+        TokenString returnTokenString = cachedTokenString;
 		cachedTokenString = null;
 		return returnTokenString;
 	}
@@ -136,7 +136,7 @@ public class TokenStringSource {
 		List<Token> v = new ArrayList<>();
 		try {
 			while (true) {
-				var tok = tokenizer.nextToken();
+                Token tok = tokenizer.nextToken();
 				if (tok.ttype() == Token.TT_EOF || tok.sval().equals(delimiter)) {
 					break;
 				}

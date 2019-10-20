@@ -37,7 +37,7 @@ public class Linebase implements SplayTreeItem {
     private int _helper = -1;
 
     public Linebase() {
-        for (var i = 0; i < 2; i++) _endp[i] = null;
+        for (int i = 0; i < 2; i++) _endp[i] = null;
         _id = 0;
     }
 
@@ -84,7 +84,7 @@ public class Linebase implements SplayTreeItem {
      */
     public void reverse() {
         assert (_type == Poly2TriUtils.INSERT);
-        var tmp = _endp[0];
+        Pointbase tmp = _endp[0];
         _endp[0] = _endp[1];
         _endp[1] = tmp;
     }
@@ -102,7 +102,7 @@ public class Linebase implements SplayTreeItem {
     }
 
     public String toString() {
-        var sb = "Linebase(" +
+        String sb = "Linebase(" +
                 "ID = " + _id +
                 ", " + Poly2TriUtils.typeToString(_type) +
                 ", [" +

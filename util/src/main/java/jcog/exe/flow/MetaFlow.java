@@ -19,6 +19,8 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.function.BooleanSupplier;
 
@@ -84,7 +86,7 @@ public class MetaFlow {
     final float ditherScale = (float) Math.pow(10, digitResolution);
 
     private void value(byte[] cursor, byte quality, float value) {
-        var n = plan.putIfAbsent(cursor, Node::new);
+        Node n = plan.putIfAbsent(cursor, Node::new);
         n.getIfAbsentPutWithKey(quality,
             (q)->new ConcurrentHistogram(digitResolution) {
                 @Override
@@ -138,7 +140,7 @@ public class MetaFlow {
             if (isEmpty())
                 return super.toString();
 
-            var sb = new StringBuilder(512);
+            StringBuilder sb = new StringBuilder(512);
             sb.append('{');
             forEachKeyValue((k,v)-> sb.append(qualia.getIndex(k).name).append('=').append(v).append(", "));
             sb.setLength(sb.length()-2);
@@ -187,7 +189,7 @@ public class MetaFlow {
                 return null;
             });
 
-            var at = buffer.getLast();
+            StackWalker.StackFrame at = buffer.getLast();
 
 //            Optional<Class<?>> callerClass = walker.walk(s ->
 //                    s.map(StackWalker.StackFrame::getDeclaringClass)
@@ -195,12 +197,12 @@ public class MetaFlow {
 //                            .findFirst());
             clear();
             StackWalker.StackFrame prev = null;
-            for (var i = buffer.size()-1; i>=0; i--) {
+            for (int i = buffer.size()-1; i>=0; i--) {
             //for (int i = buffer.size()-1; i>=0; i--) {
-                var next = buffer.get(i);
+                StackWalker.StackFrame next = buffer.get(i);
                 write(prev, next);
                 if (i != 0) {
-                    var SEPARATOR = '{';
+                    char SEPARATOR = '{';
                     writeByte((byte)SEPARATOR);
                 }
                 prev = next;
@@ -247,7 +249,7 @@ public class MetaFlow {
 
             //TODO add to buffer, with codepoints etc
             writeByte('{');
-            for (var x : args) {
+            for (Object x : args) {
                 writeUTF(x.toString()); //HACK
                 writeByte(',');
             }
@@ -269,7 +271,7 @@ public class MetaFlow {
     static byte[] compactDescriptor(String _descriptor) {
         return compactMethodDescriptors.apply(_descriptor, (descriptor)->{
             //TODO use byteseek automaton
-            var descriptor1 = descriptor;
+            String descriptor1 = descriptor;
             descriptor1 = descriptor1.replace("java/lang/","");
             if (descriptor1.endsWith("V")) //void return value
                 descriptor1 = descriptor1.substring(0, descriptor1.length()-1);
@@ -287,7 +289,7 @@ public class MetaFlow {
     public Quality quality(String q) {
         return qualia.computeIfAbsent(q, qq -> {
             synchronized (qualia) {
-                var id = qualia.size();
+                int id = qualia.size();
                 if (id > 126)
                     throw new TODO("limit to 127 qualities");
                 return new Quality(qq, (byte) id);
@@ -299,7 +301,7 @@ public class MetaFlow {
 
     public MetaFlow() {
         base = walkerSummary.walk(s->s.dropWhile(x -> {
-            var cn = x.getClassName();
+            String cn = x.getClassName();
             return cn.equals(MetaFlow.class.getName()) || cn.startsWith(ThreadLocal.class.getName());
         })
                 .findFirst().get());
@@ -359,14 +361,19 @@ public class MetaFlow {
 //            urls.addAt(f.toURL());
 //        }
 //
-        var urls = ClassPath.from(ClassLoader.getSystemClassLoader().getParent()).getAllClasses().stream().map(ClassPath.ResourceInfo::url).toArray(URL[]::new);
+        List<URL> list = new ArrayList<>();
+        for (ClassPath.ClassInfo classInfo : ClassPath.from(ClassLoader.getSystemClassLoader().getParent()).getAllClasses()) {
+            URL url = classInfo.url();
+            list.add(url);
+        }
+        URL[] urls = list.toArray(new URL[0]);
         // feed your URLs to a URLClassLoader!
         ClassLoader classloader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader().getParent());
 
         // relative to that classloader, find the main class
         // you want to bootstrap, which is the first cmd line arg
         Class mainClass = classloader.loadClass(className);
-        var main = mainClass.getMethod(methodName
+        Method main = mainClass.getMethod(methodName
                 /*new Class[]{args.getClass()}*/);
 
         Thread.currentThread().setContextClassLoader(classloader);

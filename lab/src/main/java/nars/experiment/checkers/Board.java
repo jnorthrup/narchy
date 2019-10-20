@@ -30,8 +30,8 @@ public class Board extends JPanel implements MouseListener, PlayerListener {
      *
      */
     public Board(Player player1, Player player2, Checkers game) {
-        var WIDTH = game.WIDTH;
-        var HEIGHT = game.HEIGHT;
+        int WIDTH = game.WIDTH;
+        int HEIGHT = game.HEIGHT;
 
 
         this.player1 = player1;
@@ -52,8 +52,8 @@ public class Board extends JPanel implements MouseListener, PlayerListener {
         setPreferredSize(new Dimension(WIDTH * SQUARE_WIDTH, HEIGHT * SQUARE_HEIGHT));
 
         squares = (Square[][]) Array.newInstance(Square.class, WIDTH, HEIGHT);
-        for (var i = 0; i < WIDTH; i++) {
-            for (var j = 0; j < HEIGHT; j++) {
+        for (int i = 0; i < WIDTH; i++) {
+            for (int j = 0; j < HEIGHT; j++) {
 
                 squares[i][j] = new Square(i % 2 == j % 2 ? new Color(50, 50, 50) : new Color(200, 200, 200), i, j);
 
@@ -69,8 +69,8 @@ public class Board extends JPanel implements MouseListener, PlayerListener {
         setLayout(new GridLayout(WIDTH, HEIGHT));
 
 
-        for (var i = HEIGHT - 1; i >= 0; i--) {
-            for (var j = 0; j < WIDTH; j++)
+        for (int i = HEIGHT - 1; i >= 0; i--) {
+            for (int j = 0; j < WIDTH; j++)
                 add(squares[j][i]);
         }
 
@@ -96,10 +96,10 @@ public class Board extends JPanel implements MouseListener, PlayerListener {
      *
      */
     private void setPieces() {
-        var pieces = game.getPieces();
+        Piece[][] pieces = game.getPieces();
 
-        for (var i = 0; i < game.WIDTH; i++) {
-            for (var j = 0; j < game.HEIGHT; j++) {
+        for (int i = 0; i < game.WIDTH; i++) {
+            for (int j = 0; j < game.HEIGHT; j++) {
                 squares[i][j].setPiece(pieces[i][j]);
             }
         }
@@ -125,8 +125,8 @@ public class Board extends JPanel implements MouseListener, PlayerListener {
         super.repaint();
 
         if (squares != null) {
-            for (var square : squares) {
-                for (var aSquare : square) aSquare.repaint();
+            for (Square[] square : squares) {
+                for (Square aSquare : square) aSquare.repaint();
             }
         }
     }
@@ -141,22 +141,22 @@ public class Board extends JPanel implements MouseListener, PlayerListener {
                 if (source.getCoordinateX() % 2 == source.getCoordinateY() % 2) {
                     source.select();
 
-                    var targets = game.pieceCouldMoveToFrom(source.getCoordinateX(), source.getCoordinateY());
-                    for (var target : targets)
+                    ArrayList<int[]> targets = game.pieceCouldMoveToFrom(source.getCoordinateX(), source.getCoordinateY());
+                    for (int[] target : targets)
                         squares[target[0]][target[1]].target();
                 } else
                     source = null;
             } else if (source.equals(e.getSource())) {
 
-                var targets = game.pieceCouldMoveToFrom(source.getCoordinateX(), source.getCoordinateY());
-                for (var target : targets)
+                ArrayList<int[]> targets = game.pieceCouldMoveToFrom(source.getCoordinateX(), source.getCoordinateY());
+                for (int[] target : targets)
                     squares[target[0]][target[1]].detarget();
 
                 source.deselect();
                 source = null;
             } else {
 
-                var destination = (Square) e.getSource();
+                Square destination = (Square) e.getSource();
 
                 if (game.move(source.getCoordinateX(), source.getCoordinateY(), destination.getCoordinateX(), destination.getCoordinateY())) {
                     detargetAllSquares();
@@ -200,8 +200,8 @@ public class Board extends JPanel implements MouseListener, PlayerListener {
      *
      */
     private void detargetAllSquares() {
-        for (var square : squares) {
-            for (var aSquare : square) aSquare.detarget();
+        for (Square[] square : squares) {
+            for (Square aSquare : square) aSquare.detarget();
         }
     }
 
@@ -213,13 +213,13 @@ public class Board extends JPanel implements MouseListener, PlayerListener {
     }
 
     public static void main(String[] args) {
-        var b = new Board(new HumanPlayer("Human1"), new HumanPlayer("Human2"), 8, 8);
+        Board b = new Board(new HumanPlayer("Human1"), new HumanPlayer("Human2"), 8, 8);
 
 
-        var frame = new JFrame("Checkers");
+        JFrame frame = new JFrame("Checkers");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        var boardPane = new JPanel(new FlowLayout());
+        JPanel boardPane = new JPanel(new FlowLayout());
         ((FlowLayout) boardPane.getLayout()).setAlignment(FlowLayout.CENTER);
         boardPane.add(b);
 
@@ -265,10 +265,10 @@ public class Board extends JPanel implements MouseListener, PlayerListener {
     }
 
     public void playWindow() {
-        var frame = new JFrame("Checkers");
+        JFrame frame = new JFrame("Checkers");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        var boardPane = new JPanel(new BorderLayout());
+        JPanel boardPane = new JPanel(new BorderLayout());
 
         boardPane.add(this, BorderLayout.CENTER);
 

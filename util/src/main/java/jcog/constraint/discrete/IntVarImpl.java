@@ -58,7 +58,7 @@ public class IntVarImpl extends IntVar {
         this.initMax = initMax;
         this.minT = new TrailedInt(trail, initMin);
         this.maxT = new TrailedInt(trail, initMax);
-        var size = initMax - initMin + 1;
+        int size = initMax - initMin + 1;
         this.sizeT = new TrailedInt(trail, size);
         this.values = makeInt(size, i -> i + initMin);
         this.positions = makeInt(size, i -> i);
@@ -71,9 +71,9 @@ public class IntVarImpl extends IntVar {
         this.sizeT = new TrailedInt(trail, values.length);
 
 
-        var min = MAX_VALUE;
-        var max = MIN_VALUE;
-        for (var i = 0; i < values.length; i++) {
+        int min = MAX_VALUE;
+        int max = MIN_VALUE;
+        for (int i = 0; i < values.length; i++) {
             min = Math.min(min, values[i]);
             max = Math.max(max, values[i]);
         }
@@ -83,9 +83,9 @@ public class IntVarImpl extends IntVar {
         this.maxT = new TrailedInt(trail, initMax);
 
 
-        var range = max - min + 1;
+        int range = max - min + 1;
         this.positions = makeInt(range, i -> range);
-        for (var i = 0; i < values.length; i++) {
+        for (int i = 0; i < values.length; i++) {
             this.positions[values[i] - initMin] = i;
         }
     }
@@ -129,13 +129,13 @@ public class IntVarImpl extends IntVar {
     }
 
     private void swap(int pos1, int pos2) {
-        var v1 = values[pos1];
-        var v2 = values[pos2];
+        int v1 = values[pos1];
+        int v2 = values[pos2];
         values[pos1] = v2;
         values[pos2] = v1;
-        var id1 = v1 - initMin;
+        int id1 = v1 - initMin;
         positions[id1] = pos2;
-        var id2 = v2 - initMin;
+        int id2 = v2 - initMin;
         positions[id2] = pos1;
     }
 
@@ -144,7 +144,7 @@ public class IntVarImpl extends IntVar {
         if (value < minT.getValue() || value > maxT.getValue()) {
             return false;
         }
-        var size = sizeT.getValue();
+        int size = sizeT.getValue();
 
         
         if (size == 1) {
@@ -152,7 +152,7 @@ public class IntVarImpl extends IntVar {
         }
 
 
-        var position = positions[value - initMin];
+        int position = positions[value - initMin];
         if (position >= size) {
             return false;
         }
@@ -172,20 +172,20 @@ public class IntVarImpl extends IntVar {
     public boolean remove(int value) {
 
 
-        var min = minT.getValue();
-        var max = maxT.getValue();
+        int min = minT.getValue();
+        int max = maxT.getValue();
         if (value < min || value > max) {
             return true;
         }
 
 
-        var size = sizeT.getValue();
+        int size = sizeT.getValue();
         if (size == 1) {
             return false;
         }
 
 
-        var position = positions[value - initMin];
+        int position = positions[value - initMin];
         if (position >= size) {
             return true;
         }
@@ -209,7 +209,7 @@ public class IntVarImpl extends IntVar {
             awakeBounds();
         } else if (min == value) {
 
-            var i = min - initMin + 1;
+            int i = min - initMin + 1;
             while (positions[i] >= size) {
                 i++;
             }
@@ -217,7 +217,7 @@ public class IntVarImpl extends IntVar {
             awakeBounds();
         } else if (max == value) {
 
-            var i = max - initMin - 1;
+            int i = max - initMin - 1;
             while (positions[i] >= size) {
                 i--;
             }
@@ -230,22 +230,22 @@ public class IntVarImpl extends IntVar {
 
     @Override
     public boolean updateMin(int value) {
-        var max = maxT.getValue();
+        int max = maxT.getValue();
         if (value == max) {
             return assign(value);
         }
         if (max < value) {
             return false;
         }
-        var min = minT.getValue();
+        int min = minT.getValue();
         if (value <= min) {
             return true;
         }
 
-        var i = min - initMin;
-        var size = sizeT.getValue();
+        int i = min - initMin;
+        int size = sizeT.getValue();
         while (i < value - initMin) {
-            var position = positions[i];
+            int position = positions[i];
             if (position < size) {
                 swap(position, --size);
             }
@@ -271,22 +271,22 @@ public class IntVarImpl extends IntVar {
 
     @Override
     public boolean updateMax(int value) {
-        var min = minT.getValue();
+        int min = minT.getValue();
         if (value == min) {
             return assign(value);
         }
         if (min > value) {
             return false;
         }
-        var max = maxT.getValue();
+        int max = maxT.getValue();
         if (value >= max) {
             return true;
         }
 
-        var i = max - initMin;
-        var size = sizeT.getValue();
+        int i = max - initMin;
+        int size = sizeT.getValue();
         while (i > value - initMin) {
-            var position = positions[i];
+            int position = positions[i];
             if (position < size) {
                 swap(position, --size);
             }
@@ -312,7 +312,7 @@ public class IntVarImpl extends IntVar {
 
     @Override
     public int copyDomain(int[] array) {
-        var size = sizeT.getValue();
+        int size = sizeT.getValue();
         System.arraycopy(values, 0, array, 0, size);
         return size;
     }

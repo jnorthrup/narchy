@@ -7,7 +7,9 @@ package jurls.core.reinforcementlearning;
 
 import jurls.core.utils.ActionValuePair;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -17,34 +19,43 @@ public class ByQActionSelector implements ActionSelector {
 
     @Override
     public ActionValuePair[] fromQValuesToProbabilities(double epsilon, ActionValuePair[] actionValuePairs) {
-        var ret = Arrays.stream(actionValuePairs).map(actionValuePair1 -> new ActionValuePair(
-                actionValuePair1.getA(),
-                actionValuePair1.getV()
-        )).toArray(ActionValuePair[]::new);
+        List<ActionValuePair> list = new ArrayList<>();
+        for (ActionValuePair actionValuePair1 : actionValuePairs) {
+            ActionValuePair valuePair1 = new ActionValuePair(
+                    actionValuePair1.getA(),
+                    actionValuePair1.getV()
+            );
+            list.add(valuePair1);
+        }
+        ActionValuePair[] ret = list.toArray(new ActionValuePair[0]);
 
-        var seen = false;
+        boolean seen = false;
         double best = 0;
-        for (var pair : ret) {
-            var valuePair1V = pair.getV();
+        for (ActionValuePair pair : ret) {
+            double valuePair1V = pair.getV();
             if (!seen || Double.compare(valuePair1V, best) < 0) {
                 seen = true;
                 best = valuePair1V;
             }
         }
-        var min = seen ? best : Double.MAX_VALUE;
+        double min = seen ? best : Double.MAX_VALUE;
 
-        for (var i = 0; i < ret.length; ++i) {
+        for (int i = 0; i < ret.length; ++i) {
             ret[i].setV(ret[i].getV() + min);
         }
 
-        var sum = Arrays.stream(ret).mapToDouble(ActionValuePair::getV).sum();
+        double sum = 0.0;
+        for (ActionValuePair valuePair : ret) {
+            double actionValuePair1V = valuePair.getV();
+            sum += actionValuePair1V;
+        }
 
-        for (var i = 0; i < ret.length; ++i) {
+        for (int i = 0; i < ret.length; ++i) {
             ret[i].setV(ret[i].getV() / sum);
         }
 
-        for (var i = 0; i < ret.length; ++i) {
-            var v = ret[i].getV();
+        for (int i = 0; i < ret.length; ++i) {
+            double v = ret[i].getV();
             ret[i].setV(
                     
                     v * v
@@ -52,10 +63,14 @@ public class ByQActionSelector implements ActionSelector {
         }
 
         sum = 0;
-        var result = Arrays.stream(ret).mapToDouble(ActionValuePair::getV).sum();
+        double result = 0.0;
+        for (ActionValuePair actionValuePair : ret) {
+            double v = actionValuePair.getV();
+            result += v;
+        }
         sum += result;
 
-        for (var i = 0; i < ret.length; ++i) {
+        for (int i = 0; i < ret.length; ++i) {
             ret[i].setV(ret[i].getV() / sum);
         }
         return ret;

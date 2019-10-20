@@ -19,9 +19,9 @@ import static nars.time.Tense.XTERNAL;
 public interface RecursiveTermTransform extends TermTransform, nars.term.util.builder.TermConstructor {
 
     static Term evalInhSubs(Subterms inhSubs) {
-        var p = inhSubs.sub(1); /* pred */
+        Term p = inhSubs.sub(1); /* pred */
         if (p instanceof InlineFunctor) {
-            var s = inhSubs.sub(0);
+            Term s = inhSubs.sub(0);
             if (s instanceof Compound && s.opID() == PROD.id)
                 return ((InlineFunctor) p).applyInline(((Compound)s).subtermsDirect());
         }
@@ -36,20 +36,20 @@ public interface RecursiveTermTransform extends TermTransform, nars.term.util.bu
     }
 
     default Term applyCompound(Compound x, Op newOp, int ydt) {
-        var f = this;
+        RecursiveTermTransform f = this;
 
-        var xOp = x.op();
-        var yOp = newOp == null ? xOp : newOp;
+        Op xOp = x.op();
+        Op yOp = newOp == null ? xOp : newOp;
 
-        var xx = x.subtermsDirect();
+        Subterms xx = x.subtermsDirect();
 
-        var yy = xx.transformSubs(f, yOp);
+        Subterms yy = xx.transformSubs(f, yOp);
         if (yy == null)
             return Null;
 
         //inline reductions
         if (yOp == CONJ && xx!=yy) {
-            var yys = yy.subs();
+            int yys = yy.subs();
             if (yys == 0)
                 return True;
             if (yy.containsInstance(False))
@@ -63,20 +63,20 @@ public interface RecursiveTermTransform extends TermTransform, nars.term.util.bu
             }
         } else if (yOp == INH && f.evalInline() && yy.subs()==2) {
             //inline eval
-            var v = RecursiveTermTransform.evalInhSubs(yy);
+            Term v = RecursiveTermTransform.evalInhSubs(yy);
             if (v != null)
                 return v;
         }
 
-        var xdt = x.dt();
+        int xdt = x.dt();
         if (newOp == null)
             ydt = xdt;
 
         if (yOp.commutative) {
-            var ys = yy.subs();
+            int ys = yy.subs();
             if (ys == 1) {
                 if (yOp == CONJ) {
-                    var y0 = yy.sub(0);
+                    Term y0 = yy.sub(0);
                     if (!(y0 instanceof Ellipsislike) && !(y0 instanceof Fragment))
                         return y0;
                 }
@@ -137,10 +137,10 @@ public interface RecursiveTermTransform extends TermTransform, nars.term.util.bu
         //apply any shifts caused by internal range changes (ex: True removal)
         if (!yy.equals(xx) && xx.subs() == 2 && yy.subs() == 2) {
 
-            var subjRangeBefore = xx.subEventRange(0);
-            var predRangeBefore = xx.subEventRange(1);
-            var subjRangeAfter = yy.subEventRange(0);
-            var predRangeAfter = yy.subEventRange(1);
+            int subjRangeBefore = xx.subEventRange(0);
+            int predRangeBefore = xx.subEventRange(1);
+            int subjRangeAfter = yy.subEventRange(0);
+            int predRangeAfter = yy.subEventRange(1);
             ydt += (subjRangeBefore - subjRangeAfter) + (predRangeBefore - predRangeAfter);
 
         }
@@ -178,8 +178,8 @@ public interface RecursiveTermTransform extends TermTransform, nars.term.util.bu
         public final Term applyCompound(Compound x) {
 
             if (x instanceof Neg) {
-                var xu = x.unneg();
-                var yu = apply(xu);
+                Term xu = x.unneg();
+                Term yu = apply(xu);
                 return (yu == xu) ? x : yu.neg();
             } else {
                 return applyPosCompound(x);

@@ -20,11 +20,11 @@ public class HexButton extends PushButton {
 //        super.paintWidget(bounds, gl);
 
         //copied from: Widget.java paintWidget
-        var dim = 1f - (dz /* + if disabled, dim further */) / 3f;
-        var bri = 0.25f * dim;
+        float dim = 1f - (dz /* + if disabled, dim further */) / 3f;
+        float bri = 0.25f * dim;
         color.set( rgb-> Util.or(rgb,bri,pri/4), gl);
 
-        var rad =
+        float rad =
                 Math.min(w(), h())/2;
                 //bounds.radius()
                 //bounds.radius() * 0.5f;

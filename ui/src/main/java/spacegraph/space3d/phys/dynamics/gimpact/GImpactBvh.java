@@ -72,11 +72,11 @@ public class GImpactBvh {
 
 	
 	private void refit() {
-		var leafbox = new BoxCollision.AABB();
-		var bound = new BoxCollision.AABB();
-		var temp_box = new BoxCollision.AABB();
+        BoxCollision.AABB leafbox = new BoxCollision.AABB();
+        BoxCollision.AABB bound = new BoxCollision.AABB();
+        BoxCollision.AABB temp_box = new BoxCollision.AABB();
 
-		var nodecount = getNodeCount();
+        int nodecount = getNodeCount();
 		while ((nodecount--) != 0) {
 			if (isLeafNode(nodecount)) {
 				primitive_manager.get_primitive_box(getNodeData(nodecount), leafbox);
@@ -87,7 +87,7 @@ public class GImpactBvh {
 				
 				bound.invalidate();
 
-				var child_node = getLeftNode(nodecount);
+                int child_node = getLeftNode(nodecount);
 				if (child_node != 0) {
 					getNodeBound(child_node, temp_box);
 					bound.merge(temp_box);
@@ -117,12 +117,12 @@ public class GImpactBvh {
 	 */
 	public void buildSet() {
 
-		var primitive_boxes = new BvhDataArray();
+        BvhDataArray primitive_boxes = new BvhDataArray();
 		primitive_boxes.resize(primitive_manager.get_primitive_count());
 
-		var tmpAABB = new BoxCollision.AABB();
+        BoxCollision.AABB tmpAABB = new BoxCollision.AABB();
 
-		for (var i = 0; i < primitive_boxes.size(); i++) {
+		for (int i = 0; i < primitive_boxes.size(); i++) {
 			
 			primitive_manager.get_primitive_box(i, tmpAABB);
 			primitive_boxes.setBound(i, tmpAABB);
@@ -137,17 +137,17 @@ public class GImpactBvh {
 	 * Returns the indices of the primitives in the primitive_manager field.
 	 */
 	public boolean boxQuery(BoxCollision.AABB box, IntArrayList collided_results) {
-		var curIndex = 0;
-		var numNodes = getNodeCount();
+        int curIndex = 0;
+        int numNodes = getNodeCount();
 
-		var bound = new BoxCollision.AABB();
+        BoxCollision.AABB bound = new BoxCollision.AABB();
 
 		while (curIndex < numNodes) {
 			getNodeBound(curIndex, bound);
 
 
-			var aabbOverlap = bound.has_collision(box);
-			var isleafnode = isLeafNode(curIndex);
+            boolean aabbOverlap = bound.has_collision(box);
+            boolean isleafnode = isLeafNode(curIndex);
 
 			if (isleafnode && aabbOverlap) {
 				collided_results.add(getNodeData(curIndex));
@@ -169,7 +169,7 @@ public class GImpactBvh {
 	 * Returns the indices of the primitives in the primitive_manager field.
 	 */
 	public boolean boxQueryTrans(BoxCollision.AABB box, Transform transform, IntArrayList collided_results) {
-		var transbox = new BoxCollision.AABB(box);
+        BoxCollision.AABB transbox = new BoxCollision.AABB(box);
 		transbox.appy_transform(transform);
 		return boxQuery(transbox, collided_results);
 	}
@@ -178,17 +178,17 @@ public class GImpactBvh {
 	 * Returns the indices of the primitives in the primitive_manager field.
 	 */
 	public boolean rayQuery(v3 ray_dir, v3 ray_origin, IntArrayList collided_results) {
-		var curIndex = 0;
-		var numNodes = getNodeCount();
+        int curIndex = 0;
+        int numNodes = getNodeCount();
 
-		var bound = new BoxCollision.AABB();
+        BoxCollision.AABB bound = new BoxCollision.AABB();
 
 		while (curIndex < numNodes) {
 			getNodeBound(curIndex, bound);
 
 
-			var aabbOverlap = bound.collide_ray(ray_origin, ray_dir);
-			var isleafnode = isLeafNode(curIndex);
+            boolean aabbOverlap = bound.collide_ray(ray_origin, ray_dir);
+            boolean isleafnode = isLeafNode(curIndex);
 
 			if (isleafnode && aabbOverlap) {
 				collided_results.add(getNodeData(curIndex));
@@ -264,9 +264,9 @@ public class GImpactBvh {
 	}
 
 	private static boolean _node_collision(GImpactBvh boxset0, GImpactBvh boxset1, BoxCollision.BoxBoxTransformCache trans_cache_1to0, int node0, int node1, boolean complete_primitive_tests) {
-		var box0 = new BoxCollision.AABB();
+        BoxCollision.AABB box0 = new BoxCollision.AABB();
 		boxset0.getNodeBound(node0, box0);
-		var box1 = new BoxCollision.AABB();
+        BoxCollision.AABB box1 = new BoxCollision.AABB();
 		boxset1.getNodeBound(node1, box1);
 
 		return box0.overlapping_trans_cache(box1, trans_cache_1to0, complete_primitive_tests);
@@ -352,7 +352,7 @@ public class GImpactBvh {
 		if (boxset0.getNodeCount() == 0 || boxset1.getNodeCount() == 0) {
 			return;
 		}
-		var trans_cache_1to0 = new BoxCollision.BoxBoxTransformCache();
+        BoxCollision.BoxBoxTransformCache trans_cache_1to0 = new BoxCollision.BoxBoxTransformCache();
 
 		trans_cache_1to0.calc_from_homogenic(trans0, trans1);
 

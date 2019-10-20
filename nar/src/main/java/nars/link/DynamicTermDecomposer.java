@@ -66,7 +66,7 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
 
     private @Nullable Term sampleDynamic(Compound t, int depthRemain, Random rng) {
 
-        var u = subterm(t, rng);
+        Term u = subterm(t, rng);
 
         /* || !u.op().conceptualizable */
         return depthRemain <= 1 || !(u instanceof Compound) ? u : sampleDynamic((Compound) u, depthRemain - 1, rng);
@@ -78,7 +78,7 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
 
     protected Term subterm(Compound x, Subterms tt, Random rng) {
 
-        var n = tt.subs();
+        int n = tt.subs();
 
         Term y;
         switch (n) {
@@ -138,7 +138,7 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
     public static final DynamicTermDecomposer WeightedImpl = new WeightedDynamicTermDecomposer() {
         @Override
         public @Nullable Term decompose(Compound t, Random rng) {
-            var subjOrPred = subterm(t, rng);
+            Term subjOrPred = subterm(t, rng);
             if (subjOrPred instanceof Compound && rng.nextBoolean()) {
                 return subjOrPred.opID() == CONJ.id ? WeightedConjEvent.decompose((Compound) subjOrPred, rng) : Weighted.decompose((Compound) subjOrPred, rng);
             } else {
@@ -155,23 +155,23 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
                 @Override
                 protected int depth(Compound root, Random rng) {
                     /* https://academo.org/demos/3d-surface-plotter/?expression=(1%2F(1%2Bx%2F(1%2By)))&xRange=0%2C32&yRange=0%2C8&resolution=23 */
-                    var s = root.subs();
+                    int s = root.subs();
                     if (s == 0)
                         return 1;
 
-                    var fanoutRatio =
+                    float fanoutRatio =
                             //root.volume() / (1f + root.subs());
                             //1 / (1 + ((float)root.volume())/(1+root.subs()));
                             1 / (1 + (root.volume()-1f)/s);
 
-                    var w =
+                    float w =
                             fanoutRatio;
                             //Util.sqr(fanoutRatio);
                             //Util.sqrt(fanoutRatio);
                             //(float)Math.pow(fanoutRatio, 0.75f);
                             //(float)Math.pow(fanoutRatio, 1.5f);
 
-                    var p = rng.nextFloat();
+                    float p = rng.nextFloat();
 
                     return p >= w ? 2 : 1;
                 }
@@ -193,7 +193,7 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
             if (subterm instanceof Atomic)
                 return 1;
 
-            var v =
+            int v =
                     subterm.unneg().volume();
                     //sub.unneg().complexity();
             return

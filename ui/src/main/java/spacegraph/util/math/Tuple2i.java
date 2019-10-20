@@ -276,7 +276,7 @@ public abstract class Tuple2i implements java.io.Serializable, Cloneable {
      */
     public boolean equals(Object t1) {
         try {
-            var t2 = (Tuple2i) t1;
+            Tuple2i t2 = (Tuple2i) t1;
 	    return(this.x == t2.x && this.y == t2.y);
         }
         catch (NullPointerException | ClassCastException e2) {
@@ -294,7 +294,7 @@ public abstract class Tuple2i implements java.io.Serializable, Cloneable {
      * @return the integer hash code value
      */
     public int hashCode() {
-        var bits = 1L;
+        long bits = 1L;
 	bits = 31L * bits + x;
 	bits = 31L * bits + y;
 	return (int) (bits ^ (bits >> 32));

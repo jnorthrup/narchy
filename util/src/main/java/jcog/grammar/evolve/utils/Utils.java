@@ -73,54 +73,54 @@ public class Utils {
     }
 
     private static int i3(String s, int ifMissing) {
-        var dig100 = i(s.charAt(0));
+        int dig100 = i(s.charAt(0));
         if (dig100 == -1) return ifMissing;
 
-        var dig10 = i(s.charAt(1));
+        int dig10 = i(s.charAt(1));
         if (dig10 == -1) return ifMissing;
 
-        var dig1 = i(s.charAt(2));
+        int dig1 = i(s.charAt(2));
         if (dig1 == -1) return ifMissing;
 
         return dig100 * 100 + dig10 * 10 + dig1;
     }
 
     private static int i2(String s, int ifMissing) {
-        var dig10 = i(s.charAt(0));
+        int dig10 = i(s.charAt(0));
         if (dig10 == -1) return ifMissing;
 
-        var dig1 = i(s.charAt(1));
+        int dig1 = i(s.charAt(1));
         if (dig1 == -1) return ifMissing;
 
         return dig10 * 10 + dig1;
     }
 
     private static int i1(String s, int ifMissing) {
-        var dig1 = i(s.charAt(0));
+        int dig1 = i(s.charAt(0));
         if (dig1 != -1) return ifMissing;
         return dig1;
     }
 
     public static float[] calculateMeanFitness(List<Ranking> population) {
-        var out = new float[population.get(0).getFitness().length];
-        for (var r : population) {
-            var fitness = r.getFitness();
-            for (var i = 0; i < out.length; i++) {
+        float[] out = new float[population.get(0).getFitness().length];
+        for (Ranking r : population) {
+            double[] fitness = r.getFitness();
+            for (int i = 0; i < out.length; i++) {
                 out[i] += fitness[i];
             }
         }
-        for (var i = 0; i < out.length; i++) {
+        for (int i = 0; i < out.length; i++) {
             out[i] /= population.size();
         }
         return out;
     }
 
     public static boolean isAParetoDominateByB(double[] fitnessA, double[] fitnessB) {
-        var n = fitnessA.length;
-        var dominate = false;
-        for (var i = 0; i < n; i++) {
-            var a = fitnessA[i];
-            var b = fitnessB[i];
+        int n = fitnessA.length;
+        boolean dominate = false;
+        for (int i = 0; i < n; i++) {
+            double a = fitnessA[i];
+            double b = fitnessB[i];
 
             if (a > b)
                 dominate = true;
@@ -157,7 +157,7 @@ public class Utils {
         });
 
         if (!toRemove.isEmpty()) {
-            for (var node : toRemove) {
+            for (Node node : toRemove) {
                 r.removeKey(node);
             }
             return r;
@@ -171,9 +171,9 @@ public class Utils {
         if (!System.getProperty("os.name").toLowerCase().contains("linux")) {
             return "Unaviable";
         }
-        var fis = new FileInputStream(new File("/proc/cpuinfo"));
-        var isr = new InputStreamReader(fis);
-        var bufferedReader = new BufferedReader(isr);
+        FileInputStream fis = new FileInputStream(new File("/proc/cpuinfo"));
+        InputStreamReader isr = new InputStreamReader(fis);
+        BufferedReader bufferedReader = new BufferedReader(isr);
         String line;
         while ((line = bufferedReader.readLine()) != null) {
             if (line.matches("model name.*")) {
@@ -186,7 +186,7 @@ public class Utils {
 
     public static double diversity(Collection<Ranking> population) {
         Set<String> tmp = new UnifiedSet(population.size());
-        for (var r : population) {
+        for (Ranking r : population) {
             tmp.add(r.getDescription());
         }
         return 100 * tmp.size() / (double) population.size();
@@ -208,12 +208,12 @@ public class Utils {
     }
 
     public static String humanReadableByteCount(long bytes, boolean si) {
-        var unit = si ? 1000 : 1024;
+        int unit = si ? 1000 : 1024;
         if (bytes < unit) {
             return bytes + " B";
         }
-        var exp = (int) (Math.log(bytes) / Math.log(unit));
-        var pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
+        int exp = (int) (Math.log(bytes) / Math.log(unit));
+        String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
         return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
     }
 
@@ -237,17 +237,22 @@ public class Utils {
      */
     public static Set<String> subparts(String word, int nMin, int nMax) {
 
-        var x = word.length() * (nMax-nMin);
+        int x = word.length() * (nMax-nMin);
 
         Set<String> subparts = new HashSet<>(x);
 
-        for (var n = nMin; n <= nMax; n++) {
-            for (var i = 0; i < word.length(); i++) {
+        for (int n = nMin; n <= nMax; n++) {
+            for (int i = 0; i < word.length(); i++) {
 
-                var end = Math.min(i + n, word.length());
+                int end = Math.min(i + n, word.length());
 
-                var sb = IntStream.range(i, end).mapToObj(c -> escape(word.charAt(c))).collect(Collectors.joining());
-                var builder = sb;
+                StringBuilder result = new StringBuilder();
+                for (int c = i; c < end; c++) {
+                    String escape = escape(word.charAt(c));
+                    result.append(escape);
+                }
+                String sb = result.toString();
+                String builder = sb;
                 /* estimate */
                 subparts.add(builder);
             }
@@ -263,9 +268,9 @@ public class Utils {
     }
     
     public static String escape(String string){
-        var stringBuilder = new StringBuilder(string.length());
-        var stringChars = string.toCharArray();
-        for(var character : stringChars){
+        StringBuilder stringBuilder = new StringBuilder(string.length());
+        char[] stringChars = string.toCharArray();
+        for(char character : stringChars){
             stringBuilder.append(escape(character));
         }
         return stringBuilder.toString();
@@ -281,16 +286,16 @@ public class Utils {
     public static void generateRegexRanges(CharSet charset, Consumer<RegexRange> each) {
 
 
-        var cc = charset.toSortedArray();
+        char[] cc = charset.toSortedArray();
         
         char start;
-        var first = cc[0];
-        var last = cc[cc.length-1];
+        char first = cc[0];
+        char last = cc[cc.length-1];
 
-        var old = start = first;
+        char old = start = first;
 
-        for (var i = 1; i < cc.length; i++) {
-            var c = cc[i];
+        for (int i = 1; i < cc.length; i++) {
+            char c = cc[i];
 
             
             

@@ -44,15 +44,15 @@ public interface AbstractBytes {
     AbstractBytes subSequence(int start, int end);
 
     default void toArray(byte[] c, int offset) {
-        var l = length();
-        for (var i = 0; i < l; ) {
+        int l = length();
+        for (int i = 0; i < l; ) {
             c[offset++] = at(i++);
         }
     }
 
     /** clones a new copy TODO when can it share a ref, if start==0 and end==length ? */
     default byte[] arrayCompactDirect() {
-        var b = new byte[length()];
+        byte[] b = new byte[length()];
         toArray(b, 0);
         return b;
     }

@@ -116,7 +116,7 @@ public class GjkEpaSolver {
 		boolean failed;
 		
 		{
-			for (var i = 0; i<simplex.length; i++) simplex[i] = new Mkv();
+			for (int i = 0; i<simplex.length; i++) simplex[i] = new Mkv();
 		}
 
 		GJK() {
@@ -156,12 +156,12 @@ public class GjkEpaSolver {
 		
 		
 		static /*unsigned*/ int Hash(v3 v) {
-			var h = (int)(v.x * 15461) ^ (int)(v.y * 83003) ^ (int)(v.z * 15473);
+			int h = (int)(v.x * 15461) ^ (int)(v.y * 83003) ^ (int)(v.z * 15473);
 			return (h * 169639) & GJK_hashmask;
 		}
 
 		v3 LocalSupport(v3 d, /*unsigned*/ int i, v3 out) {
-			var tmp = new v3();
+			v3 tmp = new v3();
 			MatrixUtil.transposeTransform(tmp, d, wrotations[i]);
 
 			shapes[i].localGetSupportingVertex(tmp, out);
@@ -174,20 +174,20 @@ public class GjkEpaSolver {
 		void Support(v3 d, Mkv v) {
 			v.r.set(d);
 
-			var tmp1 = LocalSupport(d, 0, new v3());
+			v3 tmp1 = LocalSupport(d, 0, new v3());
 
-			var tmp = new v3();
+			v3 tmp = new v3();
 			tmp.set(d);
 			tmp.negated();
-			var tmp2 = LocalSupport(tmp, 1, new v3());
+			v3 tmp2 = LocalSupport(tmp, 1, new v3());
 
 			v.w.sub(tmp1, tmp2);
 			v.w.scaleAdd(margin, d, v.w);
 		}
 
 		boolean FetchSupport() {
-			var h = Hash(ray);
-			var e = table[h];
+			int h = Hash(ray);
+			He e = table[h];
 			while (e != null) {
 				if (e.v.equals(ray)) {
 					--order;
@@ -208,7 +208,7 @@ public class GjkEpaSolver {
 
 		boolean SolveSimplex2(v3 ao, v3 ab) {
 			if (ab.dot(ao) >= 0) {
-				var cabo = new v3();
+				v3 cabo = new v3();
 				cabo.cross(ab, ao);
 				if (cabo.lengthSquared() > GJK_sqinsimplex_eps) {
 					ray.cross(cabo, ab);
@@ -227,7 +227,7 @@ public class GjkEpaSolver {
 
 		boolean SolveSimplex3(v3 ao, v3 ab, v3 ac)
 		{
-			var tmp = new v3();
+			v3 tmp = new v3();
 			tmp.cross(ab, ac);
 			return (SolveSimplex3a(ao,ab,ac,tmp));
 		}
@@ -235,10 +235,10 @@ public class GjkEpaSolver {
 		boolean SolveSimplex3a(v3 ao, v3 ab, v3 ac, v3 cabc) {
 
 
-			var tmp = new v3();
+			v3 tmp = new v3();
 			tmp.cross(cabc, ab);
 
-			var tmp2 = new v3();
+			v3 tmp2 = new v3();
 			tmp2.cross(cabc, ac);
 
 			if (tmp.dot(ao) < -GJK_insimplex_eps) {
@@ -253,7 +253,7 @@ public class GjkEpaSolver {
 				return SolveSimplex2(ao, ac);
 			}
 			else {
-				var d = cabc.dot(ao);
+				float d = cabc.dot(ao);
 				if (Math.abs(d) > GJK_insimplex_eps) {
 					if (d > 0) {
 						ray.set(cabc);
@@ -261,7 +261,7 @@ public class GjkEpaSolver {
 					else {
 						ray.negated(cabc);
 
-						var swapTmp = new Mkv();
+						Mkv swapTmp = new Mkv();
 						swapTmp.set(simplex[0]);
 						simplex[0].set(simplex[1]);
 						simplex[1].set(swapTmp);
@@ -277,15 +277,15 @@ public class GjkEpaSolver {
 		boolean SolveSimplex4(v3 ao, v3 ab, v3 ac, v3 ad) {
 
 
-			var crs = new v3();
+			v3 crs = new v3();
 
-			var tmp = new v3();
+			v3 tmp = new v3();
 			tmp.cross(ab, ac);
 
-			var tmp2 = new v3();
+			v3 tmp2 = new v3();
 			tmp2.cross(ac, ad);
 
-			var tmp3 = new v3();
+			v3 tmp3 = new v3();
 			tmp3.cross(ad, ab);
 
 			if (tmp.dot(ao) > GJK_insimplex_eps) {
@@ -316,16 +316,16 @@ public class GjkEpaSolver {
 		}
 		
 		boolean SearchOrigin() {
-			var tmp = new v3();
+			v3 tmp = new v3();
 			tmp.set(1f, 0f, 0f);
 			return SearchOrigin(tmp);
 		}
 		
 		boolean SearchOrigin(v3 initray) {
-			var tmp1 = new v3();
-			var tmp2 = new v3();
-			var tmp3 = new v3();
-			var tmp4 = new v3();
+			v3 tmp1 = new v3();
+			v3 tmp2 = new v3();
+			v3 tmp3 = new v3();
+			v3 tmp4 = new v3();
 
 			iterations = 0;
 			order = -1;
@@ -338,10 +338,10 @@ public class GjkEpaSolver {
 			FetchSupport();
 			ray.negated(simplex[0].w);
 			for (; iterations < GJK_maxiterations; ++iterations) {
-				var rl = ray.length();
+				float rl = ray.length();
 				ray.scaled(1f / (rl > 0f ? rl : 1f));
 				if (FetchSupport()) {
-					var found = false;
+					boolean found = false;
 					switch (order) {
 						case 1:
                             tmp1.negated(simplex[1].w);
@@ -375,9 +375,9 @@ public class GjkEpaSolver {
 		}
 		
 		boolean EncloseOrigin() {
-			var tmp = new v3();
-			var tmp1 = new v3();
-			var tmp2 = new v3();
+			v3 tmp = new v3();
+			v3 tmp1 = new v3();
+			v3 tmp2 = new v3();
 
 			switch (order) {
 				
@@ -385,7 +385,7 @@ public class GjkEpaSolver {
 					break;
 				
 				case 1:
-					var ab = new v3();
+					v3 ab = new v3();
                     ab.sub(simplex[1].w, simplex[0].w);
 
                     v3[] b = { new v3(), new v3(), new v3() };
@@ -399,14 +399,14 @@ public class GjkEpaSolver {
 
                     float[] m = {b[0].lengthSquared(), b[1].lengthSquared(), b[2].lengthSquared()};
 
-					var tmpQuat = new Quat4f();
+					Quat4f tmpQuat = new Quat4f();
                     tmp.normalize(ab);
                     QuaternionUtil.setRotation(tmpQuat, tmp, cst2Pi / 3f);
 
-					var r = new Matrix3f();
+					Matrix3f r = new Matrix3f();
                     MatrixUtil.setRotation(r, tmpQuat);
 
-					var w = new v3();
+					v3 w = new v3();
                     w.set(b[m[0] > m[1] ? m[0] > m[2] ? 0 : 2 : m[1] > m[2] ? 1 : 2]);
 
                     tmp.normalize(w);
@@ -424,7 +424,7 @@ public class GjkEpaSolver {
 				case 2:
                     tmp1.sub(simplex[1].w, simplex[0].w);
                     tmp2.sub(simplex[2].w, simplex[0].w);
-					var n = new v3();
+					v3 n = new v3();
                     n.cross(tmp1, tmp2);
                     n.normalize();
 
@@ -481,8 +481,8 @@ public class GjkEpaSolver {
 		boolean failed;
 		
 		{
-			for (var i = 0; i<features.length; i++) {
-				for (var j = 0; j<features[i].length; j++) {
+			for (int i = 0; i<features.length; i++) {
+				for (int j = 0; j<features[i].length; j++) {
 					features[i][j] = new v3();
 				}
 			}
@@ -494,13 +494,13 @@ public class GjkEpaSolver {
 		}
 		
 		static v3 GetCoordinates(Face face) {
-			var out = new v3();
+			v3 out = new v3();
 
-			var tmp = new v3();
-			var tmp1 = new v3();
-			var tmp2 = new v3();
+			v3 tmp = new v3();
+			v3 tmp1 = new v3();
+			v3 tmp2 = new v3();
 
-			var o = new v3();
+			v3 o = new v3();
 			o.scale(-face.d, face.n);
 
 
@@ -519,7 +519,7 @@ public class GjkEpaSolver {
 			tmp.cross(tmp1, tmp2);
 			out.z = tmp.length();
 
-			var sm = out.x + out.y + out.z;
+			float sm = out.x + out.y + out.z;
 
 			out.scaled(1f / (sm > 0f ? sm : 1f));
 
@@ -529,8 +529,8 @@ public class GjkEpaSolver {
 		Face FindBest() {
 			Face bf = null;
 			if (root != null) {
-				var cf = root;
-				var bd = cstInf;
+				Face cf = root;
+				float bd = cstInf;
 				do {
 					if (cf.d < bd) {
 						bd = cf.d;
@@ -543,23 +543,29 @@ public class GjkEpaSolver {
 		}
 
 		static boolean Set(Face f, Mkv a, Mkv b, Mkv c) {
-			var tmp1 = new v3();
-			var tmp2 = new v3();
-			var tmp3 = new v3();
+			v3 tmp1 = new v3();
+			v3 tmp2 = new v3();
+			v3 tmp3 = new v3();
 
-			var nrm = new v3();
+			v3 nrm = new v3();
 			tmp1.sub(b.w, a.w);
 			tmp2.sub(c.w, a.w);
 			nrm.cross(tmp1, tmp2);
 
 
-			var lenSq = nrm.lengthSquared();
+			float lenSq = nrm.lengthSquared();
 
 			tmp1.cross(a.w, b.w);
 			tmp2.cross(b.w, c.w);
 			tmp3.cross(c.w, a.w);
 
-			var valid = Stream.of(tmp1, tmp2, tmp3).noneMatch(v3 -> (!(v3.dot(nrm) >= -EPA_inface_eps)));
+			boolean valid = true;
+			for (jcog.math.v3 v3 : Arrays.asList(tmp1, tmp2, tmp3)) {
+				if ((!(v3.dot(nrm) >= -EPA_inface_eps))) {
+					valid = false;
+					break;
+				}
+			}
 
 			f.v[0] = a;
 			f.v[1] = b;
@@ -571,7 +577,7 @@ public class GjkEpaSolver {
 		}
 		
 		Face NewFace(Mkv a, Mkv b, Mkv c) {
-			var pf = new Face();
+			Face pf = new Face();
 			if (Set(pf, a, b, c)) {
 				if (root != null) {
 					root.prev = pf;
@@ -613,17 +619,17 @@ public class GjkEpaSolver {
 		}
 
 		Mkv Support(v3 w) {
-			var v = new Mkv();
+			Mkv v = new Mkv();
 			gjk.Support(w, v);
 			return v;
 		}
 		
 		int BuildHorizon(int markid, Mkv w, Face f, int e, Face[] cf, Face[] ff) {
-			var ne = 0;
+			int ne = 0;
 			if (f.mark != markid) {
-				var e1 = mod3[e + 1];
+				int e1 = mod3[e + 1];
 				if ((f.n.dot(w.w) + f.d) > 0) {
-					var nf = NewFace(f.v[e1], f.v[e], w);
+					Face nf = NewFace(f.v[e1], f.v[e], w);
 					Link(nf, 0, f, e);
 					if (cf[0] != null) {
 						Link(cf[0], 1, nf, 2);
@@ -635,7 +641,7 @@ public class GjkEpaSolver {
 					ne = 1;
 				}
 				else {
-					var e2 = mod3[e + 2];
+					int e2 = mod3[e + 2];
 					Detach(f);
 					f.mark = markid;
 					ne += BuildHorizon(markid, w, f.f[e1], f.e[e1], cf, ff);
@@ -650,7 +656,7 @@ public class GjkEpaSolver {
 		}
 		
 		float EvaluatePD(float accuracy) {
-			var tmp = new v3();
+			v3 tmp = new v3();
 
 
             depth = -cstInf;
@@ -663,14 +669,14 @@ public class GjkEpaSolver {
             if (gjk.EncloseOrigin()) {
                 
                 int[][] pfidx_ptr = null;
-				var pfidx_index = 0;
+				int pfidx_index = 0;
 
-				var nfidx = 0;
+				int nfidx = 0;
                 
                 int[][] peidx_ptr = null;
-				var peidx_index = 0;
+				int peidx_index = 0;
 
-				var neidx = 0;
+				int neidx = 0;
                 switch (gjk.order) {
                     
                     case 3:
@@ -703,12 +709,12 @@ break;
                 }
                 int i;
 
-				var basemkv = new Mkv[5];
+				Mkv[] basemkv = new Mkv[5];
                 for (i = 0; i <= gjk.order; ++i) {
                     basemkv[i] = new Mkv();
                     basemkv[i].set(gjk.simplex[i]);
                 }
-				var basefaces = new Face[6];
+				Face[] basefaces = new Face[6];
                 for (i = 0; i < nfidx; ++i, pfidx_index++) {
                     basefaces[i] = NewFace(basemkv[pfidx_ptr[pfidx_index][0]], basemkv[pfidx_ptr[pfidx_index][1]], basemkv[pfidx_ptr[pfidx_index][2]]);
                 }
@@ -722,20 +728,20 @@ break;
             }
             /* Expand hull		*/
             Face bestface = null;
-            for (var markid = 1; iterations < EPA_maxiterations; ++iterations) {
-				var bf = FindBest();
+            for (int markid = 1; iterations < EPA_maxiterations; ++iterations) {
+				Face bf = FindBest();
                 if (bf != null) {
                     tmp.negated(bf.n);
-					var w = Support(tmp);
-					var d = bf.n.dot(w.w) + bf.d;
+					Mkv w = Support(tmp);
+					float d = bf.n.dot(w.w) + bf.d;
                     bestface = bf;
                     if (d < -accuracy) {
                         Detach(bf);
                         bf.mark = ++markid;
-						var nf = 0;
+						int nf = 0;
                         Face[] ff = {null};
                         Face[] cf = {null};
-                        for (var i = 0; i < 3; ++i) {
+                        for (int i = 0; i < 3; ++i) {
                             nf += BuildHorizon(markid, w, bf.f[i], bf.e[i], cf, ff);
                         }
                         if (nf <= 2) {
@@ -753,20 +759,20 @@ break;
             }
             /* Extract contact	*/
             if (bestface != null) {
-				var b = GetCoordinates(bestface);
+				v3 b = GetCoordinates(bestface);
                 normal.set(bestface.n);
                 depth = Math.max(0, bestface.d);
-                for (var i = 0; i < 2; ++i) {
-					var s = i != 0 ? -1f : 1f;
-                    for (var j = 0; j < 3; ++j) {
+                for (int i = 0; i < 2; ++i) {
+					float s = i != 0 ? -1f : 1f;
+                    for (int j = 0; j < 3; ++j) {
                         tmp.scale(s, bestface.v[j].r);
                         gjk.LocalSupport(tmp, i, features[i][j]);
                     }
                 }
 
-				var tmp1 = new v3();
-				var tmp2 = new v3();
-				var tmp3 = new v3();
+				v3 tmp1 = new v3();
+				v3 tmp2 = new v3();
+				v3 tmp3 = new v3();
 
                 tmp1.scale(b.x, features[0][0]);
                 tmp2.scale(b.y, features[0][1]);
@@ -811,12 +817,12 @@ break;
 				wtrs1.basis, wtrs1, shape1,
 				radialmargin + EPA_accuracy);
 		try {
-			var collide = gjk.SearchOrigin();
+			boolean collide = gjk.SearchOrigin();
 			results.gjk_iterations = gjk.iterations + 1;
 			if (collide) {
 				/* Then EPA for penetration depth	*/
-				var epa = new EPA(gjk);
-				var pd = epa.EvaluatePD();
+				EPA epa = new EPA(gjk);
+				float pd = epa.EvaluatePD();
 				results.epa_iterations = epa.iterations + 1;
 				if (pd > 0) {
 					results.status = ResultsStatus.Penetrating;

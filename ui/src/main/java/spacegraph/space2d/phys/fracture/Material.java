@@ -93,33 +93,33 @@ public abstract class Material {
      * @return Vrati pole Polygonov, na ktore bude dany polygon rozdeleny
      */
     Polygon[] split(Smasher geom, Polygon p, v2 localPos, v2 localVel, float normalImpulse) {
-        var foceeArray = focee(localPos, localVel);
+        v2[] foceeArray = focee(localPos, localVel);
 
 
-        var ln = localVel.length();
+        float ln = localVel.length();
 
 
-        var r = m_radius;
+        float r = m_radius;
 
         float c = 2;
 
-        var dd = Util.sqr(Math.max(ln * c, r));
+        float dd = Util.sqr(Math.max(ln * c, r));
 
         if (ln > EPSILON) {
 
-            var sin = -localVel.x / ln;
-            var cos = -localVel.y / ln;
+            float sin = -localVel.x / ln;
+            float cos = -localVel.y / ln;
 
-            var rr = r * r;
+            float rr = r * r;
             geom.calculate(p, foceeArray, localPos, point -> {
-                var x = localPos.x - point.x;
-                var y = localPos.y - point.y;
+                float x = localPos.x - point.x;
+                float y = localPos.y - point.y;
 
                 x = cos * x + -sin * y;
                 y = sin * x + cos * y;
 
-                var xx = x * x;
-                var yy = y * y;
+                float xx = x * x;
+                float yy = y * y;
                 return (y < 0 && (xx + yy < rr)) || (y > 0 && (xx / rr + yy / dd < 1));
             });
         }

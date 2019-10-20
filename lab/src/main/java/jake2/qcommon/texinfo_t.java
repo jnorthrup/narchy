@@ -43,7 +43,7 @@ public class texinfo_t {
 		flags = bb.getInt();
 		value = bb.getInt();
 
-		var str = new byte[32];
+        byte[] str = new byte[32];
         bb.get(str);
 		texture = new String(str, 0, Lib.strlen(str));
 		nexttexinfo = bb.getInt();

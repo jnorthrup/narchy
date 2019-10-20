@@ -89,13 +89,13 @@ public enum MathFunc {
     };
 
     public static Term add(Term x, Term y) {
-        var xInt = x.op() == INT;
+        boolean xInt = x.op() == INT;
         if (xInt) {
-            var X = ((IdempotInt) x).i;
+            int X = ((IdempotInt) x).i;
             if (X == 0) return y;
         }
         if (y.op() == INT) {
-            var Y = ((IdempotInt) y).i;
+            int Y = ((IdempotInt) y).i;
             if (Y == 0) return x;
             if (xInt && ((IdempotInt) x).i == Y) return mul(x, IdempotInt.the(2));
         }
@@ -106,13 +106,13 @@ public enum MathFunc {
 
     public static Term mul(Term x, Term y) {
         if (x.op() == INT) {
-            var X = ((IdempotInt) x).i;
+            int X = ((IdempotInt) x).i;
             if (X == 0) return IdempotInt.ZERO;
             if (X == 1) return y;
         }
 
         if (y.op() == INT) {
-            var Y = ((IdempotInt) y).i;
+            int Y = ((IdempotInt) y).i;
             if (Y == 0) return IdempotInt.ZERO;
             if (Y == 1) return x;
         }
@@ -179,13 +179,13 @@ public enum MathFunc {
         @Override
         protected Term compute(Evaluation e, Term x, Term y) {
 
-            var xi = x.op() == INT;
-            var xx = xi ? ((IdempotInt) x).i : Integer.MIN_VALUE;
-            var yi = y.op() == INT;
-            var yy = yi ? ((IdempotInt) y).i : Integer.MIN_VALUE;
+            boolean xi = x.op() == INT;
+            int xx = xi ? ((IdempotInt) x).i : Integer.MIN_VALUE;
+            boolean yi = y.op() == INT;
+            int yy = yi ? ((IdempotInt) y).i : Integer.MIN_VALUE;
 
             if (xi || yi) {
-                var preReduction = preFilter(x, xx, xi, y, yy, yi);
+                Term preReduction = preFilter(x, xx, xi, y, yy, yi);
                 if (preReduction != null)
                     return preReduction;
             }
@@ -201,10 +201,10 @@ public enum MathFunc {
                 return compute(xx, yy);
 
             } else {
-                var changed = false;
+                boolean changed = false;
                 if (x.compareTo(y) > 0) {
 
-                    var t = x;
+                    Term t = x;
                     x = y;
                     y = t;
 
@@ -232,11 +232,11 @@ public enum MathFunc {
         @Override
         protected Term computeXfromYandXY(Evaluation e, Term x, Term y, Term xy) {
             if (y.op() == INT && xy.op() == INT) {
-                var XY = ((IdempotInt) xy).i;
-                var Y = ((IdempotInt) y).i;
+                int XY = ((IdempotInt) xy).i;
+                int Y = ((IdempotInt) y).i;
                 if (Y == 0) return xy;
 
-                var X = uncompute(XY, Y);
+                Term X = uncompute(XY, Y);
 
                 return e.is(x, X) ? null : Null;
             }

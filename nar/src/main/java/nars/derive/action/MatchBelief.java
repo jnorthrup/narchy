@@ -1,5 +1,6 @@
 package nars.derive.action;
 
+import jcog.signal.meter.Use;
 import nars.NAL;
 import nars.Op;
 import nars.Task;
@@ -30,8 +31,8 @@ public class MatchBelief extends NativeHow {
 
 	@Override
 	protected void run(RuleCause why, Derivation d) {
-		try (var __ = d.nar.emotion.derive_B_PremiseMatch.time()) {
-			var y = match(d.premise, PremiseBeliefMatcher.PremiseUnifyVars, why, d);
+		try (Use.SafeAutocloseable __ = d.nar.emotion.derive_B_PremiseMatch.time()) {
+            Premise y = match(d.premise, PremiseBeliefMatcher.PremiseUnifyVars, why, d);
 			if (y != null)
 				d.add(y);
 		}
@@ -56,17 +57,17 @@ public class MatchBelief extends NativeHow {
 	 */
     private static @Nullable Premise match(Premise p, int var, RuleCause why, Derivation d) {
 
-		var beliefTerm = p.beliefTerm();
+        Term beliefTerm = p.beliefTerm();
 		if (!beliefTerm.op().taskable)
 			return null; //HACK some non-taskable / non-conceptualizable beliefTerms op's are invisible to the predicate trie due to being masked in Anom's
 
-		var task = p.task();
+        Task task = p.task();
 
-		var nextBeliefTerm = beliefTerm;
+        Term nextBeliefTerm = beliefTerm;
 
 //		boolean beliefUnifiesTask = false;
 
-		var taskTerm = task.term();
+        Term taskTerm = task.term();
 		if (taskTerm.equals(nextBeliefTerm)) {
 //			beliefUnifiesTask = true;
 		} else if (taskTerm.opID() == nextBeliefTerm.opID()) {
@@ -80,10 +81,10 @@ public class MatchBelief extends NativeHow {
 			} else if (nextBeliefTerm.hasAny(var) || taskTerm.hasAny(var)) {
 
 
-				var stolen = d.unify.ttlGetAndSet(0); //HACK steal TTL temporarily
+                int stolen = d.unify.ttlGetAndSet(0); //HACK steal TTL temporarily
 				d.beliefMatch.setTTL(stolen);
 
-				var u = d.beliefMatch.uniSubst(taskTerm, nextBeliefTerm);
+                Term u = d.beliefMatch.uniSubst(taskTerm, nextBeliefTerm);
 
 				d.unify.ttlGetAndSet(d.beliefMatch.ttl); //HACK restore remaining TTL
 
@@ -98,7 +99,7 @@ public class MatchBelief extends NativeHow {
 
 		}
 
-		var belief = match(task, nextBeliefTerm, d);
+        Task belief = match(task, nextBeliefTerm, d);
 
 		if (belief != null) {
 
@@ -119,13 +120,13 @@ public class MatchBelief extends NativeHow {
 		if (belief == null && nextBeliefTerm instanceof Compound && nextBeliefTerm.hasXternal() && taskTerm.volume() > nextBeliefTerm.volume() && !taskTerm.containsRecursively(nextBeliefTerm)) {
 			//structurify: try to match the beliefTerm to a taskTerm component
 			//  emulates (slowly) the termlink id codes from opennars
-			var found = new Term[1];
-			var bOp = nextBeliefTerm.opID();
-			var bStruct = nextBeliefTerm.structure();
-			var _nextBeliefTerm = nextBeliefTerm;
+            Term[] found = new Term[1];
+            int bOp = nextBeliefTerm.opID();
+            int bStruct = nextBeliefTerm.structure();
+            Term _nextBeliefTerm = nextBeliefTerm;
 			//TODO shuffle recursion order
 			taskTerm.recurseTerms(x -> x.hasAll(bStruct), s -> {
-				var s1 = s;
+                Term s1 = s;
                 if (s1 instanceof Compound) {
 					s1 = s1.unneg();
 					if (s1.opID() == bOp) {
@@ -151,7 +152,7 @@ public class MatchBelief extends NativeHow {
 
 	private static @Nullable Task match(Task task, Term beliefTerm, Derivation d) {
 
-		var beliefTable = d.nar.tableDynamic(beliefTerm, true);
+        BeliefTable beliefTable = d.nar.tableDynamic(beliefTerm, true);
 
 		return beliefTable != null && !beliefTable.isEmpty() ?
 			match(task, beliefTerm, beliefTable, timeFocus(task, beliefTerm, d), d) : null;
@@ -169,9 +170,9 @@ public class MatchBelief extends NativeHow {
 
 	private static @Nullable Task match(Task task, Term beliefTerm, BeliefTable bb, long[] when, Derivation d) {
 
-		var tBelief = task.isBelief();
+        boolean tBelief = task.isBelief();
 
-		var t = task(bb, beliefTerm, when, tBelief ? ((Predicate<Task>) task::equals).negate() : null, d);
+        Task t = task(bb, beliefTerm, when, tBelief ? ((Predicate<Task>) task::equals).negate() : null, d);
 
 		//HACK the filter helps but is not 100%
 		return t != null && (tBelief && t.equals(task)) ? null : t;

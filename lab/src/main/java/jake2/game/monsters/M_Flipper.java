@@ -609,7 +609,7 @@ public class M_Flipper {
             if (GameBase.skill.value == 3)
                 return;
 
-            var n = (Lib.rand() + 1) % 2;
+            int n = (Lib.rand() + 1) % 2;
             if (n == 0) {
                 game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
                         Defines.ATTN_NORM, 0);

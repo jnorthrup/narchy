@@ -64,7 +64,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     }
 
     public final boolean equivalent(DynBytes d) {
-        var len = this.len;
+        int len = this.len;
         return d.len == len && Arrays.equals(bytes, 0, len, d.bytes, 0, len);
     }
 
@@ -118,8 +118,8 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
      * combo: (byte, int)
      */
     public final void writeByteInt(byte b, int i) {
-        var len = ensureSized(1 + 4);
-        var bytes = this.bytes;
+        int len = ensureSized(1 + 4);
+        byte[] bytes = this.bytes;
         bytes[len++] = b;
         this.len = writeInt(i, bytes, len);
     }
@@ -129,9 +129,9 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     }
 
     public final void fillBytes(byte b, int next) {
-        var start = this.len;
+        int start = this.len;
         this.len += next;
-        var end = this.len;
+        int end = this.len;
         Arrays.fill(bytes, start, end, b);
     }
 
@@ -143,15 +143,15 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
 
     @Override
     public final void write(byte[] bytes, int srcOffset, int len) {
-        var position = ensureSized(len);
+        int position = ensureSized(len);
         System.arraycopy(bytes, srcOffset, this.bytes, position, len);
         this.len += len;
     }
 
     protected int ensureSized(int extra) {
-        var x = this.bytes;
-        var current = x.length;
-        var p = this.len;
+        byte[] x = this.bytes;
+        int current = x.length;
+        int p = this.len;
         if (current - p < extra) {
             this.bytes = realloc(x, current,
                     //space + Math.max(extra, MIN_GROWTH_BYTES)
@@ -228,9 +228,9 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     }
 
     public final byte[] compact(byte[] forceIfSameAs, boolean force) {
-        var l = this.len;
+        int l = this.len;
         if (l > 0) {
-            var b = this.bytes;
+            byte[] b = this.bytes;
             //noinspection ArrayEquality
             if (force || b.length != l || forceIfSameAs == bytes)
                 return this.bytes = Arrays.copyOfRange(b, 0, l);
@@ -264,8 +264,8 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
 
     @Override
     public final void writeShort(int v) {
-        var s = ensureSized(2);
-        var e = this.bytes;
+        int s = ensureSized(2);
+        byte[] e = this.bytes;
         e[s++] = (byte) (v >> 8);
         e[s++] = (byte) v;
         this.len = s;
@@ -285,7 +285,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
 
     @Override
     public final void writeInt(int v) {
-        var s = ensureSized(4);
+        int s = ensureSized(4);
         this.len = writeInt(v, this.bytes, s);
     }
 
@@ -300,8 +300,8 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     @Override
     public final void writeLong(long v) {
 
-        var s = ensureSized(8);
-        var e = this.bytes;
+        int s = ensureSized(8);
+        byte[] e = this.bytes;
         e[s++] = (byte) ((int) (v >> 56));
         e[s++] = (byte) ((int) (v >> 48));
         e[s++] = (byte) ((int) (v >> 40));
@@ -355,7 +355,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
 
     @Override
     public final Appendable append(CharSequence csq, int start, int end) {
-        for (var i = start; i < end;)
+        for (int i = start; i < end;)
             writeChar(csq.charAt(i++));
         return this;
     }
@@ -389,28 +389,28 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
 
 
     public void writeUnsignedLong(long x) {
-        var pos = ensureSized(8 + 2 /* max */);
+        int pos = ensureSized(8 + 2 /* max */);
         this.len += IntCoding.encodeUnsignedVariableLong(x, bytes, pos);
     }
 
     public void writeUnsignedInt(int x) {
-        var pos = ensureSized(4 + 1 /* max */);
+        int pos = ensureSized(4 + 1 /* max */);
         this.len += IntCoding.encodeUnsignedVariableInt(x, bytes, pos);
     }
 
     public void writeZigZagLong(long x) {
-        var pos = ensureSized(8 + 2 /* max */);
+        int pos = ensureSized(8 + 2 /* max */);
         this.len += IntCoding.encodeZigZagVariableLong(x, bytes, pos);
     }
 
     public void writeZigZagInt(int x) {
-        var pos = ensureSized(4 + 1 /* max */);
+        int pos = ensureSized(4 + 1 /* max */);
         this.len += IntCoding.encodeZigZagVariableInt(x, bytes, pos);
     }
 
     private long readVarEncodedUnsignedLong() {
         long unsigned = 0;
-        var i = 0;
+        int i = 0;
         long b;
         while (((b = bytes[len] & 0xff) & 0x80) != 0) {
             unsigned |= (b & 0x7f) << i;
@@ -422,8 +422,8 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     }
 
     public int readVarEncodedUnsignedInt() {
-        var unsigned = 0;
-        var i = 0;
+        int unsigned = 0;
+        int i = 0;
         int b;
         while (((b = bytes[len] & 0xff) & 0x80) != 0) {
             unsigned |= (b & 0x7f) << i;

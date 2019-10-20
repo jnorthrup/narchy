@@ -28,8 +28,8 @@ public enum SampleLoader
     private static SoundSample load(InputStream isis) throws UnsupportedAudioFileException, IOException
     {
 
-        var d = rip(isis);
-        var ais = AudioSystem.getAudioInputStream(new ByteArrayInputStream(d));
+        byte[] d = rip(isis);
+        AudioInputStream ais = AudioSystem.getAudioInputStream(new ByteArrayInputStream(d));
         
         return buildSample(rip(ais), ais.getFormat());
     }
@@ -68,10 +68,10 @@ public enum SampleLoader
     private static SoundSample buildSample(byte[] b, AudioFormat af) throws UnsupportedAudioFileException
     {
 
-        var channels = af.getChannels();
-        var sampleSize = af.getSampleSizeInBits();
-        var rate = af.getFrameRate();
-        var signed = af.getEncoding() == AudioFormat.Encoding.PCM_SIGNED;
+        int channels = af.getChannels();
+        int sampleSize = af.getSampleSizeInBits();
+        float rate = af.getFrameRate();
+        boolean signed = af.getEncoding() == AudioFormat.Encoding.PCM_SIGNED;
 
         
         if (channels != 1) throw new UnsupportedAudioFileException("Only mono samples are supported");
@@ -79,38 +79,38 @@ public enum SampleLoader
         if (!(af.getEncoding() == AudioFormat.Encoding.PCM_UNSIGNED || af.getEncoding() == AudioFormat.Encoding.PCM_SIGNED)) throw new UnsupportedAudioFileException("Unsupported encoding");
 
 
-        var bb = ByteBuffer.wrap(b);
+        ByteBuffer bb = ByteBuffer.wrap(b);
         bb.order(af.isBigEndian() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
 
-        var s = b.length / (sampleSize / 8);
-        var buf = new float[s];
+        int s = b.length / (sampleSize / 8);
+        float[] buf = new float[s];
         
         switch (sampleSize) {
             case 8:
                 if (signed) {
-                    for (var i = 0; i < s; i++)
+                    for (int i = 0; i < s; i++)
                         buf[i] = bb.get() / (float) 0x80;
                 } else {
-                    for (var i = 0; i < s; i++)
+                    for (int i = 0; i < s; i++)
                         buf[i] = ((bb.get() & 0xFF) - 0x80) / (float) 0x80;
                 }
                 break;
             case 16:
                 if (signed) {
-                    for (var i = 0; i < s; i++)
+                    for (int i = 0; i < s; i++)
                         buf[i] = bb.getShort() / (float) 0x8000;
                 } else {
-                    for (var i = 0; i < s; i++)
+                    for (int i = 0; i < s; i++)
                         buf[i] = ((bb.getShort() & 0xFFFF) - 0x8000) / (float) 0x8000;
                 }
                 break;
             case 32:
                 if (signed) {
-                    for (var i = 0; i < s; i++)
+                    for (int i = 0; i < s; i++)
                         buf[i] = bb.getInt() / (float) 0x80000000;
                 } else {
                     
-                    for (var i = 0; i < s; i++)
+                    for (int i = 0; i < s; i++)
                         buf[i] = ((bb.getInt() & 0xFFFFFFFFL) - 0x80000000L) / (float) 0x80000000;
                 }
                 break;
@@ -123,11 +123,11 @@ public enum SampleLoader
     /** digitize provided function at sample rate (ex: 44.1kh) */
     public static SoundSample digitize(FloatToFloatFunction f, int sampleRate, int duration) {
 
-        var samples = duration * sampleRate;
-        var ss = new SoundSample(new float[samples], sampleRate);
-        var b = ss.buf;
+        int samples = duration * sampleRate;
+        SoundSample ss = new SoundSample(new float[samples], sampleRate);
+        float[] b = ss.buf;
         float t = 0, dt = 1.0f / sampleRate;
-        for (var i = 0; i < samples; i++) {
+        for (int i = 0; i < samples; i++) {
             b[i] = f.valueOf(t);
             t+=dt;
         }

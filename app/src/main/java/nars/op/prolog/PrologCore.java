@@ -119,12 +119,12 @@ public class PrologCore extends Prolog implements Consumer<Task> {
         if (task.isBelief()) {
 
             if (task.isEternal()) {
-                var dt = task.term().dt();
+                int dt = task.term().dt();
                 if (dt == 0 || dt == DTERNAL) {
-                    var c = task.conf();
+                    float c = task.conf();
                     if (c >= confThreshold.floatValue()) {
-                        var f = task.freq();
-                        var t = trueFreqThreshold.floatValue();
+                        float f = task.freq();
+                        float t = trueFreqThreshold.floatValue();
                         if (f > t)
                             believe(task, true);
                         else if (f < 1f - t)
@@ -145,14 +145,14 @@ public class PrologCore extends Prolog implements Consumer<Task> {
     protected void believe(Task t, boolean truth) {
 
 
-        var ct = t.term();
+        Term ct = t.term();
 
         if (!ct.hasAny(Op.AtomicConstant))
             return;
 
         beliefs.computeIfAbsent(ct, (pp/*=ct?*/) -> {
 
-            var next = (Struct) pterm(t.term());
+            Struct next = (Struct) pterm(t.term());
 
             if (!truth) {
                 if (t.op() == IMPL) {
@@ -162,7 +162,7 @@ public class PrologCore extends Prolog implements Consumer<Task> {
                 }
             }
 
-            var s = solve(assertion(next));
+            Solution s = solve(assertion(next));
             if (s.isSuccess())
                 logger.info("believe {}", next);
             else
@@ -176,14 +176,14 @@ public class PrologCore extends Prolog implements Consumer<Task> {
 
 
     protected void question(Task question) {
-        var tt = question.term();
+        Term tt = question.term();
         /*if (t.op() == Op.NEGATE) {
             
             tt = ((Compound)tt).target(0);
             truth = !truth;
         }*/
 
-        var questionTerm = pterm(tt);
+        alice.tuprolog.Term questionTerm = pterm(tt);
 
 
         logger.info("solve {}", questionTerm);
@@ -215,10 +215,10 @@ public class PrologCore extends Prolog implements Consumer<Task> {
 
     private void answer(Task question, Solution answer) {
         try {
-            var yt = nterm(answer.goal);
+            Term yt = nterm(answer.goal);
 
-            var y = Task.tryTask(yt, BELIEF, $.t(1f, answerConf.floatValue()), (term, truth) -> {
-                var t = NALTask.the(term, BELIEF, truth, nar.time(), ETERNAL, ETERNAL, nar.evidence())
+            Task y = Task.tryTask(yt, BELIEF, $.t(1f, answerConf.floatValue()), (term, truth) -> {
+                Task t = NALTask.the(term, BELIEF, truth, nar.time(), ETERNAL, ETERNAL, nar.evidence())
                         .pri(nar);
                 return t;
             });
@@ -243,9 +243,9 @@ public class PrologCore extends Prolog implements Consumer<Task> {
     }
 
     private static @Nullable Term[] nterms(Struct s) {
-        var len = s.subs();
-        var n = new Term[len];
-        for (var ni = 0; ni < len; ni++) {
+        int len = s.subs();
+        Term[] n = new Term[len];
+        for (int ni = 0; ni < len; ni++) {
             if ((n[ni] = nterm(s.subResolve(ni))) == null)
                 return null;
         }
@@ -258,7 +258,7 @@ public class PrologCore extends Prolog implements Consumer<Task> {
         if (t instanceof Var) {
             result = $.varDep(((Var) t).name());
         } else {
-            var s = (Struct) t;
+            Struct s = (Struct) t;
             if (s.subs() > 0) {
                 switch (s.name()) {
 
@@ -301,7 +301,7 @@ public class PrologCore extends Prolog implements Consumer<Task> {
                         break;
                 }
             } else {
-                var n = s.name();
+                String n = s.name();
                 if (n.startsWith("'#")) {
 
                     result = $.varDep(n.substring(2, n.length() - 1));
@@ -358,8 +358,8 @@ public class PrologCore extends Prolog implements Consumer<Task> {
 
     public static alice.tuprolog.Term pterm(Term term) {
         if (term instanceof Compound) {
-            var op = term.op();
-            var st = psubterms(term.subterms());
+            Op op = term.op();
+            alice.tuprolog.Term[] st = psubterms(term.subterms());
             switch (op) {
                 case IMPL:
                     return new Struct(":-", st[1], st[0] /* reversed */);
@@ -377,11 +377,11 @@ public class PrologCore extends Prolog implements Consumer<Task> {
                 case PROD:
                     return new Struct(st);
                 case INH:
-                    var pred = term.sub(1);
+                    Term pred = term.sub(1);
                     if (pred.op() == ATOM) {
-                        var subj = term.sub(0);
+                        Term subj = term.sub(0);
                         if (subj.op() == PROD) {
-                            var args = st[0];
+                            alice.tuprolog.Term args = st[0];
                             return new Struct(wrapAtom(pred.toString()),
                                     args != null ?
                                             Iterators.toArray(((Struct) st[0]).listIterator(), alice.tuprolog.Term.class) :

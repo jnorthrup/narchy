@@ -223,7 +223,7 @@ public class qfiles {
 		public daliasframe_t(ByteBuffer b) {
 			scale[0] = b.getFloat();	scale[1] = b.getFloat();	scale[2] = b.getFloat();
 			translate[0] = b.getFloat(); translate[1] = b.getFloat(); translate[2] = b.getFloat();
-			var nameBuf = new byte[16];
+            byte[] nameBuf = new byte[16];
 			b.get(nameBuf);
 			name = new String(nameBuf).trim();
 		}
@@ -323,7 +323,7 @@ public class qfiles {
 			origin_x = b.getInt();
 			origin_y = b.getInt();
 
-			var nameBuf = new byte[MAX_SKINNAME];
+            byte[] nameBuf = new byte[MAX_SKINNAME];
 			b.get(nameBuf);
 			name = new String(nameBuf).trim();
 		}
@@ -341,7 +341,7 @@ public class qfiles {
 			numframes = b.getInt();
 			
 			frames = new dsprframe_t[numframes];
-			for (var i = 0; i < numframes; i++) {
+			for (int i = 0; i < numframes; i++) {
 				frames[i] = new dsprframe_t(b);	
 			}
 		}
@@ -377,7 +377,7 @@ public class qfiles {
 			
 			b.order(ByteOrder.LITTLE_ENDIAN);
 
-			var nameBuf = new byte[NAME_SIZE];
+            byte[] nameBuf = new byte[NAME_SIZE];
 			
 			b.get(nameBuf);
 			name = new String(nameBuf).trim();
@@ -415,7 +415,7 @@ public class qfiles {
 			this.ident = bb.getInt();
 			this.version = bb.getInt();
 
-			for (var n = 0; n < Defines.HEADER_LUMPS; n++)
+			for (int n = 0; n < Defines.HEADER_LUMPS; n++)
 				lumps[n] = new lump_t(bb.getInt(), bb.getInt());
 
 		}
@@ -430,13 +430,13 @@ public class qfiles {
 		public dmodel_t(ByteBuffer bb) {
 			bb.order(ByteOrder.LITTLE_ENDIAN);
 
-			for (var j = 0; j < 3; j++)
+			for (int j = 0; j < 3; j++)
 				mins[j] = bb.getFloat();
 
-			for (var j = 0; j < 3; j++)
+			for (int j = 0; j < 3; j++)
 				maxs[j] = bb.getFloat();
 
-			for (var j = 0; j < 3; j++)
+			for (int j = 0; j < 3; j++)
 				origin[j] = bb.getFloat();
 
 			headnode = bb.getInt();
@@ -499,13 +499,13 @@ public class qfiles {
 			children[0] = bb.getInt();
 			children[1] = bb.getInt();
 
-			var mins = this.mins;
-			for (var j = 0; j < 3; j++) {
+            short[] mins = this.mins;
+			for (int j = 0; j < 3; j++) {
 				mins[j] = bb.getShort();
 			}
 
-			var maxs = this.maxs;
-			for (var j = 0; j < 3; j++)
+            short[] maxs = this.maxs;
+			for (int j = 0; j < 3; j++)
 				maxs[j] = bb.getShort();
 
 			firstface = bb.getShort() & 0xffff;
@@ -582,12 +582,12 @@ public class qfiles {
 			cluster = bb.getShort();
 			area = bb.getShort();
 
-			var mins = this.mins;
+            short[] mins = this.mins;
 			mins[0] = bb.getShort();
 			mins[1] = bb.getShort();
 			mins[2] = bb.getShort();
 
-			var maxs = this.maxs;
+            short[] maxs = this.maxs;
 			maxs[0] = bb.getShort();
 			maxs[1] = bb.getShort();
 			maxs[2] = bb.getShort();
@@ -661,12 +661,12 @@ public class qfiles {
 	public static class dvis_t {
 
 		public dvis_t(ByteBuffer bb) {
-			var numclusters = this.numclusters = bb.getInt();
+            int numclusters = this.numclusters = bb.getInt();
 			bitofs = new int[numclusters][2];
 
-			var b = this.bitofs;
-			for (var i = 0; i < numclusters; i++) {
-				var bi = b[i];
+            int[][] b = this.bitofs;
+			for (int i = 0; i < numclusters; i++) {
+                int[] bi = b[i];
 				bi[0] = bb.getInt();
 				bi[1] = bb.getInt();
 			}

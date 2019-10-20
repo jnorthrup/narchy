@@ -110,8 +110,8 @@ public abstract class RdesktopCanvas extends Canvas {
      * @return
      */
     private static int parse_delta(byte[] buffer, int[] offset) {
-        var value = buffer[offset[0]++] & 0xff;
-        var two_byte = value & 0x80;
+        int value = buffer[offset[0]++] & 0xff;
+        int two_byte = value & 0x80;
 
         if ((value & 0x40) != 0) /* sign bit */
             value |= ~0x3f;
@@ -211,7 +211,7 @@ public abstract class RdesktopCanvas extends Canvas {
      */
     public void displayImage(Image img, int x, int y) {
 
-        var g = backstore.getGraphics();
+        Graphics g = backstore.getGraphics();
         g.drawImage(img, x, y, null);
         /* ********* Useful test for identifying image boundaries ************ */
         
@@ -257,7 +257,7 @@ public abstract class RdesktopCanvas extends Canvas {
      */
     public int[] getImage(int x, int y, int cx, int cy) {
 
-        var data = backstore.getRGB(x, y, cx, cy, null,
+        int[] data = backstore.getRGB(x, y, cx, cy, null,
 
                 0,
                 cx);
@@ -290,8 +290,8 @@ public abstract class RdesktopCanvas extends Canvas {
      * Reset clipping boundaries for canvas
      */
     public void resetClip() {
-        var g = this.getGraphics();
-        var bounds = this.getBounds();
+        Graphics g = this.getGraphics();
+        Rectangle bounds = this.getBounds();
         g.setClip(bounds.x, bounds.y, bounds.width, bounds.height);
         this.top = 0;
         this.left = 0;
@@ -305,7 +305,7 @@ public abstract class RdesktopCanvas extends Canvas {
      * @param bounds Order defining new boundaries
      */
     public void setClip(BoundsOrder bounds) {
-        var g = this.getGraphics();
+        Graphics g = this.getGraphics();
         g.setClip(bounds.getLeft(), bounds.getTop(), bounds.getRight()
                 - bounds.getLeft(), bounds.getBottom() - bounds.getTop());
         this.top = bounds.getTop();
@@ -338,7 +338,7 @@ public abstract class RdesktopCanvas extends Canvas {
         if (x > this.right || y > this.bottom)
             return;
 
-        var Bpp = Options.Bpp;
+        int Bpp = Options.Bpp;
 
         
         color = Bitmap.convertTo24(color);
@@ -349,7 +349,7 @@ public abstract class RdesktopCanvas extends Canvas {
                     | ((color & 0xFF0000) >> 16);
 
 
-        var clipright = x + cx - 1;
+        int clipright = x + cx - 1;
         if (clipright > this.right)
             clipright = this.right;
         if (x < this.left)
@@ -357,7 +357,7 @@ public abstract class RdesktopCanvas extends Canvas {
         cx = clipright - x + 1;
 
 
-        var clipbottom = y + cy - 1;
+        int clipbottom = y + cy - 1;
         if (clipbottom > this.bottom)
             clipbottom = this.bottom;
         if (y < this.top)
@@ -365,7 +365,7 @@ public abstract class RdesktopCanvas extends Canvas {
         cy = clipbottom - y + 1;
 
 
-        var rect = new int[cx * cy];
+        int[] rect = new int[cx * cy];
         Arrays.fill(rect, color);
         
         backstore.setRGB(x, y, cx, cy, rect, 0, cx);
@@ -420,8 +420,8 @@ public abstract class RdesktopCanvas extends Canvas {
         int numadd;
         int den;
         int num;
-        var deltay = Math.abs(y2 - y1);
-        var deltax = Math.abs(x2 - x1);
+        int deltay = Math.abs(y2 - y1);
+        int deltax = Math.abs(x2 - x1);
         if (deltax >= deltay) {
             
             xinc1 = 0; 
@@ -439,9 +439,9 @@ public abstract class RdesktopCanvas extends Canvas {
             numpixels = deltay; 
         }
 
-        var y = y1;
-        var x = x1;
-        for (var curpixel = 0; curpixel <= numpixels; curpixel++) {
+        int y = y1;
+        int x = x1;
+        for (int curpixel = 0; curpixel <= numpixels; curpixel++) {
             setPixel(opcode, x, y, color); 
             num += numadd; 
             if (num >= den) { 
@@ -453,10 +453,10 @@ public abstract class RdesktopCanvas extends Canvas {
             y += yinc2; 
         }
 
-        var x_min = Math.min(x1, x2);
-        var x_max = Math.max(x1, x2);
-        var y_min = Math.min(y1, y2);
-        var y_max = Math.max(y1, y2);
+        int x_min = Math.min(x1, x2);
+        int x_max = Math.max(x1, x2);
+        int y_min = Math.min(y1, y2);
+        int y_max = Math.max(y1, y2);
 
         this.repaint(x_min, y_min, x_max - x_min + 1, y_max - y_min + 1);
     }
@@ -541,14 +541,14 @@ public abstract class RdesktopCanvas extends Canvas {
      * @param line LineOrder describing line to be drawn
      */
     public void drawLineOrder(LineOrder line) {
-        var x1 = line.getStartX();
-        var y1 = line.getStartY();
-        var x2 = line.getEndX();
-        var y2 = line.getEndY();
+        int x1 = line.getStartX();
+        int y1 = line.getStartY();
+        int x2 = line.getEndX();
+        int y2 = line.getEndY();
 
-        var fgcolor = line.getPen().getColor();
+        int fgcolor = line.getPen().getColor();
 
-        var opcode = line.getOpcode() - 1;
+        int opcode = line.getOpcode() - 1;
         drawLine(x1, y1, x2, y2, fgcolor, opcode);
     }
 
@@ -558,23 +558,23 @@ public abstract class RdesktopCanvas extends Canvas {
      * @param destblt DestBltOrder describing the blit to be performed
      */
     public void drawDestBltOrder(DestBltOrder destblt) {
-        var x = destblt.getX();
-        var y = destblt.getY();
+        int x = destblt.getX();
+        int y = destblt.getY();
 
         if (x > this.right || y > this.bottom)
             return;
 
-        var cx = destblt.getCX();
-        var cy = destblt.getCY();
+        int cx = destblt.getCX();
+        int cy = destblt.getCY();
 
-        var clipright = x + cx - 1;
+        int clipright = x + cx - 1;
         if (clipright > this.right)
             clipright = this.right;
         if (x < this.left)
             x = this.left;
         cx = clipright - x + 1;
 
-        var clipbottom = y + cy - 1;
+        int clipbottom = y + cy - 1;
         if (clipbottom > this.bottom)
             clipbottom = this.bottom;
         if (y < this.top)
@@ -593,25 +593,25 @@ public abstract class RdesktopCanvas extends Canvas {
      * @param screenblt ScreenBltOrder describing the blit to be performed
      */
     public void drawScreenBltOrder(ScreenBltOrder screenblt) {
-        var x = screenblt.getX();
-        var y = screenblt.getY();
+        int x = screenblt.getX();
+        int y = screenblt.getY();
 
         if (x > this.right || y > this.bottom)
             return;
 
-        var cx = screenblt.getCX();
-        var cy = screenblt.getCY();
-        var srcx = screenblt.getSrcX();
-        var srcy = screenblt.getSrcY();
+        int cx = screenblt.getCX();
+        int cy = screenblt.getCY();
+        int srcx = screenblt.getSrcX();
+        int srcy = screenblt.getSrcY();
 
-        var clipright = x + cx - 1;
+        int clipright = x + cx - 1;
         if (clipright > this.right)
             clipright = this.right;
         if (x < this.left)
             x = this.left;
         cx = clipright - x + 1;
 
-        var clipbottom = y + cy - 1;
+        int clipbottom = y + cy - 1;
         if (clipbottom > this.bottom)
             clipbottom = this.bottom;
         if (y < this.top)
@@ -633,19 +633,19 @@ public abstract class RdesktopCanvas extends Canvas {
      * @param memblt MemBltOrder describing the blit to be performed
      */
     public void drawMemBltOrder(MemBltOrder memblt) {
-        var x = memblt.getX();
-        var y = memblt.getY();
+        int x = memblt.getX();
+        int y = memblt.getY();
 
         if (x > this.right || y > this.bottom)
             return;
 
-        var cx = memblt.getCX();
-        var cy = memblt.getCY();
-        var srcx = memblt.getSrcX();
-        var srcy = memblt.getSrcY();
+        int cx = memblt.getCX();
+        int cy = memblt.getCY();
+        int srcx = memblt.getSrcX();
+        int srcy = memblt.getSrcY();
 
 
-        var clipright = x + cx - 1;
+        int clipright = x + cx - 1;
         if (clipright > this.right)
             clipright = this.right;
         if (x < this.left)
@@ -653,7 +653,7 @@ public abstract class RdesktopCanvas extends Canvas {
         cx = clipright - x + 1;
 
 
-        var clipbottom = y + cy - 1;
+        int clipbottom = y + cy - 1;
         if (clipbottom > this.bottom)
             clipbottom = this.bottom;
         if (y < this.top)
@@ -666,7 +666,7 @@ public abstract class RdesktopCanvas extends Canvas {
         if (logger.isInfoEnabled())
             logger.info("MEMBLT x={} y={} cx={} cy={} srcx={} srcy={} opcode={}", x, y, cx, cy, srcx, srcy, memblt.getOpcode());
         try {
-            var bitmap = cache.getBitmap(memblt.getCacheID(), memblt
+            Bitmap bitmap = cache.getBitmap(memblt.getCacheID(), memblt
                     .getCacheIDX());
             
             
@@ -698,7 +698,7 @@ public abstract class RdesktopCanvas extends Canvas {
         bgcolor = Bitmap.convertTo24(bgcolor);
 
 
-        var clipright = x + cx - 1;
+        int clipright = x + cx - 1;
         if (clipright > this.right)
             clipright = this.right;
         if (x < this.left)
@@ -706,7 +706,7 @@ public abstract class RdesktopCanvas extends Canvas {
         cx = clipright - x + 1;
 
 
-        var clipbottom = y + cy - 1;
+        int clipbottom = y + cy - 1;
         if (clipbottom > this.bottom)
             clipbottom = this.bottom;
         if (y < this.top)
@@ -733,10 +733,10 @@ public abstract class RdesktopCanvas extends Canvas {
                 break;
 
             case 3:
-                var brushx = brush.getXOrigin();
-                var brushy = brush.getYOrigin();
-                var pattern = brush.getPattern();
-                var ipattern = pattern;
+                int brushx = brush.getXOrigin();
+                int brushy = brush.getYOrigin();
+                byte[] pattern = brush.getPattern();
+                byte[] ipattern = pattern;
 
                 /*
                  * 
@@ -745,9 +745,9 @@ public abstract class RdesktopCanvas extends Canvas {
                  */
 
                 src = new int[cx * cy];
-                var psrc = 0;
+                int psrc = 0;
                 for (i = 0; i < cy; i++) {
-                    for (var j = 0; j < cx; j++) {
+                    for (int j = 0; j < cx; j++) {
                         if ((ipattern[(i + brushy) % 8] & (0x01 << ((j + brushx) % 8))) == 0)
                             src[psrc] = fgcolor;
                         else
@@ -770,18 +770,18 @@ public abstract class RdesktopCanvas extends Canvas {
      * @param patblt PatBltOrder describing the blit to be performed
      */
     public void drawPatBltOrder(PatBltOrder patblt) {
-        var brush = patblt.getBrush();
-        var x = patblt.getX();
-        var y = patblt.getY();
+        Brush brush = patblt.getBrush();
+        int x = patblt.getX();
+        int y = patblt.getY();
 
         if (x > this.right || y > this.bottom)
             return;
 
-        var cx = patblt.getCX();
-        var cy = patblt.getCY();
-        var fgcolor = patblt.getForegroundColor();
-        var bgcolor = patblt.getBackgroundColor();
-        var opcode = patblt.getOpcode();
+        int cx = patblt.getCX();
+        int cy = patblt.getCY();
+        int fgcolor = patblt.getForegroundColor();
+        int bgcolor = patblt.getBackgroundColor();
+        int opcode = patblt.getOpcode();
 
         patBltOrder(opcode, x, y, cx, cy, fgcolor, bgcolor, brush);
     }
@@ -792,26 +792,26 @@ public abstract class RdesktopCanvas extends Canvas {
      * @param triblt TriBltOrder describing the blit
      */
     public void drawTriBltOrder(TriBltOrder triblt) {
-        var x = triblt.getX();
-        var y = triblt.getY();
+        int x = triblt.getX();
+        int y = triblt.getY();
 
         if (x > this.right || y > this.bottom)
             return;
 
-        var cx = triblt.getCX();
-        var cy = triblt.getCY();
-        var srcx = triblt.getSrcX();
-        var srcy = triblt.getSrcY();
-        var fgcolor = triblt.getForegroundColor();
-        var bgcolor = triblt.getBackgroundColor();
-        var brush = triblt.getBrush();
+        int cx = triblt.getCX();
+        int cy = triblt.getCY();
+        int srcx = triblt.getSrcX();
+        int srcy = triblt.getSrcY();
+        int fgcolor = triblt.getForegroundColor();
+        int bgcolor = triblt.getBackgroundColor();
+        Brush brush = triblt.getBrush();
 
         
         fgcolor = Bitmap.convertTo24(fgcolor);
         bgcolor = Bitmap.convertTo24(bgcolor);
 
 
-        var clipright = x + cx - 1;
+        int clipright = x + cx - 1;
         if (clipright > this.right)
             clipright = this.right;
         if (x < this.left)
@@ -819,7 +819,7 @@ public abstract class RdesktopCanvas extends Canvas {
         cx = clipright - x + 1;
 
 
-        var clipbottom = y + cy - 1;
+        int clipbottom = y + cy - 1;
         if (clipbottom > this.bottom)
             clipbottom = this.bottom;
         if (y < this.top)
@@ -827,7 +827,7 @@ public abstract class RdesktopCanvas extends Canvas {
         cy = clipbottom - y + 1;
 
         try {
-            var bitmap = cache.getBitmap(triblt.getCacheID(), triblt
+            Bitmap bitmap = cache.getBitmap(triblt.getCacheID(), triblt
                     .getCacheIDX());
             switch (triblt.getOpcode()) {
                 case 0x69: 
@@ -863,27 +863,27 @@ public abstract class RdesktopCanvas extends Canvas {
      * @param polyline PolyLineOrder describing the set of lines to draw
      */
     public void drawPolyLineOrder(PolyLineOrder polyline) {
-        var x = polyline.getX();
-        var y = polyline.getY();
-        var fgcolor = polyline.getForegroundColor();
-        var datasize = polyline.getDataSize();
-        var databytes = polyline.getData();
-        var lines = polyline.getLines();
+        int x = polyline.getX();
+        int y = polyline.getY();
+        int fgcolor = polyline.getForegroundColor();
+        int datasize = polyline.getDataSize();
+        byte[] databytes = polyline.getData();
+        int lines = polyline.getLines();
 
         
         fgcolor = Bitmap.convertTo24(fgcolor);
 
 
-        var data = new int[1];
+        int[] data = new int[1];
         data[0] = ((lines - 1) / 4) + 1;
-        var flags = 0;
-        var index = 0;
+        int flags = 0;
+        int index = 0;
 
-        var opcode = polyline.getOpcode() - 1;
+        int opcode = polyline.getOpcode() - 1;
 
-        for (var line = 0; (line < lines) && (data[0] < datasize); line++) {
-            var xfrom = x;
-            var yfrom = y;
+        for (int line = 0; (line < lines) && (data[0] < datasize); line++) {
+            int xfrom = x;
+            int yfrom = y;
 
             if (line % 4 == 0)
                 flags = databytes[index++];
@@ -924,7 +924,7 @@ public abstract class RdesktopCanvas extends Canvas {
      * @param color  Colour value to be used in operation
      */
     private void setPixel(int opcode, int x, int y, int color) {
-        var Bpp = Options.Bpp;
+        int Bpp = Options.Bpp;
 
         
         if (Bpp == 3)
@@ -954,7 +954,7 @@ public abstract class RdesktopCanvas extends Canvas {
     public void drawGlyph(int mixmode, int x, int y, int cx, int cy,
                           byte[] data, int bgcolor, int fgcolor) {
 
-        var Bpp = Options.Bpp;
+        int Bpp = Options.Bpp;
 
         
         fgcolor = Bitmap.convertTo24(fgcolor);
@@ -973,30 +973,30 @@ public abstract class RdesktopCanvas extends Canvas {
         if (x > this.right || y > this.bottom)
             return;
 
-        var clipright = x + cx - 1;
+        int clipright = x + cx - 1;
         if (clipright > this.right)
             clipright = this.right;
-        var newx = Math.max(x, this.left);
-        var newcx = clipright - x + 1;
+        int newx = Math.max(x, this.left);
+        int newcx = clipright - x + 1;
 
-        var clipbottom = y + cy - 1;
+        int clipbottom = y + cy - 1;
         if (clipbottom > this.bottom)
             clipbottom = this.bottom;
-        var top = this.top;
+        int top = this.top;
 
 
-        var newy = y;
+        int newy = y;
 
-        var newcy = clipbottom - newy + 1;
+        int newcy = clipbottom - newy + 1;
 
-        var pbackstore = (newy * this.width) + x;
-        var bytes_per_row = (cx - 1) / 8 + 1;
-        var pdata = bytes_per_row * (newy - y);
+        int pbackstore = (newy * this.width) + x;
+        int bytes_per_row = (cx - 1) / 8 + 1;
+        int pdata = bytes_per_row * (newy - y);
 
-        var index = 0x80;
+        int index = 0x80;
         if (mixmode == MIX_TRANSPARENT) {
-            for (var i = 0; i < newcy; i++) {
-                for (var j = 0; j < newcx; j++) {
+            for (int i = 0; i < newcy; i++) {
+                for (int j = 0; j < newcx; j++) {
                     if (index == 0) { 
                         pdata++;
                         index = 0x80;
@@ -1017,8 +1017,8 @@ public abstract class RdesktopCanvas extends Canvas {
                 }
             }
         } else { 
-            for (var i = 0; i < newcy; i++) {
-                for (var j = 0; j < newcx; j++) {
+            for (int i = 0; i < newcy; i++) {
+                for (int j = 0; j < newcx; j++) {
                     if (index == 0) { 
                         pdata++;
                         index = 0x80;
@@ -1062,13 +1062,13 @@ public abstract class RdesktopCanvas extends Canvas {
      */
     public Cursor createCursor(int cache_idx, int x, int y, int w, int h, byte[] andmask,
                                byte[] xormask, int bpp) {
-        var p = new Point(x, y);
+        Point p = new Point(x, y);
         int delta;
-        var scanline = (w + 7) / 8;
-        var offset = scanline * h;
+        int scanline = (w + 7) / 8;
+        int offset = scanline * h;
 
-        var cursor = new byte[offset];
-        var mask = new byte[offset];
+        byte[] cursor = new byte[offset];
+        byte[] mask = new byte[offset];
 
         if (bpp == 1) {
             offset = 0;
@@ -1078,21 +1078,21 @@ public abstract class RdesktopCanvas extends Canvas {
             delta = -scanline;
         }
 
-        var k = 0;
+        int k = 0;
         int j;
         int i;
-        var pandmask = 0;
-        var pcursor = 0;
-        var pmask = 0;
+        int pandmask = 0;
+        int pcursor = 0;
+        int pmask = 0;
         for (i = 0; i < h; i++) {
             pcursor = offset;
             pmask = offset;
             for (j = 0; j < scanline; j++) {
-                for (var nextbit = 0x80; nextbit != 0; nextbit >>= 1) {
+                for (int nextbit = 0x80; nextbit != 0; nextbit >>= 1) {
 
-                    var rv = 0;
-                    var pxormask = 0;
-                    var s8 = 0;
+                    int rv = 0;
+                    int pxormask = 0;
+                    int s8 = 0;
                     switch (bpp) {
                         case 1:
                             s8 = pxormask + (k / 8);
@@ -1107,19 +1107,19 @@ public abstract class RdesktopCanvas extends Canvas {
                             k += 1;
                             break;
                         case 15: {
-                            var temp = (xormask[k] << 8) | xormask[k + 1];
-                            var red = (((temp >> 7) & 0xf8) | ((temp >> 12) & 0x7));
-                            var green = (((temp >> 2) & 0xf8) | ((temp >> 8) & 0x7));
-                            var blue = (((temp << 3) & 0xf8) | ((temp >> 2) & 0x7));
+                            int temp = (xormask[k] << 8) | xormask[k + 1];
+                            int red = (((temp >> 7) & 0xf8) | ((temp >> 12) & 0x7));
+                            int green = (((temp >> 2) & 0xf8) | ((temp >> 8) & 0x7));
+                            int blue = (((temp << 3) & 0xf8) | ((temp >> 2) & 0x7));
                             rv = (red << 16) | (green << 8) | blue;
                             k += 1;
                         }
                         break;
                         case 16:
-                            var temp = (xormask[k] << 8) | xormask[k + 1];
-                            var red = ((temp >> 8) & 0xf8) | ((temp >> 13) & 0x7);
-                            var green = ((temp >> 3) & 0xfc) | ((temp >> 9) & 0x3);
-                            var blue = ((temp << 3) & 0xf8) | ((temp >> 2) & 0x7);
+                            int temp = (xormask[k] << 8) | xormask[k + 1];
+                            int red = ((temp >> 8) & 0xf8) | ((temp >> 13) & 0x7);
+                            int green = ((temp >> 3) & 0xfc) | ((temp >> 9) & 0x3);
+                            int blue = ((temp << 3) & 0xf8) | ((temp >> 2) & 0x7);
                             rv = (red << 16) | (green << 8) | blue;
                             k += 1;
                             break;
@@ -1156,15 +1156,15 @@ public abstract class RdesktopCanvas extends Canvas {
 
         pmask = 0;
         pcursor = 0;
-        var bg = 0xFF000000;
-        var fg = 0xFFFFFFFF;
-        var pcursormap = 0;
-        var cursormap = new int[w * h];
+        int bg = 0xFF000000;
+        int fg = 0xFFFFFFFF;
+        int pcursormap = 0;
+        int[] cursormap = new int[w * h];
         for (i = 0; i < h; i++) {
             for (j = 0; j < scanline; j++) {
-                for (var nextbit = 0x80; nextbit != 0; nextbit >>= 1) {
-                    var isCursor = (cursor[pcursor] & nextbit) != 0;
-                    var isMask = (mask[pmask] & nextbit) != 0;
+                for (int nextbit = 0x80; nextbit != 0; nextbit >>= 1) {
+                    boolean isCursor = (cursor[pcursor] & nextbit) != 0;
+                    boolean isMask = (mask[pmask] & nextbit) != 0;
                     if (isMask) {
                         if (isCursor) {
                             cursormap[pcursormap] = fg;
@@ -1179,7 +1179,7 @@ public abstract class RdesktopCanvas extends Canvas {
             }
         }
 
-        var wincursor = this.createImage(new MemoryImageSource(w, h, cursormap, 0, w));
+        Image wincursor = this.createImage(new MemoryImageSource(w, h, cursormap, 0, w));
         return createCustomCursor(wincursor, p, "", cache_idx);
     }
 

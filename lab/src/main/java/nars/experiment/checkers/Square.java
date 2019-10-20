@@ -127,7 +127,7 @@ public class Square extends JComponent {
 
     @Override
     public String toString() {
-        var occupant = piece != null ? piece.toString() : "EMPTY";
+        String occupant = piece != null ? piece.toString() : "EMPTY";
         return "[" + x + ", " + y + "] : " + occupant;
     }
 }

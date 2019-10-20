@@ -44,7 +44,7 @@ public class Cmp extends SimpleBinaryFunctor {
             if (xVar || yVar || x.hasVars() || y.hasVars())
                 return null; //indeterminate
 
-            var c = x.compareTo(y);
+            int c = x.compareTo(y);
             if (e.is(xy, IdempotInt.the(c))) {
                 return c > 0 ? swap(x, y, c) : null;
             } else
@@ -54,14 +54,14 @@ public class Cmp extends SimpleBinaryFunctor {
                 return Null;
             if (!x.hasVars() && !y.hasVars()) {
                 //check for truth, and canonical ordering
-                var c = x.compareTo(y);
+                int c = x.compareTo(y);
                 //                if (c > 0)
                 //                    return swap(x, y, c);
                 //                else
                 return ((IdempotInt) xy).i != c ? False : True;
 
             } else if (x instanceof Variable || y instanceof Variable) {
-                var c = x.compareTo(y);
+                int c = x.compareTo(y);
                 if (c > 0)
                     return swap(x, y, c);
             }

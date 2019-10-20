@@ -147,12 +147,12 @@ public abstract class Term implements Serializable, SubTree {
      * gets a copy of this term for the output
      */
     Term copyResult(Collection<Var> goalVars, List<Var> resultVars) {
-        var s = goalVars.size();
+        int s = goalVars.size();
         Map<Var, Var> originals;
         if (s > 0) {
             originals = new IdentityHashMap<>(s);
-            for (var key : goalVars) {
-                var clone = !key.isAnonymous() ? new Var(key.getOriginalName()) : new Var();
+            for (Var key : goalVars) {
+                Var clone = !key.isAnonymous() ? new Var(key.getOriginalName()) : new Var();
                 originals.put(key, clone);
                 resultVars.add(clone);
             }
@@ -208,9 +208,9 @@ public abstract class Term implements Serializable, SubTree {
             return equals(y);
 
 
-        var engine = p;
+        Prolog engine = p;
 
-        var now = Term.now();
+        long now = Term.now();
         resolveTerm(now);
         y.resolveTerm(now);
 
@@ -225,7 +225,7 @@ public abstract class Term implements Serializable, SubTree {
                 //new LinkedHashSet();
                 //new UnifiedSet();
 
-        var ok = unify(v1, v2, y);
+        boolean ok = unify(v1, v2, y);
 
         if (ok) {
 //            ExecutionContext ec = engine.getCurrentContext();
@@ -233,10 +233,10 @@ public abstract class Term implements Serializable, SubTree {
 //                ec.trailingVars = new OneWayList<>(v1, ec.trailingVars);
 //            }
 
-            var count = 0;
-            var env = engine.getEnv();
-            var id = (env == null) ? Var.PROGRESSIVE : env.nDemoSteps;
-            for (var v : v1) {
+            int count = 0;
+            PrologSolve env = engine.getEnv();
+            int id = (env == null) ? Var.PROGRESSIVE : env.nDemoSteps;
+            for (Var v : v1) {
                 v.rename(id, count);
                 if (id >= 0) {
                     id++;
@@ -244,7 +244,7 @@ public abstract class Term implements Serializable, SubTree {
                     count++;
                 }
             }
-            for (var v : v2) {
+            for (Var v : v2) {
                 v.rename(id, count);
                 if (id >= 0) {
                     id++;
@@ -278,7 +278,7 @@ public abstract class Term implements Serializable, SubTree {
      */
     boolean unifiable(Term y) {
 
-        var now = Term.now();
+        long now = Term.now();
         resolveTerm(now);
         y.resolveTerm(now);
         Collection<Var> v1 =
@@ -293,7 +293,7 @@ public abstract class Term implements Serializable, SubTree {
                 //new LinkedHashSet<Var>();
                 //new UnifiedSet(); //<- fails, why
 
-        var ok = unify(v1, v2, y);
+        boolean ok = unify(v1, v2, y);
         Var.free(v1);
         Var.free(v2);
         return ok;

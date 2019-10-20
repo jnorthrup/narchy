@@ -138,7 +138,7 @@ public class KeyboardControl implements KeyListener {
         if (reset) return Actions.map("system_reset");
 
 
-        var bitfield = 0;
+        int bitfield = 0;
         if (left == right) bitfield |= 0;
         else if (left) bitfield |= 0x08;
         else if (right) bitfield |= 0x04;

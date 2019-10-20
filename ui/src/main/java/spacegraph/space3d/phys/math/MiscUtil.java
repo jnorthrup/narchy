@@ -47,7 +47,7 @@ public class MiscUtil {
 	}
 	
 	private static int getListCapacityForHash(int size) {
-		var n = 2;
+		int n = 2;
 		while (n < size) {
 			n <<= 1;
 		}
@@ -68,7 +68,7 @@ public class MiscUtil {
 	 * Resizes list to exact size, filling with given value when expanding.
 	 */
 	public static void resize(IntArrayList list, int size, int value) {
-		var s = list.size();
+		int s = list.size();
 		while (s < size) {
 			list.add(value);
 			s++;
@@ -86,7 +86,7 @@ public class MiscUtil {
 	 * when expanding.
 	 */
 	public static <T> void resizeIntArray(OArrayList<int[]> list, int size, int arrayLen) {
-		var ls = list.size();
+		int ls = list.size();
 			while (ls < size) {
 				list.add(new int[arrayLen]);
 				ls++;
@@ -105,7 +105,7 @@ public class MiscUtil {
 	 */
 	public static <T> void resize(FasterList<T> list, int size, Class<T> valueCls) {
 		try {
-			var ls = list.size();
+			int ls = list.size();
 			while (ls < size) {
 				list.add(valueCls != null? valueCls.getConstructor().newInstance() : null);
 				ls++;
@@ -128,7 +128,12 @@ public class MiscUtil {
 	 * @return first index of match, or -1 when not found
 	 */
 	public static <T> int indexOf(T[] array, T obj) {
-		return IntStream.range(0, array.length).filter(i -> array[i] == obj).findFirst().orElse(-1);
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] == obj) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	private static <T> void downHeap(FasterList<T> pArr, int k, int n, Comparator<T> comparator) {
@@ -136,10 +141,10 @@ public class MiscUtil {
 		/* POST:  a[k..N]  is a heap */
 
 
-		var temp = pArr.get(k - 1);
+		T temp = pArr.get(k - 1);
 		/* k has child(s) */
 		while (k <= n / 2) {
-			var child = 2 * k;
+			int child = 2 * k;
 
             
             
@@ -213,7 +218,7 @@ public class MiscUtil {
 		
 		int i = lo, j = hi;
 
-		var x = list.get((lo + hi) / 2);
+		T x = list.get((lo + hi) / 2);
 
 		
 		do {
@@ -253,7 +258,7 @@ public class MiscUtil {
 		
 		int i = lo, j = hi;
 
-		 var x = list[((lo + hi) / 2)];
+		 int[] x = list[((lo + hi) / 2)];
 
 		
 		do {

@@ -32,7 +32,7 @@ public enum StateBacktrack  { ;
 
         @Override
         State run(PrologSolve e) {
-            var curChoice = e.choicePointSelector.fetch();
+            ChoicePointContext curChoice = e.choicePointSelector.fetch();
 
             if (curChoice == null)
                 return PrologRun.END_FALSE;
@@ -41,17 +41,17 @@ public enum StateBacktrack  { ;
 
 
             e.currentContext = curChoice.executionContext;
-            var curGoal = e.currentContext.goalsToEval.backTo(curChoice.indexSubGoal).term();
+            Term curGoal = e.currentContext.goalsToEval.backTo(curChoice.indexSubGoal).term();
             if (!(curGoal instanceof Struct))
                 return PrologRun.END_FALSE;
 
             e.currentContext.currentGoal = (Struct) curGoal;
 
 
-            var curCtx = e.currentContext;
-            var pointer = curCtx.trailingVars;
-            var stopDeunify = curChoice.varsToDeunify;
-            var varsToDeunify = stopDeunify.head;
+            PrologContext curCtx = e.currentContext;
+            OneWayList<Collection<Var>> pointer = curCtx.trailingVars;
+            OneWayList<Collection<Var>> stopDeunify = curChoice.varsToDeunify;
+            Collection<Var> varsToDeunify = stopDeunify.head;
             Var.free(varsToDeunify);
             varsToDeunify.clear();
 
@@ -65,9 +65,9 @@ public enum StateBacktrack  { ;
                 if (curCtx.fatherCtx == null)
                     break;
                 stopDeunify = curCtx.fatherVarsList;
-                var fatherIndex = curCtx.fatherGoalId;
+                SubGoal fatherIndex = curCtx.fatherGoalId;
 
-                var prevGoal = curGoal;
+                Term prevGoal = curGoal;
                 curCtx = curCtx.fatherCtx;
                 curGoal = curCtx.goalsToEval.backTo(fatherIndex).term();
                 if (!(curGoal instanceof Struct) || prevGoal == curGoal)

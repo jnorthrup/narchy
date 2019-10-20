@@ -24,7 +24,7 @@ public class SaveLoad {
                 return;
             }
 
-            var fileOut = new FileOutputStream("/tmp/MiniCraft.sav");
+            FileOutputStream fileOut = new FileOutputStream("/tmp/MiniCraft.sav");
             ObjectOutput out = new ObjectOutputStream(fileOut);
 
             out.writeObject(game.world);
@@ -43,7 +43,7 @@ public class SaveLoad {
 
         ObjectInputStream in = null;
         try {
-            var f = new File("/tmp/MiniCraft.sav");
+            File f = new File("/tmp/MiniCraft.sav");
             in = new ObjectInputStream(new FileInputStream(f));
         } catch (InvalidClassException ignored) {
             System.err.println("Save file has the wrong version.");

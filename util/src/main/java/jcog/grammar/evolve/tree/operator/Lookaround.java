@@ -30,7 +30,7 @@ public abstract class Lookaround extends UnaryOperator {
 
     @Override
     public boolean isValid() {
-        var child = get(0);
+        Node child = get(0);
         return child.isValid() && !(child instanceof RegexRange || child instanceof Anchor || child instanceof Backreference);
     }
     private int numberQuantifier = 0;

@@ -46,7 +46,7 @@ public class FloatNormalizer implements FloatToFloatFunction {
         if (x != x)
             return Float.NaN;
 
-        var r = max - min;
+        float r = max - min;
         assert (r >= 0);
         if (r <= epsilon)
             return 0.5f;
@@ -68,10 +68,10 @@ public class FloatNormalizer implements FloatToFloatFunction {
 
     FloatNormalizer updateRange(float raw) {
         if (relax > 0) {
-            var range = max - min;
+            float range = max - min;
             if (range > epsilon * 2) {
-                var mid = (max + min) / 2;
-                var rangeSensitized = Util.lerp(relax, range, epsilon * 2); //shrunk
+                float mid = (max + min) / 2;
+                float rangeSensitized = Util.lerp(relax, range, epsilon * 2); //shrunk
                 min(mid - rangeSensitized / 2);
                 max(mid + rangeSensitized / 2);
             }

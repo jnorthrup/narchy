@@ -29,7 +29,7 @@ public class Atom extends AbstractAtomic implements Idempotent {
             throw new UnsupportedOperationException("Empty Atom ID");
 
 
-        var c = id.charAt(0);
+        char c = id.charAt(0);
         switch (c) {
             case '+':
             case '-':
@@ -145,11 +145,16 @@ public class Atom extends AbstractAtomic implements Idempotent {
 
 
     public boolean startsWith(byte... prefix) {
-        var b = bytes();
-        var o = 3; //skip op byte + 2 len bytes
-        var P = prefix.length;
+        byte[] b = bytes();
+        int o = 3; //skip op byte + 2 len bytes
+        int P = prefix.length;
         if (b.length - o >= P) {
-            return IntStream.range(0, P).noneMatch(i -> b[i + o] != prefix[i]);
+            for (int i = 0; i < P; i++) {
+                if (b[i + o] != prefix[i]) {
+                    return false;
+                }
+            }
+            return true;
         }
         return false;
     }

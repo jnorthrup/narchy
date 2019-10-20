@@ -38,7 +38,7 @@ public class medge_t {
     public int cachededgeoffset;
 
     public medge_t(ByteBuffer b) {
-        var v = this.v;
+        int[] v = this.v;
         v[0] = b.getShort() & 0xFFFF;
         v[1] = b.getShort() & 0xFFFF;
     }

@@ -24,9 +24,9 @@ public class ConstantPort<X> extends TypedPort<X> {
 
 
     @Override public void connected(Port other) {
-        var outOnConnect = true;
+        boolean outOnConnect = true;
         if (outOnConnect) {
-            var oi = other.in;
+            In oi = other.in;
             if (oi!=null)
                 oi.accept(null, value);
         }

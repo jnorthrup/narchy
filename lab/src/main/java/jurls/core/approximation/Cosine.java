@@ -19,9 +19,9 @@ public class Cosine implements DiffableFunctionSource {
 
     @Override
     public String partialDeriveToSource(SourceEnvironment se) {
-        var xdv = x.partialDeriveToSource(se);
-        var xvv = x.valueToSource(se);
-        var y = se.allocateVariable();
+        String xdv = x.partialDeriveToSource(se);
+        String xvv = x.valueToSource(se);
+        String y = se.allocateVariable();
         se.append(y).append(" = ").append("-").append(xdv).
                 append(" * Math.sin(").append(xvv).append(");").nl();
         return y;
@@ -29,8 +29,8 @@ public class Cosine implements DiffableFunctionSource {
 
     @Override
     public String valueToSource(SourceEnvironment se) {
-        var xv = x.valueToSource(se);
-        var y = se.allocateVariable();
+        String xv = x.valueToSource(se);
+        String y = se.allocateVariable();
         se.append(y).append(" = ").append("Math.cos(").append(xv).append(");").nl();
         return y;
     }

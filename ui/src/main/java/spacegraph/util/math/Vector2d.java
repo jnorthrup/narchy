@@ -148,7 +148,7 @@ public class Vector2d extends Tuple2d {
     public final void normalize(Vector2d v1)
     {
 
-        var norm = 1.0 / Math.sqrt(v1.x * v1.x + v1.y * v1.y);
+        double norm = 1.0 / Math.sqrt(v1.x * v1.x + v1.y * v1.y);
         this.x = v1.x*norm;
         this.y = v1.y*norm;
     }
@@ -159,7 +159,7 @@ public class Vector2d extends Tuple2d {
     public final void normalize()
     {
 
-        var norm = 1.0 / Math.sqrt(this.x * this.x + this.y * this.y);
+        double norm = 1.0 / Math.sqrt(this.x * this.x + this.y * this.y);
         this.x *= norm;
         this.y *= norm;
     }
@@ -173,7 +173,7 @@ public class Vector2d extends Tuple2d {
     */
    public final double angle(Vector2d v1)
    {
-       var vDot = this.dot(v1) / ( this.length()*v1.length() );
+       double vDot = this.dot(v1) / ( this.length()*v1.length() );
       if( vDot < -1.0) vDot = -1.0;
       if( vDot >  1.0) vDot =  1.0;
       return Math.acos( vDot );

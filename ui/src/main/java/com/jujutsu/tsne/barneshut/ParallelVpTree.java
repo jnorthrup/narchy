@@ -78,9 +78,9 @@ public class ParallelVpTree<StorageType> extends VpTree<StorageType> {
 
 			@Override
 			public TreeSearchResult call() {
-				var heap = new PriorityQueue<HeapItem>(k, (o1, o2) -> -1 * o1.compareTo(o2));
+                PriorityQueue<HeapItem> heap = new PriorityQueue<HeapItem>(k, (o1, o2) -> -1 * o1.compareTo(o2));
 
-				var tau = Double.MAX_VALUE;
+                double tau = Double.MAX_VALUE;
 				
 				node.search(node, target, k, heap, tau);
 
@@ -88,7 +88,7 @@ public class ParallelVpTree<StorageType> extends VpTree<StorageType> {
                 List<Double> distances = new ArrayList<>();
                 List<DataPoint> indices = new ArrayList<>();
                 while(!heap.isEmpty()) {
-					var h = heap.remove();
+                    HeapItem h = heap.remove();
 					indices.add(items[h.index]);
 					distances.add(h.dist);
 				}

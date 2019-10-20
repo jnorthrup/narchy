@@ -145,8 +145,8 @@ public class Cause extends WhenInternal implements Comparable<Cause>, Caused, Pr
 //    }
 
     public final void commit(float[] target) {
-        var n = target.length;
-        for (var i = 0; i < n; i++)
+        int n = target.length;
+        for (int i = 0; i < n; i++)
             target[i] = credit.getAndZero(i);
 //        for (Credit aGoal : credit)
 //            aGoal.commit();

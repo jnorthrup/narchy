@@ -31,6 +31,8 @@ import jake2.qcommon.Com;
 import jake2.qcommon.Cvar;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import java.util.stream.IntStream;
 
@@ -102,7 +104,7 @@ public class S {
 	private static void useDriver(String driverName) {
 		Sound driver = null;
 //		int count = drivers.size();
-		for (var driver1 : drivers) {
+		for (Object driver1 : drivers) {
 			driver = (Sound) driver1;
 			if (driver.getName().equals(driverName)) {
 				impl = driver;
@@ -120,7 +122,7 @@ public class S {
 		
 		Com.Printf("\n------- sound initialization -------\n");
 
-		var cv = Cvar.Get("s_initsound", "1", 0);
+		cvar_t cv = Cvar.Get("s_initsound", "1", 0);
 		if (cv.value == 0.0f) {
 			Com.Printf("not initializing.\n");
 			useDriver("dummy");
@@ -128,7 +130,7 @@ public class S {
 		}
 
 
-		var defaultDriver = "dummy";
+		String defaultDriver = "dummy";
 		if (drivers.size() > 1){
 			defaultDriver = ((Sound)drivers.lastElement()).getName();
 		}
@@ -226,8 +228,13 @@ public class S {
 	 * Returns a string array containing all sound driver names.
 	 */
 	public static String[] getDriverNames() {
-		var bound = drivers.size();
-		var names = IntStream.range(0, bound).mapToObj(i -> ((Sound) drivers.get(i)).getName()).toArray(String[]::new);
+		int bound = drivers.size();
+		List<String> list = new ArrayList<>();
+		for (int i = 0; i < bound; i++) {
+			String name = ((Sound) drivers.get(i)).getName();
+			list.add(name);
+		}
+		String[] names = list.toArray(new String[0]);
         return names;
 	}
 	

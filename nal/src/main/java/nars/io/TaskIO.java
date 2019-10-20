@@ -23,25 +23,25 @@ public enum TaskIO {
 
     public static Task readTask(DataInput in) throws IOException {
 
-        var punc = in.readByte();
+        byte punc = in.readByte();
 
-        var preterm = TermIO.the.read(in);
+        Term preterm = TermIO.the.read(in);
 
-        var term = preterm.normalize();
+        Term term = preterm.normalize();
         if (term == null)
             throw new IOException("un-normalizable task target");
 
         if (punc != COMMAND) {
-            var truth = hasTruth(punc) ? readTruth(in) : null;
+            Truth truth = hasTruth(punc) ? readTruth(in) : null;
 
-            var start = in.readLong();
-            var end = in.readLong();
+            long start = in.readLong();
+            long end = in.readLong();
 
-            var evi = readEvidence(in);
+            long[] evi = readEvidence(in);
 
-            var pri = in.readFloat();
+            float pri = in.readFloat();
 
-            var cre = in.readLong();
+            long cre = in.readLong();
 
 			return ((Task) NALTask.the(term, punc, truth, cre, start, end, evi)).pri(pri);
 		} else {
@@ -51,8 +51,8 @@ public enum TaskIO {
 
     private static long[] readEvidence(DataInput in) throws IOException {
         int eviLength = in.readByte();
-        var evi = new long[eviLength];
-        for (var i = 0; i < eviLength; i++) {
+        long[] evi = new long[eviLength];
+        for (int i = 0; i < eviLength; i++) {
             evi[i] = in.readLong();
         }
         return evi;
@@ -76,7 +76,7 @@ public enum TaskIO {
 	static void write(Task t, ByteArrayDataOutput out, boolean budget, boolean creation)  {
 
 
-        var p = t.punc();
+        byte p = t.punc();
 		out.writeByte(p);
 
 

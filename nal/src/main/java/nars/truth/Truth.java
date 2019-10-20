@@ -71,8 +71,8 @@ public interface Truth extends Truthed {
         if (!Float.isFinite(conf) || conf < 0)
             throw new TruthException("invalid conf", conf);
 
-        var freqHash = Util.toInt(freq, freqDisc);
-        var confHash = Util.toInt(Math.min(NAL.truth.CONF_MAX, conf), confDisc);
+        int freqHash = Util.toInt(freq, freqDisc);
+        int confHash = Util.toInt(Math.min(NAL.truth.CONF_MAX, conf), confDisc);
         return (freqHash << 16) | confHash;
     }
     static int truthToInt(double freq, short freqDisc, double conf, short confDisc) {
@@ -83,8 +83,8 @@ public interface Truth extends Truthed {
         if (!Double.isFinite(conf) || conf < 0)
             throw new TruthException("invalid conf", conf);
 
-        var freqHash = (int) Util.toInt(freq, freqDisc);
-        var confHash = (int) Util.toInt(Math.min(NAL.truth.CONF_MAX, conf), confDisc);
+        int freqHash = (int) Util.toInt(freq, freqDisc);
+        int confHash = (int) Util.toInt(Math.min(NAL.truth.CONF_MAX, conf), confDisc);
         return (freqHash << 16) | confHash;
     }
 
@@ -234,8 +234,8 @@ public interface Truth extends Truthed {
     }
 
     static Truth read(DataInput in) throws IOException {
-        var f = in.readFloat();
-        var c = in.readFloat();
+        float f = in.readFloat();
+        float c = in.readFloat();
         return PreciseTruth.byConf(f, c);
     }
 
@@ -287,29 +287,29 @@ public interface Truth extends Truthed {
         if (freqRes <= NAL.truth.TRUTH_EPSILON && confRes <= NAL.truth.TRUTH_EPSILON)
             return this;
 
-        var f = freq();
-        var ff = freqSafe(f, freqRes);
-        var c = conf();
-        var cc = confSafe(c, confRes);
+        float f = freq();
+        float ff = freqSafe(f, freqRes);
+        float c = conf();
+        double cc = confSafe(c, confRes);
 		//return PreciseTruth.byConf(ff, cc);
 		return Util.equals(f, ff, NAL.truth.TRUTH_EPSILON) && Util.equals(c, cc, NAL.truth.TRUTH_EPSILON) ? this : PreciseTruth.byConfEvi(ff, cc, evi() /* include extra precision */);
     }
 
     static Truth dither(Truth in, double eviMin, boolean negate, NAL nar) {
-        var e = in.evi();
+        double e = in.evi();
         if (e < eviMin)
             return null;
 
-        var freqRes = nar.freqResolution.floatValue();
-        var confRes = nar.confResolution.floatValue();
+        float freqRes = nar.freqResolution.floatValue();
+        float confRes = nar.confResolution.floatValue();
 
         if (!negate && freqRes < NAL.truth.TRUTH_EPSILON && confRes < NAL.truth.TRUTH_EPSILON)
             return in;
 
-        var fBefore = in.freq();
-        var fAfter = freq(negate ? 1-fBefore : fBefore, freqRes);
-        var cBefore = w2cSafeDouble(e);
-        var cAfter = conf(cBefore, confRes);
+        float fBefore = in.freq();
+        float fAfter = freq(negate ? 1-fBefore : fBefore, freqRes);
+        double cBefore = w2cSafeDouble(e);
+        double cAfter = conf(cBefore, confRes);
 		return (!(in instanceof MutableTruth)) && (Util.equals(fBefore, fAfter, NAL.truth.TRUTH_EPSILON) && Util.equals(cBefore, cAfter, NAL.truth.EVI_MIN)) ? in : PreciseTruth.byConfEvi(fAfter, cAfter, e /* extra precision */);
     }
 
@@ -317,12 +317,12 @@ public interface Truth extends Truthed {
 
 
     default Truth eternalized(double confFactor, double eviMin, @Nullable NAL n) {
-        var c = confFactor * w2cSafe(eviEternalized());
-        var e = c2wSafe(c);
+        double c = confFactor * w2cSafe(eviEternalized());
+        double e = c2wSafe(c);
         if (e < eviMin)
             return null;
 
-        var f = freq();
+        float f = freq();
 		return n != null ? Truth.theDithered(f, e, n) : PreciseTruth.byEvi(f, e);
     }
 

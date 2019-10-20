@@ -21,24 +21,24 @@ public class Diffusion extends Material {
     public v2[] focee(v2 startPoint, v2 vektor) {
 
 
-        var ln = vektor.length();
-        var t = new Transform();
+        float ln = vektor.length();
+        Transform t = new Transform();
         t.set(startPoint, 0);
         t.c = vektor.y / ln;
         t.s = vektor.x / ln;
 
-        final var count = 128;
-        var va = new v2[count];
+        final int count = 128;
+        v2[] va = new v2[count];
         double c = 4;
-        for (var i = 1; i <= count; i++) {
+        for (int i = 1; i <= count; i++) {
 
-            var a = r.nextFloat() * 2 * Math.PI;
-            var d = -Math.log(r.nextFloat()) * m_shattering;
+            double a = r.nextFloat() * 2 * Math.PI;
+            double d = -Math.log(r.nextFloat()) * m_shattering;
 
-            var x = Math.sin(a) * d;
-            var y = Math.cos(a) * d * c;
+            double x = Math.sin(a) * d;
+            double y = Math.cos(a) * d * c;
 
-            var v = new v2((float) x, (float) y);
+            v2 v = new v2((float) x, (float) y);
 
             va[i - 1] = Transform.mul(t, v);
         }

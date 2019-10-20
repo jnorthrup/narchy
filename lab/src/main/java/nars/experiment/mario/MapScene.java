@@ -81,39 +81,39 @@ public class MapScene extends Scene {
 
     private boolean generateLevel() {
         random = new Random(seed);
-        var n0 = new ImprovedNoise(random.nextLong());
-        var n1 = new ImprovedNoise(random.nextLong());
-        var dec = new ImprovedNoise(random.nextLong());
+        ImprovedNoise n0 = new ImprovedNoise(random.nextLong());
+        ImprovedNoise n1 = new ImprovedNoise(random.nextLong());
+        ImprovedNoise dec = new ImprovedNoise(random.nextLong());
 
-        var width = 320 / 16 + 1;
-        var height = 240 / 16 + 1;
+        int width = 320 / 16 + 1;
+        int height = 240 / 16 + 1;
         level = new int[width][height];
         data = new int[width][height];
-        var xo0 = random.nextDouble() * 512;
-        var yo0 = random.nextDouble() * 512;
-        var xo1 = random.nextDouble() * 512;
-        var yo1 = random.nextDouble() * 512;
-        for (var x = 0; x < width; x++) {
-            for (var y = 0; y < height; y++) {
-                var xd = ((x + 1) / (double) width - 0.5) * 2;
-                var yd = ((y + 1) / (double) height - 0.5) * 2;
+        double xo0 = random.nextDouble() * 512;
+        double yo0 = random.nextDouble() * 512;
+        double xo1 = random.nextDouble() * 512;
+        double yo1 = random.nextDouble() * 512;
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                double xd = ((x + 1) / (double) width - 0.5) * 2;
+                double yd = ((y + 1) / (double) height - 0.5) * 2;
                 @SuppressWarnings("unused")
-                var d = Math.sqrt(xd * xd + yd * yd) * 2;
+                double d = Math.sqrt(xd * xd + yd * yd) * 2;
                 if (x == 0 || y == 0 || x >= width - 3 || y >= height - 3) d = 100;
-                var t0 = n0.perlinNoise(x * 10.0 + xo0, y * 10.0 + yo0);
-                var t1 = n1.perlinNoise(x * 10.0 + xo1, y * 10.0 + yo1);
-                var td = (t0 - t1);
-                var t = (td * 2);
+                double t0 = n0.perlinNoise(x * 10.0 + xo0, y * 10.0 + yo0);
+                double t1 = n1.perlinNoise(x * 10.0 + xo1, y * 10.0 + yo1);
+                double td = (t0 - t1);
+                double t = (td * 2);
                 level[x][y] = t > 0 ? TILE_WATER : TILE_GRASS;
             }
         }
 
-        var lowestX = 9999;
-        var lowestY = 9999;
-        var t = 0;
-        for (var i = 0; i < 100 && t < 12; i++) {
-            var x = random.nextInt((width - 1) / 3) * 3 + 2;
-            var y = random.nextInt((height - 1) / 3) * 3 + 1;
+        int lowestX = 9999;
+        int lowestY = 9999;
+        int t = 0;
+        for (int i = 0; i < 100 && t < 12; i++) {
+            int x = random.nextInt((width - 1) / 3) * 3 + 2;
+            int y = random.nextInt((height - 1) / 3) * 3 + 1;
             if (level[x][y] == TILE_GRASS) {
                 if (x < lowestX) {
                     lowestX = x;
@@ -138,10 +138,10 @@ public class MapScene extends Scene {
         data[xMario / 16][yMario / 16] = -11;
 
 
-        for (var x = 0; x < width; x++) {
-            for (var y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 if (level[x][y] == TILE_GRASS && (x != xFarthestCap || y != yFarthestCap - 1)) {
-                    var t0 = dec.perlinNoise(x * 10.0 + xo0, y * 10.0 + yo0);
+                    double t0 = dec.perlinNoise(x * 10.0 + xo0, y * 10.0 + yo0);
                     if (t0 > 0) level[x][y] = TILE_DECORATION;
                 }
             }
@@ -183,15 +183,15 @@ public class MapScene extends Scene {
     }
 
     private void findCaps(int width, int height) {
-        var xCap = -1;
-        var yCap = -1;
+        int xCap = -1;
+        int yCap = -1;
 
-        for (var x = 0; x < width; x++) {
-            for (var y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 if (level[x][y] == TILE_LEVEL) {
-                    var roads = 0;
-                    for (var xx = x - 1; xx <= x + 1; xx++)
-                        for (var yy = y - 1; yy <= y + 1; yy++) {
+                    int roads = 0;
+                    for (int xx = x - 1; xx <= x + 1; xx++)
+                        for (int yy = y - 1; yy <= y + 1; yy++) {
                             if (level[xx][yy] == TILE_ROAD) roads++;
                         }
 
@@ -215,8 +215,8 @@ public class MapScene extends Scene {
     }
 
     private boolean findConnection(int width, int height) {
-        for (var x = 0; x < width; x++) {
-            for (var y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 if (level[x][y] == TILE_LEVEL && data[x][y] == -1) {
                     connect(x, y, width, height);
                     return true;
@@ -227,15 +227,15 @@ public class MapScene extends Scene {
     }
 
     private void connect(int xSource, int ySource, int width, int height) {
-        var maxDist = 10000;
-        var xTarget = 0;
-        var yTarget = 0;
-        for (var x = 0; x < width; x++) {
-            for (var y = 0; y < height; y++) {
+        int maxDist = 10000;
+        int xTarget = 0;
+        int yTarget = 0;
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 if (level[x][y] == TILE_LEVEL && data[x][y] == -2) {
-                    var xd = Math.abs(xSource - x);
-                    var yd = Math.abs(ySource - y);
-                    var d = xd * xd + yd * yd;
+                    int xd = Math.abs(xSource - x);
+                    int yd = Math.abs(ySource - y);
+                    int d = xd * xd + yd * yd;
                     if (d < maxDist) {
                         xTarget = x;
                         yTarget = y;
@@ -252,7 +252,7 @@ public class MapScene extends Scene {
     }
 
     private void drawRoad(int x0, int y0, int x1, int y1) {
-        var xFirst = random.nextBoolean();
+        boolean xFirst = random.nextBoolean();
 
         if (xFirst) {
             while (x0 > x1) {
@@ -285,14 +285,14 @@ public class MapScene extends Scene {
     }
 
     public void renderStatic(Graphics g) {
-        var map = Art.map;
+        Image[][] map = Art.map;
 
-        for (var x = 0; x < 320 / 16; x++) {
-            for (var y = 0; y < 240 / 16; y++) {
+        for (int x = 0; x < 320 / 16; x++) {
+            for (int y = 0; y < 240 / 16; y++) {
                 g.drawImage(map[worldNumber / 4][0], x * 16, y * 16, null);
                 switch (level[x][y]) {
                     case TILE_LEVEL:
-                        var type = data[x][y];
+                        int type = data[x][y];
                         switch (type) {
                             case 0:
                                 g.drawImage(map[0][7], x * 16, y * 16, null);
@@ -319,23 +319,23 @@ public class MapScene extends Scene {
                         }
                         break;
                     case TILE_ROAD: {
-                       var  p0 = isRoad(x - 1, y) ? 1 : 0;
-                       var  p1 = isRoad(x, y - 1) ? 1 : 0;
-                       var  p2 = isRoad(x + 1, y) ? 1 : 0;
-                       var  p3 = isRoad(x, y + 1) ? 1 : 0;
-                       var  s = p0 + p1 * 2 + p2 * 4 + p3 * 8;
+                        int p0 = isRoad(x - 1, y) ? 1 : 0;
+                        int p1 = isRoad(x, y - 1) ? 1 : 0;
+                        int p2 = isRoad(x + 1, y) ? 1 : 0;
+                        int p3 = isRoad(x, y + 1) ? 1 : 0;
+                        int s = p0 + p1 * 2 + p2 * 4 + p3 * 8;
                         g.drawImage(map[s][2], x * 16, y * 16, null);
                     }
                     break;
                     case TILE_WATER:
-                        for (var xx = 0; xx < 2; xx++) {
-                            var x2 = x * 2;
-                            for (var yy = 0; yy < 2; yy++) {
-                                var p0 = isWater(x2 + (xx - 1), y * 2 + (yy - 1)) ? 0 : 1;
-                              var p1 = isWater(x2 + (xx + 0), y * 2 + (yy - 1)) ? 0 : 1;
-                              var p2 = isWater(x2 + (xx - 1), y * 2 + (yy + 0)) ? 0 : 1;
-                              var p3 = isWater(x2 + (xx + 0), y * 2 + (yy + 0)) ? 0 : 1;
-                              var s = p0 + p1 * 2 + p2 * 4 + p3 * 8 - 1;
+                        for (int xx = 0; xx < 2; xx++) {
+                            int x2 = x * 2;
+                            for (int yy = 0; yy < 2; yy++) {
+                                int p0 = isWater(x2 + (xx - 1), y * 2 + (yy - 1)) ? 0 : 1;
+                                int p1 = isWater(x2 + (xx + 0), y * 2 + (yy - 1)) ? 0 : 1;
+                                int p2 = isWater(x2 + (xx - 1), y * 2 + (yy + 0)) ? 0 : 1;
+                                int p3 = isWater(x2 + (xx + 0), y * 2 + (yy + 0)) ? 0 : 1;
+                                int s = p0 + p1 * 2 + p2 * 4 + p3 * 8 - 1;
                                 if (s >= 0 && s < 14) {
                                     g.drawImage(map[s][4 + ((xx + yy) & 1)], x * 16 + xx * 8, y * 16 + yy * 8, null);
                                 }
@@ -352,10 +352,10 @@ public class MapScene extends Scene {
     @Override
     public void render(Graphics g, float alpha) {
         g.drawImage(staticBg, 0, 0, null);
-        var map = Art.map;
+        Image[][] map = Art.map;
 
-        for (var y = 0; y <= 240 / 16; y++) {
-            for (var x = 320 / 16; x >= 0; x--) {
+        for (int y = 0; y <= 240 / 16; y++) {
+            for (int x = 320 / 16; x >= 0; x--) {
                 if (level[x][y] == TILE_WATER) {
                     if (isWater(x * 2 - 1, y * 2 - 1)) {
                         g.drawImage(map[15][4 + (tick / 6 + y) % 4], x * 16 - 8, y * 16 - 8, null);
@@ -391,8 +391,8 @@ public class MapScene extends Scene {
     }
 
     private static void drawString(Graphics g, String text, int x, int y, int c) {
-        var ch = text.toCharArray();
-        for (var i = 0; i < ch.length; i++) {
+        char[] ch = text.toCharArray();
+        for (int i = 0; i < ch.length; i++) {
             g.drawImage(Art.font[ch[i] - 32][c], x + i * 8, y, null);
         }
     }
@@ -408,8 +408,8 @@ public class MapScene extends Scene {
         if (x < 0) x = 0;
         if (y < 0) y = 0;
 
-        for (var xx = 0; xx < 2; xx++) {
-            for (var yy = 0; yy < 2; yy++) {
+        for (int xx = 0; xx < 2; xx++) {
+            for (int yy = 0; yy < 2; yy++) {
                 if (level[(x + xx) / 2][(y + yy) / 2] != TILE_WATER) return false;
             }
         }
@@ -424,8 +424,8 @@ public class MapScene extends Scene {
         xMario += xMarioA;
         yMario += yMarioA;
         tick++;
-        var x = xMario / 16;
-        var y = yMario / 16;
+        int x = xMario / 16;
+        int y = yMario / 16;
         if (level[x][y] == TILE_ROAD) {
             data[x][y] = 0;
         }
@@ -440,8 +440,8 @@ public class MapScene extends Scene {
                 } else {
                     if (level[x][y] == TILE_LEVEL && data[x][y] != 0 && data[x][y] > -10) {
                         Mario.levelString = (worldNumber + 1) + "-";
-                        var difficulty = worldNumber + 1;
-                        var type = LevelGenerator.TYPE_OVERGROUND;
+                        int difficulty = worldNumber + 1;
+                        int type = LevelGenerator.TYPE_OVERGROUND;
                         if (data[x][y] > 1 && new Random(seed + x * 313211 + y * 534321).nextInt(3) == 0) {
                             type = LevelGenerator.TYPE_UNDERGROUND;
                         }
@@ -492,10 +492,10 @@ public class MapScene extends Scene {
     }
 
     public void tryWalking(int xd, int yd) {
-        var x = xMario / 16;
-        var y = yMario / 16;
-        var xt = xMario / 16 + xd;
-        var yt = yMario / 16 + yd;
+        int x = xMario / 16;
+        int y = yMario / 16;
+        int xt = xMario / 16 + xd;
+        int yt = yMario / 16 + yd;
 
         if (level[xt][yt] == TILE_ROAD || level[xt][yt] == TILE_LEVEL) {
             if (level[xt][yt] == TILE_ROAD) {
@@ -508,7 +508,7 @@ public class MapScene extends Scene {
     }
 
     private int calcDistance(int x, int y, int xa, int ya) {
-        var distance = 0;
+        int distance = 0;
         while (true) {
             x += xa;
             y += ya;
@@ -530,8 +530,8 @@ public class MapScene extends Scene {
     }
 
     public void levelWon() {
-        var x = xMario / 16;
-        var y = yMario / 16;
+        int x = xMario / 16;
+        int y = yMario / 16;
         if (data[x][y] == -2) {
             nextWorld();
             return;

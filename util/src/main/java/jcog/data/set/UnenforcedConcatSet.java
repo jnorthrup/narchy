@@ -75,8 +75,8 @@ public class UnenforcedConcatSet<X> extends AbstractSet<X> {
     /** if a or b are null, they are considered empty sets */
     public static <X> Set<X> concat(@Nullable Set<X> a, @Nullable Set<X> b) {
         Set<X> nextFree;
-        var aEmpty = a == null || a.isEmpty();
-        var bEmpty = b == null || b.isEmpty();
+        boolean aEmpty = a == null || a.isEmpty();
+        boolean bEmpty = b == null || b.isEmpty();
         if (bEmpty && aEmpty) {
             nextFree = Collections.emptySet();
         } else if (bEmpty) {

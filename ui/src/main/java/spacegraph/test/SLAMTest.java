@@ -129,7 +129,7 @@ public class SLAMTest extends JPanel {
         detDesc = FactoryDetectDescribe.surfStable(new ConfigFastHessian(
                 0, 4, 1000, 1, 9, 4, 2), null, null, GrayU8.class);
 
-        for (var i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) {
             locations[i] = new FastQueue<>(Point2D_F64.class, true);
             features[i] = UtilFeature.createQueue(detDesc, 2048);
             dimensions[i] = new ImageDimension();
@@ -170,18 +170,18 @@ public class SLAMTest extends JPanel {
 //        examples.add(createExample("turkey"));
 
 //        SwingUtilities.invokeLater(()->{
-        var wc = WebCam.the();
+        WebCam wc = WebCam.the();
 
-        var app = new SLAMTest();
+        SLAMTest app = new SLAMTest();
 
-        var jf = new JFrame("");
+        JFrame jf = new JFrame("");
         jf.setContentPane(app);
         jf.setSize(1500, 1500);
         jf.setVisible(true);
 //        jf.pack();
 
-        var guiPointCloud = VisualizeData.createPointCloudViewer();
-        var pcv = guiPointCloud;
+        PointCloudViewer guiPointCloud = VisualizeData.createPointCloudViewer();
+        PointCloudViewer pcv = guiPointCloud;
 
         //pcv.getComponent().setPreferredSize(new Dimension(left.getWidth(), left.getHeight()));
 
@@ -189,13 +189,13 @@ public class SLAMTest extends JPanel {
 //        controls.setViews(4);
 //        });
 
-        var j = new JFrame();
+        JFrame j = new JFrame();
         j.setSize(800, 600);
         j.getContentPane().add(guiPointCloud.getComponent());
         j.setVisible(true);
 
         Runnable[] running = {null};
-        var frames = new MetalConcurrentQueue<BufferedImage>(4);
+        MetalConcurrentQueue<BufferedImage> frames = new MetalConcurrentQueue<BufferedImage>(4);
         wc.tensor.on((r) -> {
             if (r.img == null)
                 return;
@@ -206,19 +206,19 @@ public class SLAMTest extends JPanel {
 
             synchronized (app) {
                 if (running[0] == null && frames.size() > 2) {
-                    var a = frames.last();
-                    var b = frames.last(1);
+                    BufferedImage a = frames.last();
+                    BufferedImage b = frames.last(1);
                     assert (a != b);
-                    var c = frames.last(2);
+                    BufferedImage c = frames.last(2);
                     assert (b != c);
                     assert (a != c);
 
                     running[0] = () -> {
                         try {
-                            var disparityD2c = app.processImage(ImageType.single(ImageDataType.U8), 0, a, b, c);
+                            Pair<GrayF32, DisparityToColorPointCloud> disparityD2c = app.processImage(ImageType.single(ImageDataType.U8), 0, a, b, c);
                             if (disparityD2c!=null) {
-                                var d2c = disparityD2c.getTwo();
-                                var d = disparityD2c.getOne();
+                                DisparityToColorPointCloud d2c = disparityD2c.getTwo();
+                                GrayF32 d = disparityD2c.getOne();
                                 pcv.setCameraHFov(PerspectiveOps.computeHFov(PerspectiveOps.matrixToPinhole(
                                         app.rectifiedK, d.width, d.height, null)));
                                 pcv.setCameraToWorld(new Se3_F64());
@@ -345,7 +345,7 @@ public class SLAMTest extends JPanel {
 
     void setImage(int sourceID, long frameID, BufferedImage bufferedIn, ImageType type) {
 
-        var buffered = scaleBuffered(bufferedIn);
+        BufferedImage buffered = scaleBuffered(bufferedIn);
 
 //        if (sourceID == 0) {
 //            BoofSwingUtil.invokeNowOrLater(()->{
@@ -355,7 +355,7 @@ public class SLAMTest extends JPanel {
 //        }
 
         // ok this is ugly.... find a way to not convert the image twice
-        var input = ConvertBufferedImage.convertFrom(buffered, true, type);
+        ImageBase input = ConvertBufferedImage.convertFrom(buffered, true, type);
 //        System.out.println("Processing image "+sourceID+"  shape "+input.width+" "+input.height);
 //        System.out.println("  "+inputFilePath);
         dimensions[sourceID].set(input.width, input.height);
@@ -371,8 +371,8 @@ public class SLAMTest extends JPanel {
         features[sourceID].reset();
 
         // save results
-        for (var i = 0; i < detDesc.getNumberOfFeatures(); i++) {
-            var pixel = detDesc.getLocation(i);
+        for (int i = 0; i < detDesc.getNumberOfFeatures(); i++) {
+            Point2D_F64 pixel = detDesc.getLocation(i);
             locations[sourceID].grow().set(pixel.x - cx, pixel.y - cy);
             features[sourceID].grow().setTo(detDesc.getDescription(i));
         }
@@ -385,18 +385,18 @@ public class SLAMTest extends JPanel {
      * Scale buffered image so that it meets the image size restrictions
      */
     private BufferedImage scaleBuffered(BufferedImage input) {
-        var m = Math.max(input.getWidth(), input.getHeight());
+        int m = Math.max(input.getWidth(), input.getHeight());
         if (m <= controls.maxImageSize)
             return input;
         else {
-            var scale = controls.maxImageSize / (double) m;
-            var w = (int) (scale * input.getWidth() + 0.5);
-            var h = (int) (scale * input.getHeight() + 0.5);
+            double scale = controls.maxImageSize / (double) m;
+            int w = (int) (scale * input.getWidth() + 0.5);
+            int h = (int) (scale * input.getHeight() + 0.5);
 
             // Use BoofCV to down sample since Graphics2D introduced too many aliasing artifacts
-            var output = new BufferedImage(w, h, TYPE_INT_RGB);
-            var a = new Planar<GrayU8>(GrayU8.class, input.getWidth(), input.getHeight(), 3);
-            var b = new Planar<GrayU8>(GrayU8.class, w, h, 3);
+            BufferedImage output = new BufferedImage(w, h, TYPE_INT_RGB);
+            Planar<GrayU8> a = new Planar<GrayU8>(GrayU8.class, input.getWidth(), input.getHeight(), 3);
+            Planar<GrayU8> b = new Planar<GrayU8>(GrayU8.class, w, h, 3);
             ConvertBufferedImage.convertFrom(input, a, true);
             AverageDownSampleOps.down(a, b);
             ConvertBufferedImage.convertTo(b, output, true);
@@ -407,8 +407,8 @@ public class SLAMTest extends JPanel {
     private Pair<GrayF32, DisparityToColorPointCloud> processImages(boolean skipAssociate, boolean skipStructure) {
 
 
-        var width = buff[0].getWidth();
-        var height = buff[0].getHeight();
+        int width = buff[0].getWidth();
+        int height = buff[0].getHeight();
 
 ////        SwingUtilities.invokeLater(()->{
 //            controls.disableComputeButton();
@@ -416,7 +416,7 @@ public class SLAMTest extends JPanel {
 //            controls.addText(width+" x "+height+"\n");
 ////        });
 
-        var time0 = System.currentTimeMillis();
+        long time0 = System.currentTimeMillis();
 
         double cx = width / 2;
         double cy = height / 2;
@@ -428,16 +428,16 @@ public class SLAMTest extends JPanel {
             associateThree.setFeaturesC(features[2]);
             associateThree.associate();
 
-            var associatedIdx = associateThree.getMatches();
+            FastQueue<AssociatedTripleIndex> associatedIdx = associateThree.getMatches();
             associated.reset();
-            for (var i = 0; i < associatedIdx.size; i++) {
-                var p = associatedIdx.get(i);
+            for (int i = 0; i < associatedIdx.size; i++) {
+                AssociatedTripleIndex p = associatedIdx.get(i);
                 associated.grow().set(locations[0].get(p.a), locations[1].get(p.b), locations[2].get(p.c));
             }
 
             // Show work in progress and items are computed
 //            BoofSwingUtil.invokeNowOrLater(() -> {
-            for (var i = 0; i < 3; i++) {
+            for (int i = 0; i < 3; i++) {
                 controls.addText(String.format("Feats[%d] %d\n", i, features[i].size));
             }
             controls.addText("Associated " + associated.size + "\n");
@@ -465,12 +465,12 @@ public class SLAMTest extends JPanel {
             }
 
 //            SwingUtilities.invokeLater(()->{
-            var n = structureEstimator.ransac.getMatchSet().size();
-            var score = structureEstimator.bundleAdjustment.getFitScore();
-            var numObs = structureEstimator.observations.getObservationCount();
-            var numPoints = structureEstimator.structure.points.size();
+            int n = structureEstimator.ransac.getMatchSet().size();
+            double score = structureEstimator.bundleAdjustment.getFitScore();
+            int numObs = structureEstimator.observations.getObservationCount();
+            int numPoints = structureEstimator.structure.points.size();
             controls.addText(String.format("Tri Feats %d\n", n));
-            for (var i = 0; i < 3; i++) {
+            for (int i = 0; i < 3; i++) {
                 BundlePinholeSimplified c = structureEstimator.structure.cameras.get(i).getModel();
                 controls.addText(String.format("cam[%d] f=%.1f\n", i, c.f));
                 controls.addText(String.format("   k1=%.2f k2=%.2f\n", c.k1, c.k2));
@@ -481,7 +481,7 @@ public class SLAMTest extends JPanel {
         }
 
         // Pick the two best views to compute stereo from
-        var selected = selectBestPair(structureEstimator.structure);
+        int[] selected = selectBestPair(structureEstimator.structure);
         if (selected == null)
             return null;
 
@@ -490,7 +490,7 @@ public class SLAMTest extends JPanel {
 
     private Pair<GrayF32, DisparityToColorPointCloud> computeStereoCloud(int view0, int view1, double cx, double cy) {
         System.out.println("Computing rectification: views " + view0 + " " + view1);
-        var structure = structureEstimator.getStructure();
+        SceneStructureMetric structure = structureEstimator.getStructure();
 
         BundlePinholeSimplified cp = structure.getCameras().get(view0).getModel();
         intrinsic01 = new CameraPinholeBrown();
@@ -502,20 +502,20 @@ public class SLAMTest extends JPanel {
         intrinsic02.fsetK(cp.f, cp.f, 0, cx, cy, dimensions[view1].width, dimensions[view1].height);
         intrinsic02.fsetRadial(cp.k1, cp.k2);
 
-        var w_to_0 = structure.views.get(view0).worldToView;
-        var w_to_1 = structure.views.get(view1).worldToView;
+        Se3_F64 w_to_0 = structure.views.get(view0).worldToView;
+        Se3_F64 w_to_1 = structure.views.get(view1).worldToView;
 
         leftToRight = w_to_0.invert(null).concat(w_to_1, null);
 
-        var color1 = new Planar<GrayU8>(GrayU8.class, dimensions[view0].width, dimensions[view0].height, 3);
-        var color2 = new Planar<GrayU8>(GrayU8.class, dimensions[view1].width, dimensions[view1].height, 3);
+        Planar<GrayU8> color1 = new Planar<GrayU8>(GrayU8.class, dimensions[view0].width, dimensions[view0].height, 3);
+        Planar<GrayU8> color2 = new Planar<GrayU8>(GrayU8.class, dimensions[view1].width, dimensions[view1].height, 3);
         ConvertBufferedImage.convertFrom(buff[view0], color1, true);
         ConvertBufferedImage.convertFrom(buff[view1], color2, true);
 
         // rectify a colored image
-        var rectColor1 = new Planar<GrayU8>(GrayU8.class, color1.width, color1.height, 3);
-        var rectColor2 = new Planar<GrayU8>(GrayU8.class, color2.width, color2.height, 3);
-        var rectMask = new GrayU8(color1.width, color1.height);
+        Planar<GrayU8> rectColor1 = new Planar<GrayU8>(GrayU8.class, color1.width, color1.height, 3);
+        Planar<GrayU8> rectColor2 = new Planar<GrayU8>(GrayU8.class, color2.width, color2.height, 3);
+        GrayU8 rectMask = new GrayU8(color1.width, color1.height);
 
         rectifyImages(color1, color2, leftToRight, intrinsic01, intrinsic02,
                 rectColor1, rectColor2, rectMask, rectifiedK, rectifiedR);
@@ -537,7 +537,7 @@ public class SLAMTest extends JPanel {
         }
 
         System.out.println("Computing disparity. min=" + controls.minDisparity + " max=" + controls.maxDisparity);
-        var disparity = computeDisparity(rectColor1, rectColor2);
+        GrayF32 disparity = computeDisparity(rectColor1, rectColor2);
 
         // remove annoying false points
         RectifyImageOps.applyMask(disparity, rectMask, 0);
@@ -561,27 +561,27 @@ public class SLAMTest extends JPanel {
      * z-axis
      */
     private static int[] selectBestPair(SceneStructureMetric structure) {
-        var w0 = structure.views.get(0);
-        var w1 = structure.views.size() > 1 ? structure.views.get(1) : null;
-        var w2 = structure.views.size() > 2 ? structure.views.get(2) : null;
+        SceneStructureMetric.View w0 = structure.views.get(0);
+        SceneStructureMetric.View w1 = structure.views.size() > 1 ? structure.views.get(1) : null;
+        SceneStructureMetric.View w2 = structure.views.size() > 2 ? structure.views.get(2) : null;
         if (w0 == null)
             w0 = ThreadLocalRandom.current().nextBoolean() ? w1 : w2;
         if (w1 == null)
             w1 = w2;
-        var w_to_0 = w0.worldToView;
-        var w_to_1 = w1.worldToView;
-        var w_to_2 = w2.worldToView;
+        Se3_F64 w_to_0 = w0.worldToView;
+        Se3_F64 w_to_1 = w1.worldToView;
+        Se3_F64 w_to_2 = w2.worldToView;
 
-        var view0_to_1 = w_to_0.invert(null).concat(w_to_1, null);
-        var view0_to_2 = w_to_0.invert(null).concat(w_to_2, null);
-        var view1_to_2 = w_to_1.invert(null).concat(w_to_2, null);
+        Se3_F64 view0_to_1 = w_to_0.invert(null).concat(w_to_1, null);
+        Se3_F64 view0_to_2 = w_to_0.invert(null).concat(w_to_2, null);
+        Se3_F64 view1_to_2 = w_to_1.invert(null).concat(w_to_2, null);
 
 		Se3_F64[] candidates = {view0_to_1, view0_to_2, view1_to_2};
 
-        var best = -1;
-        var bestScore = Double.MAX_VALUE;
-        for (var i = 0; i < candidates.length; i++) {
-            var s = score(candidates[i]);
+        int best = -1;
+        double bestScore = Double.MAX_VALUE;
+        for (int i = 0; i < candidates.length; i++) {
+            double s = score(candidates[i]);
             System.out.println("stereo score[" + i + "] = " + s);
             if (s < bestScore) {
                 bestScore = s;
@@ -607,11 +607,11 @@ public class SLAMTest extends JPanel {
 //		Rodrigues_F64 rod = new Rodrigues_F64();
 //		ConvertRotation3D_F64.matrixToRodrigues(se.R,rod);
 
-        var x = Math.abs(se.T.x);
-        var y = Math.abs(se.T.y);
-        var z = Math.abs(se.T.z) + 1e-8;
+        double x = Math.abs(se.T.x);
+        double y = Math.abs(se.T.y);
+        double z = Math.abs(se.T.z) + 1e-8;
 
-        var r = Math.max(x / (y + z), y / (x + z));
+        double r = Math.max(x / (y + z), y / (x + z));
 
 //		System.out.println(se.T+"  angle="+rod.theta);
 
@@ -630,17 +630,17 @@ public class SLAMTest extends JPanel {
                        GrayU8 rectifiedMask,
                        DMatrixRMaj rectifiedK,
                        DMatrixRMaj rectifiedR) {
-        var rectifyAlg = RectifyImageOps.createCalibrated();
+        RectifyCalibrated rectifyAlg = RectifyImageOps.createCalibrated();
 
         // original camera calibration matrices
-        var K1 = PerspectiveOps.pinholeToMatrix(intrinsic1, (DMatrixRMaj) null);
-        var K2 = PerspectiveOps.pinholeToMatrix(intrinsic2, (DMatrixRMaj) null);
+        DMatrixRMaj K1 = PerspectiveOps.pinholeToMatrix(intrinsic1, (DMatrixRMaj) null);
+        DMatrixRMaj K2 = PerspectiveOps.pinholeToMatrix(intrinsic2, (DMatrixRMaj) null);
 
         rectifyAlg.process(K1, new Se3_F64(), K2, leftToRight);
 
         // rectification matrix for each image
-        var rect1 = rectifyAlg.getRect1();
-        var rect2 = rectifyAlg.getRect2();
+        DMatrixRMaj rect1 = rectifyAlg.getRect1();
+        DMatrixRMaj rect2 = rectifyAlg.getRect2();
         rectifiedR.set(rectifyAlg.getRectifiedRotation());
 
         // New calibration matrix,
@@ -650,14 +650,14 @@ public class SLAMTest extends JPanel {
         RectifyImageOps.fullViewLeft(intrinsic1, rect1, rect2, rectifiedK);
 
         // undistorted and rectify images
-        var rect1_F32 = new FMatrixRMaj(3, 3);
-        var rect2_F32 = new FMatrixRMaj(3, 3);
+        FMatrixRMaj rect1_F32 = new FMatrixRMaj(3, 3);
+        FMatrixRMaj rect2_F32 = new FMatrixRMaj(3, 3);
         ConvertMatrixData.convert(rect1, rect1_F32);
         ConvertMatrixData.convert(rect2, rect2_F32);
 
-        var distortLeft =
+        ImageDistort<C, C> distortLeft =
                 RectifyImageOps.rectifyImage(intrinsic1, rect1_F32, BorderType.EXTENDED, distorted1.getImageType());
-        var distortRight =
+        ImageDistort<C, C> distortRight =
                 RectifyImageOps.rectifyImage(intrinsic2, rect2_F32, BorderType.EXTENDED, distorted2.getImageType());
 
         rectifiedMask.reshape(rectified1.width, rectified2.height);
@@ -667,19 +667,19 @@ public class SLAMTest extends JPanel {
 
     public GrayF32 computeDisparity(Planar<GrayU8> rectColor1, Planar<GrayU8> rectColor2) {
 
-        var rectifiedLeft = new GrayU8(rectColor1.width, rectColor1.height);
-        var rectifiedRight = new GrayU8(rectColor2.width, rectColor2.height);
+        GrayU8 rectifiedLeft = new GrayU8(rectColor1.width, rectColor1.height);
+        GrayU8 rectifiedRight = new GrayU8(rectColor2.width, rectColor2.height);
         ConvertImage.average(rectColor1, rectifiedLeft);
         ConvertImage.average(rectColor2, rectifiedRight);
 
         // compute disparity
-        var disparityAlg =
+        StereoDisparity<GrayS16, GrayF32> disparityAlg =
                 FactoryStereoDisparity.regionSubpixelWta(DisparityAlgorithms.RECT_FIVE,
                         controls.minDisparity, controls.maxDisparity, 6, 6, 30, 3, 0.05, GrayS16.class);
 
         // Apply the Laplacian across the image to add extra resistance to changes in lighting or camera gain
-        var derivLeft = new GrayS16(rectColor1.width, rectColor1.height);
-        var derivRight = new GrayS16(rectColor2.width, rectColor2.height);
+        GrayS16 derivLeft = new GrayS16(rectColor1.width, rectColor1.height);
+        GrayS16 derivRight = new GrayS16(rectColor2.width, rectColor2.height);
         DerivativeLaplacian.process(rectifiedLeft, derivLeft, null);
         DerivativeLaplacian.process(rectifiedRight, derivRight, null);
 
@@ -704,8 +704,8 @@ public class SLAMTest extends JPanel {
      */
     public synchronized Pair<GrayF32, DisparityToColorPointCloud> pointCloud(GrayF32 disparity, BufferedImage left,
                                                                              Se3_F64 motion, DMatrixRMaj rectifiedK, DMatrixRMaj rectifiedR) {
-        var d2c = new DisparityToColorPointCloud();
-        var baseline = motion.getT().norm();
+        DisparityToColorPointCloud d2c = new DisparityToColorPointCloud();
+        double baseline = motion.getT().norm();
         d2c.configure(baseline, rectifiedK, rectifiedR, new DoNothing2Transform2_F64(), controls.minDisparity, controls.maxDisparity);
         d2c.process(disparity, left);
 
@@ -787,7 +787,7 @@ class DemoThreeViewControls extends StandardAlgConfigPanel implements ChangeList
     }
 
     public void addText(String text) {
-        var a = textInfo.getText() + text;
+        String a = textInfo.getText() + text;
         textInfo.setText(a);
     }
 
@@ -824,7 +824,7 @@ class DemoThreeViewControls extends StandardAlgConfigPanel implements ChangeList
             maxImageSize = ((Number) sMaxSize.getValue()).intValue();
             scaleChanged = true;
         }
-        var compute = true;
+        boolean compute = true;
         if (compute)
             bCompute.setEnabled(true);
     }

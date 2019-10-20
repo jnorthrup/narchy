@@ -43,13 +43,13 @@ public class CachedTreeEvaluator extends DefaultTreeEvaluator implements CachedE
     @Override
     public List<Bounds[]> evaluate(Node root, Context context) throws TreeEvaluationException {
 
-        var sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         root.describe(sb);
 
-        var key = new Triplet<EvaluationPhases, Boolean, String>(context.getPhase(), context.isStripedPhase(), sb.toString());
+        Triplet<EvaluationPhases, Boolean, String> key = new Triplet<EvaluationPhases, Boolean, String>(context.getPhase(), context.isStripedPhase(), sb.toString());
         /*synchronized (cache)*/ {
-            var error = new TreeEvaluationException[1];
-            var result = cache.compute(key, (k, res) -> {
+            TreeEvaluationException[] error = new TreeEvaluationException[1];
+            List<Bounds[]> result = cache.compute(key, (k, res) -> {
                 if (res != null) {
                     hit++;
                     return res;
@@ -81,8 +81,12 @@ public class CachedTreeEvaluator extends DefaultTreeEvaluator implements CachedE
     @Override
     public long getCacheSizeBytes(){
         synchronized (cache) {
-            var cacheSize = cache.values().stream().mapToLong(list -> {
-                var sum = list.stream().mapToLong(exampleResult -> exampleResult.length).sum();
+            long cacheSize = cache.values().stream().mapToLong(list -> {
+                long sum = 0L;
+                for (Bounds[] exampleResult : list) {
+                    long length = exampleResult.length;
+                    sum += length;
+                }
                 return sum;
             }).sum();
             cacheSize*=(Integer.SIZE/4);

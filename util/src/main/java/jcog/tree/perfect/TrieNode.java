@@ -108,7 +108,7 @@ public class TrieNode<S, T> implements Entry<S, T> {
      * index.
      */
     protected TrieNode<S, T> split(int index, T newValue, TrieSequencer<S> sequencer) {
-        var c = new TrieNode<S, T>(this, value, sequence, index + start, end, children);
+        TrieNode<S, T> c = new TrieNode<S, T>(this, value, sequence, index + start, end, children);
         c.registerAsParent();
 
         setValue(null);
@@ -131,7 +131,7 @@ public class TrieNode<S, T> implements Entry<S, T> {
      *                  children PerfectHashMap.
      */
     protected void add(TrieNode<S, T> child, TrieSequencer<S> sequencer) {
-        var hash = sequencer.hashOf(child.sequence, end);
+        int hash = sequencer.hashOf(child.sequence, end);
 
         if (children == null) {
             children = new PerfectHashMap<>(hash, child);
@@ -146,7 +146,7 @@ public class TrieNode<S, T> implements Entry<S, T> {
         Object[] vv = children.values;
         if ((vv == null) || (vv.length == 0)) return;
 
-        for (var x : vv) {
+        for (Object x : vv) {
             if (x == null) continue;
             childConsumer.accept((TrieNode<S, T>) x);
         }
@@ -157,9 +157,9 @@ public class TrieNode<S, T> implements Entry<S, T> {
         Object[] vv = children.values;
         if ((vv == null) || (vv.length == 0)) return;
 
-        for (var x /*TrieNode<S,T> x*/ : vv) {
+        for (Object x /*TrieNode<S,T> x*/ : vv) {
             if (x == null) continue;
-            var xx = (TrieNode<S, T>) x;
+            TrieNode<S, T> xx = (TrieNode<S, T>) x;
             parentChildConsumer.accept(this, xx);
             xx.forEach(parentChildConsumer);
         }
@@ -176,7 +176,7 @@ public class TrieNode<S, T> implements Entry<S, T> {
         
         setValue(null);
 
-        var childCount = (children == null ? 0 : children.size());
+        int childCount = (children == null ? 0 : children.size());
 
 
         switch (childCount) {
@@ -184,7 +184,7 @@ public class TrieNode<S, T> implements Entry<S, T> {
                 parent.children.remove(sequencer.hashOf(sequence, start));
                 break;
             case 1:
-                var child = children.valueAt(0);
+                TrieNode<S, T> child = children.valueAt(0);
 
                 children = child.children;
                 value = child.value;
@@ -207,7 +207,7 @@ public class TrieNode<S, T> implements Entry<S, T> {
      * @param amount The amount of size to addAt.
      */
     private void addSize(int amount) {
-        var curr = this;
+        TrieNode<S, T> curr = this;
 
         while (curr != null) {
             curr.size += amount;
@@ -222,7 +222,7 @@ public class TrieNode<S, T> implements Entry<S, T> {
      * @return The total size of the given map.
      */
     private int calculateSize(PerfectHashMap<TrieNode<S, T>> nodes) {
-        var size = 0;
+        int size = 0;
 
         if (nodes != null) {
             size = IntStream.iterate(nodes.capacity() - 1, i -> i >= 0, i -> i - 1).mapToObj(nodes::valueAt).filter(Objects::nonNull).mapToInt(n -> n.size).sum();
@@ -237,8 +237,8 @@ public class TrieNode<S, T> implements Entry<S, T> {
      */
     private void registerAsParent() {
         if (children != null) {
-            for (var i = 0; i < children.capacity(); i++) {
-                var c = children.valueAt(i);
+            for (int i = 0; i < children.capacity(); i++) {
+                TrieNode<S, T> c = children.valueAt(i);
 
                 if (c != null) {
                     c.parent = this;
@@ -339,7 +339,7 @@ public class TrieNode<S, T> implements Entry<S, T> {
      * @return The root of the {@link Trie} this TrieNode.
      */
     public TrieNode<S, T> getRoot() {
-        var n = parent;
+        TrieNode<S, T> n = parent;
 
         while (n.parent != null) {
             n = n.parent;
@@ -378,9 +378,9 @@ public class TrieNode<S, T> implements Entry<S, T> {
 
     @Override
     public T setValue(T newValue) {
-        var previousValue = value;
+        T previousValue = value;
 
-        var nulled = (value = newValue) == null;
+        boolean nulled = (value = newValue) == null;
 
         if (previousValue == null && !nulled) {
             addSize(1);
@@ -408,12 +408,12 @@ public class TrieNode<S, T> implements Entry<S, T> {
             return false;
         }
 
-        var node = (TrieNode) o;
+        TrieNode node = (TrieNode) o;
 
-        var nv = node.value;
-        var ns = node.sequence;
-        var ts = sequence;
-        var tv = value;
+        Object nv = node.value;
+        Object ns = node.sequence;
+        S ts = sequence;
+        T tv = value;
         return (ts == ns || ts.equals(ns)) &&
                 (tv == nv || (tv != null && nv != null && tv.equals(nv)));
     }

@@ -13,8 +13,10 @@ import org.junit.platform.commons.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -39,7 +41,14 @@ public class Emotion implements Meter, Consumer<NAR> {
     private static final Field[] EmotionFields;
 
     static {
-        EmotionFields = ReflectionUtils.findFields(Emotion.class, (f) -> true, ReflectionUtils.HierarchyTraversalMode.TOP_DOWN).stream().filter(field -> !Modifier.isPrivate(field.getModifiers())).sorted(Comparator.comparing(Field::getName)).toArray(Field[]::new);
+        List<Field> list = new ArrayList<>();
+        for (Field field : ReflectionUtils.findFields(Emotion.class, (f) -> true, ReflectionUtils.HierarchyTraversalMode.TOP_DOWN)) {
+            if (!Modifier.isPrivate(field.getModifiers())) {
+                list.add(field);
+            }
+        }
+        list.sort(Comparator.comparing(Field::getName));
+        EmotionFields = list.toArray(new Field[0]);
     }
 
     /**
@@ -177,8 +186,8 @@ public class Emotion implements Meter, Consumer<NAR> {
      */
     public void perceive(Task t) {
 
-        var vol = t.volume();
-        var pri = t.priElseZero();
+        int vol = t.volume();
+        float pri = t.priElseZero();
 
         busy(pri, vol);
 
@@ -186,8 +195,8 @@ public class Emotion implements Meter, Consumer<NAR> {
     }
 
     public void commit(BiConsumer<String, Object> statConsumer) {
-        for (var f : EmotionFields) {
-            var fn = f.getName();
+        for (Field f : EmotionFields) {
+            String fn = f.getName();
             try {
                 statConsumer.accept(fn, v(f.get(Emotion.this)));
             } catch (IllegalAccessException e) {

@@ -47,12 +47,12 @@ public abstract class TermBuilder implements TermConstructor {
 
     final Term newCompound(Op o, int dt, Term[] t, @Nullable DynBytes key) {
 
-        var s = t.length;
+        int s = t.length;
         if (o.maxSubs < s)
                 throw new TermException("subterm overflow", o, dt, t);
 
-        var hasEllipsis = false;
-        for (var x : t) {
+        boolean hasEllipsis = false;
+        for (Term x : t) {
             if (x == IdempotentBool.Null)
                 return IdempotentBool.Null; //try to detect earlier
             if (x instanceof Ellipsislike)
@@ -89,8 +89,8 @@ public abstract class TermBuilder implements TermConstructor {
 
     public Term normalize(Compound x, byte varOffset) {
 
-        var c = new CompoundNormalization(x, varOffset);
-        var y = c.apply(x); //x.transform();
+        CompoundNormalization c = new CompoundNormalization(x, varOffset);
+        Term y = c.apply(x); //x.transform();
 
         if (varOffset == 0 && y instanceof Compound)
             ((Compound)y).subtermsDirect().setNormalized();
@@ -119,7 +119,7 @@ public abstract class TermBuilder implements TermConstructor {
                 return IdempotentBool.True;
 
             case 1:
-                var only = u[0];
+                Term only = u[0];
                 return only instanceof Ellipsislike ? newCompound(CONJ, dt, only) : only;
         }
 
@@ -174,7 +174,7 @@ public abstract class TermBuilder implements TermConstructor {
     }
 
     public static Term concept(Compound x) {
-        var term = x.unneg().root().normalize();
+        Term term = x.unneg().root().normalize();
 
         if (term instanceof Neg || !term.op().conceptualizable)
             throw new TermException("not conceptualizable", x);
@@ -200,13 +200,13 @@ public abstract class TermBuilder implements TermConstructor {
         if (nextDT == 0)
             nextDT = DTERNAL; //HACK
 
-        var baseDT = x.dt();
+        int baseDT = x.dt();
         if (nextDT == baseDT)
             return x; //no change
 
-        var op = x.op(); assert (op.temporal);
+        Op op = x.op(); assert (op.temporal);
 
-        var xs = x.subterms();
+        Subterms xs = x.subterms();
 //        if (baseDT != XTERNAL && nextDT != XTERNAL && dtSpecial(baseDT) == dtSpecial(nextDT)) {
 //            if (!xs.hasAny(CONJ.bit | NEG.bit)
 //                    //|| (!xs.hasAny(CONJ) && xs.hasAny(NEG) && xs.count(NEG) <= 1) //exception: one or less negs
@@ -254,7 +254,7 @@ public abstract class TermBuilder implements TermConstructor {
 //                return u; //return Null;
 //        }
 
-        var i = Intrin.id(u);
+        short i = Intrin.id(u);
         if (i!=0)
             return new Neg.NegIntrin(i);
 

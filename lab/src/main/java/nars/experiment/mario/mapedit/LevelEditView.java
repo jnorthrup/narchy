@@ -24,7 +24,7 @@ public class LevelEditView extends JComponent implements MouseListener, MouseMot
     public LevelEditView(TilePicker tilePicker) {
         this.tilePicker = tilePicker;
         level = new Level(256, 15);
-        var size = new Dimension(level.width * 16, level.height * 16);
+        Dimension size = new Dimension(level.width * 16, level.height * 16);
         setPreferredSize(size);
         setMinimumSize(size);
         setMaximumSize(size);
@@ -35,7 +35,7 @@ public class LevelEditView extends JComponent implements MouseListener, MouseMot
 
     public void setLevel(Level level) {
         this.level = level;
-        var size = new Dimension(level.width * 16, level.height * 16);
+        Dimension size = new Dimension(level.width * 16, level.height * 16);
         setPreferredSize(size);
         setMinimumSize(size);
         setMaximumSize(size);

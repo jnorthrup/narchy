@@ -37,7 +37,7 @@ public final class VarIndep extends NormalizedVariable {
             case 1:
                 return Task.fail(x, "singular independent variable", safe);
             default:
-                var xx = x.subterms();
+                Subterms xx = x.subterms();
                 if (x.op().statement && xx.AND(Termlike::hasVarIndep)) {
                     return validIndepBalance(x, safe); //indep appearing in both, test for balance
                 } else {
@@ -51,20 +51,20 @@ public final class VarIndep extends NormalizedVariable {
     private static boolean validIndepBalance(Term t, boolean safe) {
 
 
-        var statements = new FasterList<ByteList>();
+        FasterList<ByteList> statements = new FasterList<ByteList>();
         //ByteObjectHashMap<List<ByteList>> indepVarPaths = new ByteObjectHashMap<>(4);
         UnifiedMap<Term,List<ByteList>> indepVarPaths = new UnifiedMap(0, 0.5f);
 
         t.pathsTo(
                 (Term x) -> {
-                    var xo = x.op();
+                    Op xo = x.op();
                     return (xo == VAR_INDEP) || (xo.statement && x.varIndep() > 0);
                 },
                 x -> x.hasAny(Op.StatementBits | Op.VAR_INDEP.bit),
                 (path, indepVarOrStatement) -> {
                     if (!path.isEmpty()) {
-                        var p = path.toImmutable();
-                        var s = (indepVarOrStatement.op() == VAR_INDEP) ?
+                        ImmutableByteList p = path.toImmutable();
+                        List<ByteList> s = (indepVarOrStatement.op() == VAR_INDEP) ?
                             indepVarPaths.getIfAbsentPut(
                                     //((VarIndep) indepVarOrStatement).id(),
                                     indepVarOrStatement,
@@ -83,38 +83,38 @@ public final class VarIndep extends NormalizedVariable {
         if (statements.size() > 1)
             statements.sortThisByInt(PrimitiveIterable::size);
 
-        var rootIsStatement = t.op().statement;
+        boolean rootIsStatement = t.op().statement;
 
 
-        var nStatements = (byte) statements.size();
-        var count = new ByteByteHashMap(nStatements);
-        nextPath: for (var varPaths : indepVarPaths) {
+        byte nStatements = (byte) statements.size();
+        ByteByteHashMap count = new ByteByteHashMap(nStatements);
+        nextPath: for (List<ByteList> varPaths : indepVarPaths) {
 
             if (!count.isEmpty())
                 count.clear();
 
-            for (var p : varPaths) {
+            for (ByteList p : varPaths) {
                 if (rootIsStatement) {
-                    var branch = p.get(0);
+                    byte branch = p.get(0);
                     if (Util.branchOr((byte) -1, count, branch) == 0b11)
                         continue nextPath;
                 }
 
-                var pSize = p.size();
+                int pSize = p.size();
 
                 nextStatement:
                 for (byte k = 0; k < nStatements; k++) {
-                    var statement = statements.get(k);
-                    var statementPathLength = statement.size();
+                    ByteList statement = statements.get(k);
+                    int statementPathLength = statement.size();
                     if (statementPathLength > pSize)
                         break;
 
-                    for (var i = 0; i < statementPathLength; i++) {
+                    for (int i = 0; i < statementPathLength; i++) {
                         if (p.get(i) != statement.get(i))
                             break nextStatement;
                     }
 
-                    var lastBranch = p.get(statementPathLength);
+                    byte lastBranch = p.get(statementPathLength);
                     //assert (lastBranch == 0 || lastBranch == 1) : lastBranch + " for path " + p + " while validating target: " + t;
 
 

@@ -36,9 +36,9 @@ import jcog.math.v3;
 public class GImpactMassUtil {
 
 	public static v3 get_point_inertia(v3 point, float mass, v3 out) {
-		var x2 = point.x * point.x;
-		var y2 = point.y * point.y;
-		var z2 = point.z * point.z;
+        float x2 = point.x * point.x;
+        float y2 = point.y * point.y;
+        float z2 = point.z * point.z;
 		out.set(mass * (y2 + z2), mass * (x2 + z2), mass * (x2 + y2));
 		return out;
 	}

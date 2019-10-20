@@ -222,10 +222,10 @@ public class InterpolatingMicrosphere {
 
     public static float[] ebeSubtract(float[] a, float[] b) throws DimensionMismatchException {
 
-        var result = a.clone();
+        float[] result = a.clone();
 
-        var l = a.length;
-        for (var i = 0; i < l; ++i) {
+        int l = a.length;
+        for (int i = 0; i < l; ++i) {
             result[i] -= b[i];
         }
 
@@ -236,8 +236,8 @@ public class InterpolatingMicrosphere {
         if (v.length == 1) {
             return Math.abs(v[0]);
         }
-        var zero = true;
-        for (var x : v) {
+        boolean zero = true;
+        for (float x : v) {
             if (Math.abs(x) > epsilon) {
                 zero = false;
                 break;
@@ -246,17 +246,17 @@ public class InterpolatingMicrosphere {
         if (zero)
             return 0;
 
-        var rdwarf = 3.834E-20D;
-        var rgiant = 1.304E19D;
-        var s1 = 0.0D;
-        var s2 = 0.0D;
-        var s3 = 0.0D;
-        var x1max = 0.0D;
-        var x3max = 0.0D;
+        double rdwarf = 3.834E-20D;
+        double rgiant = 1.304E19D;
+        double s1 = 0.0D;
+        double s2 = 0.0D;
+        double s3 = 0.0D;
+        double x1max = 0.0D;
+        double x3max = 0.0D;
         double floatn = v.length;
-        var agiant = rgiant / floatn;
+        double agiant = rgiant / floatn;
 
-        for (var norm = 0; norm < v.length; ++norm) {
+        for (int norm = 0; norm < v.length; ++norm) {
             double xabs = Math.abs(v[norm]);
             if (xabs >= rdwarf && xabs <= agiant) {
                 s2 += xabs * xabs;
@@ -297,30 +297,30 @@ public class InterpolatingMicrosphere {
     }
 
     public void illuminate(@NotNull float[] targetPoint, float[][] data, Focus focus, int numSamples) {
-        var epsilon = 0.01f;
+        float epsilon = 0.01f;
 
-        for (var i = 0; i < numSamples; i++) {
+        for (int i = 0; i < numSamples; i++) {
 
 
-            var X = data[i];
-            var diff = ebeSubtract(new float[] { X[0] }, targetPoint);
+            float[] X = data[i];
+            float[] diff = ebeSubtract(new float[] { X[0] }, targetPoint);
             /** effective (minimum) radius of one point, an interval within which distance is zero (co-tangent) */
-            var pointRadius = 0f;
-            var distance = Math.max(0, safeNorm(epsilon, diff) - pointRadius);
+            float pointRadius = 0f;
+            float distance = Math.max(0, safeNorm(epsilon, diff) - pointRadius);
 
-            @Nullable var sampleDirection = distance!=0 ? diff : null;
-            var evidence = X[2];
-            var vectors = distance!=0  ? this.size : 1;
+            @Nullable float[] sampleDirection = distance!=0 ? diff : null;
+            float evidence = X[2];
+            int vectors = distance!=0  ? this.size : 1;
 
-            for (var j = 0; j < vectors; j++) {
+            for (int j = 0; j < vectors; j++) {
 
-                var n = microsphere.get(j);
-                var cos = (sampleDirection != null) ? cosAngleNormalized(n, sampleDirection) : 1f;
+                float[] n = microsphere.get(j);
+                float cos = (sampleDirection != null) ? cosAngleNormalized(n, sampleDirection) : 1f;
 
                 if (cos > 0) {
-                    var illumination = cos * focus.focus(distance, evidence);
+                    float illumination = cos * focus.focus(distance, evidence);
                     if (illumination > 0) {
-                        var d = microsphereData.get(j);
+                        float[] d = microsphereData.get(j);
                         d[0] += illumination;
                         d[1] += illumination * X[1] /* 0...1.0 */;
                     }
@@ -376,12 +376,12 @@ public class InterpolatingMicrosphere {
      */
     private @NotNull float[] interpolate() {
 
-        var size = this.size;
+        int size = this.size;
 
         float weightedValue = 0, illumination = 0;
 
-        for (var i = 0; i < size; i++) {
-            var fd = microsphereData.get(i);
+        for (int i = 0; i < size; i++) {
+            float[] fd = microsphereData.get(i);
 
             illumination += fd[0];
             weightedValue += fd[1]; /* sample */
@@ -398,8 +398,8 @@ public class InterpolatingMicrosphere {
      */
     protected static float cosAngleNormalized(@NotNull float[] x, @NotNull float[] y) {
         if (x.length == 1) {
-            var x0 = x[0];
-            var y0 = y[0];
+            @NotNull float x0 = x[0];
+            @NotNull float y0 = y[0];
             return (x0 > 0 && y0 > 0) || (x0 < 0 && y0 < 0) ? 1.0f : -1.0f;
         } else
             return cosAngle(x, y);
@@ -411,7 +411,7 @@ public class InterpolatingMicrosphere {
 
     public static float linearCombination(float[] a, float[] b) throws DimensionMismatchException {
 
-        var len = a.length;
+        int len = a.length;
         if (len == 1) {
             return a[0] * b[0];
         } else {
@@ -441,8 +441,8 @@ public class InterpolatingMicrosphere {
      * Reset the all the {@link Facet facets} data to zero.
      */
     private void clear() {
-        for (var i = 0; i < size; i++) {
-            var d = microsphereData.get(i);
+        for (int i = 0; i < size; i++) {
+            float[] d = microsphereData.get(i);
             d[0] = d[1] = d[2] = 0;
             d[3] = -1; 
         }

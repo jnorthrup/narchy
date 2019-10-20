@@ -109,11 +109,11 @@ public class ConeTwistConstraint extends TypedConstraint {
 	
 	@Override
 	public void buildJacobian() {
-		var tmp = new v3();
-		var tmp1 = new v3();
-		var tmp2 = new v3();
+        v3 tmp = new v3();
+        v3 tmp1 = new v3();
+        v3 tmp2 = new v3();
 
-		var tmpTrans = new Transform();
+        Transform tmpTrans = new Transform();
 
 		appliedImpulse = 0f;
 
@@ -126,13 +126,13 @@ public class ConeTwistConstraint extends TypedConstraint {
 		accSwingLimitImpulse = 0f;
 
 		if (!angularOnly) {
-			var pivotAInW = new v3(rbAFrame);
+            v3 pivotAInW = new v3(rbAFrame);
 			rbA.getCenterOfMassTransform(tmpTrans).transform(pivotAInW);
 
-			var pivotBInW = new v3(rbBFrame);
+            v3 pivotBInW = new v3(rbBFrame);
 			rbB.getCenterOfMassTransform(tmpTrans).transform(pivotBInW);
 
-			var relPos = new v3();
+            v3 relPos = new v3();
 			relPos.sub(pivotBInW, pivotAInW);
 
 			
@@ -146,11 +146,11 @@ public class ConeTwistConstraint extends TypedConstraint {
 
 			TransformUtil.planeSpace1(normal[0], normal[1], normal[2]);
 
-			for (var i = 0; i < 3; i++) {
-				var mat1 = rbA.getCenterOfMassTransform(new Transform()).basis;
+			for (int i = 0; i < 3; i++) {
+                Matrix3f mat1 = rbA.getCenterOfMassTransform(new Transform()).basis;
 				mat1.transpose();
 
-				var mat2 = rbB.getCenterOfMassTransform(new Transform()).basis;
+                Matrix3f mat2 = rbB.getCenterOfMassTransform(new Transform()).basis;
 				mat2.transpose();
 
 				tmp1.sub(pivotAInW, rbA.getCenterOfMassPosition(tmp));
@@ -178,10 +178,10 @@ public class ConeTwistConstraint extends TypedConstraint {
 		rbBFrame.basis.getColumn(0, b2Axis1);
 		getRigidBodyB().getCenterOfMassTransform(tmpTrans).basis.transform(b2Axis1);
 
-		var swing1 = 0f;
+        float swing1 = 0f;
 
         float swx = 0f, swy = 0f;
-		var thresh = 10f;
+        float thresh = 10f;
 		float fact;
 
 		
@@ -197,7 +197,7 @@ public class ConeTwistConstraint extends TypedConstraint {
 			swing1 *= fact;
 		}
 
-		var swing2 = 0f;
+        float swing2 = 0f;
         if (swingSpan2 >= 0.05f) {
 			rbAFrame.basis.getColumn(2, b1Axis3);
 			getRigidBodyA().getCenterOfMassTransform(tmpTrans).basis.transform(b1Axis3);
@@ -210,9 +210,9 @@ public class ConeTwistConstraint extends TypedConstraint {
 			swing2 *= fact;
 		}
 
-		var RMaxAngle1Sq = 1.0f / (swingSpan1 * swingSpan1);
-		var RMaxAngle2Sq = 1.0f / (swingSpan2 * swingSpan2);
-		var EllipseAngle = Math.abs(swing1*swing1) * RMaxAngle1Sq + Math.abs(swing2*swing2) * RMaxAngle2Sq;
+        float RMaxAngle1Sq = 1.0f / (swingSpan1 * swingSpan1);
+        float RMaxAngle2Sq = 1.0f / (swingSpan2 * swingSpan2);
+        float EllipseAngle = Math.abs(swing1*swing1) * RMaxAngle1Sq + Math.abs(swing2*swing2) * RMaxAngle2Sq;
 
 		if (EllipseAngle > 1.0f) {
 			swingCorrection = EllipseAngle - 1.0f;
@@ -225,7 +225,7 @@ public class ConeTwistConstraint extends TypedConstraint {
 			swingAxis.cross(b2Axis1, tmp);
 			swingAxis.normalize();
 
-			var swingAxisSign = (b2Axis1.dot(b1Axis1) >= 0.0f) ? 1.0f : -1.0f;
+            float swingAxisSign = (b2Axis1.dot(b1Axis1) >= 0.0f) ? 1.0f : -1.0f;
 			swingAxis.scaled(swingAxisSign);
 
 			kSwing = 1f / (getRigidBodyA().computeAngularImpulseDenominator(swingAxis) +
@@ -239,11 +239,11 @@ public class ConeTwistConstraint extends TypedConstraint {
 			rbBFrame.basis.getColumn(1, b2Axis2);
 			getRigidBodyB().getCenterOfMassTransform(tmpTrans).basis.transform(b2Axis2);
 
-			var rotationArc = QuaternionUtil.shortestArcQuat(b2Axis1, b1Axis1, new Quat4f());
-			var TwistRef = QuaternionUtil.quatRotate(rotationArc, b2Axis2, new v3());
-			var twist = ScalarUtil.atan2Fast(TwistRef.dot(b1Axis3), TwistRef.dot(b1Axis2));
+            Quat4f rotationArc = QuaternionUtil.shortestArcQuat(b2Axis1, b1Axis1, new Quat4f());
+            v3 TwistRef = QuaternionUtil.quatRotate(rotationArc, b2Axis2, new v3());
+            float twist = ScalarUtil.atan2Fast(TwistRef.dot(b1Axis3), TwistRef.dot(b1Axis2));
 
-			var lockedFreeFactor = (twistSpan > 0.05f) ? limitSoftness : 0f;
+            float lockedFreeFactor = (twistSpan > 0.05f) ? limitSoftness : 0f;
 			if (twist <= -twistSpan * lockedFreeFactor) {
 				twistCorrection = -(twist + twistSpan);
 				solveTwistLimit = true;
@@ -273,43 +273,43 @@ public class ConeTwistConstraint extends TypedConstraint {
 
 	@Override
 	public void solveConstraint(float timeStep) {
-		var tmp = new v3();
-		var tmp2 = new v3();
+        v3 tmp = new v3();
+        v3 tmp2 = new v3();
 
-		var tmpVec = new v3();
-		var tmpTrans = new Transform();
+        v3 tmpVec = new v3();
+        Transform tmpTrans = new Transform();
 
-		var pivotAInW = new v3(rbAFrame);
+        v3 pivotAInW = new v3(rbAFrame);
 		rbA.getCenterOfMassTransform(tmpTrans).transform(pivotAInW);
 
-		var pivotBInW = new v3(rbBFrame);
+        v3 pivotBInW = new v3(rbBFrame);
 		rbB.getCenterOfMassTransform(tmpTrans).transform(pivotBInW);
 
 
         if (!angularOnly) {
-			var rel_pos1 = new v3();
+            v3 rel_pos1 = new v3();
 			rel_pos1.sub(pivotAInW, rbA.getCenterOfMassPosition(tmpVec));
 
-			var rel_pos2 = new v3();
+            v3 rel_pos2 = new v3();
 			rel_pos2.sub(pivotBInW, rbB.getCenterOfMassPosition(tmpVec));
 
-			var vel1 = rbA.getVelocityInLocalPoint(rel_pos1, new v3());
-			var vel2 = rbB.getVelocityInLocalPoint(rel_pos2, new v3());
-			var vel = new v3();
+            v3 vel1 = rbA.getVelocityInLocalPoint(rel_pos1, new v3());
+            v3 vel2 = rbB.getVelocityInLocalPoint(rel_pos2, new v3());
+            v3 vel = new v3();
 			vel.sub(vel1, vel2);
 
-			var tau = 0.3f;
-            for (var i = 0; i < 3; i++) {
-				var normal = jac[i].linearJointAxis;
-				var jacDiagABInv = 1f / jac[i].Adiag;
+            float tau = 0.3f;
+            for (int i = 0; i < 3; i++) {
+                v3 normal = jac[i].linearJointAxis;
+                float jacDiagABInv = 1f / jac[i].Adiag;
 
-				var rel_vel = normal.dot(vel);
+                float rel_vel = normal.dot(vel);
 				
 				tmp.sub(pivotAInW, pivotBInW);
-				var depth = -(tmp).dot(normal);
-				var impulse = depth * tau / timeStep * jacDiagABInv - rel_vel * jacDiagABInv;
+                float depth = -(tmp).dot(normal);
+                float impulse = depth * tau / timeStep * jacDiagABInv - rel_vel * jacDiagABInv;
 				appliedImpulse += impulse;
-				var impulse_vector = new v3();
+                v3 impulse_vector = new v3();
 				impulse_vector.scale(impulse, normal);
 
 				tmp.sub(pivotAInW, rbA.getCenterOfMassPosition(tmpVec));
@@ -322,21 +322,21 @@ public class ConeTwistConstraint extends TypedConstraint {
 		}
 
 
-		var angVelA = getRigidBodyA().getAngularVelocity(new v3());
-		var angVelB = getRigidBodyB().getAngularVelocity(new v3());
+        v3 angVelA = getRigidBodyA().getAngularVelocity(new v3());
+        v3 angVelB = getRigidBodyB().getAngularVelocity(new v3());
 
         
         if (solveSwingLimit) {
             tmp.sub(angVelB, angVelA);
-			var amplitude = ((tmp).dot(swingAxis) * relaxationFactor * relaxationFactor + swingCorrection * (1f / timeStep) * biasFactor);
-			var impulseMag = amplitude * kSwing;
+            float amplitude = ((tmp).dot(swingAxis) * relaxationFactor * relaxationFactor + swingCorrection * (1f / timeStep) * biasFactor);
+            float impulseMag = amplitude * kSwing;
 
 
-			var temp = accSwingLimitImpulse;
+            float temp = accSwingLimitImpulse;
             accSwingLimitImpulse = Math.max(accSwingLimitImpulse + impulseMag, 0.0f);
             impulseMag = accSwingLimitImpulse - temp;
 
-			var impulse = new v3();
+            v3 impulse = new v3();
             impulse.scale(impulseMag, swingAxis);
 
             rbA.torqueImpulse(impulse);
@@ -348,15 +348,15 @@ public class ConeTwistConstraint extends TypedConstraint {
         
         if (solveTwistLimit) {
             tmp.sub(angVelB, angVelA);
-			var amplitude = ((tmp).dot(twistAxis) * relaxationFactor * relaxationFactor + twistCorrection * (1f / timeStep) * biasFactor);
-			var impulseMag = amplitude * kTwist;
+            float amplitude = ((tmp).dot(twistAxis) * relaxationFactor * relaxationFactor + twistCorrection * (1f / timeStep) * biasFactor);
+            float impulseMag = amplitude * kTwist;
 
 
-			var temp = accTwistLimitImpulse;
+            float temp = accTwistLimitImpulse;
             accTwistLimitImpulse = Math.max(accTwistLimitImpulse + impulseMag, 0.0f);
             impulseMag = accTwistLimitImpulse - temp;
 
-			var impulse = new v3();
+            v3 impulse = new v3();
             impulse.scale(impulseMag, twistAxis);
 
             rbA.torqueImpulse(impulse);

@@ -41,11 +41,11 @@ public final class SloppyMath {
 		  }
 
 			public static double lambert(double v, double u){
-                var x = -(Math.log(-v)+u);
-                var w = -x;
+                double x = -(Math.log(-v)+u);
+                double w = -x;
 				double diff=1;
 				while (Math.abs(diff)<1.0e-5){
-                    var z = -x -Math.log(Math.abs(w));
+                    double z = -x -Math.log(Math.abs(w));
 				  diff = z-w;
 				  w = z;
 				}
@@ -83,7 +83,7 @@ public final class SloppyMath {
 	 * Returns the minimum of three int values.
 	 */
   public static int max(int a, int b, int c) {
-      var ma = a;
+      int ma = a;
     if (b > ma) {
       ma = b;
     }
@@ -99,7 +99,7 @@ public final class SloppyMath {
 	 */
   public static int min(int a, int b, int c) {
 
-      var mi = a;
+      int mi = a;
     if (b < mi) {
       mi = b;
     }
@@ -207,7 +207,7 @@ public final class SloppyMath {
   public static double relativeDifferance(double a, double b) {
       a = Math.abs(a);
       b = Math.abs(b);
-      var absMin = Math.min(a,b);
+      double absMin = Math.min(a,b);
       return Math.abs(a-b) / absMin;      
   }
 
@@ -293,8 +293,8 @@ public final class SloppyMath {
 
   public static double logAdd(float[] logV) {
     double maxIndex = 0;
-      var max = Double.NEGATIVE_INFINITY;
-    for (var i = 0; i < logV.length; i++) {
+      double max = Double.NEGATIVE_INFINITY;
+    for (int i = 0; i < logV.length; i++) {
       if (logV[i] > max) {
         max = logV[i];
         maxIndex = i;
@@ -302,9 +302,9 @@ public final class SloppyMath {
     }
     if (max == Double.NEGATIVE_INFINITY) return Double.NEGATIVE_INFINITY;
 
-      var threshold = max - LOGTOLERANCE;
-      var sumNegativeDifferences = 0.0;
-    for (var i = 0; i < logV.length; i++) {
+      double threshold = max - LOGTOLERANCE;
+      double sumNegativeDifferences = 0.0;
+    for (int i = 0; i < logV.length; i++) {
       if (i != maxIndex && logV[i] > threshold) {
         sumNegativeDifferences += Math.exp(logV[i] - max);
       }
@@ -317,20 +317,20 @@ public final class SloppyMath {
   }
 
   public static void logNormalize(double[] logV) {
-      var logSum = logAdd(logV);
+      double logSum = logAdd(logV);
       if (Double.isNaN(logSum)) {
         throw new RuntimeException("Bad log-sum");
       }
       if (logSum == 0.0) return;
-      for (var i = 0; i < logV.length; i++) {
+      for (int i = 0; i < logV.length; i++) {
         logV[i] -= logSum;
       }
   }
 
   public static double logAdd(double[] logV) {
     double maxIndex = 0;
-      var max = Double.NEGATIVE_INFINITY;
-    for (var i = 0; i < logV.length; i++) {
+      double max = Double.NEGATIVE_INFINITY;
+    for (int i = 0; i < logV.length; i++) {
       if (logV[i] > max) {
         max = logV[i];
         maxIndex = i;
@@ -338,9 +338,9 @@ public final class SloppyMath {
     }
     if (max == Double.NEGATIVE_INFINITY) return Double.NEGATIVE_INFINITY;
 
-      var threshold = max - LOGTOLERANCE;
-      var sumNegativeDifferences = 0.0;
-    for (var i = 0; i < logV.length; i++) {
+      double threshold = max - LOGTOLERANCE;
+      double sumNegativeDifferences = 0.0;
+    for (int i = 0; i < logV.length; i++) {
       if (i != maxIndex && logV[i] > threshold) {
         sumNegativeDifferences += Math.exp(logV[i] - max);
       }
@@ -353,9 +353,9 @@ public final class SloppyMath {
   }
 
   public static double logAdd(List<Double> logV) {
-      var max = Double.NEGATIVE_INFINITY;
+      double max = Double.NEGATIVE_INFINITY;
 	    double maxIndex = 0;
-	    for (var i = 0; i < logV.size(); i++) {
+	    for (int i = 0; i < logV.size(); i++) {
 	      if (logV.get(i) > max) {
 	        max = logV.get(i);
 	        maxIndex = i;
@@ -363,9 +363,9 @@ public final class SloppyMath {
 	    }
 	    if (max == Double.NEGATIVE_INFINITY) return Double.NEGATIVE_INFINITY;
 
-      var threshold = max - LOGTOLERANCE;
-      var sumNegativeDifferences = 0.0;
-	    for (var i = 0; i < logV.size(); i++) {
+      double threshold = max - LOGTOLERANCE;
+      double sumNegativeDifferences = 0.0;
+	    for (int i = 0; i < logV.size(); i++) {
 	      if (i != maxIndex && logV.get(i) > threshold) {
 	        sumNegativeDifferences += Math.exp(logV.get(i) - max);
 	      }
@@ -379,9 +379,9 @@ public final class SloppyMath {
 
   
   public static float logAdd_Old(float[] logV) {
-      var max = Float.NEGATIVE_INFINITY;
+      float max = Float.NEGATIVE_INFINITY;
     float maxIndex = 0;
-    for (var i = 0; i < logV.length; i++) {
+    for (int i = 0; i < logV.length; i++) {
       if (logV[i] > max) {
         max = logV[i];
         maxIndex = i;
@@ -389,9 +389,9 @@ public final class SloppyMath {
     }
     if (max == Float.NEGATIVE_INFINITY) return Float.NEGATIVE_INFINITY;
 
-      var threshold = max - LOGTOLERANCE_F;
-      var sumNegativeDifferences = 0.0f;
-    for (var i = 0; i < logV.length; i++) {
+      float threshold = max - LOGTOLERANCE_F;
+      float sumNegativeDifferences = 0.0f;
+    for (int i = 0; i < logV.length; i++) {
       if (i != maxIndex && logV[i] > threshold) {
         sumNegativeDifferences += Math.exp(logV[i] - max);
       }
@@ -408,9 +408,9 @@ public final class SloppyMath {
 	 */
   public static float logAdd(float[] logV, int lastIndex) {
   	if (lastIndex==0) return Float.NEGATIVE_INFINITY;
-      var max = Float.NEGATIVE_INFINITY;
+      float max = Float.NEGATIVE_INFINITY;
     float maxIndex = 0;
-    for (var i = 0; i < lastIndex; i++) {
+    for (int i = 0; i < lastIndex; i++) {
       if (logV[i] > max) {
         max = logV[i];
         maxIndex = i;
@@ -418,9 +418,9 @@ public final class SloppyMath {
     }
     if (max == Float.NEGATIVE_INFINITY) return Float.NEGATIVE_INFINITY;
 
-      var threshold = max - LOGTOLERANCE_F;
-      var sumNegativeDifferences = 0.0;
-    for (var i = 0; i < lastIndex; i++) {
+      float threshold = max - LOGTOLERANCE_F;
+      double sumNegativeDifferences = 0.0;
+    for (int i = 0; i < lastIndex; i++) {
       if (i != maxIndex && logV[i] > threshold) {
         sumNegativeDifferences += Math.exp((logV[i] - max));
       }
@@ -437,9 +437,9 @@ public final class SloppyMath {
 	 */
   public static double logAdd(double[] logV, int lastIndex) {
   	if (lastIndex==0) return Double.NEGATIVE_INFINITY;
-      var max = Double.NEGATIVE_INFINITY;
+      double max = Double.NEGATIVE_INFINITY;
   	double maxIndex = 0;
-    for (var i = 0; i < lastIndex; i++) {
+    for (int i = 0; i < lastIndex; i++) {
       if (logV[i] > max) {
         max = logV[i];
         maxIndex = i;
@@ -447,9 +447,9 @@ public final class SloppyMath {
     }
     if (max == Double.NEGATIVE_INFINITY) return Double.NEGATIVE_INFINITY;
 
-      var threshold = max - LOGTOLERANCE;
-      var sumNegativeDifferences = 0.0;
-    for (var i = 0; i < lastIndex; i++) {
+      double threshold = max - LOGTOLERANCE;
+      double sumNegativeDifferences = 0.0;
+    for (int i = 0; i < lastIndex; i++) {
       if (i != maxIndex && logV[i] > threshold) {
         sumNegativeDifferences += Math.exp((logV[i] - max));
       }
@@ -467,9 +467,9 @@ public final class SloppyMath {
 	 * @return
 	 */
   public static float addExp_Old(float[] logV) {
-      var max = Float.NEGATIVE_INFINITY;
+      float max = Float.NEGATIVE_INFINITY;
     float maxIndex = 0;
-    for (var i = 0; i < logV.length; i++) {
+    for (int i = 0; i < logV.length; i++) {
       if (logV[i] > max) {
         max = logV[i];
         maxIndex = i;
@@ -477,9 +477,9 @@ public final class SloppyMath {
     }
     if (max == Float.NEGATIVE_INFINITY) return Float.NEGATIVE_INFINITY;
 
-      var threshold = max - LOGTOLERANCE_F;
-      var sumNegativeDifferences = 0.0f;
-    for (var i = 0; i < logV.length; i++) {
+      float threshold = max - LOGTOLERANCE_F;
+      float sumNegativeDifferences = 0.0f;
+    for (int i = 0; i < logV.length; i++) {
       if (i != maxIndex && logV[i] > threshold) {
         sumNegativeDifferences += Math.exp(logV[i] - max);
       }
@@ -492,9 +492,9 @@ public final class SloppyMath {
 	 */
   public static float addExp(float[] logV, int lastIndex) {
   	if (lastIndex==0) return Float.NEGATIVE_INFINITY;
-      var max = Float.NEGATIVE_INFINITY;
+      float max = Float.NEGATIVE_INFINITY;
     float maxIndex = 0;
-    for (var i = 0; i < lastIndex; i++) {
+    for (int i = 0; i < lastIndex; i++) {
       if (logV[i] > max) {
         max = logV[i];
         maxIndex = i;
@@ -502,9 +502,9 @@ public final class SloppyMath {
     }
     if (max == Float.NEGATIVE_INFINITY) return Float.NEGATIVE_INFINITY;
 
-      var threshold = max - LOGTOLERANCE_F;
-      var sumNegativeDifferences = 0.0f;
-    for (var i = 0; i < lastIndex; i++) {
+      float threshold = max - LOGTOLERANCE_F;
+      float sumNegativeDifferences = 0.0f;
+    for (int i = 0; i < lastIndex; i++) {
       if (i != maxIndex && logV[i] > threshold) {
         sumNegativeDifferences += Math.exp(logV[i] - max);
       }
@@ -524,8 +524,8 @@ public final class SloppyMath {
     if (k == 0) {
       return 1;
     }
-      var accum = n;
-    for (var i = 1; i < k; i++) {
+      int accum = n;
+    for (int i = 1; i < k; i++) {
       accum *= (n - i);
       accum /= i;
     }
@@ -546,8 +546,8 @@ public final class SloppyMath {
     if (e == 0) {
       return 1;
     }
-      var result = 1;
-      var currPow = b;
+      int result = 1;
+      int currPow = b;
     do {
       if ((e & 1) == 1) result *= currPow;
         currPow *= currPow;
@@ -571,7 +571,7 @@ public final class SloppyMath {
       return 1;
     }
     float result = 1;
-      var currPow = b;
+      float currPow = b;
     do {
       if ((e & 1) == 1) result *= currPow;
         currPow *= currPow;
@@ -595,7 +595,7 @@ public final class SloppyMath {
       return 1;
     }
     float result = 1;
-      var currPow = b;
+      double currPow = b;
     do {
       if ((e & 1) == 1) result *= currPow;
         currPow *= currPow;
@@ -636,15 +636,15 @@ public final class SloppyMath {
           k = m - k;
       }
       if (m > r) {
-          var temp = m;
+          int temp = m;
           m = r;
           r = temp;
       }
 
 
-      var result = 0.0;
+      double result = 0.0;
       if (k >= (m + r) - n && k <= m) {
-          var finished = false;
+          boolean finished = false;
           if (r == n) {
               if (k == m) {
                   result = 1.0;
@@ -684,8 +684,8 @@ public final class SloppyMath {
                   finished = true;
               }
           } else if (k == 0) {
-              var ans = 1.0;
-              for (var m0 = 0; m0 < m; m0++) {
+              double ans = 1.0;
+              for (int m0 = 0; m0 < m; m0++) {
                   ans *= ((n - r) - m0);
                   ans /= (n - m0);
               }
@@ -693,14 +693,14 @@ public final class SloppyMath {
               finished = true;
           }
           if (!finished) {
-              var ans = 1.0;
+              double ans = 1.0;
               for (int nr = n - r, n0 = n; nr > (n - r) - (m - k); nr--, n0--) {
 
                   ans *= nr;
 
                   ans /= n0;
               }
-              for (var k0 = 0; k0 < k; k0++) {
+              for (int k0 = 0; k0 < k; k0++) {
                   ans *= (m - k0);
 
                   ans /= ((n - (m - k0)) + 1);
@@ -731,10 +731,10 @@ public final class SloppyMath {
 	 *            Probability of a success
 	 */
   public static double exactBinomial(int k, int n, double p) {
-      var total = 0.0;
-    for (var m = k; m <= n; m++) {
-        var nChooseM = 1.0;
-      for (var r = 1; r <= m; r++) {
+      double total = 0.0;
+    for (int m = k; m <= n; m++) {
+        double nChooseM = 1.0;
+      for (int r = 1; r <= m; r++) {
         nChooseM *= (n - r) + 1;
         nChooseM /= r;
       }
@@ -779,24 +779,24 @@ public final class SloppyMath {
       k = m - k;
     }
     if (m > r) {
-        var temp = m;
+        int temp = m;
       m = r;
       r = temp;
     }
 
 
-      var total = 0.0;
+      double total = 0.0;
     if (k > m / 2) {
       
-      for (var k0 = k; k0 <= m; k0++) {
+      for (int k0 = k; k0 <= m; k0++) {
         
         
         total += SloppyMath.hypergeometric(k0, n, r, m);
       }
     } else {
 
-        var min = Math.max(0, (m + r) - n);
-      for (var k0 = min; k0 < k; k0++) {
+        int min = Math.max(0, (m + r) - n);
+      for (int k0 = min; k0 < k; k0++) {
         
         
         total += SloppyMath.hypergeometric(k0, n, r, m);
@@ -825,10 +825,10 @@ public final class SloppyMath {
     int[][] cg = {{k, r - k}, {m - k, n - (k + (r - k) + (m - k))}};
     int[] cgr = {r, n - r};
     int[] cgc = {m, n - m};
-      var total = 0.0;
-    for (var i = 0; i < 2; i++) {
-      for (var j = 0; j < 2; j++) {
-          var exp = (double) cgr[i] * cgc[j] / n;
+      double total = 0.0;
+    for (int i = 0; i < 2; i++) {
+      for (int j = 0; j < 2; j++) {
+          double exp = (double) cgr[i] * cgc[j] / n;
         total += (cg[i][j] - exp) * (cg[i][j] - exp) / exp;
       }
     }
@@ -957,12 +957,12 @@ public final class SloppyMath {
 	{
     if (val < 0.0) return Double.NaN;
 	  if (val == 0.0) return Double.NEGATIVE_INFINITY;
-        var r = val - 1;
+        double r = val - 1;
 		if (Math.abs(r) < 0.3)
 		{
 
 
-            var rSquared = r * r;
+            double rSquared = r * r;
 			return r - rSquared / 2 + rSquared * r / 3;
 		}
 		double x = (Double.doubleToLongBits(val) >> 32);
@@ -974,15 +974,15 @@ public final class SloppyMath {
 	{
 
 		if (Math.abs(val) < 0.1) return 1 + val;
-        var tmp = (long) (1512775 * val + (1072693248 - 60801));
+        long tmp = (long) (1512775 * val + (1072693248 - 60801));
 		return Double.longBitsToDouble(tmp << 32);
 
 	}
 
 	public static double approxPow(double a, double b)
 	{
-        var tmp = (int) (Double.doubleToLongBits(a) >> 32);
-        var tmp2 = (int) (b * (tmp - 1072632447) + 1072632447);
+        int tmp = (int) (Double.doubleToLongBits(a) >> 32);
+        int tmp2 = (int) (b * (tmp - 1072632447) + 1072632447);
 		return Double.longBitsToDouble(((long) tmp2) << 32);
 	}
 	

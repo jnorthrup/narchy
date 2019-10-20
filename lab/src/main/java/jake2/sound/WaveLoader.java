@@ -47,7 +47,7 @@ public class WaveLoader {
 			return null;
 
 
-		var sc = s.cache;
+        sfxcache_t sc = s.cache;
 		if (sc != null)
 			return sc;
 
@@ -64,16 +64,16 @@ public class WaveLoader {
 		else
 			namebuffer = "sound/" + name;
 
-		var data = FS.LoadFile(namebuffer);
+        byte[] data = FS.LoadFile(namebuffer);
 
 		if (data == null) {
 			Com.DPrintf("Couldn't load " + namebuffer + '\n');
 			return null;
 		}
 
-		var size = data.length;
+        int size = data.length;
 
-		var info = GetWavinfo(s.name, data, size);
+        wavinfo_t info = GetWavinfo(s.name, data, size);
 
 		if (info.channels != 1)
 		{
@@ -87,7 +87,7 @@ public class WaveLoader {
 		else
 			stepscale = (float)info.rate / S.getDefaultSampleRate();
 
-		var len = (int) (info.samples / stepscale);
+        int len = (int) (info.samples / stepscale);
         len *= info.width * info.channels;
 
 		
@@ -95,7 +95,7 @@ public class WaveLoader {
 	  This is the maximum sample length in bytes which has to be replaced by
 	  a configurable variable.
 	 */
-		var maxsamplebytes = 2048 * 1024;
+        int maxsamplebytes = 2048 * 1024;
 		if (len >= maxsamplebytes)
 		{
 			Com.Printf(s.name + " is too long: " + len + " bytes?! ignoring.\n");
@@ -124,7 +124,7 @@ public class WaveLoader {
 	public static void ResampleSfx (sfx_t sfx, int inrate, int inwidth, byte[] data, int offset)
 	{
 
-		var sc = sfx.cache;
+        sfxcache_t sc = sfx.cache;
         
         if (sc == null)
         	return;
@@ -137,7 +137,7 @@ public class WaveLoader {
         	stepscale = 1;
         else
         	stepscale = (float)inrate / S.getDefaultSampleRate();
-		var outcount = (int) (sc.length / stepscale);
+        int outcount = (int) (sc.length / stepscale);
         sc.length = outcount;
         
         if (sc.loopstart != -1)
@@ -149,11 +149,11 @@ public class WaveLoader {
 
         sc.width = inwidth;
         sc.stereo = 0;
-		var samplefrac = 0;
-		var fracstep = (int) (stepscale * 256);
+        int samplefrac = 0;
+        int fracstep = (int) (stepscale * 256);
         
-        for (var i = 0; i < outcount; i++) {
-			var srcsample = samplefrac >> 8;
+        for (int i = 0; i < outcount; i++) {
+            int srcsample = samplefrac >> 8;
             samplefrac += fracstep;
 
             int sample;
@@ -188,7 +188,7 @@ public class WaveLoader {
 
 
 	static short GetLittleShort() {
-		var val = data_b[data_p] & 0xFF;
+        int val = data_b[data_p] & 0xFF;
 		data_p++;
 		val |= ((data_b[data_p] & 0xFF) << 8);
 		data_p++;
@@ -196,7 +196,7 @@ public class WaveLoader {
 	}
 
 	static int GetLittleLong() {
-		var val = data_b[data_p] & 0xFF;
+        int val = data_b[data_p] & 0xFF;
 		data_p++;
 		val |= ((data_b[data_p] & 0xFF) << 8);
 		data_p++;
@@ -229,7 +229,7 @@ public class WaveLoader {
 			}
 			data_p -= 8;
 			last_chunk = data_p + 8 + ((iff_chunk_len + 1) & ~1);
-			var s = new String(data_b, data_p, 4);
+            String s = new String(data_b, data_p, 4);
 			if (s.equals(name))
 				return;
 		}
@@ -246,7 +246,7 @@ public class WaveLoader {
 	============
 	*/
 	static wavinfo_t GetWavinfo(String name, byte[] wav, int wavlength) {
-		var info = new wavinfo_t();
+        wavinfo_t info = new wavinfo_t();
 
         if (wav == null)
 			return info;
@@ -257,7 +257,7 @@ public class WaveLoader {
 
 		
 		FindChunk("RIFF");
-		var s = new String(data_b, data_p + 8, 4);
+        String s = new String(data_b, data_p + 8, 4);
 		if (!"WAVE".equals(s)) {
 			Com.Printf("Missing RIFF/WAVE chunks\n");
 			return info;
@@ -299,7 +299,7 @@ public class WaveLoader {
 					if ("MARK".equals(s)) {
 											
 						data_p += 24;
-						var i = GetLittleLong();
+                        int i = GetLittleLong();
                         info.samples = info.loopstart + i;
 						
 					}
@@ -316,7 +316,7 @@ public class WaveLoader {
 		}
 
 		data_p += 4;
-		var samples = GetLittleLong() / info.width;
+        int samples = GetLittleLong() / info.width;
 
 		if (info.samples != 0) {
 			if (samples < info.samples)

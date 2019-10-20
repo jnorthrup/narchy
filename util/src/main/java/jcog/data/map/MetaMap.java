@@ -22,8 +22,8 @@ public interface MetaMap {
     }
 
     default <X> X metaWeak(String key, boolean softOrWeak, Function<String,X> valueIfAbsent) {
-        var r = ((Reference<X>) (meta(key, (k) -> {
-            var v = valueIfAbsent.apply(k);
+        Reference<X> r = ((Reference<X>) (meta(key, (k) -> {
+            X v = valueIfAbsent.apply(k);
             if (v != null)
                 return softOrWeak ? new SoftReference(v) : new WeakReference(v);
             else

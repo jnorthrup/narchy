@@ -197,7 +197,7 @@ public class GameUtil {
      */
 
     public static void G_ClearEdict(edict_t ent) {
-        var i = ent.index;
+        int i = ent.index;
         GameBase.g_edicts[i] = new edict_t(i);
     }
 
@@ -210,7 +210,7 @@ public class GameUtil {
     public static boolean KillBox(edict_t ent) {
 
         while (true) {
-            var tr = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs,
+            trace_t tr = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs,
                     ent.s.origin, null, Defines.MASK_PLAYERSOLID);
             if (tr.ent == null || tr.ent == GameBase.g_edicts[0])
                 break;
@@ -247,9 +247,9 @@ public class GameUtil {
         if (ent.client == null)
             return "";
 
-        var value = Info.Info_ValueForKey(ent.client.pers.userinfo, "skin");
+        String value = Info.Info_ValueForKey(ent.client.pers.userinfo, "skin");
 
-        var p = value.indexOf('/');
+        int p = value.indexOf('/');
 
         if (p == -1)
             return value;
@@ -263,7 +263,7 @@ public class GameUtil {
 
     static void ValidateSelectedItem(edict_t ent) {
 
-        var cl = ent.client;
+        gclient_t cl = ent.client;
 
         if (cl.pers.inventory[cl.pers.selected_item] != 0)
             return; 
@@ -281,7 +281,7 @@ public class GameUtil {
         float[] v = { 0, 0, 0 };
 
         Math3D.VectorSubtract(self.s.origin, other.s.origin, v);
-        var len = Math3D.VectorLength(v);
+        float len = Math3D.VectorLength(v);
         if (len < Defines.MELEE_DISTANCE)
             return Defines.RANGE_MELEE;
         if (len < 500)
@@ -305,7 +305,7 @@ public class GameUtil {
         float[] vec = {0, 0, 0};
         Math3D.VectorSubtract(other.s.origin, self.s.origin, vec);
         Math3D.VectorNormalize(vec);
-        var dot = Math3D.DotProduct(vec, forward);
+        float dot = Math3D.DotProduct(vec, forward);
 
         return dot > 0.3;
     }
@@ -321,7 +321,7 @@ public class GameUtil {
         float[] spot2 = {0, 0, 0};
         Math3D.VectorCopy(other.s.origin, spot2);
         spot2[2] += other.viewheight;
-        var trace = game_import_t.trace(spot1, Globals.vec3_origin,
+        trace_t trace = game_import_t.trace(spot1, Globals.vec3_origin,
                 Globals.vec3_origin, spot2, self, Defines.MASK_OPAQUE);
 
         return trace.fraction == 1.0;
@@ -343,8 +343,8 @@ public class GameUtil {
      * slower noticing monsters.
      */
     static boolean FindTarget(edict_t self) {
-        var result = true;
-        var finished = false;
+        boolean result = true;
+        boolean finished = false;
 
         if ((self.monsterinfo.aiflags & Defines.AI_GOOD_GUY) != 0) {
             if (self.goalentity != null && self.goalentity.inuse
@@ -365,7 +365,7 @@ public class GameUtil {
             if ((self.monsterinfo.aiflags & Defines.AI_COMBAT_POINT) != 0) {
                 result = false;
             } else {
-                var heardit = false;
+                boolean heardit = false;
                 edict_t client = null;
                 if ((GameBase.level.sight_entity_framenum >= (GameBase.level.framenum - 1))
                         && 0 == (self.spawnflags & 1)) {
@@ -417,7 +417,7 @@ public class GameUtil {
                         }
                         if (!finished) {
                             if (!heardit) {
-                                var r = range(self, client);
+                                int r = range(self, client);
 
                                 if (r == Defines.RANGE_FAR) {
                                     result = false;
@@ -623,7 +623,7 @@ public class GameUtil {
                 Math3D.VectorCopy(self.enemy.s.origin, spot2);
                 spot2[2] += self.enemy.viewheight;
 
-                var tr = game_import_t.trace(spot1, null, null, spot2, self,
+                trace_t tr = game_import_t.trace(spot1, null, null, spot2, self,
                         Defines.CONTENTS_SOLID | Defines.CONTENTS_MONSTER
                                 | Defines.CONTENTS_SLIME
                                 | Defines.CONTENTS_LAVA

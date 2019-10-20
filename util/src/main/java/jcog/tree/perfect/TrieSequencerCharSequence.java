@@ -32,7 +32,12 @@ public class TrieSequencerCharSequence<S extends CharSequence> implements TrieSe
    @Override
    public int matches( S sequenceA, int indexA, S sequenceB, int indexB, int count )
    {
-       return IntStream.range(0, count).filter(i -> sequenceA.charAt(indexA + i) != sequenceB.charAt(indexB + i)).findFirst().orElse(count);
+       for (int i = 0; i < count; i++) {
+           if (sequenceA.charAt(indexA + i) != sequenceB.charAt(indexB + i)) {
+               return i;
+           }
+       }
+       return count;
 
    }
 

@@ -35,7 +35,7 @@ public class StateGoalSelection extends State {
      */
     @Override
     State run(PrologSolve e) {
-        var c = e.run;
+        PrologRun c = e.run;
         Term curGoal = null;
         while (curGoal == null) {
             curGoal = e.currentContext.goalsToEval.fetch();
@@ -50,7 +50,7 @@ public class StateGoalSelection extends State {
 
             } else {
 
-                var goal_app = curGoal.term();
+                Term goal_app = curGoal.term();
                 if (!(goal_app instanceof Struct))
                     return PrologRun.END_FALSE;
 

@@ -34,7 +34,7 @@ public class MetalBloomFilter<E> {
     }
 
     public void add(int[] indices) {
-        for (var i = 0; i < numberOfHashes; i++) {
+        for (int i = 0; i < numberOfHashes; i++) {
             increment(indices[i]);
         }
     }
@@ -42,19 +42,24 @@ public class MetalBloomFilter<E> {
     /** possibly contains */
     public boolean contains(int[] indices) {
 
-        var bound = numberOfHashes;
-        return IntStream.range(0, bound).anyMatch(i -> cells[indices[i]] > 0);
+        int bound = numberOfHashes;
+        for (int i = 0; i < bound; i++) {
+            if (cells[indices[i]] > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public int[] hash(E element) {
 
-        var h1 = hasher.hash1(element);
-        var h2 = hasher.hash2(element);
-        var hashes = new int[10];
-        var count = 0;
-        var bound = numberOfHashes;
-        for (var i = 0; i < bound; i++) {
-            var abs = Math.abs(((h1 + i * h2) % numberOfCells));
+        int h1 = hasher.hash1(element);
+        int h2 = hasher.hash2(element);
+        int[] hashes = new int[10];
+        int count = 0;
+        int bound = numberOfHashes;
+        for (int i = 0; i < bound; i++) {
+            int abs = Math.abs(((h1 + i * h2) % numberOfCells));
             if (hashes.length == count) hashes = Arrays.copyOf(hashes, count * 2);
             hashes[count++] = abs;
         }

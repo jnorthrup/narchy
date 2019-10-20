@@ -8,7 +8,7 @@ public interface Versioned<X> {
     void pop();
 
     default X getAndPop() {
-        var x = get();
+        X x = get();
         if (x!=null)
             pop();
         return x;

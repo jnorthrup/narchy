@@ -36,9 +36,9 @@ public class RuleCyclic {
 
         ResetToDefaults();
 
-		var st = new StringTokenizer(sStr, ",/", true);
+        StringTokenizer st = new StringTokenizer(sStr, ",/", true);
 		while (st.hasMoreTokens()) {
-			var sTok = st.nextToken().toUpperCase();
+            String sTok = st.nextToken().toUpperCase();
 
             if (sTok.length() > 0 && sTok.charAt(0) == 'R')
 				iRng = Integer.valueOf(sTok.substring(1));
@@ -79,7 +79,7 @@ public class RuleCyclic {
         Validate();
 
 
-		var sBff = 'R' + String.valueOf(iRng) + "/T" + iThr + "/C"
+        String sBff = 'R' + String.valueOf(iRng) + "/T" + iThr + "/C"
                 + iClo;
 
         sBff += (iNgh == MJRules.NGHTYP_NEUM ? "/NN" : "/NM");
@@ -105,8 +105,8 @@ public class RuleCyclic {
 		else if (iRng > MAX_RANGE)
 			iRng = MAX_RANGE;
 
-		var iMax = 0;
-		for (var i = 1; i <= iRng; i++)
+        int iMax = 0;
+		for (int i = 1; i <= iRng; i++)
 
             iMax += i * 8;
 
@@ -123,33 +123,33 @@ public class RuleCyclic {
 	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 					   short[][] crrState, short[][] tmpState) {
-		var modCnt = 0;
-		var xVector = new int[21];
-		var yVector = new int[21];
+        int modCnt = 0;
+        int[] xVector = new int[21];
+        int[] yVector = new int[21];
 
-		var fMoore = (iNgh == MJRules.NGHTYP_MOOR);
+        boolean fMoore = (iNgh == MJRules.NGHTYP_MOOR);
 
-		for (var i = 0; i < sizX; i++) {
-			for (var j = 0; j < sizY; j++) {
+		for (int i = 0; i < sizX; i++) {
+			for (int j = 0; j < sizY; j++) {
 				
 				
 				xVector[10] = i;
 				yVector[10] = j;
-				for (var iTmp = 1; iTmp <= iRng; iTmp++) {
-					var colL = i - iTmp;
+				for (int iTmp = 1; iTmp <= iRng; iTmp++) {
+                    int colL = i - iTmp;
                     xVector[10 - iTmp] = colL >= 0 ? colL : sizX + colL;
 
-					var colR = i + iTmp;
+                    int colR = i + iTmp;
                     xVector[10 + iTmp] = colR < sizX ? colR : colR - sizX;
 
-					var rowT = j - iTmp;
+                    int rowT = j - iTmp;
                     yVector[10 - iTmp] = rowT >= 0 ? rowT : sizY + rowT;
 
-					var rowB = j + iTmp;
+                    int rowB = j + iTmp;
                     yVector[10 + iTmp] = rowB < sizY ? rowB : rowB - sizY;
 				}
-				var bOldVal = crrState[i][j];
-				var nxtStt = bOldVal >= (iClo - 1) ? 0 : (short) (bOldVal + 1);
+                short bOldVal = crrState[i][j];
+                short nxtStt = bOldVal >= (iClo - 1) ? 0 : (short) (bOldVal + 1);
 
                 short bNewVal;
                 if ((!fGH) || (bOldVal == 0)) {
@@ -157,9 +157,9 @@ public class RuleCyclic {
 					if (bNewVal >= iClo)
 						bNewVal = (short) (iClo - 1);
 
-					var iCnt = 0;
-                    for (var ic = 10 - iRng; ic <= 10 + iRng; ic++) {
-						for (var ir = 10 - iRng; ir <= 10 + iRng; ir++) {
+                    int iCnt = 0;
+                    for (int ic = 10 - iRng; ic <= 10 + iRng; ic++) {
+						for (int ir = 10 - iRng; ir <= 10 + iRng; ir++) {
 							if ((fMoore)
 									|| ((Math.abs(ic - 10) + Math.abs(ir - 10)) <= iRng)) {
 								if (crrState[xVector[ic]][yVector[ir]] == nxtStt) {

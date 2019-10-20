@@ -35,13 +35,13 @@ public class MatchMinMax extends TernaryOperator {
 
     @Override
     public void describe(StringBuilder builder, DescriptionContext context, RegexFlavour flavour) {
-        var tmp = new StringBuilder();
-        var child = getFirst();
+        StringBuilder tmp = new StringBuilder();
+        Node child = getFirst();
 
-        var index = context.incGroups();
+        int index = context.incGroups();
         child.describe(tmp, context, flavour);
-        var l = child.isEscaped() ? tmp.length() - 1 : tmp.length();
-        var group = l > 1 && !child.isCharacterClass() && !(child instanceof Group) && !(child instanceof NonCapturingGroup);
+        int l = child.isEscaped() ? tmp.length() - 1 : tmp.length();
+        boolean group = l > 1 && !child.isCharacterClass() && !(child instanceof Group) && !(child instanceof NonCapturingGroup);
 
         switch (flavour) {
             case JAVA:
@@ -54,9 +54,9 @@ public class MatchMinMax extends TernaryOperator {
                 }
 
                 builder.append('{');
-                var second = getSecond().toNonNegativeInteger(1);
+                int second = getSecond().toNonNegativeInteger(1);
                 builder.append(second);
-                var third = getThird().toNonNegativeInteger(-1);
+                int third = getThird().toNonNegativeInteger(-1);
                 if (third!=-1) {
                     builder.append(',').append(Math.max(third, second+1)).append("}+");
                 }else {
@@ -84,23 +84,23 @@ public class MatchMinMax extends TernaryOperator {
 
     @Override
     public boolean isValid() {
-        var first = getFirst();
-        var validFirst = first.isValid()
+        Node first = getFirst();
+        boolean validFirst = first.isValid()
                 && !(first instanceof Concatenator || first instanceof Quantifier || first instanceof MatchMinMax || first instanceof MatchMinMaxGreedy || first instanceof Anchor || first instanceof Lookaround);
 
         if (validFirst) {
 
-            var second = getSecond();
+            Node second = getSecond();
             if (!(second instanceof Constant)) return false;
 
-            var leftValue = second.toNonNegativeInteger(-1);
+            int leftValue = second.toNonNegativeInteger(-1);
             if (leftValue < 0) return false;
 
 
-            var third = getThird();
+            Node third = getThird();
             if (!(third instanceof Constant)) return false;
 
-            var rightValue = third.toNonNegativeInteger(-1);
+            int rightValue = third.toNonNegativeInteger(-1);
             if (rightValue < 0) return false;
 
             return (leftValue < rightValue);

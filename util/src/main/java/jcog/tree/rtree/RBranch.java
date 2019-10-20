@@ -72,7 +72,15 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
         //null-terminator
         //        }
 
-        return Arrays.stream(data).takeWhile(Objects::nonNull).anyMatch(c -> c.contains(x, b, model));
+        for (RNode<X> c : data) {
+            if (c == null) {
+                break;
+            }
+            if (c.contains(x, b, model)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -83,10 +91,10 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
      * @return position of the added node
      */
     private void addChild(RInsertion<X> x) {
-        var n = x.model.newLeaf().insert(x);
+        RNode<X> n = x.model.newLeaf().insert(x);
         data[this.size++] = n;
-        var b = this.bounds;
-        var nb = n.bounds();
+        HyperRegion b = this.bounds;
+        HyperRegion nb = n.bounds();
         this.bounds = b==null ? nb : Util.maybeEqual(b, b.mbr(nb));
         //grow(x.bounds);
     }
@@ -103,20 +111,20 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
     public RNode<X> add(RInsertion<X> x) {
 
 
-        var addOrMerge = x.addOrMerge; //save here before anything
+        boolean addOrMerge = x.addOrMerge; //save here before anything
 
         //1. test containment
         if (addOrMerge)
             x.addOrMerge = false; //temporarily set to contain/merge mode
 
-        var data = this.data;
+        RNode<X>[] data = this.data;
         if (x.maybeContainedBy(bounds)) {
 
             int s = this.size;
-            var merged = false;
-            for (var i = 0; i < s; i++) {
-                var ci = data[i];
-                var di = ci.add(x);
+            boolean merged = false;
+            for (int i = 0; i < s; i++) {
+                RNode<X> ci = data[i];
+                RNode<X> di = ci.add(x);
                 if (ci!=di) {
                     if (di!=null)
                         data[i] = di;
@@ -141,17 +149,17 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
         x.addOrMerge = true; //restore to add mode
 
 
-        var l = data.length;
+        int l = data.length;
         if (size < l) {
 
             addChild(x);
 
         } else {
 
-            var bestLeaf = chooseLeaf(x.bounds);
-            var dbf = data[bestLeaf];
+            int bestLeaf = chooseLeaf(x.bounds);
+            RNode<X> dbf = data[bestLeaf];
 
-            var before = dbf.bounds();
+            HyperRegion before = dbf.bounds();
             RNode nextBest = dbf.add(x);
             if (nextBest == null) {
                 if (!before.equals(dbf.bounds()))
@@ -184,11 +192,11 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
         if (nsize > 1 && !bounds.contains(xBounds))
             return this; //not here
 
-        var data = this.data;
-        for (var i = 0; i < nsize; i++) {
-            var nBefore = data[i];
+        RNode<X>[] data = this.data;
+        for (int i = 0; i < nsize; i++) {
+            RNode<X> nBefore = data[i];
 
-            @Nullable var nAfter = nBefore.remove(x, xBounds, model, removed);
+            @Nullable RNode<X> nAfter = nBefore.remove(x, xBounds, model, removed);
 
             if (nAfter!=nBefore) {
                 data[i] = nAfter;
@@ -201,7 +209,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
                             return null;
                         case 1:
                             //return the only remaining item
-                            var only = firstNonNull();
+                            RNode<X> only = firstNonNull();
                             size = 0;
                             return only;
                         default:
@@ -217,7 +225,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
                 }
 
                 if (nAfter instanceof RLeaf) {
-                    var next = consolidate(model, removed);
+                    RNode<X> next = consolidate(model, removed);
                     if (next != null)
                         return next;
                 }
@@ -242,10 +250,10 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
      * @return*/
     private RNode<X> consolidate(Spatialization<X> model, int[] removed) {
         int childItems = 0, leafs = 0;
-        for (var x : data) {
+        for (RNode<X> x : data) {
             if (x == null) break;
             if (!(x instanceof RLeaf)) continue;
-            var ls = ((RLeaf<X>) x).size;
+            short ls = ((RLeaf<X>) x).size;
             childItems += ls;
             leafs++;
         }
@@ -253,10 +261,10 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
             return null;
         }
 
-        var xx = new FasterList<X>(childItems);
+        FasterList<X> xx = new FasterList<X>(childItems);
         Consumer<X> adder = xx::addWithoutResize;
         for (int i = 0, dataLength = data.length; i < dataLength; i++) {
-            var x = data[i];
+            RNode<X> x = data[i];
             if (x == null) break;
             if (!(x instanceof RLeaf)) continue;
             x.forEach(adder);
@@ -281,7 +289,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
         }
 
 
-        for (var xxx : xx)
+        for (X xxx : xx)
             target = reinsert(xxx, target, model, removed);
 
         return target;
@@ -317,9 +325,9 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
 //    }
 
     private static <X> RNode<X> reinsert(X x, RNode<X> target, Spatialization<X> model, int[] removed) {
-        var reinsertion = model.insertion(x, true);
-        var u = target.add(reinsertion);
-        var merged = reinsertion.merged();
+        RInsertion<X> reinsertion = model.insertion(x, true);
+        RNode<X> u = target.add(reinsertion);
+        boolean merged = reinsertion.merged();
         if (merged)
             removed[0]++;
         else {
@@ -345,14 +353,14 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
     @Override
     public RNode<X> replace(X OLD, HyperRegion oldBounds, X NEW, Spatialization<X> model) {
 
-        var s = this.size;
+        short s = this.size;
         if (s > 0 && oldBounds.intersects(bounds)) {
-            var found = false;
+            boolean found = false;
 
-            var cc = this.data;
+            RNode<X>[] cc = this.data;
             HyperRegion region = null;
 
-            for (var i = 0; i < s; i++) {
+            for (int i = 0; i < s; i++) {
                 if (!found && oldBounds.intersects(cc[i].bounds())) {
                     cc[i] = cc[i].replace(OLD, oldBounds, NEW, model);
                     found = true;
@@ -368,27 +376,27 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
 
 
     private int chooseLeaf(HyperRegion tRect) {
-        var cc = this.data;
+        RNode<X>[] cc = this.data;
         if (size > 0) {
-            var bestNode = -1;
+            int bestNode = -1;
 
-            var leastEnlargement = Double.POSITIVE_INFINITY;
-            var leastPerimeter = Double.POSITIVE_INFINITY;
+            double leastEnlargement = Double.POSITIVE_INFINITY;
+            double leastPerimeter = Double.POSITIVE_INFINITY;
 
-            var s = this.size;
-            for (var i = 0; i < s; i++) {
-                var cir = cc[i].bounds();
-                var childMbr = tRect.mbr(cir);
-                var nodeEnlargement =
+            short s = this.size;
+            for (int i = 0; i < s; i++) {
+                HyperRegion cir = cc[i].bounds();
+                HyperRegion childMbr = tRect.mbr(cir);
+                double nodeEnlargement =
                         (cir != childMbr ? childMbr.cost() - (cir.cost() /* + tCost*/) : 0);
 
-                var dc = Double.compare(nodeEnlargement, leastEnlargement);
+                int dc = Double.compare(nodeEnlargement, leastEnlargement);
                 if (nodeEnlargement < leastEnlargement) {
                     leastEnlargement = nodeEnlargement;
                     leastPerimeter = childMbr.perimeter();
                     bestNode = i;
                 } else if (dc == 0) {
-                    var perimeter = childMbr.perimeter();
+                    double perimeter = childMbr.perimeter();
                     if (perimeter < leastPerimeter) {
                         leastEnlargement = nodeEnlargement;
                         leastPerimeter = perimeter;
@@ -412,7 +420,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
 
     @Override
     public void forEach(Consumer<? super X> consumer) {
-        for (var x : data) {
+        for (RNode<X> x : data) {
             if (x == null)
                 break; //null terminator
             x.forEach(consumer);
@@ -432,56 +440,98 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
     @Override
     public boolean OR(Predicate<X> p) {
         //null terminator
-        return Arrays.stream(data).takeWhile(Objects::nonNull).anyMatch(x -> x.OR(p));
+        for (RNode<X> x : data) {
+            if (x == null) {
+                break;
+            }
+            if (x.OR(p)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public boolean AND(Predicate<X> p) {
         //null terminator
-        return Arrays.stream(data).takeWhile(Objects::nonNull).allMatch(x -> x.AND(p));
+        for (RNode<X> x : data) {
+            if (x == null) {
+                break;
+            }
+            if (!x.AND(p)) {
+                return false;
+            }
+        }
+        return true;
     }
     public boolean ANDlocal(Predicate<RNode<X>> p) {
-        var n = this.data;
-        var s = this.size;
-        return IntStream.range(0, s).allMatch(i -> p.test(n[i]));
+        RNode<X>[] n = this.data;
+        short s = this.size;
+        for (int i = 0; i < s; i++) {
+            if (!p.test(n[i])) {
+                return false;
+            }
+        }
+        return true;
     }
     public boolean ORlocal(Predicate<RNode<X>> p) {
-        var n = this.data;
-        var s = this.size;
-        return IntStream.range(0, s).anyMatch(i -> p.test(n[i]));
+        RNode<X>[] n = this.data;
+        short s = this.size;
+        for (int i = 0; i < s; i++) {
+            if (p.test(n[i])) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
 
     @Override
     public boolean containing(HyperRegion rect, Predicate<X> t, Spatialization<X> model) {
-        var b = this.bounds;
+        HyperRegion b = this.bounds;
         if (b != null && rect.intersects(b)) {
             int s = size;
             //                if (d == null)
             //                    continue;
             /*else */
-            return Arrays.stream(data, 0, s).allMatch(d -> d.containing(rect, t, model));
+            for (int i = 0; i < s; i++) {
+                RNode<X> d = data[i];
+                if (!d.containing(rect, t, model)) {
+                    return false;
+                }
+            }
+            return true;
         }
         return true;
     }
 
     @Override
     public boolean intersectingNodes(HyperRegion rect, Predicate<RNode<X>> t, Spatialization<X> model) {
-        var b = this.bounds;
+        HyperRegion b = this.bounds;
         if (b != null && rect.intersects(b) && t.test(this)) {
             int s = size;
-            return IntStream.range(0, s).allMatch(i -> data[i].intersectingNodes(rect, t, model));
+            for (int i = 0; i < s; i++) {
+                if (!data[i].intersectingNodes(rect, t, model)) {
+                    return false;
+                }
+            }
+            return true;
         }
         return true;
     }
 
     @Override
     public boolean intersecting(HyperRegion rect, Predicate<X> t, Spatialization<X> model) {
-        var b = this.bounds;
+        HyperRegion b = this.bounds;
         if (b != null && rect.intersects(b)) {
             int s = size;
-            return IntStream.range(0, s).allMatch(i -> data[i].intersecting(rect, t, model));
+            for (int i = 0; i < s; i++) {
+                if (!data[i].intersecting(rect, t, model)) {
+                    return false;
+                }
+            }
+            return true;
         }
         return true;
     }
@@ -505,14 +555,14 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
 
     @Override
     public void collectStats(Stats stats, int depth) {
-        for (var i = 0; i < size; i++)
+        for (int i = 0; i < size; i++)
             data[i].collectStats(stats, depth + 1);
         stats.countBranchAtDepth(depth);
     }
 
     @Override
     public RNode<X> instrument() {
-        for (var i = 0; i < size; i++)
+        for (int i = 0; i < size; i++)
             data[i] = data[i].instrument();
         return new CounterRNode(this);
     }

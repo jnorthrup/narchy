@@ -107,7 +107,7 @@ protected void layoutImpl()
  */
 protected void layoutChild(Surface aChild, float newPW, float newPH)
 {
-    var sinfo = getSpringInfo(aChild);
+    SpringInfo sinfo = getSpringInfo(aChild);
 //    String asize = aChild.getAutosizing();
 //    float oldPW = sinfo.pwidth, oldPH = sinfo.pheight;
 //    boolean lms = asize.charAt(0)=='~', ws = asize.charAt(1)=='~', rms = asize.charAt(2)=='~';

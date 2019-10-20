@@ -16,9 +16,9 @@ public class FormulaUtil {
      */
     public static String toProlog(Formula f) {
 
-        var sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         sb.append(f.car()).append('(');
-        for (var i = 1; i < f.argumentsToArrayList(0).size(); i ++) {
+        for (int i = 1; i < f.argumentsToArrayList(0).size(); i ++) {
             if (i != 1)
                 sb.append(',');
             sb.append(f.getArgument(i));
@@ -35,9 +35,9 @@ public class FormulaUtil {
      */
     public static List<int[]> getPermutations(int size, BiPredicate<Integer, Integer> validateFn) {
 
-        var array = new int[10];
-        var count = 0;
-        for (var i = 0; i < size; i++) {
+        int[] array = new int[10];
+        int count = 0;
+        for (int i = 0; i < size; i++) {
             if (array.length == count) array = Arrays.copyOf(array, count * 2);
             array[count++] = i;
         }
@@ -56,16 +56,16 @@ public class FormulaUtil {
     private static void permutation(int[] prefix, int[] array, List<int[]> permutations,
                                     BiPredicate<Integer, Integer> validateFn) {
 
-        var n = array.length;
+        int n = array.length;
         if (n == 0) {
             permutations.add(prefix);
         }
         else {
-            for (var i = 0; i < n; i++) {
+            for (int i = 0; i < n; i++) {
                 if (validateFn.test(prefix.length, array[i])) {
-                    var newPrefix = Arrays.copyOf(prefix, prefix.length + 1);
+                    int[] newPrefix = Arrays.copyOf(prefix, prefix.length + 1);
                     newPrefix[prefix.length] = array[i];
-                    var leftovers = new int[n - 1];
+                    int[] leftovers = new int[n - 1];
                     System.arraycopy(array, 0, leftovers, 0, i);
                     if (n - i + 1 >= 0) System.arraycopy(array, i + 1, leftovers, i + 1 - 1, n - i + 1);
                     permutation(newPrefix, leftovers, permutations, validateFn);
@@ -107,7 +107,7 @@ public class FormulaUtil {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            var that = (FormulaMatchMemoMapKey) o;
+            FormulaMatchMemoMapKey that = (FormulaMatchMemoMapKey) o;
 
             if (!Objects.equals(f1, that.f1)) return false;
             return Objects.equals(f2, that.f2);
@@ -120,7 +120,7 @@ public class FormulaUtil {
         @Override
         public int hashCode() {
 
-            var result = f1 != null ? f1.hashCode() : 0;
+            int result = f1 != null ? f1.hashCode() : 0;
             result = 31 * result + (f2 != null ? f2.hashCode() : 0);
             return result;
         }

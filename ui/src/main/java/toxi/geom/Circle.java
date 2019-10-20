@@ -48,7 +48,7 @@ public class Circle extends Ellipse {
      * @return new circle instance
      */
     public static Circle from2Points(Vec2D p1, Vec2D p2) {
-        var m = p1.interpolateTo(p2, 0.5f);
+        Vec2D m = p1.interpolateTo(p2, 0.5f);
         return new Circle(m, m.distanceTo(p1));
     }
 
@@ -67,24 +67,24 @@ public class Circle extends Ellipse {
      */
     public static Circle from3Points(Vec2D p1, Vec2D p2, Vec2D p3) {
         Circle circle = null;
-        var deltaA = p2.sub(p1);
-        var deltaB = p3.sub(p2);
+        Vec2D deltaA = p2.sub(p1);
+        Vec2D deltaB = p3.sub(p2);
         if (MathUtils.abs(deltaA.x) <= 0.0000001f
                 && MathUtils.abs(deltaB.y) <= 0.0000001f) {
-            var centroid = new Vec2D(p2.x + p3.x, p1.y + p2.y)
+            Vec2D centroid = new Vec2D(p2.x + p3.x, p1.y + p2.y)
                     .scaleSelf(0.5f);
-            var radius = centroid.distanceTo(p1);
+            float radius = centroid.distanceTo(p1);
             circle = new Circle(centroid, radius);
         } else {
-            var aSlope = deltaA.y / deltaA.x;
-            var bSlope = deltaB.y / deltaB.x;
+            float aSlope = deltaA.y / deltaA.x;
+            float bSlope = deltaB.y / deltaB.x;
             if (MathUtils.abs(aSlope - bSlope) > 0.0000001f) {
-                var x = (aSlope * bSlope * (p1.y - p3.y) + bSlope
+                float x = (aSlope * bSlope * (p1.y - p3.y) + bSlope
                         * (p1.x + p2.x) - aSlope * (p2.x + p3.x))
                         / (2 * (bSlope - aSlope));
-                var y = -(x - (p1.x + p2.x) / 2) / aSlope + (p1.y + p2.y) / 2;
-                var centroid = new Vec2D(x, y);
-                var radius = centroid.distanceTo(p1);
+                float y = -(x - (p1.x + p2.x) / 2) / aSlope + (p1.y + p2.y) / 2;
+                Vec2D centroid = new Vec2D(x, y);
+                float radius = centroid.distanceTo(p1);
                 circle = new Circle(centroid, radius);
             }
         }
@@ -92,14 +92,14 @@ public class Circle extends Ellipse {
     }
 
     public static Circle newBoundingCircle(Collection<Vec2D> vertices) {
-        var origin = new Vec2D();
-        for (var v : vertices) {
+        Vec2D origin = new Vec2D();
+        for (Vec2D v : vertices) {
             origin.addSelf(v);
         }
         origin.scaleSelf(1f / vertices.size());
         float maxD = 0;
-        for (var v : vertices) {
-            var d = origin.distanceToSquared(v);
+        for (Vec2D v : vertices) {
+            float d = origin.distanceToSquared(v);
             if (d > maxD) {
                 maxD = d;
             }
@@ -152,24 +152,24 @@ public class Circle extends Ellipse {
     }
 
     public Vec2D[] getTangentPoints(ReadonlyVec2D p) {
-        var m = interpolateTo(p, 0.5f);
+        Vec2D m = interpolateTo(p, 0.5f);
         return intersectsCircle(new Circle(m, m.distanceTo(p)));
     }
 
     public Vec2D[] intersectsCircle(Circle c) {
         Vec2D[] res = null;
-        var delta = c.sub(this);
-        var d = delta.magnitude();
-        var r1 = radius.x;
-        var r2 = c.radius.x;
+        Vec2D delta = c.sub(this);
+        float d = delta.magnitude();
+        float r1 = radius.x;
+        float r2 = c.radius.x;
         if (d <= r1 + r2 && d >= Math.abs(r1 - r2)) {
-            var a = (r1 * r1 - r2 * r2 + d * d) / (2.0f * d);
+            float a = (r1 * r1 - r2 * r2 + d * d) / (2.0f * d);
             d = 1 / d;
-            var p = add(delta.scale(a * d));
-            var h = (float) Math.sqrt(r1 * r1 - a * a);
+            Vec2D p = add(delta.scale(a * d));
+            float h = (float) Math.sqrt(r1 * r1 - a * a);
             delta.perpendicular().scaleSelf(h * d);
-            var i1 = p.add(delta);
-            var i2 = p.sub(delta);
+            Vec2D i1 = p.add(delta);
+            Vec2D i2 = p.sub(delta);
             res = new Vec2D[] {
                     i1, i2
             };

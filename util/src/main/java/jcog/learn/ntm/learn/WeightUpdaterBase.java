@@ -9,7 +9,7 @@ public interface WeightUpdaterBase extends IWeightUpdater {
 
     @Override
     default void updateWeight(Unit[] data) {
-        for (var unit : data)         {
+        for (Unit unit : data)         {
             updateWeight(unit);
         }
     }
@@ -17,14 +17,14 @@ public interface WeightUpdaterBase extends IWeightUpdater {
 
     @Override
     default void updateWeight(Unit[][] data) {
-        for (var units : data) {
+        for (Unit[] units : data) {
             updateWeight(units);
         }
     }
 
     @Override
     default void updateWeight(Unit[][][] data) {
-        for (var units : data) {
+        for (Unit[][] units : data) {
             updateWeight(units);
         }
     }

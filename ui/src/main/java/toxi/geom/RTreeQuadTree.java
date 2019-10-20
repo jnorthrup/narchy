@@ -15,7 +15,7 @@ public class RTreeQuadTree<X extends VerletParticle2D> extends RTree<X> implemen
     }
 
     static RectFloat b(Vec2D v) {
-        var DEFAULT_RADIUS = 0.5f;
+        float DEFAULT_RADIUS = 0.5f;
         return b(v, DEFAULT_RADIUS);
     }
 

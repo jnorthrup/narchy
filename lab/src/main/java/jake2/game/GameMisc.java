@@ -679,7 +679,7 @@ public class GameMisc {
         Math3D.VectorSet(ent.maxs, 32, 32, -16);
         game_import_t.linkentity(ent);
 
-        var trig = GameUtil.G_Spawn();
+        edict_t trig = GameUtil.G_Spawn();
         trig.touch = teleporter_touch;
         trig.solid = Defines.SOLID_TRIGGER;
         trig.target = ent.target;
@@ -729,7 +729,7 @@ public class GameMisc {
 
         float[] size = { 0, 0, 0 };
 
-        var gib = GameUtil.G_Spawn();
+        edict_t gib = GameUtil.G_Spawn();
     
         Math3D.VectorScale(self.size, 0.5f, size);
         float[] origin = {0, 0, 0};
@@ -855,7 +855,7 @@ public class GameMisc {
     public static void ThrowDebris(edict_t self, String modelname, float speed,
             float[] origin) {
 
-        var chunk = GameUtil.G_Spawn();
+        edict_t chunk = GameUtil.G_Spawn();
         Math3D.VectorCopy(origin, chunk.s.origin);
         game_import_t.setmodel(chunk, modelname);
         float[] v = {0, 0, 0};
@@ -943,7 +943,7 @@ public class GameMisc {
 
             if (self.pathtarget != null) {
 
-                var savetarget = self.target;
+                String savetarget = self.target;
                 self.target = self.pathtarget;
                 GameUtil.G_UseTargets(self, other);
                 self.target = savetarget;
@@ -1026,7 +1026,7 @@ public class GameMisc {
 
             if (self.pathtarget != null) {
 
-                var savetarget = self.target;
+                String savetarget = self.target;
                 self.target = self.pathtarget;
                 edict_t activator;
                 if (other.enemy != null && other.enemy.client != null)
@@ -1207,7 +1207,7 @@ public class GameMisc {
             
             Math3D.VectorScale(size, 0.5f, size);
 
-            var mass = self.mass;
+            int mass = self.mass;
             if (0 == mass)
                 mass = 75;
 
@@ -1286,7 +1286,7 @@ public class GameMisc {
             if ((null == other.groundentity) || (other.groundentity == self))
                 return;
 
-            var ratio = (float) other.mass / self.mass;
+            float ratio = (float) other.mass / self.mass;
             float[] v = {0, 0, 0};
             Math3D.VectorSubtract(self.s.origin, other.s.origin, v);
             M.M_walkmove(self, Math3D.vectoyaw(v), 20 * ratio
@@ -1308,7 +1308,7 @@ public class GameMisc {
             Math3D.VectorMA(self.absmin, 0.5f, self.size, self.s.origin);
 
 
-            var spd = 1.5f * self.dmg / 200.0f;
+            float spd = 1.5f * self.dmg / 200.0f;
             float[] org = {0, 0, 0};
             org[0] = self.s.origin[0] + Lib.crandom() * self.size[0];
             org[1] = self.s.origin[1] + Lib.crandom() * self.size[1];
@@ -1579,7 +1579,7 @@ public class GameMisc {
 
             game_import_t.sound(self, Defines.CHAN_BODY, game_import_t
                     .soundindex("misc/udeath.wav"), 1, Defines.ATTN_NORM, 0);
-            for (var n = 0; n < 4; n++)
+            for (int n = 0; n < 4; n++)
                 ThrowGib(self, "models/objects/gibs/sm_meat/tris.md2",
                         damage, Defines.GIB_ORGANIC);
             ThrowHead(self, "models/objects/gibs/head2/tris.md2",
@@ -1634,7 +1634,7 @@ public class GameMisc {
 
             self.groundentity = null;
 
-            var diff = self.timestamp - GameBase.level.time;
+            float diff = self.timestamp - GameBase.level.time;
             if (diff < -1.0)
                 diff = -1.0f;
 
@@ -1736,17 +1736,17 @@ public class GameMisc {
         @Override
         public void use(edict_t self, edict_t other, edict_t activator) {
 
-            var l = self.message.length();
-            for (var e = self.teammaster; e != null; e = e.teamchain) {
+            int l = self.message.length();
+            for (edict_t e = self.teammaster; e != null; e = e.teamchain) {
                 if (e.count == 0)
                     continue;
-                var n = e.count - 1;
+                int n = e.count - 1;
                 if (n >= l) {
                     e.s.frame = 12;
                     continue;
                 }
 
-                var c = self.message.charAt(n);
+                char c = self.message.charAt(n);
                 if (c >= '0' && c <= '9')
                     e.s.frame = c - '0';
                 else if (c == '-')
@@ -1796,7 +1796,7 @@ public class GameMisc {
                 func_clock_format_countdown(self);
                 self.health--;
             } else {
-                var c = Calendar.getInstance();
+                Calendar c = Calendar.getInstance();
                 self.message = String.valueOf(c.get(Calendar.HOUR_OF_DAY)) + ':' + c.get(Calendar.MINUTE) + ':' + c.get(Calendar.SECOND);
 
                 /*
@@ -1817,8 +1817,8 @@ public class GameMisc {
                     || ((self.spawnflags & 2) != 0 && (self.health < self.wait))) {
                 if (self.pathtarget != null) {
 
-                    var savetarget = self.target;
-                    var savemessage = self.message;
+                    String savetarget = self.target;
+                    String savemessage = self.message;
                     self.target = self.pathtarget;
                     self.message = null;
                     GameUtil.G_UseTargets(self, self.activator);
@@ -1868,7 +1868,7 @@ public class GameMisc {
                 return;
 
             EdictIterator es = null;
-            var dest = GameBase.G_Find(null, GameBase.findByTarget, self.target).o;
+            edict_t dest = GameBase.G_Find(null, GameBase.findByTarget, self.target).o;
 
             if (dest == null) {
                 game_import_t.dprintf("Couldn't find destination\n");
@@ -1892,7 +1892,7 @@ public class GameMisc {
             other.s.event = Defines.EV_PLAYER_TELEPORT;
 
             
-            for (var i = 0; i < 3; i++) {
+            for (int i = 0; i < 3; i++) {
                 other.client.ps.pmove.delta_angles[i] = (short) Math3D
                         .ANGLE2SHORT(dest.s.angles[i]
                                 - other.client.resp.cmd_angles[i]);

@@ -39,9 +39,9 @@ public class UniqueList<E> extends ArrayList<Node> {
 
     @Override
     public boolean add(Node e) {
-        var builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         e.describe(builder);
-        var hash = builder.toString();
+        String hash = builder.toString();
         if (hashes.add(hash)) {
             return super.add(e);
         }
@@ -50,7 +50,7 @@ public class UniqueList<E> extends ArrayList<Node> {
 
     @Override
     public boolean addAll(Collection<? extends Node> c) {
-        var ret = false;
+        boolean ret = false;
         for(Node n:c){
             ret = this.add(n) || ret;
         }

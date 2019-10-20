@@ -97,12 +97,12 @@ public class NodeVis<X> extends Windo {
      */
     EdgeVis<X> out(NodeVis<X> target, Pool<EdgeVis<X>> pool) {
 
-        var tid = target.id;
+        X tid = target.id;
         if (tid == null)
             return null;
 
-        var y = outs.compute(tid, (tt, yy) -> {
-            var yy1 = yy;
+        EdgeVis<X> y = outs.compute(tid, (tt, yy) -> {
+            EdgeVis<X> yy1 = yy;
             if (yy1 == null) {
                 yy1 = pool.get();
                 yy1.to = target;
@@ -117,7 +117,7 @@ public class NodeVis<X> extends Windo {
         //remove dead edges, or edges to NodeVis's which have been recycled after removal
         outs.removeIf((x, e) -> {
             if (e.invalid) return true;
-            var ee = e.to;
+            NodeVis<X> ee = e.to;
             return ee == null || !x.equals(ee.id);
         });
     }

@@ -79,11 +79,11 @@ public class Transform extends Rot {
     }
 
     public static void mulToOut(Transform T, v2 v, v2 out) {
-        var ts = T.s;
-        var vx = v.x;
-        var vy = v.y;
-        var tc = T.c;
-        var tempy = (ts * vx + tc * vy) + T.pos.y;
+        float ts = T.s;
+        float vx = v.x;
+        float vy = v.y;
+        float tc = T.c;
+        float tempy = (ts * vx + tc * vy) + T.pos.y;
         out.x = (tc * vx - ts * vy) + T.pos.x;
         out.y = tempy;
     }
@@ -96,23 +96,23 @@ public class Transform extends Rot {
     }
     public static void mulToOutUnsafe(Transform T, v2 v, float scale, v2 out) {
         assert (v != out);
-        var vy = v.y * scale;
-        var vx = v.x * scale;
+        float vy = v.y * scale;
+        float vx = v.x * scale;
         Rot tq = T;
-        var pos = T.pos;
-        var tqs = tq.s;
-        var tqc = tq.c;
+        v2 pos = T.pos;
+        float tqs = tq.s;
+        float tqc = tq.c;
         out.x = (tqc * vx - tqs * vy) + pos.x;
         out.y = (tqs * vx + tqc * vy) + pos.y;
     }
 
     public static void mulToOutUnsafe(Transform T, v2 v, float scale, GL2 gl) {
-        var vy = v.y;
-        var vx = v.x;
+        float vy = v.y;
+        float vx = v.x;
         Rot tq = T;
-        var pos = T.pos;
-        var tqs = tq.s;
-        var tqc = tq.c;
+        v2 pos = T.pos;
+        float tqs = tq.s;
+        float tqc = tq.c;
         gl.glVertex2f(
                 ((tqc * vx - tqs * vy) + pos.x)*scale,
                 ((tqs * vx + tqc * vy) + pos.y)*scale
@@ -121,30 +121,30 @@ public class Transform extends Rot {
     }
 
     public static v2 mulTrans(Transform T, v2 v) {
-        var px = v.x - T.pos.x;
-        var py = v.y - T.pos.y;
-        var y = (-T.s * px + T.c * py);
+        float px = v.x - T.pos.x;
+        float py = v.y - T.pos.y;
+        float y = (-T.s * px + T.c * py);
         return new v2((T.c * px + T.s * py), y);
     }
 
     public static void mulTransToOut(Transform T, v2 v, v2 out) {
-        var px = v.x - T.pos.x;
-        var py = v.y - T.pos.y;
-        var tempy = (-T.s * px + T.c * py);
+        float px = v.x - T.pos.x;
+        float py = v.y - T.pos.y;
+        float tempy = (-T.s * px + T.c * py);
         out.x = (T.c * px + T.s * py);
         out.y = tempy;
     }
 
     public static void mulTransToOutUnsafe(Transform T, v2 v, v2 out) {
         assert (v != out);
-        var px = v.x - T.pos.x;
-        var py = v.y - T.pos.y;
+        float px = v.x - T.pos.x;
+        float py = v.y - T.pos.y;
         out.x = (T.c * px + T.s * py);
         out.y = (-T.s * px + T.c * py);
     }
 
     public static Transform mul(Transform A, Transform B) {
-        var C = new Transform();
+        Transform C = new Transform();
         mulUnsafe(A, B, C);
         Rot.mulToOutUnsafe(A, B.pos, C.pos);
         C.pos.added(A.pos);
@@ -188,14 +188,14 @@ public class Transform extends Rot {
         assert (out != A);
         assert (out != B);
         mulTransUnsafe(A, B, out);
-        var pool = new v2();
+        v2 pool = new v2();
         pool.set(B.pos).subbed(A.pos);
         mulTransUnsafe(A, pool, out.pos);
     }
 
     @Override
     public final String toString() {
-        var s = "XForm:\n";
+        String s = "XForm:\n";
         s += "Position: " + pos + '\n';
         s += "R: \n" + super.toString() + '\n';
         return s;

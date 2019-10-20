@@ -85,8 +85,8 @@ public class IntVarOpposite extends IntVar {
 
     @Override
     public int copyDomain(int[] array) {
-        var size = variable.copyDomain(array);
-        for (var i = 0; i < size; i++) {
+        int size = variable.copyDomain(array);
+        for (int i = 0; i < size; i++) {
             array[i] = -array[i];
         }
         return size;

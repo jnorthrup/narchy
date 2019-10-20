@@ -35,7 +35,7 @@ public class SimpleMemory extends MapMemory {
 
         @Override
         protected void onEvict(Map.Entry<Term, Concept> entry) {
-            var c = entry.getValue();
+            Concept c = entry.getValue();
             if (c instanceof PermanentConcept) {
                 //throw new TODO("Should not evict " + c);
                 put(entry.getKey(), c);

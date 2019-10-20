@@ -32,8 +32,8 @@ public abstract class Retemporalize extends RecursiveTermTransform.NegObliviousT
 //        if (xdt == dtNext && !requiresTransform(x.subterms()))
 //            return x;
 //        else {
-        var xo = x.op();
-        var n = xo.temporal ? dtNext : DTERNAL;
+        Op xo = x.op();
+        int n = xo.temporal ? dtNext : DTERNAL;
 //            if (n == xdt)
 //                return super.applyPosCompound(x); //fast fail if dt doesnt change
 //            else {
@@ -70,7 +70,7 @@ public abstract class Retemporalize extends RecursiveTermTransform.NegObliviousT
 
         @Override
         public int dt(Compound x) {
-            var dt = x.dt();
+            int dt = x.dt();
             return dt == from ? to : dt;
         }
     }

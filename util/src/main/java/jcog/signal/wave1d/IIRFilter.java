@@ -92,7 +92,7 @@ public abstract class IIRFilter {
 	public boolean process(float[] audioFloatBuffer, int start, int end) {
 
 		
-		for (var i = start; i < end; i++) {
+		for (int i = start; i < end; i++) {
 			//shift the in array
 			//TODO use ring buffer to avoid these copies
 			System.arraycopy(in, 0, in, 1, in.length - 1);
@@ -100,11 +100,19 @@ public abstract class IIRFilter {
 	
 			//calculate y based on a and b coefficients
 			//and in and out.
-			var bound1 = a.length;
-			var y = IntStream.range(0, bound1).mapToDouble(j1 -> a[j1] * in[j1]).sum();
-			var bound = b.length;
-			var sum = IntStream.range(0, bound).mapToDouble(j -> b[j] * out[j]).sum();
-            y += sum;
+            int bound1 = a.length;
+			double y = 0.0;
+			for (int j1 = 0; j1 < bound1; j1++) {
+				double v1 = a[j1] * in[j1];
+				y += v1;
+			}
+			int bound = b.length;
+			double sum = 0.0;
+			for (int j = 0; j < bound; j++) {
+				double v = b[j] * out[j];
+				sum += v;
+			}
+			y += sum;
 			//shift the out array
 			//TODO use ring buffer to avoid these copies
 			System.arraycopy(out, 0, out, 1, out.length - 1);
@@ -126,8 +134,8 @@ public abstract class IIRFilter {
 
 		protected void update()
 		{
-			var fracFreq = getFrequency()/getSampleRate();
-			var x = Math.exp(-2 * Math.PI * fracFreq);
+            float fracFreq = getFrequency()/getSampleRate();
+            double x = Math.exp(-2 * Math.PI * fracFreq);
 			a = new float[] {(float) ((1+x)/2), (float) (-(1+x)/2)};
 			b = new float[] {(float) x};
 		}
@@ -146,8 +154,8 @@ public abstract class IIRFilter {
 
 		@Override
 		protected void update() {
-			var fracFreq = getFrequency() / getSampleRate();
-			var x = (float) Math.exp(-2 * Math.PI * fracFreq);
+            float fracFreq = getFrequency() / getSampleRate();
+            float x = (float) Math.exp(-2 * Math.PI * fracFreq);
 			a = new float[] { 1 - x };
 			b = new float[] { x };
 		}
@@ -166,8 +174,8 @@ public abstract class IIRFilter {
 
 		@Override
 		protected void update() {
-			var freqFrac = getFrequency() / getSampleRate();
-			var x = (float) Math.exp(-14.445 * freqFrac);
+            float freqFrac = getFrequency() / getSampleRate();
+            float x = (float) Math.exp(-14.445 * freqFrac);
 			a = new float[] { (float) Math.pow(1 - x, 4) };
 			b = new float[] { 4 * x, -6 * x * x, 4 * x * x * x, -x * x * x * x };
 		}
@@ -228,10 +236,10 @@ public abstract class IIRFilter {
 
 		protected void update()
 		{
-			var R = 1 - 3 * bw;
-			var fracFreq = getFrequency() / getSampleRate();
-			var T = 2 * (float) Math.cos(2 * Math.PI * fracFreq);
-			var K = (1 - R * T + R * R) / (2 - T);
+            float R = 1 - 3 * bw;
+            float fracFreq = getFrequency() / getSampleRate();
+            float T = 2 * (float) Math.cos(2 * Math.PI * fracFreq);
+            float K = (1 - R * T + R * R) / (2 - T);
 			a = new float[] { 1 - K, (K - R) * T, R * R - K };
 			b = new float[] { R * T, -R * R };
 		}

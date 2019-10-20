@@ -47,7 +47,7 @@ public class ClobToString
 
     public static String stringOf(Clob clob) {
         if (clob == null) throw new IllegalArgumentException("clob==null");
-        var sw = new StringWriter();
+        StringWriter sw = new StringWriter();
         writeClobTo(clob, sw);
         return sw.toString();
     }
@@ -57,11 +57,11 @@ public class ClobToString
         if (writer == null) throw new IllegalArgumentException("writer==null");
 
         try {
-            var reader = clob.getCharacterStream();
-            var buffSize = 1024 * 4;
-            var buff = new char[buffSize];
+            Reader reader = clob.getCharacterStream();
+            int buffSize = 1024 * 4;
+            char[] buff = new char[buffSize];
             while (true) {
-                var rd = reader.read(buff);
+                int rd = reader.read(buff);
                 if (rd < 0) break;
                 if (rd > 0) {
                     writer.write(buff, 0, rd);

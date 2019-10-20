@@ -23,7 +23,7 @@ public abstract class UnaryBidiFunctor extends Functor {
 
     @Override
     public final @Nullable Term apply(Evaluation e, Subterms terms) {
-        var s = terms.subs();
+        int s = terms.subs();
         switch (s) {
             case 1:
                 return apply1(terms.sub(0));
@@ -46,13 +46,13 @@ public abstract class UnaryBidiFunctor extends Functor {
     }
 
     protected Term apply2(Evaluation e, Term x, Term y) {
-        var xVar = x.op().var;
+        boolean xVar = x.op().var;
         if (y.op().var) {
 
             if (xVar) {
                 return null;
             } else {
-                var XY = compute(x);
+                Term XY = compute(x);
                 if (XY!=null) {
                     return e.is(y, XY) ?
                             null : IdempotentBool.Null;
@@ -62,7 +62,7 @@ public abstract class UnaryBidiFunctor extends Functor {
             }
         } else {
             if (x.hasAny(Op.Variable)) {
-                var X = uncompute(x, y);
+                Term X = uncompute(x, y);
                 if (X!=null) {
                     return e.is(x, X) ?
                         null : IdempotentBool.Null;
@@ -71,7 +71,7 @@ public abstract class UnaryBidiFunctor extends Functor {
                 }
             } else {
 
-                var yActual = compute(x);
+                Term yActual = compute(x);
                 if (yActual == null)
                     return null;
                 //else

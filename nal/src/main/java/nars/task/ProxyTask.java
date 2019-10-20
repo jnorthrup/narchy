@@ -30,7 +30,7 @@ public class ProxyTask extends AbstractTask {
 
         creation = task.creation();
 
-        var p = task.pri();
+        float p = task.pri();
         if (p!=p) {
             if (NAL.DELETE_PROXY_TASK_TO_DELETED_TASK)
                 delete();
@@ -78,7 +78,7 @@ public class ProxyTask extends AbstractTask {
 
     @Override
     public int hashCode() {
-        var h = this.hash;
+        int h = this.hash;
         return h != 0 ? h :
             (this.hash = Task.hash(term(), truth(), punc(), start(), end(), stamp()));
     }
@@ -86,7 +86,7 @@ public class ProxyTask extends AbstractTask {
     @Override
     public long creation() {
         //updated to the latest of this or the proxy'd task's creation (as it may change)
-        var next = Math.max(task.creation(), creation);
+        long next = Math.max(task.creation(), creation);
         this.creation = next;
         return next;
     }

@@ -45,11 +45,11 @@ class MotorJointDef extends JointDef {
     public void initialize(Body2D bA, Body2D bB) {
         bodyA = bA;
         bodyB = bB;
-        var xB = bodyB.getPosition();
+        v2 xB = bodyB.getPosition();
         bodyA.getLocalPointToOut(xB, linearOffset);
 
-        var angleA = bodyA.getAngle();
-        var angleB = bodyB.getAngle();
+        float angleA = bodyA.getAngle();
+        float angleB = bodyB.getAngle();
         angularOffset = angleB - angleA;
     }
 }

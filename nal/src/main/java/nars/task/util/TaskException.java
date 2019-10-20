@@ -21,7 +21,7 @@ public final class TaskException extends SoftException {
     
     @Override
     public String getMessage() {
-        var m = super.getMessage();
+        String m = super.getMessage();
         return ((m!=null) ? m + ": " : "") + (task!=null ? task.toString() : "");
 
 

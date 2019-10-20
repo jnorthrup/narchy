@@ -8,7 +8,9 @@ import jcog.data.graph.AdjGraph;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedure;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -49,10 +51,10 @@ public class HopfieldMap<X> {
     }
 
     public HopfieldMap<X> randomWeights(float connectivity) {
-        var edges = (int) Math.ceil(x.length * x.length * connectivity);
-        for (var i = 0; i < edges; i++) {
-            var a = random();
-            var b = random();
+        int edges = (int) Math.ceil(x.length * x.length * connectivity);
+        for (int i = 0; i < edges; i++) {
+            X a = random();
+            X b = random();
             if (a != b) {
                 weight.addNode(a);
                 weight.addNode(b);
@@ -64,13 +66,18 @@ public class HopfieldMap<X> {
 
     @Override
     public String toString() {
-        var result = Arrays.stream(x).map(xx -> Texts.n4(in.floatValueOf(xx)) + ',').collect(Collectors.joining());
-        var sb = result;
+        StringBuilder sb1 = new StringBuilder();
+        for (X xx : x) {
+            String s = Texts.n4(in.floatValueOf(xx)) + ',';
+            sb1.append(s);
+        }
+        String result = sb1.toString();
+        String sb = result;
         return sb;
     }
 
     public HopfieldMap<X> learn(int cycles) {
-        for (var i = 0; i < cycles; i++) {
+        for (int i = 0; i < cycles; i++) {
             learn();
         }
         return this;
@@ -84,17 +91,17 @@ public class HopfieldMap<X> {
      * https:
      */
     public void learn() {
-        var p = randomIndex();
+        int p = randomIndex();
 
-        var alpha = alpha();
+        float alpha = alpha();
 
-        for (var i = 0; i < x.length; i++) {
+        for (int i = 0; i < x.length; i++) {
 
-            var a = x[p];
+            X a = x[p];
 
             float[] aOut = {0};
             weight.neighborEdges(a, (b, w) -> {
-                var bIn = in.floatValueOf(b);
+                float bIn = in.floatValueOf(b);
 
                 aOut[0] += bIn * w;
 
@@ -108,13 +115,13 @@ public class HopfieldMap<X> {
     }
 
     public HopfieldMap<X> get() {
-        for (var i = 0; i < x.length; i++) {
+        for (int i = 0; i < x.length; i++) {
             float[] aOut = {0};
 
-            var a = x[i];
+            X a = x[i];
 
             weight.neighborEdges(a, (b, w) -> {
-                var bIn = in.floatValueOf(b);
+                float bIn = in.floatValueOf(b);
 
                 aOut[0] += bIn * w;
             });
@@ -132,19 +139,24 @@ public class HopfieldMap<X> {
 
     public HopfieldMap<X> set(float... v) {
         assert (v.length == x.length);
-        for (var i = 0; i < v.length; i++)
+        for (int i = 0; i < v.length; i++)
             out.value(v[i], x[i]);
         return this;
     }
 
     public static void main(String[] args) {
-        var n = 8;
-        var m = IntStream.range(0, n).mapToObj(i1 -> new MutableFloat()).toArray(NumberX[]::new);
+        int n = 8;
+        List<MutableFloat> list = new ArrayList<>();
+        for (int i1 = 0; i1 < n; i1++) {
+            MutableFloat mutableFloat = new MutableFloat();
+            list.add(mutableFloat);
+        }
+        NumberX[] m = list.toArray(new NumberX[0]);
 
-        var h = new HopfieldMap<NumberX>(NumberX::floatValue,
+        HopfieldMap<NumberX> h = new HopfieldMap<NumberX>(NumberX::floatValue,
                 (v, x) -> x.set(v), m);
         h.randomWeights(0.9f);
-        for (var i = 0; i < 16; i++) {
+        for (int i = 0; i < 16; i++) {
             h.set(+1, +1, +1, +1, -1, -1, -1, -1).learn(1);
             h.set(-1, -1, -1, -1, +1, +1, +1, +1).learn(1);
         }

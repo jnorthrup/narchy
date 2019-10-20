@@ -35,32 +35,32 @@ public class PacComponent extends JComponent {
     @Override
     public synchronized void paintComponent(Graphics g) {
 
-        var mWidth = game.maze.width;
-        var mHeight = game.maze.height;
+        int mWidth = game.maze.width;
+        int mHeight = game.maze.height;
         size = Math.min(Math.round((getWidth()) / (mWidth + 0f)),
                 Math.round((getHeight()) / (mHeight + 0f)));
-        var offset =
+        Point offset =
                 new Point(0, 0);
 
 
-        var g2d = (Graphics2D) g;
+        Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
         g2d.setRenderingHint(KEY_INTERPOLATION, VALUE_INTERPOLATION_BICUBIC);
         g2d.setColor(Color.black);
         g2d.fill(g2d.getClip());
 
-        var clip = g2d.getClip();
+        Shape clip = g2d.getClip();
 
         g2d.setClip(new Rectangle(offset.x, offset.y, mWidth * size, mHeight * size));
 
         g2d.setColor(Color.black.darker().darker());
         g2d.fill(g2d.getClip());
 
-        for (var x = 0; x < mWidth; x++) {
-            for (var y = 0; y < mHeight; y++) {
+        for (int x = 0; x < mWidth; x++) {
+            for (int y = 0; y < mHeight; y++) {
 
-                var tile = getTileBounds(x, y, offset);
+                Rectangle tile = getTileBounds(x, y, offset);
 
                 if (game.maze.tiles[x][y] == 3) {
 
@@ -112,18 +112,18 @@ public class PacComponent extends JComponent {
 
 //            }
 
-            var fruit = getTileBounds(game.maze.playerStart().x, game.maze.playerStart().y, offset);
+            Rectangle fruit = getTileBounds(game.maze.playerStart().x, game.maze.playerStart().y, offset);
             g2d.fillOval(fruit.x, fruit.y, fruit.width, fruit.height);
 
         }
 
         g2d.setStroke(new BasicStroke(0));
 
-        for (var ghost : game.ghosts) {
+        for (Ghost ghost : game.ghosts) {
 
-            var ghostShape = new Polygon();
+            Polygon ghostShape = new Polygon();
 
-            for (var coords : Ghost.ghostShape) {
+            for (double[] coords : Ghost.ghostShape) {
 
                 ghostShape.addPoint((int) (coords[0] * size) + offset.x + (int) (ghost.x * size),
                         (int) (coords[1] * size) + offset.y + (int) (ghost.y * size));
@@ -140,7 +140,7 @@ public class PacComponent extends JComponent {
 
         }
 
-        var pac = getTileBounds(game.player.x, game.player.y, offset);
+        Rectangle pac = getTileBounds(game.player.x, game.player.y, offset);
         g2d.setColor(Color.blue.brighter());
 
         if (game.player.mouthAngle < 180)
@@ -187,20 +187,20 @@ public class PacComponent extends JComponent {
 
         g2d.setColor(Color.white);
         g2d.setFont(_font.deriveFont((int) (size * 0.7f)));
-        var r = getTileBounds(0, game.maze.height + 1, offset);
+        Rectangle r = getTileBounds(0, game.maze.height + 1, offset);
 
 
-        for (var s : game.splashes) {
+        for (SplashModel s : game.splashes) {
             this.new Splash(s.text, s.x, s.y, s.color);
             game.splashes.remove(s);
         }
 
-        for (var i = 0; i < this.splashText.size(); i++) {
+        for (int i = 0; i < this.splashText.size(); i++) {
 
-            var s = this.splashText.get(i);
+            Splash s = this.splashText.get(i);
             g2d.setColor(new Color(s.color.getRed() / 255f, s.color.getGreen() / 255f, s.color.getBlue() / 255f, s.time / (float) SplashModel.TIME));
             g2d.setFont(s.font);
-            var bounds = getTileBounds(s.x, s.y, offset);
+            Rectangle bounds = getTileBounds(s.x, s.y, offset);
             g2d.drawString(s.text, bounds.x, (int) (bounds.y + Math.sqrt(s.time)));
             s.update();
 
@@ -215,7 +215,7 @@ public class PacComponent extends JComponent {
 
     Rectangle getTileBounds(double x, double y, Point offset) {
 
-        var tile = new Rectangle(offset.x + (int) Math.round(x * size), offset.y + (int) Math.round(y * size), size, size);
+        Rectangle tile = new Rectangle(offset.x + (int) Math.round(x * size), offset.y + (int) Math.round(y * size), size, size);
 
         return tile;
 

@@ -25,7 +25,7 @@ import spacegraph.space2d.widget.text.LabeledPane;
         super();
         this.f = f;
 
-        var s = (slider = new FloatSlider(f)).on((FloatProcedure) FloatRangePort.this::out);
+        FloatSlider s = (slider = new FloatSlider(f)).on((FloatProcedure) FloatRangePort.this::out);
 
         set(LabeledPane.the(label, s));
 
@@ -36,7 +36,7 @@ import spacegraph.space2d.widget.text.LabeledPane;
     @Override
     protected void renderContent(ReSurface r) {
         //TODO configurable rate
-        var autoUpdate = true;
+        boolean autoUpdate = true;
         if (autoUpdate) {
             if (active())
                 LOAD();

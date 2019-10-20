@@ -40,7 +40,7 @@ public final class NEWTKBD extends KBD
         Jake2InputEvent event;
 		while ( (event=InputListener.nextEvent()) != null ) {
 	                Window eventWin = null;
-			var source = event.ev.getSource();
+            Object source = event.ev.getSource();
 	                if(source instanceof Window) {
 	                    eventWin = (Window)source;
 	                }
@@ -76,7 +76,7 @@ public final class NEWTKBD extends KBD
 					break;
 					
 				case Jake2InputEvent.WheelMoved:
-					var dir = ((MouseEvent)event.ev).getRotation()[0];
+                    float dir = ((MouseEvent)event.ev).getRotation()[0];
 					if (dir > 0) {
 						Do_Key_Event(Key.K_MWHEELDOWN, true);
 						Do_Key_Event(Key.K_MWHEELDOWN, false);
@@ -122,7 +122,7 @@ public final class NEWTKBD extends KBD
 
 	private static int XLateKeyCode(KeyEvent ev) { 
 		int code = ev.getKeyCode();
-		var key = 0;
+        int key = 0;
 		switch(code) {
 
 			case KeyEvent.VK_PAGE_UP: key = Key.K_PGUP; break;

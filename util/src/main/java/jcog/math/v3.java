@@ -126,7 +126,7 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
     }
 
     public static v3 v(v3 base, float mult) {
-        var v = v();
+        v3 v = v();
         v.scale(mult, base);
         return v;
     }
@@ -148,7 +148,7 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
     }
 
     public static float dist(v3 a, v3 b) {
-        var x = new v3(a);
+        v3 x = new v3(a);
         x.sub(b);
         return x.length();
     }
@@ -190,12 +190,12 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
     public final v3 cross(v3 v1, v3 v2) {
 
 
-        var v1z = v1.z;
-        var v2y = v2.y;
-        var v2z = v2.z;
-        var v1y = v1.y;
-        var v1x = v1.x;
-        var v2x = v2.x;
+        float v1z = v1.z;
+        float v2y = v2.y;
+        float v2z = v2.z;
+        float v1y = v1.y;
+        float v1x = v1.x;
+        float v2x = v2.x;
         set(v1y * v2z - v1z * v2y,
                 v2x * v1z - v2z * v1x,
                 v1x * v2y - v1y * v2x);
@@ -224,7 +224,7 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
      * @param v1 the un-normalized vector
      */
     public final void normalize(v3 v1) {
-        var norm = (float) (1.0 / Math.sqrt(v1.x * v1.x + v1.y * v1.y + v1.z * v1.z));
+        float norm = (float) (1.0 / Math.sqrt(v1.x * v1.x + v1.y * v1.y + v1.z * v1.z));
         set(v1.x * norm,
                 v1.y * norm,
                 v1.z * norm);
@@ -235,7 +235,7 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
      */
     public final float normalize() {
 
-        var norm = (float) Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+        float norm = (float) Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
         if (norm >= Float.MIN_NORMAL) {
 
             set(this.x / norm,
@@ -262,7 +262,7 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
      * @return the angle in radians in the range [0,PI]
      */
     public final float angle(v3 v1) {
-        var div = this.length() * v1.length();
+        float div = this.length() * v1.length();
         if (Util.equals(div, 0, Float.MIN_NORMAL))
             return Float.NaN;
 
@@ -592,7 +592,7 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
         if (this == obj) return true;
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
-        var other = (v3) obj;
+        v3 other = (v3) obj;
         if (Float.floatToIntBits(x) != Float.floatToIntBits(other.x)) return false;
         if (Float.floatToIntBits(y) != Float.floatToIntBits(other.y)) return false;
         return Float.floatToIntBits(z) == Float.floatToIntBits(other.z);
@@ -610,7 +610,7 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
      * @return the integer hash code value
      */
     public int hashCode() {
-        var bits = 1L;
+        long bits = 1L;
         bits = 31L * bits + VecMathUtil.floatToIntBits(x);
         bits = 31L * bits + VecMathUtil.floatToIntBits(y);
         bits = 31L * bits + VecMathUtil.floatToIntBits(z);
@@ -699,21 +699,21 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
      * @param max the highest value in this tuple after clamping
      */
     public final void clamp(float min, float max) {
-        var x = this.x;
+        float x = this.x;
         if (x > max) {
             x = max;
         } else if (x < min) {
             x = min;
         }
 
-        var y = this.y;
+        float y = this.y;
         if (y > max) {
             y = max;
         } else if (y < min) {
             y = min;
         }
 
-        var z = this.z;
+        float z = this.z;
         if (z > max) {
             z = max;
         } else if (z < min) {
@@ -729,11 +729,11 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
      * @param min the lowest value in this tuple after clamping
      */
     public final void clampMin(float min) {
-        var x = this.x;
+        float x = this.x;
         if (x < min) x = min;
-        var y = this.y;
+        float y = this.y;
         if (y < min) y = min;
-        var z = this.z;
+        float z = this.z;
         if (z < min) z = min;
         set(x, y, z);
     }
@@ -744,11 +744,11 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
      * @param max the highest value in the tuple after clamping
      */
     public final void clampMax(float max) {
-        var x = this.x;
+        float x = this.x;
         if (x > max) x = max;
-        var y = this.y;
+        float y = this.y;
         if (y > max) y = max;
-        var z = this.z;
+        float z = this.z;
         if (z > max) z = max;
         set(x, y, z);
     }
@@ -771,7 +771,7 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
      * @param alpha the alpha interpolation parameter
      */
     public final void interpolate(v3 t1, v3 t2, float alpha) {
-        var na = 1f - alpha;
+        float na = 1f - alpha;
         set(na * t1.x + alpha * t2.x,
                 na * t1.y + alpha * t2.y,
                 na * t1.z + alpha * t2.z);
@@ -787,7 +787,7 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
      * @param alpha the alpha interpolation parameter
      */
     public final void interpolate(v3 t1, float alpha) {
-        var na = 1f - alpha;
+        float na = 1f - alpha;
         set(na * this.x + alpha * t1.x,
                 na * this.y + alpha * t1.y,
                 na * this.z + alpha * t1.z);
@@ -796,7 +796,7 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
     }
 
     public boolean min(v3 b) {
-        var bb = false;
+        boolean bb = false;
         if (x < b.x) {
             x = b.x;
             bb = true;
@@ -813,7 +813,7 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
     }
 
     public boolean max(v3 b) {
-        var bb = false;
+        boolean bb = false;
         if (x > b.x) {
             x = b.x;
             bb = true;

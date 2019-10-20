@@ -38,10 +38,10 @@ public class ScalingMixer extends UGen {
      */
     @Override
     public void gen() {
-        for (var i = 0; i < ins; i++) {
-            var numInputs = connectedCount(i);
+        for (int i = 0; i < ins; i++) {
+            int numInputs = connectedCount(i);
             if (numInputs > 0) numInputs = 1;
-            for (var j = 0; j < bufferSize; j++) {
+            for (int j = 0; j < bufferSize; j++) {
                 bufOut[i][j] = bufIn[i][j] / numInputs;
             }
         }

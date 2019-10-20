@@ -23,14 +23,14 @@ public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProduce
 	}
 
 	public <S extends SoundProducer> Sound<S> add(S producer, SoundSource soundSource, float volume, float priority) {
-		var s = new Sound(producer, soundSource, volume, priority);
+        Sound s = new Sound(producer, soundSource, volume, priority);
 		s.playing = true;
 		add(s);
 		return s;
 	}
 
 	public void update(float receiverBalance) {
-		var updating = (soundSource != null);
+        boolean updating = (soundSource != null);
 
 		this.removeIf(sound -> !updating || !sound.update(soundSource, receiverBalance));
 	}
@@ -39,8 +39,8 @@ public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProduce
 	@SuppressWarnings("unchecked")
 	public void read(float[] leftBuf, float[] rightBuf, int readRate) {
 
-		var ss = array();
-		var s = ss.length;
+        Sound[] ss = array();
+        int s = ss.length;
 
 		if (s == 0)
 			return;
@@ -56,25 +56,25 @@ public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProduce
 		Arrays.fill(leftBuf, 0);
 		Arrays.fill(rightBuf, 0);
 
-		var l = leftBuf.length;
+        int l = leftBuf.length;
 
-		for (var i = 0; i < s; i++) {
-			var sound = ss[i];
+		for (int i = 0; i < s; i++) {
+            Sound sound = ss[i];
 
 			if (i < audibleSources) {
-				var buf = this.buf;
+                float[] buf = this.buf;
 				Arrays.fill(buf, 0);
 
-				var kontinues = sound.producer.read(buf, readRate);
+                boolean kontinues = sound.producer.read(buf, readRate);
 
-				var pan = sound.pan;
+                float pan = sound.pan;
 
-				var amp = sound.amplitude;
-				var rp = (pan <= 0 ? 1 : 1 + pan) * amp;
-				var lp = (pan >= 0 ? 1 : 1 - pan) * amp;
+                float amp = sound.amplitude;
+                float rp = (pan <= 0 ? 1 : 1 + pan) * amp;
+                float lp = (pan >= 0 ? 1 : 1 - pan) * amp;
 
-				for (var j = 0; j < l; j++) {
-					var bj = buf[j];
+				for (int j = 0; j < l; j++) {
+                    float bj = buf[j];
 					leftBuf[j] += bj * lp;
 					rightBuf[j] += bj * rp;
 				}
@@ -93,6 +93,6 @@ public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProduce
 
 	@Override
 	public void skip(int samplesToSkip, int readRate) {
-		for (var sound : this) sound.skip(samplesToSkip, readRate);
+		for (Sound sound : this) sound.skip(samplesToSkip, readRate);
 	}
 }

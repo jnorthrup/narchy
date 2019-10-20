@@ -87,7 +87,7 @@ abstract class BlockMessageDigest {
             throw new CryptoException(getAlgorithm()
                     + ": Maximum input length exceeded");
 
-        var datalen = data_length;
+        int datalen = data_length;
         int remainder;
 
         while (length >= (remainder = datalen - buffered)) {

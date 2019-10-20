@@ -5,6 +5,7 @@ import jcog.Util;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.util.FloatFloatToFloatFunction;
+import nars.Op;
 import nars.Task;
 import nars.control.Why;
 import nars.task.util.TaskException;
@@ -55,7 +56,7 @@ public abstract class AbstractTaskLink implements TaskLink {
 		if (target instanceof IdempotentBool)
 			throw new TermException("target bool", target);
 
-		var so = source.op();
+        Op so = source.op();
 		if (!so.taskable)
 			throw new TaskException("source term not taskable", source);
 		if (!so.conceptualizable)
@@ -67,8 +68,8 @@ public abstract class AbstractTaskLink implements TaskLink {
 	}
 
 	private static int hash(Term source, Term target) {
-		var s = source.hashCodeShort();
-		var t = source != target ? target.hashCodeShort() : s;
+        int s = source.hashCodeShort();
+        int t = source != target ? target.hashCodeShort() : s;
 		return (t << 16) | s;
 //        if (t!=(hash >>> 16))
 //            throw new WTF();
@@ -113,7 +114,7 @@ public abstract class AbstractTaskLink implements TaskLink {
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj instanceof TaskLink && hash == obj.hashCode()) {
-			var t = (TaskLink) obj;
+            TaskLink t = (TaskLink) obj;
 			return from.equals(t.from()) && to.equals(t.to());
 		}
 		return false;
@@ -136,7 +137,7 @@ public abstract class AbstractTaskLink implements TaskLink {
 
 	@Override
 	public float pri() {
-		var p = this.pri;
+        float p = this.pri;
 		//update cached value
 		return p != p ? (this.pri = priSum() / 4) : p;
 	}
@@ -233,7 +234,7 @@ public abstract class AbstractTaskLink implements TaskLink {
 
 	protected float merge(int ith, float pri, PriMerge merge, @Nullable PriReturn returning) {
 
-		var y = mergeDirect(ith, pri, merge::mergeUnitize, returning);
+        float y = mergeDirect(ith, pri, merge::mergeUnitize, returning);
 
 		if (returning != PriReturn.Delta || y != 0) //delta==0 on individual component = unchanged
 			invalidate();
@@ -263,12 +264,12 @@ public abstract class AbstractTaskLink implements TaskLink {
 		if (!Util.equals(X, 1)) {
 
 
-			var acc = false;
-			for (var i = 0; i < 4; i++) {
-				var aBoolean = apply(i, X, mult, Changed) != 0;
+            boolean acc = false;
+			for (int i = 0; i < 4; i++) {
+                boolean aBoolean = apply(i, X, mult, Changed) != 0;
 				acc = acc || aBoolean;
 			}
-			var changed = acc;
+            boolean changed = acc;
 			//HACK not fully atomic but at least consistent
 
             if (changed)
@@ -290,7 +291,7 @@ public abstract class AbstractTaskLink implements TaskLink {
 
 
 	public @Nullable Term matchReverse(Term from, int fromHash, Term to, int toHash) {
-		var f = fromHash();
+        int f = fromHash();
 		return f != fromHash &&
 			f != toHash &&
 			toHash() == toHash &&

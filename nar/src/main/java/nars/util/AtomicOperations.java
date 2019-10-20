@@ -72,28 +72,28 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
     public void update(NAR n) {
 
 
-        var s = active.size();
+        int s = active.size();
         if (s > 0) {
-            var now = n.time();
-            var end = now;
+            long now = n.time();
+            long end = now;
             long start = Math.round(now - n.dur());            List<Term> dispatch = new FasterList(s);
-            var exeThresh = this.exeThresh.floatValue();
+            float exeThresh = this.exeThresh.floatValue();
 
-            for (var x : active) {
-                var xx = x.get();
+            for (PriReference<Term> x : active) {
+                Term xx = x.get();
 
-                var c = n.concept(xx);
+                Concept c = n.concept(xx);
                 if (c == null) {
                     continue;
                 }
 
 
-                var goalTruth = c.goals().truth(start, end, n);
+                Truth goalTruth = c.goals().truth(start, end, n);
                 if (goalTruth == null || goalTruth.expectation() <= exeThresh) {
                     continue;
                 }
 
-                var beliefTruth = c.beliefs().truth(start, end, n); /* assume false with no evidence */
+                Truth beliefTruth = c.beliefs().truth(start, end, n); /* assume false with no evidence */
                 if (beliefTruth != null && beliefTruth.expectation() >= exeThresh) {
                     continue;
                 }
@@ -104,7 +104,7 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
                 x.delete();
             }
 
-            for (var tt : dispatch) {
+            for (Term tt : dispatch) {
                 exe.accept(tt, n);
             }
 
@@ -120,7 +120,7 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
     public @Nullable Task apply(Task x, NAR n) {
 
 
-        var y = exePrefilter(x);
+        Task y = exePrefilter(x);
         if (y == null)
             return x;
         if (y != x)
@@ -128,7 +128,7 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
 
         x = y;
 
-        var xx = x.term();
+        Term xx = x.term();
         if (x.isCommand()) {
 
             exe.accept(xx, n);
@@ -151,7 +151,7 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
      * operator goes into active probing mode
      */
     protected void enable(NAR n) {
-        var d = onCycle.getOpaque();
+        DurLoop d = onCycle.getOpaque();
         if (d == null) {
             onCycle.updateAndGet((x)-> x == null ? n.onDur(this::update) : x);
         } else {

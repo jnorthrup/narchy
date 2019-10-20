@@ -29,7 +29,7 @@ public class DenseIntUndirectedGraph implements ShortUndirectedGraph {
 
     @Override
     public void clear() {
-        for (var x : data)
+        for (int[] x : data)
             Arrays.fill(x, CLEAR_VALUE);
     }
 
@@ -40,7 +40,7 @@ public class DenseIntUndirectedGraph implements ShortUndirectedGraph {
     }
 
     private void addToEdge(short x, short y, int d) {
-        var e = data[x][y];
+        int e = data[x][y];
         if (e!=CLEAR_VALUE) {
             data[x][y] += d;
             data[y][x] += d;
@@ -49,9 +49,9 @@ public class DenseIntUndirectedGraph implements ShortUndirectedGraph {
 
     @Override
     public void edgesOf(short vertex, ShortIntProcedure eachKeyValue) {
-        var a = data[vertex];
+        int[] a = data[vertex];
         for (short i = 0; i < a.length; i++) {
-            var aa = a[i];
+            int aa = a[i];
             if (aa != CLEAR_VALUE) {
                 eachKeyValue.value(i, aa);
             }
@@ -60,9 +60,9 @@ public class DenseIntUndirectedGraph implements ShortUndirectedGraph {
 
     @Override
     public void edgesOf(short vertex, ShortProcedure eachKey) {
-        var a = data[vertex];
+        int[] a = data[vertex];
         for (short i = 0; i < a.length; i++) {
-            var aa = a[i];
+            int aa = a[i];
             if (aa != CLEAR_VALUE) {
                 eachKey.value(i);
             }
@@ -72,7 +72,7 @@ public class DenseIntUndirectedGraph implements ShortUndirectedGraph {
 
     @Override
     public void removeEdgeIf(IntPredicate filter) {
-        var l = data.length;
+        int l = data.length;
         for (short i = 0; i < l; i++) {
             if (filter.accept(i)) {
                 for (short j = 0; j < l; j++) {
@@ -93,7 +93,7 @@ public class DenseIntUndirectedGraph implements ShortUndirectedGraph {
     @Override
     public void removeVertex(short v) {
         Arrays.fill(data[v], CLEAR_VALUE);
-        for (var ee : data) {
+        for (int[] ee : data) {
             ee[v] = CLEAR_VALUE;
         }
     }

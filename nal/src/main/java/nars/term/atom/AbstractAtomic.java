@@ -34,9 +34,9 @@ public abstract class AbstractAtomic extends Atomic {
     }
 
     public static byte[] bytes(byte opID, byte[] stringbytes) {
-        var slen = stringbytes.length;
+        int slen = stringbytes.length;
 
-        var sbytes = new byte[slen + 3];
+        byte[] sbytes = new byte[slen + 3];
         sbytes[0] = opID;
         sbytes[1] = (byte) (slen >> 8 & 0xff);
         sbytes[2] = (byte) (slen & 0xff);

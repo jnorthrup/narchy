@@ -33,9 +33,9 @@ public class Rule1DBin {
         int iTmp;
 		ResetToDefaults();
 
-		var st = new StringTokenizer(sStr, ",", true);
+        StringTokenizer st = new StringTokenizer(sStr, ",", true);
 		while (st.hasMoreTokens()) {
-			var sTok = st.nextToken().toUpperCase();
+            String sTok = st.nextToken().toUpperCase();
 
             if (sTok.length() > 0 && sTok.charAt(0) == 'R')
 			{
@@ -67,7 +67,7 @@ public class Rule1DBin {
 		
 		Validate();
 
-		var sBff = 'R' + String.valueOf(iRng);
+        String sBff = 'R' + String.valueOf(iRng);
 
 
         sBff = sBff + ",R" + sHex;
@@ -95,8 +95,8 @@ public class Rule1DBin {
 
         Validate();
 
-		var sBinStr = CvtHexStr2BinStr(sHex);
-		var iCnt = 1;
+        String sBinStr = CvtHexStr2BinStr(sHex);
+        int iCnt = 1;
 
 
         int i;
@@ -112,9 +112,9 @@ public class Rule1DBin {
 	
 	
 	private static String LPad(String sStr, int num, char chPad) {
-		var iLen = sStr.length();
+        int iLen = sStr.length();
 		if (iLen < num) {
-			for (var i = 1; i <= num - iLen; i++)
+			for (int i = 1; i <= num - iLen; i++)
 				sStr = chPad + sStr;
 		}
 		return sStr;
@@ -124,15 +124,15 @@ public class Rule1DBin {
 	
 	private static String CvtBinStr2HexStr(String sBin) {
 
-		var i = sBin.length();
+        int i = sBin.length();
 		if ((i % 4) != 0)
 			LPad(sBin, 4 - (i % 4), '0');
 
-		var sHexStr = "";
+        String sHexStr = "";
 		for (i = 1; i <= (sBin.length() / 4); i++) {
-			var sTok = sBin.substring(sBin.length() - i * 4, sBin.length() - i * 4
+            String sTok = sBin.substring(sBin.length() - i * 4, sBin.length() - i * 4
                     + 3);
-			var iVal = 0;
+            int iVal = 0;
             if (sTok.charAt(1) == '1')
 				iVal += 8;
 			if (sTok.charAt(2) == '1')
@@ -153,8 +153,8 @@ public class Rule1DBin {
 	private static String CvtHexStr2BinStr(String sHex) {
 
         sHex.toUpperCase();
-		var sBinBff = "";
-        for (var i = 0; i < sHex.length(); i++) {
+        String sBinBff = "";
+        for (int i = 0; i < sHex.length(); i++) {
 			switch (sHex.charAt(i)) {
 				case '0' :
                     sBinBff += "0000";
@@ -223,16 +223,16 @@ public class Rule1DBin {
 	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState, MJBoard mjb) {
-		var iClo = mjb.StatesCount;
+        int iClo = mjb.StatesCount;
 
-		var ary1DOfs = iRng;
-		var xVector = new int[21];
+        int ary1DOfs = iRng;
+        int[] xVector = new int[21];
 
-		var i1DNextRow = mjb.i1DLastRow + 1;
+        int i1DNextRow = mjb.i1DLastRow + 1;
 		if (i1DNextRow >= sizY)
 			i1DNextRow = 0;
 
-		var OneRow = new short[sizX + 1 + 2 * ary1DOfs];
+        short[] OneRow = new short[sizX + 1 + 2 * ary1DOfs];
         int ic;
         for (ic = 0; ic < sizX; ic++)
 			OneRow[ic + ary1DOfs] = crrState[ic][mjb.i1DLastRow]; 
@@ -246,11 +246,11 @@ public class Rule1DBin {
 
 		for (ic = 0; ic < sizX; ic++) 
 		{
-			var bOldVal = OneRow[ic + ary1DOfs];
+            short bOldVal = OneRow[ic + ary1DOfs];
 
-			var iPow = 1;
-			var iIdx = 0;
-            for (var i = iRng; i >= -iRng; i--)
+            int iPow = 1;
+            int iIdx = 0;
+            for (int i = iRng; i >= -iRng; i--)
 			{
 				if (OneRow[ic + i + ary1DOfs] > 0)
                     iIdx += iPow;
@@ -268,7 +268,7 @@ public class Rule1DBin {
 
         mjb.i1DLastRow = i1DNextRow;
 
-		var modCnt = 1;
+        int modCnt = 1;
         return modCnt;
 	}
 }

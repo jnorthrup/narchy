@@ -60,7 +60,7 @@ public abstract class GameTime {
 
         @Override
         public GameTime chain(float periodMultiplier) {
-            var parent = this;
+            FPS parent = this;
             return new FPS(initialFPS /* HACK */ / periodMultiplier) {
 
                 {
@@ -81,11 +81,11 @@ public abstract class GameTime {
 
         @Override
         public long next(long now) {
-            var t = (RealTime) g.nar.time;
+            RealTime t = (RealTime) g.nar.time;
 
-            var unitsPerSec = 1/t.secondsPerUnit();
+            double unitsPerSec = 1/t.secondsPerUnit();
             double secondsPerFrame = 1/loop.getFPS();
-            var unitsPerFrame = unitsPerSec * secondsPerFrame;
+            double unitsPerFrame = unitsPerSec * secondsPerFrame;
             this.dur = (float) Math.max(1, unitsPerFrame);
             return now + Math.round(t.secondsToUnits(loop.periodS()));
         }
@@ -99,11 +99,15 @@ public abstract class GameTime {
                 loopMS = loop.periodMS();
                 loop.stop();
                 wasPaused = true;
-                children.forEach(c -> c.pause(true));
+                for (FPS c : children) {
+                    c.pause(true);
+                }
             } else if (wasPaused && !pause) {
                 loop.setPeriodMS(loopMS);
                 wasPaused = false;
-                children.forEach(c -> c.pause(false));
+                for (FPS c : children) {
+                    c.pause(false);
+                }
             }
         }
 
@@ -143,7 +147,7 @@ public abstract class GameTime {
 
         @Override
         public GameTime chain(float periodMultiplier) {
-            var parent = this;
+            Durs parent = this;
             return new Durs(durPeriod * periodMultiplier) {
                 @Override
                 public float dur() {
@@ -170,7 +174,7 @@ public abstract class GameTime {
 
         @Override
         public long next(long now) {
-            var l = this.loop;
+            DurLoop l = this.loop;
             this.dur = Tense.occToDT(l.durCycles());
             return now + l.durCycles();
         }

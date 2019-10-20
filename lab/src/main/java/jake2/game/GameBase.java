@@ -57,7 +57,7 @@ public class GameBase {
 
     public static edict_t[] g_edicts = new edict_t[Defines.MAX_EDICTS];
     static {
-        for (var n = 0; n < Defines.MAX_EDICTS; n++)
+        for (int n = 0; n < Defines.MAX_EDICTS; n++)
             g_edicts[n] = new edict_t(n);
     }
 
@@ -132,16 +132,16 @@ public class GameBase {
     public static int ClipVelocity(float[] in, float[] normal, float[] out,
             float overbounce) {
 
-        var blocked = 0;
+        int blocked = 0;
         if (normal[2] > 0)
             blocked |= 1; 
         if (normal[2] == 0.0f)
             blocked |= 2;
 
-        var backoff = Math3D.DotProduct(in, normal) * overbounce;
+        float backoff = Math3D.DotProduct(in, normal) * overbounce;
 
-        for (var i = 0; i < 3; i++) {
-            var change = normal[i] * backoff;
+        for (int i = 0; i < 3; i++) {
+            float change = normal[i] * backoff;
             out[i] = in[i] - change;
             if (out[i] > -STOP_EPSILON && out[i] < STOP_EPSILON)
                 out[i] = 0;
@@ -187,7 +187,7 @@ public class GameBase {
     
     public static edict_t G_FindEdict(EdictIterator from, EdictFindFilter eff,
             String s) {
-        var ei = G_Find(from, eff, s);
+        EdictIterator ei = G_Find(from, eff, s);
         if (ei == null)
             return null;
         else
@@ -213,7 +213,7 @@ public class GameBase {
             if (from.o.solid == Defines.SOLID_NOT)
                 continue;
 
-            for (var j = 0; j < 3; j++)
+            for (int j = 0; j < 3; j++)
                 eorg[j] = org[j]
                         - (from.o.s.origin[j] + (from.o.mins[j] + from.o.maxs[j]) * 0.5f);
 
@@ -244,8 +244,8 @@ public class GameBase {
 
         EdictIterator es = null;
 
-        var choice = new edict_t[MAXCHOICES];
-        var num_choices = 0;
+        edict_t[] choice = new edict_t[MAXCHOICES];
+        int num_choices = 0;
         while ((es = G_Find(es, findByTarget, targetname)) != null) {
             choice[num_choices++] = es.o;
             if (num_choices == MAXCHOICES)
@@ -297,13 +297,13 @@ public class GameBase {
                 && (ent.health <= 0))
             return;
 
-        var num = game_import_t.BoxEdicts(ent.absmin, ent.absmax, touch, Defines.MAX_EDICTS,
+        int num = game_import_t.BoxEdicts(ent.absmin, ent.absmax, touch, Defines.MAX_EDICTS,
                 Defines.AREA_TRIGGERS);
 
         
         
-        for (var i = 0; i < num; i++) {
-            var hit = touch[i];
+        for (int i = 0; i < num; i++) {
+            edict_t hit = touch[i];
 
             if (!hit.inuse)
                 continue;
@@ -317,7 +317,7 @@ public class GameBase {
 
     public static final pushed_t[] pushed = new pushed_t[Defines.MAX_EDICTS];
     static {
-        for (var n = 0; n < Defines.MAX_EDICTS; n++)
+        for (int n = 0; n < Defines.MAX_EDICTS; n++)
             pushed[n] = new pushed_t();
     }
 
@@ -370,8 +370,8 @@ public class GameBase {
 
     public static void AddPointToBounds(float[] v, float[] mins, float[] maxs) {
 
-        for (var i = 0; i < 3; i++) {
-            var val = v[i];
+        for (int i = 0; i < 3; i++) {
+            float val = v[i];
             if (val < mins[i])
                 mins[i] = val;
             if (val > maxs[i])
@@ -405,8 +405,8 @@ public class GameBase {
     public static void ClientEndServerFrames() {
 
 
-        for (var i = 0; i < maxclients.value; i++) {
-            var ent = g_edicts[1 + i];
+        for (int i = 0; i < maxclients.value; i++) {
+            edict_t ent = g_edicts[1 + i];
             if (!ent.inuse || null == ent.client)
                 continue;
             PlayerView.ClientEndServerFrame(ent);
@@ -419,7 +419,7 @@ public class GameBase {
      */
     public static edict_t CreateTargetChangeLevel(String map) {
 
-        var ent = GameUtil.G_Spawn();
+        edict_t ent = GameUtil.G_Spawn();
         ent.classname = "target_changelevel";
         level.nextmap = map;
         ent.map = level.nextmap;
@@ -439,13 +439,13 @@ public class GameBase {
 
         
         if (sv_maplist.string.length() > 0) {
-            var s = sv_maplist.string;
+            String s = sv_maplist.string;
             String f = null;
-            var seps = " ,\n\r";
-            var tk = new StringTokenizer(s, seps);
+            String seps = " ,\n\r";
+            StringTokenizer tk = new StringTokenizer(s, seps);
             
             while (tk.hasMoreTokens()){
-                var t = tk.nextToken();
+                String t = tk.nextToken();
 
 
                 if (f == null)
@@ -478,7 +478,7 @@ public class GameBase {
                 PlayerHud.BeginIntermission(CreateTargetChangeLevel(level.mapname));
                 return;
             }
-            var ent = edit.o;
+            edict_t ent = edit.o;
             PlayerHud.BeginIntermission(ent);
         }
     }
@@ -492,7 +492,7 @@ public class GameBase {
         if (password.modified || spectator_password.modified) {
             password.modified = spectator_password.modified = false;
 
-            var need = 0;
+            int need = 0;
 
             if ((password.string.length() > 0)
                     && 0 != Lib.Q_stricmp(password.string, "none"))
@@ -525,8 +525,8 @@ public class GameBase {
         }
 
         if (fraglimit.value != 0) {
-            for (var i = 0; i < maxclients.value; i++) {
-                var cl = game.clients[i];
+            for (int i = 0; i < maxclients.value; i++) {
+                gclient_t cl = game.clients[i];
                 if (!g_edicts[i + 1].inuse)
                     continue;
 
@@ -544,7 +544,7 @@ public class GameBase {
      */
     public static void ExitLevel() {
 
-        var command = "gamemap \"" + level.changemap + "\"\n";
+        String command = "gamemap \"" + level.changemap + "\"\n";
         game_import_t.AddCommandString(command);
         level.changemap = null;
         level.exitintermission = false;
@@ -552,8 +552,8 @@ public class GameBase {
         ClientEndServerFrames();
 
         
-        for (var i = 0; i < maxclients.value; i++) {
-            var ent = g_edicts[1 + i];
+        for (int i = 0; i < maxclients.value; i++) {
+            edict_t ent = g_edicts[1 + i];
             if (!ent.inuse)
                 continue;
             if (ent.health > ent.client.pers.max_health)
@@ -586,8 +586,8 @@ public class GameBase {
         
         
 
-        for (var i = 0; i < num_edicts; i++) {
-            var ent = g_edicts[i];
+        for (int i = 0; i < num_edicts; i++) {
+            edict_t ent = g_edicts[i];
             if (!ent.inuse)
                 continue;
 

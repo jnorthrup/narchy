@@ -54,8 +54,8 @@ public class MovieGenerator {
         this.baseFilename = baseFilename;
 
 
-        var fp = new File(baseFilename);
-        var directory = fp.getParentFile();
+        File fp = new File(baseFilename);
+        File directory = fp.getParentFile();
 
         
         if (!directory.isDirectory()) {
@@ -78,15 +78,15 @@ public class MovieGenerator {
             throw new IllegalArgumentException("Base filename is not defined.");
 
 
-        var formatter = NumberFormat.getInstance();
+        NumberFormat formatter = NumberFormat.getInstance();
         formatter.setMinimumIntegerDigits(indexDigits);
         formatter.setGroupingUsed(false);
 
 
-        var indexString = formatter.format(pngIndex);
+        String indexString = formatter.format(pngIndex);
 
 
-        var filename = baseFilename + indexString + ".png";
+        String filename = baseFilename + indexString + ".png";
 
         
         try {

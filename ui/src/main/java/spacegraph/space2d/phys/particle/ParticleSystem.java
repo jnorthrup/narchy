@@ -181,7 +181,7 @@ public class ParticleSystem {
 
     public int createParticle(ParticleDef def) {
         if (m_count >= m_internalAllocatedCapacity) {
-            var capacity = m_count != 0 ? 2 * m_count : Settings.minParticleBufferCapacity;
+            int capacity = m_count != 0 ? 2 * m_count : Settings.minParticleBufferCapacity;
             capacity = limitCapacity(capacity, m_maxCount);
             capacity = limitCapacity(capacity, m_flagsBuffer.userSuppliedCapacity);
             capacity = limitCapacity(capacity, m_positionBuffer.userSuppliedCapacity);
@@ -217,7 +217,7 @@ public class ParticleSystem {
         if (m_count >= m_internalAllocatedCapacity) {
             return Settings.invalidParticleIndex;
         }
-        var index = m_count++;
+        int index = m_count++;
         m_flagsBuffer.data[index] = def.flags;
         m_positionBuffer.data[index].set(def.position);
 
@@ -236,8 +236,8 @@ public class ParticleSystem {
             m_userDataBuffer.data[index] = def.userData;
         }
         if (m_proxyCount >= m_proxyCapacity) {
-            var oldCapacity = m_proxyCapacity;
-            var newCapacity = m_proxyCount != 0 ? 2 * m_proxyCount : Settings.minParticleBufferCapacity;
+            int oldCapacity = m_proxyCapacity;
+            int newCapacity = m_proxyCount != 0 ? 2 * m_proxyCount : Settings.minParticleBufferCapacity;
             m_proxyBuffer =
                     BufferUtils.reallocateBuffer(Proxy.class, m_proxyBuffer, oldCapacity, newCapacity);
             m_proxyCapacity = newCapacity;
@@ -247,7 +247,7 @@ public class ParticleSystem {
     }
 
     public void destroyParticle(int index, boolean callDestructionListener) {
-        var flags = ParticleType.b2_zombieParticle;
+        int flags = ParticleType.b2_zombieParticle;
         if (callDestructionListener) {
             flags |= ParticleType.b2_destructionListener;
         }
@@ -265,7 +265,7 @@ public class ParticleSystem {
     }
 
     public void destroyParticlesInGroup(ParticleGroup group, boolean callDestructionListener) {
-        for (var i = group.m_firstIndex; i < group.m_lastIndex; i++) {
+        for (int i = group.m_firstIndex; i < group.m_lastIndex; i++) {
             destroyParticle(i, callDestructionListener);
         }
     }
@@ -279,7 +279,7 @@ public class ParticleSystem {
     private final ParticleDef tempParticleDef = new ParticleDef();
 
     public ParticleGroup createParticleGroup(Dynamics2D world, ParticleGroupDef groupDef) {
-        var group = new ParticleGroup();
+        ParticleGroup group = new ParticleGroup();
         group.m_system = this;
         group.m_groupFlags = groupDef.groupFlags;
         group.m_strength = groupDef.strength;
@@ -289,37 +289,37 @@ public class ParticleSystem {
 
 
         world.invoke(() -> {
-            var stride = getParticleStride();
-            var identity = tempTransform;
+            float stride = getParticleStride();
+            Transform identity = tempTransform;
             identity.setIdentity();
-            var transform = tempTransform2;
+            Transform transform = tempTransform2;
             transform.setIdentity();
-            var firstIndex = m_count;
+            int firstIndex = m_count;
             if (groupDef.shape != null) {
-                var particleDef = tempParticleDef;
+                ParticleDef particleDef = tempParticleDef;
                 particleDef.flags = groupDef.flags;
                 particleDef.color = groupDef.color;
                 particleDef.userData = groupDef.userData;
-                var shape = groupDef.shape;
+                Shape shape = groupDef.shape;
                 transform.set(groupDef.position, groupDef.angle);
-                var aabb = temp;
-                var childCount = shape.getChildCount();
-                for (var childIndex = 0; childIndex < childCount; childIndex++) {
+                AABB aabb = temp;
+                int childCount = shape.getChildCount();
+                for (int childIndex = 0; childIndex < childCount; childIndex++) {
                     if (childIndex == 0) {
                         shape.computeAABB(aabb, identity, 0);
                     } else {
-                        var childAABB = temp2;
+                        AABB childAABB = temp2;
                         shape.computeAABB(childAABB, identity, childIndex);
                         aabb.combine(childAABB);
                     }
                 }
-                var upperBoundY = aabb.upperBound.y;
-                var upperBoundX = aabb.upperBound.x;
-                for (var y = MathUtils.floor(aabb.lowerBound.y / stride) * stride; y < upperBoundY; y +=
+                float upperBoundY = aabb.upperBound.y;
+                float upperBoundX = aabb.upperBound.x;
+                for (float y = MathUtils.floor(aabb.lowerBound.y / stride) * stride; y < upperBoundY; y +=
                         stride) {
-                    for (var x = MathUtils.floor(aabb.lowerBound.x / stride) * stride; x < upperBoundX; x +=
+                    for (float x = MathUtils.floor(aabb.lowerBound.x / stride) * stride; x < upperBoundX; x +=
                             stride) {
-                        var p = tempVec;
+                        v2 p = tempVec;
                         p.x = x;
                         p.y = y;
                         if (shape.testPoint(identity, p)) {
@@ -334,7 +334,7 @@ public class ParticleSystem {
                     }
                 }
             }
-            var lastIndex = m_count;
+            int lastIndex = m_count;
 
             group.m_firstIndex = firstIndex;
             group.m_lastIndex = lastIndex;
@@ -348,31 +348,31 @@ public class ParticleSystem {
             m_groupList = group;
             ++m_groupCount;
             
-            for (var i = firstIndex; i < lastIndex; i++) {
+            for (int i = firstIndex; i < lastIndex; i++) {
                 m_groupBuffer[i] = group;
             }
 
             updateContacts(true);
             if ((groupDef.flags & k_pairFlags) != 0) {
-                for (var k = 0; k < m_contactCount; k++) {
-                    var contact = m_contactBuffer[k];
-                    var a = contact.indexA;
-                    var b = contact.indexB;
+                for (int k = 0; k < m_contactCount; k++) {
+                    ParticleContact contact = m_contactBuffer[k];
+                    int a = contact.indexA;
+                    int b = contact.indexB;
                     if (a > b) {
-                        var temp = a;
+                        int temp = a;
                         a = b;
                         b = temp;
                     }
                     if (firstIndex <= a && b < lastIndex) {
                         if (m_pairCount >= m_pairCapacity) {
-                            var oldCapacity = m_pairCapacity;
-                            var newCapacity =
+                            int oldCapacity = m_pairCapacity;
+                            int newCapacity =
                                     m_pairCount != 0 ? 2 * m_pairCount : Settings.minParticleBufferCapacity;
                             m_pairBuffer =
                                     BufferUtils.reallocateBuffer(Pair.class, m_pairBuffer, oldCapacity, newCapacity);
                             m_pairCapacity = newCapacity;
                         }
-                        var pair = m_pairBuffer[m_pairCount];
+                        Pair pair = m_pairBuffer[m_pairCount];
                         pair.indexA = a;
                         pair.indexB = b;
                         pair.flags = contact.flags;
@@ -383,8 +383,8 @@ public class ParticleSystem {
                 }
             }
             if ((groupDef.flags & k_triadFlags) != 0) {
-                var diagram = new VoronoiDiagram(lastIndex - firstIndex);
-                for (var i = firstIndex; i < lastIndex; i++) {
+                VoronoiDiagram diagram = new VoronoiDiagram(lastIndex - firstIndex);
+                for (int i = firstIndex; i < lastIndex; i++) {
                     diagram.addGenerator(m_positionBuffer.data[i], i);
                 }
                 diagram.generate(stride / 2);
@@ -407,32 +407,36 @@ public class ParticleSystem {
         RotateBuffer(groupA.m_firstIndex, groupA.m_lastIndex, groupB.m_firstIndex);
         assert (groupA.m_lastIndex == groupB.m_firstIndex);
 
-        var array = m_flagsBuffer.data;
-        var bound = groupB.m_lastIndex;
-        var particleFlags = Arrays.stream(array, groupA.m_firstIndex, bound).reduce(0, (a, b) -> a | b);
+        int[] array = m_flagsBuffer.data;
+        int bound = groupB.m_lastIndex;
+        int particleFlags = 0;
+        for (int j = groupA.m_firstIndex; j < bound; j++) {
+            int i1 = array[j];
+            particleFlags = particleFlags | i1;
+        }
 
         updateContacts(true);
         if ((particleFlags & k_pairFlags) != 0) {
-            for (var k = 0; k < m_contactCount; k++) {
-                var contact = m_contactBuffer[k];
-                var a = contact.indexA;
-                var b = contact.indexB;
+            for (int k = 0; k < m_contactCount; k++) {
+                ParticleContact contact = m_contactBuffer[k];
+                int a = contact.indexA;
+                int b = contact.indexB;
                 if (a > b) {
-                    var temp = a;
+                    int temp = a;
                     a = b;
                     b = temp;
                 }
                 if (groupA.m_firstIndex <= a && a < groupA.m_lastIndex && groupB.m_firstIndex <= b
                         && b < groupB.m_lastIndex) {
                     if (m_pairCount >= m_pairCapacity) {
-                        var oldCapacity = m_pairCapacity;
-                        var newCapacity =
+                        int oldCapacity = m_pairCapacity;
+                        int newCapacity =
                                 m_pairCount != 0 ? 2 * m_pairCount : Settings.minParticleBufferCapacity;
                         m_pairBuffer =
                                 BufferUtils.reallocateBuffer(Pair.class, m_pairBuffer, oldCapacity, newCapacity);
                         m_pairCapacity = newCapacity;
                     }
-                    var pair = m_pairBuffer[m_pairCount];
+                    Pair pair = m_pairBuffer[m_pairCount];
                     pair.indexA = a;
                     pair.indexB = b;
                     pair.flags = contact.flags;
@@ -443,24 +447,24 @@ public class ParticleSystem {
             }
         }
         if ((particleFlags & k_triadFlags) != 0) {
-            var diagram = new VoronoiDiagram(groupB.m_lastIndex - groupA.m_firstIndex);
-            for (var i = groupA.m_firstIndex; i < groupB.m_lastIndex; i++) {
+            VoronoiDiagram diagram = new VoronoiDiagram(groupB.m_lastIndex - groupA.m_firstIndex);
+            for (int i = groupA.m_firstIndex; i < groupB.m_lastIndex; i++) {
                 if ((m_flagsBuffer.data[i] & ParticleType.b2_zombieParticle) == 0) {
                     diagram.addGenerator(m_positionBuffer.data[i], i);
                 }
             }
             diagram.generate(getParticleStride() / 2);
-            var callback = new JoinParticleGroupsCallback();
+            JoinParticleGroupsCallback callback = new JoinParticleGroupsCallback();
             callback.system = this;
             callback.groupA = groupA;
             callback.groupB = groupB;
             diagram.getNodes(callback);
         }
 
-        for (var i = groupB.m_firstIndex; i < groupB.m_lastIndex; i++) {
+        for (int i = groupB.m_firstIndex; i < groupB.m_lastIndex; i++) {
             m_groupBuffer[i] = groupA;
         }
-        var groupFlags = groupA.m_groupFlags | groupB.m_groupFlags;
+        int groupFlags = groupA.m_groupFlags | groupB.m_groupFlags;
         groupA.m_groupFlags = groupFlags;
         groupA.m_lastIndex = groupB.m_lastIndex;
         groupB.m_firstIndex = groupB.m_lastIndex;
@@ -480,7 +484,7 @@ public class ParticleSystem {
             m_world.getParticleDestructionListener().sayGoodbye(group);
         }
 
-        for (var i = group.m_firstIndex; i < group.m_lastIndex; i++) {
+        for (int i = group.m_firstIndex; i < group.m_lastIndex; i++) {
             m_groupBuffer[i] = null;
         }
 
@@ -498,43 +502,43 @@ public class ParticleSystem {
     }
 
     private void computeDepthForGroup(ParticleGroup group) {
-        for (var i = group.m_firstIndex; i < group.m_lastIndex; i++) {
+        for (int i = group.m_firstIndex; i < group.m_lastIndex; i++) {
             m_accumulationBuffer[i] = 0;
         }
-        for (var k = 0; k < m_contactCount; k++) {
-            var contact = m_contactBuffer[k];
-            var a = contact.indexA;
-            var b = contact.indexB;
+        for (int k = 0; k < m_contactCount; k++) {
+            ParticleContact contact = m_contactBuffer[k];
+            int a = contact.indexA;
+            int b = contact.indexB;
             if (a >= group.m_firstIndex && a < group.m_lastIndex && b >= group.m_firstIndex
                     && b < group.m_lastIndex) {
-                var w = contact.weight;
+                float w = contact.weight;
                 m_accumulationBuffer[a] += w;
                 m_accumulationBuffer[b] += w;
             }
         }
         m_depthBuffer = requestParticleBuffer(m_depthBuffer);
-        for (var i = group.m_firstIndex; i < group.m_lastIndex; i++) {
-            var w = m_accumulationBuffer[i];
+        for (int i = group.m_firstIndex; i < group.m_lastIndex; i++) {
+            float w = m_accumulationBuffer[i];
             m_depthBuffer[i] = w < 0.8f ? 0 : Float.MAX_VALUE;
         }
-        var interationCount = group.getParticleCount();
-        for (var t = 0; t < interationCount; t++) {
-            var updated = false;
-            for (var k = 0; k < m_contactCount; k++) {
-                var contact = m_contactBuffer[k];
-                var a = contact.indexA;
-                var b = contact.indexB;
+        int interationCount = group.getParticleCount();
+        for (int t = 0; t < interationCount; t++) {
+            boolean updated = false;
+            for (int k = 0; k < m_contactCount; k++) {
+                ParticleContact contact = m_contactBuffer[k];
+                int a = contact.indexA;
+                int b = contact.indexB;
                 if (a >= group.m_firstIndex && a < group.m_lastIndex && b >= group.m_firstIndex
                         && b < group.m_lastIndex) {
-                    var r = 1 - contact.weight;
-                    var ap0 = m_depthBuffer[a];
-                    var bp0 = m_depthBuffer[b];
-                    var ap1 = bp0 + r;
+                    float r = 1 - contact.weight;
+                    float ap0 = m_depthBuffer[a];
+                    float bp0 = m_depthBuffer[b];
+                    float ap1 = bp0 + r;
                     if (ap0 > ap1) {
                         m_depthBuffer[a] = ap1;
                         updated = true;
                     }
-                    var bp1 = ap0 + r;
+                    float bp1 = ap0 + r;
                     if (bp0 > bp1) {
                         m_depthBuffer[b] = bp1;
                         updated = true;
@@ -545,8 +549,8 @@ public class ParticleSystem {
                 break;
             }
         }
-        for (var i = group.m_firstIndex; i < group.m_lastIndex; i++) {
-            var p = m_depthBuffer[i];
+        for (int i = group.m_firstIndex; i < group.m_lastIndex; i++) {
+            float p = m_depthBuffer[i];
             if (p < Float.MAX_VALUE) {
                 m_depthBuffer[i] *= m_particleDiameter;
             } else {
@@ -559,22 +563,22 @@ public class ParticleSystem {
         assert (a != b);
         v2 pa = m_positionBuffer.data[a];
         v2 pb = m_positionBuffer.data[b];
-        var dx = pb.x - pa.x;
-        var dy = pb.y - pa.y;
-        var d2 = dx * dx + dy * dy;
+        float dx = pb.x - pa.x;
+        float dy = pb.y - pa.y;
+        float d2 = dx * dx + dy * dy;
 
         if (d2 < m_squaredDiameter) {
             if (m_contactCount >= m_contactCapacity) {
-                var oldCapacity = m_contactCapacity;
-                var newCapacity =
+                int oldCapacity = m_contactCapacity;
+                int newCapacity =
                         m_contactCount != 0 ? 2 * m_contactCount : Settings.minParticleBufferCapacity;
                 m_contactBuffer =
                         BufferUtils.reallocateBuffer(ParticleContact.class, m_contactBuffer, oldCapacity,
                                 newCapacity);
                 m_contactCapacity = newCapacity;
             }
-            var invD = d2 != 0 ? (float) Math.sqrt(1 / d2) : Float.MAX_VALUE;
-            var contact = m_contactBuffer[m_contactCount];
+            float invD = d2 != 0 ? (float) Math.sqrt(1 / d2) : Float.MAX_VALUE;
+            ParticleContact contact = m_contactBuffer[m_contactCount];
             contact.indexA = a;
             contact.indexB = b;
             contact.flags = m_flagsBuffer.data[a] | m_flagsBuffer.data[b];
@@ -586,9 +590,9 @@ public class ParticleSystem {
     }
 
     private void updateContacts(boolean exceptZombie) {
-        for (var p = 0; p < m_proxyCount; p++) {
-            var proxy = m_proxyBuffer[p];
-            var i = proxy.index;
+        for (int p = 0; p < m_proxyCount; p++) {
+            Proxy proxy = m_proxyBuffer[p];
+            int i = proxy.index;
             v2 pos = m_positionBuffer.data[i];
             proxy.tag = computeTag(m_inverseDiameter * pos.x, m_inverseDiameter * pos.y);
         }
@@ -597,28 +601,28 @@ public class ParticleSystem {
         Arrays.sort(m_proxyBuffer, 0, m_proxyCount);
 
         m_contactCount = 0;
-        var c_index = 0;
-        for (var i = 0; i < m_proxyCount; i++) {
-            var a = m_proxyBuffer[i];
-            var rightTag = computeRelativeTag(a.tag, 1, 0);
-            for (var j = i + 1; j < m_proxyCount; j++) {
-                var b = m_proxyBuffer[j];
+        int c_index = 0;
+        for (int i = 0; i < m_proxyCount; i++) {
+            Proxy a = m_proxyBuffer[i];
+            long rightTag = computeRelativeTag(a.tag, 1, 0);
+            for (int j = i + 1; j < m_proxyCount; j++) {
+                Proxy b = m_proxyBuffer[j];
                 if (rightTag < b.tag) {
                     break;
                 }
                 addContact(a.index, b.index);
             }
-            var bottomLeftTag = computeRelativeTag(a.tag, -1, 1);
+            long bottomLeftTag = computeRelativeTag(a.tag, -1, 1);
             for (; c_index < m_proxyCount; c_index++) {
-                var c = m_proxyBuffer[c_index];
+                Proxy c = m_proxyBuffer[c_index];
                 if (bottomLeftTag <= c.tag) {
                     break;
                 }
             }
-            var bottomRightTag = computeRelativeTag(a.tag, 1, 1);
+            long bottomRightTag = computeRelativeTag(a.tag, 1, 1);
 
-            for (var b_index = c_index; b_index < m_proxyCount; b_index++) {
-                var b = m_proxyBuffer[b_index];
+            for (int b_index = c_index; b_index < m_proxyCount; b_index++) {
+                Proxy b = m_proxyBuffer[b_index];
                 if (bottomRightTag < b.tag) {
                     break;
                 }
@@ -626,11 +630,11 @@ public class ParticleSystem {
             }
         }
         if (exceptZombie) {
-            var j = m_contactCount;
-            for (var i = 0; i < j; i++) {
+            int j = m_contactCount;
+            for (int i = 0; i < j; i++) {
                 if ((m_contactBuffer[i].flags & ParticleType.b2_zombieParticle) != 0) {
                     --j;
-                    var temp = m_contactBuffer[j];
+                    ParticleContact temp = m_contactBuffer[j];
                     m_contactBuffer[j] = m_contactBuffer[i];
                     m_contactBuffer[i] = temp;
                     --i;
@@ -643,12 +647,12 @@ public class ParticleSystem {
     private final UpdateBodyContactsCallback ubccallback = new UpdateBodyContactsCallback();
 
     private void updateBodyContacts() {
-        var aabb = temp;
+        AABB aabb = temp;
         aabb.lowerBound.x = Float.MAX_VALUE;
         aabb.lowerBound.y = Float.MAX_VALUE;
         aabb.upperBound.x = -Float.MAX_VALUE;
         aabb.upperBound.y = -Float.MAX_VALUE;
-        for (var i = 0; i < m_count; i++) {
+        for (int i = 0; i < m_count; i++) {
             v2 p = m_positionBuffer.data[i];
             v2.minToOut(aabb.lowerBound, p, aabb.lowerBound);
             v2.maxToOut(aabb.upperBound, p, aabb.upperBound);
@@ -666,31 +670,31 @@ public class ParticleSystem {
     private final SolveCollisionCallback sccallback = new SolveCollisionCallback();
 
     private void solveCollision(TimeStep step) {
-        var aabb = temp;
-        var lowerBound = aabb.lowerBound;
-        var upperBound = aabb.upperBound;
+        AABB aabb = temp;
+        v2 lowerBound = aabb.lowerBound;
+        v2 upperBound = aabb.upperBound;
         lowerBound.x = Float.MAX_VALUE;
         lowerBound.y = Float.MAX_VALUE;
         upperBound.x = -Float.MAX_VALUE;
         upperBound.y = -Float.MAX_VALUE;
         v2[] V = m_velocityBuffer.data;
         v2[] P = m_positionBuffer.data;
-        var dt = step.dt;
-        for (var i = 0; i < m_count; i++) {
-            var v = V[i];
-            var p1 = P[i];
-            var p1x = p1.x;
-            var p1y = p1.y;
+        float dt = step.dt;
+        for (int i = 0; i < m_count; i++) {
+            v2 v = V[i];
+            v2 p1 = P[i];
+            float p1x = p1.x;
+            float p1y = p1.y;
 
-            var p2x = p1x + dt * v.x;
-            var p2y = p1y + dt * v.y;
-            var bx = Math.min(p1x, p2x);
+            float p2x = p1x + dt * v.x;
+            float p2y = p1y + dt * v.y;
+            float bx = Math.min(p1x, p2x);
             lowerBound.x = Math.min(lowerBound.x, bx);
-            var by = Math.min(p1y, p2y);
+            float by = Math.min(p1y, p2y);
             lowerBound.y = Math.min(lowerBound.y, by);
-            var b1x = Math.max(p1x, p2x);
+            float b1x = Math.max(p1x, p2x);
             upperBound.x = Math.max(upperBound.x, b1x);
-            var b1y = Math.max(p1y, p2y);
+            float b1y = Math.max(p1y, p2y);
             upperBound.y = Math.max(upperBound.y, b1y);
         }
         sccallback.step = step;
@@ -704,7 +708,7 @@ public class ParticleSystem {
             return;
         }
         m_allParticleFlags = 0;
-        for (var i = 0; i < m_count; i++) {
+        for (int i = 0; i < m_count; i++) {
             m_allParticleFlags |= m_flagsBuffer.data[i];
         }
         if ((m_allParticleFlags & ParticleType.b2_zombieParticle) != 0) {
@@ -714,19 +718,19 @@ public class ParticleSystem {
             return;
         }
         m_allGroupFlags = 0;
-        for (var group = m_groupList; group != null; group = group.getNext()) {
+        for (ParticleGroup group = m_groupList; group != null; group = group.getNext()) {
             m_allGroupFlags |= group.m_groupFlags;
         }
-        var gravityx = step.dt * m_gravityScale * m_world.getGravity().x;
-        var gravityy = step.dt * m_gravityScale * m_world.getGravity().y;
-        var criticalVelocytySquared = getCriticalVelocitySquared(step);
-        for (var i = 0; i < m_count; i++) {
+        float gravityx = step.dt * m_gravityScale * m_world.getGravity().x;
+        float gravityy = step.dt * m_gravityScale * m_world.getGravity().y;
+        float criticalVelocytySquared = getCriticalVelocitySquared(step);
+        for (int i = 0; i < m_count; i++) {
             v2 v = m_velocityBuffer.data[i];
             v.x += gravityx;
             v.y += gravityy;
-            var v2 = v.x * v.x + v.y * v.y;
+            float v2 = v.x * v.x + v.y * v.y;
             if (v2 > criticalVelocytySquared) {
-                var a = v2 == 0 ? Float.MAX_VALUE : (float) Math.sqrt(criticalVelocytySquared / v2);
+                float a = v2 == 0 ? Float.MAX_VALUE : (float) Math.sqrt(criticalVelocytySquared / v2);
                 v.x *= a;
                 v.y *= a;
             }
@@ -738,7 +742,7 @@ public class ParticleSystem {
         if ((m_allParticleFlags & ParticleType.b2_wallParticle) != 0) {
             solveWall(step);
         }
-        for (var i = 0; i < m_count; i++) {
+        for (int i = 0; i < m_count; i++) {
             v2 pos = m_positionBuffer.data[i];
             v2 vel = m_velocityBuffer.data[i];
             pos.x += step.dt * vel.x;
@@ -774,71 +778,71 @@ public class ParticleSystem {
     private void solvePressure(TimeStep step) {
         
         
-        for (var i = 0; i < m_count; i++) {
+        for (int i = 0; i < m_count; i++) {
             m_accumulationBuffer[i] = 0;
         }
-        for (var k = 0; k < m_bodyContactCount; k++) {
-            var contact = m_bodyContactBuffer[k];
-            var a = contact.index;
-            var w = contact.weight;
+        for (int k = 0; k < m_bodyContactCount; k++) {
+            ParticleBodyContact contact = m_bodyContactBuffer[k];
+            int a = contact.index;
+            float w = contact.weight;
             m_accumulationBuffer[a] += w;
         }
-        for (var k = 0; k < m_contactCount; k++) {
-            var contact = m_contactBuffer[k];
-            var a = contact.indexA;
-            var b = contact.indexB;
-            var w = contact.weight;
+        for (int k = 0; k < m_contactCount; k++) {
+            ParticleContact contact = m_contactBuffer[k];
+            int a = contact.indexA;
+            int b = contact.indexB;
+            float w = contact.weight;
             m_accumulationBuffer[a] += w;
             m_accumulationBuffer[b] += w;
         }
         
         if ((m_allParticleFlags & k_noPressureFlags) != 0) {
-            for (var i = 0; i < m_count; i++) {
+            for (int i = 0; i < m_count; i++) {
                 if ((m_flagsBuffer.data[i] & k_noPressureFlags) != 0) {
                     m_accumulationBuffer[i] = 0;
                 }
             }
         }
 
-        var pressurePerWeight = m_pressureStrength * getCriticalPressure(step);
-        for (var i = 0; i < m_count; i++) {
-            var w = m_accumulationBuffer[i];
-            var h =
+        float pressurePerWeight = m_pressureStrength * getCriticalPressure(step);
+        for (int i = 0; i < m_count; i++) {
+            float w = m_accumulationBuffer[i];
+            float h =
                     pressurePerWeight
                             * MathUtils.max(0.0f, MathUtils.min(w, Settings.maxParticleWeight)
                             - Settings.minParticleWeight);
             m_accumulationBuffer[i] = h;
         }
 
-        var velocityPerPressure = step.dt / (m_density * m_particleDiameter);
-        for (var k = 0; k < m_bodyContactCount; k++) {
-            var contact = m_bodyContactBuffer[k];
-            var a = contact.index;
-            var b = contact.body;
-            var w = contact.weight;
-            var m = contact.mass;
-            var n = contact.normal;
+        float velocityPerPressure = step.dt / (m_density * m_particleDiameter);
+        for (int k = 0; k < m_bodyContactCount; k++) {
+            ParticleBodyContact contact = m_bodyContactBuffer[k];
+            int a = contact.index;
+            Body2D b = contact.body;
+            float w = contact.weight;
+            float m = contact.mass;
+            v2 n = contact.normal;
             v2 p = m_positionBuffer.data[a];
-            var h = m_accumulationBuffer[a] + pressurePerWeight * w;
-            var f = tempVec;
-            var coef = velocityPerPressure * w * m * h;
+            float h = m_accumulationBuffer[a] + pressurePerWeight * w;
+            v2 f = tempVec;
+            float coef = velocityPerPressure * w * m * h;
             f.x = coef * n.x;
             f.y = coef * n.y;
             v2 velData = m_velocityBuffer.data[a];
-            var particleInvMass = getParticleInvMass();
+            float particleInvMass = getParticleInvMass();
             velData.x -= particleInvMass * f.x;
             velData.y -= particleInvMass * f.y;
             b.applyLinearImpulse(f, p, true);
         }
-        for (var k = 0; k < m_contactCount; k++) {
-            var contact = m_contactBuffer[k];
-            var a = contact.indexA;
-            var b = contact.indexB;
-            var w = contact.weight;
-            var n = contact.normal;
-            var h = m_accumulationBuffer[a] + m_accumulationBuffer[b];
-            var fx = velocityPerPressure * w * h * n.x;
-            var fy = velocityPerPressure * w * h * n.y;
+        for (int k = 0; k < m_contactCount; k++) {
+            ParticleContact contact = m_contactBuffer[k];
+            int a = contact.indexA;
+            int b = contact.indexB;
+            float w = contact.weight;
+            v2 n = contact.normal;
+            float h = m_accumulationBuffer[a] + m_accumulationBuffer[b];
+            float fx = velocityPerPressure * w * h * n.x;
+            float fy = velocityPerPressure * w * h * n.y;
             v2 velDataA = m_velocityBuffer.data[a];
             v2 velDataB = m_velocityBuffer.data[b];
             velDataA.x -= fx;
@@ -850,28 +854,28 @@ public class ParticleSystem {
 
     private void solveDamping(TimeStep step) {
 
-        var damping = m_dampingStrength;
-        for (var k = 0; k < m_bodyContactCount; k++) {
-            var contact = m_bodyContactBuffer[k];
-            var a = contact.index;
-            var b = contact.body;
-            var w = contact.weight;
-            var m = contact.mass;
-            var n = contact.normal;
+        float damping = m_dampingStrength;
+        for (int k = 0; k < m_bodyContactCount; k++) {
+            ParticleBodyContact contact = m_bodyContactBuffer[k];
+            int a = contact.index;
+            Body2D b = contact.body;
+            float w = contact.weight;
+            float m = contact.mass;
+            v2 n = contact.normal;
             v2 p = m_positionBuffer.data[a];
-            var tempX = p.x - b.sweep.c.x;
-            var tempY = p.y - b.sweep.c.y;
+            float tempX = p.x - b.sweep.c.x;
+            float tempY = p.y - b.sweep.c.y;
             v2 velA = m_velocityBuffer.data[a];
 
-            var vx = -b.velAngular * tempY + b.vel.x - velA.x;
-            var vy = b.velAngular * tempX + b.vel.y - velA.y;
+            float vx = -b.velAngular * tempY + b.vel.x - velA.x;
+            float vy = b.velAngular * tempX + b.vel.y - velA.y;
 
-            var vn = vx * n.x + vy * n.y;
+            float vn = vx * n.x + vy * n.y;
             if (vn < 0) {
-                var f = tempVec;
+                v2 f = tempVec;
                 f.x = damping * w * m * vn * n.x;
                 f.y = damping * w * m * vn * n.y;
-                var invMass = getParticleInvMass();
+                float invMass = getParticleInvMass();
                 velA.x += invMass * f.x;
                 velA.y += invMass * f.y;
                 f.x = -f.x;
@@ -879,20 +883,20 @@ public class ParticleSystem {
                 b.applyLinearImpulse(f, p, true);
             }
         }
-        for (var k = 0; k < m_contactCount; k++) {
-            var contact = m_contactBuffer[k];
-            var a = contact.indexA;
-            var b = contact.indexB;
-            var w = contact.weight;
-            var n = contact.normal;
+        for (int k = 0; k < m_contactCount; k++) {
+            ParticleContact contact = m_contactBuffer[k];
+            int a = contact.indexA;
+            int b = contact.indexB;
+            float w = contact.weight;
+            v2 n = contact.normal;
             v2 velA = m_velocityBuffer.data[a];
             v2 velB = m_velocityBuffer.data[b];
-            var vx = velB.x - velA.x;
-            var vy = velB.y - velA.y;
-            var vn = vx * n.x + vy * n.y;
+            float vx = velB.x - velA.x;
+            float vy = velB.y - velA.y;
+            float vn = vx * n.x + vy * n.y;
             if (vn < 0) {
-                var fx = damping * w * vn * n.x;
-                var fy = damping * w * vn * n.y;
+                float fx = damping * w * vn * n.x;
+                float fy = damping * w * vn * n.y;
                 velA.x += fx;
                 velA.y += fy;
                 velB.x -= fx;
@@ -902,7 +906,7 @@ public class ParticleSystem {
     }
 
     private void solveWall(TimeStep step) {
-        for (var i = 0; i < m_count; i++) {
+        for (int i = 0; i < m_count; i++) {
             if ((m_flagsBuffer.data[i] & ParticleType.b2_wallParticle) != 0) {
                 v2 r = m_velocityBuffer.data[i];
                 r.x = 0.0f;
@@ -917,24 +921,24 @@ public class ParticleSystem {
     private final Transform tempXf2 = new Transform();
 
     private void solveRigid(TimeStep step) {
-        for (var group = m_groupList; group != null; group = group.getNext()) {
+        for (ParticleGroup group = m_groupList; group != null; group = group.getNext()) {
             if ((group.m_groupFlags & ParticleGroupType.b2_rigidParticleGroup) != 0) {
                 group.updateStatistics();
-                var temp = tempVec;
-                var cross = tempv2;
-                var rotation = tempRot;
+                v2 temp = tempVec;
+                v2 cross = tempv2;
+                Rot rotation = tempRot;
                 rotation.set(step.dt * group.m_angularVelocity);
                 Rot.mulToOutUnsafe(rotation, group.m_center, cross);
                 temp.set(group.m_linearVelocity).scaled(step.dt).added(group.m_center).subbed(cross);
                 tempXf.pos.set(temp);
                 tempXf.set(rotation);
                 Transform.mulToOut(tempXf, group.m_transform, group.m_transform);
-                var velocityTransform = tempXf2;
+                Transform velocityTransform = tempXf2;
                 velocityTransform.pos.x = step.inv_dt * tempXf.pos.x;
                 velocityTransform.pos.y = step.inv_dt * tempXf.pos.y;
                 velocityTransform.s = step.inv_dt * tempXf.s;
                 velocityTransform.c = step.inv_dt * (tempXf.c - 1);
-                for (var i = group.m_firstIndex; i < group.m_lastIndex; i++) {
+                for (int i = group.m_firstIndex; i < group.m_lastIndex; i++) {
                     Transform.mulToOutUnsafe(velocityTransform, m_positionBuffer.data[i],
                             m_velocityBuffer.data[i]);
                 }
@@ -943,34 +947,34 @@ public class ParticleSystem {
     }
 
     private void solveElastic(TimeStep step) {
-        var elasticStrength = step.inv_dt * m_elasticStrength;
-        for (var k = 0; k < m_triadCount; k++) {
-            var triad = m_triadBuffer[k];
+        float elasticStrength = step.inv_dt * m_elasticStrength;
+        for (int k = 0; k < m_triadCount; k++) {
+            Triad triad = m_triadBuffer[k];
             if ((triad.flags & ParticleType.b2_elasticParticle) != 0) {
-                var a = triad.indexA;
-                var b = triad.indexB;
-                var c = triad.indexC;
-                var oa = triad.pa;
-                var ob = triad.pb;
-                var oc = triad.pc;
+                int a = triad.indexA;
+                int b = triad.indexB;
+                int c = triad.indexC;
+                v2 oa = triad.pa;
+                v2 ob = triad.pb;
+                v2 oc = triad.pc;
                 v2 pa = m_positionBuffer.data[a];
                 v2 pb = m_positionBuffer.data[b];
                 v2 pc = m_positionBuffer.data[c];
-                var px = 1f / 3 * (pa.x + pb.x + pc.x);
-                var py = 1f / 3 * (pa.y + pb.y + pc.y);
-                var rs = v2.cross(oa, pa) + v2.cross(ob, pb) + v2.cross(oc, pc);
-                var rc = v2.dot(oa, pa) + v2.dot(ob, pb) + v2.dot(oc, pc);
-                var r2 = rs * rs + rc * rc;
-                var invR = r2 == 0 ? Float.MAX_VALUE : (float) Math.sqrt(1f / r2);
+                float px = 1f / 3 * (pa.x + pb.x + pc.x);
+                float py = 1f / 3 * (pa.y + pb.y + pc.y);
+                float rs = v2.cross(oa, pa) + v2.cross(ob, pb) + v2.cross(oc, pc);
+                float rc = v2.dot(oa, pa) + v2.dot(ob, pb) + v2.dot(oc, pc);
+                float r2 = rs * rs + rc * rc;
+                float invR = r2 == 0 ? Float.MAX_VALUE : (float) Math.sqrt(1f / r2);
                 rs *= invR;
                 rc *= invR;
-                var strength = elasticStrength * triad.strength;
-                var roax = rc * oa.x - rs * oa.y;
-                var roay = rs * oa.x + rc * oa.y;
-                var robx = rc * ob.x - rs * ob.y;
-                var roby = rs * ob.x + rc * ob.y;
-                var rocx = rc * oc.x - rs * oc.y;
-                var rocy = rs * oc.x + rc * oc.y;
+                float strength = elasticStrength * triad.strength;
+                float roax = rc * oa.x - rs * oa.y;
+                float roay = rs * oa.x + rc * oa.y;
+                float robx = rc * ob.x - rs * ob.y;
+                float roby = rs * ob.x + rc * ob.y;
+                float rocx = rc * oc.x - rs * oc.y;
+                float rocy = rs * oc.x + rc * oc.y;
                 v2 va = m_velocityBuffer.data[a];
                 v2 vb = m_velocityBuffer.data[b];
                 v2 vc = m_velocityBuffer.data[c];
@@ -985,22 +989,22 @@ public class ParticleSystem {
     }
 
     private void solveSpring(TimeStep step) {
-        var springStrength = step.inv_dt * m_springStrength;
-        for (var k = 0; k < m_pairCount; k++) {
-            var pair = m_pairBuffer[k];
+        float springStrength = step.inv_dt * m_springStrength;
+        for (int k = 0; k < m_pairCount; k++) {
+            Pair pair = m_pairBuffer[k];
             if ((pair.flags & ParticleType.b2_springParticle) != 0) {
-                var a = pair.indexA;
-                var b = pair.indexB;
+                int a = pair.indexA;
+                int b = pair.indexB;
                 v2 pa = m_positionBuffer.data[a];
                 v2 pb = m_positionBuffer.data[b];
-                var dx = pb.x - pa.x;
-                var dy = pb.y - pa.y;
-                var r0 = pair.distance;
-                var r1 = (float) Math.sqrt(dx * dx + dy * dy);
+                float dx = pb.x - pa.x;
+                float dy = pb.y - pa.y;
+                float r0 = pair.distance;
+                float r1 = (float) Math.sqrt(dx * dx + dy * dy);
                 if (r1 == 0) r1 = Float.MAX_VALUE;
-                var strength = springStrength * pair.strength;
-                var fx = strength * (r0 - r1) / r1 * dx;
-                var fy = strength * (r0 - r1) / r1 * dy;
+                float strength = springStrength * pair.strength;
+                float fx = strength * (r0 - r1) / r1 * dx;
+                float fy = strength * (r0 - r1) / r1 * dy;
                 v2 va = m_velocityBuffer.data[a];
                 v2 vb = m_velocityBuffer.data[b];
                 va.x -= fx;
@@ -1013,45 +1017,45 @@ public class ParticleSystem {
 
     private void solveTensile(TimeStep step) {
         m_accumulation2Buffer = requestParticleBuffer(Position.class, m_accumulation2Buffer);
-        for (var i = 0; i < m_count; i++) {
+        for (int i = 0; i < m_count; i++) {
             m_accumulationBuffer[i] = 0;
             m_accumulation2Buffer[i].setZero();
         }
-        for (var k = 0; k < m_contactCount; k++) {
-            var contact = m_contactBuffer[k];
+        for (int k = 0; k < m_contactCount; k++) {
+            ParticleContact contact = m_contactBuffer[k];
             if ((contact.flags & ParticleType.b2_tensileParticle) != 0) {
-                var a = contact.indexA;
-                var b = contact.indexB;
-                var w = contact.weight;
-                var n = contact.normal;
+                int a = contact.indexA;
+                int b = contact.indexB;
+                float w = contact.weight;
+                v2 n = contact.normal;
                 m_accumulationBuffer[a] += w;
                 m_accumulationBuffer[b] += w;
                 v2 a2A = m_accumulation2Buffer[a];
                 v2 a2B = m_accumulation2Buffer[b];
-                var inter = (1 - w) * w;
+                float inter = (1 - w) * w;
                 a2A.x -= inter * n.x;
                 a2A.y -= inter * n.y;
                 a2B.x += inter * n.x;
                 a2B.y += inter * n.y;
             }
         }
-        var strengthA = m_surfaceTensionStrengthA * getCriticalVelocity(step);
-        var strengthB = m_surfaceTensionStrengthB * getCriticalVelocity(step);
-        for (var k = 0; k < m_contactCount; k++) {
-            var contact = m_contactBuffer[k];
+        float strengthA = m_surfaceTensionStrengthA * getCriticalVelocity(step);
+        float strengthB = m_surfaceTensionStrengthB * getCriticalVelocity(step);
+        for (int k = 0; k < m_contactCount; k++) {
+            ParticleContact contact = m_contactBuffer[k];
             if ((contact.flags & ParticleType.b2_tensileParticle) != 0) {
-                var a = contact.indexA;
-                var b = contact.indexB;
-                var w = contact.weight;
-                var n = contact.normal;
+                int a = contact.indexA;
+                int b = contact.indexB;
+                float w = contact.weight;
+                v2 n = contact.normal;
                 v2 a2A = m_accumulation2Buffer[a];
                 v2 a2B = m_accumulation2Buffer[b];
-                var h = m_accumulationBuffer[a] + m_accumulationBuffer[b];
-                var sx = a2B.x - a2A.x;
-                var sy = a2B.y - a2A.y;
-                var fn = (strengthA * (h - 2) + strengthB * (sx * n.x + sy * n.y)) * w;
-                var fx = fn * n.x;
-                var fy = fn * n.y;
+                float h = m_accumulationBuffer[a] + m_accumulationBuffer[b];
+                float sx = a2B.x - a2A.x;
+                float sy = a2B.y - a2A.y;
+                float fn = (strengthA * (h - 2) + strengthB * (sx * n.x + sy * n.y)) * w;
+                float fx = fn * n.x;
+                float fy = fn * n.y;
                 v2 va = m_velocityBuffer.data[a];
                 v2 vb = m_velocityBuffer.data[b];
                 va.x -= fx;
@@ -1063,22 +1067,22 @@ public class ParticleSystem {
     }
 
     private void solveViscous(TimeStep step) {
-        var viscousStrength = m_viscousStrength;
-        for (var k = 0; k < m_bodyContactCount; k++) {
-            var contact = m_bodyContactBuffer[k];
-            var a = contact.index;
+        float viscousStrength = m_viscousStrength;
+        for (int k = 0; k < m_bodyContactCount; k++) {
+            ParticleBodyContact contact = m_bodyContactBuffer[k];
+            int a = contact.index;
             if ((m_flagsBuffer.data[a] & ParticleType.b2_viscousParticle) != 0) {
-                var b = contact.body;
-                var w = contact.weight;
-                var m = contact.mass;
+                Body2D b = contact.body;
+                float w = contact.weight;
+                float m = contact.mass;
                 v2 p = m_positionBuffer.data[a];
                 v2 va = m_velocityBuffer.data[a];
-                var tempX = p.x - b.sweep.c.x;
-                var tempY = p.y - b.sweep.c.y;
-                var vx = -b.velAngular * tempY + b.vel.x - va.x;
-                var vy = b.velAngular * tempX + b.vel.y - va.y;
-                var f = tempVec;
-                var pInvMass = getParticleInvMass();
+                float tempX = p.x - b.sweep.c.x;
+                float tempY = p.y - b.sweep.c.y;
+                float vx = -b.velAngular * tempY + b.vel.x - va.x;
+                float vy = b.velAngular * tempX + b.vel.y - va.y;
+                v2 f = tempVec;
+                float pInvMass = getParticleInvMass();
                 f.x = viscousStrength * m * w * vx;
                 f.y = viscousStrength * m * w * vy;
                 va.x += pInvMass * f.x;
@@ -1088,19 +1092,19 @@ public class ParticleSystem {
                 b.applyLinearImpulse(f, p, true);
             }
         }
-        for (var k = 0; k < m_contactCount; k++) {
-            var contact = m_contactBuffer[k];
+        for (int k = 0; k < m_contactCount; k++) {
+            ParticleContact contact = m_contactBuffer[k];
             if ((contact.flags & ParticleType.b2_viscousParticle) != 0) {
-                var a = contact.indexA;
-                var b = contact.indexB;
-                var w = contact.weight;
+                int a = contact.indexA;
+                int b = contact.indexB;
+                float w = contact.weight;
                 v2 va = m_velocityBuffer.data[a];
                 v2 vb = m_velocityBuffer.data[b];
-                var vx = vb.x - va.x;
-                var vy = vb.y - va.y;
-                var fx = viscousStrength * w * vx;
+                float vx = vb.x - va.x;
+                float vy = vb.y - va.y;
+                float fx = viscousStrength * w * vx;
                 va.x += fx;
-                var fy = viscousStrength * w * vy;
+                float fy = viscousStrength * w * vy;
                 va.y += fy;
                 vb.x -= fx;
                 vb.y -= fy;
@@ -1109,22 +1113,22 @@ public class ParticleSystem {
     }
 
     private void solvePowder(TimeStep step) {
-        var powderStrength = m_powderStrength * getCriticalVelocity(step);
-        var minWeight = 1.0f - Settings.particleStride;
-        for (var k = 0; k < m_bodyContactCount; k++) {
-            var contact = m_bodyContactBuffer[k];
-            var a = contact.index;
+        float powderStrength = m_powderStrength * getCriticalVelocity(step);
+        float minWeight = 1.0f - Settings.particleStride;
+        for (int k = 0; k < m_bodyContactCount; k++) {
+            ParticleBodyContact contact = m_bodyContactBuffer[k];
+            int a = contact.index;
             if ((m_flagsBuffer.data[a] & ParticleType.b2_powderParticle) != 0) {
-                var w = contact.weight;
+                float w = contact.weight;
                 if (w > minWeight) {
-                    var b = contact.body;
-                    var m = contact.mass;
+                    Body2D b = contact.body;
+                    float m = contact.mass;
                     v2 p = m_positionBuffer.data[a];
-                    var n = contact.normal;
-                    var f = tempVec;
+                    v2 n = contact.normal;
+                    v2 f = tempVec;
                     v2 va = m_velocityBuffer.data[a];
-                    var inter = powderStrength * m * (w - minWeight);
-                    var pInvMass = getParticleInvMass();
+                    float inter = powderStrength * m * (w - minWeight);
+                    float pInvMass = getParticleInvMass();
                     f.x = inter * n.x;
                     f.y = inter * n.y;
                     va.x -= pInvMass * f.x;
@@ -1133,19 +1137,19 @@ public class ParticleSystem {
                 }
             }
         }
-        for (var k = 0; k < m_contactCount; k++) {
-            var contact = m_contactBuffer[k];
+        for (int k = 0; k < m_contactCount; k++) {
+            ParticleContact contact = m_contactBuffer[k];
             if ((contact.flags & ParticleType.b2_powderParticle) != 0) {
-                var w = contact.weight;
+                float w = contact.weight;
                 if (w > minWeight) {
-                    var a = contact.indexA;
-                    var b = contact.indexB;
-                    var n = contact.normal;
+                    int a = contact.indexA;
+                    int b = contact.indexB;
+                    v2 n = contact.normal;
                     v2 va = m_velocityBuffer.data[a];
                     v2 vb = m_velocityBuffer.data[b];
-                    var inter = powderStrength * (w - minWeight);
-                    var fx = inter * n.x;
-                    var fy = inter * n.y;
+                    float inter = powderStrength * (w - minWeight);
+                    float fx = inter * n.x;
+                    float fy = inter * n.y;
                     va.x -= fx;
                     va.y -= fy;
                     vb.x += fx;
@@ -1158,20 +1162,20 @@ public class ParticleSystem {
     private void solveSolid(TimeStep step) {
         
         m_depthBuffer = requestParticleBuffer(m_depthBuffer);
-        var ejectionStrength = step.inv_dt * m_ejectionStrength;
-        for (var k = 0; k < m_contactCount; k++) {
-            var contact = m_contactBuffer[k];
-            var a = contact.indexA;
-            var b = contact.indexB;
+        float ejectionStrength = step.inv_dt * m_ejectionStrength;
+        for (int k = 0; k < m_contactCount; k++) {
+            ParticleContact contact = m_contactBuffer[k];
+            int a = contact.indexA;
+            int b = contact.indexB;
             if (m_groupBuffer[a] != m_groupBuffer[b]) {
-                var w = contact.weight;
-                var n = contact.normal;
-                var h = m_depthBuffer[a] + m_depthBuffer[b];
+                float w = contact.weight;
+                v2 n = contact.normal;
+                float h = m_depthBuffer[a] + m_depthBuffer[b];
                 v2 va = m_velocityBuffer.data[a];
                 v2 vb = m_velocityBuffer.data[b];
-                var inter = ejectionStrength * h * w;
-                var fx = inter * n.x;
-                var fy = inter * n.y;
+                float inter = ejectionStrength * h * w;
+                float fx = inter * n.x;
+                float fy = inter * n.y;
                 va.x -= fx;
                 va.y -= fy;
                 vb.x += fx;
@@ -1183,18 +1187,18 @@ public class ParticleSystem {
     private void solveColorMixing(TimeStep step) {
         
         m_colorBuffer.data = requestParticleBuffer(ParticleColor.class, m_colorBuffer.data);
-        var colorMixing256 = (int) (256 * m_colorMixingStrength);
-        for (var k = 0; k < m_contactCount; k++) {
-            var contact = m_contactBuffer[k];
-            var a = contact.indexA;
-            var b = contact.indexB;
+        int colorMixing256 = (int) (256 * m_colorMixingStrength);
+        for (int k = 0; k < m_contactCount; k++) {
+            ParticleContact contact = m_contactBuffer[k];
+            int a = contact.indexA;
+            int b = contact.indexB;
             if ((m_flagsBuffer.data[a] & m_flagsBuffer.data[b] & ParticleType.b2_colorMixingParticle) != 0) {
-                var colorA = m_colorBuffer.data[a];
-                var colorB = m_colorBuffer.data[b];
-                var dr = (colorMixing256 * (colorB.r - colorA.r)) >> 8;
-                var dg = (colorMixing256 * (colorB.g - colorA.g)) >> 8;
-                var db = (colorMixing256 * (colorB.b - colorA.b)) >> 8;
-                var da = (colorMixing256 * (colorB.a - colorA.a)) >> 8;
+                ParticleColor colorA = m_colorBuffer.data[a];
+                ParticleColor colorB = m_colorBuffer.data[b];
+                int dr = (colorMixing256 * (colorB.r - colorA.r)) >> 8;
+                int dg = (colorMixing256 * (colorB.g - colorA.g)) >> 8;
+                int db = (colorMixing256 * (colorB.b - colorA.b)) >> 8;
+                int da = (colorMixing256 * (colorB.a - colorA.a)) >> 8;
                 colorA.r += dr;
                 colorA.g += dg;
                 colorA.b += db;
@@ -1209,12 +1213,12 @@ public class ParticleSystem {
 
     private void solveZombie() {
 
-        var newCount = 0;
-        var newIndices = new int[m_count];
-        for (var i = 0; i < m_count; i++) {
-            var flags = m_flagsBuffer.data[i];
+        int newCount = 0;
+        int[] newIndices = new int[m_count];
+        for (int i = 0; i < m_count; i++) {
+            int flags = m_flagsBuffer.data[i];
             if ((flags & ParticleType.b2_zombieParticle) != 0) {
-                var destructionListener = m_world.getParticleDestructionListener();
+                ParticleDestructionListener destructionListener = m_world.getParticleDestructionListener();
                 if ((flags & ParticleType.b2_destructionListener) != 0 && destructionListener != null) {
                     destructionListener.sayGoodbye(i);
                 }
@@ -1241,17 +1245,17 @@ public class ParticleSystem {
         }
 
         
-        for (var k = 0; k < m_proxyCount; k++) {
-            var proxy = m_proxyBuffer[k];
+        for (int k = 0; k < m_proxyCount; k++) {
+            Proxy proxy = m_proxyBuffer[k];
             proxy.index = newIndices[proxy.index];
         }
 
 
-        var j = m_proxyCount;
-        for (var i = 0; i < j; i++) {
+        int j = m_proxyCount;
+        for (int i = 0; i < j; i++) {
             if (Test.IsProxyInvalid(m_proxyBuffer[i])) {
                 --j;
-                var temp = m_proxyBuffer[j];
+                Proxy temp = m_proxyBuffer[j];
                 m_proxyBuffer[j] = m_proxyBuffer[i];
                 m_proxyBuffer[i] = temp;
                 --i;
@@ -1260,8 +1264,8 @@ public class ParticleSystem {
         m_proxyCount = j;
 
         
-        for (var k = 0; k < m_contactCount; k++) {
-            var contact = m_contactBuffer[k];
+        for (int k = 0; k < m_contactCount; k++) {
+            ParticleContact contact = m_contactBuffer[k];
             contact.indexA = newIndices[contact.indexA];
             contact.indexB = newIndices[contact.indexB];
         }
@@ -1270,10 +1274,10 @@ public class ParticleSystem {
         
         
         j = m_contactCount;
-        for (var i = 0; i < j; i++) {
+        for (int i = 0; i < j; i++) {
             if (Test.IsContactInvalid(m_contactBuffer[i])) {
                 --j;
-                var temp = m_contactBuffer[j];
+                ParticleContact temp = m_contactBuffer[j];
                 m_contactBuffer[j] = m_contactBuffer[i];
                 m_contactBuffer[i] = temp;
                 --i;
@@ -1282,8 +1286,8 @@ public class ParticleSystem {
         m_contactCount = j;
 
         
-        for (var k = 0; k < m_bodyContactCount; k++) {
-            var contact = m_bodyContactBuffer[k];
+        for (int k = 0; k < m_bodyContactCount; k++) {
+            ParticleBodyContact contact = m_bodyContactBuffer[k];
             contact.index = newIndices[contact.index];
         }
         
@@ -1291,10 +1295,10 @@ public class ParticleSystem {
         
         
         j = m_bodyContactCount;
-        for (var i = 0; i < j; i++) {
+        for (int i = 0; i < j; i++) {
             if (Test.IsBodyContactInvalid(m_bodyContactBuffer[i])) {
                 --j;
-                var temp = m_bodyContactBuffer[j];
+                ParticleBodyContact temp = m_bodyContactBuffer[j];
                 m_bodyContactBuffer[j] = m_bodyContactBuffer[i];
                 m_bodyContactBuffer[i] = temp;
                 --i;
@@ -1303,18 +1307,18 @@ public class ParticleSystem {
         m_bodyContactCount = j;
 
         
-        for (var k = 0; k < m_pairCount; k++) {
-            var pair = m_pairBuffer[k];
+        for (int k = 0; k < m_pairCount; k++) {
+            Pair pair = m_pairBuffer[k];
             pair.indexA = newIndices[pair.indexA];
             pair.indexB = newIndices[pair.indexB];
         }
         
         
         j = m_pairCount;
-        for (var i = 0; i < j; i++) {
+        for (int i = 0; i < j; i++) {
             if (Test.IsPairInvalid(m_pairBuffer[i])) {
                 --j;
-                var temp = m_pairBuffer[j];
+                Pair temp = m_pairBuffer[j];
                 m_pairBuffer[j] = m_pairBuffer[i];
                 m_pairBuffer[i] = temp;
                 --i;
@@ -1323,8 +1327,8 @@ public class ParticleSystem {
         m_pairCount = j;
 
         
-        for (var k = 0; k < m_triadCount; k++) {
-            var triad = m_triadBuffer[k];
+        for (int k = 0; k < m_triadCount; k++) {
+            Triad triad = m_triadBuffer[k];
             triad.indexA = newIndices[triad.indexA];
             triad.indexB = newIndices[triad.indexB];
             triad.indexC = newIndices[triad.indexC];
@@ -1333,10 +1337,10 @@ public class ParticleSystem {
         
         
         j = m_triadCount;
-        for (var i = 0; i < j; i++) {
+        for (int i = 0; i < j; i++) {
             if (Test.IsTriadInvalid(m_triadBuffer[i])) {
                 --j;
-                var temp = m_triadBuffer[j];
+                Triad temp = m_triadBuffer[j];
                 m_triadBuffer[j] = m_triadBuffer[i];
                 m_triadBuffer[i] = temp;
                 --i;
@@ -1345,11 +1349,11 @@ public class ParticleSystem {
         m_triadCount = j;
 
         
-        for (var group = m_groupList; group != null; group = group.getNext()) {
-            var firstIndex = newCount;
-            var lastIndex = 0;
-            var modified = false;
-            for (var i = group.m_firstIndex; i < group.m_lastIndex; i++) {
+        for (ParticleGroup group = m_groupList; group != null; group = group.getNext()) {
+            int firstIndex = newCount;
+            int lastIndex = 0;
+            boolean modified = false;
+            for (int i = group.m_firstIndex; i < group.m_lastIndex; i++) {
                 j = newIndices[i];
                 if (j >= 0) {
                     firstIndex = MathUtils.min(firstIndex, j);
@@ -1380,8 +1384,8 @@ public class ParticleSystem {
         
 
         
-        for (var group = m_groupList; group != null; ) {
-            var next = group.getNext();
+        for (ParticleGroup group = m_groupList; group != null; ) {
+            ParticleGroup next = group.getNext();
             if (group.m_toBeDestroyed) {
                 destroyParticleGroup(group);
             } else if (group.m_toBeSplit) {
@@ -1436,41 +1440,41 @@ public class ParticleSystem {
         }
 
         
-        for (var k = 0; k < m_proxyCount; k++) {
-            var proxy = m_proxyBuffer[k];
+        for (int k = 0; k < m_proxyCount; k++) {
+            Proxy proxy = m_proxyBuffer[k];
             proxy.index = newIndices.getIndex(proxy.index);
         }
 
         
-        for (var k = 0; k < m_contactCount; k++) {
-            var contact = m_contactBuffer[k];
+        for (int k = 0; k < m_contactCount; k++) {
+            ParticleContact contact = m_contactBuffer[k];
             contact.indexA = newIndices.getIndex(contact.indexA);
             contact.indexB = newIndices.getIndex(contact.indexB);
         }
 
         
-        for (var k = 0; k < m_bodyContactCount; k++) {
-            var contact = m_bodyContactBuffer[k];
+        for (int k = 0; k < m_bodyContactCount; k++) {
+            ParticleBodyContact contact = m_bodyContactBuffer[k];
             contact.index = newIndices.getIndex(contact.index);
         }
 
         
-        for (var k = 0; k < m_pairCount; k++) {
-            var pair = m_pairBuffer[k];
+        for (int k = 0; k < m_pairCount; k++) {
+            Pair pair = m_pairBuffer[k];
             pair.indexA = newIndices.getIndex(pair.indexA);
             pair.indexB = newIndices.getIndex(pair.indexB);
         }
 
         
-        for (var k = 0; k < m_triadCount; k++) {
-            var triad = m_triadBuffer[k];
+        for (int k = 0; k < m_triadCount; k++) {
+            Triad triad = m_triadBuffer[k];
             triad.indexA = newIndices.getIndex(triad.indexA);
             triad.indexB = newIndices.getIndex(triad.indexB);
             triad.indexC = newIndices.getIndex(triad.indexC);
         }
 
         
-        for (var group = m_groupList; group != null; group = group.getNext()) {
+        for (ParticleGroup group = m_groupList; group != null; group = group.getNext()) {
             group.m_firstIndex = newIndices.getIndex(group.m_firstIndex);
             group.m_lastIndex = newIndices.getIndex(group.m_lastIndex - 1) + 1;
         }
@@ -1516,7 +1520,7 @@ public class ParticleSystem {
     }
 
     private float getCriticalVelocitySquared(TimeStep step) {
-        var velocity = getCriticalVelocity(step);
+        float velocity = getCriticalVelocity(step);
         return velocity * velocity;
     }
 
@@ -1529,7 +1533,7 @@ public class ParticleSystem {
     }
 
     float getParticleMass() {
-        var stride = getParticleStride();
+        float stride = getParticleStride();
         return m_density * stride * stride;
     }
 
@@ -1623,10 +1627,10 @@ public class ParticleSystem {
     }
 
     private static int lowerBound(Proxy[] ray, int length, long tag) {
-        var left = 0;
+        int left = 0;
         while (length > 0) {
-            var step = length / 2;
-            var curr = left + step;
+            int step = length / 2;
+            int curr = left + step;
             if (ray[curr].tag < tag) {
                 left = curr + 1;
                 length -= step + 1;
@@ -1638,10 +1642,10 @@ public class ParticleSystem {
     }
 
     private static int upperBound(Proxy[] ray, int length, long tag) {
-        var left = 0;
+        int left = 0;
         while (length > 0) {
-            var step = length / 2;
-            var curr = left + step;
+            int step = length / 2;
+            int curr = left + step;
             if (ray[curr].tag <= tag) {
                 left = curr + 1;
                 length -= step + 1;
@@ -1657,18 +1661,18 @@ public class ParticleSystem {
             return;
         }
 
-        var lowerBoundX = aabb.lowerBound.x;
-        var lowerBoundY = aabb.lowerBound.y;
-        var upperBoundX = aabb.upperBound.x;
-        var upperBoundY = aabb.upperBound.y;
-        var firstProxy =
+        float lowerBoundX = aabb.lowerBound.x;
+        float lowerBoundY = aabb.lowerBound.y;
+        float upperBoundX = aabb.upperBound.x;
+        float upperBoundY = aabb.upperBound.y;
+        int firstProxy =
                 lowerBound(m_proxyBuffer, m_proxyCount,
                         computeTag(m_inverseDiameter * lowerBoundX, m_inverseDiameter * lowerBoundY));
-        var lastProxy =
+        int lastProxy =
                 upperBound(m_proxyBuffer, m_proxyCount,
                         computeTag(m_inverseDiameter * upperBoundX, m_inverseDiameter * upperBoundY));
-        for (var proxy = firstProxy; proxy < lastProxy; ++proxy) {
-            var i = m_proxyBuffer[proxy].index;
+        for (int proxy = firstProxy; proxy < lastProxy; ++proxy) {
+            int i = m_proxyBuffer[proxy].index;
             v2 p = m_positionBuffer.data[i];
             if (lowerBoundX < p.x && p.x < upperBoundX && lowerBoundY < p.y && p.y < upperBoundY) {
                 if (!callback.reportParticle(i)) {
@@ -1687,13 +1691,13 @@ public class ParticleSystem {
         if (m_proxyCount == 0) {
             return;
         }
-        var firstProxy =
+        int firstProxy =
                 lowerBound(
                         m_proxyBuffer,
                         m_proxyCount,
                         computeTag(m_inverseDiameter * MathUtils.min(point1.x, point2.x) - 1, m_inverseDiameter
                                 * MathUtils.min(point1.y, point2.y) - 1));
-        var lastProxy =
+        int lastProxy =
                 upperBound(
                         m_proxyBuffer,
                         m_proxyCount,
@@ -1701,23 +1705,23 @@ public class ParticleSystem {
                                 * MathUtils.max(point1.y, point2.y) + 1));
 
 
-        var vx = point2.x - point1.x;
-        var vy = point2.y - point1.y;
-        var v2 = vx * vx + vy * vy;
+        float vx = point2.x - point1.x;
+        float vy = point2.y - point1.y;
+        float v2 = vx * vx + vy * vy;
         if (v2 == 0) v2 = Float.MAX_VALUE;
         float fraction = 1;
-        for (var proxy = firstProxy; proxy < lastProxy; ++proxy) {
-            var i = m_proxyBuffer[proxy].index;
+        for (int proxy = firstProxy; proxy < lastProxy; ++proxy) {
+            int i = m_proxyBuffer[proxy].index;
             jcog.math.v2 posI = m_positionBuffer.data[i];
-            var px = point1.x - posI.x;
-            var py = point1.y - posI.y;
-            var pv = px * vx + py * vy;
-            var p2 = px * px + py * py;
-            var determinant = pv * pv - v2 * (p2 - m_squaredDiameter);
+            float px = point1.x - posI.x;
+            float py = point1.y - posI.y;
+            float pv = px * vx + py * vy;
+            float p2 = px * px + py * py;
+            float determinant = pv * pv - v2 * (p2 - m_squaredDiameter);
             if (determinant >= 0) {
-                var sqrtDeterminant = (float) Math.sqrt(determinant);
+                float sqrtDeterminant = (float) Math.sqrt(determinant);
 
-                var t = (-pv - sqrtDeterminant) / v2;
+                float t = (-pv - sqrtDeterminant) / v2;
                 if (t > fraction) {
                     continue;
                 }
@@ -1727,14 +1731,14 @@ public class ParticleSystem {
                         continue;
                     }
                 }
-                var n = tempVec;
+                jcog.math.v2 n = tempVec;
                 tempVec.x = px + t * vx;
                 tempVec.y = py + t * vy;
                 n.normalize();
-                var point = tempv2;
+                jcog.math.v2 point = tempv2;
                 point.x = point1.x + t * vx;
                 point.y = point1.y + t * vy;
-                var f = callback.reportParticle(i, point, n, t);
+                float f = callback.reportParticle(i, point, n, t);
                 fraction = MathUtils.min(fraction, f);
                 if (fraction <= 0) {
                     break;
@@ -1745,16 +1749,16 @@ public class ParticleSystem {
 
     public float computeParticleCollisionEnergy() {
         float sum_v2 = 0;
-        for (var k = 0; k < m_contactCount; k++) {
-            var contact = m_contactBuffer[k];
-            var a = contact.indexA;
-            var b = contact.indexB;
-            var n = contact.normal;
+        for (int k = 0; k < m_contactCount; k++) {
+            ParticleContact contact = m_contactBuffer[k];
+            int a = contact.indexA;
+            int b = contact.indexB;
+            v2 n = contact.normal;
             v2 va = m_velocityBuffer.data[a];
             v2 vb = m_velocityBuffer.data[b];
-            var vx = vb.x - va.x;
-            var vy = vb.y - va.y;
-            var vn = vx * n.x + vy * n.y;
+            float vx = vb.x - va.x;
+            float vy = vb.y - va.y;
+            float vn = vx * n.x + vy * n.y;
             if (vn < 0) {
                 sum_v2 += vn * vn;
             }
@@ -1781,7 +1785,7 @@ public class ParticleSystem {
     private <T> T[] requestParticleBuffer(Class<T> klass, T[] buffer) {
         if (buffer == null) {
             buffer = (T[]) Array.newInstance(klass, m_internalAllocatedCapacity);
-            for (var i = 0; i < m_internalAllocatedCapacity; i++) {
+            for (int i = 0; i < m_internalAllocatedCapacity; i++) {
                 try {
                     buffer[i] = klass.getConstructor().newInstance();
                 } catch (Exception e) {
@@ -1836,7 +1840,7 @@ public class ParticleSystem {
             if (this == obj) return true;
             if (obj == null) return false;
             if (getClass() != obj.getClass()) return false;
-            var other = (Proxy) obj;
+            Proxy other = (Proxy) obj;
             return tag == other.tag;
         }
     }
@@ -1876,19 +1880,19 @@ public class ParticleSystem {
             v2 pa = system.m_positionBuffer.data[a];
             v2 pb = system.m_positionBuffer.data[b];
             v2 pc = system.m_positionBuffer.data[c];
-            var dabx = pa.x - pb.x;
-            var daby = pa.y - pb.y;
-            var dbcx = pb.x - pc.x;
-            var dbcy = pb.y - pc.y;
-            var dcax = pc.x - pa.x;
-            var dcay = pc.y - pa.y;
-            var maxDistanceSquared = Settings.maxTriadDistanceSquared * system.m_squaredDiameter;
+            float dabx = pa.x - pb.x;
+            float daby = pa.y - pb.y;
+            float dbcx = pb.x - pc.x;
+            float dbcy = pb.y - pc.y;
+            float dcax = pc.x - pa.x;
+            float dcay = pc.y - pa.y;
+            float maxDistanceSquared = Settings.maxTriadDistanceSquared * system.m_squaredDiameter;
             if (dabx * dabx + daby * daby < maxDistanceSquared
                     && dbcx * dbcx + dbcy * dbcy < maxDistanceSquared
                     && dcax * dcax + dcay * dcay < maxDistanceSquared) {
                 if (system.m_triadCount >= system.m_triadCapacity) {
-                    var oldCapacity = system.m_triadCapacity;
-                    var newCapacity =
+                    int oldCapacity = system.m_triadCapacity;
+                    int newCapacity =
                             system.m_triadCount != 0
                                     ? 2 * system.m_triadCount
                                     : Settings.minParticleBufferCapacity;
@@ -1897,7 +1901,7 @@ public class ParticleSystem {
                                     newCapacity);
                     system.m_triadCapacity = newCapacity;
                 }
-                var triad = system.m_triadBuffer[system.m_triadCount];
+                Triad triad = system.m_triadBuffer[system.m_triadCount];
                 triad.indexA = a;
                 triad.indexB = b;
                 triad.indexC = c;
@@ -1905,8 +1909,8 @@ public class ParticleSystem {
                         system.m_flagsBuffer.data[a] | system.m_flagsBuffer.data[b]
                                 | system.m_flagsBuffer.data[c];
                 triad.strength = def.strength;
-                var midPointx = 1f / 3f * (pa.x + pb.x + pc.x);
-                var midPointy = 1f / 3f * (pa.y + pb.y + pc.y);
+                float midPointx = 1f / 3f * (pa.x + pb.x + pc.x);
+                float midPointy = 1f / 3f * (pa.y + pb.y + pc.y);
                 triad.pa.x = pa.x - midPointx;
                 triad.pa.y = pa.y - midPointy;
                 triad.pb.x = pb.x - midPointx;
@@ -1930,30 +1934,30 @@ public class ParticleSystem {
     static class JoinParticleGroupsCallback implements VoronoiDiagramCallback {
         public void callback(int a, int b, int c) {
 
-            var countA =
+            int countA =
                     ((a < groupB.m_firstIndex) ? 1 : 0) + ((b < groupB.m_firstIndex) ? 1 : 0)
                             + ((c < groupB.m_firstIndex) ? 1 : 0);
             if (countA > 0 && countA < 3) {
-                var af = system.m_flagsBuffer.data[a];
-                var bf = system.m_flagsBuffer.data[b];
-                var cf = system.m_flagsBuffer.data[c];
+                int af = system.m_flagsBuffer.data[a];
+                int bf = system.m_flagsBuffer.data[b];
+                int cf = system.m_flagsBuffer.data[c];
                 if ((af & bf & cf & k_triadFlags) != 0) {
                     v2 pa = system.m_positionBuffer.data[a];
                     v2 pb = system.m_positionBuffer.data[b];
                     v2 pc = system.m_positionBuffer.data[c];
-                    var dabx = pa.x - pb.x;
-                    var daby = pa.y - pb.y;
-                    var dbcx = pb.x - pc.x;
-                    var dbcy = pb.y - pc.y;
-                    var dcax = pc.x - pa.x;
-                    var dcay = pc.y - pa.y;
-                    var maxDistanceSquared = Settings.maxTriadDistanceSquared * system.m_squaredDiameter;
+                    float dabx = pa.x - pb.x;
+                    float daby = pa.y - pb.y;
+                    float dbcx = pb.x - pc.x;
+                    float dbcy = pb.y - pc.y;
+                    float dcax = pc.x - pa.x;
+                    float dcay = pc.y - pa.y;
+                    float maxDistanceSquared = Settings.maxTriadDistanceSquared * system.m_squaredDiameter;
                     if (dabx * dabx + daby * daby < maxDistanceSquared
                             && dbcx * dbcx + dbcy * dbcy < maxDistanceSquared
                             && dcax * dcax + dcay * dcay < maxDistanceSquared) {
                         if (system.m_triadCount >= system.m_triadCapacity) {
-                            var oldCapacity = system.m_triadCapacity;
-                            var newCapacity =
+                            int oldCapacity = system.m_triadCapacity;
+                            int newCapacity =
                                     system.m_triadCount != 0
                                             ? 2 * system.m_triadCount
                                             : Settings.minParticleBufferCapacity;
@@ -1962,14 +1966,14 @@ public class ParticleSystem {
                                             newCapacity);
                             system.m_triadCapacity = newCapacity;
                         }
-                        var triad = system.m_triadBuffer[system.m_triadCount];
+                        Triad triad = system.m_triadBuffer[system.m_triadCount];
                         triad.indexA = a;
                         triad.indexB = b;
                         triad.indexC = c;
                         triad.flags = af | bf | cf;
                         triad.strength = MathUtils.min(groupA.m_strength, groupB.m_strength);
-                        var midPointx = (float) 1 / 3 * (pa.x + pb.x + pc.x);
-                        var midPointy = (float) 1 / 3 * (pa.y + pb.y + pc.y);
+                        float midPointx = (float) 1 / 3 * (pa.x + pb.x + pc.x);
+                        float midPointy = (float) 1 / 3 * (pa.y + pb.y + pc.y);
                         triad.pa.x = pa.x - midPointx;
                         triad.pa.y = pa.y - midPointy;
                         triad.pb.x = pb.x - midPointx;
@@ -2032,50 +2036,50 @@ public class ParticleSystem {
             if (fixture.isSensor() || fixture.filter.maskBits==0) {
                 return true;
             }
-            var shape = fixture.shape();
-            var b = fixture.getBody();
-            var bp = b.getWorldCenter();
-            var bm = b.getMass();
-            var bI = b.getInertia() - bm * b.getLocalCenter().lengthSquared();
-            var invBm = bm > 0 ? 1 / bm : 0;
-            var invBI = bI > 0 ? 1 / bI : 0;
-            var childCount = shape.getChildCount();
-            for (var childIndex = 0; childIndex < childCount; childIndex++) {
-                var aabb = fixture.getAABB(childIndex);
-                var aabblowerBoundx = aabb.lowerBound.x - system.m_particleDiameter;
-                var aabblowerBoundy = aabb.lowerBound.y - system.m_particleDiameter;
-                var aabbupperBoundx = aabb.upperBound.x + system.m_particleDiameter;
-                var aabbupperBoundy = aabb.upperBound.y + system.m_particleDiameter;
-                var firstProxy =
+            Shape shape = fixture.shape();
+            Body2D b = fixture.getBody();
+            v2 bp = b.getWorldCenter();
+            float bm = b.getMass();
+            float bI = b.getInertia() - bm * b.getLocalCenter().lengthSquared();
+            float invBm = bm > 0 ? 1 / bm : 0;
+            float invBI = bI > 0 ? 1 / bI : 0;
+            int childCount = shape.getChildCount();
+            for (int childIndex = 0; childIndex < childCount; childIndex++) {
+                AABB aabb = fixture.getAABB(childIndex);
+                float aabblowerBoundx = aabb.lowerBound.x - system.m_particleDiameter;
+                float aabblowerBoundy = aabb.lowerBound.y - system.m_particleDiameter;
+                float aabbupperBoundx = aabb.upperBound.x + system.m_particleDiameter;
+                float aabbupperBoundy = aabb.upperBound.y + system.m_particleDiameter;
+                int firstProxy =
                         lowerBound(
                                 system.m_proxyBuffer,
                                 system.m_proxyCount,
                                 computeTag(system.m_inverseDiameter * aabblowerBoundx, system.m_inverseDiameter
                                         * aabblowerBoundy));
-                var lastProxy =
+                int lastProxy =
                         upperBound(
                                 system.m_proxyBuffer,
                                 system.m_proxyCount,
                                 computeTag(system.m_inverseDiameter * aabbupperBoundx, system.m_inverseDiameter
                                         * aabbupperBoundy));
 
-                for (var proxy = firstProxy; proxy != lastProxy; ++proxy) {
-                    var a = system.m_proxyBuffer[proxy].index;
+                for (int proxy = firstProxy; proxy != lastProxy; ++proxy) {
+                    int a = system.m_proxyBuffer[proxy].index;
                     v2 ap = system.m_positionBuffer.data[a];
                     if (aabblowerBoundx <= ap.x && ap.x <= aabbupperBoundx && aabblowerBoundy <= ap.y
                             && ap.y <= aabbupperBoundy) {
-                        var n = tempVec;
-                        var d = fixture.distance(ap, childIndex, n);
+                        v2 n = tempVec;
+                        float d = fixture.distance(ap, childIndex, n);
                         if (d < system.m_particleDiameter) {
-                            var invAm =
+                            float invAm =
                                     (system.m_flagsBuffer.data[a] & ParticleType.b2_wallParticle) != 0 ? 0 : system
                                             .getParticleInvMass();
-                            var rpx = ap.x - bp.x;
-                            var rpy = ap.y - bp.y;
-                            var rpn = rpx * n.y - rpy * n.x;
+                            float rpx = ap.x - bp.x;
+                            float rpy = ap.y - bp.y;
+                            float rpn = rpx * n.y - rpy * n.x;
                             if (system.m_bodyContactCount >= system.m_bodyContactCapacity) {
-                                var oldCapacity = system.m_bodyContactCapacity;
-                                var newCapacity =
+                                int oldCapacity = system.m_bodyContactCapacity;
+                                int newCapacity =
                                         system.m_bodyContactCount != 0
                                                 ? 2 * system.m_bodyContactCount
                                                 : Settings.minParticleBufferCapacity;
@@ -2084,7 +2088,7 @@ public class ParticleSystem {
                                                 system.m_bodyContactBuffer, oldCapacity, newCapacity);
                                 system.m_bodyContactCapacity = newCapacity;
                             }
-                            var contact = system.m_bodyContactBuffer[system.m_bodyContactCount];
+                            ParticleBodyContact contact = system.m_bodyContactBuffer[system.m_bodyContactCount];
                             contact.index = a;
                             contact.body = b;
                             contact.weight = 1 - d * system.m_inverseDiameter;
@@ -2114,42 +2118,42 @@ public class ParticleSystem {
             if (fixture.isSensor()) {
                 return true;
             }
-            var shape = fixture.shape();
-            var body = fixture.getBody();
-            var childCount = shape.getChildCount();
-            for (var childIndex = 0; childIndex < childCount; childIndex++) {
-                var aabb = fixture.getAABB(childIndex);
-                var aabblowerBoundx = aabb.lowerBound.x - system.m_particleDiameter;
-                var aabblowerBoundy = aabb.lowerBound.y - system.m_particleDiameter;
-                var aabbupperBoundx = aabb.upperBound.x + system.m_particleDiameter;
-                var aabbupperBoundy = aabb.upperBound.y + system.m_particleDiameter;
-                var firstProxy =
+            Shape shape = fixture.shape();
+            Body2D body = fixture.getBody();
+            int childCount = shape.getChildCount();
+            for (int childIndex = 0; childIndex < childCount; childIndex++) {
+                AABB aabb = fixture.getAABB(childIndex);
+                float aabblowerBoundx = aabb.lowerBound.x - system.m_particleDiameter;
+                float aabblowerBoundy = aabb.lowerBound.y - system.m_particleDiameter;
+                float aabbupperBoundx = aabb.upperBound.x + system.m_particleDiameter;
+                float aabbupperBoundy = aabb.upperBound.y + system.m_particleDiameter;
+                int firstProxy =
                         lowerBound(
                                 system.m_proxyBuffer,
                                 system.m_proxyCount,
                                 computeTag(system.m_inverseDiameter * aabblowerBoundx, system.m_inverseDiameter
                                         * aabblowerBoundy));
-                var lastProxy =
+                int lastProxy =
                         upperBound(
                                 system.m_proxyBuffer,
                                 system.m_proxyCount,
                                 computeTag(system.m_inverseDiameter * aabbupperBoundx, system.m_inverseDiameter
                                         * aabbupperBoundy));
 
-                for (var proxy = firstProxy; proxy != lastProxy; ++proxy) {
-                    var a = system.m_proxyBuffer[proxy].index;
+                for (int proxy = firstProxy; proxy != lastProxy; ++proxy) {
+                    int a = system.m_proxyBuffer[proxy].index;
                     v2 ap = system.m_positionBuffer.data[a];
                     if (aabblowerBoundx <= ap.x && ap.x <= aabbupperBoundx && aabblowerBoundy <= ap.y
                             && ap.y <= aabbupperBoundy) {
                         v2 av = system.m_velocityBuffer.data[a];
-                        var temp = tempVec;
+                        v2 temp = tempVec;
                         Transform.mulTransToOutUnsafe(body.transformPrev, ap, temp);
                         Transform.mulToOutUnsafe(body, temp, input.p1);
                         input.p2.x = ap.x + step.dt * av.x;
                         input.p2.y = ap.y + step.dt * av.y;
                         input.maxFraction = 1;
                         if (fixture.raycast(output, input, childIndex)) {
-                            var p = tempVec;
+                            v2 p = tempVec;
                             p.x =
                                     (1 - output.fraction) * input.p1.x + output.fraction * input.p2.x
                                             + Settings.linearSlop * output.normal.x;
@@ -2157,16 +2161,16 @@ public class ParticleSystem {
                                     (1 - output.fraction) * input.p1.y + output.fraction * input.p2.y
                                             + Settings.linearSlop * output.normal.y;
 
-                            var vx = step.inv_dt * (p.x - ap.x);
-                            var vy = step.inv_dt * (p.y - ap.y);
+                            float vx = step.inv_dt * (p.x - ap.x);
+                            float vy = step.inv_dt * (p.y - ap.y);
                             av.x = vx;
                             av.y = vy;
-                            var particleMass = system.getParticleMass();
-                            var ax = particleMass * (av.x - vx);
-                            var ay = particleMass * (av.y - vy);
-                            var b = output.normal;
-                            var fdn = ax * b.x + ay * b.y;
-                            var f = tempv2;
+                            float particleMass = system.getParticleMass();
+                            float ax = particleMass * (av.x - vx);
+                            float ay = particleMass * (av.y - vy);
+                            v2 b = output.normal;
+                            float fdn = ax * b.x + ay * b.y;
+                            v2 f = tempv2;
                             f.x = fdn * b.x;
                             f.y = fdn * b.y;
                             body.applyLinearImpulse(f, p, true);

@@ -161,14 +161,14 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
     private Checkbox[] logic_select = new Checkbox[FAMILIES];
 
     public static void main(String[] argv) {
-        var m = new MetaMath();
+        MetaMath m = new MetaMath();
         m.init();
-        var j = new JFrame();
+        JFrame j = new JFrame();
         j.setSize(500,500);
         j.setContentPane(m);
         j.setVisible(true);
 
-        for (var i = 0; i < axiomArr.length; i++) {
+        for (int i = 0; i < axiomArr.length; i++) {
             VariableName.init();
             System.out.println(PrimFormula.getDisplay(axiomArr[i].assertion, false));
         }
@@ -178,26 +178,26 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
     // and adds to it all user theorems that are valid in that
     // logic family
     static Axiom[] buildAxiomArr(int logicFamily) {
-        var axiomVec = new ArrayList<Axiom>(axiomFamily[logicFamily]);
+        ArrayList<Axiom> axiomVec = new ArrayList<Axiom>(axiomFamily[logicFamily]);
 
         // Build a string with all axiom labels
-        var axiomLabels = " ";
+        String axiomLabels = " ";
         if (userTheorems.size() != 0) { // Only build label list if it will be used
-            for (var i = 0; i < axiomVec.size(); i++) {
+            for (int i = 0; i < axiomVec.size(); i++) {
                 axiomLabels = axiomLabels + axiomVec.get(i).label + " ";
             }
         }
 
         // For each user theorem, accept it only if all steps of each proof
         // are in the axiomLabels string
-        for (var i = 0; i < userTheorems.size(); i++) {
-            var userTh = userTheorems.get(i);
-            var userProof = " " + userTh.proof + " ";
-            var position0 = 1;
-            var position = userProof.indexOf(' ', position0);
-            var validProof = true;
+        for (int i = 0; i < userTheorems.size(); i++) {
+            Axiom userTh = userTheorems.get(i);
+            String userProof = " " + userTh.proof + " ";
+            int position0 = 1;
+            int position = userProof.indexOf(' ', position0);
+            boolean validProof = true;
             while (position != -1) {
-                var userProofStepLabel = userProof.substring(position0 - 1,
+                String userProofStepLabel = userProof.substring(position0 - 1,
                         position + 1);
                 if (!axiomLabels.contains(userProofStepLabel)
                         // 5-Jun-2002 (ndm) The condition below was added in case the
@@ -223,7 +223,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                 axiomLabels = axiomLabels + userTh.label + " ";
             }
         } // for i
-        var axArr = new Axiom[axiomVec.size()];
+        Axiom[] axArr = new Axiom[axiomVec.size()];
         axiomVec.toArray(axArr);
         return axArr;
     }
@@ -244,10 +244,10 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         // Labels are same as in Metamath set.mm
 
         // Implication
-        var tmpConnective = new Connective("wi", "wff", 2, "( $1 -> $2 )");
+        Connective tmpConnective = new Connective("wi", "wff", 2, "( $1 -> $2 )");
         tmpConnective.setArgtype(0, "wff");
         tmpConnective.setArgtype(1, "wff");
-        var connectiveVec = new ArrayList<Connective>();
+        ArrayList<Connective> connectiveVec = new ArrayList<Connective>();
         connectiveVec.add(tmpConnective);
 
         // Negation
@@ -387,7 +387,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         // Build connective label and map strings for faster lookup
         connectiveLabels = " ";
         connectiveLabelMap = "";
-        for (var i = 0; i < connectiveArr.length; i++) {
+        for (int i = 0; i < connectiveArr.length; i++) {
             connectiveLabels = connectiveLabels + connectiveArr[i].label + " ";
             // Only the valueOf will be used; the other characters are placeholders
             connectiveLabelMap = connectiveLabelMap + (char) i
@@ -402,32 +402,32 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
         // ************ Propositional calculus
 
-        var axiomVec = new ArrayList<Axiom>();
+        ArrayList<Axiom> axiomVec = new ArrayList<Axiom>();
 
         // ax-1 $a |- ( P -> ( Q -> P ) ) $.
         // We define a new variable (ax_1Axiom) for the axiom if
         // we will use it again in another system later.  Otherwise
         // we just use the variable tmpAxiom.
-        var ax_1Axiom = new Axiom("ax-1", "wi $1 wi $2 $1",
+        Axiom ax_1Axiom = new Axiom("ax-1", "wi $1 wi $2 $1",
                 "Axiom of simplification (propositional calculus)");
         axiomVec.add(ax_1Axiom);
 
         // ax-2 $a |- ( ( P -> ( Q -> R ) ) -> ( ( P -> Q ) ->
         //   ( P -> R ) ) ) $.
-        var ax_2Axiom = new Axiom("ax-2",
+        Axiom ax_2Axiom = new Axiom("ax-2",
                 "wi wi $1 wi $2 $3 wi wi $1 $2 wi $1 $3",
                 "Axiom of distribution (propositional calculus)");
         axiomVec.add(ax_2Axiom);
 
         // ax-3 $a |- ( ( -. P -> -. Q ) -> ( Q -> P ) ) $.
-        var tmpAxiom = new Axiom("ax-3", "wi wi wn $1 wn $2 wi $2 $1",
+        Axiom tmpAxiom = new Axiom("ax-3", "wi wi wn $1 wn $2 wi $2 $1",
                 "Axiom of contraposition (propositional calculus)");
         axiomVec.add(tmpAxiom);
 
         // maj   $e |- ( P -> Q ) $.
         // min   $e |- P $.
         // ax-mp $a |- Q $.
-        var rule_mpAxiom = new Axiom("ax-mp", "$2",
+        Axiom rule_mpAxiom = new Axiom("ax-mp", "$2",
                 "Inference rule of modus ponens (propositional calculus)");
         rule_mpAxiom.addHyp("$1");
         rule_mpAxiom.addHyp("wi $1 $2");
@@ -441,27 +441,27 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         axiomVec = new ArrayList<>(axiomFamily[PROP_CALC]); // Start w/ prop calc
 
         // df-bi1 $a |- ( ( P <-> Q ) -> ( P -> Q ) ) $.
-        var df_bi1Axiom = new Axiom("df-bi1", "wi wb $1 $2 wi $1 $2",
+        Axiom df_bi1Axiom = new Axiom("df-bi1", "wi wb $1 $2 wi $1 $2",
                 "Definition of biconditional (part 1 of 3)");
         axiomVec.add(df_bi1Axiom);
 
         // df-bi2 $a |- ( ( P <-> Q ) -> ( Q -> P ) ) $.
-        var df_bi2Axiom = new Axiom("df-bi2", "wi wb $1 $2 wi $2 $1",
+        Axiom df_bi2Axiom = new Axiom("df-bi2", "wi wb $1 $2 wi $2 $1",
                 "Definition of biconditional (part 2 of 3)");
         axiomVec.add(df_bi2Axiom);
 
         // df-bi3 $a |- ( ( P -> Q ) -> ( ( Q -> P ) -> ( P <-> Q ) ) ) $.
-        var df_bi3Axiom = new Axiom("df-bi3", "wi wi $1 $2 wi wi $2 $1 wb $1 $2",
+        Axiom df_bi3Axiom = new Axiom("df-bi3", "wi wi $1 $2 wi wi $2 $1 wb $1 $2",
                 "Definition of biconditional (part 3 of 3)");
         axiomVec.add(df_bi3Axiom);
 
         // df-or $a |- ( ( P \/ Q ) <-> ( -. P -> Q ) ) $.
-        var df_orAxiom = new Axiom("df-or", "wb wo $1 $2 wi wn $1 $2",
+        Axiom df_orAxiom = new Axiom("df-or", "wb wo $1 $2 wi wn $1 $2",
                 "Definition of disjunction (logical OR)");
         axiomVec.add(df_orAxiom);
 
         // df-an $a |- ( ( P /\ Q ) <-> -. ( P -> -. Q ) ) $.
-        var df_anAxiom = new Axiom("df-an", "wb wa $1 $2 wn wi $1 wn $2",
+        Axiom df_anAxiom = new Axiom("df-an", "wb wa $1 $2 wn wi $1 wn $2",
                 "Definition of conjunction (logical AND)");
         axiomVec.add(df_anAxiom);
 
@@ -575,13 +575,13 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         axiomVec.add(df_anAxiom);
 
         // df-ex $a |- ( E. x P <-> -. A. x -. P ) $.
-        var df_exAxiom = new Axiom("df-ex", "wb wex $1 $2 wn wal $1 wn $2",
+        Axiom df_exAxiom = new Axiom("df-ex", "wb wex $1 $2 wn wal $1 wn $2",
                 "Definition of existential quantifier");
         axiomVec.add(df_exAxiom);
 
         //  df-sub $a |- [ x / y ] P <->
         //             ( ( y = x -> P ) /\ E. y ( y = x /\ P ) ) ) $.
-        var df_subAxiom = new Axiom("df-sub",
+        Axiom df_subAxiom = new Axiom("df-sub",
                 "wb wsb $1 $2 $3 wa wi weq cv $2 cv $1 $3 wex $2 wa weq cv $2 cv $1 $3",
                 "Definition of proper substitution of x for y in P(y) to result in P(x)");
         axiomVec.add(df_subAxiom);
@@ -760,7 +760,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         axiomVec = new ArrayList<>();
 
         // (P -> P)
-        var ax_IAxiom = new Axiom("I", "wi $1 $1",
+        Axiom ax_IAxiom = new Axiom("I", "wi $1 $1",
                 "Principal type-scheme for combinator I");
         axiomVec.add(ax_IAxiom);
 
@@ -809,7 +809,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         // maj   $e |- ( P -> Q ) $.
         // min   $e |- P $.
         // ax-mp $a |- Q $.
-        var rule_DAxiom = new Axiom("D", "$2",
+        Axiom rule_DAxiom = new Axiom("D", "$2",
                 "Condensed detachment (modus ponens)");
         rule_DAxiom.addHyp("$1");
         rule_DAxiom.addHyp("wi $1 $2");
@@ -893,7 +893,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
         // $e |- P $.
         // $a |- [] P $.
-        var rule_necAxiom = new Axiom("ax-nec", "wnec $1",
+        Axiom rule_necAxiom = new Axiom("ax-nec", "wnec $1",
                 "Rule of necessitation (modal logic)");
         rule_necAxiom.addHyp("$1");
         axiomVec.add(rule_necAxiom);
@@ -903,7 +903,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         axiomVec.add(df_bi3Axiom);
 
         // <> P <-> -. [] -. P
-        var df_possAxiom = new Axiom("df-poss", "wb wposs $1 wn wnec wn $1",
+        Axiom df_possAxiom = new Axiom("df-poss", "wb wposs $1 wn wnec wn $1",
                 "Definition of possibility");
         axiomVec.add(df_possAxiom);
 
@@ -918,7 +918,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         axiomVec.add(tmpAxiom);
 
         // _|_ <-> -. ( P -> P )
-        var df_falseAxiom = new Axiom("df-false", "wb wfalse wn wi $1 $1",
+        Axiom df_falseAxiom = new Axiom("df-false", "wb wfalse wn wi $1 $1",
                 "Definition of logical false constant");
         axiomVec.add(df_falseAxiom);
 
@@ -1253,8 +1253,8 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
         // Determine the largest number of hypotheses
         maxAxiomHypotheses = 0;
-        for (var i = 0; i < axiomFamily.length; i++) {
-            for (var j = 0; j < axiomFamily[i].size(); j++) {
+        for (int i = 0; i < axiomFamily.length; i++) {
+            for (int j = 0; j < axiomFamily[i].size(); j++) {
                 if (axiomFamily[i].get(j).axiomHypothesisVec.size()
                         > maxAxiomHypotheses) {
                     maxAxiomHypotheses
@@ -1335,7 +1335,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
         if (e.getItemSelectable() == option_choices) {
 
-            var rebuildFlag = false;
+            boolean rebuildFlag = false;
 
             if (e.getItem() == "Undo") {
 
@@ -1359,16 +1359,16 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                 audioName = "gate"; // Sound effect
                 undoStack.push(currentState.makeClone());
                 redoStack = new Stack<>();
-                var iEnd = currentState.assertionVec.size() - 1;
+                int iEnd = currentState.assertionVec.size() - 1;
                 int iStart;
                 if (e.getItem() == "Rotate Stack") {
                     iStart = 0;
                 } else {
                     iStart = iEnd - 1;
                 }
-                var tmpStr = currentState.assertionVec.get(iStart);
-                var tmpPStr = currentState.proofVec.get(iStart);
-                for (var j = iStart; j < iEnd; j++) {
+                String tmpStr = currentState.assertionVec.get(iStart);
+                String tmpPStr = currentState.proofVec.get(iStart);
+                for (int j = iStart; j < iEnd; j++) {
                     currentState.assertionVec.set(j,
                             currentState.assertionVec.get(j + 1));
                     currentState.proofVec.set(j,
@@ -1426,9 +1426,9 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                 /* [sound] */
                 audioName = "gate"; // Sound effect
                 this.removeAll();
-                var cg = new CheckboxGroup();
-                for (var i = 0; i < FAMILIES; i++) {
-                    var enable = i == currentFamily;
+                CheckboxGroup cg = new CheckboxGroup();
+                for (int i = 0; i < FAMILIES; i++) {
+                    boolean enable = i == currentFamily;
                     logic_select[i] = new Checkbox(familyName[i], cg, enable);
                     this.add(logic_select[i]);
                     logic_select[i].addItemListener(this);
@@ -1511,8 +1511,8 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
                     // Display fleshed-out proof detail
                     proof_text.append("\n\nDetailed proof:\n\n");
-                    var proofInfoState = State.buildProofInfoState(currentState);
-                    for (var i = 0; i < proofInfoState.assertionVec.size(); i++) {
+                    State proofInfoState = State.buildProofInfoState(currentState);
+                    for (int i = 0; i < proofInfoState.assertionVec.size(); i++) {
                         proof_text.append(" " +
                                 proofInfoState.proofVec.get(i) + "    "
                                 + PrimFormula.getDisplay(
@@ -1521,10 +1521,10 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                     }
                     if (proofInfoState.distinctVarVec.size() > 0) {
                         proof_text.append("\nDistinct variable pairs for this proof:\n\n");
-                        for (var i = 0; i < proofInfoState.distinctVarVec.size(); i++) {
+                        for (int i = 0; i < proofInfoState.distinctVarVec.size(); i++) {
                             proof_text.append("   ");
-                            for (var j = 0; j < 2; j++) {
-                                var v = (short) (
+                            for (int j = 0; j < 2; j++) {
+                                short v = (short) (
                                         proofInfoState.distinctVarVec.get(i).charAt(j));
                                 // We assume type is already assigned, so 0 is OK
                                 proof_text.append(VariableName.name(v, (short) 0) + " ");
@@ -1584,9 +1584,9 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
                     /* [sound] */ // Sound effects
                     /* [sound] */
-                    var rAudio = axiomArr[choice].axiomHypothesisVec.size();
+                    int rAudio = axiomArr[choice].axiomHypothesisVec.size();
                     /* [sound] */
-                    var aAudio = currentState.assertionVec.size();
+                    int aAudio = currentState.assertionVec.size();
                     /* [sound] */
                     if (rAudio == aAudio && rAudio > 1) audioName = "bart.aye_carumba";
                         /* [sound] */
@@ -1628,7 +1628,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
             // end if (event.target == axiom_choices)
 
         } else {
-            for (var i = 0; i < FAMILIES; i++) {
+            for (int i = 0; i < FAMILIES; i++) {
 
                 if (e.getItemSelectable() == logic_select[i]) {
 
@@ -1767,11 +1767,11 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
             // If there are hypotheses, do a dummy run-thru of assertions and
             // hypotheses to get desired variable names for axiom choice menu
             VariableName.init();
-            for (var i = currentState.assertionVec.size() - 1; i >= 0; i--) {
+            for (int i = currentState.assertionVec.size() - 1; i >= 0; i--) {
                 PrimFormula.getDisplay(
                         currentState.assertionVec.get(i), false);
             }
-            for (var i = currentState.hypothesisVec.size() - 1; i >= 0; i--) {
+            for (int i = currentState.hypothesisVec.size() - 1; i >= 0; i--) {
                 PrimFormula.getDisplay(
                         currentState.hypothesisVec.get(i), false);
             }
@@ -1780,9 +1780,9 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         // Put any user hypotheses first
         // Variable names have not been reinitialized here; we want to use
         // the names in the currentState display for best user info
-        var menuString = "";
+        String menuString = "";
         if (!axiomInfoModeFlag) {
-            for (var i = 0; i < currentState.hypothesisVec.size(); i++) {
+            for (int i = 0; i < currentState.hypothesisVec.size(); i++) {
                 menuString = "1 $hyp" + (i + 1) + " " +
                         PrimFormula.getDisplay(
                                 currentState.hypothesisVec.get(i), false);
@@ -1800,17 +1800,17 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         // stack the most will be displayed first
         // Note: in info mode we show *all* axioms in their natural order, whether
         // or not they unify
-        var menuFormula = "";
-        for (var hyps = maxAxiomHypotheses; hyps >= 0; hyps--) {
+        String menuFormula = "";
+        for (int hyps = maxAxiomHypotheses; hyps >= 0; hyps--) {
             if (axiomInfoModeFlag && hyps > 0) continue;
-            for (var i = 0; i < axiomArr.length; i++) {
+            for (int i = 0; i < axiomArr.length; i++) {
                 if (!axiomInfoModeFlag &&
                         axiomArr[i].axiomHypothesisVec.size() != hyps) continue;
                 if (hyps == 0) { // (or axiomInfoModeFlag - see continue logic above)
                     // If there are no hypotheses, don't bother to unify for speedup
                     menuString = axiomArr[i].menuEntry; // use pre-computed entry for speed
                 } else {
-                    var dummyState = Unification.unify(axiomArr[i], currentState, false);
+                    State dummyState = Unification.unify(axiomArr[i], currentState, false);
                     if (dummyState == null) continue; // Unification not possible
                     menuFormula = dummyState.getStackTop();
                     VariableName.init(); // Initialize so types don't get mixed up
@@ -1842,7 +1842,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         VariableName.init(); // Initialize so types don't get mixed up
 
         // Clear screen
-        var r = this.getBounds();
+        Rectangle r = this.getBounds();
         g.setColor(this.getBackground());
         g.fillRect(r.x, r.y, r.width, r.height);
 
@@ -1858,8 +1858,8 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         } else {
             g.setColor(Color.cyan);
         }
-        var fm = g.getFontMetrics();
-        var token = "Metamath Solitaire \u00a9 2003 (GPL) Norman Megill nm" +
+        FontMetrics fm = g.getFontMetrics();
+        String token = "Metamath Solitaire \u00a9 2003 (GPL) Norman Megill nm" +
                 "@" +
                 "alum.mit.edu";
         g.drawString(token, (r.width - fm.stringWidth(token)) / 2, r.height - 10);
@@ -1974,8 +1974,8 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         fm = g.getFontMetrics();
 
         //for (int i = 0; i < 4; i++) {  // Future
-        for (var i = 0; i < 3; i++) {
-            var c = Color.black;
+        for (int i = 0; i < 3; i++) {
+            Color c = Color.black;
             switch (i) {
                 case 0:
                     c = Color.blue;
@@ -2007,7 +2007,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         }
 
         // Display stack (or requested axiom in info mode)
-        var axiomOrTheorem = "axiom";
+        String axiomOrTheorem = "axiom";
         if (currentState.assertionVec.size() != 0 || axiomInfoModeFlag) {
             currentY += Y_INCREMENT * 3 / 2;
             g.setFont(new Font("Dialog", Font.PLAIN, FONT_SIZE));
@@ -2049,7 +2049,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                         axiomArr[infoModeAxiomToShow].assertion);
             } else {
                 // Display from top of stack down
-                for (var i = currentState.assertionVec.size() - 1; i >= 0; i--) {
+                for (int i = currentState.assertionVec.size() - 1; i >= 0; i--) {
                     currentY += Y_INCREMENT;
                     DrawSymbols.drawFormula(g, currentY,
                             currentState.assertionVec.get(i));
@@ -2078,7 +2078,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                 //     < axiomArr[infoModeAxiomToShow].axiomHypothesisVec.size();
                 //    i++) {
                 // Reverse order
-                for (var i =
+                for (int i =
                      axiomArr[infoModeAxiomToShow].axiomHypothesisVec.size() - 1;
                      i >= 0; i--) {
                     currentY += Y_INCREMENT;
@@ -2089,7 +2089,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                 // Normal order
                 //for (int i = 0; i < currentState.hypothesisVec.size(); i++) {
                 // Reverse order
-                for (var i = currentState.hypothesisVec.size() - 1; i >= 0; i--) {
+                for (int i = currentState.hypothesisVec.size() - 1; i >= 0; i--) {
                     currentY += Y_INCREMENT;
                     DrawSymbols.drawFormula(g, currentY, currentState.hypothesisVec.get(i));
                 }
@@ -2137,7 +2137,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
             /* [sound] */
             AudioClip a = null;
             /* [sound] */
-            for (var i = 0; i < audioSaveNameVec.size(); i++) {
+            for (int i = 0; i < audioSaveNameVec.size(); i++) {
                 /* [sound] */
                 if (audioSaveNameVec.get(i).equals(audioName)) {
                     /* [sound] */
@@ -2199,7 +2199,7 @@ final class DrawSymbols {
     }
 
     private static void drawToken(String token, short type) {
-        var c = Color.black; // -1 = connective
+        Color c = Color.black; // -1 = connective
         if (type == (short) (-1)) {
             // Connective
             g.setColor(c);
@@ -2372,14 +2372,14 @@ final class DrawSymbols {
         //   as $var:type
 
         formula += " ";
-        var position0 = 0;
-        var position = formula.indexOf(' ');
+        int position0 = 0;
+        int position = formula.indexOf(' ');
         while (position != -1) {
-            var token = formula.substring(position0, position);
+            String token = formula.substring(position0, position);
             if (token.charAt(0) == '$') { // Variable
-                var p2 = token.indexOf(':');
-                var varNum = (short) Integer.parseInt(token.substring(1, p2));
-                var varType = (short) Integer.parseInt(token.substring(p2 + 1));
+                int p2 = token.indexOf(':');
+                short varNum = (short) Integer.parseInt(token.substring(1, p2));
+                short varType = (short) Integer.parseInt(token.substring(p2 + 1));
                 drawToken(VariableName.name(varNum, varType), varType);
             } else { // Connective
                 drawToken(token, (short) (-1));
@@ -2401,9 +2401,9 @@ final class DrawSymbols {
         currentY = wcurrentY;
         currentX = MetaMath.X_INIT;
 
-        for (var i = 0; i < distinctVarVec.size(); i++) {
-            for (var j = 0; j < 2; j++) {
-                var v = (short) (distinctVarVec.get(i).charAt(j));
+        for (int i = 0; i < distinctVarVec.size(); i++) {
+            for (int j = 0; j < 2; j++) {
+                short v = (short) (distinctVarVec.get(i).charAt(j));
                 // We assume type is already assigned, so 0 is OK */
                 drawToken(VariableName.name(v, (short) 0), VariableName.type(v));
                 currentX += 4;
@@ -2435,11 +2435,11 @@ final class PrimFormula {
             return formula.substring(start, start + 1);
         } else {
             // It's a connective
-            var connNum = (short) (formula.charAt(start));
+            short connNum = (short) (formula.charAt(start));
             connNum = (short) (-(connNum + 1));
-            var subformula = formula.substring(start, start + 1);
-            var position = start;
-            for (var i = 0; i < MetaMath.connectiveArr[connNum].argtypes.length; i++) {
+            String subformula = formula.substring(start, start + 1);
+            int position = start;
+            for (int i = 0; i < MetaMath.connectiveArr[connNum].argtypes.length; i++) {
                 position = start + subformula.length();
                 subformula += pformula(formula, position);
             }
@@ -2454,12 +2454,12 @@ final class PrimFormula {
             return String.valueOf((char) 0);
         } else {
             // It's a connective
-            var connNum = (short) (formula.charAt(start));
+            short connNum = (short) (formula.charAt(start));
             connNum = (short) (-(connNum + 1));
-            var typeNum = MetaMath.connectiveArr[connNum].type;
-            var typesList = String.valueOf((char) typeNum);
-            var position = start;
-            for (var i = 0; i < MetaMath.connectiveArr[connNum].argtypes.length; i++) {
+            short typeNum = MetaMath.connectiveArr[connNum].type;
+            String typesList = String.valueOf((char) typeNum);
+            int position = start;
+            for (int i = 0; i < MetaMath.connectiveArr[connNum].argtypes.length; i++) {
                 position = start + typesList.length();
                 typeNum = MetaMath.connectiveArr[connNum].argtypes[i];
                 // Override the type of the first return char (could be
@@ -2478,7 +2478,7 @@ final class PrimFormula {
 
     static String subGetDisplay(String formula, int start, boolean raw) {
         // String tokenSeparator = " "; // Separator character between tokens in axiom menu
-        var tokenSeparator = ""; // Separator character between tokens in axiom menu
+        String tokenSeparator = ""; // Separator character between tokens in axiom menu
         if (raw) {
             tokenSeparator = " "; // Must always be a space for further parsing
         } else {
@@ -2495,26 +2495,26 @@ final class PrimFormula {
             }
         } else {
             // It's a connective
-            var connNum = (short) (formula.charAt(start));
+            short connNum = (short) (formula.charAt(start));
             connNum = (short) (-(connNum + 1));
-            var subformula = formula.substring(start, start + 1);
-            var position = start;
-            var displayArgs = new String[MetaMath.connectiveArr[connNum].argtypes.length];
+            String subformula = formula.substring(start, start + 1);
+            int position = start;
+            String[] displayArgs = new String[MetaMath.connectiveArr[connNum].argtypes.length];
             // Collect the arguments in display notation
-            for (var i = 0; i < MetaMath.connectiveArr[connNum].argtypes.length; i++) {
+            for (int i = 0; i < MetaMath.connectiveArr[connNum].argtypes.length; i++) {
                 position = start + subformula.length();
                 subformula += pformula(formula, position);
                 displayArgs[i] = subGetDisplay(formula, position, raw);
             }
-            var tmpNotation = MetaMath.connectiveArr[connNum].notation + " ";
-            var displayFormula = "";
+            String tmpNotation = MetaMath.connectiveArr[connNum].notation + " ";
+            String displayFormula = "";
             // Replace the arguments in the connectives display notation
-            var charPosition0 = 0;
-            var charPosition = tmpNotation.indexOf(' ');
+            int charPosition0 = 0;
+            int charPosition = tmpNotation.indexOf(' ');
             while (charPosition != -1) {
-                var token = tmpNotation.substring(charPosition0, charPosition);
+                String token = tmpNotation.substring(charPosition0, charPosition);
                 if (token.charAt(0) == '$') { // Display template argument
-                    var argNum = (short) Integer.parseInt(token.substring(1));
+                    short argNum = (short) Integer.parseInt(token.substring(1));
                     if (displayFormula.length() == 0) {
                         displayFormula = displayArgs[argNum - 1];
                     } else {
@@ -2564,12 +2564,12 @@ final class VariableName {
                 varTypeVec.add(null);
             }
             // Get name based on type and previous names
-            var v = varSoFar[type];
+            int v = varSoFar[type];
             varSoFar[type]++;
             String[] letters = {"PQRSTUWXYZ", "xyzwvutsrqpnmlkjihgfdcba",
                     "ABCDFGHJKLMN", "e"};
-            var quotient = v / letters[type].length();
-            var remainder = v % letters[type].length();
+            int quotient = v / letters[type].length();
+            int remainder = v % letters[type].length();
             String suffix;
             if (quotient == 0) suffix = "";
             else suffix = Integer.toString(quotient - 1);
@@ -2604,7 +2604,7 @@ class Connective {
     // Get expression type number for input string; return -1 if bad
     private static short getExprType(String stype) {
 		String[] TYPE_LIST = {"wff", "var", "class", "digit"};
-        for (var i = 0; i < TYPE_LIST.length; i++) {
+        for (int i = 0; i < TYPE_LIST.length; i++) {
             if (TYPE_LIST[i].equals(stype)) return (short) i;
         }
         return (short) (-1);
@@ -2644,12 +2644,12 @@ class Axiom {
     //  simplicity?)
     Axiom(State st) {
         // We have to make clones because state contents will be changing
-        var stCopy = st.makeClone();
+        State stCopy = st.makeClone();
 
         // Remove all assertions except last
-        var trimmedAssertionVec = new ArrayList<String>();
+        ArrayList<String> trimmedAssertionVec = new ArrayList<String>();
         trimmedAssertionVec.add(stCopy.assertionVec.get(stCopy.assertionVec.size() - 1));
-        var trimmedProofVec = new ArrayList<String>();
+        ArrayList<String> trimmedProofVec = new ArrayList<String>();
         trimmedProofVec.add(stCopy.proofVec.get(stCopy.proofVec.size() - 1));
         stCopy.assertionVec = trimmedAssertionVec;
         stCopy.proofVec = trimmedProofVec;
@@ -2667,21 +2667,21 @@ class Axiom {
     // Convert RPN character, space-separated strings to RPN numeric strings
     // Connectives are negative, variables are positive
     private static String englToNumStr(String englRPN) {
-        var numRPNbuf = new StringBuilder();
+        StringBuilder numRPNbuf = new StringBuilder();
 
         englRPN += " ";
         numRPNbuf.ensureCapacity(englRPN.length() / 2);
-        var position0 = 0;
-        var position = englRPN.indexOf(' ');
+        int position0 = 0;
+        int position = englRPN.indexOf(' ');
         while (position != -1) {
-            var token = englRPN.substring(position0, position);
+            String token = englRPN.substring(position0, position);
             if (token.charAt(0) == '$') { // Variable
-                var varNum = (short) Integer.parseInt(token.substring(1));
+                short varNum = (short) Integer.parseInt(token.substring(1));
                 numRPNbuf.append((char) varNum);
             } else { // Connective
-                var i = MetaMath.connectiveLabels.indexOf(" " + token + " ");
+                int i = MetaMath.connectiveLabels.indexOf(" " + token + " ");
                 if (i == -1) System.out.println("Bug: Unknown connective " + token);
-                var connNum = (short) (MetaMath.connectiveLabelMap.charAt(i));
+                short connNum = (short) (MetaMath.connectiveLabelMap.charAt(i));
                 numRPNbuf.append((char) (-(connNum + 1)));
             }
             position0 = position + 1;
@@ -2744,21 +2744,21 @@ class State {
     static State buildProofInfoState(State currentState) {
         // Add proof steps one by one with special unify() mode, keeping all steps
         // Get the axiom-list version of the proof of the top of the stack
-        var proof = currentState.proofVec.get(currentState.proofVec.size() - 1);
-        var proofInfoState = new State();
+        String proof = currentState.proofVec.get(currentState.proofVec.size() - 1);
+        State proofInfoState = new State();
         // Copy any hypotheses
-        for (var i = 0; i < currentState.hypothesisVec.size(); i++) {
+        for (int i = 0; i < currentState.hypothesisVec.size(); i++) {
             proofInfoState.addHyp();
         }
         // Scan the axiom-list proof
         proof += " ";
-        var position0 = 0;
-        var position = proof.indexOf(' ');
+        int position0 = 0;
+        int position = proof.indexOf(' ');
         while (position != -1) {
-            var label = proof.substring(position0, position);
+            String label = proof.substring(position0, position);
             if (label.charAt(0) == '$') { // Hypothesis $hypnn - future: make sure
                 //   that $ is not allowed if user name accepted for user proofs
-                var hypNum = Integer.parseInt(label.substring(4)) - 1;
+                int hypNum = Integer.parseInt(label.substring(4)) - 1;
                 proofInfoState.pushAssertion(
                         proofInfoState.hypothesisVec.get(hypNum),
                         // Special label for hypothesis step
@@ -2780,17 +2780,17 @@ class State {
         } // end while position != -1
 
         // Sort the proof steps (they are not sorted in proofInfoState)
-        var stepSortMap = new int[proofInfoState.assertionVec.size()];
-        for (var i = 0; i < stepSortMap.length; i++) {
-            var labl = proofInfoState.proofVec.get(i);
-            var stepNum = Integer.parseInt(labl.substring(0,
+        int[] stepSortMap = new int[proofInfoState.assertionVec.size()];
+        for (int i = 0; i < stepSortMap.length; i++) {
+            String labl = proofInfoState.proofVec.get(i);
+            int stepNum = Integer.parseInt(labl.substring(0,
                     labl.indexOf(' '))) - 1;
             stepSortMap[stepNum] = i;
         }
-        var sortedAssertionVec = new ArrayList<String>();
-        var sortedProofVec = new ArrayList<String>();
-        for (var i = 0; i < stepSortMap.length; i++) {
-            var step = stepSortMap[i];
+        ArrayList<String> sortedAssertionVec = new ArrayList<String>();
+        ArrayList<String> sortedProofVec = new ArrayList<String>();
+        for (int i = 0; i < stepSortMap.length; i++) {
+            int step = stepSortMap[i];
             sortedAssertionVec.add(proofInfoState.assertionVec.get(step));
             sortedProofVec.add(proofInfoState.proofVec.get(step));
         }
@@ -2801,14 +2801,14 @@ class State {
         proofInfoState.normalize(); // Trim distinct vars, init var names
         // Dummy run thru steps in reverse order for desired variable name
         // assignment
-        for (var i = proofInfoState.assertionVec.size() - 1; i >= 0; i--) {
+        for (int i = proofInfoState.assertionVec.size() - 1; i >= 0; i--) {
             PrimFormula.getDisplay(proofInfoState.assertionVec.get(i), false);
         }
         return proofInfoState;
     } // buildProofInfoState
 
     State makeClone() {
-        var c = new State();
+        State c = new State();
         c.maxVar = maxVar;
         c.assertionVec = new ArrayList<>(assertionVec);
         c.proofVec = new ArrayList<>(proofVec);
@@ -2853,7 +2853,7 @@ class State {
         // (important, otherwise distinct var list will have garbage entries)
         // Note:  variables are numbered starting at 1, not 0.
         short newMax = 0;
-        var varMap = new short[maxVar + 1];
+        short[] varMap = new short[maxVar + 1];
         StringBuffer scanBuf;
         int i;
         int j;
@@ -2891,7 +2891,7 @@ class State {
         // Scan distinct variable pairs
         for (i = 0; i < distinctVarVec.size(); i++) {
             scanBuf = new StringBuffer(distinctVarVec.get(i));
-            var discardFlag = false;
+            boolean discardFlag = false;
             for (j = 0; j < scanBuf.length(); j++) {
                 if (j > 1) System.out.println("Bug #1"); // S.b. only two vars each
                 c = (short) (scanBuf.charAt(j));
@@ -2930,7 +2930,7 @@ class Substitution {
 
     // Makes a substitution into a formula
     static String makeSubst(String formula, Substitution subst) {
-        var i = -1;
+        int i = -1;
         while (true) {
             i = formula.indexOf(subst.substVar, i + 1);
             if (i < 0) break;
@@ -2942,7 +2942,7 @@ class Substitution {
 
     // Makes a set of substitutions into a formula
     static String makeVecSubst(String formula, ArrayList substVec) {
-        for (var i = 0; i < substVec.size(); i++) {
+        for (int i = 0; i < substVec.size(); i++) {
             formula = makeSubst(formula, (Substitution) (substVec.get(i)));
         }
         return formula;
@@ -2968,9 +2968,9 @@ final class Unification {
                              boolean proofInfoFlag) {
 
         substVec = new ArrayList<>();
-        var currentStateStackSize = currentState.assertionVec.size();
+        int currentStateStackSize = currentState.assertionVec.size();
         if (testAxiom == null) return null; // To allow for sloppy axiom array
-        var axiomHypSize = testAxiom.axiomHypothesisVec.size();
+        int axiomHypSize = testAxiom.axiomHypothesisVec.size();
 
         // See if stack has enough entries
         if (currentStateStackSize < axiomHypSize) {
@@ -3016,8 +3016,8 @@ final class Unification {
                 if (i >= axiomHyp.length() || i >= stateHyp.length()) {
                     break;
                 }
-                var cr = (short) (axiomHyp.charAt(i));
-                var cs = (short) (stateHyp.charAt(i));
+                short cr = (short) (axiomHyp.charAt(i));
+                short cs = (short) (stateHyp.charAt(i));
                 if (cr == cs) continue;
                 String substStr;
                 short substVar;
@@ -3035,7 +3035,7 @@ final class Unification {
                 if (substStr.indexOf((char) substVar) >= 0) {
                     return null; // Unif not possible - substituted var in substitution
                 }
-                var subst = new Substitution(substVar, substStr);
+                Substitution subst = new Substitution(substVar, substStr);
                 if (!rebuildDistinct(subst)) {
                     return null; // Dist var violation
                 }
@@ -3048,7 +3048,7 @@ final class Unification {
         }
 
         // Build new State to return to caller
-        var newState = new State();
+        State newState = new State();
         // Build new assertion stack
         newState.assertionVec = new ArrayList<>();
 
@@ -3071,7 +3071,7 @@ final class Unification {
                     currentState.proofVec.get(i));
         }
         // Build proof for new assertion
-        var newProof = testAxiom.label;
+        String newProof = testAxiom.label;
         if (proofInfoFlag) {
             // Format is step#, axiom used, steps used by hypotheses of axiom
             newProof = (currentStateStackSize + 1) + " " + newProof;
@@ -3107,11 +3107,11 @@ final class Unification {
     // Renumber variables in a formula from a axiom, by adding axiom's var #
     // (which must be > 0) to oldMaxVar
     static String renumberVars(String axiomFormula) {
-        var formulaBuf = new StringBuilder(axiomFormula);
+        StringBuilder formulaBuf = new StringBuilder(axiomFormula);
         // Renumber variables
-        for (var i = 0; i < formulaBuf.length(); i++) {
+        for (int i = 0; i < formulaBuf.length(); i++) {
             if ((short) (formulaBuf.charAt(i)) > 0) {
-                var newVar = (short) (oldMaxVar + (short) (formulaBuf.charAt(i)));
+                short newVar = (short) (oldMaxVar + (short) (formulaBuf.charAt(i)));
                 formulaBuf.setCharAt(i, (char) newVar);
                 if (newVar > newMaxVar) newMaxVar = newVar;
             }
@@ -3123,11 +3123,11 @@ final class Unification {
     // Make substitution to hyp's and substVec (substVec is theoretically
     // not necessary but done to speed things up)
     static void makeSub(Substitution subst) {
-        for (var hyp = 0; hyp < stateHypVec.size(); hyp++) {
+        for (int hyp = 0; hyp < stateHypVec.size(); hyp++) {
             stateHypVec.set(hyp, Substitution.makeSubst(stateHypVec.get(hyp), subst));
             axiomHypVec.set(hyp, Substitution.makeSubst(axiomHypVec.get(hyp), subst));
         }
-        for (var sub = 0; sub < substVec.size(); sub++) {
+        for (int sub = 0; sub < substVec.size(); sub++) {
             substVec.get(sub).substString =
                     Substitution.makeSubst(substVec.get(sub).substString, subst);
         }
@@ -3136,9 +3136,9 @@ final class Unification {
     // Rebuild newDistinctVarVec after a substitution
     // Returns true if no distinct variable violations, false if there were
     static boolean rebuildDistinct(Substitution subst) {
-        var ilimit = newDistinctVarVec.size();
+        int ilimit = newDistinctVarVec.size();
         int i;
-        var found = false;
+        boolean found = false;
         short v0;
         short v1;
         String dpair;
@@ -3146,14 +3146,14 @@ final class Unification {
             v0 = (short) (newDistinctVarVec.get(i).charAt(0));
             v1 = (short) (newDistinctVarVec.get(i).charAt(1));
             if (v1 == subst.substVar) {
-                var vtmp = v0;
+                short vtmp = v0;
                 v0 = v1;
                 v1 = vtmp;
             }
             if (v0 == subst.substVar) {
                 // 1st var is substituted
-                for (var j = 0; j < (subst.substString).length(); j++) {
-                    var vsub = (short) ((subst.substString).charAt(j));
+                for (int j = 0; j < (subst.substString).length(); j++) {
+                    short vsub = (short) ((subst.substString).charAt(j));
                     if (vsub < 0) continue; // Not a variable
                     if (vsub == v1) {
                         // Distinct variable conflict

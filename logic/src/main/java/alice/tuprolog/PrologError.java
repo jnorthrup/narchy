@@ -53,7 +53,7 @@ public class PrologError extends Throwable {
 		Term tuPrologTerm = new Struct("instantiation_error", engineManager.getEnv().currentContext.currentGoal, new NumberTerm.Int(argNo));
 		/*Castagna 06/2011*/
 
-		var descriptionError =  "Instantiation error" +
+        String descriptionError =  "Instantiation error" +
 		" in argument " + argNo + 
 		" of " + engineManager.getEnv().currentContext.currentGoal;
 		return new PrologError(new Struct("error", errorTerm, tuPrologTerm), descriptionError);
@@ -65,7 +65,7 @@ public class PrologError extends Throwable {
 		Term tuPrologTerm = new Struct("type_error", e.getEnv().currentContext.currentGoal, new NumberTerm.Int(argNo), new Struct(validType), culprit);
 		/*Castagna 06/2011*/
 
-		var descriptionError =  "Type error" +
+        String descriptionError =  "Type error" +
 		" in argument " + argNo + 
 		" of " + e.getEnv().currentContext.currentGoal;
 		return new PrologError(new Struct("error", errorTerm, tuPrologTerm), descriptionError);
@@ -77,7 +77,7 @@ public class PrologError extends Throwable {
 		Term tuPrologTerm = new Struct("domain_error", e.getEnv().currentContext.currentGoal, new NumberTerm.Int(argNo), new Struct(validDomain), culprit);
 		/*Castagna 06/2011*/
 
-		var descriptionError =  "Domain error" +
+        String descriptionError =  "Domain error" +
 		" in argument " + argNo + 
 		" of " + e.getEnv().currentContext.currentGoal;
 		return new PrologError(new Struct("error", errorTerm, tuPrologTerm), descriptionError);
@@ -89,7 +89,7 @@ public class PrologError extends Throwable {
 		Term tuPrologTerm = new Struct("existence_error", e.getEnv().currentContext.currentGoal, new NumberTerm.Int(argNo), new Struct(objectType), culprit, message);
 		/*Castagna 06/2011*/
 
-		var descriptionError =  "Existence error" +
+        String descriptionError =  "Existence error" +
 		" in argument " + argNo + 
 		" of " + e.getEnv().currentContext.currentGoal;
 		return new PrologError(new Struct("error", errorTerm, tuPrologTerm), descriptionError);
@@ -101,7 +101,7 @@ public class PrologError extends Throwable {
 		Term tuPrologTerm = new Struct("permission_error", e.getEnv().currentContext.currentGoal, new Struct(operation), new Struct(objectType), culprit, message);
 		/*Castagna 06/2011*/
 
-		var descriptionError =  "Permission error" +
+        String descriptionError =  "Permission error" +
 		" in  " + e.getEnv().currentContext.currentGoal;
 		return new PrologError(new Struct("error", errorTerm, tuPrologTerm), descriptionError);
 		/**/		
@@ -112,7 +112,7 @@ public class PrologError extends Throwable {
 		Term tuPrologTerm = new Struct("representation_error", e.getEnv().currentContext.currentGoal, new NumberTerm.Int(argNo), new Struct(flag));
 		/*Castagna 06/2011*/
 
-		var descriptionError =  "Representation error" +
+        String descriptionError =  "Representation error" +
 		" in argument " + argNo + 
 		" of " + e.getEnv().currentContext.currentGoal;
 		return new PrologError(new Struct("error", errorTerm, tuPrologTerm), descriptionError);
@@ -124,7 +124,7 @@ public class PrologError extends Throwable {
 		Term tuPrologTerm = new Struct("evaluation_error", e.getEnv().currentContext.currentGoal, new NumberTerm.Int(argNo), new Struct(error));
 		/*Castagna 06/2011*/
 
-		var descriptionError =  "Evaluation error" +
+        String descriptionError =  "Evaluation error" +
 		" in argument " + argNo + 
 		" of " + e.getEnv().currentContext.currentGoal;
 		return new PrologError(new Struct("error", errorTerm, tuPrologTerm), descriptionError);
@@ -136,7 +136,7 @@ public class PrologError extends Throwable {
 		Term tuPrologTerm = new Struct("resource_error", e.getEnv().currentContext.currentGoal, resource);
 		/*Castagna 06/2011*/
 
-		var descriptionError =  "Resource error" +
+        String descriptionError =  "Resource error" +
 		" in " + e.getEnv().currentContext.currentGoal;
 		return new PrologError(new Struct("error", errorTerm, tuPrologTerm), descriptionError);
 		/**/		
@@ -152,22 +152,22 @@ public class PrologError extends Throwable {
 		/*Castagna 06/2011*/
 
 
-		var syntaxErrorDescription = message.term().toString();
+        String syntaxErrorDescription = message.term().toString();
 
 		
 		syntaxErrorDescription = NEWLINE.matcher(syntaxErrorDescription).replaceAll(Matcher.quoteReplacement(" "));
 		
 		syntaxErrorDescription = syntaxErrorDescription.substring(1, syntaxErrorDescription.length()-1);
-		var start = 	(String.valueOf(syntaxErrorDescription.charAt(0))).toLowerCase();
+        String start = 	(String.valueOf(syntaxErrorDescription.charAt(0))).toLowerCase();
 		
 		syntaxErrorDescription = start + syntaxErrorDescription.substring(1);
 
-		var descriptionError = "Syntax error";
+        String descriptionError = "Syntax error";
 
-		var firstSignificativeInformation = true;
+        boolean firstSignificativeInformation = true;
 		String[] nameInformation = {"clause", "line", "position"};
 		int[] errorInformation = {clause, line, position};
-		for(var i = 0; i < errorInformation.length; i++)
+		for(int i = 0; i < errorInformation.length; i++)
 		{
 			if(errorInformation[i] != -1)
 				if(firstSignificativeInformation)
@@ -189,7 +189,7 @@ public class PrologError extends Throwable {
 		Term tuPrologTerm = new Struct("system_error", message);
 		/*Castagna 06/2011*/
 
-		var descriptionError = "System error";
+        String descriptionError = "System error";
 		return new PrologError(new Struct("error", errorTerm, tuPrologTerm), descriptionError);
 		/**/		
 	}

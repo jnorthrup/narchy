@@ -51,7 +51,7 @@ public class Tool extends Item {
 
     @Override
     public Tool clone() {
-        var t = (Tool) super.clone();
+        Tool t = (Tool) super.clone();
         t.uses = 0;
         return t;
     }

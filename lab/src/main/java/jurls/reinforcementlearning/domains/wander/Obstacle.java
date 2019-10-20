@@ -28,7 +28,7 @@ public class Obstacle {
 	}
 
 	public boolean circleCollides(double x2, double y2, double r2) {
-		var dist = getDistanceSq(x2, y2);
+        double dist = getDistanceSq(x2, y2);
 		return dist - (r2*r2) < (r*r);
 	}
 
@@ -37,9 +37,9 @@ public class Obstacle {
 	}
 
 	private double getDistanceSq(double x2, double y2) {
-		var xd = (x2-x);
-		var yd = (y2-y);
-		var dist = (xd*xd + yd*yd);
+        double xd = (x2-x);
+        double yd = (y2-y);
+        double dist = (xd*xd + yd*yd);
 		return dist;
 	}
 	private double getDistance(double x2, double y2) {

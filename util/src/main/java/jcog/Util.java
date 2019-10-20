@@ -108,7 +108,7 @@ public enum Util {
 
 	static {
 		try {
-			var singleoneInstanceField = Unsafe.class.getDeclaredField("theUnsafe");
+			Field singleoneInstanceField = Unsafe.class.getDeclaredField("theUnsafe");
 			singleoneInstanceField.setAccessible(true);
 			unsafe = (Unsafe) singleoneInstanceField.get(null);
 		} catch (Exception e) {
@@ -125,13 +125,13 @@ public enum Util {
 	 * http:
 	 */
 	public static double expFast(double val) {
-		var tmp = (long) (1512775 * val + (1072693248 - 60801));
+		long tmp = (long) (1512775 * val + (1072693248 - 60801));
 		return Double.longBitsToDouble(tmp << 32);
 	}
 
 	public static String UUIDbase64() {
-		var low = UUID.randomUUID().getLeastSignificantBits();
-		var high = UUID.randomUUID().getMostSignificantBits();
+		long low = UUID.randomUUID().getLeastSignificantBits();
+		long high = UUID.randomUUID().getMostSignificantBits();
 		return new String(Base64.getEncoder().encode(
 			Bytes.concat(
 				Longs.toByteArray(low),
@@ -149,7 +149,7 @@ public enum Util {
 
 	public static int hash(byte[] x, int from, int to) {
 
-		var len = to - from;
+		int len = to - from;
 		switch (len) {
 			case 0:
 				return 1;
@@ -174,9 +174,9 @@ public enum Util {
 	}
 
 	public static int hashJava(byte[] bytes, int len) {
-		var result = 1;
+		int result = 1;
 
-		for (var i = 0; i < len; ++i) {
+		for (int i = 0; i < len; ++i) {
 			result = 31 * result + bytes[i];
 		}
 
@@ -199,7 +199,7 @@ public enum Util {
 		} else {
 			int[] remain = {max};
 			return (z) -> {
-				var next = (--remain[0] > 0);
+				boolean next = (--remain[0] > 0);
 				return x.test(z) && next;
 			};
 		}
@@ -226,8 +226,8 @@ public enum Util {
 //    }
 
 	public static int hashFNV(byte[] bytes, int from, int to) {
-		var h = 0x811c9dc5;
-		for (var i = from; i < to; i++)
+		int h = 0x811c9dc5;
+		for (int i = from; i < to; i++)
 			h = (h * 16777619) ^ bytes[i];
 		return h;
 	}
@@ -280,8 +280,8 @@ public enum Util {
 	public static String globToRegEx(String line) {
 
 		line = line.trim();
-		var strLen = line.length();
-		var sb = new StringBuilder(strLen);
+		int strLen = line.length();
+		StringBuilder sb = new StringBuilder(strLen);
 
 		if (strLen > 0 && line.charAt(0) == '*') {
 			line = line.substring(1);
@@ -291,9 +291,9 @@ public enum Util {
 			line = line.substring(0, strLen - 1);
 			strLen--;
 		}
-		var escaping = false;
-		var inCurlies = 0;
-		for (var currentChar : line.toCharArray()) {
+		boolean escaping = false;
+		int inCurlies = 0;
+		for (char currentChar : line.toCharArray()) {
 			switch (currentChar) {
 				case '*':
 					if (escaping)
@@ -366,13 +366,13 @@ public enum Util {
 
 	public static long hashPJW(String str) {
 		long BitsInUnsignedInt = (4 * 8);
-		var ThreeQuarters = (BitsInUnsignedInt * 3) / 4;
-		var OneEighth = BitsInUnsignedInt / 8;
-		var HighBits = (0xFFFFFFFFL) << (BitsInUnsignedInt - OneEighth);
+		long ThreeQuarters = (BitsInUnsignedInt * 3) / 4;
+		long OneEighth = BitsInUnsignedInt / 8;
+		long HighBits = (0xFFFFFFFFL) << (BitsInUnsignedInt - OneEighth);
 		long hash = 0;
 		long test = 0;
 
-		for (var i = 0; i < str.length(); i++) {
+		for (int i = 0; i < str.length(); i++) {
 			hash = (hash << OneEighth) + str.charAt(i);
 
 			if ((test = hash & HighBits) != 0) {
@@ -387,8 +387,8 @@ public enum Util {
 		long hash = 0;
 		long x = 0;
 
-		var l = str.length();
-		for (var i = 0; i < l; i++) {
+		int l = str.length();
+		for (int i = 0; i < l; i++) {
 			hash = (hash << 4) + str.charAt(i);
 
 			if ((x = hash & 0xF0000000L) != 0) {
@@ -437,13 +437,13 @@ public enum Util {
 
 	public static int hashCombine(int i, long x, long y) {
 		//return hashCombine(hashCombine(i, x), Long.hashCode(y));
-		var ix = hashCombine(i, x);
+		int ix = hashCombine(i, x);
 		return x == y ? ix : hashCombine(ix, Long.hashCode(y));
 	}
 
 	public static int hashCombine(int a, long[] b) {
-		var x = Util.hashCombine(a, b[0]);
-		for (var i = 1; i < b.length; i++) {
+		int x = Util.hashCombine(a, b[0]);
+		for (int i = 1; i < b.length; i++) {
 			x = Util.hashCombine(x, b[i]);
 		}
 		return x;
@@ -457,7 +457,7 @@ public enum Util {
 		if (a != b) {
 			return hashCombine(a.hashCode(), b.hashCode());
 		} else {
-			var ah = a.hashCode();
+			int ah = a.hashCode();
 			return hashCombine(ah, ah);
 		}
 	}
@@ -546,7 +546,7 @@ public enum Util {
 	 * returns the next index
 	 */
 	public static int longToBytes(long l, byte[] target, int offset) {
-		for (var i = offset + 7; i >= offset; i--) {
+		for (int i = offset + 7; i >= offset; i--) {
 			target[i] = (byte) (l & 0xFF);
 			l >>= 8;
 		}
@@ -557,7 +557,7 @@ public enum Util {
 	 * returns the next index
 	 */
 	public static int intToBytes(int l, byte[] target, int offset) {
-		for (var i = offset + 3; i >= offset; i--) {
+		for (int i = offset + 3; i >= offset; i--) {
 			target[i] = (byte) (l & 0xFF);
 			l >>= 8;
 		}
@@ -651,7 +651,10 @@ public enum Util {
 	}
 
 	public static double mean(double... d) {
-		var result = stream(d).sum();
+		double result = 0.0;
+		for (double v : d) {
+			result += v;
+		}
 
 		return result / d.length;
 	}
@@ -820,8 +823,13 @@ public enum Util {
 
 	public static boolean equals(float[] a, float[] b, float epsilon) {
 		if (Arrays.equals(a, b)) return true;
-		var l = a.length;
-		return IntStream.range(0, l).allMatch(i -> equals(a[i], b[i], epsilon));
+		int l = a.length;
+		for (int i = 0; i < l; i++) {
+			if (!equals(a[i], b[i], epsilon)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -831,14 +839,20 @@ public enum Util {
 	public static int compare(long[] x, long[] y) {
 		if (Arrays.equals(x, y)) return 0;
 
-		var xlen = x.length;
+		int xlen = x.length;
 
-		var yLen = y.length;
+		int yLen = y.length;
 		if (xlen != yLen) {
 			return Integer.compare(xlen, yLen);
 		} else {
 
-			return IntStream.range(0, xlen).map(i -> Long.compare(x[i], y[i])).filter(c -> c != 0).findFirst().orElse(0);
+			for (int i = 0; i < xlen; i++) {
+				int c = Long.compare(x[i], y[i]);
+				if (c != 0) {
+					return c;
+				}
+			}
+			return 0;
 
 		}
 	}
@@ -846,11 +860,11 @@ public enum Util {
 	public static byte[] intAsByteArray(int index) {
 
 		if (index < 36) {
-			var x = base36(index);
+			byte x = base36(index);
 			return new byte[]{x};
 		} else if (index < (36 * 36)) {
-			var x1 = base36(index % 36);
-			var x2 = base36(index / 36);
+			byte x1 = base36(index % 36);
+			byte x2 = base36(index / 36);
 			return new byte[]{x2, x1};
 		} else {
 			throw new RuntimeException("variable index out of range for this method");
@@ -912,7 +926,7 @@ public enum Util {
 
 	public static MethodHandle mhRef(Class<?> type, String name) {
 		try {
-			for (var m : type.getMethods()) {
+			for (Method m : type.getMethods()) {
 				if (m.getName().equals(name)) {
 					return MethodHandles
 							.lookup()
@@ -939,9 +953,9 @@ public enum Util {
 
 	@SafeVarargs
     public static <F> MethodHandle mh(String name, F... fun) {
-		var fun0 = fun[0];
-		var m = mh(name, fun0.getClass(), fun0);
-		for (var i = 1; i < fun.length; i++) {
+		F fun0 = fun[0];
+		MethodHandle m = mh(name, fun0.getClass(), fun0);
+		for (int i = 1; i < fun.length; i++) {
 			m = m.bindTo(fun[i]);
 		}
 		return m;
@@ -968,27 +982,27 @@ public enum Util {
 	}
 
 	public static float sigmoidDiff(float a, float b) {
-		var sum = a + b;
-		var delta = a - b;
-		var deltaNorm = delta / sum;
+		float sum = a + b;
+		float delta = a - b;
+		float deltaNorm = delta / sum;
 		return sigmoid(deltaNorm);
 	}
 
 	public static float sigmoidDiffAbs(float a, float b) {
-		var sum = a + b;
-		var delta = Math.abs(a - b);
-		var deltaNorm = delta / sum;
+		float sum = a + b;
+		float delta = Math.abs(a - b);
+		float deltaNorm = delta / sum;
 		return sigmoid(deltaNorm);
 	}
 
 	public static List<String> inputToStrings(InputStream is) throws IOException {
-		var x = CharStreams.readLines(new InputStreamReader(is, Charsets.UTF_8));
+		List<String> x = CharStreams.readLines(new InputStreamReader(is, Charsets.UTF_8));
 		Closeables.closeQuietly(is);
 		return x;
 	}
 
 	public static String inputToString(InputStream is) throws IOException {
-		var s = CharStreams.toString(new InputStreamReader(is, Charsets.UTF_8));
+		String s = CharStreams.toString(new InputStreamReader(is, Charsets.UTF_8));
 		Closeables.closeQuietly(is);
 		return s;
 	}
@@ -1011,7 +1025,7 @@ public enum Util {
 	}
 
 	public static byte[] reverse(ByteArrayList l) {
-		var s = l.size();
+		int s = l.size();
 		switch (s) {
 			case 0:
 				return ArrayUtil.EMPTY_BYTE_ARRAY;
@@ -1020,8 +1034,8 @@ public enum Util {
 			case 2:
 				return new byte[]{l.get(1), l.get(0)};
 			default:
-				var b = new byte[s];
-				for (var i = 0; i < s; i++)
+				byte[] b = new byte[s];
+				for (int i = 0; i < s; i++)
 					b[i] = l.get(--s);
 				return b;
 		}
@@ -1035,7 +1049,7 @@ public enum Util {
 	public static void writeBits(int x, int numBits, float[] y, int offset) {
 
 		for (int i = 0, j = offset; i < numBits; i++, j++) {
-			var mask = 1 << i;
+			int mask = 1 << i;
 			y[j] = ((x & mask) == 1) ? 1f : 0f;
 		}
 
@@ -1045,12 +1059,12 @@ public enum Util {
 	 * a and b must be instances of input, and output must be of size input.length-2
 	 */
 	public static <X> X[] except(X[] input, X a, X b, X[] output) {
-		var targetLen = input.length - 2;
+		int targetLen = input.length - 2;
 		if (output.length != targetLen) {
 			throw new RuntimeException("wrong size");
 		}
-		var j = 0;
-		for (var x : input) {
+		int j = 0;
+		for (X x : input) {
 			if ((x != a) && (x != b))
 				output[j++] = x;
 		}
@@ -1060,44 +1074,48 @@ public enum Util {
 
 
 	public static float[] normalize(float[] x) {
-		var minmax = minmax(x);
+		float[] minmax = minmax(x);
 		return normalize(x, minmax[0], minmax[1]);
 	}
 
 	public static double[] normalize(double[] x) {
-		var minmax = minmax(x);
+		double[] minmax = minmax(x);
 		return normalize(x, minmax[0], minmax[1]);
 	}
 	public static float[] normalizeCartesian(float[] x) {
 		double magSq = 0;
-		for (var i = 0; i < x.length; i++) {
-			var xi = x[i];
+		for (int i = 0; i < x.length; i++) {
+			float xi = x[i];
 			magSq += xi * xi;
 		}
 
 		if (magSq < Math.sqrt(Float.MIN_NORMAL))
 			return x; //~zero vector, leave unchanged
 
-		var mag = (float) Math.sqrt(magSq);
-		for (var i = 0; i < x.length; i++)
+		float mag = (float) Math.sqrt(magSq);
+		for (int i = 0; i < x.length; i++)
 			x[i] /= mag;
 
 		return x;
 	}
 	public static double[] normalizeCartesian(double[] x) {
-		var magSq = stream(x).map(xi -> xi * xi).sum();
+		double magSq = 0.0;
+		for (double xi : x) {
+			double v = xi * xi;
+			magSq += v;
+		}
 		if (magSq < Math.sqrt(Double.MIN_NORMAL))
 			return x; //~zero vector, leave unchanged
-		var mag = Math.sqrt(magSq);
-		for (var i = 0; i < x.length; i++) {
+		double mag = Math.sqrt(magSq);
+		for (int i = 0; i < x.length; i++) {
 			x[i] /= mag;
 		}
 		return x;
 	}
 
 	public static float[] normalizeMargin(float lowerPct, float upperPct, float[] x) {
-		var minmax = minmax(x);
-		var range = minmax[1] - minmax[0];
+		float[] minmax = minmax(x);
+		float range = minmax[1] - minmax[0];
 		return normalize(x, minmax[0] - lowerPct * range, minmax[1] + upperPct * range);
 	}
 
@@ -1117,18 +1135,18 @@ public enum Util {
 	}
 
 	public static float[] normalize(float[] x, int s, int e, float min, float max) {
-		for (var i = s; i < e; i++)
+		for (int i = s; i < e; i++)
 			x[i] = normalize(x[i], min, max);
 		return x;
 	}
 	public static float[] normalizeSafe(float[] x, int s, int e, float min, float max) {
-		for (var i = s; i < e; i++)
+		for (int i = s; i < e; i++)
 			x[i] = normalizeSafe(x[i], min, max);
 		return x;
 	}
 
 	public static double[] normalize(double[] x, int s, int e, double min, double max) {
-		for (var i = s; i < e; i++)
+		for (int i = s; i < e; i++)
 			x[i] = normalize(x[i], min, max);
 		return x;
 	}
@@ -1161,29 +1179,32 @@ public enum Util {
 	}
 
 	public static float variance(float[] population) {
-		var average = 0.0f;
-		for (var p : population) {
+		float average = 0.0f;
+		for (float p : population) {
 			average += p;
 		}
-		var n = population.length;
+		int n = population.length;
 		average /= n;
 
-		var variance = 0.0f;
-		for (var p : population) {
-			var d = p - average;
+		float variance = 0.0f;
+		for (float p : population) {
+			float d = p - average;
 			variance += d * d;
 		}
 		return variance / n;
 	}
 
 	public static double[] avgvar(double[] population) {
-		var average = stream(population).sum();
-		var n = population.length;
+		double average = 0.0;
+		for (double v : population) {
+			average += v;
+		}
+		int n = population.length;
 		average /= n;
 
-		var variance = 0.0;
-		for (var p : population) {
-			var d = p - average;
+		double variance = 0.0;
+		for (double p : population) {
+			double d = p - average;
 			variance += d * d;
 		}
 		variance /= n;
@@ -1192,42 +1213,48 @@ public enum Util {
 	}
 
 	public static double[] variance(DoubleStream s) {
-		var dd = new DoubleArrayList();
+		DoubleArrayList dd = new DoubleArrayList();
 		s.forEach(dd::add);
 		if (dd.isEmpty())
 			return null;
 
-		var avg = dd.average();
+		double avg = dd.average();
 
-		var n = dd.size();
-		var sum = IntStream.range(0, n).mapToDouble(dd::get).map(p -> p - avg).map(d -> d * d).sum();
-		var variance = sum;
+		int n = dd.size();
+		double sum = 0.0;
+		for (int i = 0; i < n; i++) {
+			double p = dd.get(i);
+			double d = p - avg;
+			double v = d * d;
+			sum += v;
+		}
+		double variance = sum;
 		variance /= n;
 
 		return new double[]{avg, variance};
 	}
 
 	public static String className(Object p) {
-		var pClass = p.getClass();
-		var s = pClass.getSimpleName();
+		Class<?> pClass = p.getClass();
+		String s = pClass.getSimpleName();
 		if (s.isEmpty())
 			return pClass.toString().replace("class ", "");
 		return s;
 	}
 
 	public static float[] toFloat(double[] d) {
-		var l = d.length;
-		var f = new float[l];
-		for (var i = 0; i < l; i++)
+		int l = d.length;
+		float[] f = new float[l];
+		for (int i = 0; i < l; i++)
 			f[i] = (float) d[i];
 		return f;
 	}
 
 	public static double[] toDouble(float[] d) {
-		var l = d.length;
-		var f = new double[10];
-		var count = 0;
-		for (var i = 0; i < l; i++) {
+		int l = d.length;
+		double[] f = new double[10];
+		int count = 0;
+		for (int i = 0; i < l; i++) {
 			double v = d[i];
 			if (f.length == count) f = Arrays.copyOf(f, count * 2);
 			f[count++] = v;
@@ -1238,10 +1265,10 @@ public enum Util {
 
 	public static long[] minmax(IntToLongFunction f, int from, int to) {
 
-		var min = Long.MAX_VALUE;
-		var max = Long.MIN_VALUE;
-		for (var i = from; i < to; i++) {
-			var y = f.applyAsLong(i);
+		long min = Long.MAX_VALUE;
+		long max = Long.MIN_VALUE;
+		for (int i = from; i < to; i++) {
+			long y = f.applyAsLong(i);
 			if (y < min) min = y;
 			if (y > max) max = y;
 		}
@@ -1251,9 +1278,9 @@ public enum Util {
 
 	public static float[] minmax(float[] x) {
 
-		var min = Float.POSITIVE_INFINITY;
-		var max = Float.NEGATIVE_INFINITY;
-		for (var y : x) {
+		float min = Float.POSITIVE_INFINITY;
+		float max = Float.NEGATIVE_INFINITY;
+		for (float y : x) {
 
 			if (y < min) min = y;
 			if (y > max) max = y;
@@ -1263,9 +1290,9 @@ public enum Util {
 
 	public static float[] minmaxsum(float[] x) {
 		float sum = 0;
-		var min = Float.POSITIVE_INFINITY;
-		var max = Float.NEGATIVE_INFINITY;
-		for (var y : x) {
+		float min = Float.POSITIVE_INFINITY;
+		float max = Float.NEGATIVE_INFINITY;
+		for (float y : x) {
 			sum += y;
 			if (y < min) min = y;
 			if (y > max) max = y;
@@ -1275,9 +1302,9 @@ public enum Util {
 
 	public static double[] minmax(double[] x) {
 
-		var min = Double.POSITIVE_INFINITY;
-		var max = Double.NEGATIVE_INFINITY;
-		for (var y : x) {
+		double min = Double.POSITIVE_INFINITY;
+		double max = Double.NEGATIVE_INFINITY;
+		for (double y : x) {
 
 			if (y < min) min = y;
 			if (y > max) max = y;
@@ -1289,17 +1316,17 @@ public enum Util {
 		if (!logger.isInfoEnabled()) {
 			procedure.run();
 		} else {
-			var dtNS = timeNS(procedure);
+			long dtNS = timeNS(procedure);
 			logger.info("{} {}", procName, Texts.timeStr(dtNS));
 		}
 	}
 
 	public static long timeNS(Runnable procedure) {
-		var start = System.nanoTime();
+		long start = System.nanoTime();
 
 		procedure.run();
 
-		var end = System.nanoTime();
+		long end = System.nanoTime();
 		return end - start;
 	}
 
@@ -1321,7 +1348,7 @@ public enum Util {
 	}
 
 	public static <X, Y> Y[] map(Function<X, Y> f, Y[] target, int targetOffset, X[] src, int srcFrom, int srcTo) {
-		for (var i = srcFrom; i < srcTo; i++) {
+		for (int i = srcFrom; i < srcTo; i++) {
 			target[targetOffset++] = f.apply(src[i]);
 		}
 		return target;
@@ -1332,10 +1359,10 @@ public enum Util {
 	 */
 	@SafeVarargs
     public static <X, Y> Y[] map(Function<X, Y> f, IntFunction<Y[]> targetBuilder, X... src) {
-		var i = 0;
-		var target = targetBuilder.apply(src.length);
-		for (var x : src) {
-			var y = f.apply(x);
+		int i = 0;
+		Y[] target = targetBuilder.apply(src.length);
+		for (X x : src) {
+			Y y = f.apply(x);
 			target[i++] = y;
 		}
 		return target;
@@ -1345,8 +1372,8 @@ public enum Util {
     public static <X> X[] mapIfChanged(UnaryOperator<X> f, X... src) {
 		X[] target = null;
 		for (int i = 0, srcLength = src.length; i < srcLength; i++) {
-			var x = src[i];
-			var y = f.apply(x);
+			X x = src[i];
+			X y = f.apply(x);
 			if (y != x) {
 				if (target == null)
 					target = src.clone();
@@ -1363,41 +1390,49 @@ public enum Util {
 	@SafeVarargs
     public static <X> float sum(FloatFunction<X> value, X... xx) {
 		float y = 0;
-		for (var x : xx)
+		for (X x : xx)
 			y += value.floatValueOf(x);
 		return y;
 	}
 
 	@SafeVarargs
     public static <X> double sumDouble(FloatFunction<X> value, X... xx) {
-		var y = stream(xx).mapToDouble(value::floatValueOf).sum();
+		double y = 0.0;
+		for (X x : xx) {
+			double floatValueOf = value.floatValueOf(x);
+			y += floatValueOf;
+		}
 		return y;
 	}
 
 	@SafeVarargs
     public static <X> double sum(ToDoubleFunction<X> value, X... xx) {
-		var y = stream(xx).mapToDouble(value).sum();
+		double y = 0.0;
+		for (X x : xx) {
+			double v = value.applyAsDouble(x);
+			y += v;
+		}
 		return y;
 	}
 
 	public static <X> int sum(ToIntFunction<X> value, Iterable<X> xx) {
-		var y = 0;
-		for (var x : xx)
+		int y = 0;
+		for (X x : xx)
 			y += value.applyAsInt(x);
 		return y;
 	}
 
 	public static <X> float sum(FloatFunction<X> value, Iterable<X> xx) {
 		float y = 0;
-		for (var x : xx)
+		for (X x : xx)
 			y += value.floatValueOf(x);
 		return y;
 	}
 
 	public static <X> float avg(FloatFunction<X> value, Iterable<X> xx) {
 		float y = 0;
-		var count = 0;
-		for (var x : xx) {
+		int count = 0;
+		for (X x : xx) {
 			y += value.floatValueOf(x);
 			count++;
 		}
@@ -1411,59 +1446,67 @@ public enum Util {
 
 	@SafeVarargs
     public static <X> int sum(ToIntFunction<X> value, int from, int to, X... xx) {
-		var len = to - from;
-		var y = IntStream.range(from, len).map(i -> value.applyAsInt(xx[i])).sum();
+		int len = to - from;
+		int y = 0;
+		for (int i = from; i < len; i++) {
+			int applyAsInt = value.applyAsInt(xx[i]);
+			y += applyAsInt;
+		}
 		return y;
 	}
 
 	@SafeVarargs
     public static <X> long sum(ToLongFunction<X> value, X... xx) {
-		var y = stream(xx).mapToLong(value).sum();
+		long y = 0L;
+		for (X x : xx) {
+			long l = value.applyAsLong(x);
+			y += l;
+		}
 		return y;
 	}
 
 	@SafeVarargs
     public static <X> long min(ToLongFunction<X> value, X... xx) {
-		var y = Long.MAX_VALUE;
-		for (var x : xx)
+		long y = Long.MAX_VALUE;
+		for (X x : xx)
 			y = Math.min(y, value.applyAsLong(x));
 		return y;
 	}
 
 	@SafeVarargs
     public static <X> long max(ToLongFunction<X> value, X... xx) {
-		var y = Long.MIN_VALUE;
-		for (var x : xx)
+		long y = Long.MIN_VALUE;
+		for (X x : xx)
 			y = Math.max(y, value.applyAsLong(x));
 		return y;
 	}
 
 	@SafeVarargs
     public static <X> int max(ToIntFunction<X> value, X... xx) {
-		var y = Integer.MIN_VALUE;
-		for (var x : xx)
+		int y = Integer.MIN_VALUE;
+		for (X x : xx)
 			y = Math.max(y, value.applyAsInt(x));
 		return y;
 	}
 
 	public static <X> long max(ToLongFunction<X> value, Iterable<X> xx) {
-		var y = Long.MIN_VALUE;
-		for (var x : xx)
+		long y = Long.MIN_VALUE;
+		for (X x : xx)
 			y = Math.max(y, value.applyAsLong(x));
 		return y;
 	}
 
 	public static <X> long min(ToLongFunction<X> value, Iterable<X> xx) {
-		var y = Long.MAX_VALUE;
-		for (var x : xx)
+		long y = Long.MAX_VALUE;
+		for (X x : xx)
 			y = Math.min(y, value.applyAsLong(x));
 		return y;
 	}
 
 	@SafeVarargs
     public static <X> boolean sumBetween(ToIntFunction<X> value, int min, int max, X... xx) {
-		var y = 0;
-		for (var x : xx) {
+		int y = 0;
+		for (X x : xx) {
 			if ((y += value.applyAsInt(x)) > max)
 				return false;
 		}
@@ -1472,8 +1515,8 @@ public enum Util {
 
 	@SafeVarargs
     public static <X> boolean sumExceeds(ToIntFunction<X> value, int max, X... xx) {
-		var y = 0;
-		for (var x : xx) {
+		int y = 0;
+		for (X x : xx) {
 			if ((y += value.applyAsInt(x)) > max)
 				return true;
 		}
@@ -1485,10 +1528,10 @@ public enum Util {
 	 * TODO make a random one for cases where equivalents exist
 	 */
 	public static int maxIndex(float... xx) {
-		var y = Float.NEGATIVE_INFINITY;
-		var best = -1;
-		for (var i = 0; i < xx.length; i++) {
-			var x = xx[i];
+		float y = Float.NEGATIVE_INFINITY;
+		int best = -1;
+		for (int i = 0; i < xx.length; i++) {
+			float x = xx[i];
 			if (x > y) {
 				y = x;
 				best = i;
@@ -1500,48 +1543,55 @@ public enum Util {
 	@SafeVarargs
     public static <X> float mean(FloatFunction<X> value, X... xx) {
 		float y = 0;
-		for (var x : xx)
+		for (X x : xx)
 			y += value.floatValueOf(x);
 		return y / xx.length;
 	}
 
 	@SafeVarargs
     public static <X> float max(FloatFunction<X> value, X... xx) {
-		var y = Float.NEGATIVE_INFINITY;
-		for (var x : xx)
+		float y = Float.NEGATIVE_INFINITY;
+		for (X x : xx)
 			y = Math.max(y, value.floatValueOf(x));
 		return y;
 	}
 
 	public static <X> float max(FloatFunction<X> value, Iterable<X> xx) {
-		var y = Float.NEGATIVE_INFINITY;
-		for (var x : xx)
+		float y = Float.NEGATIVE_INFINITY;
+		for (X x : xx)
 			y = Math.max(y, value.floatValueOf(x));
 		return y;
 	}
 
 	@SafeVarargs
     public static <X> float min(FloatFunction<X> value, X... xx) {
-		var y = Float.POSITIVE_INFINITY;
-		for (var x : xx)
+		float y = Float.POSITIVE_INFINITY;
+		for (X x : xx)
 			y = Math.min(y, value.floatValueOf(x));
 		return y;
 	}
 
 	public static int sum(int... x) {
-		var y = stream(x).sum();
+		int y = 0;
+		for (int i : x) {
+			y += i;
+		}
 		return y;
 	}
 
 	public static int sum(int[] x, int from, int to) {
-		var y = stream(x, from, to).sum();
+		int y = 0;
+		for (int j = from; j < to; j++) {
+			int i = x[j];
+			y += i;
+		}
 		return y;
 	}
 
 	public static double max(double... x) {
-		var seen = false;
+		boolean seen = false;
 		double best = 0;
-		for (var f : x) {
+		for (double f : x) {
 			if (f >= Double.NEGATIVE_INFINITY) {
 				if (!seen || Double.compare(f, best) > 0) {
 					seen = true;
@@ -1549,13 +1599,13 @@ public enum Util {
 				}
 			}
 		}
-		var y = seen ? best : Double.NEGATIVE_INFINITY;
+		double y = seen ? best : Double.NEGATIVE_INFINITY;
         return y;
 	}
 
 	public static byte max(byte... x) {
-		var y = Byte.MIN_VALUE;
-		for (var f : x) {
+		byte y = Byte.MIN_VALUE;
+		for (byte f : x) {
 			if (f > y)
 				y = f;
 		}
@@ -1563,8 +1613,8 @@ public enum Util {
 	}
 
 	public static float max(float... x) {
-		var y = Float.NEGATIVE_INFINITY;
-		for (var f : x) {
+		float y = Float.NEGATIVE_INFINITY;
+		for (float f : x) {
 			if (f > y)
 				y = f;
 		}
@@ -1572,9 +1622,9 @@ public enum Util {
 	}
 
 	public static double min(double... x) {
-		var seen = false;
+		boolean seen = false;
 		double best = 0;
-		for (var f : x) {
+		for (double f : x) {
 			if (f <= Double.POSITIVE_INFINITY) {
 				if (!seen || Double.compare(f, best) < 0) {
 					seen = true;
@@ -1582,13 +1632,13 @@ public enum Util {
 				}
 			}
 		}
-		var y = seen ? best : Double.POSITIVE_INFINITY;
+		double y = seen ? best : Double.POSITIVE_INFINITY;
         return y;
 	}
 
 	public static float min(float... x) {
-		var y = Float.POSITIVE_INFINITY;
-		for (var f : x) {
+		float y = Float.POSITIVE_INFINITY;
+		for (float f : x) {
 			if (f < y)
 				y = f;
 		}
@@ -1596,9 +1646,9 @@ public enum Util {
 	}
 
 	public static float min(int s, int e, float... x) {
-		var y = Float.POSITIVE_INFINITY;
-		for (var i = s; i < e; i++) {
-			var f = x[i];
+		float y = Float.POSITIVE_INFINITY;
+		for (int i = s; i < e; i++) {
+			float f = x[i];
 			if (f < y)
 				y = f;
 		}
@@ -1606,9 +1656,9 @@ public enum Util {
 	}
 
 	public static float max(int s, int e, float... x) {
-		var y = Float.NEGATIVE_INFINITY;
-		for (var i = s; i < e; i++) {
-			var f = x[i];
+		float y = Float.NEGATIVE_INFINITY;
+		for (int i = s; i < e; i++) {
+			float f = x[i];
 			if (f > y)
 				y = f;
 		}
@@ -1617,14 +1667,14 @@ public enum Util {
 
 	public static float sum(float... x) {
 		float y = 0;
-		for (var f : x)
+		for (float f : x)
 			y += f;
 		return y;
 	}
 
 	public static float sumAbs(float... x) {
 		float y = 0;
-		for (var f : x) {
+		for (float f : x) {
 			y += Math.abs(f);
 		}
 		return y;
@@ -1634,10 +1684,10 @@ public enum Util {
 	 * TODO fair random selection when exist equal values
 	 */
 	public static int argmax(double... vec) {
-		var result = -1;
-		var max = Double.NEGATIVE_INFINITY;
+		int result = -1;
+		double max = Double.NEGATIVE_INFINITY;
 		for (int i = 0, l = vec.length; i < l; i++) {
-			var v = vec[i];
+			double v = vec[i];
 			if (v > max) {
 				max = v;
 				result = i;
@@ -1650,10 +1700,10 @@ public enum Util {
 	 * TODO fair random selection when exist equal values
 	 */
 	public static int argmax(float... vec) {
-		var result = -1;
-		var max = Float.NEGATIVE_INFINITY;
+		int result = -1;
+		float max = Float.NEGATIVE_INFINITY;
 		for (int i = 0, l = vec.length; i < l; i++) {
-			var v = vec[i];
+			float v = vec[i];
 			if (v > max) {
 				max = v;
 				result = i;
@@ -1663,24 +1713,24 @@ public enum Util {
 	}
 
 	public static void shuffle(Object[] ar, Random rnd) {
-		for (var i = ar.length - 1; i > 0; i--) {
-			var index = rnd.nextInt(i + 1);
+		for (int i = ar.length - 1; i > 0; i--) {
+			int index = rnd.nextInt(i + 1);
 
-			var a = ar[index];
+			Object a = ar[index];
 			ar[index] = ar[i];
 			ar[i] = a;
 		}
 	}
 
 	public static int argmax(Random random, float... vec) {
-		var result = -1;
-		var max = Float.NEGATIVE_INFINITY;
+		int result = -1;
+		float max = Float.NEGATIVE_INFINITY;
 
-		var l = vec.length;
-		var start = random.nextInt(l);
-		for (var i = 0; i < l; i++) {
-			var ii = (i + start) % l;
-			var v = vec[ii];
+		int l = vec.length;
+		int start = random.nextInt(l);
+		for (int i = 0; i < l; i++) {
+			int ii = (i + start) % l;
+			float v = vec[ii];
 			if (v > max) {
 				max = v;
 				result = ii;
@@ -1712,8 +1762,8 @@ public enum Util {
 
 	public static float sum(int count, IntToFloatFunction values) {
 		float weightSum = 0;
-		for (var i = 0; i < count; i++) {
-			var w = values.valueOf(i);
+		for (int i = 0; i < count; i++) {
+			float w = values.valueOf(i);
 			assert (w == w && w >= 0);
 			weightSum += w;
 		}
@@ -1722,8 +1772,8 @@ public enum Util {
 
 	public static float sumIfPositive(int count, IntToFloatFunction values) {
 		float weightSum = 0;
-		for (var i = 0; i < count; i++) {
-			var w = values.valueOf(i);
+		for (int i = 0; i < count; i++) {
+			float w = values.valueOf(i);
 			//assert (w == w);
 			if (w == w && w > Float.MIN_NORMAL)
 				weightSum += w;
@@ -1733,29 +1783,49 @@ public enum Util {
 
 	public static boolean equals(double[] a, double[] b, double epsilon) {
 		if (Arrays.equals(a, b)) return true;
-		var l = a.length;
-		return IntStream.range(0, l).allMatch(i -> equals(a[i], b[i], epsilon));
+		int l = a.length;
+		for (int i = 0; i < l; i++) {
+			if (!equals(a[i], b[i], epsilon)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public static boolean equals(long[] a, long[] b, int firstN) {
 		if (Arrays.equals(a, b)) return true;
-		return IntStream.range(0, firstN).noneMatch(i -> a[i] != b[i]);
+		for (int i = 0; i < firstN; i++) {
+			if (a[i] != b[i]) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public static boolean equals(long[] a, long[] b) {
 		if (Arrays.equals(a, b)) return true;
-		var l = a.length;
+		int l = a.length;
 		if (b.length != l)
 			return false;
-		return IntStream.range(0, l).noneMatch(i -> a[i] != b[i]);
+		for (int i = 0; i < l; i++) {
+			if (a[i] != b[i]) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public static boolean equals(short[] a, short[] b) {
 		if (Arrays.equals(a, b)) return true;
-		var l = a.length;
+		int l = a.length;
 		if (b.length != l)
 			return false;
-		return IntStream.range(0, l).noneMatch(i -> a[i] != b[i]);
+		for (int i = 0; i < l; i++) {
+			if (a[i] != b[i]) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public static int short2Int(short high, short low) {
@@ -1819,11 +1889,11 @@ public enum Util {
 	 * range [a, b)
 	 */
 	public static int[] intArray(int a, int b) {
-		var ba = b - a;
-		var x = new int[10];
-		var count = 0;
-		for (var i = 0; i < ba; i++) {
-			var i1 = a + i;
+		int ba = b - a;
+		int[] x = new int[10];
+		int count = 0;
+		for (int i = 0; i < ba; i++) {
+			int i1 = a + i;
 			if (x.length == count) x = Arrays.copyOf(x, count * 2);
 			x[count++] = i1;
 		}
@@ -1864,11 +1934,11 @@ public enum Util {
 	}
 
 	public static String uuid128() {
-		var u = UUID.randomUUID();
-		var a = u.getLeastSignificantBits();
-		var sb = new StringBuilder(6);
+		UUID u = UUID.randomUUID();
+		long a = u.getLeastSignificantBits();
+		StringBuilder sb = new StringBuilder(6);
 		BinTxt.append(sb, a);
-		var b = u.getMostSignificantBits();
+		long b = u.getMostSignificantBits();
 		BinTxt.append(sb, b);
 		return sb.toString();
 	}
@@ -1880,8 +1950,8 @@ public enum Util {
 		//long a = u.getLeastSignificantBits();
 		//long b = u.getMostSignificantBits();
 		//long c = a ^ b;
-		var rng = ThreadLocalRandom.current();
-		var c = rng.nextLong();
+		ThreadLocalRandom rng = ThreadLocalRandom.current();
+		long c = rng.nextLong();
 		return BinTxt.toString(c);
 	}
 
@@ -1980,8 +2050,8 @@ public enum Util {
 		//try {
 		if (nanos <= 0) return;
 
-		var now = System.nanoTime();
-		var end = now + nanos;
+		long now = System.nanoTime();
+		long end = now + nanos;
 		while (nanos > 0) {
 
 			if (nanos >= thresholdNS) {
@@ -2042,8 +2112,8 @@ public enum Util {
 		if (periodNS <= napTimeNS) {
 			sleepNS(periodNS);
 		} else {
-			var now = System.nanoTime();
-			var end = now + periodNS;
+			long now = System.nanoTime();
+			long end = now + periodNS;
 			do {
 				sleepNS(Math.min(napTimeNS, end - now));
 			} while (((now = System.nanoTime()) < end) && keepSleeping.getAsBoolean());
@@ -2054,7 +2124,7 @@ public enum Util {
 		if (isPowerOf2(i))
 			return i;
 		else {
-			var curr = i - 1;
+			int curr = i - 1;
 			while (curr > 0) {
 				if (isPowerOf2(curr)) {
 					return curr;
@@ -2070,7 +2140,7 @@ public enum Util {
 		if (n < 1) {
 			return false;
 		} else {
-			var p_of_2 = (Math.log(n) / log2);
+			double p_of_2 = (Math.log(n) / log2);
 			return Math.abs(p_of_2 - Math.round((int) p_of_2)) == 0;
 		}
 	}
@@ -2091,8 +2161,8 @@ public enum Util {
 			ne = se + nw - sw;
 
 
-		var n = lerp(x, ne, nw);
-		var s = lerp(x, se, sw);
+		float n = lerp(x, ne, nw);
+		float s = lerp(x, se, sw);
 		return lerp(z, s, n);
 	}
 
@@ -2130,10 +2200,10 @@ public enum Util {
 	 */
 
 	public static <X> X[] sortUniquely(X[] arg) {
-		var len = arg.length;
+		int len = arg.length;
 		Arrays.sort(arg);
-		for (var i = 0; i < len - 1; i++) {
-			var dups = 0;
+		for (int i = 0; i < len - 1; i++) {
+			int dups = 0;
 			while (arg[i].equals(arg[i + 1])) {
 				dups++;
 				if (++i == len - 1)
@@ -2165,17 +2235,32 @@ public enum Util {
 
 
 	public static <X> int count(Predicate<X> p, X[] xx) {
-		var count = stream(xx).filter(p).count();
-		var i = (int) count;
+		long count = 0L;
+		for (X x : xx) {
+			if (p.test(x)) {
+				count++;
+			}
+		}
+		int i = (int) count;
         return i;
 	}
 
 	public static <X> boolean and(Predicate<X> p, int from, int to, X[] xx) {
-		return IntStream.range(from, to).allMatch(i -> p.test(xx[i]));
+		for (int i = from; i < to; i++) {
+			if (!p.test(xx[i])) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public static <X> boolean or(Predicate<X> p, int from, int to, X[] xx) {
-		return IntStream.range(from, to).anyMatch(i -> p.test(xx[i]));
+		for (int i = from; i < to; i++) {
+			if (p.test(xx[i])) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static <X> boolean and(Predicate<X> p, X[] xx) {
@@ -2195,7 +2280,7 @@ public enum Util {
 	}
 
 	public static <X> boolean and(Predicate<? super X> p, Iterable<X> xx) {
-		for (var x : xx) {
+		for (X x : xx) {
 			if (!p.test(x))
 				return false;
 		}
@@ -2203,7 +2288,7 @@ public enum Util {
 	}
 
 	public static <X> boolean or(Predicate<? super X> p, Iterable<X> xx) {
-		for (var x : xx) {
+		for (X x : xx) {
 			if (p.test(x))
 				return true;
 		}
@@ -2271,7 +2356,7 @@ public enum Util {
 
 
 	public static float[] toFloat(double[] a, int from, int to, DoubleToFloatFunction df) {
-		var result = new float[to - from];
+		float[] result = new float[to - from];
 		for (int j = 0, i = from; i < to; i++, j++) {
 			result[j] = df.valueOf(a[i]);
 		}
@@ -2279,7 +2364,7 @@ public enum Util {
 	}
 
 	public static float[] toFloat(double[] a, int from, int to) {
-		var result = new float[to - from];
+		float[] result = new float[to - from];
 		for (int j = 0, i = from; i < to; i++, j++) {
 			result[j] = (float) a[i];
 		}
@@ -2287,12 +2372,12 @@ public enum Util {
 	}
 
 	public static void mul(float scale, float[] f) {
-		for (var i = 0; i < f.length; i++)
+		for (int i = 0; i < f.length; i++)
 			f[i] *= scale;
 	}
 
 	public static void mul(double scale, double[] f) {
-		for (var i = 0; i < f.length; i++)
+		for (int i = 0; i < f.length; i++)
 			f[i] *= scale;
 	}
 
@@ -2344,7 +2429,7 @@ public enum Util {
 
 
 	public static float softmax(float x, float temp) {
-		var f = (float) Math.exp(x / temp);
+		float f = (float) Math.exp(x / temp);
 		if (!Float.isFinite(f))
 			throw new RuntimeException("softmax(" + f + ',' + temp + ") is non-finite");
 		return f;
@@ -2360,23 +2445,23 @@ public enum Util {
 	}
 
 	public static float[] map(int num, IntToFloatFunction build, @Nullable float[] reuse) {
-		var f = (reuse != null && reuse.length == num) ? reuse : new float[num];
-		for (var i = 0; i < num; i++)
+		@Nullable float[] f = (reuse != null && reuse.length == num) ? reuse : new float[num];
+		for (int i = 0; i < num; i++)
 			f[i] = build.valueOf(i);
 		return f;
 	}
 
 	public static double[] map(int num, IntToDoubleFunction build, @Nullable double[] reuse) {
-		var f = (reuse != null && reuse.length == num) ? reuse : new double[num];
-		for (var i = 0; i < num; i++)
+		@Nullable double[] f = (reuse != null && reuse.length == num) ? reuse : new double[num];
+		for (int i = 0; i < num; i++)
 			f[i] = build.applyAsDouble(i);
 		return f;
 	}
 
 	public static <X> float[] map(X[] what, FloatFunction<X> value) {
-		var num = what.length;
-		var f = new float[num];
-		for (var i = 0; i < num; i++) {
+		int num = what.length;
+		float[] f = new float[num];
+		for (int i = 0; i < num; i++) {
 			f[i] = value.floatValueOf(what[i]);
 		}
 		return f;
@@ -2386,13 +2471,13 @@ public enum Util {
 	 * returns amount of memory used as a value between 0 and 100% (1.0)
 	 */
 	public static float memoryUsed() {
-		var runtime = Runtime.getRuntime();
-		var total = runtime.totalMemory();
-		var free = runtime.freeMemory();
-		var max = runtime.maxMemory();
-		var usedMemory = total - free;
-		var availableMemory = max - usedMemory;
-		var ratio = 1f - ((float) availableMemory) / max;
+		Runtime runtime = Runtime.getRuntime();
+		long total = runtime.totalMemory();
+		long free = runtime.freeMemory();
+		long max = runtime.maxMemory();
+		long usedMemory = total - free;
+		long availableMemory = max - usedMemory;
+		float ratio = 1f - ((float) availableMemory) / max;
 
 		return ratio;
 	}
@@ -2403,7 +2488,7 @@ public enum Util {
 	 */
 	public static void reverse(Object[] array, int i, int j) {
 		while (j > i) {
-			var tmp = array[j];
+			Object tmp = array[j];
 			array[j] = array[i];
 			array[i] = tmp;
 			j--;
@@ -2443,15 +2528,21 @@ public enum Util {
 	/** @noinspection ArrayEquality*/
 	public static int compare(byte[] a, byte[] b) {
 		if (a==b) return 0;
-		var al = a.length;
-		var l = Integer.compare(al, b.length);
+		int al = a.length;
+		int l = Integer.compare(al, b.length);
 		if (l != 0)
 			return l;
-		return IntStream.range(0, al).map(i -> a[i] - b[i]).filter(d -> d != 0).findFirst().orElse(0);
+		for (int i = 0; i < al; i++) {
+			int d = a[i] - b[i];
+			if (d != 0) {
+				return d;
+			}
+		}
+		return 0;
 	}
 
 	public static <X> Supplier<Stream<X>> buffer(Stream<X> x) {
-		var buffered = x.collect(toList());
+		List<X> buffered = x.collect(toList());
 		return buffered::stream;
 	}
 
@@ -2459,7 +2550,7 @@ public enum Util {
 	 * creates an immutable sublist from a ByteList, since this isnt implemented yet in Eclipse collections
 	 */
 	public static ImmutableByteList subList(ByteList x, int a, int b) {
-		var size = b - a;
+		int size = b - a;
 		if (a == 0 && b == x.size())
 			return x.toImmutable();
 
@@ -2484,7 +2575,7 @@ public enum Util {
 	}
 
 	public static byte branchOr(byte key, ByteByteHashMap count, byte branch) {
-		var branchBit = (byte) (1 << branch);
+		byte branchBit = (byte) (1 << branch);
 		return count.updateValue(key, branchBit, (x) -> (byte) (x | branchBit));
 	}
 
@@ -2527,7 +2618,7 @@ public enum Util {
 			b = +0.5f;
 			tx = -1f;
 		}
-		var x0 = (x + tx);
+		float x0 = (x + tx);
 		return (float) (a * Math.sqrt(1f - x0 * x0 * 4) + b);
 	}
 
@@ -2570,14 +2661,14 @@ public enum Util {
 
 	public static FloatSupplier compose(FloatSupplier f, FloatToFloatFunction g) {
 		return () -> {
-			var fx = f.asFloat();
+			float fx = f.asFloat();
 			return g.valueOf(fx);
 		};
 	}
 
 	public static FloatToFloatFunction compose(FloatToFloatFunction f, FloatToFloatFunction g) {
 		return (x) -> {
-			var fx = f.valueOf(x);
+			float fx = f.valueOf(x);
 			return g.valueOf(fx);
 		};
 	}
@@ -2588,15 +2679,15 @@ public enum Util {
 
 	public static int concurrencyExcept(int reserve) {
 
-		var specifiedThreads = System.getenv("threads");
+		String specifiedThreads = System.getenv("threads");
 		int threads;
 		if (specifiedThreads != null)
 			threads = Texts.i(specifiedThreads);
 		else
 			threads = Runtime.getRuntime().availableProcessors() - reserve;
 
-		var maxThreads = Integer.MAX_VALUE;
-		var minThreads = 2;
+		int maxThreads = Integer.MAX_VALUE;
+		int minThreads = 2;
 		return Util.clamp(
 			threads, minThreads, maxThreads);
 	}
@@ -2606,7 +2697,7 @@ public enum Util {
 	 */
 	public static <X> X[] replaceDirect(X[] xx, X from, X to) {
 		for (int i = 0, xxLength = xx.length; i < xxLength; i++) {
-			var x = xx[i];
+			X x = xx[i];
 			if (x == from)
 				xx[i] = to;
 		}
@@ -2618,8 +2709,8 @@ public enum Util {
 	}
 
 	public static <X> X[] replaceDirect(X[] xx, int start, int end, UnaryOperator<X> f) {
-		for (var i = start; i < end; i++) {
-			var x = xx[i];
+		for (int i = start; i < end; i++) {
+			X x = xx[i];
 			xx[i] = f.apply(x);
 		}
 		return xx;
@@ -2641,7 +2732,7 @@ public enum Util {
 	 */
 	public static float aveAri(float... arr) {
 		float sum = 0;
-		for (var f : arr) {
+		for (float f : arr) {
 			sum += f;
 		}
 		return sum / arr.length;
@@ -2662,7 +2753,7 @@ public enum Util {
 	 */
 	public static float aveGeo(float... arr) {
 		float product = 1;
-		for (var f : arr) {
+		for (float f : arr) {
 			if (f == 0) return 0;
 			product *= f;
 		}
@@ -2674,7 +2765,7 @@ public enum Util {
 	}
 
 	public static void assertUnitized(float... f) {
-		for (var x : f) {
+		for (float x : f) {
 			assertUnitized(x);
 		}
 	}
@@ -2704,16 +2795,21 @@ public enum Util {
 	 */
 	public static <X extends Comparable> boolean isSorted(X[] x) {
 		if (x.length < 2) return true;
-		return IntStream.range(1, x.length).noneMatch(i -> x[i - 1].compareTo(x[i]) > 0);
+		for (int i = 1; i < x.length; i++) {
+			if (x[i - 1].compareTo(x[i]) > 0) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public static int[] bytesToInts(byte[] array) {
-		var n = array.length;
+		int n = array.length;
 		if (n == 0)
 			return ArrayUtil.EMPTY_INT_ARRAY;
-		var t = new int[10];
-		var count = 0;
-		for (var i = 0; i < n; i++) {
+		int[] t = new int[10];
+		int count = 0;
+		for (int i = 0; i < n; i++) {
 			int i1 = array[i];
 			if (t.length == count) t = Arrays.copyOf(t, count * 2);
 			t[count++] = i1;
@@ -2747,7 +2843,7 @@ public enum Util {
 		if (pairs.length % 2 != 0)
 			throw new RuntimeException("must be even # of arguments");
 
-		var points = pairs.length / 2;
+		int points = pairs.length / 2;
 		if (points < 2) {
 			//TODO return constant function
 			throw new RuntimeException("must provide at least 2 points");
@@ -2756,7 +2852,7 @@ public enum Util {
 		//https://commons.apache.org/proper/commons-math/userguide/fitting.html
 		List<WeightedObservedPoint> obs = new FasterList(points);
 		int yMin = Integer.MAX_VALUE, yMax = Integer.MIN_VALUE;
-		for (var i = 0; i < pairs.length; ) {
+		for (int i = 0; i < pairs.length; ) {
 			int y;
 			obs.add(new WeightedObservedPoint(1f, pairs[i++], y = pairs[i++]));
 			if (y < yMin) yMin = y;
@@ -2764,11 +2860,11 @@ public enum Util {
 		}
 		//TODO if yMin==yMax return constant function
 
-		var degree =
+		int degree =
 			points - 1;
 		//points;
 
-		var coefficients = Util.toFloat(PolynomialCurveFitter.create(degree).fit(obs));
+		float[] coefficients = Util.toFloat(PolynomialCurveFitter.create(degree).fit(obs));
 
         /* adapted from: PolynomialFunction
            https://en.wikipedia.org/wiki/Horner%27s_method
@@ -2776,10 +2872,10 @@ public enum Util {
 		int YMin = yMin, YMax = yMax;
 		assert (yMin < yMax);
 		return (X) -> {
-			var n = coefficients.length;
+			int n = coefficients.length;
 			float x = toInt.applyAsInt(X);
-			var y = coefficients[n - 1];
-			for (var j = n - 2; j >= 0; j--) {
+			float y = coefficients[n - 1];
+			for (int j = n - 2; j >= 0; j--) {
 				y = x * y + coefficients[j];
 			}
 			return Util.clampSafe(Math.round(y), YMin, YMax);
@@ -2832,8 +2928,8 @@ public enum Util {
 				return IntSets.immutable.of(f.applyAsInt(items[0]), f.applyAsInt(items[1]));
 			//...
 			default:
-				var i = new IntHashSet(items.length);
-				for (var x : items) {
+				IntHashSet i = new IntHashSet(items.length);
+				for (X x : items) {
 					i.add(f.applyAsInt(x));
 				}
 				return i;
@@ -2841,7 +2937,7 @@ public enum Util {
 	}
 
 	public static float intProperty(String name, int defaultValue) {
-		var p = System.getProperty(name);
+		String p = System.getProperty(name);
 		return p != null ? Integer.parseInt(p) : defaultValue;
 	}
 
@@ -2850,15 +2946,15 @@ public enum Util {
 	}
 
 	public static double interpSum(IntToFloatFunction data, int capacity, double sStart, double sEnd, boolean wrap) {
-		var iStart = (int) Math.ceil(sStart);
-		var iEnd = (int) Math.floor(sEnd);
+		int iStart = (int) Math.ceil(sStart);
+		int iEnd = (int) Math.floor(sEnd);
 		if (iEnd < 0 || iStart >= capacity)
 			return 0;
 
 		if (iEnd == iStart)
 			return data.valueOf(iStart);
 
-		var i = iStart - 1;
+		int i = iStart - 1;
 
 		if (i < 0) {
 			if (wrap)
@@ -2872,7 +2968,7 @@ public enum Util {
 		double sum = 0;
 		sum += iStart > 0 ? (iStart - sStart) * data.valueOf(i++) : 0;
 
-		for (var k = iStart; k < iEnd; k++) {
+		for (int k = iStart; k < iEnd; k++) {
 			if (i == capacity) i = 0;
 			sum += data.valueOf(i++);
 		}
@@ -2894,14 +2990,14 @@ public enum Util {
 	 */
 	public static void normalizeHamming(float[] v, float target) {
 		float current = 0;
-		for (var i = 0; i < v.length; i++) {
+		for (int i = 0; i < v.length; i++) {
 			current += Math.abs(v[i]);
 		}
 		if (current < ScalarValue.EPSILON) {
 			Arrays.fill(v, target / v.length);
 		} else {
-			var scale = target / current;
-			for (var i = 0; i < v.length; i++) {
+			float scale = target / current;
+			for (int i = 0; i < v.length; i++) {
 				v[i] *= scale;
 			}
 		}
@@ -2913,7 +3009,7 @@ public enum Util {
 
 	public static long readToWrite(long l, StampedLock lock, boolean strong) {
 		if (l != 0) {
-			var ll = lock.tryConvertToWriteLock(l);
+			long ll = lock.tryConvertToWriteLock(l);
 			if (ll != 0) return ll;
 
 			if (!strong) return 0;
@@ -2926,7 +3022,7 @@ public enum Util {
 
 	public static long writeToRead(long l, StampedLock lock) {
 		if (l != 0) {
-			var ll = lock.tryConvertToReadLock(l);
+			long ll = lock.tryConvertToReadLock(l);
 			if (ll != 0) return ll;
 
 			lock.unlockWrite(l);

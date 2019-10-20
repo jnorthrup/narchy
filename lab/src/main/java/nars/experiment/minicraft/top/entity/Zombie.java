@@ -24,8 +24,8 @@ public class Zombie extends Mob {
         super.tick();
 
         if (level.player != null && randomWalkTime == 0) {
-            var xd = level.player.x - x;
-            var yd = level.player.y - y;
+            int xd = level.player.x - x;
+            int yd = level.player.y - y;
             if (xd * xd + yd * yd < 50 * 50) {
                 xa = 0;
                 ya = 0;
@@ -36,7 +36,7 @@ public class Zombie extends Mob {
             }
         }
 
-        var speed = tickTime & 1;
+        int speed = tickTime & 1;
         if (!move(xa * speed, ya * speed) || random.nextInt(200) == 0) {
             randomWalkTime = 60;
             xa = (random.nextInt(3) - 1) * random.nextInt(2);
@@ -47,10 +47,10 @@ public class Zombie extends Mob {
 
     @Override
     public void render(Screen screen) {
-        var xt = 0;
+        int xt = 0;
 
-        var flip1 = (walkDist >> 3) & 1;
-        var flip2 = (walkDist >> 3) & 1;
+        int flip1 = (walkDist >> 3) & 1;
+        int flip2 = (walkDist >> 3) & 1;
 
         if (dir == 1) {
             xt += 2;
@@ -65,10 +65,10 @@ public class Zombie extends Mob {
             xt += 4 + ((walkDist >> 3) & 1) * 2;
         }
 
-        var xo = x - 8;
-        var yo = y - 11;
+        int xo = x - 8;
+        int yo = y - 11;
 
-        var col = Color.get(-1, 10, 252, 050);
+        int col = Color.get(-1, 10, 252, 050);
         if (lvl == 2) col = Color.get(-1, 100, 522, 050);
         if (lvl == 3) col = Color.get(-1, 111, 444, 050);
         if (lvl == 4) col = Color.get(-1, 000, 111, 020);
@@ -76,7 +76,7 @@ public class Zombie extends Mob {
             col = Color.get(-1, 555, 555, 555);
         }
 
-        var yt = 14;
+        int yt = 14;
         screen.render(xo + 8 * flip1, yo + 0, xt + yt * 32, col, flip1);
         screen.render(xo + 8 - 8 * flip1, yo + 0, xt + 1 + yt * 32, col, flip1);
         screen.render(xo + 8 * flip2, yo + 8, xt + (yt + 1) * 32, col, flip2);
@@ -94,8 +94,8 @@ public class Zombie extends Mob {
     protected void die() {
         super.die();
 
-        var count = random.nextInt(2) + 1;
-        for (var i = 0; i < count; i++) {
+        int count = random.nextInt(2) + 1;
+        for (int i = 0; i < count; i++) {
             level.add(new ItemEntity(new ResourceItem(Resource.cloth), x + random.nextInt(11) - 5, y + random.nextInt(11) - 5));
         }
 

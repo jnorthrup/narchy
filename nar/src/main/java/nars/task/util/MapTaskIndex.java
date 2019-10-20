@@ -50,9 +50,9 @@ public final class MapTaskIndex implements TaskIndex {
     }
 
     public void removeDeleted() {
-        var ii = tasks.values().iterator();
+        Iterator<Task> ii = tasks.values().iterator();
         while (ii.hasNext()) {
-            var x = ii.next();
+            Task x = ii.next();
             if (x.isDeleted()) {
                 logger.error("lingering deleted task: {}", x);
                 ii.remove();
@@ -79,9 +79,9 @@ public final class MapTaskIndex implements TaskIndex {
 
     @Override
     public void forEach( Consumer<Task> each) {
-        for (var entry : tasks.entrySet()) {
-            var k = entry.getKey();
-            var v = entry.getValue();
+        for (Map.Entry<Task, Task> entry : tasks.entrySet()) {
+            Task k = entry.getKey();
+            Task v = entry.getValue();
             each.accept(v);
         }
     }

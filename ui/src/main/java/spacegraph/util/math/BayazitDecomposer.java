@@ -23,7 +23,7 @@ class BayazitDecomposer {
 	}
 
 	private static v2 at(int i, FasterList<v2> vertices) {
-		var s = vertices.size();
+        int s = vertices.size();
 		return vertices.get(i < 0 ? s - (-i % s) : i % s);
 	}
 
@@ -31,7 +31,7 @@ class BayazitDecomposer {
         while (j < i)
 			j += vertices.size();
 
-		var p = new FasterList<v2>();
+        FasterList<v2> p = new FasterList<v2>();
         for (; i <= j; ++i) {
 			p.add(at(i, vertices));
 		}
@@ -40,10 +40,10 @@ class BayazitDecomposer {
 
 	private static float getSignedArea(FasterList<v2> vect) {
         float area = 0;
-		for (var i = 0; i < vect.size(); i++) {
-			var j = (i + 1) % vect.size();
-			var vi = vect.get(i);
-			var vj = vect.get(j);
+		for (int i = 0; i < vect.size(); i++) {
+            int j = (i + 1) % vect.size();
+            v2 vi = vect.get(i);
+            v2 vj = vect.get(j);
 			area += vi.x * vj.y;
 			area -= vi.y * vj.x;
 		}
@@ -53,10 +53,10 @@ class BayazitDecomposer {
 
 	private static float getSignedArea(v2[] vect) {
         float area = 0;
-		for (var i = 0; i < vect.length; i++) {
-			var j = (i + 1) % vect.length;
-			var vi = vect[i];
-			var vj = vect[j];
+		for (int i = 0; i < vect.length; i++) {
+            int j = (i + 1) % vect.length;
+            v2 vi = vect[i];
+            v2 vj = vect[j];
 			area += vi.x * vj.y;
 			area -= vi.y * vj.x;
 		}
@@ -94,16 +94,16 @@ class BayazitDecomposer {
 			
 			
 		}
-		var list = new FasterList<FasterList<v2>>();
-		var lowerInt = new v2();
-		var upperInt = new v2();
+        FasterList<FasterList<v2>> list = new FasterList<FasterList<v2>>();
+        v2 lowerInt = new v2();
+        v2 upperInt = new v2();
 		int lowerIndex = 0, upperIndex = 0;
 		FasterList<v2> lowerPoly, upperPoly;
-		for (var i = 0; i < vertices.size(); ++i) {
+		for (int i = 0; i < vertices.size(); ++i) {
 			if (reflex(i, vertices)) {
                 float upperDist;
-				var lowerDist = upperDist = Float.MAX_VALUE;
-                for (var j = 0; j < vertices.size(); ++j) {
+                float lowerDist = upperDist = Float.MAX_VALUE;
+                for (int j = 0; j < vertices.size(); ++j) {
 
                     v2 p;
                     float d;
@@ -140,7 +140,7 @@ class BayazitDecomposer {
 				
 				
 				if (lowerIndex == (upperIndex + 1) % vertices.size()) {
-					var sp = new v2((lowerInt.x + upperInt.x) / 2,
+                    v2 sp = new v2((lowerInt.x + upperInt.x) / 2,
                             (lowerInt.y + upperInt.y) / 2);
 					lowerPoly = copy(i, upperIndex, vertices);
 					lowerPoly.add(sp);
@@ -151,7 +151,7 @@ class BayazitDecomposer {
 					while (upperIndex < lowerIndex)
 						upperIndex += vertices.size();
                     double highestScore = 0;
-                    for (var j = lowerIndex; j <= upperIndex; ++j) {
+                    for (int j = lowerIndex; j <= upperIndex; ++j) {
 						if (canSee(i, j, vertices)) {
 							double score = 1 / (squareDist(at(i, vertices), at(j, vertices)) + 1);
 							if (reflex(j, vertices)) {
@@ -190,11 +190,11 @@ class BayazitDecomposer {
 		
 		
 		
-		for (var i = 0; i < list.size(); i++) {
+		for (int i = 0; i < list.size(); i++) {
 			list.set(i, Simplify2D.collinearSimplify(list.get(i), 0));
 		}
 		
-		for (var i = list.size() - 1; i >= 0; i--) {
+		for (int i = list.size() - 1; i >= 0; i--) {
 			if (list.get(i).isEmpty()) list.remove(i);
 		}
 		return list;
@@ -217,12 +217,12 @@ class BayazitDecomposer {
 			if (rightOn(at(j, vertices), at(j + 1, vertices), at(i, vertices))
 					|| leftOn(at(j, vertices), at(j - 1, vertices), at(i, vertices))) return false;
 		}
-		var n = vertices.size();
-		for (var k = 0; k < n; ++k) {
+        int n = vertices.size();
+		for (int k = 0; k < n; ++k) {
 			if ((k + 1) % n == i || k == i || (k + 1) % n == j || k == j) {
 				continue; 
 			}
-			var intersectionPoint = new v2();
+            v2 intersectionPoint = new v2();
 			if (lineIntersect(at(i, vertices), at(j, vertices), at(k, vertices),
 					at(k + 1, vertices), true, true)) {
 				return false;
@@ -232,14 +232,14 @@ class BayazitDecomposer {
 	}
 
 	private static v2 lineIntersect(v2 p1, v2 p2, v2 q1, v2 q2) {
-		var i = new v2();
-		var a1 = p2.y - p1.y;
-		var b1 = p1.x - p2.x;
-		var c1 = a1 * p1.x + b1 * p1.y;
-		var a2 = q2.y - q1.y;
-		var b2 = q1.x - q2.x;
-		var c2 = a2 * q1.x + b2 * q1.y;
-		var det = a1 * b2 - a2 * b1;
+        v2 i = new v2();
+        float a1 = p2.y - p1.y;
+        float b1 = p1.x - p2.x;
+        float c1 = a1 * p1.x + b1 * p1.y;
+        float a2 = q2.y - q1.y;
+        float b2 = q1.x - q2.x;
+        float c2 = a2 * q1.x + b2 * q1.y;
+        float det = a1 * b2 - a2 * b1;
 		if (!Util.equals(det, 0, Epsilon)) {
 			
 			i.x = (b2 * c1 - b1 * c2) / det;
@@ -280,27 +280,27 @@ class BayazitDecomposer {
 	
 	private static boolean lineIntersect(v2 point1, v2 point2, v2 point3,
                                          v2 point4, boolean firstIsSegment, boolean secondIsSegment) {
-		var point = new v2();
+        v2 point = new v2();
 
 
-		var a = point4.y - point3.y;
-		var b = point2.x - point1.x;
-		var c = point4.x - point3.x;
-		var d = point2.y - point1.y;
+        float a = point4.y - point3.y;
+        float b = point2.x - point1.x;
+        float c = point4.x - point3.x;
+        float d = point2.y - point1.y;
 
-		var denom = (a * b) - (c * d);
+        float denom = (a * b) - (c * d);
 		
 		if (!(denom >= -Epsilon && denom <= Epsilon)) {
-			var e = point1.y - point3.y;
-			var f = point1.x - point3.x;
-			var oneOverDenom = 1.0f / denom;
+            float e = point1.y - point3.y;
+            float f = point1.x - point3.x;
+            float oneOverDenom = 1.0f / denom;
 
-			var ua = (c * e) - (a * f);
+            float ua = (c * e) - (a * f);
 			ua *= oneOverDenom;
 			
 			if (!firstIsSegment || ua >= 0.0f && ua <= 1.0f) {
 
-				var ub = (b * e) - (d * f);
+                float ub = (b * e) - (d * f);
 				ub *= oneOverDenom;
 				
 				
@@ -351,8 +351,8 @@ class BayazitDecomposer {
 
 
 	private static float squareDist(v2 a, v2 b) {
-		var dx = b.x - a.x;
-		var dy = b.y - a.y;
+        float dx = b.x - a.x;
+        float dy = b.y - a.y;
 		return dx * dx + dy * dy;
 	}
 }

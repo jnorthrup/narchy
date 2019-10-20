@@ -25,23 +25,23 @@ public final class CommonVariable extends UnnormalizedVariable {
     @Deprecated private final short[] vars; //TODO compute dynamically from bytes()
 
     public static Variable common(Variable A, Variable B) {
-        var cmp = A.compareTo(B);
+        int cmp = A.compareTo(B);
         assert(cmp!=0);
         if (cmp > 0) {
-            var x = A;
+            Variable x = A;
             A = B;
             B = x;
         }
 
-        var op = A.op();
+        Op op = A.op();
 
         IntrinSubterms z;
-        var ac = A instanceof CommonVariable;
-        var bc = B instanceof CommonVariable;
+        boolean ac = A instanceof CommonVariable;
+        boolean bc = B instanceof CommonVariable;
         if (!ac && !bc) {
             z = new IntrinSubterms(Terms.commute(A, B));
         } else {
-            var t = new ShortHashSet();
+            ShortHashSet t = new ShortHashSet();
 
             if (ac && bc) {
                 t.addAll(((CommonVariable) A).vars);
@@ -67,7 +67,7 @@ public final class CommonVariable extends UnnormalizedVariable {
             if (t.size() <= 2)
                 throw new WTF();
 
-            var tt = t.toSortedArray();
+            short[] tt = t.toSortedArray();
 
             if (ac && Arrays.equals(tt, ((CommonVariable)A).vars))
                 return A; //subsumed
@@ -95,9 +95,13 @@ public final class CommonVariable extends UnnormalizedVariable {
         if (cv.length < 2 || cv.length > NAL.unify.UNIFY_COMMON_VAR_MAX)
             return Null;
 
-        var s = Arrays.stream(cv).map(o -> (Variable) o).collect(Collectors.toCollection(MetalTreeSet::new));
+        MetalTreeSet<Variable> s = new MetalTreeSet<>();
+        for (Object o : cv) {
+            Variable variable = (Variable) o;
+            s.add(variable);
+        }
 
-        var ss = s.size();
+        int ss = s.size();
         if (ss < 2 || ss > NAL.unify.UNIFY_COMMON_VAR_MAX)
             return Null;
 
@@ -122,9 +126,9 @@ public final class CommonVariable extends UnnormalizedVariable {
     }
 
     static String key(Op o, IntrinSubterms vars) {
-        var joiner = new StringJoiner("", String.valueOf(o.ch), "");
-        var n = vars.subs();
-        for (var i = 0; i < n; i++)
+        StringJoiner joiner = new StringJoiner("", String.valueOf(o.ch), "");
+        int n = vars.subs();
+        for (int i = 0; i < n; i++)
             joiner.add(String.valueOf(vars.sub(i)));
 
         return joiner.toString();
@@ -142,7 +146,7 @@ public final class CommonVariable extends UnnormalizedVariable {
                 return true;
         }
 
-        var common = CommonVariable.common(X,Y);
+        Variable common = CommonVariable.common(X,Y);
         return (common.equals(X) || u.putXY(X, common)) && (common.equals(Y) || u.putXY(Y, common));
     }
 

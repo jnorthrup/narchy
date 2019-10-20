@@ -14,9 +14,9 @@ import net.beadsproject.beads.data.WaveFactory;
 public class NoiseWave extends WaveFactory {
     @Override
     public ArrayTensor get(int bufferSize) {
-        var size = bufferSize;
-        var b = new ArrayTensor(size);
-        for (var i = 0; i < bufferSize; i++) {
+        int size = bufferSize;
+        ArrayTensor b = new ArrayTensor(size);
+        for (int i = 0; i < bufferSize; i++) {
             b.data[i] = (float) (1. - 2. * Math.random());
         }
         return b;

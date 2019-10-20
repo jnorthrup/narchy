@@ -19,13 +19,13 @@ public class SquareWave extends WaveFactory {
      */
     @Override
     public ArrayTensor get(int bufferSize) {
-        var size = bufferSize;
-        var b = new ArrayTensor(size);
-        var halfBufferSize = bufferSize / 2;
-        for (var i = 0; i < halfBufferSize; i++) {
+        int size = bufferSize;
+        ArrayTensor b = new ArrayTensor(size);
+        int halfBufferSize = bufferSize / 2;
+        for (int i = 0; i < halfBufferSize; i++) {
             b.data[i] = 1f;
         }
-        for (var i = halfBufferSize; i < bufferSize; i++) {
+        for (int i = halfBufferSize; i < bufferSize; i++) {
             b.data[i] = -1f;
         }
         return b;

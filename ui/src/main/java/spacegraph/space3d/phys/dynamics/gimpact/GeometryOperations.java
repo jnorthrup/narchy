@@ -49,7 +49,7 @@ class GeometryOperations {
 	 * Calc a plane from a triangle edge an a normal.
 	 */
 	public static void edge_plane(v3 e1, v3 e2, v3 normal, Vector4f plane) {
-		var planenormal = new v3();
+        v3 planenormal = new v3();
 		planenormal.sub(e2, e1);
 		planenormal.cross(planenormal, normal);
 		planenormal.normalize();
@@ -62,10 +62,10 @@ class GeometryOperations {
 	 * Finds the closest point(cp) to (v) on a segment (e1,e2).
 	 */
 	private static void closest_point_on_segment(v3 cp, v3 v, v3 e1, v3 e2) {
-		var n = new v3();
+        v3 n = new v3();
 		n.sub(e2, e1);
 		cp.sub(v, e1);
-		var _scalar = cp.dot(n) / n.dot(n);
+        float _scalar = cp.dot(n) / n.dot(n);
 		if (_scalar < 0.0f) {
 			//cp = e1;
 			cp.set(e1);
@@ -85,15 +85,15 @@ class GeometryOperations {
 	 * @return -0 if the ray never intersects, -1 if the ray collides in front, -2 if the ray collides in back
 	 */
 	private static int line_plane_collision(Vector4f plane, v3 vDir, v3 vPoint, v3 pout, float[] tparam, float tmin, float tmax) {
-		var _dotdir = VectorUtil.dot3(vDir, plane);
+        float _dotdir = VectorUtil.dot3(vDir, plane);
 
 		if (Math.abs(_dotdir) < PLANEDIREPSILON) {
 			tparam[0] = tmax;
 			return 0;
 		}
 
-		var _dis = ClipPolygon.distance_point_plane(plane, vPoint);
-		var returnvalue = _dis < 0.0f ? 2 : 1;
+        float _dis = ClipPolygon.distance_point_plane(plane, vPoint);
+        int returnvalue = _dis < 0.0f ? 2 : 1;
 		tparam[0] = -_dis / _dotdir;
 
 		if (tparam[0] < tmin) {
@@ -112,17 +112,17 @@ class GeometryOperations {
 	 * Find closest points on segments.
 	 */
 	public static void segment_collision(v3 vA1, v3 vA2, v3 vB1, v3 vB2, v3 vPointA, v3 vPointB) {
-		var AD = new v3();
+        v3 AD = new v3();
 		AD.sub(vA2, vA1);
 
-		var BD = new v3();
+        v3 BD = new v3();
 		BD.sub(vB2, vB1);
 
-		var N = new v3();
+        v3 N = new v3();
 		N.cross(AD, BD);
 		float[] tp = { N.lengthSquared() };
 
-		var _M = new Vector4f();
+        Vector4f _M = new Vector4f();
 
 		if (tp[0] < BulletGlobals.SIMD_EPSILON)
 		{
@@ -130,7 +130,7 @@ class GeometryOperations {
             _M.x = vB1.dot(AD);
 			_M.y = vB2.dot(AD);
 
-			var invert_b_order = false;
+            boolean invert_b_order = false;
             if (_M.x > _M.y) {
 				invert_b_order = true;
 

@@ -87,9 +87,9 @@ public final class Operator extends AbstractAtomic implements Idempotent {
             else {
                 assert(task.isGoal());
                 if (executeGoal(task)) {
-                    var s = task.start();
-                    var now = nar.time();
-                    var dur = nar.dur();
+                    long s = task.start();
+                    long now = nar.time();
+                    float dur = nar.dur();
                     if (s >= now - dur / 2) {
                         if (s > now + dur / 2) {
                             //delayed

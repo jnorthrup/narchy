@@ -64,51 +64,51 @@ public class SubsimplexConvexCast extends ConvexCast {
 	
 	@Override
     public boolean calcTimeOfImpact(Transform fromA, Transform toA, Transform fromB, Transform toB, CastResult result) {
-		var tmp = new v3();
+        v3 tmp = new v3();
 		
 		simplexSolver.reset();
 
-		var linVelA = new v3();
-		var linVelB = new v3();
+        v3 linVelA = new v3();
+        v3 linVelB = new v3();
 		linVelA.sub(toA, fromA);
 		linVelB.sub(toB, fromB);
 
-		var interpolatedTransA = new Transform(fromA);
-		var interpolatedTransB = new Transform(fromB);
+        Transform interpolatedTransA = new Transform(fromA);
+        Transform interpolatedTransB = new Transform(fromB);
 
 
-		var r = new v3();
+        v3 r = new v3();
 		r.sub(linVelA, linVelB);
 
-		var v = new v3();
+        v3 v = new v3();
 
 		tmp.negated(r);
 		MatrixUtil.transposeTransform(tmp, tmp, fromA.basis);
-		var supVertexA = convexA.localGetSupportingVertex(tmp, new v3());
+        v3 supVertexA = convexA.localGetSupportingVertex(tmp, new v3());
 		fromA.transform(supVertexA);
 		
 		MatrixUtil.transposeTransform(tmp, r, fromB.basis);
-		var supVertexB = convexB.localGetSupportingVertex(tmp, new v3());
+        v3 supVertexB = convexB.localGetSupportingVertex(tmp, new v3());
 		fromB.transform(supVertexB);
 		
 		v.sub(supVertexA, supVertexB);
 
-		var n = new v3();
+        v3 n = new v3();
 		n.set(0f, 0f, 0f);
-		var hasResult = false;
-		var c = new v3();
+        boolean hasResult = false;
+        v3 c = new v3();
 
-		var lambda = 0f;
-		var lastLambda = lambda;
+        float lambda = 0f;
+        float lastLambda = lambda;
 
-		var dist2 = v.lengthSquared();
+        float dist2 = v.lengthSquared();
 
 
-		var epsilon = 0.0001f;
+        float epsilon = 0.0001f;
 		
 		v3 w = new v3(), p = new v3();
 
-		var maxIter = MAX_ITERATIONS;
+        int maxIter = MAX_ITERATIONS;
         while ((dist2 > epsilon) && (maxIter--) != 0) {
 			tmp.negated(v);
 			MatrixUtil.transposeTransform(tmp, tmp, interpolatedTransA.basis);
@@ -121,14 +121,14 @@ public class SubsimplexConvexCast extends ConvexCast {
 			
 			w.sub(supVertexA, supVertexB);
 
-			var VdotW = v.dot(w);
+            float VdotW = v.dot(w);
 
 			if (lambda > 1f) {
 				return false;
 			}
 			
 			if (VdotW > 0f) {
-				var VdotR = v.dot(r);
+                float VdotR = v.dot(r);
 
                 if (VdotR >= -(BulletGlobals.FLT_EPSILON * BulletGlobals.FLT_EPSILON)) {
 					return false;
@@ -180,8 +180,8 @@ public class SubsimplexConvexCast extends ConvexCast {
 		if (result.normal.dot(r) >= -result.allowedPenetration)
 			return false;
 
-		var hitA = new v3();
-		var hitB = new v3();
+        v3 hitA = new v3();
+        v3 hitB = new v3();
 		simplexSolver.compute_points(hitA,hitB);
 		result.hitPoint.set(hitB);
 		return true;

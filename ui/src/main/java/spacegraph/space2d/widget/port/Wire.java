@@ -27,7 +27,7 @@ public class Wire {
         assert(a!=b);
         if (a.id > b.id) {
 
-            var x = b;
+            Surface x = b;
             b = a;
             a = x;
         }
@@ -54,7 +54,7 @@ public class Wire {
     public final boolean equals(Object obj) {
         if (this == obj) return true;
 
-        var w = ((Wire)obj);
+        Wire w = ((Wire)obj);
         return w.hash == hash && (w.a.equals(a) && w.b.equals(b));
     }
 
@@ -70,13 +70,13 @@ public class Wire {
 
         if (receiver.recv(this, x)) {
 
-            var now = System.nanoTime();
+            long now = System.nanoTime();
 
             int th;
             if (x == null) {
                 th = 0;
             } else {
-                var cl = x.getClass();
+                Class<?> cl = x.getClass();
                 th = cl.hashCode();
                 if (cl.isArray()) {
 
@@ -114,7 +114,7 @@ public class Wire {
      * time is in nanosconds
      */
     public float activity(boolean aOrB, long now, long window) {
-        var l = aOrB ? aLastActive : bLastActive;
+        long l = aOrB ? aLastActive : bLastActive;
         if (l == Long.MIN_VALUE)
             return 0;
         else {
@@ -127,7 +127,7 @@ public class Wire {
     }
 
     public int typeHash(boolean aOrB) {
-        var x = aOrB ? aTypeHash : bTypeHash;
+        int x = aOrB ? aTypeHash : bTypeHash;
         if (x == 0 && (aOrB ? aLastActive : bLastActive)==Long.MIN_VALUE)
             return (aOrB ? bTypeHash : aTypeHash ); 
         else

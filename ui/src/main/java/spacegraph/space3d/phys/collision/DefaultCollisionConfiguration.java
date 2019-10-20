@@ -55,7 +55,7 @@ public class DefaultCollisionConfiguration extends CollisionConfiguration {
 	private final CollisionAlgorithmCreateFunc convexPlaneCF;
 
 	public DefaultCollisionConfiguration() {
-		var simplexSolver = new VoronoiSimplexSolver();
+        VoronoiSimplexSolver simplexSolver = new VoronoiSimplexSolver();
 
 
         ConvexPenetrationDepthSolver pdSolver = new GjkEpaPenetrationDepthSolver();

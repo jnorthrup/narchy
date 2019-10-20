@@ -25,7 +25,7 @@ public class LongND implements HyperPoint, Serializable, Comparable<LongND> {
     }
 
     public static LongND fill(int dims, long value) {
-        var a = new long[dims];
+        long[] a = new long[dims];
         Arrays.fill(a, value);
         return new LongND(a);
     }
@@ -42,12 +42,12 @@ public class LongND implements HyperPoint, Serializable, Comparable<LongND> {
 
     @Override
     public double distance(HyperPoint h) {
-        var p = (LongND) h;
+        LongND p = (LongND) h;
         double sumSq = 0;
-        for (var i = 0; i < coord.length; i++) {
-            var x = coord[i];
-            var y = p.coord[i];
-            var xMinY = x - y;
+        for (int i = 0; i < coord.length; i++) {
+            long x = coord[i];
+            long y = p.coord[i];
+            long xMinY = x - y;
             sumSq += xMinY * xMinY;
         }
         return Math.sqrt(sumSq);
@@ -63,7 +63,7 @@ public class LongND implements HyperPoint, Serializable, Comparable<LongND> {
         if (this == o) return true;
         if (!(o instanceof LongND)) return false;
 
-        var longND = (LongND) o;
+        LongND longND = (LongND) o;
         return hash == longND.hashCode() && Arrays.equals(coord, longND.coord);
 
 

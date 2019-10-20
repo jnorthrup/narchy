@@ -32,10 +32,10 @@ public final class LightDTCompound extends SeparateSubtermsCompound {
                 :
                 base.hashCode());
 
-        var op = base.op();
+        Op op = base.op();
 
 
-        var s = base.subterms();
+        Subterms s = base.subterms();
 
         this.ref = base;
 
@@ -46,7 +46,7 @@ public final class LightDTCompound extends SeparateSubtermsCompound {
 
             assert (getClass() != LightDTCompound.class /* a subclass */ || dt != DTERNAL);
 
-            var size = s.subs();
+            int size = s.subs();
 
             if (op.temporal && (op != CONJ && size != 2))
                 throw new TermException("Invalid dt value for operator", op, dt, s.arrayShared());

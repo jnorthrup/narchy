@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 public class LambdaStampedLock extends StampedLock {
 
     public void write(Runnable writeProcedure) {
-        var stamp = writeLock();
+        long stamp = writeLock();
         try {
             writeProcedure.run();
         } finally {
@@ -20,7 +20,7 @@ public class LambdaStampedLock extends StampedLock {
     }
 
     public <T> T write(Supplier<T> writeProcedure) {
-        var stamp = writeLock();
+        long stamp = writeLock();
 
         try {
             return writeProcedure.get();
@@ -32,7 +32,7 @@ public class LambdaStampedLock extends StampedLock {
 
 
     public boolean write(BooleanSupplier writeProcedure) {
-        var stamp = writeLock();
+        long stamp = writeLock();
 
         try {
             return writeProcedure.getAsBoolean();
@@ -43,7 +43,7 @@ public class LambdaStampedLock extends StampedLock {
     }
 
     public int write(IntSupplier writeProcedure) {
-        var stamp = writeLock();
+        long stamp = writeLock();
         try {
             return writeProcedure.getAsInt();
         } finally {
@@ -52,7 +52,7 @@ public class LambdaStampedLock extends StampedLock {
     }
 
     public <T> T read(Supplier<T> readProcedure) {
-        var stamp = readLock();
+        long stamp = readLock();
 
         try {
             return readProcedure.get();
@@ -63,7 +63,7 @@ public class LambdaStampedLock extends StampedLock {
     }
 
     public int read(IntSupplier readProcedure) {
-        var stamp = readLock();
+        long stamp = readLock();
         int result;
         try {
             result = readProcedure.getAsInt();
@@ -74,7 +74,7 @@ public class LambdaStampedLock extends StampedLock {
     }
 
     public void read(Runnable readProcedure) {
-        var stamp = readLock();
+        long stamp = readLock();
         try {
             readProcedure.run();
         } finally {
@@ -83,7 +83,7 @@ public class LambdaStampedLock extends StampedLock {
     }
 
     public void readOptimistic(Runnable readProcedure) {
-        var stamp = tryOptimisticRead();
+        long stamp = tryOptimisticRead();
 
         if (stamp != 0) {
             readProcedure.run();
@@ -95,10 +95,10 @@ public class LambdaStampedLock extends StampedLock {
     }
 
     public boolean writeConditional(BooleanSupplier condition, Runnable action) {
-        var stamp = readLock();
+        long stamp = readLock();
         try {
             while (condition.getAsBoolean()) {
-                var writeStamp = tryConvertToWriteLock(stamp);
+                long writeStamp = tryConvertToWriteLock(stamp);
                 if (writeStamp != 0) {
                     action.run();
                     stamp = writeStamp;

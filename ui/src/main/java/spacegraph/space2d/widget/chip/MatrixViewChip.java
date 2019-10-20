@@ -31,7 +31,7 @@ public class MatrixViewChip extends Bordering {
 
                 last = x;
 
-                var shape = x.shape();
+                int[] shape = x.shape();
                if (shape.length ==3 ) {
                    //HACK RGB
                    assert(shape[2]==3);

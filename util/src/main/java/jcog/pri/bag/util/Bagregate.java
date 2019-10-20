@@ -54,13 +54,13 @@ public class Bagregate<X> implements Iterable<PriReference<X>> {
         if (src==null /*|| !busy.compareAndSet(false, true)*/)
             return false;
 
-        var preAmp = this.preAmp.floatValue();
+        float preAmp = this.preAmp.floatValue();
 
         bag.commit(bag.forget(this.forgetRate.floatValue()));
 
         for (X xx : src) {
             if (include(xx)) {
-                var pri = pri(xx);
+                float pri = pri(xx);
                 if (pri == pri)
                     bag.putAsync(new PLink<>(xx, pri * preAmp));
             }
@@ -87,7 +87,7 @@ public class Bagregate<X> implements Iterable<PriReference<X>> {
 
     @Override
     public final void forEach(Consumer<? super PriReference<X>> action) {
-        for (var xPriReference : bag) {
+        for (PriReference<X> xPriReference : bag) {
             action.accept(xPriReference);
         }
     }

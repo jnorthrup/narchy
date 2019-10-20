@@ -8,7 +8,12 @@ class TrieSequencerByteList implements TrieSequencer<ByteList> {
 
     @Override
     public int matches(ByteList sequenceA, int indexA, ByteList sequenceB, int indexB, int count) {
-        return IntStream.range(0, count).filter(i -> sequenceA.get(indexA + i) != sequenceB.get(indexB + i)).findFirst().orElse(count);
+        for (int i = 0; i < count; i++) {
+            if (sequenceA.get(indexA + i) != sequenceB.get(indexB + i)) {
+                return i;
+            }
+        }
+        return count;
 
     }
 

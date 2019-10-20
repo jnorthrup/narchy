@@ -21,8 +21,8 @@ public abstract class LazyList<X> extends AbstractList<X> {
 
     @Override
     public void forEach(Consumer<? super X> action) {
-        var s = size();
-        for (var i = 0; i < s; i++)
+        int s = size();
+        for (int i = 0; i < s; i++)
             action.accept(get(i));
     }
 
@@ -35,21 +35,31 @@ public abstract class LazyList<X> extends AbstractList<X> {
     }
 
     public void activateAll() {
-        var s = size();
-        for (var i = 0; i < s; i++) {
+        int s = size();
+        for (int i = 0; i < s; i++) {
             get(i,true);
         }
     }
 
     public boolean allSatisfy(org.eclipse.collections.api.block.predicate.Predicate<? super X> predicate) {
         //return InternalArrayIterate.allSatisfy(this.items, this.size, predicate);
-        var s = size();
-        return IntStream.range(0, s).allMatch(i -> predicate.test(get(i)));
+        int s = size();
+        for (int i = 0; i < s; i++) {
+            if (!predicate.test(get(i))) {
+                return false;
+            }
+        }
+        return true;
     }
     public <P> boolean allSatisfyWith(Predicate2<? super X, ? super P> predicate2, P parameter) {
-        var s = size();
+        int s = size();
         if (s > 0) {
-            return IntStream.range(0, s).allMatch(i -> predicate2.accept(get(i), parameter));
+            for (int i = 0; i < s; i++) {
+                if (!predicate2.accept(get(i), parameter)) {
+                    return false;
+                }
+            }
+            return true;
         }
         return true;
     }
@@ -77,12 +87,12 @@ public abstract class LazyList<X> extends AbstractList<X> {
     }
 
     public X get(int i, boolean activate) {
-        var x = list.get(i);
+        Object x = list.get(i);
         if (x instanceof Supplier) {
             if (!activate)
                 return inactive();
             else {
-                var y = ((Supplier) x).get();
+                Object y = ((Supplier) x).get();
                 list.setFast(i, y);
                 x = y;
             }

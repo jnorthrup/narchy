@@ -45,7 +45,7 @@ public abstract class TernaryOperator extends ParentNode {
 
     @Override
     public Node cloneTree() {
-        var bop = buildCopy();
+        TernaryOperator bop = buildCopy();
         if (size() >= 3) {
             cloneChild(get(0), bop);
             cloneChild(get(1), bop);

@@ -94,17 +94,17 @@ public final class Narsese {
      * returns number of tasks created
      */
     public static void tasks(String input, Collection<Task> c, NAL m) throws NarseseException {
-        var p = the();
+        Narsese p = the();
 
-        var parsedTasks = 0;
+        int parsedTasks = 0;
 
-        var r = p.inputParser().run(input);
-        var rv = r.getValueStack();
+        ParsingResult r = p.inputParser().run(input);
+        ValueStack rv = r.getValueStack();
 
-        var size = rv.size();
+        int size = rv.size();
 
-        for (var i = size - 1; i >= 0; i--) {
-            var o = rv.peek(i);
+        for (int i = size - 1; i >= 0; i--) {
+            Object o = rv.peek(i);
 
             Object[] y;
             if (o instanceof Task) {
@@ -115,7 +115,7 @@ public final class Narsese {
                 throw new NarseseException("Parse error: " + input);
             }
 
-            var t = decodeTask(m, y);
+            Task t = decodeTask(m, y);
 
             c.add(t);
             parsedTasks++;
@@ -139,7 +139,7 @@ public final class Narsese {
      * parse one task
      */
     public static Task task(String input, NAL n) throws NarseseException {
-        var tt = tasks(input, n);
+        List<Task> tt = tasks(input, n);
         if (tt.size() != 1)
             throw new NarseseException(tt.size() + " tasks parsed in single-task parse: " + input);
         return tt.get(0);
@@ -150,15 +150,15 @@ public final class Narsese {
             return (Task) x[0];
         }
 
-        var content = ((Term) x[1]).normalize();
+        Term content = ((Term) x[1]).normalize();
             /*if (!(content instanceof Compound)) {
                 throw new NarseseException("Task target unnormalizable: " + contentRaw);
 
             } else */
 
-        var px = x[2];
+        Object px = x[2];
 
-        var punct =
+        byte punct =
                 px instanceof Byte ?
                         (Byte) x[2]
                         :
@@ -167,7 +167,7 @@ public final class Narsese {
         if (punct == COMMAND)
             return new AbstractCommandTask(content);
 
-        var _t = x[3];
+        Object _t = x[3];
         Truth t;
 
         if (_t instanceof Truth)
@@ -181,9 +181,9 @@ public final class Narsese {
             t = $.t(1, nar.confDefault(punct)); //HACK
 
 
-        var occ = occurrence(nar.time, x[4]);
+        long[] occ = occurrence(nar.time, x[4]);
 
-        var C = Task.taskValid(content, punct, t, false);
+        Term C = Task.taskValid(content, punct, t, false);
 
         Task y = NALTask.the(C, punct, t, nar.time(), occ[0], occ[1], nar.evidence());
 
@@ -197,21 +197,21 @@ public final class Narsese {
         if (O == null)
             return new long[]{ETERNAL, ETERNAL};
         else if (O instanceof Tense) {
-            var o = t.relativeOccurrence((Tense)O);
+            long o = t.relativeOccurrence((Tense)O);
             return new long[]{o, o};
         } else if (O instanceof QuantityTerm) {
-            var qCycles = t.toCycles(((QuantityTerm) O).quant);
-            var o = t.now() + qCycles;
+            long qCycles = t.toCycles(((QuantityTerm) O).quant);
+            long o = t.now() + qCycles;
             return new long[]{o, o};
         } else if (O instanceof Integer) {
 
-            var o = t.now() + (Integer) O;
+            long o = t.now() + (Integer) O;
             return new long[]{o, o};
         } else if (O instanceof Object[]) {
-            var start = occurrence(t, ((Object[]) O)[0]);
+            long[] start = occurrence(t, ((Object[]) O)[0]);
             if (start[0] != start[1] || start[0] == ETERNAL || start[0] == TIMELESS)
                 throw new UnsupportedOperationException();
-            var end = occurrence(t, ((Object[]) O)[1]);
+            long[] end = occurrence(t, ((Object[]) O)[1]);
             if (end[0] != end[1] || end[0] == ETERNAL || end[0] == TIMELESS)
                 throw new UnsupportedOperationException();
             if (start[0] <= end[0]) {
@@ -229,7 +229,7 @@ public final class Narsese {
     }
 
     public static Term term(String s, boolean normalize) throws NarseseException {
-        var y = term(s);
+        Term y = term(s);
         return normalize ? nullIfNull(y.normalize()) : y;
     }
 
@@ -246,19 +246,19 @@ public final class Narsese {
         try {
 
 
-            var r = termParser().run(s);
+            ParsingResult r = termParser().run(s);
 
-            var stack = r.getValueStack();
+            ValueStack stack = r.getValueStack();
 
             if (stack.size() == 1) {
-                var x = stack.pop();
+                Object x = stack.pop();
 
                 if (x instanceof String)
                     return Atomic.the((String) x);
                 else if (x instanceof Term)
                     return (Term) x;
             } else {
-                var x = Util.map(0, stack.size(), Object[]::new, stack::peek);
+                Object[] x = Util.map(0, stack.size(), Object[]::new, stack::peek);
                 ee = new SoftException("incomplete parse: " + Arrays.toString(x));
             }
 
@@ -303,7 +303,7 @@ public final class Narsese {
             //Objects.requireNonNull(inputBuffer, "inputBuffer");
             resetValueStack();
 
-            var context = createRootContext(inputBuffer, this);
+            MatcherContext<V> context = createRootContext(inputBuffer, this);
 
             return createParsingResult(context.runMatcher(), context);
         }
@@ -335,10 +335,10 @@ public final class Narsese {
         private final char[] charSequence;
 
         CharSequenceInputBuffer(CharSequence charSequence) {
-            var length = charSequence.length();
+            int length = charSequence.length();
 
             this.charSequence = new char[length];
-            for (var i = 0; i < length; i++) {
+            for (int i = 0; i < length; i++) {
                 this.charSequence[i] = charSequence.charAt(i);
             }
         }
@@ -351,16 +351,16 @@ public final class Narsese {
         @SuppressWarnings("ImplicitNumericConversion")
         @Override
         public int codePointAt(int index) {
-            var length = charSequence.length;
+            int length = charSequence.length;
             if (index >= length)
                 return -1;
 
-            var c = charAt(index);
+            char c = charAt(index);
             if (!Character.isHighSurrogate(c))
                 return c;
             if (index == length - 1)
                 return c;
-            var c2 = charAt(index + 1);
+            char c2 = charAt(index + 1);
             return Character.isLowSurrogate(c2) ? Character.toCodePoint(c, c2) : c;
         }
 
@@ -372,8 +372,8 @@ public final class Narsese {
 
         @Override
         public String extract(int start, int end) {
-            var realStart = Math.max(start, 0);
-            var realEnd = Math.min(end, charSequence.length);
+            int realStart = Math.max(start, 0);
+            int realEnd = Math.min(end, charSequence.length);
             return subSequence(realStart, realEnd);
         }
 

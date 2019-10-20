@@ -31,7 +31,7 @@ public class BomberRandInt {
      * generator.
      */
     static {
-        for (var i = 0; i < BUFFER_SIZE; i++)
+        for (int i = 0; i < BUFFER_SIZE; i++)
             buffer[i] = Math.random();
     }
 
@@ -51,7 +51,7 @@ public class BomberRandInt {
      * @return a random integer
      */
     public int draw() {
-        var result = low + (int) ((high - low + 1) * nextRandom());
+        int result = low + (int) ((high - low + 1) * nextRandom());
         return result;
     }
 
@@ -62,11 +62,11 @@ public class BomberRandInt {
      */
     private static double nextRandom() {
         /** pick a random element in the stack */
-        var position = (int) (Math.random() * BUFFER_SIZE);
+        int position = (int) (Math.random() * BUFFER_SIZE);
         if (position == BUFFER_SIZE)
             position = BUFFER_SIZE - 1;
         /** store the value of that element */
-        var result = buffer[position];
+        double result = buffer[position];
         /** fill that element with a new random double */
         buffer[position] = Math.random();
         /** return the value */

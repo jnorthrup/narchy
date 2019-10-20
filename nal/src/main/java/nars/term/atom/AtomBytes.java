@@ -21,7 +21,7 @@ public class AtomBytes extends AbstractAtomic implements Idempotent {
 	}
 
 	public static AtomBytes atomBytes(DataInput i) throws IOException {
-		var bb = new byte[i.readUnsignedShort()];
+        byte[] bb = new byte[i.readUnsignedShort()];
 		i.readFully(bb);
 		return AtomBytes.atomBytes(bb);
 	}
@@ -57,7 +57,7 @@ public class AtomBytes extends AbstractAtomic implements Idempotent {
 
 	@Override
 	public String toString() {
-		var b = bytes;
+        byte[] b = bytes;
 		//byte[] b = QuickLZ.decompress(bytes, 3)
 		return "\"" + new String(b, 3, b.length-3) + "\"";
 	}

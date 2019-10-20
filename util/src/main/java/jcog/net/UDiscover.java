@@ -50,7 +50,7 @@ public abstract class UDiscover<P> {
             try {
                 //.getLocalHost();
                 //.getLoopbackAddress();
-                var ia = InetAddress
+                InetAddress ia = InetAddress
                         //.getLocalHost();
                         //.getLoopbackAddress();
                         .getByName(address);
@@ -76,7 +76,7 @@ public abstract class UDiscover<P> {
 
                 myID = Util.toBytes(id);
                 p = new DatagramPacket(myID, myID.length, ia, port);
-                var theirID = new byte[MAX_PAYLOAD_ID];
+                byte[] theirID = new byte[MAX_PAYLOAD_ID];
                 q = new DatagramPacket(theirID, theirID.length);
 
                 busy.set(false);
@@ -91,7 +91,7 @@ public abstract class UDiscover<P> {
 
     public boolean update() {
 
-        var ms = this.ms;
+        MulticastSocket ms = this.ms;
         if (ms == null)
             return false;
 
@@ -115,10 +115,10 @@ public abstract class UDiscover<P> {
                 ms.receive(q);
                 try {
 
-                    var len = q.getLength();
-                    var qd = q.getData();
+                    int len = q.getLength();
+                    byte[] qd = q.getData();
                     if (!Arrays.equals(p.getData(), qd) && !Arrays.equals(myID, 0, myID.length, qd, 0, len)) {
-                        var theirPayload = (P) Util.fromBytes(qd, len, id.getClass());
+                        P theirPayload = (P) Util.fromBytes(qd, len, id.getClass());
                         found(theirPayload, q.getAddress(), q.getPort());
 
                     }

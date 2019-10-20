@@ -50,16 +50,16 @@ public class FlaggingAccuracyPrecisionLengthObjective implements Objective {
     @Override
     public double[] fitness(Node individual) {
 
-        var dataSetView = this.context.getCurrentDataSet();
-        var evaluator = context.getConfiguration().getEvaluator();
-        var fitness = new double[3];
+        DataSet dataSetView = this.context.getCurrentDataSet();
+        TreeEvaluator evaluator = context.getConfiguration().getEvaluator();
+        double[] fitness = new double[3];
 
         double fitnessLenght;
 
         List<Bounds[]> evaluate;
         try {
             evaluate = evaluator.evaluate(individual, context);
-            var builder = new StringBuilder();
+            StringBuilder builder = new StringBuilder();
             individual.describe(builder);
             fitnessLenght = builder.length();
         } catch (TreeEvaluationException ex) {
@@ -69,19 +69,19 @@ public class FlaggingAccuracyPrecisionLengthObjective implements Objective {
         }
 
 
-        var statsOverall = new BasicStats();
+        BasicStats statsOverall = new BasicStats();
 
-        for (var i = 0; i < evaluate.size(); i++) {
-            var result = evaluate.get(i);
+        for (int i = 0; i < evaluate.size(); i++) {
+            Bounds[] result = evaluate.get(i);
 
-            var example = dataSetView.getExample(i);
+            Example example = dataSetView.getExample(i);
             
             if (isUnannotated(example)){
                 continue;
             }
 
 
-            var stats = new BasicStats();
+            BasicStats stats = new BasicStats();
 
             stats.tp = isTruePositive(result, example.match) ? 1 : 0;
             stats.fp = isFalsePositive(result, example.unmatch) ? 1 : 0;
@@ -99,7 +99,7 @@ public class FlaggingAccuracyPrecisionLengthObjective implements Objective {
     }
 
     public static boolean isUnannotated(Example ex){
-        var mm = ex.match;
+        List<Bounds> mm = ex.match;
         return mm.isEmpty() && ex.unmatch.isEmpty();
     }
      

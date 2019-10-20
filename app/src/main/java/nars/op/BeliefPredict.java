@@ -75,7 +75,7 @@ public class BeliefPredict extends NARPart {
     public BeliefPredict(Termed[] pastSampling, int history, int sampleDur, Termed[] presentSampling, Predictor m, What target) {
         super(target.nar);
 
-        var nar = target.nar;
+        NAR nar = target.nar;
         this.sampleDur = sampleDur;
         this.predicted = presentSampling;
 
@@ -102,23 +102,23 @@ public class BeliefPredict extends NARPart {
     protected synchronized void predict() {
 
 
-        var now = nar.time();
+        long now = nar.time();
 
-        var c = conf.floatValue() * nar.beliefConfDefault.floatValue();
-        var fade = confFadeFactor.floatValue();
+        float c = conf.floatValue() * nar.beliefConfDefault.floatValue();
+        float fade = confFadeFactor.floatValue();
         List<PredictionTask> nextPred = new FasterList((projections+1)*predictor.framer.outputCount());
 
 
-        var oldPred = this.predictions;
+        List<PredictionTask> oldPred = this.predictions;
         //TODO also directly remove from table?
-        for (var predictionTask : oldPred) {
+        for (PredictionTask predictionTask : oldPred) {
             predictionTask.delete();
         }
         oldPred.clear();
 
 
         double[] p = null;
-        for (var i = 0; i < projections + 1; i++) {
+        for (int i = 0; i < projections + 1; i++) {
 
             p = (i == 0) ? predictor.next(now-sampleDur) : predictor.project(p);
 
@@ -145,27 +145,27 @@ public class BeliefPredict extends NARPart {
     private void believe(long when, double[] predFreq, float conf, List<PredictionTask> predictions) {
 
 
-        var evi = c2w(conf );
+        float evi = c2w(conf );
 
         //long eShared = nar.evidence()[0];
-        var se = Tense.dither(new long[] { when, when+sampleDur }, nar);
+        long[] se = Tense.dither(new long[] { when, when+sampleDur }, nar);
 //        long start = Tense.dither(when , nar);
 //        long end = Tense.dither(when+sampleDur, nar);
 
-        for (var i = 0; i < predFreq.length; i++) {
+        for (int i = 0; i < predFreq.length; i++) {
 
-            var f0 = predFreq[i];
+            double f0 = predFreq[i];
             if (!Double.isFinite(f0))
                 continue;
 
-            var f = (float)Util.unitize(f0);
+            float f = (float)Util.unitize(f0);
 
-            var t = Truth.theDithered(f, evi, nar);
+            PreciseTruth t = Truth.theDithered(f, evi, nar);
             if (t == null)
                 continue;
 
             //System.out.println("-> " + start + " " + end);
-            var p = new PredictionTask(predicted[i].term(), t, se[0], se[1], nar.evidence());
+            PredictionTask p = new PredictionTask(predicted[i].term(), t, se[0], se[1], nar.evidence());
             p.pri(nar);
 
             predictions.add(p);
@@ -175,10 +175,10 @@ public class BeliefPredict extends NARPart {
 
     LongToFloatFunction freqSupplier(Termed c, NAR nar) {
         return (when) -> {
-            var start = (when);
-            var end = (when + sampleDur);
+            long start = (when);
+            long end = (when + sampleDur);
             //System.out.println("<- " + start + " " + end);
-            @Nullable var t = nar.truth(c, BELIEF, start, end); //TODO filter predictions (PredictionTask's) from being used in this calculation
+            @Nullable Truth t = nar.truth(c, BELIEF, start, end); //TODO filter predictions (PredictionTask's) from being used in this calculation
             if (t == null)
                 return
                         0.5f;

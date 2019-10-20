@@ -86,9 +86,9 @@ public class XoRoShiRo128PlusRandom extends Random implements Rand {
 
 
     @Override public long nextLong() {
-        var s0 = a;
-        var s1 = b;
-        var result = s0 + s1;
+        long s0 = a;
+        long s1 = b;
+        long result = s0 + s1;
         s1 ^= s0;
         a = Long.rotateLeft(s0, 55) ^ s1 ^ s1 << 14;
         b = Long.rotateLeft(s1, 36);
@@ -124,12 +124,12 @@ public class XoRoShiRo128PlusRandom extends Random implements Rand {
      */
     public long nextLong(long n) {
         if (n <= 0) throw new IllegalArgumentException("illegal bound " + n + " (must be positive)");
-        var t = nextLong();
-        var nMinus1 = n - 1;
+        long t = nextLong();
+        long nMinus1 = n - 1;
         
         if ((n & nMinus1) == 0) return (t >>> Long.numberOfLeadingZeros(nMinus1)) & nMinus1;
         
-        for (var u = t >>> 1; u + nMinus1 - (t = u % n) < 0; u = nextLong() >>> 1) ;
+        for (long u = t >>> 1; u + nMinus1 - (t = u % n) < 0; u = nextLong() >>> 1) ;
         return t;
     }
 
@@ -177,10 +177,10 @@ public class XoRoShiRo128PlusRandom extends Random implements Rand {
 
     @Override
     public void nextBytes(byte[] bytes) {
-        var i = bytes.length;
+        int i = bytes.length;
         while (i != 0) {
-            var n = Math.min(i, 8);
-            for (var bits = nextLong(); n-- != 0; bits >>= 8) bytes[--i] = (byte) bits;
+            int n = Math.min(i, 8);
+            for (long bits = nextLong(); n-- != 0; bits >>= 8) bytes[--i] = (byte) bits;
         }
     }
 
@@ -236,7 +236,7 @@ public class XoRoShiRo128PlusRandom extends Random implements Rand {
      */
     @Override
     public void setSeed(long seed) {
-        var r = new XorShift1024StarRandom.SplitMix64RandomGenerator(seed);
+        XorShift1024StarRandom.SplitMix64RandomGenerator r = new XorShift1024StarRandom.SplitMix64RandomGenerator(seed);
         a = r.nextLong();
         b = r.nextLong();
     }

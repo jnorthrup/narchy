@@ -29,7 +29,7 @@ public abstract class SubFinger extends Finger {
 
     public void update() {
         if (isOn()) {
-            var p = ((OrthoSurfaceGraph) root).video.getWidthHeightMin();
+            float p = ((OrthoSurfaceGraph) root).video.getWidthHeightMin();
             posPixel.set(posRel.clone().scaled(p).added(parent.posPixel));
         }
     }
@@ -58,7 +58,7 @@ public abstract class SubFinger extends Finger {
 
             focused.set(parent.focused());
 
-            var rotSpeed = 0.05f;
+            float rotSpeed = 0.05f;
             theta += rotSpeed; //rotSpeed * (rng.nextFloat() * 2 - 1);
             posRel.set( radius * Math.cos(theta), radius * Math.sin(theta) );
 

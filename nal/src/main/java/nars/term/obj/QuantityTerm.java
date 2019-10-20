@@ -20,7 +20,7 @@ public class QuantityTerm extends ProxyTerm {
     }
 
     public static @Nullable QuantityTerm the(String toParse) throws IllegalArgumentException {
-        var q = AbstractQuantity.parse(toParse);
+        Quantity<? extends Quantity<?>> q = AbstractQuantity.parse(toParse);
         if (q == null)
             return null;
         return new QuantityTerm(q);
@@ -29,8 +29,8 @@ public class QuantityTerm extends ProxyTerm {
     /** interpret a product of the form (unit, time) */
     public static @Nullable QuantityTerm the(Term qTerm) throws IllegalArgumentException {
         if (qTerm.op()==PROD && qTerm.subs()==2) {
-            var unit = qTerm.sub(0);
-            var value = $.doubleValue(qTerm.sub(1));
+            Term unit = qTerm.sub(0);
+            double value = $.doubleValue(qTerm.sub(1));
             return QuantityTerm.the(value + " " + unit);
         }
         return null;

@@ -6,6 +6,7 @@ import nars.$;
 import nars.NAR;
 import nars.concept.TaskConcept;
 import nars.game.Game;
+import nars.game.action.ActionSignal;
 import nars.game.sensor.ComponentSignal;
 import nars.game.sensor.Signal;
 import nars.game.sensor.VectorSensor;
@@ -57,7 +58,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
         if (src instanceof PixelBag) {
             //HACK sub-pri the actions for this attn group
-            for (var aa : ((PixelBag) src).actions) {
+            for (ActionSignal aa : ((PixelBag) src).actions) {
                 n.control.input(aa.pri, pri);
             }
         }
@@ -99,7 +100,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
     public static IntIntToObjectFunction<nars.term.Term> RadixProduct(@Nullable Term root, int width, int height, int radix) {
         return (x, y) -> {
-            var coords = radix > 1 ?
+            Term coords = radix > 1 ?
                     $.p(zipCoords(coord(x, width, radix), coord(y, height, radix))) :
                     $.p(x, y);
             return root == null ? coords :
@@ -110,7 +111,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
     public static IntIntToObjectFunction<nars.term.Term> RadixRecurse(@Nullable Term root, int width, int height, int radix) {
         return (x, y) -> {
-            var coords = radix > 1 ?
+            Term coords = radix > 1 ?
                     $.pRecurse(true, zipCoords(coord(x, width, radix), coord(y, height, radix))) :
                     $.p(x, y);
             return root == null ? coords : $.p(root,coords);
@@ -119,7 +120,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
     public static IntIntToObjectFunction<nars.term.Term> InhRecurse(@Nullable Term root, int width, int height, int radix) {
         return (x, y) -> {
-            var coords = radix > 1 ?
+            Term coords = radix > 1 ?
                     $.inhRecurse(zipCoords(coord(x, width, radix), coord(y, height, radix))) :
                     $.p(x, y);
             return root == null ? coords : $.p(root,coords);
@@ -127,14 +128,14 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     }
 
     private static Term[] zipCoords(Term[] x, Term[] y) {
-        var m = max(x.length, y.length);
-        var r = new Term[m];
-        var sx = m - x.length;
-        var sy = m - y.length;
+        int m = max(x.length, y.length);
+        Term[] r = new Term[m];
+        int sx = m - x.length;
+        int sy = m - y.length;
         int ix = 0, iy = 0;
-        for (var i = 0; i < m; i++) {
+        for (int i = 0; i < m; i++) {
             Term xy;
-            var levelPrefix =
+            char levelPrefix =
                     (char) ('a' + (m - 1 - i));
 
 

@@ -13,8 +13,8 @@ public class SineString extends KarplusStrongString {
 
     public void pluck() {
         clear();
-        var capacity = buffer.capacity();
-        for (var i = 0; i < capacity; i++) {
+        int capacity = buffer.capacity();
+        for (int i = 0; i < capacity; i++) {
             buffer.enqueue((Math.sin(i * 2 * Math.PI / capacity)) * getMaxVolume());
         }
     }
@@ -22,7 +22,7 @@ public class SineString extends KarplusStrongString {
     public void tic() {
         double first = buffer.dequeue();
         double second = buffer.peek();
-        var last = (first + second) * (deltaVolume / 2);
+        double last = (first + second) * (deltaVolume / 2);
 		buffer.enqueue(last * deltaVolume);
     }
 

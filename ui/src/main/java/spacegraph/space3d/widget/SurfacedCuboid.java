@@ -54,7 +54,7 @@ public class SurfacedCuboid<X> extends SimpleSpatial<X> implements SurfaceGraph 
     public SurfacedCuboid front(Surface front) {
         //TODO non-synchronized
         synchronized (this) {
-            @Nullable var prevFront = this.front;
+            @Nullable Surface prevFront = this.front;
             if (prevFront != front) {
                 if (prevFront != null)
                     prevFront.stop();

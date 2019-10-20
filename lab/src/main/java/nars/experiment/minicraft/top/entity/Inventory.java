@@ -17,8 +17,8 @@ public class Inventory {
 
     public synchronized void add(int slot, Item item) {
         if (item instanceof ResourceItem) {
-            var toTake = (ResourceItem) item;
-            var has = findResource(toTake.resource);
+            ResourceItem toTake = (ResourceItem) item;
+            ResourceItem has = findResource(toTake.resource);
             if (has == null) {
                 items.add(slot, toTake);
             } else {
@@ -30,18 +30,26 @@ public class Inventory {
     }
 
     private ResourceItem findResource(Resource resource) {
-        var bound = items.size();
-        return IntStream.range(0, bound).filter(i -> items.get(i) instanceof ResourceItem).mapToObj(i -> (ResourceItem) items.get(i)).filter(has -> has.resource == resource).findFirst().orElse(null);
+        int bound = items.size();
+        for (int i = 0; i < bound; i++) {
+            if (items.get(i) instanceof ResourceItem) {
+                ResourceItem has = (ResourceItem) items.get(i);
+                if (has.resource == resource) {
+                    return has;
+                }
+            }
+        }
+        return null;
     }
 
     public boolean hasResources(Resource r, int count) {
-        var ri = findResource(r);
+        ResourceItem ri = findResource(r);
         if (ri == null) return false;
         return ri.count >= count;
     }
 
     public boolean removeResource(Resource r, int count) {
-        var ri = findResource(r);
+        ResourceItem ri = findResource(r);
         if (ri == null) return false;
         if (ri.count < count) return false;
         ri.count -= count;
@@ -51,12 +59,17 @@ public class Inventory {
 
     public int count(Item item) {
         if (item instanceof ResourceItem) {
-            var ri = findResource(((ResourceItem) item).resource);
+            ResourceItem ri = findResource(((ResourceItem) item).resource);
             if (ri != null) return ri.count;
         } else {
-            var bound = items.size();
-            var result = IntStream.range(0, bound).filter(i -> items.get(i).matches(item)).count();
-            var count = (int) result;
+            int bound = items.size();
+            long result = 0L;
+            for (int i = 0; i < bound; i++) {
+                if (items.get(i).matches(item)) {
+                    result++;
+                }
+            }
+            int count = (int) result;
             return count;
         }
         return 0;

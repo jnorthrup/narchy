@@ -65,7 +65,7 @@ public abstract class Functor extends AbstractAtomic implements BiFunction<Evalu
     }
 
     public static @Nullable Subterms args(Compound x, int requireArity) {
-        var s = _args(x);
+        Subterms s = _args(x);
         return s.subs()==requireArity ?  s : null;
     }
 
@@ -75,7 +75,7 @@ public abstract class Functor extends AbstractAtomic implements BiFunction<Evalu
 
     public static boolean isFunc(Term x) {
         if (x instanceof Compound && x.op() == INH && x.hasAll(Op.FuncBits)) {
-            var xx = x.subterms();
+            Subterms xx = x.subterms();
             return xx.subIs(0, PROD) && xx.subIs(1, ATOM);
         }
         return false;
@@ -111,7 +111,7 @@ public abstract class Functor extends AbstractAtomic implements BiFunction<Evalu
 
     private static LambdaFunctor f(Atom termAtom, int minArity, int maxArity, Function<Subterms, Term> ff) {
         return f(termAtom, (tt) -> {
-            var n = tt.subs();
+            int n = tt.subs();
             return ((n >= minArity) && ( n<=maxArity)) ? ff.apply(tt) : IdempotentBool.Null;
         });
     }
@@ -128,13 +128,13 @@ public abstract class Functor extends AbstractAtomic implements BiFunction<Evalu
     }
 
     public static LambdaFunctor r0(String termAtom, Supplier<Runnable> ff) {
-        var fName = fName(termAtom);
+        Atom fName = fName(termAtom);
         return f0(fName, () -> new AbstractPred<>($.inst($.quote(Util.uuid64()), fName)) {
 
             @Override
             public boolean test(Object o) {
                 try {
-                    var r = ff.get();
+                    Runnable r = ff.get();
                     r.run();
                     return true;
                 } catch (Throwable t) {
@@ -176,7 +176,7 @@ public abstract class Functor extends AbstractAtomic implements BiFunction<Evalu
      */
     public static LambdaFunctor f1Concept(String termAtom, NAR nar, BiFunction<Concept, NAR, Term> ff) {
         return f1(fName(termAtom), t -> {
-            var c = nar.conceptualizeDynamic(t);
+            Concept c = nar.conceptualizeDynamic(t);
             return c != null ? ff.apply(c, nar) : null;
         });
     }

@@ -38,7 +38,7 @@ public final class StockMethods {
      * @param x
      */
     public static float smoothStep(float edge0, float edge1, float x) {
-        var t = Util.unitize((x - edge0) / (edge1 - edge0));
+        float t = Util.unitize((x - edge0) / (edge1 - edge0));
         return t * t * (3f - 2f * t);
     }
 

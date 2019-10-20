@@ -11,7 +11,7 @@ public class SquareDiffDecayWave extends SquareWave {
     }
 
     private static double calcDecay(double frequency) {
-        var factor = 440 / frequency;
+        double factor = 440 / frequency;
         return Math.pow(.996, factor);
     }
 }

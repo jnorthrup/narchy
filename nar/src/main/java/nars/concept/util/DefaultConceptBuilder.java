@@ -39,7 +39,7 @@ public class DefaultConceptBuilder extends ConceptBuilder {
             if (overlay.length == 1 && overlay[0] instanceof ImageBeliefTable)
                 return overlay[0];
             else {
-                var b = new BeliefTables(overlay.length + 2);
+                BeliefTables b = new BeliefTables(overlay.length + 2);
                 b.addAll(overlay);
                 b.add(newTemporalTable(x, beliefOrGoal));
                 b.add(newEternalTable(x));
@@ -62,7 +62,7 @@ public class DefaultConceptBuilder extends ConceptBuilder {
 
     @Override
     public QuestionTable questionTable(Term term, boolean questionOrQuest) {
-        var o = term.op();
+        Op o = term.op();
 		return (questionOrQuest ? o.beliefable : o.goalable) ?
             new HijackQuestionTable(0, 2) :
             QuestionTable.Empty;

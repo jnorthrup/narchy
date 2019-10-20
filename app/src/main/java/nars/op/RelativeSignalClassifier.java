@@ -21,10 +21,10 @@ public abstract class RelativeSignalClassifier  {
     }
 
     public void run() {
-        var h = input();
+        float h = input();
 
-        var dMean = (float)(h - history.getMean());
-        var varianceThresh = history.getVariance();
+        float dMean = (float)(h - history.getMean());
+        double varianceThresh = history.getVariance();
         history.addValue(h);
 
         

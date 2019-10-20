@@ -34,7 +34,7 @@ public class Seq extends CollectionParser {
 	}
 
 	public Seq(Parser... p) {
-		for (var x : p)
+		for (Parser x : p)
 			get(x);
 	}
 
@@ -76,8 +76,8 @@ public class Seq extends CollectionParser {
 	 */
 	@Override
 	public Set<Assembly> match(Set<Assembly> in) {
-		var out = in;
-		for (var p : subparsers) {
+        Set<Assembly> out = in;
+		for (Parser p : subparsers) {
 			out = p.matchAndAssemble(out);
 			if (out.isEmpty()) {
 				return out;
@@ -93,8 +93,8 @@ public class Seq extends CollectionParser {
 	@Override
 	protected List<String> randomExpansion(int maxDepth, int depth) {
 		List<String> v = new ArrayList<>();
-		for (var p : subparsers) {
-			var w = p.randomExpansion(maxDepth, depth++);
+		for (Parser p : subparsers) {
+            List<String> w = p.randomExpansion(maxDepth, depth++);
 			v.addAll(w);
 		}
 		return v;

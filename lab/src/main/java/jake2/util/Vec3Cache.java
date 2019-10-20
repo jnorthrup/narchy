@@ -31,7 +31,7 @@ public final class Vec3Cache {
     }
     
     public static final void debug() {
-        var max = 0;
+        int max = 0;
         System.err.println("Vec3Cache: max. " + (max + 1) + " vectors used.");
     }
 }

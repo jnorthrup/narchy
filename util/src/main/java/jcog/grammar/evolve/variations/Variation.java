@@ -55,26 +55,26 @@ public class Variation {
      * @return two new individuals
      */
     public Twin<Node> crossover(Node individualA, Node individualB, int maxTries) {
-        var isGood = false;
+        boolean isGood = false;
         Node newIndividualA = null;
         Node newIndividualB = null;
 
-        for (var tries = 0; tries < maxTries; tries++) {
+        for (int tries = 0; tries < maxTries; tries++) {
 
             newIndividualA = individualA.cloneTree();
             newIndividualB = individualB.cloneTree();
 
-            var randomNodeA = pickRandomNode(newIndividualA);
-            var randomNodeB = pickRandomNode(newIndividualB);
+            Node randomNodeA = pickRandomNode(newIndividualA);
+            Node randomNodeB = pickRandomNode(newIndividualB);
 
             if (randomNodeA != null && randomNodeB != null) {
 
-                var aParent = randomNodeA.getParent();
-                var aChilds = aParent.children();
-                var aIndex = aChilds.indexOf(randomNodeA);
-                var bParent = randomNodeB.getParent();
-                var bChilds = bParent.children();
-                var bIndex = bChilds.indexOf(randomNodeB);
+                ParentNode aParent = randomNodeA.getParent();
+                List<Node> aChilds = aParent.children();
+                int aIndex = aChilds.indexOf(randomNodeA);
+                ParentNode bParent = randomNodeB.getParent();
+                List<Node> bChilds = bParent.children();
+                int bIndex = bChilds.indexOf(randomNodeB);
                 aParent.set(aIndex, randomNodeB);
                 bParent.set(bIndex, randomNodeA);
                 randomNodeA.setParent(bParent);
@@ -112,13 +112,13 @@ public class Variation {
      */
     public Node mutate(Node individual) {
 
-        var newNodes = this.growth.generate(20);
-        var mutant = individual.cloneTree();
+        List<Node> newNodes = this.growth.generate(20);
+        Node mutant = individual.cloneTree();
 
 
-        for (var newNode : newNodes) {
+        for (Node newNode : newNodes) {
 
-            var randomNode = pickRandomNode(mutant);
+            Node randomNode = pickRandomNode(mutant);
             if (randomNode != null) {
                 replaceNode(randomNode, newNode);
                 if (checkMaxDepth(mutant, 1) && mutant.isValid()) {
@@ -133,10 +133,10 @@ public class Variation {
     }
 
     private Node pickRandomNode(Node individual) {
-        var param = context.getConfiguration().getEvolutionParameters();
+        EvolutionParameters param = context.getConfiguration().getEvolutionParameters();
         List<Node> nodeList = new ArrayList<>();
 
-        var random = this.context.getRandom().nextFloat();
+        float random = this.context.getRandom().nextFloat();
 
         if (random <= param.getNodeCrossoverSelectionProbability()) {
             enlistNode(individual, nodeList, false);
@@ -154,7 +154,7 @@ public class Variation {
         if (nodeList.isEmpty()) {
             return null;
         }
-        var randomIndex = this.context.getRandom().nextInt(nodeList.size());
+        int randomIndex = this.context.getRandom().nextInt(nodeList.size());
         return nodeList.get(randomIndex);
     }
 
@@ -164,7 +164,7 @@ public class Variation {
             nodes.add(root);
 
         }
-        for (var child : root.children()) {
+        for (Node child : root.children()) {
             enlistNode(child, nodes, isLeaf);
         }
 
@@ -178,9 +178,9 @@ public class Variation {
 
     private static void replaceNode(Node oldChild, Node newChild) {
 
-        var parent = oldChild.getParent();
-        var childs = parent.children();
-        var index = childs.indexOf(oldChild);
+        ParentNode parent = oldChild.getParent();
+        List<Node> childs = parent.children();
+        int index = childs.indexOf(oldChild);
         newChild.setParent(parent);
         oldChild.setParent(null);
         parent.set(index, newChild);
@@ -188,12 +188,12 @@ public class Variation {
 
     private static void swapNodes(Node a, Node b) {
 
-        var aParent = a.getParent();
-        var aChilds = aParent.children();
-        var aIndex = aChilds.indexOf(a);
-        var bParent = b.getParent();
-        var bChilds = bParent.children();
-        var bIndex = bChilds.indexOf(b);
+        ParentNode aParent = a.getParent();
+        List<Node> aChilds = aParent.children();
+        int aIndex = aChilds.indexOf(a);
+        ParentNode bParent = b.getParent();
+        List<Node> bChilds = bParent.children();
+        int bIndex = bChilds.indexOf(b);
         aParent.set(aIndex, b);
         bParent.set(bIndex, a);
         a.setParent(bParent);
@@ -208,12 +208,12 @@ public class Variation {
             return true;
         }
 
-        var acc = true;
-        for (var child : root.children()) {
-            var checkMaxDepth = checkMaxDepth(child, depth + 1);
+        boolean acc = true;
+        for (Node child : root.children()) {
+            boolean checkMaxDepth = checkMaxDepth(child, depth + 1);
             acc = acc && checkMaxDepth;
         }
-        var ret = acc;
+        boolean ret = acc;
 
         return ret;
     }
@@ -223,7 +223,7 @@ public class Variation {
         if (root instanceof Group) {
             groups.add((Group) root);
         }
-        for (var child : root.children()) {
+        for (Node child : root.children()) {
             checkSingleGroup(child, groups);
         }
 
@@ -236,15 +236,15 @@ public class Variation {
         if (groups.size() < 2) {
             return root;
         }
-        var nextInt = this.context.getRandom().nextInt(groups.size());
+        int nextInt = this.context.getRandom().nextInt(groups.size());
 
         groups.remove(nextInt);
 
-        for (var group : groups) {
-            var ncg = new NonCapturingGroup();
+        for (Group group : groups) {
+            NonCapturingGroup ncg = new NonCapturingGroup();
             if (group != root) {
                 ncg.setParent(group.getParent());
-                var indexOf = ncg.getParent().children().indexOf(group);
+                int indexOf = ncg.getParent().children().indexOf(group);
                 ncg.getParent().children().set(indexOf, ncg);
 
             } else {

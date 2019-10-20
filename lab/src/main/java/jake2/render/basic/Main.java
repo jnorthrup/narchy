@@ -243,7 +243,12 @@ public abstract class Main extends Base {
 		if (r_nocull.value != 0)
 			return false;
 
-		return IntStream.range(0, 4).anyMatch(i -> Math3D.BoxOnPlaneSide(mins, maxs, frustum[i]) == 2);
+		for (int i = 0; i < 4; i++) {
+			if (Math3D.BoxOnPlaneSide(mins, maxs, frustum[i]) == 2) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	final void R_RotateForEntity(entity_t e) {
@@ -272,13 +277,13 @@ public abstract class Main extends Base {
 	void R_DrawSpriteModel(entity_t e) {
 
 
-		var psprite = (qfiles.dsprite_t) currentmodel.extradata;
+        qfiles.dsprite_t psprite = (qfiles.dsprite_t) currentmodel.extradata;
 
 		e.frame %= psprite.numframes;
 
-		var frame = psprite.frames[e.frame];
+        qfiles.dsprframe_t frame = psprite.frames[e.frame];
 
-		var alpha = 1.0F;
+        float alpha = 1.0F;
 		if ((e.flags & Defines.RF_TRANSLUCENT) != 0)
 			alpha = e.alpha;
 
@@ -477,21 +482,21 @@ public abstract class Main extends Base {
 		
 		gl.glBegin(GL_TRIANGLES);
 
-		var sourceVertices = particle_t.vertexArray;
-		var sourceColors = particle_t.colorArray;
+        FloatBuffer sourceVertices = particle_t.vertexArray;
+        IntBuffer sourceColors = particle_t.colorArray;
 		for (int j = 0, i = 0; i < num_particles; i++) {
-			var origin_x = sourceVertices.get(j++);
-			var origin_y = sourceVertices.get(j++);
-			var origin_z = sourceVertices.get(j++);
+            float origin_x = sourceVertices.get(j++);
+            float origin_y = sourceVertices.get(j++);
+            float origin_z = sourceVertices.get(j++);
 
 
-			var scale = (origin_x - r_origin[0]) * vpn[0]
+            float scale = (origin_x - r_origin[0]) * vpn[0]
 					+ (origin_y - r_origin[1]) * vpn[1]
 					+ (origin_z - r_origin[2]) * vpn[2];
 
 			scale = (scale < 20) ? 1 :  1 + scale * 0.004f;
 
-			var color = sourceColors.get(i);
+            int color = sourceColors.get(i);
 			gl.glColor4ub(
 				(byte)((color >> 0) & 0xFF),
 				(byte)((color >> 8) & 0xFF),
@@ -595,7 +600,13 @@ public abstract class Main extends Base {
 
 	static int SignbitsForPlane(cplane_t out) {
 
-		var bits = IntStream.range(0, 3).filter(j -> out.normal[j] < 0).map(j -> (1 << j)).reduce(0, (a, b) -> a | b);
+		int bits = 0;
+		for (int j = 0; j < 3; j++) {
+			if (out.normal[j] < 0) {
+				int i = (1 << j);
+				bits = bits | i;
+			}
+		}
 		return bits;
 	}
 
@@ -609,7 +620,7 @@ public abstract class Main extends Base {
 		
 		Math3D.RotatePointAroundVector(frustum[3].normal, vright, vpn, - (90f - r_newrefdef.fov_y / 2f));
 
-		for (var i = 0; i < 4; i++) {
+		for (int i = 0; i < 4; i++) {
 			frustum[i].type = Defines.PLANE_ANYZ;
 			frustum[i].dist = Math3D.DotProduct(r_origin, frustum[i].normal);
 			frustum[i].signbits = (byte) SignbitsForPlane(frustum[i]);
@@ -636,7 +647,7 @@ public abstract class Main extends Base {
 		if ((r_newrefdef.rdflags & Defines.RDF_NOWORLDMODEL) == 0) {
 			r_oldviewcluster = r_viewcluster;
 			r_oldviewcluster2 = r_viewcluster2;
-			var leaf = Mod_PointInLeaf(r_origin, r_worldmodel);
+            mleaf_t leaf = Mod_PointInLeaf(r_origin, r_worldmodel);
 			r_viewcluster = r_viewcluster2 = leaf.cluster;
 
 			
@@ -660,7 +671,7 @@ public abstract class Main extends Base {
 			}
 		}
 
-		for (var i = 0; i < 4; i++)
+		for (int i = 0; i < 4; i++)
 			v_blend[i] = r_newrefdef.blend[i];
 
 		c_brush_polys = 0;
@@ -683,13 +694,13 @@ public abstract class Main extends Base {
 
 	void MYgluPerspective(double fovy, double aspect, double zNear, double zFar) {
 
-		var ymax = zNear * Math.tan(fovy * Math.PI / 360.0);
-		var ymin = -ymax;
+        double ymax = zNear * Math.tan(fovy * Math.PI / 360.0);
+        double ymin = -ymax;
 
-		var xmin = ymin * aspect;
+        double xmin = ymin * aspect;
 
 		xmin += - (2 * gl_state.camera_separation) / zNear;
-		var xmax = ymax * aspect;
+        double xmax = ymax * aspect;
 		xmax += - (2 * gl_state.camera_separation) / zNear;
 
 		gl.glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
@@ -703,18 +714,18 @@ public abstract class Main extends Base {
 	void R_SetupGL() {
 
 
-		var x = (int) Math.floor(r_newrefdef.x * vid.getWidth() / vid.getWidth());
-		var x2 = (int) Math.ceil((r_newrefdef.x + r_newrefdef.width) * vid.getWidth() / vid.getWidth());
-		var y = (int) Math.floor(vid.getHeight() - r_newrefdef.y * vid.getHeight() / vid.getHeight());
-		var y2 = (int) Math.ceil(vid.getHeight() - (r_newrefdef.y + r_newrefdef.height) * vid.getHeight() / vid.getHeight());
+        int x = (int) Math.floor(r_newrefdef.x * vid.getWidth() / vid.getWidth());
+        int x2 = (int) Math.ceil((r_newrefdef.x + r_newrefdef.width) * vid.getWidth() / vid.getWidth());
+        int y = (int) Math.floor(vid.getHeight() - r_newrefdef.y * vid.getHeight() / vid.getHeight());
+        int y2 = (int) Math.ceil(vid.getHeight() - (r_newrefdef.y + r_newrefdef.height) * vid.getHeight() / vid.getHeight());
 
-		var w = x2 - x;
-		var h = y - y2;
+        int w = x2 - x;
+        int h = y - y2;
 
 		gl.glViewport(x, y2, w, h);
 
 
-		var screenaspect = (float) r_newrefdef.width / r_newrefdef.height;
+        float screenaspect = (float) r_newrefdef.width / r_newrefdef.height;
 		gl.glMatrixMode(GL_PROJECTION);
 		gl.glLoadIdentity();
 		MYgluPerspective(r_newrefdef.fov_y, screenaspect, 4, 4096);
@@ -1012,12 +1023,12 @@ public abstract class Main extends Base {
 	protected boolean R_SetMode() {
 
 
-		var fullscreen = (vid_fullscreen.value > 0.0f);
+        boolean fullscreen = (vid_fullscreen.value > 0.0f);
 
 		vid_fullscreen.modified = false;
 		gl_mode.modified = false;
 
-		var dim = new Dimension(vid.getWidth(), vid.getHeight());
+        Dimension dim = new Dimension(vid.getWidth(), vid.getHeight());
 
 		int err;
 		if ((err = glImpl.setMode(dim, (int) gl_mode.value, fullscreen)) == rserr_ok) {
@@ -1065,7 +1076,7 @@ public abstract class Main extends Base {
 		assert(Warp.SIN.length == 256) : "warpsin table bug";
 
 		
-		for (var j = 0; j < 256; j++) {
+		for (int j = 0; j < 256; j++) {
 			r_turbsin[j] = Warp.SIN[j] * 0.5f;
 		}
 
@@ -1105,8 +1116,8 @@ public abstract class Main extends Base {
 		
 		gl_config.parseOpenGLVersion();
 
-		var renderer_buffer = gl_config.renderer_string.toLowerCase();
-		var vendor_buffer = gl_config.vendor_string.toLowerCase();
+        String renderer_buffer = gl_config.renderer_string.toLowerCase();
+        String vendor_buffer = gl_config.vendor_string.toLowerCase();
 
 		if (renderer_buffer.contains("voodoo")) {
 			if (!renderer_buffer.contains("rush"))
@@ -1131,7 +1142,7 @@ public abstract class Main extends Base {
 		else
 			gl_config.renderer = GL_RENDERER_OTHER;
 
-		var monolightmap = gl_monolightmap.string.toUpperCase();
+        String monolightmap = gl_monolightmap.string.toUpperCase();
 		if (monolightmap.length() < 2 || monolightmap.charAt(1) != 'F') {
 			if (gl_config.renderer == GL_RENDERER_PERMEDIA2) {
 				Cvar.Set("gl_monolightmap", "A");
@@ -1302,7 +1313,7 @@ public abstract class Main extends Base {
 		R_InitParticleTexture();
 		Draw_InitLocal();
 
-		var err = gl.glGetError();
+        int err = gl.glGetError();
 		if (err != GL_NO_ERROR)
 			VID.Printf(
 				Defines.PRINT_ALL,
@@ -1351,7 +1362,7 @@ public abstract class Main extends Base {
 		*/
 		if (gl_mode.modified || vid_fullscreen.modified) {
 
-			var ref = Cvar.Get("vid_ref", "lwjgl", 0);
+            cvar_t ref = Cvar.Get("vid_ref", "lwjgl", 0);
 			ref.modified = true;
 		}
 
@@ -1467,8 +1478,8 @@ public abstract class Main extends Base {
 		int i;
 
 		if (palette != null) {
-			var j =0;
-			var color = 0;
+            int j =0;
+            int color = 0;
 			for (i = 0; i < 256; i++) {
 				color = (palette[j++] & 0xFF) << 0;
 				color |= (palette[j++] & 0xFF) << 8;
@@ -1552,7 +1563,7 @@ public abstract class Main extends Base {
 		gl.glBegin(GL_TRIANGLE_STRIP);
 
 		for (i = 0; i < NUM_BEAM_SEGS; i++) {
-			var v = start_points[i];
+            float[] v = start_points[i];
 			gl.glVertex3f(v[0], v[1], v[2]);
 			v = end_points[i];
 			gl.glVertex3f(v[0], v[1], v[2]);

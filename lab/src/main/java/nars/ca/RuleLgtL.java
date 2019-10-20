@@ -44,9 +44,9 @@ public class RuleLgtL {
 
 		ResetToDefaults();
 
-		var st = new StringTokenizer(sStr, ",", true);
+        StringTokenizer st = new StringTokenizer(sStr, ",", true);
 		while (st.hasMoreTokens()) {
-			var sTok = st.nextToken().toUpperCase();
+            String sTok = st.nextToken().toUpperCase();
 			sTok = sTok.trim();
 
 
@@ -79,7 +79,7 @@ public class RuleLgtL {
 				if (sTok.length() >= 4) {
 					iTmp = sTok.indexOf("..");
 					if (iTmp >= 0) {
-						var sBff = sTok.substring(1, iTmp);
+                        String sBff = sTok.substring(1, iTmp);
 						iSMin = Integer.valueOf(sBff);
 						sBff = sTok.substring(iTmp + 2);
 						iSMax = Integer.valueOf(sBff);
@@ -128,10 +128,10 @@ public class RuleLgtL {
         Validate();
 
 
-		var sBff = 'R' + String.valueOf(iRng);
+        String sBff = 'R' + String.valueOf(iRng);
 
 
-		var ih = isHist ? iClo : 0;
+        int ih = isHist ? iClo : 0;
 		sBff = sBff + ",C" + ih;
 
 
@@ -166,8 +166,8 @@ public class RuleLgtL {
 		if (iNgh != MJRules.NGHTYP_NEUM)
 			iNgh = MJRules.NGHTYP_MOOR;
 
-		var iMax = isCentr ? 1 : 0;
-		for (var i = 1; i <= iRng; i++)
+        int iMax = isCentr ? 1 : 0;
+		for (int i = 1; i <= iRng; i++)
 
             iMax += i * 8;
 
@@ -190,40 +190,40 @@ public class RuleLgtL {
 	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState, MJBoard mjb) {
-		var modCnt = 0;
-		var lurd = new int[4];
-		var xVector = new int[21];
-		var yVector = new int[21];
+        int modCnt = 0;
+        int[] lurd = new int[4];
+        int[] xVector = new int[21];
+        int[] yVector = new int[21];
 		int iTmpC, iTmpR, iTmpBlobC, iTmpBlobR;
 		int ctrCol, ctrRow;
-		var fMoore = (iNgh == MJRules.NGHTYP_MOOR);
+        boolean fMoore = (iNgh == MJRules.NGHTYP_MOOR);
 														
 
-		for (var i = 0; i < sizX; i++) {
-			for (var j = 0; j < sizY; j++) {
+		for (int i = 0; i < sizX; i++) {
+			for (int j = 0; j < sizY; j++) {
 				
 				
 				xVector[10] = i;
 				yVector[10] = j;
-				for (var iTmp = 1; iTmp <= iRng; iTmp++) {
-					var colL = i - iTmp;
+				for (int iTmp = 1; iTmp <= iRng; iTmp++) {
+                    int colL = i - iTmp;
 					xVector[10 - iTmp] = colL >= 0 ? colL : sizX + colL;
 
-					var colR = i + iTmp;
+                    int colR = i + iTmp;
 					xVector[10 + iTmp] = colR < sizX ? colR : colR - sizX;
 
-					var rowT = j - iTmp;
+                    int rowT = j - iTmp;
 					yVector[10 - iTmp] = rowT >= 0 ? rowT : sizY + rowT;
 
-					var rowB = j + iTmp;
+                    int rowB = j + iTmp;
 					yVector[10 + iTmp] = rowB < sizY ? rowB : rowB - sizY;
 				}
-				var bOldVal = crrState[i][j];
-				var bNewVal = bOldVal;
+                short bOldVal = crrState[i][j];
+                short bNewVal = bOldVal;
 				if (bNewVal >= iClo)
 					bNewVal = (short) (iClo - 1);
 
-				var iCnt = 0;
+                int iCnt = 0;
 				int ir;
 				int ic;
 				if (isHist) {

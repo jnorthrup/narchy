@@ -86,7 +86,7 @@ public class DataSet implements Serializable {
         this.numberUnAnnotatedChars = 0;
         this.numberOfChars = 0;
     
-        for (var ex : this.examples) {
+        for (Example ex : this.examples) {
             this.numberMatches += ex.match.size();
             this.numberUnmatches += ex.unmatch.size();
             this.numberMatchedChars += ex.getNumberMatchedChars();
@@ -151,7 +151,7 @@ public class DataSet implements Serializable {
     
     
     public String getStatsString(){
-        var stats = "DataSet " + this.name + " stats:\n" +
+        String stats = "DataSet " + this.name + " stats:\n" +
                 "number examples: " + this.getNumberExamples() +
                 "\noverall chars in dataset: " + this.getNumberOfChars() +
                 "\nnumber matches: " + this.getNumberMatches() +
@@ -163,21 +163,21 @@ public class DataSet implements Serializable {
     }
     
     public void randomize() {
-        var random = new Random();
-        for (var i = 0; i < examples.size(); i++) {
+        Random random = new Random();
+        for (int i = 0; i < examples.size(); i++) {
             if((((i*100)/examples.size())%5)==0){
                 System.out.format("randomize %d%%\n",((i*100)/examples.size()));
             }
-            var destIndex = random.nextInt(examples.size());
-            var ex1 = examples.get(i);
-            var ex2 = examples.get(destIndex);
+            int destIndex = random.nextInt(examples.size());
+            Example ex1 = examples.get(i);
+            Example ex2 = examples.get(destIndex);
             examples.set(i, ex2);
             examples.set(destIndex, ex1);
         }
     }
     
     public void populateUnmatchesFromMatches(){
-            for (var ex : this.examples) {
+            for (Example ex : this.examples) {
                 ex.populateUnmatchesFromMatches();
             }
         
@@ -187,7 +187,7 @@ public class DataSet implements Serializable {
      * Populate examples with the temporary list of matched and unmatched strings (using current match and unmatch bounds)
      */
     public void populateAnnotatedStrings(){
-            for(var example : this.examples){
+            for(Example example : this.examples){
             example.populateAnnotatedStrings();
             }
     }
@@ -207,9 +207,9 @@ public class DataSet implements Serializable {
      */
     public DataSet subDataset(String name, List<Range> ranges){
 
-        var subDataset = new DataSet(name);
-            for(var range : ranges){
-                for(var index = range.getStartIndex(); index <= range.getEndIndex(); index++){
+        DataSet subDataset = new DataSet(name);
+            for(Range range : ranges){
+                for(int index = range.getStartIndex(); index <= range.getEndIndex(); index++){
                     subDataset.add(this.getExamples().get(index));
                 }           
             }
@@ -223,7 +223,7 @@ public class DataSet implements Serializable {
      */
     public DataSet initStripedDatasetView(double marginSize){
         this.stripedDataset = new DataSet(this.name, this.description, this.regexTarget);
-        for(var example : this.examples){
+        for(Example example : this.examples){
             this.stripedDataset.examples.addAll(stripeExample(example, marginSize));
         }        
         return this.stripedDataset;
@@ -242,13 +242,13 @@ public class DataSet implements Serializable {
     protected static List<Example> stripeExample(Example example, double marginSize){
 
 
-        var mm = example.getMatch();
+        List<Bounds> mm = example.getMatch();
         List<Bounds> savedBounds = new ArrayList<>(mm.size());
 
-        for(var match : mm){
+        for(Bounds match : mm){
 
-            var charMargin = (int) Math.max(((match.size() * marginSize) / 2.0),1.0);
-            var grownMatch = new Bounds(match.start - charMargin, match.end + charMargin);
+            int charMargin = (int) Math.max(((match.size() * marginSize) / 2.0),1.0);
+            Bounds grownMatch = new Bounds(match.start - charMargin, match.end + charMargin);
             grownMatch.start = Math.max(grownMatch.start, 0);
             grownMatch.end = Math.min(grownMatch.end, example.getNumberOfChars());
             savedBounds.add(grownMatch);
@@ -259,27 +259,27 @@ public class DataSet implements Serializable {
 
 
         List<Example> slicesExampleList = new ArrayList<>();
-        for(var slice : savedBounds){
-            var sliceExample = new Example();
+        for(Bounds slice : savedBounds){
+            Example sliceExample = new Example();
             sliceExample.setString(example.getString().substring(slice.start, slice.end));
             
             
-            for(var match : mm){
+            for(Bounds match : mm){
                 if(match.start >= slice.end){
                     break; 
                 } else {
-                    var slicedMatch = match.windowView(slice);
+                    Bounds slicedMatch = match.windowView(slice);
                     if(slicedMatch != null){
                         sliceExample.getMatch().add(slicedMatch);
                     }
                 }
             }
             
-            for(var unmatch : example.getUnmatch()){
+            for(Bounds unmatch : example.getUnmatch()){
                 if(unmatch.start >= slice.end){
                     break; 
                 } else {
-                    var slicedUnmatch = unmatch.windowView(slice);
+                    Bounds slicedUnmatch = unmatch.windowView(slice);
                     if(slicedUnmatch != null){
                         sliceExample.getUnmatch().add(slicedUnmatch);
             }
@@ -349,10 +349,10 @@ public class DataSet implements Serializable {
      * @return true, when the dataset has been modified by reduction
      */
     public boolean addSeparateAndConquerLevel(String individualRegex, int jobId, boolean convertToUnmatch, boolean isFlagging){
-        var oldDataset = this.getLastSeparateAndConquerDataSet(jobId);
-        var dataset = oldDataset.reduceSeparateAndConquerDataset(individualRegex, convertToUnmatch, isFlagging);
+        DataSet oldDataset = this.getLastSeparateAndConquerDataSet(jobId);
+        DataSet dataset = oldDataset.reduceSeparateAndConquerDataset(individualRegex, convertToUnmatch, isFlagging);
         dataset.updateStats();
-        var modified = (dataset.getNumberMatches() != oldDataset.getNumberMatches());
+        boolean modified = (dataset.getNumberMatches() != oldDataset.getNumberMatches());
         this.getSeparateAndConquerLevels(jobId).add(dataset);
         if(this.getStripedDataset()!=null){
             modified = this.getStripedDataset().addSeparateAndConquerLevel(individualRegex,jobId, convertToUnmatch, isFlagging) || modified;       
@@ -368,11 +368,11 @@ public class DataSet implements Serializable {
      */
     private DataSet reduceSeparateAndConquerDataset(String individualRegex, boolean convertToUnmatch, boolean isFlagging ){
 
-        var pattern = Pattern.compile(individualRegex);
-        var individualRegexMatcher = pattern.matcher("");
+        Pattern pattern = Pattern.compile(individualRegex);
+        Matcher individualRegexMatcher = pattern.matcher("");
 
-        var reducedDataset = new DataSet(this.name, "Reduction: "+individualRegex, this.regexTarget);
-        for(var example : this.examples){
+        DataSet reducedDataset = new DataSet(this.name, "Reduction: "+individualRegex, this.regexTarget);
+        for(Example example : this.examples){
             if(!isFlagging){
                 reducedDataset.getExamples().add(DataSet.reduceSeparateAndConquerExample(example, individualRegexMatcher, convertToUnmatch));
             } else {
@@ -384,7 +384,7 @@ public class DataSet implements Serializable {
     
     private static boolean isTruePositiveFlaggingExample(Example example, Matcher individualRegexMatcher){
         try {
-            var m = individualRegexMatcher.reset(example.getString());
+            Matcher m = individualRegexMatcher.reset(example.getString());
             return (m.find() && !example.match.isEmpty());
         } catch (StringIndexOutOfBoundsException ex) {
             return false;
@@ -403,7 +403,7 @@ public class DataSet implements Serializable {
         if(!isTruePositiveFlaggingExample(example, individualRegexMatcher)){
             return new Example(example);
         }
-        var unannotatedExample = new Example();
+        Example unannotatedExample = new Example();
         unannotatedExample.setString(example.getString());
         return unannotatedExample;
     }
@@ -417,12 +417,12 @@ public class DataSet implements Serializable {
     
     
     private static Example manipulateSeparateAndConquerExample(Example example, Matcher individualRegexMatcher, boolean convertToUnmatch){
-        var exampleClone = new Example(example);
+        Example exampleClone = new Example(example);
         List<Bounds> extractions = new ArrayList<>();
         try {
-            var m = individualRegexMatcher.reset(example.getString());
+            Matcher m = individualRegexMatcher.reset(example.getString());
             while (m.find()) {
-                var bounds = new Bounds(m.start(0), m.end(0));
+                Bounds bounds = new Bounds(m.start(0), m.end(0));
                 extractions.add(bounds);
             }
         } catch (StringIndexOutOfBoundsException ex) {
@@ -435,9 +435,9 @@ public class DataSet implements Serializable {
         }
         
         
-        for (var it = exampleClone.getMatch().iterator(); it.hasNext();) {
-            var match = it.next();
-            for(var extraction : extractions){
+        for (Iterator<Bounds> it = exampleClone.getMatch().iterator(); it.hasNext();) {
+            Bounds match = it.next();
+            for(Bounds extraction : extractions){
                 
                 if(match.equals(extraction)){
                     it.remove();
@@ -460,7 +460,7 @@ public class DataSet implements Serializable {
     }
     
     public DataSet getLastSeparateAndConquerDataSet(int jobId){
-        var datasetsList =  this.getSeparateAndConquerLevels(jobId);
+        List<DataSet> datasetsList =  this.getSeparateAndConquerLevels(jobId);
         if(datasetsList.isEmpty()){
             return this;
         }
@@ -523,7 +523,7 @@ public class DataSet implements Serializable {
     
     
     public void removeSeparateAndConquerLevel(int jobID){
-        var separateAndConquerLevelsForJob = this.getSeparateAndConquerLevels(jobID);
+        List<DataSet> separateAndConquerLevelsForJob = this.getSeparateAndConquerLevels(jobID);
         if(!separateAndConquerLevelsForJob.isEmpty()){
             separateAndConquerLevelsForJob.remove(separateAndConquerLevelsForJob.size()-1);
         }
@@ -555,12 +555,12 @@ public class DataSet implements Serializable {
         protected transient List<String> unmatchedStrings = new FasterList<>();
 
         public void addMatchBounds(int bs, int bf) {
-            var boundaries = new Bounds(bs, bf);
+            Bounds boundaries = new Bounds(bs, bf);
             match.add(boundaries);
         }
         
         public void addUnmatchBounds(int bs, int bf) {
-            var boundaries = new Bounds(bs, bf);
+            Bounds boundaries = new Bounds(bs, bf);
             unmatch.add(boundaries);
         }
         
@@ -577,17 +577,21 @@ public class DataSet implements Serializable {
         }
         
         private static int getNumberCharsInsideIntervals(List<Bounds> textIntervals){
-            var countChars = textIntervals.stream().mapToInt(interval -> (interval.end - interval.start)).sum();
+            int countChars = 0;
+            for (Bounds interval : textIntervals) {
+                int i = (interval.end - interval.start);
+                countChars += i;
+            }
             return countChars;
         }
         
         public void populateAnnotatedStrings(){
             this.matchedStrings.clear();
-            for(var bounds : this.match){
+            for(Bounds bounds : this.match){
                 this.matchedStrings.add(this.string.substring(bounds.start,bounds.end));
             }
             this.unmatchedStrings.clear();
-            for(var bounds : this.unmatch){
+            for(Bounds bounds : this.unmatch){
                 this.unmatchedStrings.add(this.string.substring(bounds.start,bounds.end));
         }
         }
@@ -625,8 +629,8 @@ public class DataSet implements Serializable {
         public void populateUnmatchesFromMatches(){
             this.unmatch.clear();
 
-            var previousMatchFinalIndex = 0;
-                for(var oneMatch : this.match){
+            int previousMatchFinalIndex = 0;
+                for(Bounds oneMatch : this.match){
                     if(oneMatch.start > previousMatchFinalIndex){
                         this.addUnmatchBounds(previousMatchFinalIndex, oneMatch.start);
                     }
@@ -650,8 +654,12 @@ public class DataSet implements Serializable {
          * @return a list of all annotated strings
          */
         public List<String> getAnnotatedStrings(){
-            var annotatedStrings = this.getMatch().stream().map(bounds1 -> this.getString().substring(bounds1.start, bounds1.end)).collect(Collectors.toList());
-            for(var bounds : this.getUnmatch()){
+            List<String> annotatedStrings = new ArrayList<>();
+            for (Bounds bounds1 : this.getMatch()) {
+                String substring = this.getString().substring(bounds1.start, bounds1.end);
+                annotatedStrings.add(substring);
+            }
+            for(Bounds bounds : this.getUnmatch()){
                 annotatedStrings.add(this.getString().substring(bounds.start, bounds.end));
             }
             return annotatedStrings;
@@ -667,7 +675,11 @@ public class DataSet implements Serializable {
             List<Bounds> boundsList = new ArrayList<>(this.getMatch());
             boundsList.addAll(this.getUnmatch());
             Collections.sort(boundsList);
-            List<String> annotatedStrings = boundsList.stream().map(bounds -> this.getString().substring(bounds.start, bounds.end)).collect(Collectors.toCollection(() -> new ArrayList<>(boundsList.size())));
+            List<String> annotatedStrings = new ArrayList<>(boundsList.size());
+            for (Bounds bounds : boundsList) {
+                String substring = this.getString().substring(bounds.start, bounds.end);
+                annotatedStrings.add(substring);
+            }
             return annotatedStrings;
         }
     
@@ -693,7 +705,7 @@ public class DataSet implements Serializable {
 
         @Override
         public int hashCode() {
-            var hash = 3;
+            int hash = 3;
             hash = 97 * hash + this.start;
             hash = 97 * hash + this.end;
             return hash;
@@ -702,7 +714,7 @@ public class DataSet implements Serializable {
         @Override
         public boolean equals(Object obj) {
             if (!(obj instanceof Bounds)) return false;
-            var other = (Bounds) obj;
+            Bounds other = (Bounds) obj;
             return ((this.end == other.end)&&(this.start == other.start));
         }
         
@@ -718,9 +730,9 @@ public class DataSet implements Serializable {
                 return newBoundsList;
             }
             Collections.sort(boundsList);
-            var prevBounds = new Bounds(boundsList.get(0).start, boundsList.get(0).end);
-            for (var i = 1; i < boundsList.size(); i++) {
-                var currentBounds = boundsList.get(i);
+            Bounds prevBounds = new Bounds(boundsList.get(0).start, boundsList.get(0).end);
+            for (int i = 1; i < boundsList.size(); i++) {
+                Bounds currentBounds = boundsList.get(i);
                 if(currentBounds.start <= prevBounds.end){
                     
                     prevBounds.end = Math.max(currentBounds.end,prevBounds.end);
@@ -741,7 +753,7 @@ public class DataSet implements Serializable {
          * @return
          */
         public Bounds windowView(Bounds rangeBounds){
-            var newBounds = new Bounds(this.start-rangeBounds.start, this.end-rangeBounds.start);
+            Bounds newBounds = new Bounds(this.start-rangeBounds.start, this.end-rangeBounds.start);
             if((newBounds.start >= rangeBounds.size())||(newBounds.end<=0)){
                 return null; 
             }
@@ -784,7 +796,17 @@ public class DataSet implements Serializable {
             Collections.sort(zoneRanges);
 
 
-            var overallEOAA = (int) Arrays.stream(ranges).filter(extractedBounds -> zoneRanges.stream().takeWhile(expectedBounds -> expectedBounds.start < extractedBounds.end).anyMatch(extractedBounds::overlaps)).count();
+            int overallEOAA = (int) Arrays.stream(ranges).filter(extractedBounds -> {
+                for (Bounds expectedBounds : zoneRanges) {
+                    if (expectedBounds.start >= extractedBounds.end) {
+                        break;
+                    }
+                    if (extractedBounds.overlaps(expectedBounds)) {
+                        return true;
+                    }
+                }
+                return false;
+            }).count();
             return overallEOAA;
         }
 

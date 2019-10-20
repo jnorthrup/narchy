@@ -43,10 +43,10 @@ public class BitmapLabel extends AbstractLabel {
 
     @Override
     public AbstractLabel text(String next) {
-        var prev = text;
+        String prev = text;
         if (prev==null || !prev.equals(next)) {
 
-            var rows = 1 + Texts.countRows(next, '\n');
+            int rows = 1 + Texts.countRows(next, '\n');
             boolean resized;
             if (rows == 1) {
                 resized = view.resize(next.length(), 1);
@@ -66,9 +66,9 @@ public class BitmapLabel extends AbstractLabel {
 
     @Override
     protected void doLayout(float dtS) {
-        var b = bounds;
-        var r = view.rows; if (r > 0) {
-            var c = view.cols; if (c > 0) {
+        RectFloat b = bounds;
+        int r = view.rows; if (r > 0) {
+            int c = view.cols; if (c > 0) {
                 b = AspectAlign.innerBounds(b, (r * characterAspectRatio) / c);
             }
         }
@@ -124,12 +124,12 @@ public class BitmapLabel extends AbstractLabel {
 
             clearBackground(); //may not be necessary if only one line and all characters are used but in multiline the matrix currently isnt regular so some chars will not be redrawn
 
-            var s = BitmapLabel.this.text;
-            var n = s.length();
+            String s = BitmapLabel.this.text;
+            int n = s.length();
             int row = 0, col =0;
             Color4f fg = BitmapLabel.this.fgColor, bg = BitmapLabel.this.bgColor;
-            for (var i = 0; i < n; i++) {
-                var c = s.charAt(i);
+            for (int i = 0; i < n; i++) {
+                char c = s.charAt(i);
                 if (c == '\n') {
                     row++;
                     col = 0;

@@ -49,7 +49,7 @@ public class spawn_temp_t {
 	public float maxpitch;
 
 	public boolean set(String key, String value) {
-		var result = true;
+        boolean result = true;
 		switch (key) {
 			case "lip":
 				lip = Lib.atoi(value);

@@ -12,18 +12,18 @@ public class SequenceGenerator
     public static TrainingSequence generateSequenceSawtooth(int length, int vectorSize) {
         length = length*2+2;
 
-        var input = new double[length][vectorSize];
-        var output = new double[length][vectorSize];
+        double[][] input = new double[length][vectorSize];
+        double[][] output = new double[length][vectorSize];
 
-        var direction = rng.nextFloat() < 0.5;
+        boolean direction = rng.nextFloat() < 0.5;
 
 
-        var j = (int)(rng.nextFloat() * 100);
-        for (var i = 0; i < length; i++) {
-            var index = j % vectorSize;
+        int j = (int)(rng.nextFloat() * 100);
+        for (int i = 0; i < length; i++) {
+            int index = j % vectorSize;
 
             input[i][index] = 1;
-            var reflected = (vectorSize - 1) - index;
+            int reflected = (vectorSize - 1) - index;
             output[i][reflected] = 1;
 
             if (direction)
@@ -39,14 +39,14 @@ public class SequenceGenerator
     public static TrainingSequence generateSequenceXOR(int length, int vectorSize) {
 
 
-        var input = new double[length][vectorSize];
-        var output = new double[length][vectorSize];
+        double[][] input = new double[length][vectorSize];
+        double[][] output = new double[length][vectorSize];
 
 
-        var j = (int)(rng.nextFloat() * 153) % Math.max(1,vectorSize/2) + vectorSize/2;
+        int j = (int)(rng.nextFloat() * 153) % Math.max(1,vectorSize/2) + vectorSize/2;
 
-        for (var i = 0; i < length; i++) {
-            var index = ((j)^(i)) % vectorSize;
+        for (int i = 0; i < length; i++) {
+            int index = ((j)^(i)) % vectorSize;
             
 
             if (i < vectorSize/2)
@@ -61,20 +61,20 @@ public class SequenceGenerator
     }
 
     public static TrainingSequence generateSequenceWTF(int length, int inputVectorSize) {
-        var data = new double[length][inputVectorSize];
-        for (var i = 0; i < length; i++)
+        double[][] data = new double[length][inputVectorSize];
+        for (int i = 0; i < length; i++)
         {
 
-            for (var j = 0; j < inputVectorSize; j++)
+            for (int j = 0; j < inputVectorSize; j++)
             {
                 data[i][j] = rng.nextInt(2);
             }
         }
-        var sequenceLength = (length * 2) + 2;
-        var vectorSize = inputVectorSize - 2;
-        var input = new double[sequenceLength][inputVectorSize];
+        int sequenceLength = (length * 2) + 2;
+        int vectorSize = inputVectorSize - 2;
+        double[][] input = new double[sequenceLength][inputVectorSize];
 
-        for (var i = 0; i < sequenceLength; i++)
+        for (int i = 0; i < sequenceLength; i++)
         {
             
             if (i == 0) {
@@ -91,8 +91,8 @@ public class SequenceGenerator
             }
                
         }
-        var output = new double[sequenceLength][vectorSize];
-        for (var i = 0; i < sequenceLength; i++)
+        double[][] output = new double[sequenceLength][vectorSize];
+        for (int i = 0; i < sequenceLength; i++)
         {
             
             if (i >= (length + 2))

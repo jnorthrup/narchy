@@ -63,11 +63,11 @@ public final class EwmaAnomalyzer {
 
         //val params = getParams();
 
-        var stdDev = sqrt(this.variance);
-        var weakDelta = EwmaParams.weakSigmas * stdDev;
-        var strongDelta = EwmaParams.strongSigmas * stdDev;
+        double stdDev = sqrt(this.variance);
+        double weakDelta = EwmaParams.weakSigmas * stdDev;
+        double strongDelta = EwmaParams.strongSigmas * stdDev;
 
-        var thresholds = new Anomalysis.AnomalyThresholds(
+        Anomalysis.AnomalyThresholds thresholds = new Anomalysis.AnomalyThresholds(
                 this.mean + strongDelta,
                 this.mean + weakDelta,
                 this.mean - weakDelta,
@@ -76,7 +76,7 @@ public final class EwmaAnomalyzer {
 
         updateEstimates(what);
 
-        var level = thresholds.classify(what);
+        Anomalysis.AnomalyLevel level = thresholds.classify(what);
 
         return new Anomalysis(mean, level, thresholds);
     }
@@ -85,9 +85,9 @@ public final class EwmaAnomalyzer {
 
         // https://en.wikipedia.org/wiki/Moving_average#Exponentially_weighted_moving_variance_and_standard_deviation
         // http://people.ds.cam.ac.uk/fanf2/hermes/doc/antiforgery/stats.pdf
-        var diff = value - this.mean;
-        var alpha = EwmaParams.alpha;
-        var incr = alpha * diff;
+        double diff = value - this.mean;
+        double alpha = EwmaParams.alpha;
+        double incr = alpha * diff;
         this.mean += incr;
 
         // Welford's algorithm for computing the variance online

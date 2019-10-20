@@ -23,7 +23,7 @@ class MatrixTransform {
     }
 
     Mat tanh(Mat mat) {
-        var out = new Mat(mat.n, mat.d);
+        Mat out = new Mat(mat.n, mat.d);
         Arrays.setAll(out.w, i -> Math.tanh(mat.w[i]));
         if (this.needsBackprop)
             this.q.addLast(new Backprop(Backprop.BackpropMethod.TANH, mat, out));
@@ -31,24 +31,24 @@ class MatrixTransform {
     }
 
     Mat mul(Mat m1, Mat m2) {
-        var m1d = m1.d;
+        int m1d = m1.d;
         assert m1d == m2.n;
-        var m2d = m2.d;
-        var n = m1.n;
+        int m2d = m2.d;
+        int n = m1.n;
 
         //assert(m1d == m2.n): "matmul dimensions misaligned: " + m1d + " != " + m2.n;
 
-        var d = m2d;
-        var m1w = m1.w;
-        var m2w = m2.w;
-        var out = new Mat(n, d);
-        var outw = out.w;
+        int d = m2d;
+        double[] m1w = m1.w;
+        double[] m2w = m2.w;
+        Mat out = new Mat(n, d);
+        double[] outw = out.w;
 
-            for (var i = 0; i < n; i++) { // loop over rows of m1
-                var m1i = m1d * i;
-                for (var j = 0; j < m2d; j++) { // loop over cols of m2
-                    var dot = 0.0;
-                    for (var k = 0; k < m1d; k++) // dot product loop
+            for (int i = 0; i < n; i++) { // loop over rows of m1
+                int m1i = m1d * i;
+                for (int j = 0; j < m2d; j++) { // loop over cols of m2
+                    double dot = 0.0;
+                    for (int k = 0; k < m1d; k++) // dot product loop
                         dot += m1w[m1i + k] * m2w[m2d * k + j];
 
                     outw[d * i + j] = dot;
@@ -62,15 +62,15 @@ class MatrixTransform {
     }
 
     Mat add(Mat mat1, Mat mat2) {
-        var m1W = mat1.w;
-        var m2W = mat2.w;
+        double[] m1W = mat1.w;
+        double[] m2W = mat2.w;
         assert m1W.length == m2W.length;
 
-        var out = new Mat(mat1.n, mat1.d);
-        var bound = m1W.length;
-        var outw = out.w;
+        Mat out = new Mat(mat1.n, mat1.d);
+        int bound = m1W.length;
+        double[] outw = out.w;
 
-        for (var i = 0; i < bound; i++)
+        for (int i = 0; i < bound; i++)
             outw[i] = m1W[i] + m2W[i];
 
         if (this.needsBackprop)
@@ -106,22 +106,22 @@ class MatrixTransform {
 
         private static void mulBack(Mat m1, Mat m2, Mat out) {
 
-            var n = m1.n;
-            var m1d = m1.d;
-            var m2d = m2.d;
-            var m1w = m1.w;
-            var m2w = m2.w;
-            var m1dw = m1.dw;
-            var m2dw = m2.dw;
-            var outdw = out.dw;
+            int n = m1.n;
+            int m1d = m1.d;
+            int m2d = m2.d;
+            double[] m1w = m1.w;
+            double[] m2w = m2.w;
+            double[] m1dw = m1.dw;
+            double[] m2dw = m2.dw;
+            double[] outdw = out.dw;
 
-            for (var i = 0; i < n; i++) {
-                for (var j = 0; j < m2d; j++) {
-                    var b = outdw[m2d * i + j];
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < m2d; j++) {
+                    double b = outdw[m2d * i + j];
                     if (b!=0) {
-                        for (var k = 0; k < m1d; k++) {
-                            var mm1 = m1d * i + k;
-                            var mm2 = m2d * k + j;
+                        for (int k = 0; k < m1d; k++) {
+                            int mm1 = m1d * i + k;
+                            int mm2 = m2d * k + j;
                             m1dw[mm1] += m2w[mm2] * b;
                             m2dw[mm2] += m1w[mm1] * b;
                         }
@@ -131,10 +131,10 @@ class MatrixTransform {
         }
 
         private static void addBack(Mat mat1, Mat mat2, Mat out) {
-            var bound = mat1.w.length;
+            int bound = mat1.w.length;
             double[] m1DW = mat1.dw,  m2DW = mat2.dw, outDW = out.dw;
-            for (var i = 0; i < bound; i++) {
-                var dwi = outDW[i];
+            for (int i = 0; i < bound; i++) {
+                double dwi = outDW[i];
                 if (dwi != 0) {
                     m1DW[i] += dwi;
                     m2DW[i] += dwi;
@@ -143,9 +143,9 @@ class MatrixTransform {
         }
 
         private static void tanhBack(Mat mat, Mat out) {
-            var bound = mat.w.length;
+            int bound = mat.w.length;
             double[] matdw = mat.dw, outW = out.w, outDW = out.dw;
-            for (var i = 0; i < bound; i++)
+            for (int i = 0; i < bound; i++)
                 matdw[i] += (1 - Util.sqr(outW[i])) * outDW[i];
         }
 

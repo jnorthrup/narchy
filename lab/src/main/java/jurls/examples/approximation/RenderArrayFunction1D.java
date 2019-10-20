@@ -24,7 +24,7 @@ public class RenderArrayFunction1D implements RenderFunction1D {
 
     @Override
     public double compute(double x) {
-        var i = (int) Math.round(x * (ys.length - 1));
+        int i = (int) Math.round(x * (ys.length - 1));
         if(i >= ys.length){
             return 0;
         }

@@ -31,7 +31,7 @@ import jake2.qcommon.sizebuf_t;
 public class client_t {
 
 	public client_t() {
-		for (var n = 0; n < Defines.UPDATE_BACKUP; n++) {
+		for (int n = 0; n < Defines.UPDATE_BACKUP; n++) {
 			frames[n] = new client_frame_t();
 		}
 	}

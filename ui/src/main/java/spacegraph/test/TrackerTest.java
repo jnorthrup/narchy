@@ -96,12 +96,12 @@ public class TrackerTest extends VideoSurface {
     public Surface finger(Finger finger) {
         boolean reset ;
         if ((reset=finger.pressedNow(2)) || finger.pressedNow(0)) {
-            var p = finger.posRelative(innerBounds());
+            v2 p = finger.posRelative(innerBounds());
             p.scaled(frame.width,frame.height);
-            var ch = 0.15f;
-            var cw = 0.15f;
+            float ch = 0.15f;
+            float cw = 0.15f;
             float x = p.x, y = p.y, w = frame.width*cw, h = frame.height*ch;
-            var location = new Quadrilateral_F64();
+            Quadrilateral_F64 location = new Quadrilateral_F64();
             location.setA(new Point2D_F64(x-w/2, y-h/2));
             location.setB(new Point2D_F64(x+w/2, y-h/2));
             location.setC(new Point2D_F64(x+w/2, y+h/2));
@@ -118,18 +118,18 @@ public class TrackerTest extends VideoSurface {
     @Override
     protected void renderContent(ReSurface r) {
         super.renderContent(r);
-        var _l = location;
+        Quadrilateral_F64 _l = location;
         if (_l != null) {
             if (tracking) {
                 float w = frame.width;
                 float h = frame.height;
                 r.on((g) -> {
-                    var i = innerBounds();
-                    var l = location;
-                    var a = i.normalize(new v2((float) l.a.x / w, (float) (l.a.y) / h));
-                    var b = i.normalize(new v2((float) l.b.x / w, (float) (l.b.y) / h));
-                    var c = i.normalize(new v2((float) l.c.x / w, (float) (l.c.y) / h));
-                    var d = i.normalize(new v2((float) l.d.x / w, (float) (l.d.y) / h));
+                    RectFloat i = innerBounds();
+                    Quadrilateral_F64 l = location;
+                    v2 a = i.normalize(new v2((float) l.a.x / w, (float) (l.a.y) / h));
+                    v2 b = i.normalize(new v2((float) l.b.x / w, (float) (l.b.y) / h));
+                    v2 c = i.normalize(new v2((float) l.c.x / w, (float) (l.c.y) / h));
+                    v2 d = i.normalize(new v2((float) l.d.x / w, (float) (l.d.y) / h));
                     g.glLineWidth(4);
                     g.glColor3f(1, 1, 1);
                     Draw.line(a.x, a.y, b.x, b.y, g);
@@ -143,7 +143,7 @@ public class TrackerTest extends VideoSurface {
     }
 
     protected ImageBase frame() {
-        var ii = in.image;
+        BufferedImage ii = in.image;
         if (ii != null) {
             ConvertBufferedImage.convertFrom(ii, true, frame);
         }

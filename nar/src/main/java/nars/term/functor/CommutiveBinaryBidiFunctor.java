@@ -19,7 +19,7 @@ public abstract class CommutiveBinaryBidiFunctor extends BinaryBidiFunctor {
 
     public static Term the(Atomic func, Term x, Term y) {
         if (x.compareTo(y) > 0) {
-            var z = x;
+            Term z = x;
             x = y;
             y = z;
         }
@@ -30,7 +30,7 @@ public abstract class CommutiveBinaryBidiFunctor extends BinaryBidiFunctor {
     protected Term apply2(Evaluation e, Term x, Term y) {
         if (x.compareTo(y) > 0) {
             //return $.func((Atomic) target(), y, x);
-            var z = x;
+            Term z = x;
             x = y;
             y = z;
         }

@@ -67,7 +67,7 @@ public abstract class CauseChannel<X extends Prioritizable>  {
             case 0: return;
             case 1: accept(xx[0], target); break;
             default: {
-                for (var x : xx)
+                for (X x : xx)
                     preAccept(x);
                 target.acceptAll(xx);
                 break;

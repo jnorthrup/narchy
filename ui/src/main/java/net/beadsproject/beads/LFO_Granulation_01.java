@@ -9,7 +9,7 @@ import net.beadsproject.beads.ugens.*;
 public class LFO_Granulation_01 {
     public static void main(String[] args) {
 
-        var ac = new AudioContext();
+        AudioContext ac = new AudioContext();
 
         
         Sample sourceSample = null;
@@ -31,13 +31,13 @@ public class LFO_Granulation_01 {
         }
 
 
-        var gsp = new GranularSamplePlayer(ac, sourceSample);
+        GranularSamplePlayer gsp = new GranularSamplePlayer(ac, sourceSample);
 
         
         gsp.setLoopType(SamplePlayer.LoopType.LOOP_FORWARDS);
 
 
-        var wpGrainDurationLFO = new WavePlayer(ac, 0.03f, WaveFactory.SINE);
+        WavePlayer wpGrainDurationLFO = new WavePlayer(ac, 0.03f, WaveFactory.SINE);
         var grainDurationLFO = new FuncGen(wpGrainDurationLFO) {
             @Override
             public float floatValueOf(float[] x) {
@@ -49,7 +49,7 @@ public class LFO_Granulation_01 {
         gsp.setGrainSize(grainDurationLFO);
 
 
-        var wpGrainIntervalLFO = new WavePlayer(ac, 0.02f, WaveFactory.SINE);
+        WavePlayer wpGrainIntervalLFO = new WavePlayer(ac, 0.02f, WaveFactory.SINE);
         var grainIntervalLFO = new FuncGen(wpGrainIntervalLFO) {
             @Override
             public float floatValueOf(float[] x) {
@@ -63,7 +63,7 @@ public class LFO_Granulation_01 {
         gsp.setRandomness(new Static(ac, 10.0f));
 
 
-        var gain = new Gain(ac, 1, 0.5f);
+        Gain gain = new Gain(ac, 1, 0.5f);
         gain.in(gsp);
 
         

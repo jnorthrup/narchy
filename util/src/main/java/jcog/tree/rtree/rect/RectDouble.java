@@ -39,12 +39,12 @@ public class RectDouble implements HyperRegion, Comparable<RectDouble> {
 
     public RectDouble(double x1, double y1, double x2, double y2) {
         if (x2 < x1) {
-            var t = x2;
+            double t = x2;
             x2 = x1;
             x1 = t;
         }
         if (y2 < y1) {
-            var t = y2;
+            double t = y2;
             y2 = y1;
             y1 = t;
         }
@@ -61,7 +61,7 @@ public class RectDouble implements HyperRegion, Comparable<RectDouble> {
 		} else {
             minX = p2.x;
 		}
-        var maxX = p2.x;
+        double maxX = p2.x;
 
         double minY;
         if (p1.y < p2.y) {
@@ -69,7 +69,7 @@ public class RectDouble implements HyperRegion, Comparable<RectDouble> {
 		} else {
             minY = p2.y;
 		}
-        var maxY = p2.y;
+        double maxY = p2.y;
 
         min = new Double2D(minX, minY);
         max = new Double2D(maxX, maxY);
@@ -78,11 +78,11 @@ public class RectDouble implements HyperRegion, Comparable<RectDouble> {
 
     @Override
     public RectDouble mbr(HyperRegion r) {
-        var r2 = (RectDouble) r;
-        var minX = Math.min(min.x, r2.min.x);
-        var minY = Math.min(min.y, r2.min.y);
-        var maxX = Math.max(max.x, r2.max.x);
-        var maxY = Math.max(max.y, r2.max.y);
+        RectDouble r2 = (RectDouble) r;
+        double minX = Math.min(min.x, r2.min.x);
+        double minY = Math.min(min.y, r2.min.y);
+        double maxX = Math.max(max.x, r2.max.x);
+        double maxY = Math.max(max.y, r2.max.y);
 
         return new RectDouble(minX, minY, maxX, maxY);
 
@@ -94,8 +94,8 @@ public class RectDouble implements HyperRegion, Comparable<RectDouble> {
     }
 
     public Double2D center() {
-        var dx = center(0);
-        var dy = center(1);
+        double dx = center(0);
+        double dy = center(1);
 
         return new Double2D(dx, dy);
     }
@@ -113,7 +113,7 @@ public class RectDouble implements HyperRegion, Comparable<RectDouble> {
 
     @Override
     public double coord(int dimension, boolean maxOrMin) {
-        var e = (maxOrMin ? max : min);
+        Double2D e = (maxOrMin ? max : min);
         assert(dimension==0 || dimension==1);
         return dimension==0 ? e.x : e.y;
     }
@@ -133,7 +133,7 @@ public class RectDouble implements HyperRegion, Comparable<RectDouble> {
 
     @Override
     public boolean contains( HyperRegion r) {
-        var r2 = (RectDouble) r;
+        RectDouble r2 = (RectDouble) r;
 
         return min.x <= r2.min.x &&
                 max.x >= r2.max.x &&
@@ -144,7 +144,7 @@ public class RectDouble implements HyperRegion, Comparable<RectDouble> {
 
     @Override
     public boolean intersects(HyperRegion r) {
-        var r2 = (RectDouble) r;
+        RectDouble r2 = (RectDouble) r;
 
         return !((min.x > r2.max.x) || (r2.min.x > max.x) ||
                 (min.y > r2.max.y) || (r2.min.y > max.y));
@@ -152,8 +152,8 @@ public class RectDouble implements HyperRegion, Comparable<RectDouble> {
 
     @Override
     public double cost() {
-        var dx = max.x - min.x;
-        var dy = max.y - min.y;
+        double dx = max.x - min.x;
+        double dy = max.y - min.y;
         return Math.abs(dx * dy);
     }
 
@@ -163,7 +163,7 @@ public class RectDouble implements HyperRegion, Comparable<RectDouble> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        var rect2D = (RectDouble) o;
+        RectDouble rect2D = (RectDouble) o;
 
         return Util.equals(min.x, rect2D.min.x, Spatialization.EPSILON) &&
                 Util.equals(max.x, rect2D.max.x, Spatialization.EPSILON) &&
@@ -173,7 +173,7 @@ public class RectDouble implements HyperRegion, Comparable<RectDouble> {
 
     @Override
     public int hashCode() {
-        var result = min.hashCode();
+        int result = min.hashCode();
         result = 31 * result + max.hashCode();
         return result;
     }
@@ -195,7 +195,7 @@ public class RectDouble implements HyperRegion, Comparable<RectDouble> {
 
     @Override
     public int compareTo(RectDouble o) {
-        var a = min.compareTo(o.min);
+        int a = min.compareTo(o.min);
         if (a != 0) return a;
         return max.compareTo(o.max);
     }

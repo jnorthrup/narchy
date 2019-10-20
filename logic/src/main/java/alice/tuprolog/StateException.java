@@ -19,7 +19,7 @@ public class StateException extends State {
 
     @Override
     State run(PrologSolve e) {
-        var errorType = e.currentContext.currentGoal.name();
+        String errorType = e.currentContext.currentGoal.name();
         if ("throw".equals(errorType))
             prologError(e);
         else
@@ -28,7 +28,7 @@ public class StateException extends State {
     }
 
     private void prologError(PrologSolve e) {
-        var errorTerm = e.currentContext.currentGoal.sub(0);
+        Term errorTerm = e.currentContext.currentGoal.sub(0);
         e.currentContext = e.currentContext.fatherCtx;
         if (e.currentContext == null) {
             
@@ -37,7 +37,7 @@ public class StateException extends State {
             return;
         }
 
-        var c = e.run;
+        PrologRun c = e.run;
         while (true) {
             
             
@@ -51,13 +51,13 @@ public class StateException extends State {
                 c.cut();
 
 
-                var unifiedVars = e.currentContext.trailingVars.head;
+                Collection<Var> unifiedVars = e.currentContext.trailingVars.head;
                 e.currentContext.currentGoal.sub(1).unify(unifiedVars,
                         unifiedVars, errorTerm);
 
 
-                var handlerTerm = e.currentContext.currentGoal.sub(2);
-                var curHandlerTerm = handlerTerm.term();
+                Term handlerTerm = e.currentContext.currentGoal.sub(2);
+                Term curHandlerTerm = handlerTerm.term();
                 if (!(curHandlerTerm instanceof Struct)) {
                     e.nextState = PrologRun.END_FALSE;
                     return;
@@ -69,9 +69,9 @@ public class StateException extends State {
                 
                 if (handlerTerm != curHandlerTerm)
                     handlerTerm = new Struct("call", curHandlerTerm);
-                var handler = (Struct) handlerTerm;
+                Struct handler = (Struct) handlerTerm;
                 c.identify(handler);
-                var sgt = new SubGoalTree();
+                SubGoalTree sgt = new SubGoalTree();
                 sgt.add(handler);
                 c.pushSubGoal(sgt);
                 e.currentContext.currentGoal = handler;
@@ -93,9 +93,9 @@ public class StateException extends State {
     }
 
     private void javaException(PrologSolve e) {
-        var c = e.run;
-        var cg = e.currentContext.currentGoal;
-        var exceptionTerm = cg.subs() > 0 ? cg.sub(0) : null;
+        PrologRun c = e.run;
+        Struct cg = e.currentContext.currentGoal;
+        Term exceptionTerm = cg.subs() > 0 ? cg.sub(0) : null;
         e.currentContext = e.currentContext.fatherCtx;
         if (e.currentContext == null) {
             
@@ -117,8 +117,8 @@ public class StateException extends State {
                 c.cut();
 
 
-                var unifiedVars = e.currentContext.trailingVars.head;
-                var handlerTerm = javaUnify(e.currentContext.currentGoal
+                Collection<Var> unifiedVars = e.currentContext.trailingVars.head;
+                Term handlerTerm = javaUnify(e.currentContext.currentGoal
                         .sub(1), exceptionTerm, unifiedVars);
                 if (handlerTerm == null) {
                     e.nextState = PrologRun.END_FALSE;
@@ -126,17 +126,17 @@ public class StateException extends State {
                 }
 
 
-                var curHandlerTerm = handlerTerm.term();
+                Term curHandlerTerm = handlerTerm.term();
                 if (!(curHandlerTerm instanceof Struct)) {
                     e.nextState = PrologRun.END_FALSE;
                     return;
                 }
-                var finallyTerm = e.currentContext.currentGoal.sub(2);
-                var curFinallyTerm = finallyTerm.term();
+                Term finallyTerm = e.currentContext.currentGoal.sub(2);
+                Term curFinallyTerm = finallyTerm.term();
 
-                var isFinally = true;
+                boolean isFinally = true;
                 if (curFinallyTerm instanceof NumberTerm.Int) {
-                    var finallyInt = (NumberTerm.Int) curFinallyTerm;
+                    NumberTerm.Int finallyInt = (NumberTerm.Int) curFinallyTerm;
                     if (finallyInt.intValue() == 0)
                         isFinally = false;
                     else {
@@ -158,12 +158,12 @@ public class StateException extends State {
                 if (finallyTerm != curFinallyTerm)
                     finallyTerm = new Struct("call", curFinallyTerm);
 
-                var handler = (Struct) handlerTerm;
+                Struct handler = (Struct) handlerTerm;
                 c.identify(handler);
-                var sgt = new SubGoalTree();
+                SubGoalTree sgt = new SubGoalTree();
                 sgt.add(handler);
                 if (isFinally) {
-                    var finallyStruct = (Struct) finallyTerm;
+                    Struct finallyStruct = (Struct) finallyTerm;
                     c.identify(finallyStruct);
                     sgt.add(finallyStruct);
                 }
@@ -192,15 +192,15 @@ public class StateException extends State {
     private static boolean javaMatch(Term arg1, Term exceptionTerm) {
         if (!arg1.isList())
             return false;
-        var list = (Struct) arg1;
+        Struct list = (Struct) arg1;
         if (list.isEmptyList())
             return false;
         Iterator<? extends Term> it = list.listIterator();
         while (it.hasNext()) {
-            var nextTerm = it.next();
+            Term nextTerm = it.next();
             if (!nextTerm.isCompound())
                 continue;
-            var element = (Struct) nextTerm;
+            Struct element = (Struct) nextTerm;
             if (!",".equals(element.name()))
                 continue;
             if (element.subs() != 2)
@@ -215,13 +215,13 @@ public class StateException extends State {
     
     
     private static Term javaUnify(Term arg1, Term exceptionTerm, Collection<Var> unifiedVars) {
-        var list = (Struct) arg1;
+        Struct list = (Struct) arg1;
         Iterator<? extends Term> it = list.listIterator();
         while (it.hasNext()) {
-            var nextTerm = it.next();
+            Term nextTerm = it.next();
             if (!nextTerm.isCompound())
                 continue;
-            var element = (Struct) nextTerm;
+            Struct element = (Struct) nextTerm;
             if (!",".equals(element.name()))
                 continue;
             if (element.subs() != 2)

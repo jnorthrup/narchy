@@ -23,22 +23,22 @@ public class FloatFirstOrderDifference implements FloatSupplier {
 
     @Override
     public float asFloat() {
-        var x = update();
+        float x = update();
         if (nanIfZero && x == 0)
             return Float.NaN;
         return x;
     }
 
     private float update() {
-        var now = clock.getAsLong();
-        var before = lastUpdate.get();
+        long now = clock.getAsLong();
+        long before = lastUpdate.get();
         if (!lastUpdate.compareAndSet(before, now)) {
             return lastDifference; 
         }
 
-        var currentValue = in.asFloat();
+        float currentValue = in.asFloat();
 
-        var lastValue = this.lastValue;
+        float lastValue = this.lastValue;
 
         this.lastValue = currentValue;
 

@@ -20,21 +20,21 @@ public class TreeMap2D<X> extends DynamicLayout2D<X> {
 
     @Override
     protected void layout(Graph2D<X> g, float dtS) {
-        var b = g.bounds;
+        RectFloat b = g.bounds;
         //sort descending
         nodes.sortThisByFloat((a)-> {
             a.w = b.w;
             a.h = b.h;
             return -a.node.pri;
         });
-        var end = nodes.size() - 1;
+        int end = nodes.size() - 1;
         total = areaSum(0, end);
 
-        var newBounds = layout(0, end, b);
+        RectFloat newBounds = layout(0, end, b);
 
         //normalize
-        var nw = b.w / newBounds.w;
-        var nh = b.h / newBounds.h;
+        float nw = b.w / newBounds.w;
+        float nh = b.h / newBounds.h;
         nodes.forEach(n -> {
             n.x = b.x + (n.x - b.x) * nw;
             n.y = b.y + (n.y - b.y) * nh;
@@ -55,7 +55,7 @@ public class TreeMap2D<X> extends DynamicLayout2D<X> {
             nodes.get(start).set(bounds);
         }
 
-        var newBounds = bounds;
+        RectFloat newBounds = bounds;
         this.mid = start;
         while (mid < end) {
             if (highestAspect(start, mid, bounds) > highestAspect(start, mid + 1, bounds)) {
@@ -71,12 +71,12 @@ public class TreeMap2D<X> extends DynamicLayout2D<X> {
 
     float highestAspect(int start, int end, RectFloat bounds) {
 
-        var b = layoutRow(start, end, bounds);
+        RectFloat b = layoutRow(start, end, bounds);
 
-        var max = Float.NEGATIVE_INFINITY;
-        for (var i = start; i <= end; i++) {
-            var ni = this.nodes.get(i);
-            var r = ni.aspectExtreme();
+        float max = Float.NEGATIVE_INFINITY;
+        for (int i = start; i <= end; i++) {
+            MutableRectFloat<X> ni = this.nodes.get(i);
+            float r = ni.aspectExtreme();
             if (r > max) {
                 max = r;
             }
@@ -85,23 +85,23 @@ public class TreeMap2D<X> extends DynamicLayout2D<X> {
     }
 
     RectFloat layoutRow(int start, int end, RectFloat bounds) {
-        var isHorizontal = bounds.w < bounds.h;
+        boolean isHorizontal = bounds.w < bounds.h;
 
-        var rowSize = areaSum(start, end);
-        var rowRatio = rowSize / total;
+        float rowSize = areaSum(start, end);
+        float rowRatio = rowSize / total;
        // assert(rowRatio==rowRatio): start + ".." + end + ": " + rowSize + " " + total;
         float offset = 0;
 
-        for (var i = start; i <= end; i++) {
+        for (int i = start; i <= end; i++) {
             MutableRectFloat x = this.nodes.get(i);
 
-            var p = x.node.pri;
+            float p = x.node.pri;
             if (p != p || p < ScalarValue.EPSILON) {
                 x.size(0.1f,0.1f);
                 continue;
             }
 
-            var ratio = p / rowSize;
+            float ratio = p / rowSize;
 
 
             assert(ratio==ratio): p + " " + rowSize;
@@ -133,7 +133,7 @@ public class TreeMap2D<X> extends DynamicLayout2D<X> {
 
     float areaSum(int start, int end) {
         float sum = 0;
-        for (var i = start; i <= end; i++)
+        for (int i = start; i <= end; i++)
             sum += nodes.get(i).node.pri;
         return sum;
     }

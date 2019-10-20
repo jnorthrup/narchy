@@ -28,7 +28,7 @@ public class Rule1DTotal {
 		iClo = 2; 
 		isCentr = true; 
 		iRng = 2; 
-		for (var i = 0; i <= MAX_RANGE * 2 + 1; i++) {
+		for (int i = 0; i <= MAX_RANGE * 2 + 1; i++) {
 			rulesS[i] = false; 
 			rulesB[i] = false; 
 		}
@@ -41,9 +41,9 @@ public class Rule1DTotal {
 
         ResetToDefaults();
 
-		var st = new StringTokenizer(sStr, ",", true);
+        StringTokenizer st = new StringTokenizer(sStr, ",", true);
 		while (st.hasMoreTokens()) {
-			var sTok = st.nextToken().toUpperCase();
+            String sTok = st.nextToken().toUpperCase();
 
 
             int iTmp;
@@ -103,10 +103,10 @@ public class Rule1DTotal {
 
         Validate();
 
-		var sBff = 'R' + String.valueOf(iRng);
+        String sBff = 'R' + String.valueOf(iRng);
 
 
-		var ih = isHist ? iClo : 0;
+        int ih = isHist ? iClo : 0;
 		sBff = sBff + ",C" + ih;
 
 
@@ -147,15 +147,15 @@ public class Rule1DTotal {
 	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState, MJBoard mjb) {
-		var xVector = new int[21];
+        int[] xVector = new int[21];
 
-		var ary1DOfs = iRng;
+        int ary1DOfs = iRng;
 
-		var i1DNextRow = mjb.i1DLastRow + 1;
+        int i1DNextRow = mjb.i1DLastRow + 1;
 		if (i1DNextRow >= sizY)
 			i1DNextRow = 0;
 
-		var OneRow = new short[sizX + 1 + 2 * ary1DOfs];
+        short[] OneRow = new short[sizX + 1 + 2 * ary1DOfs];
         int ic;
         for (ic = 0; ic < sizX; ic++)
 			OneRow[ic + ary1DOfs] = crrState[ic][mjb.i1DLastRow]; 
@@ -169,8 +169,8 @@ public class Rule1DTotal {
 
 		for (ic = 0; ic < sizX; ic++) 
 		{
-			var bOldVal = OneRow[ic + ary1DOfs];
-			var iCnt = 0;
+            short bOldVal = OneRow[ic + ary1DOfs];
+            int iCnt = 0;
             int i;
             short bNewVal;
             if (isHist)
@@ -251,7 +251,7 @@ public class Rule1DTotal {
 
         mjb.i1DLastRow = i1DNextRow;
 
-		var modCnt = 1;
+        int modCnt = 1;
         return modCnt;
 	}
 }

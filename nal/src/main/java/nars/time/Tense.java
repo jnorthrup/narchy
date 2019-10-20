@@ -83,7 +83,7 @@ public enum Tense {
     /** direction == -1 down, 0 = any, +1 = up */
     public static long dither(long x, int dither, int direction) {
         if (dither > 1) {
-            var y = dither(x, dither);
+            long y = dither(x, dither);
             switch (direction) {
                 case -1:
                     if (y > x)
@@ -127,7 +127,7 @@ public enum Tense {
 
     /** modifies the input array, and returns it */
     public static long[] dither(long[] t, int dt) {
-        var s = t[0];
+        long s = t[0];
         if (s == ETERNAL) {
             assert(t[1] == ETERNAL);
             return t;
@@ -174,9 +174,9 @@ public enum Tense {
         long start = MAX_VALUE, end = Long.MIN_VALUE;
 
         while (t.hasNext()) {
-            var x = t.next();
+            TaskRegion x = t.next();
             //if (x == null) continue;
-            var xs = x.start();
+            long xs = x.start();
             if (xs != ETERNAL) {
                 start = Math.min(xs, start);
                 end = Math.max(x.end(), end);
@@ -194,15 +194,15 @@ public enum Tense {
 
         for (TaskRegion x : t) {
 
-            var xs = x.start();
+            long xs = x.start();
             if (xs != ETERNAL) {
-                var xe = x.end();
+                long xe = x.end();
                 if (start==MAX_VALUE) {
                     //first
                     start = xs;
                     end = xe;
                 } else {
-                    @Nullable var l = Longerval.intersection(start, end, xs, xe);
+                    @Nullable Longerval l = Longerval.intersection(start, end, xs, xe);
                     if (l==null)
                         return null;
 
@@ -247,7 +247,7 @@ public enum Tense {
      * assumes that at least one of the items is non-eternal.
      * */
     public static long[] union(int dtDither, Iterable<? extends TaskRegion> tasks) {
-        var u = Tense.union(tasks.iterator());
+        long[] u = Tense.union(tasks.iterator());
 //        long unionRange = u[1] - u[0];
 //        float rangeThreshold = Param.REVISION_UNION_THRESHOLD;
 //        if (unionRange > Math.ceil(rangeThreshold * Util.max(t -> t.start()==ETERNAL ?  0 : t.range(), tasks))) {
@@ -274,8 +274,8 @@ public enum Tense {
         if (d < 1)
             throw new WTF("dtDither < 1");
 
-        var s = x.start();
-        var e = x.end();
+        long s = x.start();
+        long e = x.end();
         if (s != ETERNAL) {
             if (s == TIMELESS)
                 throw WTF.WTF(x + " has start=TIMELESS");
@@ -296,7 +296,7 @@ public enum Tense {
     public static void assertDithered(Term t, int d) {
         if (d > 1 && t.hasAny(Op.Temporal)) {
             t.recurseTerms(z -> z.hasAny(Op.Temporal), xx -> {
-                var zdt = xx.dt();
+                int zdt = xx.dt();
                 if (!Tense.dtSpecial(zdt)) {
                     if (zdt != Tense.dither(zdt, d))
                         throw WTF.WTF(t + " contains non-dithered DT in subterm " + xx);

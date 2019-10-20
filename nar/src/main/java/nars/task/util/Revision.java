@@ -26,10 +26,10 @@ public enum Revision {;
     /** classic eternal revision */
     public static @Nullable Truth revise(/*@NotNull*/ Truthed a, /*@NotNull*/ Truthed b, float factor, float minEvi) {
 
-        var ae = a.evi();
-        var be = b.evi();
-        var w = ae + be;
-        var e = w * factor;
+        double ae = a.evi();
+        double be = b.evi();
+        double w = ae + be;
+        double e = w * factor;
 
         return e <= minEvi ?
                 null :
@@ -132,26 +132,26 @@ public enum Revision {;
     /** truth revision task merge strategy */
     public static @Nullable <T extends TaskRegion> Pair<Task, TruthProjection> _merge(T[] tasks, int n, int minComponents, boolean ditherTruth, NAL nal) {
 
-        var p = NAL.newProjection(TIMELESS, TIMELESS).ditherDT(nal).add(n, tasks);
+        TruthProjection p = NAL.newProjection(TIMELESS, TIMELESS).ditherDT(nal).add(n, tasks);
 
         if (!p.minComponents(minComponents).commit(false, nal))
             return null;
 
-        var eviMin = NAL.belief.REVISION_MIN_EVI_FILTER ? nal.confMin.evi() : NAL.truth.EVI_MIN;
+        double eviMin = NAL.belief.REVISION_MIN_EVI_FILTER ? nal.confMin.evi() : NAL.truth.EVI_MIN;
 
-        var truth = p.get(eviMin, ditherTruth, nal);
+        Truth truth = p.get(eviMin, ditherTruth, nal);
         if (truth == null)
             return null;
 
-        var punc = p.punc();
-        var c = Task.taskValid(p.term, punc, truth, false);
+        byte punc = p.punc();
+        Term c = Task.taskValid(p.term, punc, truth, false);
         Task y = new TemporalTask(c, punc, truth, nal.time(), p.start(), p.end(), p.stampSample(STAMP_CAPACITY, nal.random()));
         return pair(y, p);
     }
 
     /** budget a revision result */
     public static Task afterMerge(Pair<Task, TruthProjection> AB) {
-        var m = AB.getOne();
+        Task m = AB.getOne();
         TemporalBeliefTable.budget(AB.getTwo(), m);
         return m;
     }

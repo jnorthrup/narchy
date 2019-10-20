@@ -28,7 +28,12 @@ class TrieSequencerByteArray implements TrieSequencer<byte[]> {
 
     @Override
     public int matches(byte[] sequenceA, int indexA, byte[] sequenceB, int indexB, int count) {
-        return IntStream.range(0, count).filter(i -> sequenceA[indexA + i] != sequenceB[indexB + i]).findFirst().orElse(count);
+        for (int i = 0; i < count; i++) {
+            if (sequenceA[indexA + i] != sequenceB[indexB + i]) {
+                return i;
+            }
+        }
+        return count;
 
     }
 

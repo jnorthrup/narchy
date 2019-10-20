@@ -83,7 +83,7 @@ public class MJDiversities {
 
 		try {
 
-			var itm = DIV_NONE;
+            int itm = DIV_NONE;
 			if (sStr.startsWith("#SYSTEM"))
 				itm = DIV_SYSTEM;
 			else if (sStr.startsWith("#NOISE"))
@@ -97,9 +97,9 @@ public class MJDiversities {
 
 			if (itm != DIV_NONE) {
 				ResetItem(itm);
-				var st = new StringTokenizer(sStr, ",", false);
+                StringTokenizer st = new StringTokenizer(sStr, ",", false);
 				while (st.hasMoreTokens()) {
-					var sTok = st.nextToken().toUpperCase();
+                    String sTok = st.nextToken().toUpperCase();
 					switch (itm) {
 						case DIV_SYSTEM :
 							if (sTok.startsWith("ACT="))
@@ -172,7 +172,7 @@ public class MJDiversities {
 	
 	
 	public String ItemAsString(int itm) {
-		var sRet = "";
+        String sRet = "";
 
 		switch (itm) {
 			case DIV_SYSTEM :
@@ -216,7 +216,7 @@ public class MJDiversities {
 	
 	
 	public boolean ItemActive(int itm) {
-		var bRet = false;
+        boolean bRet = false;
 		switch (itm) {
 			case DIV_SYSTEM :
 				bRet = m_Enabled;
@@ -244,7 +244,7 @@ public class MJDiversities {
 	public void Perform(boolean BeforePass, MJBoard mjb) {
 		int iCol, iRow;
 		int minX, minY;
-		var ifRedraw = false;
+        boolean ifRedraw = false;
 
 		
 		if (m_BHoleActive) {
@@ -271,7 +271,7 @@ public class MJDiversities {
 				&& (m_NoiseCells > 0)) {
 			if ((mjb.Cycle % m_NoiseCycles) == 0) {
 				ifRedraw = true; 
-				for (var i = 1; i <= m_NoiseCells; i++) {
+				for (int i = 1; i <= m_NoiseCells; i++) {
 					iCol = (int) Math
 							.ceil(Math.random() * (mjb.UnivSize.x - 1));
 					iRow = (int) Math
@@ -283,7 +283,7 @@ public class MJDiversities {
 
 		
 		if (StrIn.m_Active && BeforePass) {
-			var iSiz = StrIn.m_Vals.size();
+            int iSiz = StrIn.m_Vals.size();
 			if (iSiz > 0) 
 			{
 				ifRedraw = true; 

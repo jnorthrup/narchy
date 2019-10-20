@@ -18,11 +18,11 @@ import java.util.Arrays;
 
     public long[] toSortedArray() {
 
-        var s = size();
+        int s = size();
         if (s == 0)
             return ArrayUtil.EMPTY_LONG_ARRAY;
 
-        var l = toArray();
+        long[] l = toArray();
         if (s > 1)
             Arrays.sort(l);
         return l;

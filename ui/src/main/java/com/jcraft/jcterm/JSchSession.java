@@ -41,9 +41,9 @@ public final class JSchSession {
     public static JSchSession getSession(String username, String password,
                                          String hostname, int port, UserInfo userinfo, Proxy proxy)
             throws JSchException {
-        var key = getPoolKey(username, hostname, port);
+        String key = getPoolKey(username, hostname, port);
         try {
-            var jschSession = (JSchSession) pool.get(key);
+            JSchSession jschSession = (JSchSession) pool.get(key);
             if (jschSession != null && !jschSession.getSession().isConnected()) {
                 pool.remove(key);
                 jschSession = null;
@@ -65,7 +65,7 @@ public final class JSchSession {
                 if (session == null)
                     throw new JSchException("The JSch service is not available");
 
-                var schSession = new JSchSession(session, key);
+                JSchSession schSession = new JSchSession(session, key);
                 pool.put(key, schSession);
 
                 return schSession;

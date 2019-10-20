@@ -25,7 +25,7 @@ public abstract class AudioSource implements DigitizedSignal {
         //int numChannels = line.getFormat().getChannels();
         bytesPerSample = line.getFormat().getFrameSize();//line.getFormat().getSampleSizeInBits()/8;
 
-        var audioBufferSamples = line.getBufferSize();
+        int audioBufferSamples = line.getBufferSize();
         preByteBuffer = new byte[audioBufferSamples * bytesPerSample];
 
     }
@@ -33,10 +33,10 @@ public abstract class AudioSource implements DigitizedSignal {
     @Override
     public boolean hasNext(int atleastSamples) {
 
-        var availableBytes = line.available();
+        int availableBytes = line.available();
 
 
-        var toDrain = availableBytes - (atleastSamples /* n buffers */ * bytesPerSample);
+        int toDrain = availableBytes - (atleastSamples /* n buffers */ * bytesPerSample);
         if (toDrain > 0) {
             while (toDrain % bytesPerSample > 0) toDrain--;
 
@@ -50,9 +50,9 @@ public abstract class AudioSource implements DigitizedSignal {
     }
 
     public static void print() {
-        var minfoSet = AudioSystem.getMixerInfo();
+        Mixer.Info[] minfoSet = AudioSystem.getMixerInfo();
 
-        for (var i : minfoSet)
+        for (Mixer.Info i : minfoSet)
             System.out.println(i);
     }
 
@@ -60,21 +60,21 @@ public abstract class AudioSource implements DigitizedSignal {
 
         List<AudioSource> ll = new FasterList();
 
-        var ii = AudioSystem.getMixerInfo();
-        for (var mixerInfo : ii) {
-            var mi = AudioSystem.getMixer(mixerInfo);
-            var mm = mi.getTargetLineInfo();
-            for (var M : mm) {
+        Mixer.Info[] ii = AudioSystem.getMixerInfo();
+        for (Mixer.Info mixerInfo : ii) {
+            Mixer mi = AudioSystem.getMixer(mixerInfo);
+            Line.Info[] mm = mi.getTargetLineInfo();
+            for (Line.Info M : mm) {
                 if (TargetDataLine.class.isAssignableFrom(M.getLineClass())) {
                     //System.out.println(mixerInfo + " " + M + " " + M.getLineClass());
                     try {
-                        var lm = (TargetDataLine) mi.getLine(M);
+                        TargetDataLine lm = (TargetDataLine) mi.getLine(M);
 
 
                         //lm.open();
 
 
-                        var f = lm.getFormat();
+                        AudioFormat f = lm.getFormat();
 //                        f = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, f.getSampleRate(),
 //                                f.getSampleSizeInBits(),
 //                                1 /* channels */,
@@ -160,7 +160,7 @@ public abstract class AudioSource implements DigitizedSignal {
 //            do {
 
 
-            var availableBytes = line.available();
+            int availableBytes = line.available();
 
             //logger.trace
             //System.out.println(available + "/" + capacity + " @ " + line.getMicrosecondPosition());
@@ -188,10 +188,10 @@ public abstract class AudioSource implements DigitizedSignal {
             //pad to bytes per sample
 
 
-            var readAtMost = capacitySamples * bytesPerSample;
+            int readAtMost = capacitySamples * bytesPerSample;
 
 
-            var toRead = Math.min(readAtMost, availableBytes);
+            int toRead = Math.min(readAtMost, availableBytes);
             if (toRead <= 0)
                 return 0;
 
@@ -202,7 +202,7 @@ public abstract class AudioSource implements DigitizedSignal {
             //synch time to realtime
             this._start = ((System.currentTimeMillis()*1000L) - line.getMicrosecondPosition())/1000L;
 
-            var nSamplesRead = audioBytesRead / bytesPerSample;
+            int nSamplesRead = audioBytesRead / bytesPerSample;
 
             decode(target, nSamplesRead);
 

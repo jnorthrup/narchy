@@ -54,8 +54,8 @@ public class Level {
         data = maps[1];
 
         if (parentLevel != null) {
-            for (var y = 0; y < h; y++)
-                for (var x = 0; x < w; x++) {
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++) {
                     if (parentLevel.getTile(x, y) == Tile.stairsDown) {
 
                         setTile(x, y, Tile.stairsUp, 0);
@@ -84,12 +84,12 @@ public class Level {
         }
 
         entitiesInTiles = new ArrayList[w * h];
-        for (var i = 0; i < w * h; i++) {
+        for (int i = 0; i < w * h; i++) {
             entitiesInTiles[i] = new ArrayList<>();
         }
 
         if (level == 1) {
-            var aw = new AirWizard();
+            AirWizard aw = new AirWizard();
             aw.x = w * 8;
             aw.y = h * 8;
             add(aw);
@@ -97,13 +97,13 @@ public class Level {
     }
 
     public void renderBackground(Screen screen, int xScroll, int yScroll) {
-        var w = (screen.w + 15) >> 4;
-        var h = (screen.h + 15) >> 4;
+        int w = (screen.w + 15) >> 4;
+        int h = (screen.h + 15) >> 4;
         screen.setOffset(xScroll, yScroll);
-        var yo = yScroll >> 4;
-        var xo = xScroll >> 4;
-        for (var y = yo; y <= h + yo; y++) {
-            for (var x = xo; x <= w + xo; x++) {
+        int yo = yScroll >> 4;
+        int xo = xScroll >> 4;
+        for (int y = yo; y <= h + yo; y++) {
+            for (int x = xo; x <= w + xo; x++) {
                 getTile(x, y).render(screen, this, x, y);
             }
         }
@@ -115,14 +115,14 @@ public class Level {
     public Player player;
 
     public void renderSprites(Screen screen, int xScroll, int yScroll) {
-        var w = (screen.w + 15) >> 4;
-        var h = (screen.h + 15) >> 4;
+        int w = (screen.w + 15) >> 4;
+        int h = (screen.h + 15) >> 4;
 
         screen.setOffset(xScroll, yScroll);
-        var yo = yScroll >> 4;
-        var xo = xScroll >> 4;
-        for (var y = yo; y <= h + yo; y++) {
-            for (var x = xo; x <= w + xo; x++) {
+        int yo = yScroll >> 4;
+        int xo = xScroll >> 4;
+        for (int y = yo; y <= h + yo; y++) {
+            for (int x = xo; x <= w + xo; x++) {
                 if (x < 0 || y < 0 || x >= this.w || y >= this.h) continue;
                 rowSprites.addAll(entitiesInTiles[x + y * this.w]);
             }
@@ -135,24 +135,24 @@ public class Level {
     }
 
     public void renderLight(Screen screen, int xScroll, int yScroll) {
-        var w = (screen.w + 15) >> 4;
-        var h = (screen.h + 15) >> 4;
+        int w = (screen.w + 15) >> 4;
+        int h = (screen.h + 15) >> 4;
 
         screen.setOffset(xScroll, yScroll);
-        var r = 4;
-        var yo = yScroll >> 4;
-        var xo = xScroll >> 4;
-        for (var y = yo - r; y <= h + yo + r; y++) {
-            for (var x = xo - r; x <= w + xo + r; x++) {
+        int r = 4;
+        int yo = yScroll >> 4;
+        int xo = xScroll >> 4;
+        for (int y = yo - r; y <= h + yo + r; y++) {
+            for (int x = xo - r; x <= w + xo + r; x++) {
                 if (x < 0 || y < 0 || x >= this.w || y >= this.h) continue;
-                var entities = entitiesInTiles[x + y * this.w];
-                for (var i = 0; i < entities.size(); i++) {
-                    var e = entities.get(i);
+                List<Entity> entities = entitiesInTiles[x + y * this.w];
+                for (int i = 0; i < entities.size(); i++) {
+                    Entity e = entities.get(i);
 
-                    var lr = e.getLightRadius();
+                    int lr = e.getLightRadius();
                     if (lr > 0) screen.renderLight(e.x - 1, e.y - 4, lr * 8);
                 }
-                var lr = getTile(x, y).getLightRadius(this, x, y);
+                int lr = getTile(x, y).getLightRadius(this, x, y);
                 if (lr > 0) screen.renderLight(x * 16 + 8, y * 16 + 8, lr * 8);
             }
         }
@@ -162,7 +162,7 @@ public class Level {
 
     private void sortAndRender(Screen screen, List<Entity> list) {
         Collections.sort(list, spriteSorter);
-        for (var i = 0; i < list.size(); i++) {
+        for (int i = 0; i < list.size(); i++) {
             list.get(i).render(screen);
         }
     }
@@ -201,8 +201,8 @@ public class Level {
 
     public void remove(Entity e) {
         entities.remove(e);
-        var xto = e.x >> 4;
-        var yto = e.y >> 4;
+        int xto = e.x >> 4;
+        int yto = e.y >> 4;
         removeEntity(xto, yto, e);
     }
 
@@ -217,18 +217,18 @@ public class Level {
     }
 
     public void trySpawn(int count) {
-        for (var i = 0; i < count; i++) {
+        for (int i = 0; i < count; i++) {
 
-            var maxLevel = 1;
+            int maxLevel = 1;
             if (depth < 0) {
                 maxLevel = (-depth) + 1;
             }
-            var minLevel = 1;
+            int minLevel = 1;
             if (depth > 0) {
                 minLevel = maxLevel = 4;
             }
 
-            var lvl = random.nextInt(maxLevel - minLevel + 1) + minLevel;
+            int lvl = random.nextInt(maxLevel - minLevel + 1) + minLevel;
             Mob mob;
             if (random.nextInt(2) == 0)
                 mob = new Slime(lvl);
@@ -244,15 +244,15 @@ public class Level {
     public void tick() {
         trySpawn(1);
 
-        for (var i = 0; i < w * h / 50; i++) {
-            var xt = random.nextInt(w);
-            var yt = random.nextInt(w);
+        for (int i = 0; i < w * h / 50; i++) {
+            int xt = random.nextInt(w);
+            int yt = random.nextInt(w);
             getTile(xt, yt).tick(this, xt, yt);
         }
-        for (var i = 0; i < entities.size(); i++) {
-            var e = entities.get(i);
-            var xto = e.x >> 4;
-            var yto = e.y >> 4;
+        for (int i = 0; i < entities.size(); i++) {
+            Entity e = entities.get(i);
+            int xto = e.x >> 4;
+            int yto = e.y >> 4;
 
             e.tick();
 
@@ -260,8 +260,8 @@ public class Level {
                 entities.remove(i--);
                 removeEntity(xto, yto, e);
             } else {
-                var xt = e.x >> 4;
-                var yt = e.y >> 4;
+                int xt = e.x >> 4;
+                int yt = e.y >> 4;
 
                 if (xto != xt || yto != yt) {
                     removeEntity(xto, yto, e);
@@ -273,16 +273,16 @@ public class Level {
 
     public List<Entity> getEntities(int x0, int y0, int x1, int y1) {
         List<Entity> result = new ArrayList<>();
-        var xt0 = (x0 >> 4) - 1;
-        var yt0 = (y0 >> 4) - 1;
-        var xt1 = (x1 >> 4) + 1;
-        var yt1 = (y1 >> 4) + 1;
-        for (var y = yt0; y <= yt1; y++) {
-            for (var x = xt0; x <= xt1; x++) {
+        int xt0 = (x0 >> 4) - 1;
+        int yt0 = (y0 >> 4) - 1;
+        int xt1 = (x1 >> 4) + 1;
+        int yt1 = (y1 >> 4) + 1;
+        for (int y = yt0; y <= yt1; y++) {
+            for (int x = xt0; x <= xt1; x++) {
                 if (x < 0 || y < 0 || x >= w || y >= h) continue;
-                var entities = entitiesInTiles[x + y * this.w];
-                for (var i = 0; i < entities.size(); i++) {
-                    var e = entities.get(i);
+                List<Entity> entities = entitiesInTiles[x + y * this.w];
+                for (int i = 0; i < entities.size(); i++) {
+                    Entity e = entities.get(i);
                     if (e.intersects(x0, y0, x1, y1)) result.add(e);
                 }
             }

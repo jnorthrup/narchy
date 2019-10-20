@@ -35,7 +35,7 @@ public class VectorLabel extends AbstractLabel {
     @Override
     protected void doLayout(float dtS) {
 
-        var len = text.length();
+        int len = text.length();
         if (len == 0) {
             textScaleX = textScaleY = 0;
             return;
@@ -45,7 +45,7 @@ public class VectorLabel extends AbstractLabel {
 //        this.textScaleY = charAspect;
 
         float tw = w(), th = h();
-        var visAspect = th / tw;
+        float visAspect = th / tw;
 //        if (textScaleY / textScaleX <= visAspect) {
 //            this.textScaleX = 1f / (charAspect * len);
 //            this.textScaleY = textScaleX * charAspect;
@@ -63,7 +63,7 @@ public class VectorLabel extends AbstractLabel {
     
     @Override
     protected void renderContent(ReSurface r) {
-        var p = r.visP(bounds.scale(textScaleX, textScaleY), MIN_PIXELS_TO_BE_VISIBLE);
+        float p = r.visP(bounds.scale(textScaleX, textScaleY), MIN_PIXELS_TO_BE_VISIBLE);
 
         LabelRenderer l;
         if (p <= 0)

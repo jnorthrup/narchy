@@ -32,8 +32,8 @@ public class LinearInterpolationFunction implements ParameterizedFunction, Unary
     
     public double valueEvidence(double x) {
 
-        var eLow = evidence.lowerEntry(x);
-        var eHigh = evidence.higherEntry(x);
+        Map.Entry<Double, Double> eLow = evidence.lowerEntry(x);
+        Map.Entry<Double, Double> eHigh = evidence.higherEntry(x);
         
         if (eLow == null && eHigh == null)
             return 0;        
@@ -46,9 +46,9 @@ public class LinearInterpolationFunction implements ParameterizedFunction, Unary
             if (x == lk) return l;
             if (x == hk) return h;
 
-            var ld = Math.abs(lk - x);
-            var lh = Math.abs(hk - x);
-            var pl = ld / (ld + lh);
+            double ld = Math.abs(lk - x);
+            double lh = Math.abs(hk - x);
+            double pl = ld / (ld + lh);
             
             return l * (1.0 - pl) + h * (pl);
         }
@@ -80,14 +80,14 @@ public class LinearInterpolationFunction implements ParameterizedFunction, Unary
     public void learn(double[] X, double y) {
         if (X.length > 1) 
             throw new RuntimeException("Only one input variable supported currently");
-        var x = X[0];
+        double x = X[0];
        
         while (evidence.size() > numPoints) {
             
             double low = evidence.firstKey();
             double high = evidence.lastKey();
-            var r = Math.random() * ( high - low ) + low;
-            var removed =  evidence.lowerKey(r);
+            double r = Math.random() * ( high - low ) + low;
+            Double removed =  evidence.lowerKey(r);
             if (removed == null)
                 removed = evidence.higherKey(r);
             if (removed!=null)

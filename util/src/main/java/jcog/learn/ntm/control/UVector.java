@@ -41,15 +41,19 @@ public class UVector {
     }
 
     public double sumGradientValueProducts() {
-        var value = this.value;
-        var bound = value.length;
-        var s = IntStream.range(0, bound).mapToDouble(i -> value[i] * grad[i]).sum();
+        double[] value = this.value;
+        int bound = value.length;
+        double s = 0.0;
+        for (int i = 0; i < bound; i++) {
+            double v = value[i] * grad[i];
+            s += v;
+        }
         return s;
     }
 
     public void valueMultiplySelf(double factor) {
-        var value = this.value;
-        for (var i = 0; i < value.length; i++) {
+        double[] value = this.value;
+        for (int i = 0; i < value.length; i++) {
             value[i] *= factor;
         }
     }
@@ -63,20 +67,24 @@ public class UVector {
     }
 
     public void setDelta(double[] target) {
-        var v = this.value;
-        var g = this.grad;
+        double[] v = this.value;
+        double[] g = this.grad;
 
-        for (var j = 0; j < v.length; j++) {
+        for (int j = 0; j < v.length; j++) {
             g[j] = v[j] - target[j];
         }
     }
 
     public double sumDot(double[] input) {
 
-        var v = this.value;
+        double[] v = this.value;
 
-        var bound = size();
-        var s = IntStream.range(0, bound).mapToDouble(j -> v[j] * input[j]).sum();
+        int bound = size();
+        double s = 0.0;
+        for (int j = 0; j < bound; j++) {
+            double v1 = v[j] * input[j];
+            s += v1;
+        }
         return s;
     }
 }

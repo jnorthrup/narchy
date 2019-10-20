@@ -6,6 +6,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.graph.GraphEdit2D;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -62,9 +63,13 @@ public class Launcher {
     public static void main(String[] args) {
 
 
-        var envs = new Reflections("nars").getSubTypesOf(GameX.class);
+        Set<Class<? extends GameX>> envs = new Reflections("nars").getSubTypesOf(GameX.class);
 
-        var list = envs.stream().map(Experiment::new).collect(toList());
+        List<Experiment> list = new ArrayList<>();
+        for (Class<? extends GameX> env : envs) {
+            Experiment experiment = new Experiment(env);
+            list.add(experiment);
+        }
         Surface m = grid(
                 new ObjectSurface(
                         list
@@ -76,7 +81,7 @@ public class Launcher {
         );
 
 
-        var g = new GraphEdit2D();
+        GraphEdit2D g = new GraphEdit2D();
         SpaceGraph.window(                 g, 800, 800        );
 
         g.add(m).posRel(0.5f, 0.5f, 0.75f);

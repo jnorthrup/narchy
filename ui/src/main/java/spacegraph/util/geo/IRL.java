@@ -48,7 +48,7 @@ public class IRL {
      */
     @Deprecated
     public @Nullable Osm request(float lon, float lat, float lonRange, float latRange) {
-        var o  = reqCache.apply(
+        Osm o  = reqCache.apply(
                 RectFloat.XYXY(
                     Util.round(lon - lonRange/(2-Float.MIN_NORMAL), lonRange),
                     Util.round(lat - latRange/(2-Float.MIN_NORMAL), latRange),
@@ -61,9 +61,9 @@ public class IRL {
     }
 
     private Osm load(double lonMin, double latMin, double lonMax, double latMax) {
-        var osm = new Osm();
+        Osm osm = new Osm();
 
-        var u = Osm.url("https://api.openstreetmap.org", lonMin, latMin, lonMax, latMax);
+        URL u = Osm.url("https://api.openstreetmap.org", lonMin, latMin, lonMax, latMax);
         osm.id = u.toExternalForm();
 
         Exe.runLater(() -> user.get(u.toString(), () -> {

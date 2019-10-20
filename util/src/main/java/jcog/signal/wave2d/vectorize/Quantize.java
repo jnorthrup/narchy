@@ -253,12 +253,12 @@ public class Quantize {
 
     static {
         SQUARES = new int[MAX_RGB + MAX_RGB + 1];
-        for (var i = -MAX_RGB; i <= MAX_RGB; i++) {
+        for (int i = -MAX_RGB; i <= MAX_RGB; i++) {
             SQUARES[i + MAX_RGB] = i * i;
         }
 
         SHIFT = new int[MAX_TREE_DEPTH + 1];
-        for (var i = 0; i < MAX_TREE_DEPTH + 1; ++i) {
+        for (int i = 0; i < MAX_TREE_DEPTH + 1; ++i) {
             SHIFT[i] = 1 << (15 - i);
         }
     }
@@ -271,7 +271,7 @@ public class Quantize {
      * @return The new color palette.
      */
     public static int[] quantizeImage(int[][] pixels, int max_colors) {
-        var cube = new Cube(pixels, max_colors);
+        Cube cube = new Cube(pixels, max_colors);
         cube.classification();
         cube.reduction();
         cube.assignment();
@@ -297,7 +297,7 @@ public class Quantize {
             this.pixels = pixels;
             this.max_colors = max_colors;
 
-            var i = max_colors;
+            int i = max_colors;
             
             
             for (depth = 1; i != 0; depth++) {
@@ -354,15 +354,15 @@ public class Quantize {
          *   represented by this node.
          */
         void classification() {
-            var pixels = this.pixels;
+            int[][] pixels = this.pixels;
 
-            var width = pixels.length;
-            var height = pixels[0].length;
+            int width = pixels.length;
+            int height = pixels[0].length;
 
             
-            for (var x = width; x-- > 0; ) {
-                for (var y = height; y-- > 0; ) {
-                    var pixel = pixels[x][y];
+            for (int x = width; x-- > 0; ) {
+                for (int y = height; y-- > 0; ) {
+                    int pixel = pixels[x][y];
 
 
                     if (nodes > MAX_NODES) {
@@ -372,12 +372,12 @@ public class Quantize {
                     }
 
 
-                    var node = root;
-                    var blue = (pixel) & 0xFF;
-                    var green = (pixel >> 8) & 0xFF;
-                    var red = (pixel >> 16) & 0xFF;
-                    for (var level = 1; level <= depth; ++level) {
-                        var id = (((red > node.mid_red ? 1 : 0)) |
+                    Node node = root;
+                    int blue = (pixel) & 0xFF;
+                    int green = (pixel >> 8) & 0xFF;
+                    int red = (pixel >> 16) & 0xFF;
+                    for (int level = 1; level <= depth; ++level) {
+                        int id = (((red > node.mid_red ? 1 : 0)) |
                                 ((green > node.mid_green ? 1 : 0) << 1) |
                                 ((blue > node.mid_blue ? 1 : 0) << 2));
                         if (node.child[id] == null) {
@@ -408,7 +408,7 @@ public class Quantize {
          * characteristics for later averaging.
          */
         void reduction() {
-            var threshold = 1;
+            int threshold = 1;
             while (colors > max_colors) {
                 colors = 0;
                 threshold = root.reduce(threshold, Integer.MAX_VALUE);
@@ -449,25 +449,25 @@ public class Quantize {
             colors = 0;
             root.colormap();
 
-            var pixels = this.pixels;
+            int[][] pixels = this.pixels;
 
-            var width = pixels.length;
-            var height = pixels[0].length;
+            int width = pixels.length;
+            int height = pixels[0].length;
 
-            var search = new Search();
+            Search search = new Search();
 
             
-            for (var x = width; x-- > 0; ) {
-                for (var y = height; y-- > 0; ) {
-                    var pixel = pixels[x][y];
-                    var red = (pixel >> 16) & 0xFF;
-                    var green = (pixel >> 8) & 0xFF;
-                    var blue = (pixel) & 0xFF;
+            for (int x = width; x-- > 0; ) {
+                for (int y = height; y-- > 0; ) {
+                    int pixel = pixels[x][y];
+                    int red = (pixel >> 16) & 0xFF;
+                    int green = (pixel >> 8) & 0xFF;
+                    int blue = (pixel) & 0xFF;
 
 
-                    var node = root;
+                    Node node = root;
                     for (; ; ) {
-                        var id = (((red > node.mid_red ? 1 : 0)) |
+                        int id = (((red > node.mid_red ? 1 : 0)) |
                                 ((green > node.mid_green ? 1 : 0) << 1) |
                                 ((blue > node.mid_blue ? 1 : 0) << 2));
                         if (node.child[id] == null) {
@@ -558,7 +558,7 @@ public class Quantize {
                 parent.child[id] = this;
 
 
-                var bi = (1 << (MAX_TREE_DEPTH - level)) >> 1;
+                int bi = (1 << (MAX_TREE_DEPTH - level)) >> 1;
                 mid_red = parent.mid_red + ((id & 1) > 0 ? bi : -bi);
                 mid_green = parent.mid_green + ((id & 2) > 0 ? bi : -bi);
                 mid_blue = parent.mid_blue + ((id & 4) > 0 ? bi : -bi);
@@ -585,7 +585,7 @@ public class Quantize {
              */
             void pruneLevel() {
                 if (nchild != 0) {
-                    for (var id = 0; id < 8; id++) {
+                    for (int id = 0; id < 8; id++) {
                         if (child[id] != null) {
                             child[id].pruneLevel();
                         }
@@ -605,7 +605,7 @@ public class Quantize {
              */
             int reduce(int threshold, int next_threshold) {
                 if (nchild != 0) {
-                    for (var id = 0; id < 8; id++) {
+                    for (int id = 0; id < 8; id++) {
                         if (child[id] != null) {
                             next_threshold = child[id].reduce(threshold, next_threshold);
                         }
@@ -632,16 +632,16 @@ public class Quantize {
              */
             void colormap() {
                 if (nchild != 0) {
-                    for (var id = 0; id < 8; id++) {
+                    for (int id = 0; id < 8; id++) {
                         if (child[id] != null) {
                             child[id].colormap();
                         }
                     }
                 }
                 if (unique != 0) {
-                    var r = ((total_red + (unique >> 1)) / unique);
-                    var g = ((total_green + (unique >> 1)) / unique);
-                    var b = ((total_blue + (unique >> 1)) / unique);
+                    int r = ((total_red + (unique >> 1)) / unique);
+                    int g = ((total_green + (unique >> 1)) / unique);
+                    int b = ((total_blue + (unique >> 1)) / unique);
                     cube.colormap[cube.colors] = (((0xFF) << 24) |
                             ((r & 0xFF) << 16) |
                             ((g & 0xFF) << 8) |
@@ -656,7 +656,7 @@ public class Quantize {
              */
             void closestColor(int red, int green, int blue, Search search) {
                 if (nchild != 0) {
-                    for (var id = 0; id < 8; id++) {
+                    for (int id = 0; id < 8; id++) {
                         if (child[id] != null) {
                             child[id].closestColor(red, green, blue, search);
                         }
@@ -664,8 +664,8 @@ public class Quantize {
                 }
 
                 if (unique != 0) {
-                    var color = cube.colormap[color_number];
-                    var distance = distance(color, red, green, blue);
+                    int color = cube.colormap[color_number];
+                    int distance = distance(color, red, green, blue);
                     if (distance < search.distance) {
                         search.distance = distance;
                         search.color_number = color_number;
@@ -683,7 +683,7 @@ public class Quantize {
             }
 
             public String toString() {
-                var buf = new StringBuffer();
+                StringBuffer buf = new StringBuffer();
                 if (parent == this) {
                     buf.append("root");
                 } else {

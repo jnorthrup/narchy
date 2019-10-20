@@ -70,7 +70,7 @@ public class SV_USER {
      */
     public static void SV_BeginDemoserver() {
 
-        var name = "demos/" + SV_INIT.sv.name;
+        String name = "demos/" + SV_INIT.sv.name;
         try {
             SV_INIT.sv.demofile = FS.FOpenFile(name);
         } catch (IOException e) {
@@ -103,7 +103,7 @@ public class SV_USER {
         }
 
 
-        var gamedir = Cvar.VariableString("gamedir");
+        String gamedir = Cvar.VariableString("gamedir");
 
         
         MSG.WriteByte(SV_MAIN.sv_client.netchan.message,
@@ -136,7 +136,7 @@ public class SV_USER {
         
         if (SV_INIT.sv.state == Defines.ss_game) {
 
-            var ent = GameBase.g_edicts[playernum + 1];
+            edict_t ent = GameBase.g_edicts[playernum + 1];
             ent.s.number = playernum + 1;
             SV_MAIN.sv_client.edict = ent;
             SV_MAIN.sv_client.lastcmd = new usercmd_t();
@@ -169,7 +169,7 @@ public class SV_USER {
             return;
         }
 
-        var start = Lib.atoi(Cmd.Argv(2));
+        int start = Lib.atoi(Cmd.Argv(2));
 
         
 
@@ -221,16 +221,16 @@ public class SV_USER {
             return;
         }
 
-        var start = Lib.atoi(Cmd.Argv(2));
+        int start = Lib.atoi(Cmd.Argv(2));
 
 
-        var nullstate = new entity_state_t(null);
+        entity_state_t nullstate = new entity_state_t(null);
 
         
 
         while (SV_MAIN.sv_client.netchan.message.cursize < Defines.MAX_MSGLEN / 2
                 && start < Defines.MAX_EDICTS) {
-            var base = SV_INIT.sv.baselines[start];
+            entity_state_t base = SV_INIT.sv.baselines[start];
             if (base.modelindex != 0 || base.sound != 0 || base.effects != 0) {
                 MSG.WriteByte(SV_MAIN.sv_client.netchan.message,
                         Defines.svc_spawnbaseline);
@@ -286,7 +286,7 @@ public class SV_USER {
         if (SV_MAIN.sv_client.download == null)
             return;
 
-        var r = SV_MAIN.sv_client.downloadsize - SV_MAIN.sv_client.downloadcount;
+        int r = SV_MAIN.sv_client.downloadsize - SV_MAIN.sv_client.downloadcount;
         if (r > 1024)
             r = 1024;
 
@@ -294,10 +294,10 @@ public class SV_USER {
         MSG.WriteShort(SV_MAIN.sv_client.netchan.message, r);
 
         SV_MAIN.sv_client.downloadcount += r;
-        var size = SV_MAIN.sv_client.downloadsize;
+        int size = SV_MAIN.sv_client.downloadsize;
         if (size == 0)
             size = 1;
-        var percent = SV_MAIN.sv_client.downloadcount * 100 / size;
+        int percent = SV_MAIN.sv_client.downloadcount * 100 / size;
         MSG.WriteByte(SV_MAIN.sv_client.netchan.message, percent);
         SZ.Write(SV_MAIN.sv_client.netchan.message, SV_MAIN.sv_client.download,
                 SV_MAIN.sv_client.downloadcount - r, r);
@@ -313,9 +313,9 @@ public class SV_USER {
      * ================== SV_BeginDownload_f ==================
      */
     public static void SV_BeginDownload_f() {
-        var offset = 0;
+        int offset = 0;
 
-        var name = Cmd.Argv(1);
+        String name = Cmd.Argv(1);
 
         if (Cmd.Argc() > 2)
             offset = Lib.atoi(Cmd.Argv(2)); 
@@ -419,7 +419,7 @@ public class SV_USER {
             return; 
 
         SV_INIT.svs.spawncount++;
-        var v = Cvar.VariableString("nextserver");
+        String v = Cvar.VariableString("nextserver");
         
         if (v.length() == 0)
             Cbuf.AddText("killserver\n");
@@ -459,7 +459,7 @@ public class SV_USER {
         SV_USER.sv_player = SV_MAIN.sv_client.edict;
 
 
-        var i = 0;
+        int i = 0;
         for (ucmd_t u = null; i < SV_USER.ucmds.length; i++) {
             u = SV_USER.ucmds[i];
             if (Cmd.Argv(0).equals(u.name)) {
@@ -501,15 +501,15 @@ public class SV_USER {
      */
     public static void SV_ExecuteClientMessage(client_t cl) {
 
-        var nullcmd = new usercmd_t();
+        usercmd_t nullcmd = new usercmd_t();
         usercmd_t oldest = new usercmd_t(), oldcmd = new usercmd_t(), newcmd = new usercmd_t();
 
         SV_MAIN.sv_client = cl;
         SV_USER.sv_player = SV_MAIN.sv_client.edict;
 
 
-        var move_issued = false;
-        var stringCmdCount = 0;
+        boolean move_issued = false;
+        int stringCmdCount = 0;
 
         while (true) {
             if (Globals.net_message.readcount > Globals.net_message.cursize) {
@@ -519,7 +519,7 @@ public class SV_USER {
                 return;
             }
 
-            var c = MSG.ReadByte(Globals.net_message);
+            int c = MSG.ReadByte(Globals.net_message);
             if (c == -1)
                 break;
 
@@ -586,7 +586,7 @@ public class SV_USER {
                 }
 
                 if (0 == SV_MAIN.sv_paused.value) {
-                    var net_drop = cl.netchan.dropped;
+                    int net_drop = cl.netchan.dropped;
                     if (net_drop < 20) {
 
                         

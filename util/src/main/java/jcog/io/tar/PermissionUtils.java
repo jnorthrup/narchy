@@ -71,8 +71,14 @@ public class PermissionUtils {
 	private static int posixPermissions(File f) {
 		int number;
 		try {
-			var permissions = Files.getPosixFilePermissions(f.toPath());
-			var sum = posixPermissionToInteger.entrySet().stream().filter(entry -> permissions.contains(entry.getKey())).mapToInt(Map.Entry::getValue).sum();
+            Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(f.toPath());
+			int sum = 0;
+			for (Map.Entry<PosixFilePermission, Integer> entry : posixPermissionToInteger.entrySet()) {
+				if (permissions.contains(entry.getKey())) {
+					int value = entry.getValue();
+					sum += value;
+				}
+			}
 			number = sum;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -95,8 +101,12 @@ public class PermissionUtils {
 	}
 
 	private static Integer standardPermissions(File f) {
-		var permissions = readStandardPermissions(f);
-		var number = permissions.stream().mapToInt(permission -> permission.mode).sum();
+        Set<StandardFilePermission> permissions = readStandardPermissions(f);
+		int number = 0;
+		for (StandardFilePermission permission : permissions) {
+			int mode = permission.mode;
+			number += mode;
+		}
 		return number;
 	}
 }

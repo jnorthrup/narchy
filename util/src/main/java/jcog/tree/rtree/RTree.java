@@ -97,10 +97,10 @@ public class RTree<X> implements Space<X> {
 
 
     public final RInsertion<X> insert(/*@NotNull*/ X x) {
-        var i = model.insertion(x, true);
+        RInsertion<X> i = model.insertion(x, true);
 
 //        i.start(this);
-        var nextRoot = root.add(i);
+        RNode<X> nextRoot = root.add(i);
 
         if (nextRoot!=null)
             this.root = nextRoot; //even if not added; in case merge changed something, dunno
@@ -130,15 +130,15 @@ public class RTree<X> implements Space<X> {
      */
     @Override
     public boolean remove(X x) {
-        var before = SIZE.get(this);
+        int before = SIZE.get(this);
         if (before == 0)
             return false;
-        var bx = model.bounds(x);
+        HyperRegion bx = model.bounds(x);
         if (!root.bounds().contains(bx))
             return false;
 
         int[] removed = { 0 };
-        @Nullable var nextRoot = root.remove(x, bx, model, removed);
+        @Nullable RNode<X> nextRoot = root.remove(x, bx, model, removed);
         if (removed[0] > 0) {
 
             SIZE.addAndGet(this, -removed[0]);
@@ -163,9 +163,9 @@ public class RTree<X> implements Space<X> {
             return true;
         } else {
 
-            var removed = remove(told);
+            boolean removed = remove(told);
             if (removed) {
-                var added = add(tnew);
+                boolean added = add(tnew);
                 if (!added)
                     throw new UnsupportedOperationException("error adding " + tnew);
                 return true;
@@ -215,7 +215,7 @@ public class RTree<X> implements Space<X> {
     }
 
     @Deprecated public Set<X> containedToSet(HyperRegion rect) {
-        var s = size();
+        int s = size();
         Set<X> t = new HashSet(s);
         root.containing(rect, x -> {
             t.add(x);
@@ -233,7 +233,7 @@ public class RTree<X> implements Space<X> {
 
     @Override
     public Stats stats() {
-        var stats = new Stats();
+        Stats stats = new Stats();
         stats.setType(model);
         stats.setMaxFill(model.max);
 

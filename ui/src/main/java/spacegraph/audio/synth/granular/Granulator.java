@@ -17,21 +17,21 @@ class Granulator {
 	}
 
 	boolean hasMoreSamples(long[] grain, long now) {
-		var length = grain[1];
-		var showTime = grain[2];
+        long length = grain[1];
+        long showTime = grain[2];
 		return now < showTime + length + window.getSize();
 	}
 
 	float sample(long[] grain, long now) {
 
 
-		var sb = sourceBuffer;
+        float[] sb = sourceBuffer;
 
-		var showTime = grain[2];
-		var offset = now - showTime;
+        long showTime = grain[2];
+        long offset = now - showTime;
 
-		var startIndex = grain[0];
-		var sourceIndex = (int) ((startIndex + offset + sb.length));
+        long startIndex = grain[0];
+        int sourceIndex = (int) ((startIndex + offset + sb.length));
 		while (sourceIndex < 0)
 			sourceIndex += sb.length;
 		sourceIndex %= sb.length;
@@ -40,15 +40,15 @@ class Granulator {
 	}
 
 	static boolean isFading(long[] grain, long now) {
-		var length = grain[1];
-		var showTime = grain[2];
+        long length = grain[1];
+        long showTime = grain[2];
 		return now >= showTime + length;
 	}
 
 	long[] nextGrain(long[] grain, int startIndex, float fadeInTime) {
 		if (grain == null)
 			grain = new long[3];
-		var ws = window.getSize();
+        int ws = window.getSize();
 		grain[0] = (startIndex + ws) % sourceBuffer.length;
 		grain[1] = grainSizeSamples;
 		grain[2] = Math.round(fadeInTime + ws);

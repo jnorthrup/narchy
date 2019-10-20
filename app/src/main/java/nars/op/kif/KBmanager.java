@@ -98,8 +98,8 @@ public class KBmanager implements Serializable {
      */
     public static boolean serializedExists() {
 
-        var kbDir = System.getenv("SIGMA_HOME") + File.separator + "KBs";
-        var serfile = new File(kbDir + File.separator + "kbmanager.ser");
+        String kbDir = System.getenv("SIGMA_HOME") + File.separator + "KBs";
+        File serfile = new File(kbDir + File.separator + "kbmanager.ser");
         System.out.println("KBmanager.serializedExists(): " + serfile.exists());
         return serfile.exists();
     }
@@ -219,57 +219,57 @@ public class KBmanager implements Serializable {
     public void setDefaultAttributes() {
 
         try {
-            var base = System.getenv("SIGMA_HOME");
+            String base = System.getenv("SIGMA_HOME");
             if (StringUtil.emptyString(base))
                 base = System.getProperty("user.dir");
-            var tptpHome = System.getenv("TPTP_HOME");
+            String tptpHome = System.getenv("TPTP_HOME");
             if (StringUtil.emptyString(tptpHome))
                 tptpHome = System.getProperty("user.dir");
-            var systemsHome = System.getenv("SYSTEMS_HOME");
+            String systemsHome = System.getenv("SYSTEMS_HOME");
             if (StringUtil.emptyString(systemsHome))
                 systemsHome = System.getProperty("user.dir");
-            var tomcatRoot = System.getenv("CATALINA_HOME");
+            String tomcatRoot = System.getenv("CATALINA_HOME");
             if (StringUtil.emptyString(tomcatRoot))
                 tomcatRoot = System.getProperty("user.dir");
-            var tomcatRootDir = new File(tomcatRoot);
-            var baseDir = new File(base);
-            var tptpHomeDir = new File(tptpHome);
-            var systemsDir = new File(systemsHome);
-            var logDir = new File(baseDir, "logs");
+            File tomcatRootDir = new File(tomcatRoot);
+            File baseDir = new File(base);
+            File tptpHomeDir = new File(tptpHome);
+            File systemsDir = new File(systemsHome);
+            File logDir = new File(baseDir, "logs");
             logDir.mkdirs();
 
 
             preferences.put("baseDir",baseDir.getCanonicalPath());
             preferences.put("tptpHomeDir",tptpHomeDir.getCanonicalPath());
             preferences.put("systemsDir",systemsDir.getCanonicalPath());
-            var kbDir = new File(baseDir, "KBs");
+            File kbDir = new File(baseDir, "KBs");
             preferences.put("kbDir",kbDir.getCanonicalPath());
-            var inferenceTestDir = new File(kbDir, "tests");
+            File inferenceTestDir = new File(kbDir, "tests");
             preferences.put("inferenceTestDir",inferenceTestDir.getCanonicalPath());
-            var sep = File.separator;
-            var testOutputDir = new File(tomcatRootDir,
+            String sep = File.separator;
+            File testOutputDir = new File(tomcatRootDir,
                     (String.join(sep, "webapps", "sigma", "tests")));
             preferences.put("testOutputDir",testOutputDir.getCanonicalPath());
 
-            var graphVizDir = new File("/usr/bin");
+            File graphVizDir = new File("/usr/bin");
             preferences.put("graphVizDir", graphVizDir.getCanonicalPath());
 
-            var graphDir = new File(tomcatRootDir, String.join(sep, "webapps", "sigma", "graph"));
+            File graphDir = new File(tomcatRootDir, String.join(sep, "webapps", "sigma", "graph"));
             if (!graphDir.exists())
                 graphDir.mkdir();
             preferences.put("graphDir", graphDir.getCanonicalPath());
 
 
-            var _OS = System.getProperty("os.name");
-            var ieExec = "e_ltb_runner";
+            String _OS = System.getProperty("os.name");
+            String ieExec = "e_ltb_runner";
             if (StringUtil.isNonEmptyString(_OS) && _OS.matches("(?i).*win.*"))
                 ieExec = "e_ltb_runner.exe";
-            var ieDirFile = new File(baseDir, "inference");
-            var ieExecFile = (ieDirFile.isDirectory()
+            File ieDirFile = new File(baseDir, "inference");
+            File ieExecFile = (ieDirFile.isDirectory()
                     ? new File(ieDirFile, ieExec)
                     : new File(ieExec));
-            var leoExec = "leo";
-            var leoExecFile = (ieDirFile.isDirectory()
+            String leoExec = "leo";
+            File leoExecFile = (ieDirFile.isDirectory()
                     ? new File(ieDirFile, leoExec)
                     : new File(leoExec));
             preferences.put("inferenceEngine",ieExecFile.getCanonicalPath());
@@ -614,7 +614,7 @@ public class KBmanager implements Serializable {
 
         System.out.println("Info in KBmanager.initializeOnce()");
 
-        var base = System.getenv("SIGMA_HOME");
+        String base = System.getenv("SIGMA_HOME");
         initializeOnce(base + File.separator + "KBs");
     }
 
@@ -626,7 +626,7 @@ public class KBmanager implements Serializable {
      */
     public void initializeOnce(String configFileDir) {
 
-        var loaded = false;
+        boolean loaded = false;
         if (initializing || initialized) {
             System.out.println("Info in KBmanager.initializeOnce(): initialized is " + initialized);
             System.out.println("Info in KBmanager.initializeOnce(): initializing is " + initializing);
@@ -716,8 +716,8 @@ public class KBmanager implements Serializable {
      */
     public static String escapeFilename(CharSequence fname) {
 
-        var newstring = new StringBuilder();
-        for (var i = 0; i < fname.length(); i++) {
+        StringBuilder newstring = new StringBuilder();
+        for (int i = 0; i < fname.length(); i++) {
             if (fname.charAt(i) == 92 && fname.charAt(i+1) != 92)
                 newstring = newstring.append("\\\\");
             if (fname.charAt(i) == 92 && fname.charAt(i+1) == 92) {
@@ -740,7 +740,7 @@ public class KBmanager implements Serializable {
 
     public KB addKB(String name, boolean isVisible) {
 
-        var kb = new KB(name, preferences.get("kbDir"), isVisible);
+        KB kb = new KB(name, preferences.get("kbDir"), isVisible);
         kbs.put(name.intern(),kb);
         return kb;
     }
@@ -864,9 +864,9 @@ public class KBmanager implements Serializable {
      */
     public HashSet<String> getKBnames() {
 
-        var names = new HashSet<String>();
-        for (var kbName : kbs.keySet()) {
-            var kb = getKB(kbName);
+        HashSet<String> names = new HashSet<String>();
+        for (String kbName : kbs.keySet()) {
+            KB kb = getKB(kbName);
             if (kb.isVisible())
                 names.add(kbName);
         }
@@ -878,9 +878,9 @@ public class KBmanager implements Serializable {
      */
     public ArrayList<String> allAvailableLanguages() {
 
-        var result = new ArrayList<String>();
-        for (var kbName : kbs.keySet()) {
-            var kb = getKB(kbName);
+        ArrayList<String> result = new ArrayList<String>();
+        for (String kbName : kbs.keySet()) {
+            KB kb = getKB(kbName);
             result.addAll(kb.availableLanguages());
         }
         return result;
@@ -894,8 +894,8 @@ public class KBmanager implements Serializable {
         System.out.println("KBmanager.printPrefs()");
         if (preferences == null || preferences.isEmpty())
             System.out.println("KBmanager.printPrefs(): preference list is empty");
-        for (var entry : preferences.entrySet()) {
-            var value = entry.getValue();
+        for (Map.Entry<String, String> entry : preferences.entrySet()) {
+            String value = entry.getValue();
             System.out.println(entry.getKey() + " : " + value);
         }
     }
@@ -909,7 +909,7 @@ public class KBmanager implements Serializable {
             System.out.println("Error in KBmanager.getPref(): bad key: " + key);
             return "";
         }
-        var ans = preferences.get(key);
+        String ans = preferences.get(key);
         if (ans == null)
             ans = "";
         return ans;

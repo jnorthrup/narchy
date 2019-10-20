@@ -40,7 +40,7 @@ import java.util.Iterator;
         if (isEmpty()) {
             throw new RuntimeException("Ring buffer underflow");
         } else {
-            var toReturn = peek();
+            T toReturn = peek();
             first = increment(first);
             fillCount--;
             return toReturn;
@@ -91,7 +91,7 @@ import java.util.Iterator;
         }
 
         public T next() {
-            var toReturn = get(index);
+            T toReturn = get(index);
             index++;
             return toReturn;
         }

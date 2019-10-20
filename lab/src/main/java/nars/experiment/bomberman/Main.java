@@ -35,12 +35,12 @@ public class Main {
      * Starts the program by creating an instance of MainFrame.
      */
     public static void main(String[] args) {
-        var bombermanMode = false;
-        var badArg = false;
+        boolean bombermanMode = false;
+        boolean badArg = false;
         /** default look and feel: metal */
-        var lookAndFeel = 1;
+        int lookAndFeel = 1;
         /** check supplied parameters (if any) */
-        for (var i = 0; i < args.length; i++) {
+        for (int i = 0; i < args.length; i++) {
             /** if "bomberman" parameter is supplied */
             if ("Bomberman".equals(args[i]) || "bomberman".equals(args[i]))
                 bombermanMode = true;
@@ -76,7 +76,7 @@ public class Main {
                  * "com.sun.java.swing.plaf.motif.MotifLookAndFeel"
                  * "javax.swing.plaf.mac.MacLookAndFeel"
                  */
-                var laf = "javax.swing.plaf.metal.MetalLookAndFeel";
+                String laf = "javax.swing.plaf.metal.MetalLookAndFeel";
                 switch (lookAndFeel) {
                     case 0:
                         laf = UIManager.getSystemLookAndFeelClassName();

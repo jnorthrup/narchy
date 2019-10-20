@@ -43,7 +43,7 @@ public abstract class JoglES1Driver extends JoglGL2ES1 implements GLDriver {
     protected static final GLProfile glp;    
     static {
 
-        var v = Cvar.Get("jogl_gl2es1", "0", 0);
+        cvar_t v = Cvar.Get("jogl_gl2es1", "0", 0);
         if( v.value != 0f ) {
             glp = GLProfile.getGL2ES1();
         } else {
@@ -72,7 +72,7 @@ public abstract class JoglES1Driver extends JoglGL2ES1 implements GLDriver {
         if(null == newtWin) {
             newtWin = new NEWTWin();
         }
-        var res = newtWin.setMode(glp, dim, mode, fullscreen, getName());
+        int res = newtWin.setMode(glp, dim, mode, fullscreen, getName());
         if( Base.rserr_ok == res ) {
             setGL(newtWin.window.getGL().getGL2ES1());
             init(0, 0);

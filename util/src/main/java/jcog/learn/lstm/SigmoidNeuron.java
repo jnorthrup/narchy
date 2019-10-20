@@ -11,7 +11,7 @@ public final class SigmoidNeuron implements Neuron
 
 	@Override
 	public final double derivate(double x) {
-		var act = activate(x);
+        double act = activate(x);
 		return act * (1.0 - act);
 	}
 

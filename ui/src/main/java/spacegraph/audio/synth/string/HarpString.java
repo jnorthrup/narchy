@@ -22,7 +22,7 @@ public class HarpString extends KarplusStrongString {
     public void pluck() {
         setDeltaVolume(pluckDelta);
         clear();
-        for (var i = 0; i < buffer.capacity(); i++) {
+        for (int i = 0; i < buffer.capacity(); i++) {
             buffer.enqueue((Math.random() - 0.5) * 2 * getMaxVolume());
         }
     }
@@ -30,7 +30,7 @@ public class HarpString extends KarplusStrongString {
     public void tic() {
         double first = buffer.dequeue();
         double second = buffer.peek();
-        var x = (first + second) / 2; // lowpass filter
+        double x = (first + second) / 2; // lowpass filter
 		filterOut = C * x + filterIn - C * filterOut; // allpass tuning filter
         filterIn = x;
         buffer.enqueue(filterOut * deltaVolume * -1);

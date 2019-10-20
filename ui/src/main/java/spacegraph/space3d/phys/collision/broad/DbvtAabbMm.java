@@ -62,7 +62,7 @@ public class DbvtAabbMm {
 	}
 	
 	public static void swap(DbvtAabbMm p1, DbvtAabbMm p2) {
-		var tmp = new v3();
+        v3 tmp = new v3();
 		
 		tmp.set(p1.mi);
 		p1.mi.set(p2.mi);
@@ -99,20 +99,20 @@ public class DbvtAabbMm {
 	}
 	
 	private static DbvtAabbMm FromCE(v3 c, v3 e, DbvtAabbMm out) {
-		var box = out;
+        DbvtAabbMm box = out;
 		box.mi.sub(c, e);
 		box.mx.add(c, e);
 		return box;
 	}
 
 	public static DbvtAabbMm fromCR(v3 c, float r, DbvtAabbMm out) {
-		var tmp = new v3();
+        v3 tmp = new v3();
 		tmp.set(r, r, r);
 		return FromCE(c, tmp, out);
 	}
 
 	public static DbvtAabbMm FromMM(v3 mi, v3 mx, DbvtAabbMm out) {
-		var box = out;
+        DbvtAabbMm box = out;
 		box.mi.set(mi);
 		box.mx.set(mx);
 		return box;
@@ -159,8 +159,8 @@ public class DbvtAabbMm {
 	}
 
 	public int Classify(v3 n, float o, int s) {
-		var pi = new v3();
-		var px = new v3();
+        v3 pi = new v3();
+        v3 px = new v3();
 
 		switch (s) {
 			case (0):
@@ -208,7 +208,7 @@ public class DbvtAabbMm {
 
 	public float ProjectMinimum(v3 v, int signs) {
 		v3[] b = { mx, mi };
-		var p = new v3();
+        v3 p = new v3();
 		p.set(b[(signs) & 1].x,
 		      b[(signs >> 1) & 1].y,
 		      b[(signs >> 2) & 1].z);
@@ -225,9 +225,9 @@ public class DbvtAabbMm {
 	}
 
 	public static boolean intersect(DbvtAabbMm a, DbvtAabbMm b, Transform xform) {
-		var d0 = new v3();
-		var d1 = new v3();
-		var tmp = new v3();
+        v3 d0 = new v3();
+        v3 d1 = new v3();
+        v3 tmp = new v3();
 
 		
 		b.center(d0);
@@ -236,7 +236,7 @@ public class DbvtAabbMm {
 
 		MatrixUtil.transposeTransform(d1, d0, xform.basis);
 
-		var s1 = new float[2];
+        float[] s1 = new float[2];
 		s1[0] = xform.dot(d0);
 		s1[1] = s1[0];
 
@@ -260,10 +260,10 @@ public class DbvtAabbMm {
 
 	public static boolean intersect(DbvtAabbMm a, v3 org, v3 invdir, int[] signs) {
 		v3[] bounds = {a.mi, a.mx};
-		var txmin = (bounds[signs[0]].x - org.x) * invdir.x;
-		var txmax = (bounds[1 - signs[0]].x - org.x) * invdir.x;
-		var tymin = (bounds[signs[1]].y - org.y) * invdir.y;
-		var tymax = (bounds[1 - signs[1]].y - org.y) * invdir.y;
+        float txmin = (bounds[signs[0]].x - org.x) * invdir.x;
+        float txmax = (bounds[1 - signs[0]].x - org.x) * invdir.x;
+        float tymin = (bounds[signs[1]].y - org.y) * invdir.y;
+        float tymax = (bounds[1 - signs[1]].y - org.y) * invdir.y;
 		if ((txmin > tymax) || (tymin > txmax)) {
 			return false;
 		}
@@ -274,8 +274,8 @@ public class DbvtAabbMm {
 		if (tymax < txmax) {
 			txmax = tymax;
 		}
-		var tzmin = (bounds[signs[2]].z - org.z) * invdir.z;
-		var tzmax = (bounds[1 - signs[2]].z - org.z) * invdir.z;
+        float tzmin = (bounds[signs[2]].z - org.z) * invdir.z;
+        float tzmax = (bounds[1 - signs[2]].z - org.z) * invdir.z;
 		if ((txmin > tzmax) || (tzmin > txmax)) {
 			return false;
 		}
@@ -290,8 +290,8 @@ public class DbvtAabbMm {
 	}
 
 	public static float Proximity(DbvtAabbMm a, DbvtAabbMm b) {
-		var d = new v3();
-		var tmp = new v3();
+        v3 d = new v3();
+        v3 tmp = new v3();
 
 		d.add(a.mi, a.mx);
 		tmp.add(b.mi, b.mx);
@@ -300,7 +300,7 @@ public class DbvtAabbMm {
 	}
 
 	public static void merge(DbvtAabbMm a, DbvtAabbMm b, DbvtAabbMm r) {
-		for (var i = 0; i<3; i++) {
+		for (int i = 0; i<3; i++) {
 			VectorUtil.setCoord(r.mi, i, Math.min(coord(a.mi, i), coord(b.mi, i)));
 
 			VectorUtil.setCoord(r.mx, i, Math.max(coord(a.mx, i), coord(b.mx, i)));
@@ -317,12 +317,12 @@ public class DbvtAabbMm {
 	}
 	
 	private void addSpan(v3 d, float[] smi, int smi_idx, float[] smx, int smx_idx) {
-		var mx = this.mx;
-		var mi = this.mi;
-		for (var i = 0; i<3; i++) {
-			var cx = coord(mx, i);
-			var cd = coord(d, i);
-			var ci = coord(mi, i);
+        v3 mx = this.mx;
+        v3 mi = this.mi;
+		for (int i = 0; i<3; i++) {
+            float cx = coord(mx, i);
+            float cd = coord(d, i);
+            float ci = coord(mi, i);
 			if (cd < 0) {
 				smi[smi_idx] += cx * cd;
 				smx[smx_idx] += ci * cd;

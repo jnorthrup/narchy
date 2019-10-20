@@ -34,11 +34,11 @@ public final class HTMLSurface extends AWTSurface {
 
         HTMLView(String initialURL) {
 
-            var lblURL = new JLabel("URL");
-            var txtURL = new JTextField(initialURL, 30);
-            var btnBrowse = new JButton("Browse");
+            JLabel lblURL = new JLabel("URL");
+            JTextField txtURL = new JTextField(initialURL, 30);
+            JButton btnBrowse = new JButton("Browse");
 
-            var panel = new JPanel();
+            JPanel panel = new JPanel();
             panel.setLayout(new FlowLayout());
             panel.add(lblURL);
             panel.add(txtURL);
@@ -63,10 +63,10 @@ public final class HTMLSurface extends AWTSurface {
 
             ed.addHyperlinkListener(e -> {
                 if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                    var pane = (JEditorPane) e.getSource();
+                    JEditorPane pane = (JEditorPane) e.getSource();
                     if (e instanceof HTMLFrameHyperlinkEvent) {
-                        var evt = (HTMLFrameHyperlinkEvent) e;
-                        var doc = (HTMLDocument) pane.getDocument();
+                        HTMLFrameHyperlinkEvent evt = (HTMLFrameHyperlinkEvent) e;
+                        HTMLDocument doc = (HTMLDocument) pane.getDocument();
                         doc.processHTMLFrameHyperlinkEvent(evt);
                     } else {
                         try {

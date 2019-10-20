@@ -72,18 +72,18 @@ public class SphereSphereCollisionAlgorithm extends CollisionAlgorithm {
 		resultOut.setPersistentManifold(manifoldPtr);
 
 
-		var diff = new v3();
+        v3 diff = new v3();
 		diff.sub(col0.transform, col1.transform);
 
-		var lenSq = diff.lengthSquared();
+        float lenSq = diff.lengthSquared();
 
-		var sphere0 = (SphereShape) col0.shape();
-		var sphere1 = (SphereShape) col1.shape();
-		var radius0 = sphere0.getRadius();
-		var radius1 = sphere1.getRadius();
+        SphereShape sphere0 = (SphereShape) col0.shape();
+        SphereShape sphere1 = (SphereShape) col1.shape();
+        float radius0 = sphere0.getRadius();
+        float radius1 = sphere1.getRadius();
 
 
-		var r01 = radius0 + radius1;
+        float r01 = radius0 + radius1;
 		if (lenSq > r01*r01) {
 			
 			resultOut.refreshContactPoints();
@@ -92,28 +92,28 @@ public class SphereSphereCollisionAlgorithm extends CollisionAlgorithm {
 		}
 
 
-		var normalOnSurfaceB = new v3(1, 0, 0);
+        v3 normalOnSurfaceB = new v3(1, 0, 0);
 
-		var len = (float) Math.sqrt(lenSq);
+        float len = (float) Math.sqrt(lenSq);
 
         if (len > BulletGlobals.FLT_EPSILON) {
 			normalOnSurfaceB.scale(1f / len, diff);
 		}
 
-		var tmp = new v3();
+        v3 tmp = new v3();
 
 
-		var pos0 = new v3();
+        v3 pos0 = new v3();
 		tmp.scale(radius0, normalOnSurfaceB);
 		pos0.sub(col0.transform, tmp);
 
 
-		var pos1 = new v3();
+        v3 pos1 = new v3();
 		tmp.scale(radius1, normalOnSurfaceB);
 		pos1.add(col1.transform, tmp);
 
 
-		var dist = len - r01;
+        float dist = len - r01;
         resultOut.addContactPoint(normalOnSurfaceB, pos1, dist, manifoldPtr.getContactBreakingThreshold());
 
 		
@@ -138,7 +138,7 @@ public class SphereSphereCollisionAlgorithm extends CollisionAlgorithm {
 	public static class CreateFunc extends CollisionAlgorithmCreateFunc {
 		@Override
 		public CollisionAlgorithm createCollisionAlgorithm(CollisionAlgorithmConstructionInfo ci, Collidable body0, Collidable body1) {
-			var algo = new SphereSphereCollisionAlgorithm();
+            SphereSphereCollisionAlgorithm algo = new SphereSphereCollisionAlgorithm();
 			algo.init(null, ci, body0, body1);
 			return algo;
 		}

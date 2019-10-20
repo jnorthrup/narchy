@@ -75,14 +75,14 @@ public class StringSimilarity {
          * Compute JW similarity.
          */
         public final double similarity(String s1, String s2) {
-            var mtp = matches(s1, s2);
+            int[] mtp = matches(s1, s2);
             float m = mtp[0];
             if (m == 0) {
                 return 0f;
             }
             double j = ((m / s1.length() + m / s2.length() + (m - mtp[1]) / m))
                     / THREE;
-            var jw = j;
+            double jw = j;
 
             if (j > getThreshold()) {
                 jw = j + Math.min(JW_COEF, 1.0 / mtp[THREE]) * mtp[2] * (1 - j);
@@ -107,13 +107,13 @@ public class StringSimilarity {
                 max = s2;
                 min = s1;
             }
-            var range = Math.max(max.length() / 2 - 1, 0);
-            var matchIndexes = new int[min.length()];
+            int range = Math.max(max.length() / 2 - 1, 0);
+            int[] matchIndexes = new int[min.length()];
             Arrays.fill(matchIndexes, -1);
-            var matchFlags = new boolean[max.length()];
-            var matches = 0;
-            for (var mi = 0; mi < min.length(); mi++) {
-                var c1 = min.charAt(mi);
+            boolean[] matchFlags = new boolean[max.length()];
+            int matches = 0;
+            for (int mi = 0; mi < min.length(); mi++) {
+                char c1 = min.charAt(mi);
                 for (int xi = Math.max(mi - range, 0),
                      xn = Math.min(mi + range + 1, max.length()); xi < xn; xi++) {
                     if (!matchFlags[xi] && c1 == max.charAt(xi)) {
@@ -124,8 +124,8 @@ public class StringSimilarity {
                     }
                 }
             }
-            var ms1 = new char[matches];
-            var ms2 = new char[matches];
+            char[] ms1 = new char[matches];
+            char[] ms2 = new char[matches];
             for (int i = 0, si = 0; i < min.length(); i++) {
                 if (matchIndexes[i] != -1) {
                     ms1[si] = min.charAt(i);
@@ -138,10 +138,15 @@ public class StringSimilarity {
                     si++;
                 }
             }
-            var count = IntStream.range(0, ms1.length).filter(i -> ms1[i] != ms2[i]).count();
-            var transpositions = (int) count;
-            var prefix = 0;
-            for (var mi = 0; mi < min.length(); mi++) {
+            long count = 0L;
+            for (int i = 0; i < ms1.length; i++) {
+                if (ms1[i] != ms2[i]) {
+                    count++;
+                }
+            }
+            int transpositions = (int) count;
+            int prefix = 0;
+            for (int mi = 0; mi < min.length(); mi++) {
                 if (s1.charAt(mi) == s2.charAt(mi)) {
                     prefix++;
                 } else {

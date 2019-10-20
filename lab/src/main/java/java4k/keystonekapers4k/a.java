@@ -42,26 +42,26 @@ public class a extends Applet implements Runnable {
 	@Override
     public void run() {
 
-		final var S = "\u0000\u00ec\uecec\u6f6f\u6f32\u8432\uaaaa\uaafc\ufc54\ue8e8\u4ad2\ud240\ubbbb\u35a2\ua22a\u8686\u1d48\u4800\ud2a4\u4a18\u1aa7\ud6d6\ud64a\u4a4a\ua71a\u1ab8\u3232\uc848\u48e8\ucc63\u0044\u0042\u72c2\u65a0\ue142\u9e82\u84fc\ud400\u0000\u0006\u1011\u1212\u1110\u0006\u0202\u0202\u0202\n\u0000\u0606\u0606\u0600\u0000\u000e\u0e13\u1313\u1414\u1414\u1414\u1414\u1414\n\u0000\u0a09\u0808\u0808\u090b\n\u0e0e\u0e0e\u0e0e\u0e0e\u0000\f\u0808\u090b\u0806\u0506\u0708\u090a\u0014\u0000\u0000\f\u0c0c\u0c0c\u0d0d\u0d0d\u0d0d\u0d0d\u0d0d\u0014\u0e0f\u0e0c\u0c0c\u0c0c\u0f0e\u0f0e\u0f0e\u0f0e\u0f0f\u0f0f\u0006\u0000\u0000\u0000\u0001\u0202\u0303\u0405\u0607\u0707\u0707\u0707\u0808\u0808\u0809\u003c\u6666\u6666\u663c\u0018\u1c18\u1818\u183c\u003c\u6260\u3c06\u067e\u003c\u6260\u3060\u623c\u0030\u3834\u327e\u3030\u007e\u0606\u3e60\u623e\u003c\u4606\u3e66\u663c\u007e\u4260\u3018\u1818\u003c\u6666\u3c66\u663c\u003c\u6666\u7c60\u623c\u3c7e\u7e7e\u7e3c\u585a\ufafa\ufefe\u001e\uc0cc\ufbf7\u6f1e\u0406\u001e\uc1cd\ufbf6\u6e1e\u0406\u2481\u0000\u3c66\u5adb\ua5ff\ubde7\ubde7\u0000\u1842\u3c66\u5adb\ua5ff\ubde7\ubde7\u3c24\uffff\uffff\uffff\uffff\uff55\u7f55\u7f55\u7f90\ufe66\u006c\u3810\u387c\ufefe\ufefe\ufe7c\u183c\u3c3c\u7e1c\u3c1c\u1c18\u2c7e\u6e7e\u6e7e\u7c7c\u2c7c\u183c\u3c3c\u7e1c\u3c1c\u1c18\u2cbe\uee7e\u6c7e\u7eff\uc101\u183c\u3c3c\u7e9c\ubc9c\u9c98\u7e2f\u7d6c\u7fcd\u0000\u0000\u183c\u3c3c\u7e1c\u3c1c\u1c18\u2cbe\uee7e\u2c3c\u3f3f\uc140\u183c\u3c3c\u7e1c\u3c1c\u1c18\u2c3c\u3c7c\u7c3c\u7e7e\u0a18\u183c\u3c3c\u7e1c\u3c1c\u1c18\u2c3c\u7c7c\u2c7e\u7e3e\u6204\u3078\u7878\ufc38\u7838\u3830\u1c1e\u3f6f\u7f1e\u0e00\u0000\u1c1c\u1c1c\u3c1c\u1c0c\u0e4e\u7e3e\u0c1c\u3e36\u2663\u0101\u1c1c\u1c1c\u3c1c\u1c4c\u4c7e\u3f1d\u1d3c\u7d4f\u46c0\u0000\u1c1c\u1c1c\u3c1c\u1c0c\u0e4e\u7e3e\u0c1c\u1c14\u1711\u6120\u1c1c\u1c1c\u3c1c\u1c0c\u0c1c\u1c3c\u3c1c\u3c68\u7e0a\u0a18\u1c1c\u1c1c\u3c1c\u1c0c\u0c1c\u3c3c\u1c3c\u7466\u4622\u4204\u3078\u7878\u78fc";
+		final String S = "\u0000\u00ec\uecec\u6f6f\u6f32\u8432\uaaaa\uaafc\ufc54\ue8e8\u4ad2\ud240\ubbbb\u35a2\ua22a\u8686\u1d48\u4800\ud2a4\u4a18\u1aa7\ud6d6\ud64a\u4a4a\ua71a\u1ab8\u3232\uc848\u48e8\ucc63\u0044\u0042\u72c2\u65a0\ue142\u9e82\u84fc\ud400\u0000\u0006\u1011\u1212\u1110\u0006\u0202\u0202\u0202\n\u0000\u0606\u0606\u0600\u0000\u000e\u0e13\u1313\u1414\u1414\u1414\u1414\u1414\n\u0000\u0a09\u0808\u0808\u090b\n\u0e0e\u0e0e\u0e0e\u0e0e\u0000\f\u0808\u090b\u0806\u0506\u0708\u090a\u0014\u0000\u0000\f\u0c0c\u0c0c\u0d0d\u0d0d\u0d0d\u0d0d\u0d0d\u0014\u0e0f\u0e0c\u0c0c\u0c0c\u0f0e\u0f0e\u0f0e\u0f0e\u0f0f\u0f0f\u0006\u0000\u0000\u0000\u0001\u0202\u0303\u0405\u0607\u0707\u0707\u0707\u0808\u0808\u0809\u003c\u6666\u6666\u663c\u0018\u1c18\u1818\u183c\u003c\u6260\u3c06\u067e\u003c\u6260\u3060\u623c\u0030\u3834\u327e\u3030\u007e\u0606\u3e60\u623e\u003c\u4606\u3e66\u663c\u007e\u4260\u3018\u1818\u003c\u6666\u3c66\u663c\u003c\u6666\u7c60\u623c\u3c7e\u7e7e\u7e3c\u585a\ufafa\ufefe\u001e\uc0cc\ufbf7\u6f1e\u0406\u001e\uc1cd\ufbf6\u6e1e\u0406\u2481\u0000\u3c66\u5adb\ua5ff\ubde7\ubde7\u0000\u1842\u3c66\u5adb\ua5ff\ubde7\ubde7\u3c24\uffff\uffff\uffff\uffff\uff55\u7f55\u7f55\u7f90\ufe66\u006c\u3810\u387c\ufefe\ufefe\ufe7c\u183c\u3c3c\u7e1c\u3c1c\u1c18\u2c7e\u6e7e\u6e7e\u7c7c\u2c7c\u183c\u3c3c\u7e1c\u3c1c\u1c18\u2cbe\uee7e\u6c7e\u7eff\uc101\u183c\u3c3c\u7e9c\ubc9c\u9c98\u7e2f\u7d6c\u7fcd\u0000\u0000\u183c\u3c3c\u7e1c\u3c1c\u1c18\u2cbe\uee7e\u2c3c\u3f3f\uc140\u183c\u3c3c\u7e1c\u3c1c\u1c18\u2c3c\u3c7c\u7c3c\u7e7e\u0a18\u183c\u3c3c\u7e1c\u3c1c\u1c18\u2c3c\u7c7c\u2c7e\u7e3e\u6204\u3078\u7878\ufc38\u7838\u3830\u1c1e\u3f6f\u7f1e\u0e00\u0000\u1c1c\u1c1c\u3c1c\u1c0c\u0e4e\u7e3e\u0c1c\u3e36\u2663\u0101\u1c1c\u1c1c\u3c1c\u1c4c\u4c7e\u3f1d\u1d3c\u7d4f\u46c0\u0000\u1c1c\u1c1c\u3c1c\u1c0c\u0e4e\u7e3e\u0c1c\u1c14\u1711\u6120\u1c1c\u1c1c\u3c1c\u1c0c\u0c1c\u1c3c\u3c1c\u3c68\u7e0a\u0a18\u1c1c\u1c1c\u3c1c\u1c0c\u0c1c\u3c3c\u1c3c\u7466\u4622\u4204\u3078\u7878\u78fc";
 
-		final var SPRITE_RADIO_2 = 5;
-		final var SPRITE_COP_RUNNING_2 = 11;
-        final var SPRITE_COP_RUNNING_3 = 12;
-		final var SPRITE_COP_RUNNING_4 = 13;
-		final var SPRITE_ROBBER_2 = 17;
-		final var SPRITE_ROBBER_3 = 18;
-		final var SPRITE_ROBBER_4 = 19;
+		final int SPRITE_RADIO_2 = 5;
+		final int SPRITE_COP_RUNNING_2 = 11;
+        final int SPRITE_COP_RUNNING_3 = 12;
+		final int SPRITE_COP_RUNNING_4 = 13;
+		final int SPRITE_ROBBER_2 = 17;
+		final int SPRITE_ROBBER_3 = 18;
+		final int SPRITE_ROBBER_4 = 19;
 
         int i;
 		int j;
 
-		var image = new BufferedImage(152, 177, 1);
-		var g = (Graphics2D) image.getGraphics();
-		var random = new Random();
+        BufferedImage image = new BufferedImage(152, 177, 1);
+        Graphics2D g = (Graphics2D) image.getGraphics();
+        Random random = new Random();
 
 
-		var colors = new Color[26];
-		var colorValues = new int[26];
+        Color[] colors = new Color[26];
+        int[] colorValues = new int[26];
 		for (i = 0; i < 13; i++) {
 			j = S.charAt(i * 3 + 1);
 			colorValues[i << 1] = 0xFF000000 | (S.charAt(i * 3) << 8) | (j >> 8);
@@ -71,7 +71,7 @@ public class a extends Applet implements Runnable {
 		}
 
 
-		var palettes = new int[10][];
+        int[][] palettes = new int[10][];
         int x;
         int k;
         for (i = 0, k = 39; i < 10; i++) {
@@ -84,8 +84,8 @@ public class a extends Applet implements Runnable {
 		}
 
 
-		var digitSprites = new BufferedImage[4096][10];
-		var pixels = new int[8];
+        BufferedImage[][] digitSprites = new BufferedImage[4096][10];
+        int[] pixels = new int[8];
         int y;
         for (i = 0; i < 4096; i++) {
 			for (j = 0; j < 10; j++) {
@@ -106,10 +106,10 @@ public class a extends Applet implements Runnable {
 
 
         j = 157;
-		var sprites = new BufferedImage[2][22];
-		var pixels2 = new int[8];
-        final var ORIENTATION_REVERSED = 1;
-		final var ORIENTATION_ORIGINAL = 0;
+        BufferedImage[][] sprites = new BufferedImage[2][22];
+        int[] pixels2 = new int[8];
+        final int ORIENTATION_REVERSED = 1;
+		final int ORIENTATION_ORIGINAL = 0;
 		for (i = 0; i < 22; i++) {
             int z = S.charAt(106 + (i >> 1));
             if ((i & 1) == 0) {
@@ -134,125 +134,125 @@ public class a extends Applet implements Runnable {
 		}
 
 
-		var SKY_COLORS = new Color[36];
+        Color[] SKY_COLORS = new Color[36];
         for (i = 0; i <= 35; i++) {
-			var scale = (i / 35f);
+            float scale = (i / 35f);
 			scale = scale * scale * scale;
 			scale *= scale;
 			SKY_COLORS[i] = new Color(Color.HSBtoRGB((184 * scale - 124) / 360f, .6f + 0.11f * scale, .83f - 0.1f * scale));
 		}
 
-		var nextFrameStartTime = System.nanoTime();
-		var queue = new ArrayList<int[]>();
+        long nextFrameStartTime = System.nanoTime();
+        ArrayList<int[]> queue = new ArrayList<int[]>();
         Graphics2D g2 = null;
-		final var ROBBER_SPEED = 0.5f;
-		var robberVx = ROBBER_SPEED;
+		final float ROBBER_SPEED = 0.5f;
+        float robberVx = ROBBER_SPEED;
         float robberX = 524;
         float copY = 133;
         float copVy = 0;
         float ballBounceVy = 0;
         float ballBounceY = 0;
-		var playing = false;
-		var advancing = false;
-		var newGameRequest = false;
-		var resetRequest = false;
-		var insideElevator = false;
-		var stepping = false;
-		var jumpReleased = true;
-		var jumping = false;
-		var map = new int[4][8];
-		var robberVy = -32;
-		var robberOrientation = ORIENTATION_ORIGINAL;
-		final var SPRITE_ROBBER_1 = 16;
-		var robberSprite = SPRITE_ROBBER_1;
-		var robberY = 101;
-		var copOrientation = ORIENTATION_ORIGINAL;
-		final var SPRITE_COP_STANDING = 9;
-		var copSprite = SPRITE_COP_STANDING;
-		var copX = 1132;
-		final var SPRITE_AIRPLANE_1 = 2;
-		var airplaneSprite = SPRITE_AIRPLANE_1;
-		final var SPRITE_RADIO_1 = 4;
-		var radioSprite = SPRITE_RADIO_1;
-		var elevatorDirection = -1;
-		var elevatorFloor = 1;
-		var groundY = 133;
-		var oldRoom = 7;
-		var room = 7;
-		var extraLives = 3;
-		var stairsOffset = 3;
-		var timeRemaining = 50;
-		var colorCounter = 0;
-		var hitPlaneDelay = 0;
-		var robberCounter = 0;
-		var level = 0;
-		var copVx = 0;
-		var enemyDirection = 0;
-		var penaltyFloor = 0;
-		var penaltyCount = 0;
-		var elevatorCounter = 0;
-		var stairsCounter = 0;
-		var cameraX = 0;
-		var timeCounter = 0;
-		var score = 0;
-        final var OBJ_FLOOR = 8;
-        final var OBJ_TYPE = 7;
-        final var OBJ_Y3 = 6;
-        final var OBJ_Y2 = 5;
-        final var OBJ_Y1 = 4;
-        final var OBJ_ORIENTATION = 3;
-        final var OBJ_SPRITE = 2;
-        final var OBJ_Y = 1;
-        final var OBJ_X = 0;
-        final var MAP_EMPTY = 6;
-        final var MAP_AIRPLANE = 5;
-        final var MAP_SHOPPING_CART = 4;
-        final var MAP_RADIO = 3;
-        final var MAP_BALL = 2;
-        final var MAP_SUITCASE = 1;
-        final var MAP_MONEY_BAG = 0;
-        final var ELEVATOR_CLOSED = 244;
-        final var ELEVATOR_CLOSING = 130;
-        final var ELEVATOR_OPENED = 122;
-        final var ELEVATOR_OPENING = 8;
-        final var SPRITE_HAT = 21;
-        final var SPRITE_ROBBER_5 = 20;
-        final var SPRITE_COP_DUCKING = 15;
-        final var SPRITE_COP_RUNNING_5 = 14;
-        final var SPRITE_COP_JUMPING = 11;
-        final var SPRITE_COP_RUNNING_1 = 10;
-        final var SPRITE_MONEY_BAG = 8;
-        final var SPRITE_SHOPPING_CART = 7;
-        final var SPRITE_SUITCASE = 6;
-        final var SPRITE_AIRPLANE_2 = 3;
-        final var SPRITE_CITYSCAPE = 1;
-        final var SPRITE_BALL = 0;
-        final var DIGITS_WHITE = 1;
-        final var DIGITS_BLACK = 0;
-        final var COLOR_ELEVATOR_TOP = 24;
-        final var COLOR_ELEVATOR_BOTTOM = 23;
-        final var COLOR_TABLE_TOP = 22;
-        final var COLOR_TABLE_BOTTOM = 21;
-        final var COLOR_ELEVATOR_DOOR = 20;
-        final var COLOR_ESCALATOR = 20;
-        final var COLOR_STAIRS = 14;
-        final var COLOR_PILLAR = 14;
-        final var COLOR_FLOOR_2 = 9;
-        final var COLOR_FLOOR_1 = 8;
-        final var COLOR_BASEMENT = 4;
-        final var COLOR_WALL = 3;
-        final var COLOR_CITYSCAPE = 2;
-        final var COLOR_WHITE = 1;
-        final var COLOR_BLACK = 0;
-        final var VK_JUMP = 0x44;
-        final var VK_DOWN = 0x28;
-        final var VK_RIGHT = 0x27;
-        final var VK_LEFT = 0x25;
-        final var HIGH_BALL_SPEED = -.55f;
-        final var LOW_BALL_SPEED = -.4f;
-        final var BALL_GRAVITY = 0.007f;
-        final var GRAVITY = 0.07f;
-        final var JUMP_SPEED = -1.2f;
+        boolean playing = false;
+        boolean advancing = false;
+        boolean newGameRequest = false;
+        boolean resetRequest = false;
+        boolean insideElevator = false;
+        boolean stepping = false;
+        boolean jumpReleased = true;
+        boolean jumping = false;
+        int[][] map = new int[4][8];
+        int robberVy = -32;
+        int robberOrientation = ORIENTATION_ORIGINAL;
+		final int SPRITE_ROBBER_1 = 16;
+        int robberSprite = SPRITE_ROBBER_1;
+        int robberY = 101;
+        int copOrientation = ORIENTATION_ORIGINAL;
+		final int SPRITE_COP_STANDING = 9;
+        int copSprite = SPRITE_COP_STANDING;
+        int copX = 1132;
+		final int SPRITE_AIRPLANE_1 = 2;
+        int airplaneSprite = SPRITE_AIRPLANE_1;
+		final int SPRITE_RADIO_1 = 4;
+        int radioSprite = SPRITE_RADIO_1;
+        int elevatorDirection = -1;
+        int elevatorFloor = 1;
+        int groundY = 133;
+        int oldRoom = 7;
+        int room = 7;
+        int extraLives = 3;
+        int stairsOffset = 3;
+        int timeRemaining = 50;
+        int colorCounter = 0;
+        int hitPlaneDelay = 0;
+        int robberCounter = 0;
+        int level = 0;
+        int copVx = 0;
+        int enemyDirection = 0;
+        int penaltyFloor = 0;
+        int penaltyCount = 0;
+        int elevatorCounter = 0;
+        int stairsCounter = 0;
+        int cameraX = 0;
+        int timeCounter = 0;
+        int score = 0;
+        final int OBJ_FLOOR = 8;
+        final int OBJ_TYPE = 7;
+        final int OBJ_Y3 = 6;
+        final int OBJ_Y2 = 5;
+        final int OBJ_Y1 = 4;
+        final int OBJ_ORIENTATION = 3;
+        final int OBJ_SPRITE = 2;
+        final int OBJ_Y = 1;
+        final int OBJ_X = 0;
+        final int MAP_EMPTY = 6;
+        final int MAP_AIRPLANE = 5;
+        final int MAP_SHOPPING_CART = 4;
+        final int MAP_RADIO = 3;
+        final int MAP_BALL = 2;
+        final int MAP_SUITCASE = 1;
+        final int MAP_MONEY_BAG = 0;
+        final int ELEVATOR_CLOSED = 244;
+        final int ELEVATOR_CLOSING = 130;
+        final int ELEVATOR_OPENED = 122;
+        final int ELEVATOR_OPENING = 8;
+        final int SPRITE_HAT = 21;
+        final int SPRITE_ROBBER_5 = 20;
+        final int SPRITE_COP_DUCKING = 15;
+        final int SPRITE_COP_RUNNING_5 = 14;
+        final int SPRITE_COP_JUMPING = 11;
+        final int SPRITE_COP_RUNNING_1 = 10;
+        final int SPRITE_MONEY_BAG = 8;
+        final int SPRITE_SHOPPING_CART = 7;
+        final int SPRITE_SUITCASE = 6;
+        final int SPRITE_AIRPLANE_2 = 3;
+        final int SPRITE_CITYSCAPE = 1;
+        final int SPRITE_BALL = 0;
+        final int DIGITS_WHITE = 1;
+        final int DIGITS_BLACK = 0;
+        final int COLOR_ELEVATOR_TOP = 24;
+        final int COLOR_ELEVATOR_BOTTOM = 23;
+        final int COLOR_TABLE_TOP = 22;
+        final int COLOR_TABLE_BOTTOM = 21;
+        final int COLOR_ELEVATOR_DOOR = 20;
+        final int COLOR_ESCALATOR = 20;
+        final int COLOR_STAIRS = 14;
+        final int COLOR_PILLAR = 14;
+        final int COLOR_FLOOR_2 = 9;
+        final int COLOR_FLOOR_1 = 8;
+        final int COLOR_BASEMENT = 4;
+        final int COLOR_WALL = 3;
+        final int COLOR_CITYSCAPE = 2;
+        final int COLOR_WHITE = 1;
+        final int COLOR_BLACK = 0;
+        final int VK_JUMP = 0x44;
+        final int VK_DOWN = 0x28;
+        final int VK_RIGHT = 0x27;
+        final int VK_LEFT = 0x25;
+        final float HIGH_BALL_SPEED = -.55f;
+        final float LOW_BALL_SPEED = -.4f;
+        final float BALL_GRAVITY = 0.007f;
+        final float GRAVITY = 0.07f;
+        final float JUMP_SPEED = -1.2f;
         while (true) {
 
             int[] object;
@@ -1033,14 +1033,14 @@ public class a extends Applet implements Runnable {
 	@Override
 	public void processKeyEvent(KeyEvent keyEvent) {
 
-		var k = keyEvent.getKeyCode();
+        int k = keyEvent.getKeyCode();
 		if (k > 0) {
-            final var VK_S = 0x53;
-            final var VK_D = 0x44;
-            final var VK_A = 0x41;
-            final var VK_DOWN = 0x28;
-            final var VK_RIGHT = 0x27;
-            final var VK_LEFT = 0x25;
+            final int VK_S = 0x53;
+            final int VK_D = 0x44;
+            final int VK_A = 0x41;
+            final int VK_DOWN = 0x28;
+            final int VK_RIGHT = 0x27;
+            final int VK_LEFT = 0x25;
             switch (k) {
                 case VK_A:
                     k = VK_LEFT;
@@ -1052,7 +1052,7 @@ public class a extends Applet implements Runnable {
                     k = VK_DOWN;
                     break;
             }
-            final var VK_JUMP = 0x44;
+            final int VK_JUMP = 0x44;
             a[(k == VK_LEFT || k == VK_RIGHT || k == VK_DOWN) ? k : VK_JUMP] = keyEvent.getID() != 402;
 		}
 	}

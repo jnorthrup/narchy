@@ -140,9 +140,9 @@ public class VerletPhysics2D {
     }
 
     public Rect getCurrentBounds() {
-        var min = new Vec2D(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
-        var max = new Vec2D(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
-        for (var p : particles) {
+        Vec2D min = new Vec2D(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+        Vec2D max = new Vec2D(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
+        for (VerletParticle2D p : particles) {
             min.minSelf(p);
             max.maxSelf(p);
         }
@@ -169,7 +169,7 @@ public class VerletPhysics2D {
      * @return spring instance, or null if not found
      */
     public VerletSpring2D getSpring(Vec2D a, Vec2D b) {
-        for (var s : springs) {
+        for (VerletSpring2D s : springs) {
             if ((s.a == a && s.b == b) || (s.a == b && s.b == a)) {
                 return s;
             }
@@ -264,24 +264,24 @@ public class VerletPhysics2D {
     public VerletPhysics2D update(float dt) {
 
 
-        var maxTimeStep = 1f;
+        float maxTimeStep = 1f;
         dt = Math.min(dt, maxTimeStep); //hard uppper limit on timestep
 
-        var ii = 0;
+        int ii = 0;
         while (++ii < maxIterations) {
             //in seconds
-            var minTimeStep = 0.01f;
+            float minTimeStep = 0.01f;
             if (dt / ii < minTimeStep)
                 break;
             //else: further subdivide
         }
 
-        var subDT = dt / ii;
+        float subDT = dt / ii;
 
-        for (var b : behaviors)
+        for (ParticleBehavior2D b : behaviors)
             b.configure(subDT);
 
-        for (var i = ii - 1; i >= 0; i--) {
+        for (int i = ii - 1; i >= 0; i--) {
             preUpdate(subDT);
             spring(subDT);
             postUpdate();
@@ -292,7 +292,7 @@ public class VerletPhysics2D {
 
     private void index(boolean force) {
         if (index != null) {
-            for (var p : particles) {
+            for (VerletParticle2D p : particles) {
                 assert (p != null);
                 if (force || p.changed(epsilon)) {
                     index.reindex(p, VerletParticle2D::commit);
@@ -301,7 +301,7 @@ public class VerletPhysics2D {
                 }
             }
         } else {
-            for (var p : particles)
+            for (VerletParticle2D p : particles)
                 p.commit();
         }
     }
@@ -319,8 +319,8 @@ public class VerletPhysics2D {
     }
 
     protected void postUpdate() {
-        var hasGlobalConstraints = !constraints.isEmpty();
-        for (var p : particles) {
+        boolean hasGlobalConstraints = !constraints.isEmpty();
+        for (VerletParticle2D p : particles) {
             p.postUpdate(drag);
 
             if (hasGlobalConstraints) {

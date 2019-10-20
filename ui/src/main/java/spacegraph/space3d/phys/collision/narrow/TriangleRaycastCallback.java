@@ -48,55 +48,55 @@ public abstract class TriangleRaycastCallback extends TriangleCallback {
 	
 	@Override
     public void processTriangle(v3[] triangle, int partId, int triangleIndex) {
-		var vert0 = triangle[0];
-		var vert1 = triangle[1];
-		var vert2 = triangle[2];
+        v3 vert0 = triangle[0];
+        v3 vert1 = triangle[1];
+        v3 vert2 = triangle[2];
 
-		var v10 = new v3();
+        v3 v10 = new v3();
 		v10.sub(vert1, vert0);
 
-		var v20 = new v3();
+        v3 v20 = new v3();
 		v20.sub(vert2, vert0);
 
-		var triangleNormal = new v3();
+        v3 triangleNormal = new v3();
 		triangleNormal.cross(v10, v20);
 
-		var dist = vert0.dot(triangleNormal);
-		var dist_a = triangleNormal.dot(from);
+        float dist = vert0.dot(triangleNormal);
+        float dist_a = triangleNormal.dot(from);
 		dist_a -= dist;
-		var dist_b = triangleNormal.dot(to);
+        float dist_b = triangleNormal.dot(to);
 		dist_b -= dist;
 
 		if (dist_a * dist_b >= 0f) {
 			return; 
 		}
 
-		var proj_length = dist_a - dist_b;
-		var distance = (dist_a) / (proj_length);
+        float proj_length = dist_a - dist_b;
+        float distance = (dist_a) / (proj_length);
 		
 		
 		
 		
 
 		if (distance < hitFraction) {
-			var edge_tolerance = triangleNormal.lengthSquared();
+            float edge_tolerance = triangleNormal.lengthSquared();
 			edge_tolerance *= -0.0001f;
-			var point = new v3();
+            v3 point = new v3();
 			VectorUtil.lerp(point, from, to, distance);
-			var v0p = new v3();
+            v3 v0p = new v3();
             v0p.sub(vert0, point);
-			var v1p = new v3();
+            v3 v1p = new v3();
             v1p.sub(vert1, point);
-			var cp0 = new v3();
+            v3 cp0 = new v3();
             cp0.cross(v0p, v1p);
 
             if (cp0.dot(triangleNormal) >= edge_tolerance) {
-				var v2p = new v3();
+                v3 v2p = new v3();
                 v2p.sub(vert2, point);
-				var cp1 = new v3();
+                v3 cp1 = new v3();
                 cp1.cross(v1p, v2p);
                 if (cp1.dot(triangleNormal) >= edge_tolerance) {
-					var cp2 = new v3();
+                    v3 cp2 = new v3();
                     cp2.cross(v2p, v0p);
 
                     if (cp2.dot(triangleNormal) >= edge_tolerance) {
@@ -105,7 +105,7 @@ public abstract class TriangleRaycastCallback extends TriangleCallback {
                             hitFraction = reportHit(triangleNormal, distance, partId, triangleIndex);
                         }
                         else {
-							var tmp = new v3();
+                            v3 tmp = new v3();
                             tmp.negated(triangleNormal);
                             hitFraction = reportHit(tmp, distance, partId, triangleIndex);
                         }

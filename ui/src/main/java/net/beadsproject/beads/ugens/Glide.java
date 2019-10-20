@@ -111,7 +111,7 @@ public class Glide extends UGen {
     public void gen() {
         if (!nothingChanged) {
             nothingChanged = true;
-            for (var i = 0; i < bufferSize; i++) {
+            for (int i = 0; i < bufferSize; i++) {
                 if (gliding) {
                     if (glideTime <= 0f) {
                         gliding = false;
@@ -121,7 +121,7 @@ public class Glide extends UGen {
                         gliding = false;
                         bufOut[0][i] = previousValue = targetValue;
                     } else {
-                        var offset = ((float) countSinceGlide / glideTime);
+                        float offset = ((float) countSinceGlide / glideTime);
                         bufOut[0][i] = currentValue = offset * targetValue + (1f - offset) * previousValue;
                         nothingChanged = false;
                     }

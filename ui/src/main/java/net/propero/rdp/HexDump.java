@@ -41,10 +41,10 @@ enum HexDump { ;
      * @param msg  Message to include with outputted hex debug messages
      */
     public static void encode(byte[] data, String msg/* PrintStream out */) {
-        var count = 0;
+        int count = 0;
 
         while (count < data.length) {
-            var index = Integer.toHexString(count);
+            String index = Integer.toHexString(count);
             switch (index.length()) {
                 case (1):
                     index = "0000000" + index;
@@ -75,11 +75,11 @@ enum HexDump { ;
 
             index += ": ";
             
-            for (var i = 0; i < 16; i++) {
+            for (int i = 0; i < 16; i++) {
                 if (count >= data.length) {
                     break;
                 }
-                var number = Integer.toHexString((data[count] & 0x000000ff));
+                String number = Integer.toHexString((data[count] & 0x000000ff));
                 switch (number.length()) {
                     case (1):
                         number = "0" + number;

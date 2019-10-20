@@ -38,13 +38,13 @@ public final class TermMatch<X extends Unify> extends AbstractTermMatchPred<X> {
     }
 
     private static Term name(TermMatcher match, @Deprecated Function resolve) {
-        var mc = match.getClass();
-        var cc = mc.isAnonymousClass() ? match.toString() : mc.getSimpleName();
+        Class<? extends TermMatcher> mc = match.getClass();
+        String cc = mc.isAnonymousClass() ? match.toString() : mc.getSimpleName();
         if (cc.isEmpty())
             throw new WTF();
-        var a = Atomic.the(cc);
-        var r = $.$$(resolve.toString());
-        var p = match.param();
+        Atomic a = Atomic.the(cc);
+        Term r = $.$$(resolve.toString());
+        Term p = match.param();
         return p!=null ? $.func(a, r, p) : $.func(a, r);
     }
 
@@ -54,14 +54,14 @@ public final class TermMatch<X extends Unify> extends AbstractTermMatchPred<X> {
         if (resolveCost == 0)
             return false; //dont bother grouping root accessors
 
-        var other = p.stream().filter(x -> x != this && x instanceof TermMatch).map(x -> ((TermMatch) x)).filter(t -> resolve.equals(t.resolve)).findFirst().orElse(null);
+        TermMatch other = p.stream().filter(x -> x != this && x instanceof TermMatch).map(x -> ((TermMatch) x)).filter(t -> resolve.equals(t.resolve)).findFirst().orElse(null);
         if (other!=null) {
 
-            var myIndex = ((FasterList)p).indexOfInstance(this);
+            int myIndex = ((FasterList)p).indexOfInstance(this);
             TermMatch a = this; p.remove(this);
-            var b = other; ((FasterList)p).removeFirstInstance(other);
+            TermMatch b = other; ((FasterList)p).removeFirstInstance(other);
             if (a.match.cost() > b.match.cost()) {
-                var x = a;
+                TermMatch x = a;
                 a = b;
                 b = x;
             }

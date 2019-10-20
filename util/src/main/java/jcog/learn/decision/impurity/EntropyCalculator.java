@@ -23,11 +23,11 @@ public class EntropyCalculator implements ImpurityCalculator {
      */
     @Override
     public <K, V> double impurity(K value, Supplier<Stream<Function<K, V>>> splitData) {
-        var labels = splitData.get().map((x) -> x.apply(value)).distinct().collect(Collectors.toList());
+        List<V> labels = splitData.get().map((x) -> x.apply(value)).distinct().collect(Collectors.toList());
         if (labels.size() > 1) {
             // TODO this can be done faster by comparing each all at once
             return labels.stream().mapToDouble(l -> {
-                var p = ImpurityCalculator.empiricalProb(value, splitData.get(), l);
+                double p = ImpurityCalculator.empiricalProb(value, splitData.get(), l);
                 return -1.0 * p * DoubleMath.log2(p) - ((1.0 - p) * DoubleMath.log2(1.0 - p));
             }).sum();
         } else if (labels.size() == 1) {

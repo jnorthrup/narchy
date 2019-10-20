@@ -50,11 +50,11 @@ public class Ramped implements Generation {
     public List<Node> generate(int popSize) {
 
 
-        var popSizeGrow = popSize /2;
-        var popSizeFull = popSize-popSizeGrow;
+        int popSizeGrow = popSize /2;
+        int popSizeFull = popSize-popSizeGrow;
 
-        var grow = this.full.generate(popSizeGrow);
-        var full = this.grow.generate(popSizeFull);
+        List<Node> grow = this.full.generate(popSizeGrow);
+        List<Node> full = this.grow.generate(popSizeFull);
 
         List<Node> population = new ArrayList<>(grow.size() + full.size());
         population.addAll(grow);

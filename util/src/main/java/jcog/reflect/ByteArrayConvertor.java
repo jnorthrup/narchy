@@ -51,8 +51,8 @@ public class ByteArrayConvertor {
         if (bytes == null) {
             throw new IllegalArgumentException("bytes==null");
         }
-        var sb = new StringBuilder();
-        for (var aByte : bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte aByte : bytes) {
             sb.append(getHex(aByte));
         }
         return sb.toString();
@@ -68,8 +68,13 @@ public class ByteArrayConvertor {
         if (bytes == null) {
             throw new IllegalArgumentException("bytes==null");
         }
-        var result = Arrays.stream(bytes).map(ByteArrayConvertor::getHex).collect(Collectors.joining());
-        var sb = result;
+        StringBuilder sb1 = new StringBuilder();
+        for (Byte aByte : bytes) {
+            String hex = getHex(aByte);
+            sb1.append(hex);
+        }
+        String result = sb1.toString();
+        String sb = result;
         return sb;
     }
 
@@ -95,9 +100,9 @@ public class ByteArrayConvertor {
 
     public static byte[] decodeHex(CharSequence bytes) {
         if (bytes == null) throw new IllegalArgumentException("bytes==null");
-        var len = bytes.length();
-        var data = new byte[len / 2];
-        for (var i = 0; i < len; i += 2) {
+        int len = bytes.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
             data[i / 2] = (byte) ((Character.digit(bytes.charAt(i), 16) << 4)
                     + Character.digit(bytes.charAt(i + 1), 16));
         }
@@ -107,9 +112,9 @@ public class ByteArrayConvertor {
 
     public static Byte[] decodeHexBytes(CharSequence bytes) {
         if (bytes == null) throw new IllegalArgumentException("bytes==null");
-        var len = bytes.length();
-        var data = new Byte[len / 2];
-        for (var i = 0; i < len; i += 2) {
+        int len = bytes.length();
+        Byte[] data = new Byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
             data[i / 2] = (byte) ((Character.digit(bytes.charAt(i), 16) << 4)
                     + Character.digit(bytes.charAt(i + 1), 16));
         }
@@ -118,7 +123,7 @@ public class ByteArrayConvertor {
 
     static final Function<Object, String> toString = (srcData) -> {
         if ((srcData instanceof byte[])) {
-            var bytes = (byte[]) srcData;
+            byte[] bytes = (byte[]) srcData;
             return encodeHex(bytes);
         } else {
             return null;

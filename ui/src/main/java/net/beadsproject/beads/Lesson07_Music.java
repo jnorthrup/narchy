@@ -12,7 +12,7 @@ class Lesson07_Music {
     public static class Music1 {
         public static void main(String[] args) {
 
-            var ac = new AudioContext();
+            AudioContext ac = new AudioContext();
             /*
              * In this example a Clock is used to trigger events. We do this by
              * adding a listener to the Clock (which is of type Bead).
@@ -23,20 +23,20 @@ class Lesson07_Music {
              * This example is more sophisticated than the previous ones. It uses
              * nested code.
              */
-            var clock = ac.clock(800f, new Auvent() {
+            Clock clock = ac.clock(800f, new Auvent() {
 
                         int pitch;
 
                         @Override
                         public void on(Auvent message) {
-                            var c = (Clock) message;
+                            Clock c = (Clock) message;
                             if (c.isBeat()) {
 
                                 if (random(1) < 0.5) return;
                                 pitch = Pitch.forceToScale((int) random(12), Pitch.dorian);
-                                var freq = Pitch.mtof(pitch + (int) random(5) * 12 + 32);
-                                var wp = new WavePlayer(ac, freq, WaveFactory.SINE);
-                                var g = new Gain(ac, 1, new Envelope(ac, 0));
+                                float freq = Pitch.mtof(pitch + (int) random(5) * 12 + 32);
+                                WavePlayer wp = new WavePlayer(ac, freq, WaveFactory.SINE);
+                                Gain g = new Gain(ac, 1, new Envelope(ac, 0));
                                 g.in(wp);
                                 ac.out.in(g);
                                 ((Envelope) g.getGainUGen()).add(0.1f, random(200));
@@ -44,25 +44,25 @@ class Lesson07_Music {
                             }
                             if (c.getCount() % 4 == 0) {
 
-                                var pitchAlt = pitch;
+                                int pitchAlt = pitch;
                                 if (random(1) < 0.2)
                                     pitchAlt = Pitch.forceToScale((int) random(12), Pitch.dorian) + (int) random(2) * 12;
-                                var freq = Pitch.mtof(pitchAlt + 32);
-                                var wp = new WavePlayer(ac, freq, WaveFactory.SQUARE);
-                                var g = new Gain(ac, 1, new Envelope(ac, 0));
+                                float freq = Pitch.mtof(pitchAlt + 32);
+                                WavePlayer wp = new WavePlayer(ac, freq, WaveFactory.SQUARE);
+                                Gain g = new Gain(ac, 1, new Envelope(ac, 0));
                                 g.in(wp);
-                                var p = new Panner(ac, random(1));
+                                Panner p = new Panner(ac, random(1));
                                 p.in(g);
                                 ac.out.in(p);
-                                var gain = (Envelope) g.getGainUGen();
+                                Envelope gain = (Envelope) g.getGainUGen();
                                 gain.add(random(0.1), random(50));
                                 ((Envelope) g.getGainUGen()).add(0, random(400), p.die());
                             }
                             if (c.getCount() % 4 == 0) {
-                                var n = new Noise(ac);
-                                var g = new Gain(ac, 1, new Envelope(ac, 0.05f));
+                                Noise n = new Noise(ac);
+                                Gain g = new Gain(ac, 1, new Envelope(ac, 0.05f));
                                 g.in(n);
-                                var p = new Panner(ac, random(0.5) + 0.5f);
+                                Panner p = new Panner(ac, random(0.5) + 0.5f);
                                 p.in(g);
                                 ac.out.in(p);
                                 ((Envelope) g.getGainUGen()).add(0, random(100), p.die());

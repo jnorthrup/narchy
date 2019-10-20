@@ -136,8 +136,8 @@ public class RotationalLimitMotor {
 			return 0.0f;
 		}
 
-		var target_velocity = this.targetVelocity;
-		var maxMotorForce = this.maxMotorForce;
+        float target_velocity = this.targetVelocity;
+        float maxMotorForce = this.maxMotorForce;
 
 		
 		if (currentLimit != 0) {
@@ -148,22 +148,22 @@ public class RotationalLimitMotor {
 		maxMotorForce *= timeStep;
 
 
-		var vel_diff = body0.getAngularVelocity(new v3());
+        v3 vel_diff = body0.getAngularVelocity(new v3());
 		if (body1 != null) {
 			vel_diff.sub(body1.getAngularVelocity(new v3()));
 		}
 
-		var rel_vel = axis.dot(vel_diff);
+        float rel_vel = axis.dot(vel_diff);
 
 
-		var motor_relvel = limitSoftness * (target_velocity - damping * rel_vel);
+        float motor_relvel = limitSoftness * (target_velocity - damping * rel_vel);
 
 		if (motor_relvel < BulletGlobals.FLT_EPSILON && motor_relvel > -BulletGlobals.FLT_EPSILON) {
 			return 0.0f; 
 		}
 
 
-		var unclippedMotorImpulse = (1 + bounce) * motor_relvel * jacDiagABInv;
+        float unclippedMotorImpulse = (1 + bounce) * motor_relvel * jacDiagABInv;
 
 		
 		float clippedMotorImpulse;
@@ -177,16 +177,16 @@ public class RotationalLimitMotor {
 		}
 
 
-		var lo = -1e30f;
-		var hi = 1e30f;
+        float lo = -1e30f;
+        float hi = 1e30f;
 
-		var oldaccumImpulse = accumulatedImpulse;
-		var sum = oldaccumImpulse + clippedMotorImpulse;
+        float oldaccumImpulse = accumulatedImpulse;
+        float sum = oldaccumImpulse + clippedMotorImpulse;
 		accumulatedImpulse = sum > hi ? 0f : sum < lo ? 0f : sum;
 
 		clippedMotorImpulse = accumulatedImpulse - oldaccumImpulse;
 
-		var motorImp = new v3();
+        v3 motorImp = new v3();
 		motorImp.scale(clippedMotorImpulse, axis);
 
 		body0.torqueImpulse(motorImp);

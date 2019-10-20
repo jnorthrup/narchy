@@ -99,7 +99,7 @@ public enum OsmSpace  { ;
 
         @Override
         public void unproject(float x, float y, float z, float[] target) {
-            var scale = viewScale;
+            float scale = viewScale;
             target[0] = (x/scale+ center.x) ;
             target[1] = (y/scale+ center.y) ;
             target[2] = 0;
@@ -121,8 +121,8 @@ public enum OsmSpace  { ;
 
         @Override
         public void pan(float tx, float ty, RectFloat bounds) {
-            var speed = 0.5f;
-            var s =
+            float speed = 0.5f;
+            float s =
                     //1f / viewScale;
                     (speed / viewScale);
             center.added(tx*s, ty*s);
@@ -164,7 +164,7 @@ public enum OsmSpace  { ;
         @Override
         public void project(float lon, float lat, float alt, float[] target, int offset) {
 
-            var d = ECEF.latlon2ecef(lat , lon , alt); //HACK
+            double[] d = ECEF.latlon2ecef(lat , lon , alt); //HACK
             target[offset++] = (float)(d[0]); //HACK
             target[offset++] = (float)(d[1]); //HACK
             target[offset]   = (float)(d[2]); //HACK
@@ -181,15 +181,15 @@ public enum OsmSpace  { ;
             gl.glPushMatrix();
             gl.glLoadIdentity();
             float zNear = 0.5f, zFar = 1200;
-            var tanFovV = (float) Math.tan(45 * FloatUtil.PI / 180.0f / 2f);
-            var aspect =
+            float tanFovV = (float) Math.tan(45 * FloatUtil.PI / 180.0f / 2f);
+            float aspect =
                     //1;
                     //bounds.h / bounds.w;
                     bounds.w / bounds.h;
-            var top = tanFovV * zNear;
-            var right = aspect * top;
-            var bottom = -top;
-            var left = -right;
+            float top = tanFovV * zNear;
+            float right = aspect * top;
+            float bottom = -top;
+            float left = -right;
 
             gl.glMultMatrixf(FloatUtil.makePerspective(mat4f, 0, true, 45 * FloatUtil.PI / 180.0f, aspect, zNear, zFar), 0);
 
@@ -209,7 +209,7 @@ public enum OsmSpace  { ;
             gl.glRotatef(rot.y, 1, 0, 0);
 
 //            System.out.println(scale);
-            var scale = this.scale.floatValue();
+            float scale = this.scale.floatValue();
             gl.glScalef(scale,scale,scale);
 
 
@@ -222,9 +222,9 @@ public enum OsmSpace  { ;
 
             gl.glPointSize(4);
             gl.glBegin(GL_POINTS);
-            var ff = new float[3];
-            for (var lat = -90; lat < +90; lat+=10) {
-                for (var lon = -180; lon < +180; lon+=10) {
+            float[] ff = new float[3];
+            for (int lat = -90; lat < +90; lat+=10) {
+                for (int lon = -180; lon < +180; lon+=10) {
                     project(lon, lat, 0, ff, 0);
                     gl.glVertex3fv(ff, 0);
                 }
@@ -297,13 +297,13 @@ public enum OsmSpace  { ;
         }
 
         public void addNode(OsmNode node) {
-            var tags = node.tags;
+            Map<String, String> tags = node.tags;
 
             float pointSize = 1;
             float r = 0.5f, g = 0.5f, b = 0.5f, a = 1f;
             if (tags!=null && !tags.isEmpty()) {
-                var highway = tags.get("highway");
-                var natural = tags.get("natural");
+                String highway = tags.get("highway");
+                String natural = tags.get("natural");
 
                 if ("bus_stop".equals(highway)) {
 
@@ -330,7 +330,7 @@ public enum OsmSpace  { ;
                 }
             }
 
-            var c3 = new float[3];
+            float[] c3 = new float[3];
 
             project.project(node.pos, c3);
 
@@ -339,21 +339,21 @@ public enum OsmSpace  { ;
 
         public void addWay(OsmWay w) {
 
-            var tags = w.tags;
+            Map<String, String> tags = w.tags;
 
 
-            var isPolygon = false;
-            var lw = 1f;
-            var ls = (short) 0xffff;
-            var r = 0.5f;
-            var g = 0.5f;
-            var b = 0.5f;
-            var a = 1f;
+            boolean isPolygon = false;
+            float lw = 1f;
+            short ls = (short) 0xffff;
+            float r = 0.5f;
+            float g = 0.5f;
+            float b = 0.5f;
+            float a = 1f;
 
             if (tags!=null && !tags.isEmpty()) {
 
 
-                for (var entry : tags.entrySet()) {
+                for (Map.Entry<String, String> entry : tags.entrySet()) {
                     String k = entry.getKey(), v = entry.getValue();
                     switch (k) {
                         case "building":
@@ -550,11 +550,11 @@ public enum OsmSpace  { ;
 
             if (isPolygon && !wireframe) {
                 List nn = w.getOsmNodes();
-                var s = nn.size();
+                int s = nn.size();
                 if (s > 0) {
-                    var coord = new float[s][7];
-                    for (var i = 0; i < s; i++) {
-                        var ci = project.project(((OsmNode)nn.get(i)).pos, coord[i]);
+                    float[][] coord = new float[s][7];
+                    for (int i = 0; i < s; i++) {
+                        float[] ci = project.project(((OsmNode)nn.get(i)).pos, coord[i]);
                         ci[3] = r;
                         ci[4] = g;
                         ci[5] = b;
@@ -568,9 +568,9 @@ public enum OsmSpace  { ;
             } else {
 
                 List ways = w.getOsmNodes();
-                var ws = ways.size();
+                int ws = ways.size();
                 if (ws > 0) {
-                    var c3 = new float[3 * ws];
+                    float[] c3 = new float[3 * ws];
                     for (int i = 0, waysSize = ws; i < waysSize; i++) {
                         project.project(((OsmNode)ways.get(i)).pos, c3, i * 3);
                     }
@@ -588,13 +588,13 @@ public enum OsmSpace  { ;
 
         @Override
         public void end() {
-            var coord = vbuf.toArray();
+            float[] coord = vbuf.toArray();
             vbuf.clear();
-            var myNextType = nextType;
+            int myNextType = nextType;
             dbuf.add((gl)->{
                 gl.glBegin(myNextType);
-                var ii = 0;
-                for (var i = 0; i < coord.length / 7; i++) {
+                int ii = 0;
+                for (int i = 0; i < coord.length / 7; i++) {
                     gl.glColor4fv(coord, ii); ii+=4;
                     gl.glVertex3fv(coord, ii); ii+=3;
                 }
@@ -609,7 +609,7 @@ public enum OsmSpace  { ;
         public void vertex(Object vertexData) {
             if (vertexData instanceof double[]) {
 
-                var pointer = (double[]) vertexData;
+                double[] pointer = (double[]) vertexData;
 
                 if (pointer.length >= 7) {
                     //gl.glColor3dv(pointer, 3);
@@ -631,7 +631,7 @@ public enum OsmSpace  { ;
 
 
             } else if (vertexData instanceof float[]) {
-                var pointer = (float[]) vertexData;
+                float[] pointer = (float[]) vertexData;
 
                 if (pointer.length >= 7) {
 //                    gl.glColor3fv(pointer, 3);
@@ -668,15 +668,15 @@ public enum OsmSpace  { ;
         @Override
         public void combine(double[] coords, Object[] data,
                             float[] weight, Object[] outData) {
-            var vertex = new float[7];
+            float[] vertex = new float[7];
 
             vertex[0] = (float) coords[0];
             vertex[1] = (float) coords[1];
             vertex[2] = (float) coords[2];
-            for (var cc = 3; cc < 7; cc++) {
+            for (int cc = 3; cc < 7; cc++) {
                 float v = 0;
-                for (var dd = 0; dd < data.length; dd++) {
-                    var d = (float[]) data[dd];
+                for (int dd = 0; dd < data.length; dd++) {
+                    float[] d = (float[]) data[dd];
                     if (d != null) {
                         v += weight[dd] * d[cc];
                     }
@@ -694,7 +694,7 @@ public enum OsmSpace  { ;
         @Override
         public void error(int errnum) {
 
-            var estring = Draw.glu.gluErrorString(errnum);
+            String estring = Draw.glu.gluErrorString(errnum);
             System.err.println("Tessellation Error: " + estring);
             System.exit(0);
         }
@@ -721,7 +721,7 @@ public enum OsmSpace  { ;
 
         @Override
         public void accept(GL2 g) {
-            for (var d : draw) {
+            for (Consumer<GL2> d : draw) {
                 d.accept(g);
             }
         }
@@ -792,11 +792,11 @@ public enum OsmSpace  { ;
             this.lw = lw;
             this.ls = ls;
 
-            var tobj = s.tobj;
+            GLUtessellator tobj = s.tobj;
 
             GLU.gluTessBeginPolygon(tobj, null);
             GLU.gluTessBeginContour(tobj);
-            for (var ci : coord) {
+            for (float[] ci : coord) {
                 GLU.gluTessVertex(tobj, Util.toDouble(ci), 0, ci);
             }
             GLU.gluTessEndContour(tobj);
@@ -807,7 +807,7 @@ public enum OsmSpace  { ;
                 this.draw = draws[0];
             else {
                 this.draw = G ->{
-                    for (var d : draws)
+                    for (Consumer<GL2> d : draws)
                         d.accept(G);
                 };
             }
@@ -850,7 +850,7 @@ public enum OsmSpace  { ;
             gl.glLineWidth(lw);
             gl.glLineStipple(1, ls);
             gl.glBegin(GL_LINE_STRIP);
-            for (var i = 0; i < c3.length / 3; i++)
+            for (int i = 0; i < c3.length / 3; i++)
                 gl.glVertex3fv(c3, i * 3);
             gl.glEnd();
         }

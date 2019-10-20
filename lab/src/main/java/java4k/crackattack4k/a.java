@@ -201,14 +201,14 @@ public class a extends GamePanel {
 		
 		for (k = 0; k < 3; k++) {
 			float saturation = k == 2 ? 0 : 1;
-			var brightness = k == 1 ? 0.5f : 1;
+            float brightness = k == 1 ? 0.5f : 1;
 			for (i = 0; i < 5; i++) {
 				sprites[10 * k + i] = new BufferedImage(16, 16, 2);
 				sprites[10 * k + i + 5] = new BufferedImage(16, 16, 2);
 				sprites[SPRITE_FACE_1 + i] = new BufferedImage(16, 16, 2);
 				for (y = 0; y < 16; y++) {
 
-					var hue = (i < 4 ? i : -1) / 6f;
+                    float hue = (i < 4 ? i : -1) / 6f;
 
 					
 					for (x = 0; x < 8; x++) {
@@ -390,7 +390,7 @@ public class a extends GamePanel {
 
 			if (winning > 0) {
 				winning++;
-				var explosion = new int[3];
+                int[] explosion = new int[3];
 				if (winning < 256) {
 					explosion[0] = random.nextInt(104);
 					explosion[1] = random.nextInt(200);
@@ -526,11 +526,11 @@ public class a extends GamePanel {
 			i = 128;
 			j = cameraY >> 4;
 			k = -32;
-			var cleared = 0;
-			var fallingFound = false;
+            int cleared = 0;
+            boolean fallingFound = false;
 			for (x = 5; x >= 0; x--) {
 				dangerColumns[x] = false;
-				var holeFound = 0;
+                int holeFound = 0;
 				for (y = 11; y >= 0; y--) {
 
 					if (bouncingTiles[y + j][x] > 0) {
@@ -601,8 +601,8 @@ public class a extends GamePanel {
 
 			
 			cleared = 0;
-			var clearedX = 0;
-			var clearedY = 0;
+            int clearedX = 0;
+            int clearedY = 0;
 			for (y = 11; y >= 0; y--) {
 				i = 0;
 				for (x = 4; x >= 0; x--) {
@@ -696,7 +696,7 @@ public class a extends GamePanel {
 				score += 10 * (cleared - 2);
 
 
-				var chain = new int[5];
+                int[] chain = new int[5];
 				chain[CHAIN_Y] = (clearedY << 4) - cameraY + 8;
 				chain[CHAIN_WIDTH] = cleared > 9 ? 24 : 16;
 				chain[CHAIN_X] = (clearedX << 4) + (cleared > 9 ? 0 : 4);
@@ -718,7 +718,7 @@ public class a extends GamePanel {
 
 			
 			for (i = chains.size() - 1; i >= 0; i--) {
-				var chain = chains.get(i);
+                int[] chain = chains.get(i);
 				if (++chain[CHAIN_COUNT] == 32) {
 					chains.remove(i);
 				}
@@ -807,7 +807,7 @@ public class a extends GamePanel {
 						if (dying > 0 || winning > 0) {
 							z += SPRITE_FACE_1;
 						} else {
-							var e = explodingTiles[y + j][x];
+                            int e = explodingTiles[y + j][x];
 							if (e != 0) {
 								if (e < 0) {
 									if (e >= -16) {
@@ -825,7 +825,7 @@ public class a extends GamePanel {
 						}
 						offscreenGraphics.drawImage(sprites[k + 5], 4 + (x << 4), 4 + (y << 4) - i, null);
 
-						var b = (dying > 0 || winning > 0) ? 0 : dangerColumns[x] ? dangerBounce : bouncingTiles[y + j][x];
+                        int b = (dying > 0 || winning > 0) ? 0 : dangerColumns[x] ? dangerBounce : bouncingTiles[y + j][x];
 						if (b >= 4) {
 							offscreenGraphics.drawImage(sprites[z], 2 + (x << 4), 1 + (y << 4) - i + 8, 20, 10, null);
 						} else {
@@ -874,7 +874,7 @@ public class a extends GamePanel {
 				if (countdownZ > Z0) {
 					
 					offscreenGraphics.translate(52, 100);
-					var scale = Z0 / (float) (Z0 - countdownZ);
+                    float scale = Z0 / (float) (Z0 - countdownZ);
 					offscreenGraphics.scale(scale, scale);
 					offscreenGraphics.drawImage(sprites[SPRITE_DIGIT_0 + countdown], -4, -4, null);
 					offscreenGraphics.setTransform(affineTransform);
@@ -896,11 +896,11 @@ public class a extends GamePanel {
 					for (x = 0; x < 6; x++) {
 						k = tiles[y + j][x];
 						if (k > TILE_EMPTY && k < TILE_HIDDEN) {
-							var e = explodingTiles[y + j][x];
+                            int e = explodingTiles[y + j][x];
 							if (e < 0 && e >= -16) {
-								var f = 24 + e;
-								var scale = -.03125f * e;
-								for (var h = 0; h < 4; h++) {
+                                int f = 24 + e;
+                                float scale = -.03125f * e;
+								for (int h = 0; h < 4; h++) {
 									offscreenGraphics.translate(12 + (x << 4) - f * (h > 1 ? 1 : -1), 12 + (y << 4) - i - f * ((h & 1) == 1 ? 1 : -1));
 									offscreenGraphics.rotate(e);
 									offscreenGraphics.scale(scale, scale);
@@ -912,11 +912,11 @@ public class a extends GamePanel {
 					}
 				}
 				for (i = explosions.size() - 1; i >= 0; i--) {
-					var explosion = explosions.get(i);
-					var e = explosion[2];
-					var f = 24 + e;
-					var scale = -.03125f * e;
-					for (var h = 0; h < 4; h++) {
+                    int[] explosion = explosions.get(i);
+                    int e = explosion[2];
+                    int f = 24 + e;
+                    float scale = -.03125f * e;
+					for (int h = 0; h < 4; h++) {
 						offscreenGraphics.translate(explosion[0] - f * (h > 1 ? 1 : -1), explosion[1] - i - f * ((h & 1) == 1 ? 1 : -1));
 						offscreenGraphics.rotate(e);
 						offscreenGraphics.scale(scale, scale);
@@ -937,14 +937,14 @@ public class a extends GamePanel {
 
 					
 					for (i = chains.size() - 1; i >= 0; i--) {
-						var chain = chains.get(i);
+                        int[] chain = chains.get(i);
 
 						for (j = 0; j < 6; j++) {
-							var angle = 1.05f * j + 0.1f * chain[CHAIN_COUNT];
+                            float angle = 1.05f * j + 0.1f * chain[CHAIN_COUNT];
 							offscreenGraphics.translate(chain[CHAIN_X] + (chain[CHAIN_WIDTH] >> 1) + (int) (2 * (32 - chain[CHAIN_COUNT]) * Math.cos(angle)), chain[CHAIN_Y] + 8
 									+ (int) (2 * (32 - chain[CHAIN_COUNT]) * Math.sin(angle)));
 							offscreenGraphics.rotate(chain[CHAIN_COUNT]);
-							var scale = 0.25f + chain[CHAIN_COUNT] / 128f;
+                            float scale = 0.25f + chain[CHAIN_COUNT] / 128f;
 							offscreenGraphics.scale(scale, scale);
 							offscreenGraphics.drawImage(sprites[25], -8, -8, 16, 16, null);
 							offscreenGraphics.setTransform(affineTransform);
@@ -980,16 +980,16 @@ public class a extends GamePanel {
 	@Override
 	public void processAWTEvent(AWTEvent awtEvent) {
 		if (awtEvent instanceof MouseEvent) {
-			var e = (MouseEvent)awtEvent;
-			final var MOUSE_X = 0;
+            MouseEvent e = (MouseEvent)awtEvent;
+			final int MOUSE_X = 0;
 
             a[MOUSE_X] = e.getX();
-            final var MOUSE_Y = 1;
+            final int MOUSE_Y = 1;
             a[MOUSE_Y] = e.getY();
-            final var MOUSE_DOWN = 2;
+            final int MOUSE_DOWN = 2;
             if (e.getID() == MouseEvent.MOUSE_PRESSED) {
 				a[MOUSE_DOWN] = 1;
-                final var MOUSE_BUTTON = 3;
+                final int MOUSE_BUTTON = 3;
                 a[MOUSE_BUTTON] = ((e.getModifiers() & InputEvent.BUTTON1_MASK) == InputEvent.BUTTON1_MASK) ? 1 : 0;
 			} else {
 				a[MOUSE_DOWN] = 0;

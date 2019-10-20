@@ -53,7 +53,7 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
                 n);
 
         /** make sure to add curiosity table first in the list, as a filter */
-        var GOALS = ((BeliefTables) goals());
+        BeliefTables GOALS = ((BeliefTables) goals());
         GOALS.add(mutableGoals);
 
 //        final MutableTruth cPos = new MutableTruth(1f, n.confMin.floatValue()); //TODO update
@@ -79,7 +79,7 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
 
     @Override
     public double dexterity() {
-        var t = actionDex;
+        Truth t = actionDex;
         return t != null ? w2cSafeDouble(t.evi()) : 0;
     }
 
@@ -107,16 +107,16 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
 //    }
 
     public @Nullable TruthProjection truth(boolean beliefsOrGoals, int componentsMax, When<What> g, int shift) {
-        var t = (beliefsOrGoals ? beliefs() : goals());
+        BeliefTable t = (beliefsOrGoals ? beliefs() : goals());
 
         if (t.isEmpty())
             return null;
 
-        var limit = componentsMax;
-        var tries = (int)Math.ceil(limit * NAL.ANSWER_TRYING);
+        int limit = componentsMax;
+        int tries = (int)Math.ceil(limit * NAL.ANSWER_TRYING);
 
         long s = g.start+shift, e = g.end+shift;
-        var a = Answer.taskStrength(true, limit, s, e, term, null, g.x.nar);
+        Answer a = Answer.taskStrength(true, limit, s, e, term, null, g.x.nar);
 
         a.clear(tries).time(s, e).dur(g.dur);
 
@@ -129,14 +129,14 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
     @Override
     public void accept(Game g) {
 
-        var limitBelief = NAL.ANSWER_BELIEF_MATCH_CAPACITY;
-        var limitGoal = NAL.ANSWER_ACTION_ANSWER_CAPACITY;
+        int limitBelief = NAL.ANSWER_BELIEF_MATCH_CAPACITY;
+        int limitGoal = NAL.ANSWER_ACTION_ANSWER_CAPACITY;
 
         When<What> wLoop = g.nowLoop, wPercept = g.nowPercept;
 
-        var perceptShift = (int) ((wLoop.end - wLoop.start) * NAL.ACTION_DESIRE_SHIFT_DUR); //half dur
+        int perceptShift = (int) ((wLoop.end - wLoop.start) * NAL.ACTION_DESIRE_SHIFT_DUR); //half dur
 
-        @Nullable var nextFeedback = updateAction(
+        @Nullable Truth nextFeedback = updateAction(
                 this.beliefTruth = truth(truth(true, limitBelief, wLoop, perceptShift), wPercept, perceptShift),
                 this.actionTruth = actionTruth(limitGoal, wPercept, perceptShift),
                 g);
@@ -160,8 +160,8 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
 
     private Truth actionTruth(int limit, When<What> w, int shift) {
 
-        var gt = truth(false, limit, w, shift);
-        var nextActionDex = gt!=null ? truth(gt, w, shift) : null;
+        TruthProjection gt = truth(false, limit, w, shift);
+        Truth nextActionDex = gt!=null ? truth(gt, w, shift) : null;
         Truth c = null; //w.x.random().nextFloat() < 0.01f ? curiosity(w.x) : null;
         if (nextActionDex!=null) {
             actionDex = c!=null ? Revision.revise(c, nextActionDex) : nextActionDex;

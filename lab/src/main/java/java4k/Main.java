@@ -58,20 +58,20 @@ public class Main extends JFrame {
 
   public void launch() {
 
-    var rays = new float[PIXELS][3];
+      float[][] rays = new float[PIXELS][3];
 
     if (FISH_EYE_LENS) {
       float MAX = Math.max(WIDTH, HEIGHT);
       float X_OFFSET = WIDTH < HEIGHT ? (HEIGHT - WIDTH) / 2 : 0;
       float Y_OFFSET = HEIGHT < WIDTH ? (WIDTH - HEIGHT) / 2 : 0;
       for(int y = 0, k = 0; y < HEIGHT; y++) {
-        for(var x = 0; x < WIDTH; x++, k++) {
-          var theta = (float)(Math.PI * (0.5f + y + Y_OFFSET) / MAX);
-          var phi = (float)(Math.PI * (0.5f + x + X_OFFSET) / MAX);
-          var rx = (float)(Math.cos(phi) * Math.sin(theta));
-          var ry = (float)(Math.sin(phi) * Math.sin(theta));
-          var rz = (float)(Math.cos(theta));
-          var ray = rays[k];
+        for(int x = 0; x < WIDTH; x++, k++) {
+            float theta = (float)(Math.PI * (0.5f + y + Y_OFFSET) / MAX);
+            float phi = (float)(Math.PI * (0.5f + x + X_OFFSET) / MAX);
+            float rx = (float)(Math.cos(phi) * Math.sin(theta));
+            float ry = (float)(Math.sin(phi) * Math.sin(theta));
+            float rz = (float)(Math.cos(theta));
+            float[] ray = rays[k];
           ray[0] = rx;
           ray[1] = ry;
           ray[2] = rz;
@@ -79,14 +79,14 @@ public class Main extends JFrame {
       }
     } else {
       for(int y = 0, k = 0; y < HEIGHT; y++) {
-        for(var x = 0; x < WIDTH; x++, k++) {
-          var X = x - HALF_WIDTH + 0.5f;
-          var Y = -(y - HALF_HEIGHT + 0.5f);
-          var ray = rays[k];
-          var rx = X;
-          var ry = Y;
-          var rz = -Z0;
-          var inverseMag = 1f / (float)Math.sqrt(rx * rx + ry * ry + rz * rz);
+        for(int x = 0; x < WIDTH; x++, k++) {
+            float X = x - HALF_WIDTH + 0.5f;
+            float Y = -(y - HALF_HEIGHT + 0.5f);
+            float[] ray = rays[k];
+            float rx = X;
+            float ry = Y;
+            float rz = -Z0;
+            float inverseMag = 1f / (float)Math.sqrt(rx * rx + ry * ry + rz * rz);
           ray[0] = rx * inverseMag;
           ray[1] = ry * inverseMag;
           ray[2] = rz * inverseMag;
@@ -94,7 +94,7 @@ public class Main extends JFrame {
       }
     }
 
-    var panel = (JPanel)getContentPane();
+      JPanel panel = (JPanel)getContentPane();
     panel.setIgnoreRepaint(true);
     panel.setPreferredSize(new Dimension(DISPLAY_WIDTH, DISPLAY_HEIGHT));
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -103,10 +103,10 @@ public class Main extends JFrame {
     setLocationRelativeTo(null);
     setVisible(true);
 
-    var image = new BufferedImage(
+      BufferedImage image = new BufferedImage(
         WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
     image.setAccelerationPriority(1f);
-    var panelGraphics = panel.getGraphics();
+      Graphics panelGraphics = panel.getGraphics();
 
     float ox = 0;
     float oy = 0;
@@ -115,31 +115,31 @@ public class Main extends JFrame {
     float phi = 0;
     float theta = 0;
 
-    var frame = 0;
-    var startTime = System.currentTimeMillis() - 1;
-    var pixels = new int[PIXELS];
+      int frame = 0;
+      long startTime = System.currentTimeMillis() - 1;
+      int[] pixels = new int[PIXELS];
       while(true) {
 
-        var cosPhi = (float)Math.cos(phi);
-        var sinPhi = (float)Math.sin(phi);
-        var cosTheta = (float)Math.cos(theta);
-        var sinTheta = (float)Math.sin(theta);
+          float cosPhi = (float)Math.cos(phi);
+          float sinPhi = (float)Math.sin(phi);
+          float cosTheta = (float)Math.cos(theta);
+          float sinTheta = (float)Math.sin(theta);
 
-        var ux = cosPhi * sinTheta;
-        var uy = sinPhi * sinTheta;
-        var uz = cosTheta;
+          float ux = cosPhi * sinTheta;
+          float uy = sinPhi * sinTheta;
+          float uz = cosTheta;
 
-        var vx = cosPhi * cosTheta;
-        var vy = sinPhi * cosTheta;
-        var vz = -sinTheta;
+          float vx = cosPhi * cosTheta;
+          float vy = sinPhi * cosTheta;
+          float vz = -sinTheta;
 
-        var wx = uy * vz - uz * vy;
-        var wy = uz * vx - ux * vz;
-        var wz = ux * vy - uy * vx;
+          float wx = uy * vz - uz * vy;
+          float wy = uz * vx - ux * vz;
+          float wz = ux * vy - uy * vx;
 
-        var LIGHT_DIRECTION_X = wx;
-        var LIGHT_DIRECTION_Y = wy;
-        var LIGHT_DIRECTION_Z = wz;
+          float LIGHT_DIRECTION_X = wx;
+          float LIGHT_DIRECTION_Y = wy;
+          float LIGHT_DIRECTION_Z = wz;
 
       if (FISH_EYE_LENS) {
         LIGHT_DIRECTION_X = -vx;
@@ -157,26 +157,26 @@ public class Main extends JFrame {
             / (System.currentTimeMillis() - startTime) + " fps");
       }
 
-        var GX = (int)Math.floor(ox * INVERSE_GRID_SIZE);
-        var GY = (int)Math.floor(oy * INVERSE_GRID_SIZE);
-        var GZ = (int)Math.floor(oz * INVERSE_GRID_SIZE);
+          int GX = (int)Math.floor(ox * INVERSE_GRID_SIZE);
+          int GY = (int)Math.floor(oy * INVERSE_GRID_SIZE);
+          int GZ = (int)Math.floor(oz * INVERSE_GRID_SIZE);
 
-      for(var k = 0; k < PIXELS; k++) {
+      for(int k = 0; k < PIXELS; k++) {
 
-        var gx = GX;
+          int gx = GX;
 
-        var ray = rays[k];
-        var Rx = ray[0];
-        var Ry = ray[1];
-        var Rz = ray[2];
+          float[] ray = rays[k];
+          float Rx = ray[0];
+          float Ry = ray[1];
+          float Rz = ray[2];
 
-        var rx = ux * Rx + vx * Ry + wx * Rz;
-        var ry = uy * Rx + vy * Ry + wy * Rz;
-        var rz = uz * Rx + vz * Ry + wz * Rz;
+          float rx = ux * Rx + vx * Ry + wx * Rz;
+          float ry = uy * Rx + vy * Ry + wy * Rz;
+          float rz = uz * Rx + vz * Ry + wz * Rz;
 
-        var irx = 1f / rx;
+          float irx = 1f / rx;
 
-        var dgx = 0;
+          int dgx = 0;
 
           float tx = 0;
 
@@ -188,9 +188,9 @@ public class Main extends JFrame {
           tx = ((GRID_SIZE * gx) - ox) * irx;
         }
           float ty = 0;
-        var dgy = 0;
-        var gy = GY;
-        var iry = 1f / ry;
+          int dgy = 0;
+          int gy = GY;
+          float iry = 1f / ry;
         if (ry > 0) {
           dgy = 1;
           ty = ((GRID_SIZE * (gy + 1)) - oy) * iry;
@@ -199,9 +199,9 @@ public class Main extends JFrame {
           ty = (GRID_SIZE * gy - oy) * iry;
         }
           float tz = 0;
-        var dgz = 0;
-        var gz = GZ;
-        var irz = 1f / rz;
+          int dgz = 0;
+          int gz = GZ;
+          float irz = 1f / rz;
         if (rz > 0) {
           dgz = 1;
           tz = ((GRID_SIZE * (gz + 1)) - oz) * irz;
@@ -210,37 +210,37 @@ public class Main extends JFrame {
           tz = ((GRID_SIZE * gz) - oz) * irz;
         }
 
-        var dtz = Math.abs(GRID_SIZE * irz);
-        var dty = Math.abs(GRID_SIZE * iry);
-        var dtx = Math.abs(GRID_SIZE * irx);
-        var blue = 0;
-        var green = 0;
-        var red = 0;
-          for(var i = 0; i < ITERATIONS; i++) {
+          float dtz = Math.abs(GRID_SIZE * irz);
+          float dty = Math.abs(GRID_SIZE * iry);
+          float dtx = Math.abs(GRID_SIZE * irx);
+          int blue = 0;
+          int green = 0;
+          int red = 0;
+          for(int i = 0; i < ITERATIONS; i++) {
 
-            var minT = Float.MAX_VALUE;
+              float minT = Float.MAX_VALUE;
 
-            var minY = GRID_SIZE * gy;
+              float minY = GRID_SIZE * gy;
 
-            var j = gx * GRID_SIZE + HALF_GRID_SIZE;
-            var l = gz * GRID_SIZE + HALF_GRID_SIZE;
-            var P = ox - j;
-            var Q = oz - l;
-            var A = rx * rx + rz * rz;
-            var B = 2 * (P * rx + Q * rz);
-            var C = P * P + Q * Q - CYLINDER_RADIUS_2;
-            var D = B * B - 4 * A * C;
+              float j = gx * GRID_SIZE + HALF_GRID_SIZE;
+              float l = gz * GRID_SIZE + HALF_GRID_SIZE;
+              float P = ox - j;
+              float Q = oz - l;
+              float A = rx * rx + rz * rz;
+              float B = 2 * (P * rx + Q * rz);
+              float C = P * P + Q * Q - CYLINDER_RADIUS_2;
+              float D = B * B - 4 * A * C;
           if (D > 0) {
-            var t = (-B - (float)Math.sqrt(D)) / (2 * A);
+              float t = (-B - (float)Math.sqrt(D)) / (2 * A);
             if (t > 0) {
-              var y = oy + ry * t;
-              var maxY = minY + GRID_SIZE;
+                float y = oy + ry * t;
+                float maxY = minY + GRID_SIZE;
                 if (y >= minY && y <= maxY) {
                 minT = t;
                 i = ITERATIONS;
-                  var nx = ox + rx * t - j;
-                  var nz = oz + rz * t - l;
-                  var diffuse =  (nx * LIGHT_DIRECTION_X
+                    float nx = ox + rx * t - j;
+                    float nz = oz + rz * t - l;
+                    float diffuse =  (nx * LIGHT_DIRECTION_X
                     + nz * LIGHT_DIRECTION_Z);
                 green = 128;
                 if (diffuse > 0) {
@@ -252,7 +252,7 @@ public class Main extends JFrame {
             }
           }
 
-            var minX = GRID_SIZE * gx;
+              float minX = GRID_SIZE * gx;
 
               j = gy * GRID_SIZE + HALF_GRID_SIZE;
           l = gz * GRID_SIZE + HALF_GRID_SIZE;
@@ -263,16 +263,16 @@ public class Main extends JFrame {
           C = P * P + Q * Q - CYLINDER_RADIUS_2;
           D = B * B - 4 * A * C;
           if (D > 0) {
-            var t = (-B - (float)Math.sqrt(D)) / (2 * A);
+              float t = (-B - (float)Math.sqrt(D)) / (2 * A);
             if (t > 0 && t < minT) {
-              var x = ox + rx * t;
-              var maxX = minX + GRID_SIZE;
+                float x = ox + rx * t;
+                float maxX = minX + GRID_SIZE;
                 if (x >= minX && x <= maxX) {
                 minT = t;
                 i = ITERATIONS;
-                  var ny = oy + ry * t - j;
-                  var nz = oz + rz * t - l;
-                  var diffuse =  (ny * LIGHT_DIRECTION_Y
+                    float ny = oy + ry * t - j;
+                    float nz = oz + rz * t - l;
+                    float diffuse =  (ny * LIGHT_DIRECTION_Y
                     + nz * LIGHT_DIRECTION_Z);
                 red = 128;
                 if (diffuse > 0) {
@@ -284,7 +284,7 @@ public class Main extends JFrame {
             }
           }
 
-            var minZ = GRID_SIZE * gz;
+              float minZ = GRID_SIZE * gz;
 
               j = gy * GRID_SIZE + HALF_GRID_SIZE;
           l = gx * GRID_SIZE + HALF_GRID_SIZE;
@@ -295,16 +295,16 @@ public class Main extends JFrame {
           C = P * P + Q * Q - CYLINDER_RADIUS_2;
           D = B * B - 4 * A * C;
           if (D > 0) {
-            var t = (-B - (float)Math.sqrt(D)) / (2 * A);
+              float t = (-B - (float)Math.sqrt(D)) / (2 * A);
             if (t > 0 && t < minT) {
-              var z = oz + rz * t;
-              var maxZ = minZ + GRID_SIZE;
+                float z = oz + rz * t;
+                float maxZ = minZ + GRID_SIZE;
                 if (z >= minZ && z <= maxZ) {
                 minT = t;
                 i = ITERATIONS;
-                  var ny = oy + ry * t - j;
-                  var nx = ox + rx * t - l;
-                  var diffuse =  (ny * LIGHT_DIRECTION_Y
+                    float ny = oy + ry * t - j;
+                    float nx = ox + rx * t - l;
+                    float diffuse =  (ny * LIGHT_DIRECTION_Y
                     + nx * LIGHT_DIRECTION_X);
                 blue = 128;
                 if (diffuse > 0) {
@@ -316,25 +316,25 @@ public class Main extends JFrame {
             }
           }
 
-            var sx = gx * GRID_SIZE + HALF_GRID_SIZE;
-            var sy = gy * GRID_SIZE + HALF_GRID_SIZE;
-            var sz = gz * GRID_SIZE + HALF_GRID_SIZE;
+              float sx = gx * GRID_SIZE + HALF_GRID_SIZE;
+              float sy = gy * GRID_SIZE + HALF_GRID_SIZE;
+              float sz = gz * GRID_SIZE + HALF_GRID_SIZE;
 
-            var dx = ox - sx;
-            var dy = oy - sy;
-            var dz = oz - sz;
+              float dx = ox - sx;
+              float dy = oy - sy;
+              float dz = oz - sz;
 
           B = dx * rx + dy * ry + dz * rz;
           C = dx * dx + dy * dy + dz * dz - SPHERE_RADIUS_2;
           D = B * B - C;
           if (D > 0) {
-            var t = -B - (float)Math.sqrt(D);
+              float t = -B - (float)Math.sqrt(D);
             if (t > 0 && t < minT) {
               i = ITERATIONS;
-              var nx = ox + rx * t - sx;
-              var ny = oy + ry * t - sy;
-              var nz = oz + rz * t - sz;
-              var diffuse =  (nx * LIGHT_DIRECTION_X
+                float nx = ox + rx * t - sx;
+                float ny = oy + ry * t - sy;
+                float nz = oz + rz * t - sz;
+                float diffuse =  (nx * LIGHT_DIRECTION_X
                   + ny * LIGHT_DIRECTION_Y
                   + nz * LIGHT_DIRECTION_Z);
               red = 128;
@@ -372,7 +372,7 @@ public class Main extends JFrame {
   }
 
   public static void main(String[] args) {
-    var main = new Main();
+      Main main = new Main();
     main.launch();
   }
 

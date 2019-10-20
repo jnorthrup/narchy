@@ -10,8 +10,10 @@ import nars.term.anon.Intrin;
 import nars.term.anon.IntrinAtomic;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
@@ -37,15 +39,15 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
     public IntrinSubterms(Term... s) {
         super(s);
 
-        var hasNeg = hasNeg();
+        boolean hasNeg = hasNeg();
 
-        var t = subterms = new short[s.length];
+        short[] t = subterms = new short[s.length];
         for (int i = 0, sLength = s.length; i < sLength; i++) {
-            var ss = s[i];
-            var neg = hasNeg && ss instanceof Neg;
+            Term ss = s[i];
+            boolean neg = hasNeg && ss instanceof Neg;
             if (neg)
                 ss = ss.unneg();
-            var tt = Intrin.id(ss); //assert(tt!=0);
+            short tt = Intrin.id(ss); //assert(tt!=0);
             t[i] = neg ? ((short)-tt) : tt;
         }
 
@@ -53,8 +55,8 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
     }
 
     public static SubtermMetadataCollector subtermMetadata(short[] s) {
-        var c = new SubtermMetadataCollector();
-        for (var x : s)
+        SubtermMetadataCollector c = new SubtermMetadataCollector();
+        for (short x : s)
             c.collectMetadata(term(x));
         return c;
     }
@@ -79,18 +81,18 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
         if ((structure & NEG.bit) == 0)
             return structure;
         else {
-            var x = 0;
-            for (var t : subterms)
+            int x = 0;
+            for (short t : subterms)
                 x |= (t < 0) ? NEG.bit : Intrin.term(t).opBit();
             return x;
         }
     }
 
     public final boolean AND(/*@NotNull*/ Predicate<Term> p) {
-        var s = subs();
+        int s = subs();
         short prev = 0;
-        for (var i = 0; i < s; i++) {
-            var next = this.subterms[i];
+        for (int i = 0; i < s; i++) {
+            short next = this.subterms[i];
             if (prev!=next && !p.test(term(next)))
                 return false;
             prev = next;
@@ -99,10 +101,10 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
     }
 
     public final boolean OR(/*@NotNull*/ Predicate<Term> p) {
-        var s = subs();
+        int s = subs();
         short prev = 0;
-        for (var i = 0; i < s; i++) {
-            var next = this.subterms[i];
+        for (int i = 0; i < s; i++) {
+            short next = this.subterms[i];
             if (prev!=next && p.test(term(next)))
                 return true;
             prev = next;
@@ -118,14 +120,14 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
     public Subterms replaceSub(Term from, Term to, Op superOp) {
 
 
-        var fid = Intrin.id(from);
+        short fid = Intrin.id(from);
         if (fid == 0)
             return this; //no change
 
-        var found = false;
+        boolean found = false;
         if (fid > 0) {
             //find positive or negative subterm
-            for (var x: subterms) {
+            for (short x: subterms) {
                 if (Math.abs(x) == fid) {
                     found = true;
                     break;
@@ -133,7 +135,7 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
             }
         } else {
             //find exact negative only
-            for (var x: subterms) {
+            for (short x: subterms) {
                 if (x == fid) {
                     found = true;
                     break;
@@ -144,13 +146,13 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
             return this;
 
 
-        var tid = Intrin.id(to);
+        short tid = Intrin.id(to);
         if (tid != 0) {
             assert (from != to);
-            var a = this.subterms.clone();
+            short[] a = this.subterms.clone();
             if (fid > 0) {
                 for (int i = 0, aLength = a.length; i < aLength; i++) { //replace positive or negative, with original polarity
-                    var x = a[i];
+                    short x = a[i];
                     if (x == fid) a[i] = tid;
                     else if (-x == fid) a[i] = (short) -tid;
                 }
@@ -159,17 +161,17 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
                     if (a[i] == fid) a[i] = tid;
             }
 
-            var v = new IntrinSubterms(a);
+            IntrinSubterms v = new IntrinSubterms(a);
             v.normalized = preNormalize();
             return v;
 
         } else {
-            var n = subs();
-            var tt = new Term[n];
-            var a = this.subterms;
+            int n = subs();
+            Term[] tt = new Term[n];
+            short[] a = this.subterms;
             if (fid > 0) {
-                for (var i = 0; i < n; i++) { //replace positive or negative, with original polarity
-                    var x = a[i];
+                for (int i = 0; i < n; i++) { //replace positive or negative, with original polarity
+                    short x = a[i];
                     Term y;
                     if (x == fid) y = (to);
                     else if (-x == fid) y = (to.neg());
@@ -178,7 +180,12 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
                 }
             } else {
                 //replace negative only
-                tt = IntStream.range(0, n).mapToObj(i -> (a[i] == fid ? to : term(a[i]))).toArray(Term[]::new);
+                List<Term> list = new ArrayList<>();
+                for (int i = 0; i < n; i++) {
+                    Term term = (a[i] == fid ? to : term(a[i]));
+                    list.add(term);
+                }
+                tt = list.toArray(new Term[0]);
 
             }
             return new TermList(tt);
@@ -234,8 +241,8 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
     }
 
     public int countByGroup(short group) {
-        var count = 0;
-        for (var s: subterms) {
+        int count = 0;
+        for (short s: subterms) {
             if (s > 0 && Intrin.group(s) == group)
                 count++;
         }
@@ -243,8 +250,8 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
     }
 
     private int subsNeg() {
-        var count = 0;
-        for (var s: subterms)
+        int count = 0;
+        for (short s: subterms)
             if (s < 0)
                 count++;
         return count;
@@ -274,7 +281,7 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
 
     @Override
     public int indexOf(Term t, int after) {
-        var tid = Intrin.id(t);
+        short tid = Intrin.id(t);
         return tid != 0 ? indexOf(tid,after) : -1;
     }
 
@@ -285,29 +292,29 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
 //    }
 
     private int indexOfNeg(Term x) {
-        var tid = Intrin.id(x);
+        short tid = Intrin.id(x);
         return tid != 0 ? indexOf((short) -tid) : -1;
     }
 
     @Override
     public @Nullable Term[] removing(Term x) {
-        var tid = Intrin.id(x);
+        short tid = Intrin.id(x);
         if (tid == 0) return null;
-        var count = 0;
+        int count = 0;
 
-        for (var subterm : subterms) {
+        for (short subterm : subterms) {
             if (subterm == tid)
                 count++;
         }
         if (count==0)
             return null; //none found
-        var n = subterms.length;
+        int n = subterms.length;
         if (count == n){
             return Op.EmptyTermArray;
         } else {
-            var y = new Term[n - count];
-            var j = 0;
-            for (var s : subterms) {
+            Term[] y = new Term[n - count];
+            int j = 0;
+            for (short s : subterms) {
                 if (s != tid)
                     y[j++] = term(s);
             }
@@ -326,16 +333,16 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
     public boolean containsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
         if (x instanceof Neg) {
             if (hasNeg()) {
-                var tt = x.unneg();
-                var ttu = Intrin.id(tt);
+                Term tt = x.unneg();
+                short ttu = Intrin.id(tt);
                 if (ttu!=0)
                     return indexOf((short) -ttu) != -1;
             }
         } else {
-            var aid = Intrin.id(x);
+            short aid = Intrin.id(x);
             if (aid!=0) {
-                var hasNegX = false;
-                for (var xx : this.subterms) {
+                boolean hasNegX = false;
+                for (short xx : this.subterms) {
                     if (xx == aid)
                         return true; //found positive
                     else if (xx == -aid)
@@ -367,12 +374,18 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
 
         if (obj instanceof Subterms) {
 
-            var ss = (Subterms) obj;
+            Subterms ss = (Subterms) obj;
 
             //if (this.hash != ss.hashCodeSubterms()) return false;
 
-            var s = subterms.length;
-            return ss.subs() == s && IntStream.range(0, s).allMatch(i -> subEquals(i, ss.sub(i)));
+            int s = subterms.length;
+            if (ss.subs() != s) return false;
+            for (int i = 0; i < s; i++) {
+                if (!subEquals(i, ss.sub(i))) {
+                    return false;
+                }
+            }
+            return true;
 
         }
         return false;
@@ -380,7 +393,7 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
 
     @Override
     public boolean subEquals(int i, Term x) {
-        var xx = Intrin.id(x);
+        short xx = Intrin.id(x);
         return xx!=0 ? subterms[i]==xx : sub(i).equals(x);
     }
 
@@ -396,16 +409,16 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
 
     @Override
     public @Nullable Term subSub(int start, int end, byte[] path) {
-        var depth = end-start;
+        int depth = end-start;
         if (depth <= 2) {
-            var z = path[start];
+            byte z = path[start];
             if (subterms.length > z) {
                 switch (depth) {
                     case 1:
                         return sub(z);
                     case 2:
                         if (path[start+1] == 0) {
-                            var a = this.subterms[z];
+                            short a = this.subterms[z];
                             if (a < 0)
                                 return Intrin.term((short) -a); //if the subterm is negative its the only way to realize path of length 2
                         }

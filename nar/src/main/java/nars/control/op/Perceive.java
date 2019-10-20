@@ -2,8 +2,10 @@ package nars.control.op;
 
 import jcog.data.list.FasterList;
 import nars.NAL;
+import nars.NAR;
 import nars.Task;
 import nars.attention.What;
+import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.concept.Operator;
 import nars.control.MetaGoal;
@@ -30,9 +32,9 @@ public enum Perceive {
     public static void perceive(Task x, What w) {
         //w.link(AtomicTaskLink.link(x.term().concept()).priSet(x.punc(), x.priElseZero()));
 
-        var n = w.nar;
+        NAR n = w.nar;
 
-        var xx = x.term();
+        Term xx = x.term();
 
         MetaGoal.Perceive.learn(x, ((float)xx.volume())/Short.MAX_VALUE, n);
 
@@ -42,8 +44,8 @@ public enum Perceive {
 
         n.emotion.perceivedTaskStart.increment();
 
-        var punc = x.punc();
-        var cmd = punc == COMMAND;
+        byte punc = x.punc();
+        boolean cmd = punc == COMMAND;
 
         if (cmd || punc == GOAL && !x.isEternal()) {
             if (execOperator(x, w)) {
@@ -51,23 +53,23 @@ public enum Perceive {
             }
         }
         //SeriesTask already will have been added directly by the table to itself
-        var perceived = (!cmd && !(x instanceof SeriesBeliefTable.SeriesTask)) ? Remember.the(x, w) : null;
+        Remember perceived = (!cmd && !(x instanceof SeriesBeliefTable.SeriesTask)) ? Remember.the(x, w) : null;
 
 
 
         if (!(x instanceof TemporalTask.Unevaluated) && Termerator.evalable(xx)) {
-            var rt = (FasterList<Task>) new TaskEvaluation(x, w).result;
+            FasterList<Task> rt = (FasterList<Task>) new TaskEvaluation(x, w).result;
             if (rt != null) {
                 //rt.removeInstance(x); //something was eval, remove the input HACK
                 rt.remove(x); //HACK
 
                 if (!rt.isEmpty()) {
                     //move and share input priority fairly:
-                    var xPri = x.pri();
-                    var xPriAfter = xPri * NAL.TaskEvalPriDecomposeRate;
+                    float xPri = x.pri();
+                    float xPriAfter = xPri * NAL.TaskEvalPriDecomposeRate;
                     x.pri(xPriAfter);
-                    var xp = (xPri - xPriAfter) / rt.size();
-                    for (var y : rt) {
+                    float xp = (xPri - xPriAfter) / rt.size();
+                    for (Task y : rt) {
                         y.pri(xp);
                         perceive(y, w); //HACK
                     }
@@ -160,19 +162,19 @@ public enum Perceive {
         if (maybeOperator == IdempotentBool.Null)
             return false;
 
-        var n = w.nar;
-        var ooo = n.concept(maybeOperator);
+        NAR n = w.nar;
+        Concept ooo = n.concept(maybeOperator);
         if (!(ooo instanceof NodeConcept.PermanentNodeConcept))
             return false;
-        var oo = ooo.term();
+        Term oo = ooo.term();
         if (!(oo instanceof Operator))
             return false;
 
         Task next;
 
-        var o = (Operator) oo;
+        Operator o = (Operator) oo;
         try {
-            var y = o.model.apply(x, n);
+            Task y = o.model.apply(x, n);
             if (y == null)
                 return false;
             if (y.equals(x)) {

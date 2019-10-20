@@ -62,7 +62,7 @@ public abstract class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
         });
         whenDeleted.close();
 
-        var n = this.nar;
+        NAR n = this.nar;
         if (n != null) {
             n.stop(this);
         } else {
@@ -137,7 +137,7 @@ public abstract class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
     /** MAKE SURE NOT TO CALL THIS DIRECTLY; IT WILL BE INVOKED.  LIKELY YOU WANT: n.start(x) NOT x.start(a) */
     @Override protected final void start(NAR nar) {
 
-        var prevNar = this.nar;
+        NAR prevNar = this.nar;
         if (!(prevNar == null || prevNar == nar))
             throw new WTF("NAR mismatch");
 
@@ -203,12 +203,12 @@ public abstract class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
      * pause, returns a one-use resume ticket
      */
     @Deprecated public final Runnable pause() {
-        var n = this.nar;
+        NAR n = this.nar;
         if (n != null) {
             if (n.stop(this)) {
                 logger.info("pause {}", this);
                 return () -> {
-                    var nn = this.nar;
+                    NAR nn = this.nar;
                     if (nn == null) {
                         //deleted or unstarted
                     } else {

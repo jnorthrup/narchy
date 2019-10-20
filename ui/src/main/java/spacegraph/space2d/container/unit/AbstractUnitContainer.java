@@ -17,7 +17,7 @@ public abstract class AbstractUnitContainer<S extends Surface> extends Container
      * @param dtS*/
     @Override
     @Deprecated protected void doLayout(float dtS) {
-        var t = the();
+        S t = the();
         if (t!=null)
             t.pos(innerBounds());
     }
@@ -29,13 +29,13 @@ public abstract class AbstractUnitContainer<S extends Surface> extends Container
 
     @Override
     public final int childrenCount() {
-        var t = the();
+        S t = the();
         return t!=null ? 1 : 0;
     }
 
     @Override
     public final void forEach(Consumer<Surface> o) {
-        var t = the();
+        S t = the();
         if (t!=null)
             o.accept(t);
     }
@@ -45,7 +45,7 @@ public abstract class AbstractUnitContainer<S extends Surface> extends Container
 //        S content = the();
 //        if (content instanceof ContainerSurface)  return ((ContainerSurface)content).whileEach(o);
 //        else return o.test(content);
-        var t = the();
+        S t = the();
         return t == null || o.test(t);
     }
 
@@ -54,7 +54,7 @@ public abstract class AbstractUnitContainer<S extends Surface> extends Container
 //        S content = the();
 //        if (content instanceof Container)  return ((Container)content).whileEachReverse(o);
 //        else return o.test(content);
-        var t = the();
+        S t = the();
         return t == null || o.test(t);
     }
 

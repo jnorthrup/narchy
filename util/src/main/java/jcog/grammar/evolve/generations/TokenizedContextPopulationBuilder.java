@@ -65,7 +65,7 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
     
     @Override
     public void setup(Configuration configuration) {
-        var trainingDataset = configuration.getDatasetContainer().getTrainingDataset();
+        DataSet trainingDataset = configuration.getDatasetContainer().getTrainingDataset();
         this.population.addAll(this.setup(null, configuration, trainingDataset));
     }
     
@@ -79,11 +79,11 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
             usedTrainingDataset = usedTrainingDataset.getStripedDataset();
         }
 
-        var parameters = configuration.getPopulationBuilderParameters();
-        var DISCARD_W_TOKENS = true;
-        var ADD_NO_CONTEXT_INDIVIDUALS = true;
-        var TOKEN_UNMATCH_THREASHOLD = 80.0;
-        var TOKEN_THREASHOLD = 80.0;
+        Map<String, String> parameters = configuration.getPopulationBuilderParameters();
+        boolean DISCARD_W_TOKENS = true;
+        boolean ADD_NO_CONTEXT_INDIVIDUALS = true;
+        double TOKEN_UNMATCH_THREASHOLD = 80.0;
+        double TOKEN_THREASHOLD = 80.0;
         if(parameters!=null){
             
             if(parameters.containsKey("tokenThreashold")){
@@ -103,10 +103,10 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
         List<Node> newPopulation = new LinkedList<>();
 
 
-        var winnerMatchTokens = TokenizedContextTerminalSetBuilder.calculateWinnerMatchTokens(usedTrainingDataset, TOKEN_THREASHOLD, DISCARD_W_TOKENS);
-        var winnerUnMatchTokens = TokenizedContextTerminalSetBuilder.calculateWinnerUnmatchTokens(usedTrainingDataset, TOKEN_UNMATCH_THREASHOLD, DISCARD_W_TOKENS);
+        Map<String, Double> winnerMatchTokens = TokenizedContextTerminalSetBuilder.calculateWinnerMatchTokens(usedTrainingDataset, TOKEN_THREASHOLD, DISCARD_W_TOKENS);
+        Map<String, Double> winnerUnMatchTokens = TokenizedContextTerminalSetBuilder.calculateWinnerUnmatchTokens(usedTrainingDataset, TOKEN_UNMATCH_THREASHOLD, DISCARD_W_TOKENS);
         
-        for(var example : usedTrainingDataset.getExamples()){
+        for(Example example : usedTrainingDataset.getExamples()){
             if(example.getMatch().isEmpty()){
                 
                 continue;
@@ -118,7 +118,7 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
         
         
         if(ADD_NO_CONTEXT_INDIVIDUALS){
-            var tokenizedPopulationBuilder = new TokenizedPopulationBuilder();
+            TokenizedPopulationBuilder tokenizedPopulationBuilder = new TokenizedPopulationBuilder();
             if(context == null){
                 tokenizedPopulationBuilder.setup(configuration);
                 tokenizedPopulationBuilder.init(newPopulation);
@@ -127,7 +127,7 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
             }
         }
 
-        var popSize = Math.min(configuration.getEvolutionParameters().getPopulationSize()/2, newPopulation.size());
+        int popSize = Math.min(configuration.getEvolutionParameters().getPopulationSize()/2, newPopulation.size());
         
         Collections.shuffle(newPopulation,new Random(0));
         newPopulation = new LinkedList<>(newPopulation.subList(0, popSize));
@@ -141,11 +141,11 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
         List<Node> individualsForExample = new LinkedList<>();
         Set<String> matchSet = new HashSet<>(example.getMatchedStrings());
         Set<String> unmatchSet = new HashSet<>(example.getUnmatchedStrings());
-        var orderedAnnotatedStrings = example.getOrderedAnnotatedStrings();
+        List<String> orderedAnnotatedStrings = example.getOrderedAnnotatedStrings();
          
         
         String pre=null,match=null,post=null;
-        for (var i = 0; i < orderedAnnotatedStrings.size(); i++) {
+        for (int i = 0; i < orderedAnnotatedStrings.size(); i++) {
             if(matchSet.contains(orderedAnnotatedStrings.get(i))){
                 match =  orderedAnnotatedStrings.get(i);
                 if(i>0){
@@ -173,21 +173,21 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
         Node preUnmatchNode = null;
 
         if(preUnmatchString != null){
-            var preUnmatchStringTokens = tokenizer.tokenize(preUnmatchString);
+            List<String> preUnmatchStringTokens = tokenizer.tokenize(preUnmatchString);
             preUnmatchNode = createIndividualFromTokenizedString(preUnmatchStringTokens, winnerUnmatchTokens, compact, true);
         }
         Node matchNode = null;
         if(matchString != null){
-            var matchStringTokens = tokenizer.tokenize(matchString);
+            List<String> matchStringTokens = tokenizer.tokenize(matchString);
             matchNode = createIndividualFromTokenizedString(matchStringTokens, winnerMatchTokens, compact, false);
         }
         Node postUnmatchNode = null;
         if(postUnmatchString != null){
-            var postUnmatchStringTokens = tokenizer.tokenize(postUnmatchString);
+            List<String> postUnmatchStringTokens = tokenizer.tokenize(postUnmatchString);
             postUnmatchNode = createIndividualFromTokenizedString(postUnmatchStringTokens, winnerUnmatchTokens, compact, false);
         }
 
-        var finalIndividual = matchNode;
+        Node finalIndividual = matchNode;
         if(postUnmatchNode!=null){
             ParentNode finalIndividualTemp = new Concatenator();
             finalIndividualTemp.add(matchNode);
@@ -218,11 +218,11 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
         letters.add(new RegexRange("A-Za-z"));
 
         Deque<Node> nodes = new LinkedList<>();
-        for(var token : tokenizedString){
+        for(String token : tokenizedString){
             if(winnerTokens.containsKey(token)){
                 nodes.add(new Constant(Utils.escape(token)));
             } else {
-                for (var c : token.toCharArray()) {
+                for (char c : token.toCharArray()) {
                     if (Character.isLetter(c)) {
                         nodes.add(letters.cloneTree());
                     } else if (Character.isDigit(c)) {
@@ -241,13 +241,13 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
             
             
             while (nodes.size()>0) {
-                var node = nodes.pollFirst();
-                var nodeValue = node.toString();
-                var isRepeat = false;
-                var repetitions = 1;
+                Node node = nodes.pollFirst();
+                String nodeValue = node.toString();
+                boolean isRepeat = false;
+                int repetitions = 1;
                 while (!nodes.isEmpty()){
-                    var next = nodes.peek();
-                    var nextValue = next.toString();
+                    Node next = nodes.peek();
+                    String nextValue = next.toString();
 
                     if(nodeValue.equals(nextValue)){
                         repetitions++;
@@ -281,8 +281,8 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
         while (nodes.size() > 1) {
 
             while (nodes.size() > 0) {
-                var first = nodes.pollFirst();
-                var second = nodes.pollFirst();
+                Node first = nodes.pollFirst();
+                Node second = nodes.pollFirst();
 
                 if (second != null) {
                     tmp.addLast(new Concatenator(first, second));

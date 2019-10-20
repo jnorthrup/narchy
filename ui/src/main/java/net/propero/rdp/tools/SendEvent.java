@@ -78,21 +78,21 @@ public class SendEvent extends JFrame {
      */
     private javax.swing.JPanel getJContentPane() {
         if (jContentPane == null) {
-            var jLabel3 = new JLabel();
-            var jLabel2 = new JLabel();
-            var jLabel1 = new JLabel();
-            var jLabel = new JLabel();
-            var gridBagConstraints1 = new GridBagConstraints();
-            var gridBagConstraints2 = new GridBagConstraints();
-            var gridBagConstraints3 = new GridBagConstraints();
-            var gridBagConstraints4 = new GridBagConstraints();
-            var gridBagConstraints5 = new GridBagConstraints();
-            var gridBagConstraints6 = new GridBagConstraints();
-            var gridBagConstraints7 = new GridBagConstraints();
-            var gridBagConstraints8 = new GridBagConstraints();
-            var gridBagConstraints9 = new GridBagConstraints();
-            var gridBagConstraints10 = new GridBagConstraints();
-            var gridBagConstraints11 = new GridBagConstraints();
+            JLabel jLabel3 = new JLabel();
+            JLabel jLabel2 = new JLabel();
+            JLabel jLabel1 = new JLabel();
+            JLabel jLabel = new JLabel();
+            GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
+            GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
+            GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
+            GridBagConstraints gridBagConstraints4 = new GridBagConstraints();
+            GridBagConstraints gridBagConstraints5 = new GridBagConstraints();
+            GridBagConstraints gridBagConstraints6 = new GridBagConstraints();
+            GridBagConstraints gridBagConstraints7 = new GridBagConstraints();
+            GridBagConstraints gridBagConstraints8 = new GridBagConstraints();
+            GridBagConstraints gridBagConstraints9 = new GridBagConstraints();
+            GridBagConstraints gridBagConstraints10 = new GridBagConstraints();
+            GridBagConstraints gridBagConstraints11 = new GridBagConstraints();
             jContentPane = new javax.swing.JPanel();
             jContentPane.setLayout(new GridBagLayout());
             gridBagConstraints1.gridx = 1;

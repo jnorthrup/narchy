@@ -93,7 +93,7 @@ public static final Font defaultfont=new Font(Font.SANS_SERIF, Font.PLAIN, 12);
     textheight=(float)font.getStringBounds("Ij", frc).getHeight();
     levels=0;
     if(root==null) return 0;
-    var width=pose(root, -xspace, 0)-xspace;
+      float width=pose(root, -xspace, 0)-xspace;
     setPreferredSize(new Dimension(1+(int)width, 1+(int)height()));
     invalidate();
     repaint();
@@ -122,15 +122,15 @@ public static final Font defaultfont=new Font(Font.SANS_SERIF, Font.PLAIN, 12);
     node.x=xpos+xspace;
     node.y=level*(textheight+2*border+yspace);
     node.w=2*border+(float)font.getStringBounds(node.text, frc).getWidth();
-    var nodew=xspace+node.w;
+      float nodew=xspace+node.w;
     float kidsw=0;
-    for(var n: node.kids)
+    for(Node n: node.kids)
       kidsw+=pose(n, xpos+kidsw, level+1);
     if(kidsw>=nodew){
       node.x+=(kidsw-nodew)/2;
       return kidsw;
     } else{
-      for(var n: node.kids) n.xShift((nodew-kidsw)/2);
+      for(Node n: node.kids) n.xShift((nodew-kidsw)/2);
       return nodew;
     }
   }
@@ -138,7 +138,7 @@ public static final Font defaultfont=new Font(Font.SANS_SERIF, Font.PLAIN, 12);
   @Override
   public void paintComponent(Graphics g){
     if(root!=null){
-      var g2=(Graphics2D)g;
+        Graphics2D g2=(Graphics2D)g;
       g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
           RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
       g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -158,7 +158,7 @@ public static final Font defaultfont=new Font(Font.SANS_SERIF, Font.PLAIN, 12);
    * @param node root of the tree to be drawn.
    */
   protected void paintTree(Graphics2D g2, Node node){
-    for(var kid: node.kids){
+    for(Node kid: node.kids){
       paintTree(g2, kid);
       line.x1=node.x+node.w/2;
       line.y1=node.y+border+textheight/2;

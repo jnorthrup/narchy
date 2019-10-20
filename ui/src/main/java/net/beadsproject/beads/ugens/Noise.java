@@ -41,7 +41,7 @@ public class Noise extends UGen {
      */
     @Override
     public void gen() {
-        for (var i = 0; i < bufferSize; i++) {
+        for (int i = 0; i < bufferSize; i++) {
             bufOut[0][i] = noiseTensor.getAt(index);
             index++;
             if (index == noiseTensor.data.length) {

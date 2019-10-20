@@ -466,11 +466,11 @@ public class SliderConstraint extends TypedConstraint {
 	
 	
 	private void buildJacobianInt(Body3D rbA, Body3D rbB, Transform frameInA, Transform frameInB) {
-		var tmpTrans = new Transform();
-		var tmpTrans1 = new Transform();
-		var tmpTrans2 = new Transform();
-		var tmp = new v3();
-		var tmp2 = new v3();
+        Transform tmpTrans = new Transform();
+        Transform tmpTrans1 = new Transform();
+        Transform tmpTrans2 = new Transform();
+        v3 tmp = new v3();
+        v3 tmp2 = new v3();
 
 		
 		calculatedTransformA.mul(rbA.getCenterOfMassTransform(tmpTrans), frameInA);
@@ -483,16 +483,16 @@ public class SliderConstraint extends TypedConstraint {
 		projPivotInW.scaleAdd(sliderAxis.dot(delta), sliderAxis, realPivotAInW);
 		relPosA.sub(projPivotInW, rbA.getCenterOfMassPosition(tmp));
 		relPosB.sub(realPivotBInW, rbB.getCenterOfMassPosition(tmp));
-		var normalWorld = new v3();
+        v3 normalWorld = new v3();
 
 		
-		for (var i = 0; i<3; i++) {
+		for (int i = 0; i<3; i++) {
 			calculatedTransformA.basis.getColumn(i, normalWorld);
 
-			var mat1 = rbA.getCenterOfMassTransform(tmpTrans1).basis;
+            Matrix3f mat1 = rbA.getCenterOfMassTransform(tmpTrans1).basis;
 			mat1.transpose();
 
-			var mat2 = rbB.getCenterOfMassTransform(tmpTrans2).basis;
+            Matrix3f mat2 = rbB.getCenterOfMassTransform(tmpTrans2).basis;
 			mat2.transpose();
 
 			jacLin[i].init(
@@ -511,13 +511,13 @@ public class SliderConstraint extends TypedConstraint {
 		testLinLimits();
 
 		
-		for (var i = 0; i<3; i++) {
+		for (int i = 0; i<3; i++) {
 			calculatedTransformA.basis.getColumn(i, normalWorld);
 
-			var mat1 = rbA.getCenterOfMassTransform(tmpTrans1).basis;
+            Matrix3f mat1 = rbA.getCenterOfMassTransform(tmpTrans1).basis;
 			mat1.transpose();
 
-			var mat2 = rbB.getCenterOfMassTransform(tmpTrans2).basis;
+            Matrix3f mat2 = rbB.getCenterOfMassTransform(tmpTrans2).basis;
 			mat2.transpose();
 
 			jacAng[i].init(
@@ -529,7 +529,7 @@ public class SliderConstraint extends TypedConstraint {
 		}
 		testAngLimits();
 
-		var axisA = new v3();
+        v3 axisA = new v3();
 		calculatedTransformA.basis.getColumn(0, axisA);
 		kAngle = 1f / (rbA.computeAngularImpulseDenominator(axisA) + rbB.computeAngularImpulseDenominator(axisA));
 		
@@ -538,27 +538,27 @@ public class SliderConstraint extends TypedConstraint {
 	}
 	
 	private void solveConstraintInt(Body3D rbA, Body3D rbB) {
-		var tmp = new v3();
+        v3 tmp = new v3();
 
 
-		var velA = rbA.getVelocityInLocalPoint(relPosA, new v3());
-		var velB = rbB.getVelocityInLocalPoint(relPosB, new v3());
-		var vel = new v3();
+        v3 velA = rbA.getVelocityInLocalPoint(relPosA, new v3());
+        v3 velB = rbB.getVelocityInLocalPoint(relPosB, new v3());
+        v3 vel = new v3();
 		vel.sub(velA, velB);
 
-		var impulse_vector = new v3();
+        v3 impulse_vector = new v3();
 
-		for (var i = 0; i<3; i++) {
-			var normal = jacLin[i].linearJointAxis;
-			var rel_vel = normal.dot(vel);
+		for (int i = 0; i<3; i++) {
+            v3 normal = jacLin[i].linearJointAxis;
+            float rel_vel = normal.dot(vel);
 
-			var depth = VectorUtil.coord(this.depth, i);
+            float depth = VectorUtil.coord(this.depth, i);
 
-			var softness = (i != 0)? softnessOrthoLin : (solveLinLim? softnessLimLin : softnessDirLin);
-			var restitution = (i != 0)? restitutionOrthoLin : (solveLinLim? restitutionLimLin : restitutionDirLin);
-			var damping = (i != 0)? dampingOrthoLin : (solveLinLim? dampingLimLin : dampingDirLin);
+            float softness = (i != 0)? softnessOrthoLin : (solveLinLim? softnessLimLin : softnessDirLin);
+            float restitution = (i != 0)? restitutionOrthoLin : (solveLinLim? restitutionLimLin : restitutionDirLin);
+            float damping = (i != 0)? dampingOrthoLin : (solveLinLim? dampingLimLin : dampingDirLin);
 
-			var normalImpulse = softness * (restitution * depth / timeStep - damping * rel_vel) * jacLinDiagABInv[i];
+            float normalImpulse = softness * (restitution * depth / timeStep - damping * rel_vel) * jacLinDiagABInv[i];
 			impulse_vector.scale(normalImpulse, normal);
 			rbA.impulse(impulse_vector, relPosA);
 			tmp.negated(impulse_vector);
@@ -567,15 +567,15 @@ public class SliderConstraint extends TypedConstraint {
 			if (poweredLinMotor && (i == 0)) {
 				
 				if (accumulatedLinMotorImpulse < maxLinMotorForce) {
-					var desiredMotorVel = targetLinMotorVelocity;
-					var motor_relvel = desiredMotorVel + rel_vel;
+                    float desiredMotorVel = targetLinMotorVelocity;
+                    float motor_relvel = desiredMotorVel + rel_vel;
 					normalImpulse = -motor_relvel * jacLinDiagABInv[i];
 
-					var new_acc = accumulatedLinMotorImpulse + Math.abs(normalImpulse);
+                    float new_acc = accumulatedLinMotorImpulse + Math.abs(normalImpulse);
 					if (new_acc > maxLinMotorForce) {
 						new_acc = maxLinMotorForce;
 					}
-					var del = new_acc - accumulatedLinMotorImpulse;
+                    float del = new_acc - accumulatedLinMotorImpulse;
 					if (normalImpulse < 0f) {
 						normalImpulse = -del;
 					}
@@ -593,44 +593,44 @@ public class SliderConstraint extends TypedConstraint {
 		}
 
 
-		var axisA = new v3();
+        v3 axisA = new v3();
 		calculatedTransformA.basis.getColumn(0, axisA);
-		var axisB = new v3();
+        v3 axisB = new v3();
 		calculatedTransformB.basis.getColumn(0, axisB);
 
-		var angVelA = rbA.getAngularVelocity(new v3());
-		var angVelB = rbB.getAngularVelocity(new v3());
+        v3 angVelA = rbA.getAngularVelocity(new v3());
+        v3 angVelB = rbB.getAngularVelocity(new v3());
 
-		var angVelAroundAxisA = new v3();
+        v3 angVelAroundAxisA = new v3();
 		angVelAroundAxisA.scale(axisA.dot(angVelA), axisA);
-		var angVelAroundAxisB = new v3();
+        v3 angVelAroundAxisB = new v3();
 		angVelAroundAxisB.scale(axisB.dot(angVelB), axisB);
 
-		var angAorthog = new v3();
+        v3 angAorthog = new v3();
 		angAorthog.sub(angVelA, angVelAroundAxisA);
-		var angBorthog = new v3();
+        v3 angBorthog = new v3();
 		angBorthog.sub(angVelB, angVelAroundAxisB);
-		var velrelOrthog = new v3();
+        v3 velrelOrthog = new v3();
 		velrelOrthog.sub(angAorthog, angBorthog);
 
 
-		var len = velrelOrthog.length();
+        float len = velrelOrthog.length();
 		if (len > 0.00001f) {
-			var normal = new v3();
+            v3 normal = new v3();
 			normal.normalize(velrelOrthog);
-			var denom = rbA.computeAngularImpulseDenominator(normal) + rbB.computeAngularImpulseDenominator(normal);
+            float denom = rbA.computeAngularImpulseDenominator(normal) + rbB.computeAngularImpulseDenominator(normal);
 			velrelOrthog.scaled((1f / denom) * dampingOrthoAng * softnessOrthoAng);
 		}
 
 
-		var angularError = new v3();
+        v3 angularError = new v3();
 		angularError.cross(axisA, axisB);
 		angularError.scaled(1f / timeStep);
-		var len2 = angularError.length();
+        float len2 = angularError.length();
 		if (len2 > 0.00001f) {
-			var normal2 = new v3();
+            v3 normal2 = new v3();
 			normal2.normalize(angularError);
-			var denom2 = rbA.computeAngularImpulseDenominator(normal2) + rbB.computeAngularImpulseDenominator(normal2);
+            float denom2 = rbA.computeAngularImpulseDenominator(normal2) + rbB.computeAngularImpulseDenominator(normal2);
 			angularError.scaled((1f / denom2) * restitutionOrthoAng * softnessOrthoAng);
 		}
 
@@ -653,7 +653,7 @@ public class SliderConstraint extends TypedConstraint {
 			impulseMag = tmp.dot(axisA) * dampingDirAng + angDepth * restitutionDirAng / timeStep;
 			impulseMag *= kAngle * softnessDirAng;
 		}
-		var impulse = new v3();
+        v3 impulse = new v3();
 		impulse.scale(impulseMag, axisA);
 		rbA.torqueImpulse(impulse);
 		tmp.negated(impulse);
@@ -662,20 +662,20 @@ public class SliderConstraint extends TypedConstraint {
 		
 		if (poweredAngMotor) {
 			if (accumulatedAngMotorImpulse < maxAngMotorForce) {
-				var velrel = new v3();
+                v3 velrel = new v3();
 				velrel.sub(angVelAroundAxisA, angVelAroundAxisB);
-				var projRelVel = velrel.dot(axisA);
+                float projRelVel = velrel.dot(axisA);
 
-				var desiredMotorVel = targetAngMotorVelocity;
-				var motor_relvel = desiredMotorVel - projRelVel;
+                float desiredMotorVel = targetAngMotorVelocity;
+                float motor_relvel = desiredMotorVel - projRelVel;
 
-				var angImpulse = kAngle * motor_relvel;
+                float angImpulse = kAngle * motor_relvel;
 
-				var new_acc = accumulatedAngMotorImpulse + Math.abs(angImpulse);
+                float new_acc = accumulatedAngMotorImpulse + Math.abs(angImpulse);
 				if (new_acc > maxAngMotorForce) {
 					new_acc = maxAngMotorForce;
 				}
-				var del = new_acc - accumulatedAngMotorImpulse;
+                float del = new_acc - accumulatedAngMotorImpulse;
 				if (angImpulse < 0f) {
 					angImpulse = -del;
 				} else {
@@ -684,7 +684,7 @@ public class SliderConstraint extends TypedConstraint {
 				accumulatedAngMotorImpulse = new_acc;
 
 
-				var motorImp = new v3();
+                v3 motorImp = new v3();
 				motorImp.scale(angImpulse, axisA);
 				rbA.torqueImpulse(motorImp);
 				tmp.negated(motorImp);
@@ -696,7 +696,7 @@ public class SliderConstraint extends TypedConstraint {
 	
 	
 	public void calculateTransforms() {
-		var tmpTrans = new Transform();
+        Transform tmpTrans = new Transform();
 
 		if (useLinearReferenceFrameA) {
 			calculatedTransformA.mul(rbA.getCenterOfMassTransform(tmpTrans), frameInA);
@@ -711,9 +711,9 @@ public class SliderConstraint extends TypedConstraint {
 		calculatedTransformA.basis.getColumn(0, sliderAxis); 
 		delta.sub(realPivotBInW, realPivotAInW);
 		projPivotInW.scaleAdd(sliderAxis.dot(delta), sliderAxis, realPivotAInW);
-		var normalWorld = new v3();
+        v3 normalWorld = new v3();
 		
-		for (var i = 0; i<3; i++) {
+		for (int i = 0; i<3; i++) {
 			calculatedTransformA.basis.getColumn(i, normalWorld);
 			VectorUtil.setCoord(depth, i, delta.dot(normalWorld));
 		}
@@ -744,14 +744,14 @@ public class SliderConstraint extends TypedConstraint {
 		angDepth = 0f;
 		solveAngLim = false;
 		if (lowerAngLimit <= upperAngLimit) {
-			var axisA0 = new v3();
+            v3 axisA0 = new v3();
 			calculatedTransformA.basis.getColumn(1, axisA0);
-			var axisA1 = new v3();
+            v3 axisA1 = new v3();
 			calculatedTransformA.basis.getColumn(2, axisA1);
-			var axisB0 = new v3();
+            v3 axisB0 = new v3();
 			calculatedTransformB.basis.getColumn(1, axisB0);
 
-			var rot = (float) Math.atan2(axisB0.dot(axisA1), axisB0.dot(axisA0));
+            float rot = (float) Math.atan2(axisB0.dot(axisA1), axisB0.dot(axisA0));
 			if (rot < lowerAngLimit) {
 				angDepth = rot - lowerAngLimit;
 				solveAngLim = true;
@@ -766,9 +766,9 @@ public class SliderConstraint extends TypedConstraint {
 	
 	
 	public v3 getAncorInA(v3 out) {
-		var tmpTrans = new Transform();
+        Transform tmpTrans = new Transform();
 
-		var ancorInA = out;
+        v3 ancorInA = out;
 		ancorInA.scaleAdd((lowerLinLimit + upperLinLimit) * 0.5f, sliderAxis, realPivotAInW);
 		rbA.getCenterOfMassTransform(tmpTrans);
 		tmpTrans.invert();
@@ -777,7 +777,7 @@ public class SliderConstraint extends TypedConstraint {
 	}
 
 	public v3 getAncorInB(v3 out) {
-		var ancorInB = out;
+        v3 ancorInB = out;
 		ancorInB.set(frameInB);
 		return ancorInB;
 	}

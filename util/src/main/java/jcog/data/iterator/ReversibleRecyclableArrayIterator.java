@@ -37,7 +37,7 @@ public class ReversibleRecyclableArrayIterator<T> implements Iterator<T> {
     public T next() {
         if (!hasNext()) throw new NoSuchElementException();
 
-        var i = (reverse) ? ((count-1) - current) : current;
+        int i = (reverse) ? ((count-1) - current) : current;
         current++;
 
         return a[i];

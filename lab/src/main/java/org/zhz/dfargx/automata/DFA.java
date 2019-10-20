@@ -35,18 +35,18 @@ public class DFA {
     }
 
     private int[][] convert(List<NFAState> nfaStateList) {
-        var initState = nfaStateList.get(0);
-        var finalState = nfaStateList.get(1);
+        NFAState initState = nfaStateList.get(0);
+        NFAState finalState = nfaStateList.get(1);
 
-        var closureMap = calculateClosure(nfaStateList);
+        Map<NFAState, Set<NFAState>> closureMap = calculateClosure(nfaStateList);
 
         
         Map<NFAState, CharObjectHashMap<Set<NFAState>>> nfaTransitionMap = new HashMap<>();
-        for (var state : nfaStateList) {
+        for (NFAState state : nfaStateList) {
             CharObjectHashMap<Set<NFAState>> subMap = new CharObjectHashMap();
             for (char ch = 0; ch < CommonSets.ENCODING_LENGTH; ch++) {
-                var closure = closureMap.get(state);
-                var reachable = traceReachable(closure, ch, closureMap);
+                Set<NFAState> closure = closureMap.get(state);
+                Set<NFAState> reachable = traceReachable(closure, ch, closureMap);
                 if (!reachable.isEmpty()) {
                     subMap.put(ch, reachable);
                 }
@@ -63,15 +63,15 @@ public class DFA {
     }
 
     private static void constructOriginalDFA(Set<NFAState> stateSet, Map<NFAState, CharObjectHashMap<Set<NFAState>>> nfaTransitionMap, Map<Set<NFAState>, CharObjectHashMap<Set<NFAState>>> originalDFATransitionMap) {
-        var subMap = originalDFATransitionMap.get(stateSet);
+        CharObjectHashMap<Set<NFAState>> subMap = originalDFATransitionMap.get(stateSet);
         if (subMap == null) {
             subMap = new CharObjectHashMap<>();
             originalDFATransitionMap.put(stateSet, subMap);
         }
         for (char ch = 0; ch < CommonSets.ENCODING_LENGTH; ch++) {
             Set<NFAState> union = new HashSet<>();
-            for (var state : stateSet) {
-                var nfaSet = nfaTransitionMap.get(state).get(ch);
+            for (NFAState state : stateSet) {
+                Set<NFAState> nfaSet = nfaTransitionMap.get(state).get(ch);
                 if (nfaSet != null) {
                     union.addAll(nfaSet);
                 }
@@ -87,7 +87,7 @@ public class DFA {
 
     private static Map<NFAState, Set<NFAState>> calculateClosure(List<NFAState> nfaStateList) {
         Map<NFAState, Set<NFAState>> map = new HashMap<>();
-        for (var state : nfaStateList) {
+        for (NFAState state : nfaStateList) {
             Set<NFAState> closure = new HashSet<>();
             dfsClosure(state, closure);
             map.put(state, closure);
@@ -97,18 +97,18 @@ public class DFA {
 
     private static void dfsClosure(NFAState state, Set<NFAState> closure) {
         closure.add(state);
-        for (var next : state.directTable) {
+        for (NFAState next : state.directTable) {
             dfsClosure(next, closure);
         }
     }
 
     private static Set<NFAState> traceReachable(Set<NFAState> closure, char ch, Map<NFAState, Set<NFAState>> closureMap) {
         Set<NFAState> result = new HashSet<>();
-        for (var closureState : closure) {
-            var transitionMap = closureState.transitions;
-            var stateSet = transitionMap.get(ch);
+        for (NFAState closureState : closure) {
+            CharObjectHashMap<Set<NFAState>> transitionMap = closureState.transitions;
+            Set<NFAState> stateSet = transitionMap.get(ch);
             if (stateSet != null) {
-                for (var state : stateSet) {
+                for (NFAState state : stateSet) {
                     result.addAll(closureMap.get(state)); 
                 }
             }
@@ -118,11 +118,11 @@ public class DFA {
 
     private int[][] minimize(Map<Set<NFAState>, CharObjectHashMap<Set<NFAState>>> oriDFATransitionMap, Set<NFAState> initClosure, NFAState finalNFAState) {
         Map<Set<NFAState>, Integer> stateRenamingMap = new HashMap<>();
-        var initStateAfterRenaming = -1;
-        var renamingStateID = 1;
+        int initStateAfterRenaming = -1;
+        int renamingStateID = 1;
 
         
-        for (var nfaState : oriDFATransitionMap.keySet()) {
+        for (Set<NFAState> nfaState : oriDFATransitionMap.keySet()) {
             if (initStateAfterRenaming == -1 && nfaState.equals(initClosure)) {
                 initStateAfterRenaming = renamingStateID; 
             }
@@ -135,11 +135,11 @@ public class DFA {
         finalFlags.put(0, false);
 
         
-        for (var entry : oriDFATransitionMap.entrySet()) {
-            var ek = entry.getKey();
+        for (Map.Entry<Set<NFAState>, CharObjectHashMap<Set<NFAState>>> entry : oriDFATransitionMap.entrySet()) {
+            Set<NFAState> ek = entry.getKey();
             renamingStateID = stateRenamingMap.get(ek);
-            var state = newRejectState();
-            var ev = entry.getValue();
+            int[] state = newRejectState();
+            CharObjectHashMap<Set<NFAState>> ev = entry.getValue();
 
             ev.forEachKeyValue( (k, v) -> state[k] = stateRenamingMap.get(v));
 
@@ -149,35 +149,35 @@ public class DFA {
         }
 
 
-        var groupFlags = new IntIntHashMap();
-        for (var i = 0; i < finalFlags.size(); i++) {
+        IntIntHashMap groupFlags = new IntIntHashMap();
+        for (int i = 0; i < finalFlags.size(); i++) {
             boolean b = finalFlags.get(i);
             groupFlags.put(i, b ? 0 : 1);
         }
 
-        var groupTotal = 2;
+        int groupTotal = 2;
         int preGroupTotal;
         do { 
             preGroupTotal = groupTotal;
-            for (var sensitiveGroup = 0; sensitiveGroup < preGroupTotal; sensitiveGroup++) {
+            for (int sensitiveGroup = 0; sensitiveGroup < preGroupTotal; sensitiveGroup++) {
                 
                 Map<Map<Integer, Integer>, Set<Integer>> invertMap = new HashMap<>();
-                for (var sid = 0; sid < groupFlags.size(); sid++) {
-                    var group = groupFlags.get(sid);
+                for (int sid = 0; sid < groupFlags.size(); sid++) {
+                    int group = groupFlags.get(sid);
                     if (sensitiveGroup == group) {
                         Map<Integer, Integer> targetGroupTable = new HashMap<>(CommonSets.ENCODING_LENGTH);
                         for (char ch = 0; ch < CommonSets.ENCODING_LENGTH; ch++) {
-                            var targetState = renamedDFATransitionTable.get(sid)[ch];
-                            var targetGroup = groupFlags.get(targetState);
+                            int targetState = renamedDFATransitionTable.get(sid)[ch];
+                            int targetGroup = groupFlags.get(targetState);
                             targetGroupTable.put((int) ch, targetGroup);
                         }
-                        var stateIDSet = invertMap.computeIfAbsent(targetGroupTable, k -> new HashSet<>());
+                        Set<Integer> stateIDSet = invertMap.computeIfAbsent(targetGroupTable, k -> new HashSet<>());
                         stateIDSet.add(sid);
                     }
                 }
 
-                var first = true;
-                for (var stateIDSet : invertMap.values()) {
+                boolean first = true;
+                for (Set<Integer> stateIDSet : invertMap.values()) {
                     if (first) {
                         first = false;
                     } else {
@@ -205,21 +205,21 @@ public class DFA {
             }
         }
 
-        var fs = this.fs = new boolean[groupTotal];
-        for (var i = 0; i < groupTotal; i++) {
+        boolean[] fs = this.fs = new boolean[groupTotal];
+        for (int i = 0; i < groupTotal; i++) {
             fs[i] = finalGroupFlags.contains(i);
         }
 
 
-        var tt = new int[groupTotal][];
+        int[][] tt = new int[groupTotal][];
 
-        for (var groupID = 0; groupID < groupTotal; groupID++) {
-            for (var sid = 0; sid < groupFlags.size(); sid++) {
+        for (int groupID = 0; groupID < groupTotal; groupID++) {
+            for (int sid = 0; sid < groupFlags.size(); sid++) {
                 if (groupID == groupFlags.get(sid)) {
-                    var oriState = renamedDFATransitionTable.get(sid);
-                    var state = new int[CommonSets.ENCODING_LENGTH];
+                    int[] oriState = renamedDFATransitionTable.get(sid);
+                    int[] state = new int[CommonSets.ENCODING_LENGTH];
                     for (char ch = 0; ch < CommonSets.ENCODING_LENGTH; ch++) {
-                        var next = oriState[ch];
+                        int next = oriState[ch];
                         state[ch] = groupFlags.get(next);
                     }
                     tt[groupID] = state;
@@ -232,7 +232,7 @@ public class DFA {
 
 
     private static int[] newRejectState() {
-        var state = new int[CommonSets.ENCODING_LENGTH];
+        int[] state = new int[CommonSets.ENCODING_LENGTH];
         
         return state;
     }

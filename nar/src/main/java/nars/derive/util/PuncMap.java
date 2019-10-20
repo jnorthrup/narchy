@@ -48,7 +48,7 @@ public final class PuncMap extends AbstractPred<PreDerivation> {
 
 
     private static Term id(byte belief, byte goal, byte question, byte quest, byte command) {
-        var PUNC = Atomic.atom("punc");
+        Atom PUNC = Atomic.atom("punc");
         if (belief != 0 && goal != 0&& question!= 0 && quest!= 0 && command!= 0) {
             return PUNC;
         } else {

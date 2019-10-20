@@ -124,8 +124,8 @@ public abstract class Atomic implements Term {
     }
 
     public static @Nullable Atomic the(char c) {
-        @Nullable var result = Op.VarAuto;
-        var finished = false;
+        @Nullable Atomic result = Op.VarAuto;
+        boolean finished = false;
         switch (c) {
             case Op.VarAutoSym:
                 finished = true;
@@ -193,7 +193,7 @@ public abstract class Atomic implements Term {
 
     /*@NotNull*/
     public static Atomic the(String id) {
-        var l = id.length();
+        int l = id.length();
         if (l <= 0)
             throw new RuntimeException("attempted construction of zero-length Atomic id");
 
@@ -362,7 +362,7 @@ public abstract class Atomic implements Term {
      */
     public static boolean quoteable(CharSequence t, int len) {
 
-        var t0 = t.charAt(0);
+        char t0 = t.charAt(0);
         
         if (Character.isDigit(t0))
             return true;
@@ -370,7 +370,12 @@ public abstract class Atomic implements Term {
         if ((t0 == '\"') && (t.charAt(len - 1) == '\"'))
             return false;
 
-        return IntStream.range(0, len).anyMatch(i -> !Atom.isValidAtomChar(t.charAt(i)));
+        for (int i = 0; i < len; i++) {
+            if (!Atom.isValidAtomChar(t.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 
 

@@ -10,12 +10,15 @@ import nars.Op;
 import nars.Task;
 import nars.task.NALTask;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.IntStream;
@@ -34,9 +37,9 @@ public class NALData {
      * all elements except a specified row become the subj of an impl to the element in the specified column
      */
     static BiFunction<Term, Term[], Term> predictsLast = (ctx, tt) -> {
-        var lastCol = tt.length - 1;
-        var subj = Arrays.copyOf(tt, lastCol);
-        var pred = tt[lastCol];
+        int lastCol = tt.length - 1;
+        Term[] subj = Arrays.copyOf(tt, lastCol);
+        Term pred = tt[lastCol];
         return $.inh($.p($.p(subj), pred), ctx);
     };
 
@@ -68,16 +71,21 @@ public class NALData {
      * beliefs representing the schema's metadata
      */
     private static Stream<Task> metaBeliefs(NAR nar, DataTable a, BiFunction<Term, Term[], Term> pointGenerator) {
-        var meta = new FasterList<Term>();
+        FasterList<Term> meta = new FasterList<Term>();
 
-        var n = a.columnCount();
-        var pattern = pointGenerator.apply(
+        int n = a.columnCount();
+        List<nars.term.Variable> list = new ArrayList<>();
+        for (int i1 = 0; i1 < n; i1++) {
+            nars.term.Variable variable = $.varDep(i1 + 1);
+            list.add(variable);
+        }
+        Term pattern = pointGenerator.apply(
                 name(a),
-                IntStream.range(0, n).mapToObj(i1 -> $.varDep(i1 + 1)).toArray(Term[]::new)
+                list.toArray(new Term[0])
         );
-        for (var i = 0; i < n; i++) {
-            var ai = a.attrName(i);
-            var attr = attrTerm(ai);
+        for (int i = 0; i < n; i++) {
+            String ai = a.attrName(i);
+            Term attr = attrTerm(ai);
 
             meta.add(
 
@@ -85,7 +93,7 @@ public class NALData {
                             $.inh($.varIndep(i + 1), attr))
             );
 
-            var nom = a.categories(ai);
+            String[] nom = a.categories(ai);
             if (nom != null) meta.add(INH.the(SETe.the($.$(nom)), attr));
 
         }
@@ -119,10 +127,10 @@ public class NALData {
      * (a,b,c,d) -> ((a,b,c)-->d)
      */
     public static Stream<Task> data(NAR n, DataTable a, byte punc, BiFunction<Term, Term[], Term> pointGenerator) {
-        var now = n.time();
+        long now = n.time();
         return terms(a, pointGenerator).map(point -> {
 
-            var p = punc != 0 ?
+            byte p = punc != 0 ?
                     punc
                     :
                     (point.hasAny(VAR_QUERY) ? QUESTION : BELIEF);
@@ -134,13 +142,13 @@ public class NALData {
     }
 
     public static Stream<Term> terms(DataTable a, BiFunction<Term, Term[], Term> generator) {
-        var ctx = name(a);
+        Term ctx = name(a);
         return StreamSupport.stream(a.spliterator(), false).map(point -> {
             //ImmutableList point = instance.data;
-            var n = point.columnCount();
-            var t = new Term[n];
-            for (var i = 0; i < n; i++) {
-                var x = point.getObject(i);
+            int n = point.columnCount();
+            Term[] t = new Term[n];
+            for (int i = 0; i < n; i++) {
+                Object x = point.getObject(i);
                 if (x instanceof String) t[i] = attrTerm((String) x);
                 else if (x instanceof Number) t[i] = $.the((Number) x);
                 else throw new UnsupportedOperationException();
@@ -150,7 +158,7 @@ public class NALData {
     }
 
     public static Term name(DataTable a) {
-        var r = a instanceof DataTable ? ((ARFF) a).getRelation() : a.toString();
+        String r = a instanceof DataTable ? ((ARFF) a).getRelation() : a.toString();
         if (r == null)
             r = ("ARFF_" + System.identityHashCode(a));
         return $.the(r);
@@ -162,18 +170,18 @@ public class NALData {
      */
     public static Function<Term[], Term> typed(DataTable dataset, Function<Term[], Term> pointGenerator) {
         return x -> {
-            var y = pointGenerator.apply(x);
+            Term y = pointGenerator.apply(x);
             if (y.hasAny(Op.VAR_QUERY)) {
                 FasterList<Term> qVar = y.subterms().collect(s -> s.op() == VAR_QUERY, new FasterList());
 
-                var typing = qVar.stream().map(q -> {
+                Term[] typing = qVar.stream().map(q -> {
                     if (q instanceof UnnormalizedVariable) {
-                        var col = q.toString().substring(1);
+                        String col = q.toString().substring(1);
                         return INH.the(q, attrTerm(col));
                     } else {
 
                         assert (q instanceof NormalizedVariable);
-                        var col = q.hashCode() - 1;
+                        int col = q.hashCode() - 1;
                         return INH.the(q, attrTerm(dataset.attrName(col)));
                     }
                 }).toArray(Term[]::new);

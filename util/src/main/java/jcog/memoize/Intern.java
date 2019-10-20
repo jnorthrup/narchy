@@ -95,7 +95,7 @@ public final class Intern {
      */
     @SuppressWarnings("interning") 
     public static /*@Interned*/ String[] internStrings(String[] a) {
-        for (var i = 0; i < a.length; i++) {
+        for (int i = 0; i < a.length; i++) {
             if (a[i] != null) {
                 a[i] = a[i].intern();
             }
@@ -180,7 +180,7 @@ public final class Intern {
 
         @Override
         public int hash(Object o) {
-            var i = (Long) o;
+            Long i = (Long) o;
             return i.intValue();
         }
     }
@@ -238,7 +238,7 @@ public final class Intern {
 
         @Override
         public int hash(Object o) {
-            var d = (Double) o;
+            Double d = (Double) o;
             return d.hashCode();
         }
     }
@@ -254,26 +254,31 @@ public final class Intern {
         public boolean equal(Object a1, Object a2) {
 
 
-            var da1 = (double[]) a1;
-            var da2 = (double[]) a2;
+            double[] da1 = (double[]) a1;
+            double[] da2 = (double[]) a2;
             if (da1.length != da2.length) {
                 return false;
             }
-            return IntStream.range(0, da1.length).noneMatch(i -> (da1[i] != da2[i]) && (!Double.isNaN(da1[i]) || !Double.isNaN(da2[i])));
+            for (int i = 0; i < da1.length; i++) {
+                if ((da1[i] != da2[i]) && (!Double.isNaN(da1[i]) || !Double.isNaN(da2[i]))) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         @Override
         public int hash(Object o) {
-            var a = (double[]) o;
+            double[] a = (double[]) o;
             
             
             double running = 0;
-            for (var i = 0; i < a.length; i++) {
-                var elt = (Double.isNaN(a[i]) ? 0.0 : a[i]);
+            for (int i = 0; i < a.length; i++) {
+                double elt = (Double.isNaN(a[i]) ? 0.0 : a[i]);
                 running = running * FACTOR + elt * DOUBLE_FACTOR;
             }
 
-            var result = Math.round(running);
+            long result = Math.round(running);
             return (int) (result % Integer.MAX_VALUE);
         }
     }
@@ -509,13 +514,13 @@ public final class Intern {
     @SuppressWarnings({"interning", "purity"}) 
             /*@Pure*/
     public static /*@Interned*/ Integer intern(Integer a) {
-        var lookup = internedIntegers.get(a);
-        var result1 = (lookup != null) ? lookup.get() : null;
+        WeakReference<Integer> lookup = internedIntegers.get(a);
+        Integer result1 = (lookup != null) ? lookup.get() : null;
         if (result1 != null) {
             return result1;
         } else {
             @SuppressWarnings("cast") 
-                    /*@Interned*/ var result = a;
+                    /*@Interned*/ Integer result = a;
             internedIntegers.put(result, new WeakReference<>(result));
             return result;
         }
@@ -557,13 +562,13 @@ public final class Intern {
     @SuppressWarnings({"interning", "purity"})
             /*@Pure*/
     public static /*@Interned*/ Long intern(Long a) {
-        var lookup = internedLongs.get(a);
-        var result1 = (lookup != null) ? lookup.get() : null;
+        WeakReference<Long> lookup = internedLongs.get(a);
+        Long result1 = (lookup != null) ? lookup.get() : null;
         if (result1 != null) {
             return result1;
         } else {
             @SuppressWarnings("cast") 
-                    /*@Interned*/ var result = a;
+                    /*@Interned*/ Long result = a;
             internedLongs.put(result, new WeakReference<>(result));
             return result;
         }
@@ -610,13 +615,13 @@ public final class Intern {
     public static int /*@Interned*/[] intern(int[] a) {
 
 
-        var lookup = internedIntArrays.get(a);
-        var result1 = (lookup != null) ? lookup.get() : null;
+        WeakReference<int[]> lookup = internedIntArrays.get(a);
+        int[] result1 = (lookup != null) ? lookup.get() : null;
         if (result1 != null) {
             return result1;
         } else {
             @SuppressWarnings("cast") 
-                    /*@Interned*/ var result = a;
+                    /*@Interned*/ int[] result = a;
             internedIntArrays.put(result, new WeakReference<>(result));
             return result;
         }
@@ -634,13 +639,13 @@ public final class Intern {
     public static long /*@Interned*/[] intern(long[] a) {
 
 
-        var lookup = internedLongArrays.get(a);
-        var result1 = (lookup != null) ? lookup.get() : null;
+        WeakReference<long[]> lookup = internedLongArrays.get(a);
+        long[] result1 = (lookup != null) ? lookup.get() : null;
         if (result1 != null) {
             return result1;
         } else {
             @SuppressWarnings("cast") 
-                    /*@Interned*/ var result = a;
+                    /*@Interned*/ long[] result = a;
             internedLongArrays.put(result, new WeakReference<>(result));
             return result;
         }
@@ -666,13 +671,13 @@ public final class Intern {
         if (a == 0) {
             return internedDoubleZero;
         }
-        var lookup = internedDoubles.get(a);
-        var result1 = (lookup != null) ? lookup.get() : null;
+        WeakReference<Double> lookup = internedDoubles.get(a);
+        Double result1 = (lookup != null) ? lookup.get() : null;
         if (result1 != null) {
             return result1;
         } else {
             @SuppressWarnings("cast") 
-                    /*@Interned*/ var result = a;
+                    /*@Interned*/ Double result = a;
             internedDoubles.put(result, new WeakReference<>(result));
             return result;
         }
@@ -717,13 +722,13 @@ public final class Intern {
     @SuppressWarnings({"interning", "purity"})
             /*@Pure*/
     public static double /*@Interned*/[] intern(double[] a) {
-        var lookup = internedDoubleArrays.get(a);
-        var result1 = (lookup != null) ? lookup.get() : null;
+        WeakReference<double[]> lookup = internedDoubleArrays.get(a);
+        double[] result1 = (lookup != null) ? lookup.get() : null;
         if (result1 != null) {
             return result1;
         } else {
             @SuppressWarnings("cast") 
-                    /*@Interned*/ var result = a;
+                    /*@Interned*/ double[] result = a;
             internedDoubleArrays.put(result, new WeakReference<>(result));
             return result;
         }
@@ -748,17 +753,17 @@ public final class Intern {
 
         
         if (assertsEnabled) {
-            for (var k = 0; k < a.length; k++) {
+            for (int k = 0; k < a.length; k++) {
                 if (!(a[k] == Intern.intern(a[k]))) {
                     throw new IllegalArgumentException();
                 }
             }
         }
 
-        var lookup =
+        WeakReference<String[]> lookup =
                 internedStringArrays.get(a);
         /*@Nullable*/ /*@Interned*/
-        var result = (lookup != null) ? lookup.get() : null;
+        String[] result = (lookup != null) ? lookup.get() : null;
         if (result == null) {
             result = a;
             internedStringArrays.put(
@@ -766,7 +771,7 @@ public final class Intern {
         }
         @SuppressWarnings(
                 "nullness") 
-                /*@PolyNull*/ /*@Interned*/ var polyresult = result;
+                /*@PolyNull*/ /*@Interned*/ String[] polyresult = result;
         return polyresult;
     }
 
@@ -788,10 +793,10 @@ public final class Intern {
             /*@PolyNull*/ /*@Interned*/ Object[] a) {
         @SuppressWarnings(
                 "nullness")
-        var lookup =
+        WeakReference<Object[]> lookup =
                 internedObjectArrays.get(a);
         /*@Nullable*/ /*@Interned*/
-        var result = (lookup != null) ? lookup.get() : null;
+        Object[] result = (lookup != null) ? lookup.get() : null;
         if (result == null) {
             result = a;
             internedObjectArrays.put(
@@ -799,7 +804,7 @@ public final class Intern {
         }
         @SuppressWarnings(
                 "nullness") 
-                /*@PolyNull*/ /*@Interned*/ var polyresult = result;
+                /*@PolyNull*/ /*@Interned*/ Object[] polyresult = result;
         return polyresult;
     }
 
@@ -820,7 +825,7 @@ public final class Intern {
             return intern((String) a);
         } else if (a instanceof String[]) {
             @SuppressWarnings("interning")
-                    /*@Interned*/ var asArray = (/*@Interned*/ String[]) a;
+                    /*@Interned*/ String[] asArray = (/*@Interned*/ String[]) a;
             return intern(asArray);
         } else if (a instanceof Integer) {
             return intern((Integer) a);
@@ -836,7 +841,7 @@ public final class Intern {
             return intern((double[]) a);
         } else if (a instanceof Object[]) {
             @SuppressWarnings("interning")
-                    /*@Interned*/ var asArray = (/*@Interned*/ Object[]) a;
+                    /*@Interned*/ Object[] asArray = (/*@Interned*/ Object[]) a;
             return intern(asArray);
         } else {
             throw new IllegalArgumentException(
@@ -864,15 +869,15 @@ public final class Intern {
         if (assertsEnabled && !Intern.isInterned(seq)) {
             throw new IllegalArgumentException();
         }
-        var sai =
+        SequenceAndIndices<int[]> sai =
                 new SequenceAndIndices<int[]>(seq, start, end);
-        var lookup = internedIntSequenceAndIndices.get(sai);
-        var result1 = (lookup != null) ? lookup.get() : null;
+        WeakReference<int[]> lookup = internedIntSequenceAndIndices.get(sai);
+        int[] result1 = (lookup != null) ? lookup.get() : null;
         if (result1 != null) {
             return result1;
         } else {
-            var subseqUninterned = ArrayUtil.subarray(seq, start, end - start);
-            var subseq = Intern.intern(subseqUninterned);
+            int[] subseqUninterned = ArrayUtil.subarray(seq, start, end - start);
+            int[] subseq = Intern.intern(subseqUninterned);
             internedIntSequenceAndIndices.put(sai, new WeakReference<>(subseq));
             return subseq;
         }
@@ -892,15 +897,15 @@ public final class Intern {
         if (assertsEnabled && !Intern.isInterned(seq)) {
             throw new IllegalArgumentException();
         }
-        var sai =
+        SequenceAndIndices<long[]> sai =
                 new SequenceAndIndices<long[]>(seq, start, end);
-        var lookup = internedLongSequenceAndIndices.get(sai);
-        var result1 = (lookup != null) ? lookup.get() : null;
+        WeakReference<long[]> lookup = internedLongSequenceAndIndices.get(sai);
+        long[] result1 = (lookup != null) ? lookup.get() : null;
         if (result1 != null) {
             return result1;
         } else {
-            var subseq_uninterned = ArrayUtil.subarray(seq, start, end - start);
-            var subseq = Intern.intern(subseq_uninterned);
+            long[] subseq_uninterned = ArrayUtil.subarray(seq, start, end - start);
+            long[] subseq = Intern.intern(subseq_uninterned);
             internedLongSequenceAndIndices.put(sai, new WeakReference<>(subseq));
             return subseq;
         }
@@ -920,15 +925,15 @@ public final class Intern {
         if (assertsEnabled && !Intern.isInterned(seq)) {
             throw new IllegalArgumentException();
         }
-        var sai =
+        SequenceAndIndices<double[]> sai =
                 new SequenceAndIndices<double[]>(seq, start, end);
-        var lookup = internedDoubleSequenceAndIndices.get(sai);
-        var result1 = (lookup != null) ? lookup.get() : null;
+        WeakReference<double[]> lookup = internedDoubleSequenceAndIndices.get(sai);
+        double[] result1 = (lookup != null) ? lookup.get() : null;
         if (result1 != null) {
             return result1;
         } else {
-            var subseq_uninterned = ArrayUtil.subarray(seq, start, end - start);
-            var subseq = Intern.intern(subseq_uninterned);
+            double[] subseq_uninterned = ArrayUtil.subarray(seq, start, end - start);
+            double[] subseq = Intern.intern(subseq_uninterned);
             internedDoubleSequenceAndIndices.put(sai, new WeakReference<>(subseq));
             return subseq;
         }
@@ -948,20 +953,20 @@ public final class Intern {
         if (assertsEnabled && !Intern.isInterned(seq)) {
             throw new IllegalArgumentException();
         }
-        var sai =
+        SequenceAndIndices<Object[]> sai =
                 new SequenceAndIndices<Object[]>(seq, start, end);
         @SuppressWarnings("nullness")
-        var lookup =
+        WeakReference<Object[]> lookup =
                 internedObjectSequenceAndIndices.get(sai);
         /*@PolyNull*/ /*@Interned*/
-        var result1 = (lookup != null) ? lookup.get() : null;
+        Object[] result1 = (lookup != null) ? lookup.get() : null;
         if (result1 != null) {
             return result1;
         } else {
             /*@PolyNull*/ /*@Interned*/
-            var subseq_uninterned = ArrayUtil.subarray(seq, start, end - start);
+            Object[] subseq_uninterned = ArrayUtil.subarray(seq, start, end - start);
             /*@PolyNull*/ /*@Interned*/
-            var subseq = Intern.intern(subseq_uninterned);
+            Object[] subseq = Intern.intern(subseq_uninterned);
             @SuppressWarnings("nullness") 
                     Object
                     ignore = 
@@ -986,20 +991,20 @@ public final class Intern {
         if (assertsEnabled && !Intern.isInterned(seq)) {
             throw new IllegalArgumentException();
         }
-        var sai =
+        SequenceAndIndices<String[]> sai =
                 new SequenceAndIndices<String[]>(seq, start, end);
         @SuppressWarnings("nullness")
-        var lookup =
+        WeakReference<String[]> lookup =
                 internedStringSequenceAndIndices.get(sai);
         /*@PolyNull*/ /*@Interned*/
-        var result1 = (lookup != null) ? lookup.get() : null;
+        String[] result1 = (lookup != null) ? lookup.get() : null;
         if (result1 != null) {
             return result1;
         } else {
             /*@PolyNull*/ /*@Interned*/
-            var subseq_uninterned = ArrayUtil.subarray(seq, start, end - start);
+            String[] subseq_uninterned = ArrayUtil.subarray(seq, start, end - start);
             /*@PolyNull*/ /*@Interned*/
-            var subseq = Intern.intern(subseq_uninterned);
+            String[] subseq = Intern.intern(subseq_uninterned);
             @SuppressWarnings("nullness") 
                     Object
                     ignore = 
@@ -1040,7 +1045,7 @@ public final class Intern {
                 /*@GuardSatisfied*/ /*@Nullable*/ Object other) {
             if (other instanceof SequenceAndIndices<?>) {
                 @SuppressWarnings("unchecked")
-                var other_sai = (SequenceAndIndices<T>) other;
+                SequenceAndIndices<T> other_sai = (SequenceAndIndices<T>) other;
                 return equalsSequenceAndIndices(other_sai);
             } else {
                 return false;
@@ -1078,9 +1083,9 @@ public final class Intern {
         @Override
         public boolean equal(Object a1, Object a2) {
             @SuppressWarnings("unchecked")
-            var sai1 = (SequenceAndIndices<T>) a1;
+            SequenceAndIndices<T> sai1 = (SequenceAndIndices<T>) a1;
             @SuppressWarnings("unchecked")
-            var sai2 = (SequenceAndIndices<T>) a2;
+            SequenceAndIndices<T> sai2 = (SequenceAndIndices<T>) a2;
             
             return sai1.equals(sai2);
         }

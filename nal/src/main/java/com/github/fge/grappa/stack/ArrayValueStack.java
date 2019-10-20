@@ -51,7 +51,7 @@ public final class ArrayValueStack<V>
 
     @Override
     protected V doPop(int down) {
-        var ret = array[down];
+        V ret = array[down];
         arraySize--;
         System.arraycopy(array, down + 1, array, down, arraySize - down);
         array[arraySize] = null;
@@ -79,10 +79,10 @@ public final class ArrayValueStack<V>
     @Override
     protected void doSwap(int n) {
 
-        var swapIndex = n / 2; // this also works for odd numbers
+        int swapIndex = n / 2; // this also works for odd numbers
 
-        for (var index = 0; index < swapIndex; index++) {
-            var tmp = array[index];
+        for (int index = 0; index < swapIndex; index++) {
+            V tmp = array[index];
             array[index] = array[n - index - 1];
             array[n - index - 1] = tmp;
         }
@@ -101,13 +101,13 @@ public final class ArrayValueStack<V>
 
     @Override
     public Object takeSnapshot() {
-        var copy = array.length > 0  ? Arrays.copyOf(array, array.length) : (V[]) ArrayUtil.EMPTY_OBJECT_ARRAY;
+        V[] copy = array.length > 0  ? Arrays.copyOf(array, array.length) : (V[]) ArrayUtil.EMPTY_OBJECT_ARRAY;
         return new ArrayWithSize<>(copy, arraySize);
     }
 
     @Override
     public void restoreSnapshot(Object snapshot) {
-        var s = (ArrayWithSize<V>) snapshot;
+        ArrayWithSize<V> s = (ArrayWithSize<V>) snapshot;
         array = s.array;
         arraySize = s.arraySize;
     }

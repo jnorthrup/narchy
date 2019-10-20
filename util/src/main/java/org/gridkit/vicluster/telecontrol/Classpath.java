@@ -49,10 +49,10 @@ public class Classpath {
                 fillClasspath(classpath, listCurrentClasspath((URLClassLoader) classloader));
             } else if (classloader == Thread.currentThread().getContextClassLoader()) {
                 //HACK
-                var jars = System.getProperty("java.class.path").split(":");
-                var urls = new URL[jars.length];
-                var i = 0;
-                for (var x : jars) {
+                String[] jars = System.getProperty("java.class.path").split(":");
+                URL[] urls = new URL[jars.length];
+                int i = 0;
+                for (String x : jars) {
                     try {
                         urls[i++] = new URL("file://" + x);//classloader.getResource(x);
                     } catch (MalformedURLException e) {
@@ -100,7 +100,7 @@ public class Classpath {
                 try {
                     is = url.openStream();
                 } catch (Exception var12) {
-                    var path = url.toString();
+                    String path = url.toString();
                     if (MISSING_URL.put(path, path) == null) {
                         LOGGER.warn("URL not found and will be excluded from classpath: " + path);
                     }
@@ -111,29 +111,29 @@ public class Classpath {
                 if (is != null) {
                     list.add(url);
                 } else {
-                    var path = url.toString();
+                    String path = url.toString();
                     if (MISSING_URL.put(path, path) == null) {
                         LOGGER.warn("URL not found and will be excluded from classpath: " + path);
                     }
                 }
 
-                var jar = new JarInputStream(is);
-                var mf = jar.getManifest();
+                JarInputStream jar = new JarInputStream(is);
+                Manifest mf = jar.getManifest();
                 jar.close();
                 if (mf == null) {
                     return;
                 }
 
-                var cp = mf.getMainAttributes().getValue(Attributes.Name.CLASS_PATH);
+                String cp = mf.getMainAttributes().getValue(Attributes.Name.CLASS_PATH);
                 if (cp != null) {
-                    var arr$ = cp.split("\\s+");
-                    var len$ = arr$.length;
+                    String[] arr$ = cp.split("\\s+");
+                    int len$ = arr$.length;
 
-                    for (var i$ = 0; i$ < len$; ++i$) {
-                        var entry = arr$[i$];
+                    for (int i$ = 0; i$ < len$; ++i$) {
+                        String entry = arr$[i$];
 
                         try {
-                            var ipath = new URL(url, entry);
+                            URL ipath = new URL(url, entry);
                             addEntriesFromManifest(list, ipath);
                         } catch (Exception var11) {
                         }
@@ -148,8 +148,8 @@ public class Classpath {
     public static Classpath.ClasspathEntry getLocalEntry(String path) throws IOException {
         synchronized (Classpath.class) {
             try {
-                var url = (new File(path)).toURI().toURL();
-                var wr = CUSTOM_ENTRIES.get(url);
+                URL url = (new File(path)).toURI().toURL();
+                WeakReference<ClasspathEntry> wr = CUSTOM_ENTRIES.get(url);
                 Classpath.ClasspathEntry entry;
                 if (wr != null) {
                     entry = wr.get();
@@ -170,10 +170,10 @@ public class Classpath {
 
     private static void fillClasspath(List<Classpath.ClasspathEntry> classpath, Collection<URL> urls) {
 
-        for (var url : urls) {
+        for (URL url : urls) {
             if (!isIgnoredJAR(url)) {
                 try {
-                    var entry = newEntry(url);
+                    ClasspathEntry entry = newEntry(url);
                     if (entry == null) {
                         LOGGER.warn("Cannot copy URL content: " + url);
                     } else {
@@ -190,7 +190,7 @@ public class Classpath {
     private static boolean isIgnoredJAR(URL url) {
         try {
             if ("file".equals(url.getProtocol())) {
-                var f = new File(url.toURI());
+                File f = new File(url.toURI());
                 if (f.isFile()) {
                     if (belongs(JRE_ROOT, url)) {
                         return true;
@@ -215,13 +215,13 @@ public class Classpath {
             boolean var3;
             try {
                 jar = new JarFile(f);
-                var en = jar.entries();
+                Enumeration<JarEntry> en = jar.entries();
                 if (!en.hasMoreElements()) {
                     var3 = false;
                     return var3;
                 }
 
-                var je = en.nextElement();
+                JarEntry je = en.nextElement();
                 if ("META-INF/".equals(je.getName())) {
                     if (!en.hasMoreElements()) {
                         var4 = false;
@@ -264,10 +264,10 @@ public class Classpath {
 
     private static URL getJreRoot() {
         try {
-            var jlo = ClassLoader.getSystemResource("java/lang/Object.class").toString();
+            String jlo = ClassLoader.getSystemResource("java/lang/Object.class").toString();
             if (jlo.startsWith("jar:")) {
-                var root = jlo.substring("jar:".length());
-                var n = root.indexOf(33);
+                String root = jlo.substring("jar:".length());
+                int n = root.indexOf(33);
                 root = root.substring(0, n);
                 if (root.endsWith("/rt.jar")) {
                     root = root.substring(0, root.lastIndexOf(47));
@@ -285,16 +285,16 @@ public class Classpath {
     }
 
     private static Classpath.ClasspathEntry newEntry(URL url) throws IOException, URISyntaxException {
-        var entry = new Classpath.ClasspathEntry();
+        ClasspathEntry entry = new Classpath.ClasspathEntry();
         entry.url = url;
-        var file = uriToFile(url.toURI());
-        var fileName = file.getName();
+        File file = uriToFile(url.toURI());
+        String fileName = file.getName();
         if (file.isFile()) {
             entry.file = file;
             entry.filename = fileName;
         } else {
-            var lname = fileName;
-            var parent = file.getParentFile();
+            String lname = fileName;
+            File parent = file.getParentFile();
             if ("classes".equals(lname)) {
                 lname = parent.getName();
             }
@@ -322,14 +322,20 @@ public class Classpath {
     }
 
     private static boolean isEmpty(File file) {
-        var files = file.listFiles();
+        File[] files = file.listFiles();
         if (files == null) {
             return true;
         } else {
-            var arr$ = files;
-            var len$ = files.length;
+            File[] arr$ = files;
+            int len$ = files.length;
 
-            return Arrays.stream(arr$, 0, len$).noneMatch(c -> c.isFile() || !isEmpty(c));
+            for (int i = 0; i < len$; i++) {
+                File c = arr$[i];
+                if (c.isFile() || !isEmpty(c)) {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 
@@ -340,7 +346,7 @@ public class Classpath {
             } else {
 
                 try {
-                    var path = "file:////" + uri.getAuthority() + '/' + uri.getPath();
+                    String path = "file:////" + uri.getAuthority() + '/' + uri.getPath();
                     return new File(new URI(path));
                 } catch (URISyntaxException var3) {
                     return new File(uri);
