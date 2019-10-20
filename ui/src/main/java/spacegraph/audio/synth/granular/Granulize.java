@@ -73,11 +73,9 @@ public class Granulize extends SoundProducer.Amplifiable {
 	}
 
     @Override
-    public void read(float[] buf, int readRate) {
+    public boolean read(float[] buf, int readRate) {
 
-    	boolean p = isLive();
-
-		if (currentGrain == null && p) {
+		if (currentGrain == null) {
 			currentGrain = nextGrain(null);
 		}
 
@@ -85,8 +83,8 @@ public class Granulize extends SoundProducer.Amplifiable {
 		float dAmp = (amp() - amp) / buf.length;
 
 
-		if (!p)
-			dAmp = (0 - amp) / buf.length;
+//		if (!p)
+//			dAmp = (0 - amp) / buf.length;
 
 		long samples = buf.length;
 
@@ -102,7 +100,7 @@ public class Granulize extends SoundProducer.Amplifiable {
 				nextSample = grains.sample(cGrain, lnow);
 				if (Granulator.isFading(cGrain, lnow)) {
 					fGrain = cGrain;
-					cGrain = p ? nextGrain(cGrain) : null;
+					cGrain = nextGrain(cGrain);
 				}
 			}
 			if (fGrain != null) {
@@ -121,6 +119,8 @@ public class Granulize extends SoundProducer.Amplifiable {
 		fadingGrain = fGrain;
 		now = n;
 		currentAmplitude = amp;
+
+		return true;
 	}
 
     @Override

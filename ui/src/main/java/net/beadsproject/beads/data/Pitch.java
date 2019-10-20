@@ -90,6 +90,8 @@ public abstract class Pitch {
      */
     public static final int[] major = {0, 2, 4, 5, 7, 9, 11};
 
+
+
     /**
      * The minor scale relative to root.
      */

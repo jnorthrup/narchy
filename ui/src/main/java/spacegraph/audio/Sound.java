@@ -16,18 +16,17 @@ public class Sound<S extends SoundProducer> implements SoundSource, Comparable
     
     public float pan;
     public float amplitude;
-    
-    public Sound(S producer, SoundSource source, float volume, float priority)
-    {
+    boolean playing;
+
+    public Sound(S producer, SoundSource source, float volume, float priority) {
         this.producer = producer;
         this.source = source;
         this.volume = volume;
         this.priority = priority;
-
     }
     
     public boolean update(SoundSource listener, float alpha) {
-        if (!isLive())
+        if (!playing())
             return false;
 
         if (volume > 0) {
@@ -67,13 +66,12 @@ public class Sound<S extends SoundProducer> implements SoundSource, Comparable
         return true;
     }
 
-    public void skip(int samplesToSkip, int readRate)
-    {
+    public void skip(int samplesToSkip, int readRate) {
         producer.skip(samplesToSkip, readRate);
     }
 
-    public final boolean isLive()    {
-        return producer.isLive();
+    public final boolean playing()    {
+        return playing;
     }
 
     @Override
@@ -98,7 +96,6 @@ public class Sound<S extends SoundProducer> implements SoundSource, Comparable
         return source.getY(alpha);
     }
 
-
     public Sound<S> volume(float volume) {
         this.volume = volume;
         return this;
@@ -106,5 +103,9 @@ public class Sound<S extends SoundProducer> implements SoundSource, Comparable
 
     public float volume() {
         return volume;
+    }
+
+    public void stop() {
+        playing = false;
     }
 }

@@ -1,6 +1,5 @@
 package nars.exe.impl;
 
-import jcog.TODO;
 import jcog.Util;
 import jcog.exe.Exe;
 import jcog.math.FloatAveragedWindow;
@@ -145,12 +144,16 @@ public class WorkerExec extends ThreadedExec {
 				float whatGranularity = 1; //increase what slicing
 
 				double meanLoopTimeNS = loopTime.mean(); //getMean();
-				if (loopTime.mean() < 1) {
-					throw new TODO(); //has been measuring empty loops, add some safety limit
-				}
+				int maxWhatLoops;
 				int minWhatLoops = 2;
-				int loopsPlanned = (int)(cycleRemaining / meanLoopTimeNS);
-				int maxWhatLoops = minWhatLoops + Math.round(loopsPlanned / Math.max(1f,(N * whatGranularity)/concurrency)); //TODO tune
+				int loopsPlanned;
+				if (loopTime.mean() < 1) {
+					//TODO this means it has been measuring empty loops, add some safety limit
+					loopsPlanned = maxWhatLoops = minWhatLoops;
+				} else {
+					loopsPlanned = (int) (cycleRemaining / meanLoopTimeNS);
+					maxWhatLoops = minWhatLoops + Math.round(loopsPlanned / Math.max(1f, (N * whatGranularity) / concurrency)); //TODO tune
+				}
 
 				//StringBuilder y = new StringBuilder();
 

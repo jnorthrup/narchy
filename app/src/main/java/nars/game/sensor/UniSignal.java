@@ -4,8 +4,10 @@ import jcog.math.FloatRange;
 import nars.NAR;
 import nars.attention.PriBranch;
 import nars.attention.PriNode;
+import nars.game.Game;
 import nars.table.BeliefTable;
 import nars.term.Term;
+import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 /** an independent scalar (1-dimensional) signal */
@@ -30,6 +32,14 @@ public abstract class UniSignal extends Signal {
 
 	public final float pri() {
 		return pri.pri();
+	}
+
+	protected Truth truth(float nextValue, Game g) {
+		return nextValue == nextValue ?
+			Signal.truthDithered(
+				nextValue,
+				Math.max(g.nar.freqResolution.floatValue(), resolution().asFloat()),
+				g) : null;
 	}
 
 	public final FloatRange resolution() {

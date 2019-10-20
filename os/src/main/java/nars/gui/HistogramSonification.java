@@ -15,6 +15,7 @@ import spacegraph.space2d.container.grid.Gridding;
 
 import java.util.Random;
 
+/** TODO use SonificationPanel */
 public class HistogramSonification extends Gridding {
     private final float[] d;
 
@@ -85,9 +86,9 @@ public class HistogramSonification extends Gridding {
 
     @Override
     protected void stopping() {
-        for (SoundProducer g : this.g) {
-            g.stop();
-        }
+//        for (SoundProducer g : this.g) {
+//            g.stop();
+//        }
         super.stopping();
     }
 

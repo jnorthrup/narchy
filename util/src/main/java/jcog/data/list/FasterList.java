@@ -1,6 +1,7 @@
 package jcog.data.list;
 
 import jcog.Util;
+import jcog.sort.SmoothSort;
 import jcog.util.ArrayUtil;
 import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.function.Function;
@@ -105,8 +106,10 @@ public class FasterList<X> extends FastList<X> {
 
     @Override
     public FastList<X> sortThis() {
-        if (size > 1) //superclass doesnt test for this condition
-            super.sortThis();
+        if (size > 1) { //superclass doesnt test for this condition
+            //super.sortThis();
+            SmoothSort.smoothSort(items, 0, size, (x,y)->((Comparable)x).compareTo(y)); //figure that repeated sorting will lead to a smoothsort advantage
+        }
         return this;
     }
 

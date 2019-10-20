@@ -16,7 +16,7 @@ public class SineWave extends SoundProducer.Amplifiable {
     }
 
 
-    @Override public void read(float[] buf, int readRate) {
+    @Override public boolean read(float[] buf, int readRate) {
         float dt = 1.0f / readRate;
 
 
@@ -28,7 +28,7 @@ public class SineWave extends SoundProducer.Amplifiable {
             X += dt;
         }
         x = X;
-
+        return true;
     }
 
     @Override

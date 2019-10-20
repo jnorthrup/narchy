@@ -100,7 +100,11 @@ public enum Draw {
     private static final v3 b = new v3();
 
 
-    public static void drawCoordSystem(GL gl) {
+    public static final int colorBLACK = Draw.rgbInt(0,0,0);
+    public static final int colorWHITE = Draw.rgbInt(1,1,1);
+
+
+	public static void drawCoordSystem(GL gl) {
         ImmModeSink vbo = ImmModeSink.createFixed(3 * 4,
                 3, GL.GL_FLOAT,
                 4, GL.GL_FLOAT,

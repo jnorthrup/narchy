@@ -96,6 +96,7 @@ public abstract class Signal extends TaskConcept implements GameLoop, PermanentC
         );
     }
 
+
     /** pre-commit phase */
     public final boolean input(@Nullable Truth next, Term why, When<What> wLoop) {
         //Truth prevValue = currentValue;

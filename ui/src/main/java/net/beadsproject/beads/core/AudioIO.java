@@ -13,7 +13,7 @@ import spacegraph.audio.SoundProducer;
  *
  * @author ollie
  */
-public abstract class AudioIO extends SoundProducer {
+public abstract class AudioIO implements SoundProducer {
 
     /**
      * The context.

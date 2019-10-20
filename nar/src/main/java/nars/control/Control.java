@@ -67,6 +67,7 @@ import java.io.PrintStream;
     public Control(NAR nar) {
         this.nar = nar;
 
+        update();
         loop = nar.onDur(this::update);
     }
 

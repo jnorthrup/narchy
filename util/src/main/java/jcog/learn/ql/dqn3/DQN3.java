@@ -13,7 +13,9 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
 
-/** untested */
+/** untested
+ * TODO use MLPMap for the MLP
+ * */
 public class DQN3 extends Agent {
 
 
@@ -197,13 +199,15 @@ public class DQN3 extends Agent {
 //            actionNorm = 1;
 
         double errTotal = 0;
-        for (int i = 0; i < exp.lastAction.length; i++) {
+        float[] lastAction = exp.lastAction;
+        double[] w = pred.w, dw = pred.dw;
+        for (int i = 0; i < lastAction.length; i++) {
             //var qmax = r0 + this.gamma * tmat.w[R.maxi(tmat.w)];
             double qMax = exp.lastReward + this.gamma * next.w[i];
 
-            double err = (pred.w[i] - qMax) * exp.lastAction[i]/actionNorm;
+            double err = (w[i] - qMax) * lastAction[i]/actionNorm;
             double tdError = Util.clamp(err, -tdErrorClamp, tdErrorClamp);
-            pred.dw[i] = tdError;
+            dw[i] = tdError;
             errTotal += Math.abs(err);
             //errTotal += Math.abs(tdError);
         }

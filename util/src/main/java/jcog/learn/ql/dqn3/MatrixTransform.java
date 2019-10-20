@@ -48,26 +48,12 @@ class MatrixTransform {
                 int m1i = m1d * i;
                 for (int j = 0; j < m2d; j++) { // loop over cols of m2
                     double dot = 0.0;
-                    for (int  k = 0; k < m1d; k++) { // dot product loop
+                    for (int  k = 0; k < m1d; k++) // dot product loop
                         dot += m1w[m1i + k] * m2w[m2d * k + j];
-                    }
+
                     outw[d * i + j] = dot;
                 }
             }
-
-
-//        for (int i = 0; i < n; i++) {
-//            final int m1di = m1d * i;
-//            final int m2di = m2d * i;
-//            for (int idx = 0; idx < m2d; idx++) {
-//                int j = idx;
-//                double sum = 0.0;
-//                for (int k = 0; k < m1d; k++) {
-//                    sum += m1.w[m1di + k] * m2.w[m2d * k + j];
-//                }
-//                out.w[m2di + j] = sum;
-//            }
-//        }
 
         if (this.needsBackprop)
             this.q.addLast(new Backprop(Backprop.BackpropMethod.MUL, m1, m2, out));
@@ -76,14 +62,17 @@ class MatrixTransform {
     }
 
     Mat add(Mat mat1, Mat mat2) {
-        assert mat1.w.length == mat2.w.length;
+        double[] m1W = mat1.w;
+        double[] m2W = mat2.w;
+        assert m1W.length == m2W.length;
 
         Mat out = new Mat(mat1.n, mat1.d);
-        int bound = mat1.w.length;
+        int bound = m1W.length;
         double[] outw = out.w;
-        for (int i = 0; i < bound; i++) {
-            outw[i] = mat1.w[i] + mat2.w[i];
-        }
+
+        for (int i = 0; i < bound; i++)
+            outw[i] = m1W[i] + m2W[i];
+
         if (this.needsBackprop)
             this.q.addLast(new Backprop(Backprop.BackpropMethod.ADD, mat1, mat2, out));
 
@@ -117,10 +106,9 @@ class MatrixTransform {
 
         private static void mulBack(Mat m1, Mat m2, Mat out) {
 
-
             int n = m1.n;
-            int m2d = m2.d;
             int m1d = m1.d;
+            int m2d = m2.d;
             double[] m1w = m1.w;
             double[] m2w = m2.w;
             double[] m1dw = m1.dw;
@@ -144,21 +132,21 @@ class MatrixTransform {
 
         private static void addBack(Mat mat1, Mat mat2, Mat out) {
             int bound = mat1.w.length;
+            double[] m1DW = mat1.dw,  m2DW = mat2.dw, outDW = out.dw;
             for (int i = 0; i < bound; i++) {
-                double dwi = out.dw[i];
+                double dwi = outDW[i];
                 if (dwi != 0) {
-                    mat1.dw[i] += dwi;
-                    mat2.dw[i] += dwi;
+                    m1DW[i] += dwi;
+                    m2DW[i] += dwi;
                 }
             }
         }
 
         private static void tanhBack(Mat mat, Mat out) {
-            double[] matdw = mat.dw;
             int bound = mat.w.length;
-            for (int i = 0; i < bound; i++) {
-                matdw[i] += (1 - Util.sqr(out.w[i])) * out.dw[i];
-            }
+            double[] matdw = mat.dw, outW = out.w, outDW = out.dw;
+            for (int i = 0; i < bound; i++)
+                matdw[i] += (1 - Util.sqr(outW[i])) * outDW[i];
         }
 
         public enum BackpropMethod {

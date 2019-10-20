@@ -50,15 +50,17 @@ public abstract class IIRFilter {
 	 */
 	public IIRFilter(float freq, float sampleRate) {
 		this.sampleRate = sampleRate;
-		this.frequency = freq;	
-		calcCoeff();
+		this.frequency = Math.max(1, freq);
+		update();
 		in = new float[a.length];
 		out = new float[b.length];
 	}
 	
 	public void setFrequency(float freq){
-		this.frequency = freq;	
-		calcCoeff();	
+		if (freq!=this.frequency) {
+			this.frequency = freq;
+			update();
+		}
 	}
 
 	/**
@@ -83,7 +85,7 @@ public abstract class IIRFilter {
 	 * <code>b<sub>1</sub></code>.
 	 * 
 	 */
-	protected abstract void calcCoeff() ;
+	protected abstract void update() ;
 
 	
 
@@ -122,7 +124,7 @@ public abstract class IIRFilter {
 			super(freq, sampleRate);
 		}
 
-		protected void calcCoeff()
+		protected void update()
 		{
 			float fracFreq = getFrequency()/getSampleRate();
 			double x = Math.exp(-2 * Math.PI * fracFreq);
@@ -143,7 +145,7 @@ public abstract class IIRFilter {
 		}
 
 		@Override
-		protected void calcCoeff() {
+		protected void update() {
 			float fracFreq = getFrequency() / getSampleRate();
 			float x = (float) Math.exp(-2 * Math.PI * fracFreq);
 			a = new float[] { 1 - x };
@@ -159,12 +161,11 @@ public abstract class IIRFilter {
 	public static class LowPassFS extends IIRFilter{
 
 		public LowPassFS(float freq, float sampleRate) {
-			//minimum frequency is 60Hz!
-			super(freq>60?freq:60, sampleRate);
+			super(freq, sampleRate);
 		}
 
 		@Override
-		protected void calcCoeff() {
+		protected void update() {
 			float freqFrac = getFrequency() / getSampleRate();
 			float x = (float) Math.exp(-14.445 * freqFrac);
 			a = new float[] { (float) Math.pow(1 - x, 4) };
@@ -212,7 +213,7 @@ public abstract class IIRFilter {
 		public void setBandWidth(float bandWidth)
 		{
 			bw = bandWidth / getSampleRate();
-			calcCoeff();
+			update();
 		}
 
 		/**
@@ -225,7 +226,7 @@ public abstract class IIRFilter {
 			return bw * getSampleRate();
 		}
 
-		protected void calcCoeff()
+		protected void update()
 		{
 			float R = 1 - 3 * bw;
 			float fracFreq = getFrequency() / getSampleRate();

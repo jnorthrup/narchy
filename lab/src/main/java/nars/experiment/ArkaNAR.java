@@ -73,8 +73,9 @@ public class ArkaNAR extends GameX {
             //GameX a = new FZero(id, n);
             //GameX a = new ArkaNAR(id, n, true, false);
             GameX a = new PoleCart(id, n, 0.03f);
+
             RLBooster rl = new RLBooster(true, a,
-                    2, 3, (i, o) -> new DQN3(i, o, Map.of(
+                    2, 4, (i, o) -> new DQN3(i, o, Map.of(
                     DQN3.Option.ALPHA, 0.05,
                     DQN3.Option.GAMMA, 0.5,
 //                    DQN3.Option.EPSILON, 0.05,

@@ -1,6 +1,5 @@
 package net.beadsproject.beads.core.io;
 
-import jcog.TODO;
 import net.beadsproject.beads.core.*;
 
 import javax.sound.sampled.*;
@@ -55,7 +54,7 @@ public class UGenOutput extends AudioIO {
     }
 
     @Override
-    public void read(float[] buf, int readRate) {
+    public boolean read(float[] buf, int readRate) {
 
         int samples = buf.length;
         context.setBufferSize(samples);
@@ -64,16 +63,10 @@ public class UGenOutput extends AudioIO {
 
         int c = 0;
         for (int i = 0; i < samples; i++) {
-
             int j = 0;
             buf[c++] = context.out.getValue(j, i);
         }
-
-    }
-
-    @Override
-    public void skip(int samplesToSkip, int readRate) {
-        throw new TODO();
+        return !context.stopped;
     }
 
 //    @Override

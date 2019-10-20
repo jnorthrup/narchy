@@ -198,9 +198,7 @@ public class Audio implements Runnable {
     }
 
     public <S extends SoundProducer> Sound<S> play(S p, SoundSource soundSource, float volume, float priority) {
-
-
-        return mixer.addSoundProducer(p, soundSource, volume, priority);
+        return mixer.add(p, soundSource, volume, priority);
     }
 
 

@@ -2,6 +2,7 @@ package nars.gui.graph.run;
 
 import nars.NAR;
 import nars.NARS;
+import nars.attention.TaskLinkWhat;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.gui.NARui;
@@ -12,7 +13,6 @@ import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.windo.Windo;
-import spacegraph.video.OrthoSurfaceGraph;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,18 +28,21 @@ class ConceptGraph2DTest {
 
             NAR n = NARS
                     //.tmp(4);
-                    .threadSafe(4);
-//            n.attn.decay.set(0.9f);
+                    .threadSafe(8);
+            ((TaskLinkWhat)n.what()).links.decay.set(0.5f);
+            n.questionPriDefault.pri(0.9f);
+            n.beliefPriDefault.pri(0.1f);
             n.termVolMax.set(14);
 
             Surface g = BagregateConceptGraph2D.get(n);
 
-            OrthoSurfaceGraph wg = window(g, 1200, 800);
+            window(g, 1200, 800);
+            window(NARui.attentionUI(n.what()), 800, 500);
 //            wg.dev();
 
-            new DeductiveMeshTest(n, 5,5);
+            new DeductiveMeshTest(n, 3,3);
 
-            n.startFPS(4f);
+            n.startFPS(16);
 
 
         }

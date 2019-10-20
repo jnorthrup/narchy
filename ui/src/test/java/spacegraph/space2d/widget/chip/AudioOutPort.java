@@ -40,7 +40,7 @@ public class AudioOutPort extends Gridding  {
         //System.out.println("skip " + samplesToSkip);
         Sound playback = Audio.the().play(new SoundProducer() {
             @Override
-            public void read(float[] buf, int readRate) {
+            public boolean read(float[] buf, int readRate) {
                 if (enableButton.on() && in.active()) {
 
                     ObjectIntPair<float[]> nextBuffer = PrimitiveTuples.pair(buf /* TODO buffer mix command object */, readRate);
@@ -52,14 +52,15 @@ public class AudioOutPort extends Gridding  {
                     if (passThru.active())
                         passThru.out(nextBuffer);
                 }
+                return true;
             }
 
-            @Override
-            public void skip(int samplesToSkip, int readRate) {
-                //TODO
-                //buffer.skip(..);
-                //System.out.println("skip " + samplesToSkip);
-            }
+//            @Override
+//            public void skip(int samplesToSkip, int readRate) {
+//                //TODO
+//                //buffer.skip(..);
+//                //System.out.println("skip " + samplesToSkip);
+//            }
         });
     }
 
