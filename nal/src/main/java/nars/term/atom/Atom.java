@@ -1,7 +1,7 @@
 package nars.term.atom;
 
 import nars.Op;
-import nars.The;
+import nars.Idempotent;
 
 import java.util.stream.IntStream;
 
@@ -11,7 +11,7 @@ import static nars.Op.*;
  * default Atom implementation: wraps a String instance as closely as possible.
  * ideally this string is stored encoded in UTF8 byte[]'s
  */
-public class Atom extends AbstractAtomic implements The {
+public class Atom extends AbstractAtomic implements Idempotent {
 
 
 

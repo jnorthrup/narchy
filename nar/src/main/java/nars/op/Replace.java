@@ -1,6 +1,6 @@
 package nars.op;
 
-import nars.The;
+import nars.Idempotent;
 import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.Functor;
@@ -17,7 +17,7 @@ import static nars.term.atom.theBool.Null;
  * if STRICT is 4th argument, then there will only be a valid result
  * if the input has changed (not if nothing changed, and not if the attempted change had no effect)
  */
-public class Replace extends Functor implements InlineFunctor<Evaluation>, The {
+public class Replace extends Functor implements InlineFunctor<Evaluation>, Idempotent {
 
     public static final Replace replace = new Replace("replace");
 

@@ -4,7 +4,7 @@ import com.google.common.primitives.Ints;
 import jcog.data.byt.DynBytes;
 import nars.NAL;
 import nars.Op;
-import nars.The;
+import nars.Idempotent;
 import nars.io.IO;
 import nars.io.TermIO;
 import nars.subterm.Subterms;
@@ -25,7 +25,7 @@ import static nars.time.Tense.DTERNAL;
  * <p>
  * see IO.writeTerm()
  */
-public class SerialCompound extends DynBytes implements SameSubtermsCompound, The {
+public class SerialCompound extends DynBytes implements SameSubtermsCompound, Idempotent {
 
     final short volume;
 

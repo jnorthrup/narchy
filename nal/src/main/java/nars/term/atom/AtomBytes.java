@@ -1,7 +1,7 @@
 package nars.term.atom;
 
 import nars.Op;
-import nars.The;
+import nars.Idempotent;
 import nars.io.IO;
 import nars.term.Compound;
 
@@ -10,7 +10,7 @@ import java.io.IOException;
 
 import static nars.Op.ATOM;
 
-public class AtomBytes extends AbstractAtomic implements The {
+public class AtomBytes extends AbstractAtomic implements Idempotent {
 
 	public static AtomBytes atomBytes(String raw) {
 		return atomBytes(raw.getBytes());

@@ -25,7 +25,7 @@ import jcog.data.bit.MetalBitSet;
 import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
 import nars.Op;
-import nars.The;
+import nars.Idempotent;
 import nars.io.TermAppender;
 import nars.subterm.Subterms;
 import nars.term.anon.Anon;
@@ -206,7 +206,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default boolean the() {
-        return this instanceof The && subterms().these();
+        return this instanceof Idempotent && subterms().these();
     }
 
     @Override

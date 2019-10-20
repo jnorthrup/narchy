@@ -1,6 +1,6 @@
 package nars.term.compound;
 
-import nars.The;
+import nars.Idempotent;
 import nars.subterm.Subterms;
 import nars.subterm.UniSubterm;
 import nars.term.Compound;
@@ -41,7 +41,7 @@ public abstract class UnitCompound implements SameSubtermsCompound {
 
     @Override
     public boolean the() {
-        return this instanceof The && sub().the();
+        return this instanceof Idempotent && sub().the();
     }
 
 

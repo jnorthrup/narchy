@@ -1,7 +1,7 @@
 package nars.subterm;
 
 import jcog.Util;
-import nars.The;
+import nars.Idempotent;
 import nars.subterm.util.SubtermMetadataCollector;
 import nars.subterm.util.TermMetadata;
 import nars.term.Term;
@@ -13,7 +13,7 @@ import java.util.Iterator;
  * a TermVector specifically for subterms.  while both
  * can be
  */
-public abstract class TermVector extends TermMetadata implements Subterms, The /*, Subterms.SubtermsBytesCached */ {
+public abstract class TermVector extends TermMetadata implements Subterms, Idempotent /*, Subterms.SubtermsBytesCached */ {
 
     transient boolean normalized;
     private final boolean the;

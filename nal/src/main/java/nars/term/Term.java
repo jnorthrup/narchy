@@ -25,7 +25,7 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.data.set.MetalTreeSet;
 import nars.Op;
-import nars.The;
+import nars.Idempotent;
 import nars.subterm.Subterms;
 import nars.term.anon.Anom;
 import nars.term.anon.IntrinAtomic;
@@ -617,7 +617,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 //    int structure();
 
     default boolean the() {
-        return this instanceof The;
+        return this instanceof Idempotent;
     }
 
     @Override

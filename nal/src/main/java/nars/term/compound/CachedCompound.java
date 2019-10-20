@@ -1,7 +1,7 @@
 package nars.term.compound;
 
 import nars.Op;
-import nars.The;
+import nars.Idempotent;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
@@ -15,7 +15,7 @@ import static nars.time.Tense.XTERNAL;
 /**
  * on-heap, caches many commonly used methods for fast repeat access while it survives
  */
-public abstract class CachedCompound extends SeparateSubtermsCompound implements The {
+public abstract class CachedCompound extends SeparateSubtermsCompound implements Idempotent {
 
     /**
      * subterm vector

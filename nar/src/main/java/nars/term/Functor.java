@@ -5,7 +5,7 @@ import jcog.func.TriFunction;
 import nars.$;
 import nars.NAR;
 import nars.Op;
-import nars.The;
+import nars.Idempotent;
 import nars.concept.Concept;
 import nars.eval.Evaluation;
 import nars.subterm.Subterms;
@@ -33,7 +33,7 @@ import static nars.term.Terms.atomOrNull;
  * a result Term from the TermContainer arguments of
  * a function target, for example: f(x) or f(x, y).
  */
-public abstract class Functor extends AbstractAtomic implements BiFunction<Evaluation, Subterms, Term>, Term, The {
+public abstract class Functor extends AbstractAtomic implements BiFunction<Evaluation, Subterms, Term>, Term, Idempotent {
 
     protected Functor(String atom) {
         this(fName(atom));

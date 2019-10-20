@@ -2,11 +2,11 @@ package nars.term.atom;
 
 import jcog.Util;
 import nars.Op;
-import nars.The;
+import nars.Idempotent;
 import nars.term.Term;
 
 /** special atoms which are universally singleton */
-public abstract class Keyword extends Atomic implements The {
+public abstract class Keyword extends Atomic implements Idempotent {
 	protected final String label;
 	protected final byte[] bytes;
 	protected final int hash;

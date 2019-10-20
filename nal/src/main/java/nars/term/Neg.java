@@ -2,7 +2,7 @@ package nars.term;
 
 import jcog.Skill;
 import nars.Op;
-import nars.The;
+import nars.Idempotent;
 import nars.term.anon.Intrin;
 import nars.term.atom.Atomic;
 import nars.term.compound.SemiCachedUnitCompound;
@@ -52,7 +52,7 @@ import static nars.Op.NEG;
 
 
 
-    final class NegCached extends SemiCachedUnitCompound implements The, Neg {
+    final class NegCached extends SemiCachedUnitCompound implements Idempotent, Neg {
 
 
         public NegCached(Term negated) {
@@ -80,7 +80,7 @@ import static nars.Op.NEG;
     }
 
     /** TODO refine */
-    final class NegIntrin extends UnitCompound implements The, Neg {
+    final class NegIntrin extends UnitCompound implements Idempotent, Neg {
 
         public final short sub;
 
@@ -138,7 +138,7 @@ import static nars.Op.NEG;
 
     }
 
-    final class NegLight extends UnitCompound implements The, Neg {
+    final class NegLight extends UnitCompound implements Idempotent, Neg {
         private final Term sub;
 
         public NegLight(Term negated) {

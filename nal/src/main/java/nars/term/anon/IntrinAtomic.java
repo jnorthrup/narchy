@@ -1,12 +1,12 @@
 package nars.term.anon;
 
 import nars.Op;
-import nars.The;
+import nars.Idempotent;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 
-public abstract class IntrinAtomic extends Atomic implements The {
+public abstract class IntrinAtomic extends Atomic implements Idempotent {
     /** meant to be a perfect hash among all normalized variables */
     public final short i;
 

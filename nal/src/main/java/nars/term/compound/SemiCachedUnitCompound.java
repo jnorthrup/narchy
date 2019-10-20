@@ -1,11 +1,11 @@
 package nars.term.compound;
 
-import nars.The;
+import nars.Idempotent;
 import nars.term.Compound;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class SemiCachedUnitCompound extends UnitCompound implements The {
+public abstract class SemiCachedUnitCompound extends UnitCompound implements Idempotent {
 
     protected final Term sub;
 

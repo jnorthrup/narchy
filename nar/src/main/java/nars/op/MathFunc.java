@@ -1,7 +1,7 @@
 package nars.op;
 
 import nars.$;
-import nars.The;
+import nars.Idempotent;
 import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.Functor;
@@ -123,7 +123,7 @@ public enum MathFunc {
     /**
      * TODO abstract CommutiveBooleanBidiFunctor
      */
-    public static final class XOR extends InlineCommutiveBinaryBidiFunctor implements The {
+    public static final class XOR extends InlineCommutiveBinaryBidiFunctor implements Idempotent {
 
         public static final XOR xor = new XOR();
 
@@ -154,7 +154,7 @@ public enum MathFunc {
     }
 
 
-    abstract static class ArithmeticCommutiveBinaryBidiFunctor extends InlineCommutiveBinaryBidiFunctor implements The /* THE */ {
+    abstract static class ArithmeticCommutiveBinaryBidiFunctor extends InlineCommutiveBinaryBidiFunctor implements Idempotent /* THE */ {
 
         ArithmeticCommutiveBinaryBidiFunctor(String name) {
             super(name);

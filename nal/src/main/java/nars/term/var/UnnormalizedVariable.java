@@ -2,7 +2,7 @@ package nars.term.var;
 
 import nars.$;
 import nars.Op;
-import nars.The;
+import nars.Idempotent;
 import nars.io.IO;
 import nars.term.Variable;
 import nars.term.atom.AbstractAtomic;
@@ -10,7 +10,7 @@ import nars.term.atom.AbstractAtomic;
 /**
  * Unnormalized, labeled variable
  */
-public class UnnormalizedVariable extends AbstractAtomic implements Variable, The {
+public class UnnormalizedVariable extends AbstractAtomic implements Variable, Idempotent {
 
     private final int op;
 

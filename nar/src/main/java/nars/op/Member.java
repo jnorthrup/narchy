@@ -1,7 +1,7 @@
 package nars.op;
 
 import nars.Op;
-import nars.The;
+import nars.Idempotent;
 import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -16,7 +16,7 @@ import static nars.term.atom.theBool.*;
 /** equivalent to prolog member/2:
  *      member(U,S)  |-   U is in S
  */
-public final class Member extends Functor implements The, InlineFunctor<Evaluation> {
+public final class Member extends Functor implements Idempotent, InlineFunctor<Evaluation> {
 
     public static final Functor member = new Member();
 

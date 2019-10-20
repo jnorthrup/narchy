@@ -1,6 +1,6 @@
 package nars.term.functor;
 
-import nars.The;
+import nars.Idempotent;
 import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.Functor;
@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
-public final class LambdaFunctor extends Functor implements The {
+public final class LambdaFunctor extends Functor implements Idempotent {
 
     private final Function<Subterms, Term> f;
 

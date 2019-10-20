@@ -7,4 +7,4 @@ package nars
  *
  * when used as a marker interface, signifies the instance is Immutable
  */
-interface The
+interface Idempotent

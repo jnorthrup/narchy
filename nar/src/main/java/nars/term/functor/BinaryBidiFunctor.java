@@ -1,6 +1,6 @@
 package nars.term.functor;
 
-import nars.The;
+import nars.Idempotent;
 import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.Functor;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import static nars.term.atom.theBool.True;
 
 /** Functor template for a binary functor with bidirectional parameter cases */
-public abstract class BinaryBidiFunctor extends Functor implements The {
+public abstract class BinaryBidiFunctor extends Functor implements Idempotent {
 
     public BinaryBidiFunctor(String name) {
         this(fName(name));

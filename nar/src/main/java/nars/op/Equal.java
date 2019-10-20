@@ -2,7 +2,7 @@ package nars.op;
 
 import nars.$;
 import nars.Op;
-import nars.The;
+import nars.Idempotent;
 import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -19,7 +19,7 @@ import static nars.Op.INT;
 import static nars.op.Cmp.Zero;
 import static nars.term.atom.theBool.*;
 
-public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The {
+public final class Equal extends InlineCommutiveBinaryBidiFunctor implements Idempotent {
 
     public static final Equal equal = new Equal();
 

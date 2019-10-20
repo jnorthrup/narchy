@@ -4,7 +4,7 @@ import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.Range;
 import jcog.data.byt.util.IntCoding;
 import nars.Op;
-import nars.The;
+import nars.Idempotent;
 import nars.term.Term;
 import nars.term.anon.Intrin;
 
@@ -14,7 +14,7 @@ import static nars.Op.INT;
 /**
  * 32-bit signed integer
  */
-public final class theInt extends Atomic implements The {
+public final class theInt extends Atomic implements Idempotent {
 
 	static final int INT_CACHE_SIZE = ANON_INT_MAX * 8;
 	static final theInt[] pos = new theInt[INT_CACHE_SIZE];

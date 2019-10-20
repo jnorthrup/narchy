@@ -4,7 +4,7 @@ import jcog.data.list.FasterList;
 import nars.$;
 import nars.NAR;
 import nars.Op;
-import nars.The;
+import nars.Idempotent;
 import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.Functor;
@@ -147,7 +147,7 @@ public enum SetFunc {
 
     }
 
-    abstract static class AbstractBinarySetFunctor extends Functor implements InlineFunctor<Evaluation>, The {
+    abstract static class AbstractBinarySetFunctor extends Functor implements InlineFunctor<Evaluation>, Idempotent {
 
         protected AbstractBinarySetFunctor(String id) {
             super(id);
