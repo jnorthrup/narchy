@@ -26,7 +26,7 @@ public class SideCraft extends GameX {
     private final SideScrollMinicraft craft;
 
     public static void main(String[] args) {
-        runRT(30, nar1 -> {
+        Companion.initFn(30, nar1 -> {
             try {
                 return new SideCraft(nar1);
             } catch (Narsese.NarseseException e) {

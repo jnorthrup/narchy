@@ -182,7 +182,7 @@ public class Tetris extends GameX {
     public static void main(String[] args) {
 
 
-        GameX.runRT(FPS * thinkPerFrame, n -> {
+        GameX.Companion.initC(FPS * thinkPerFrame, n -> {
 
             var t = new Tetris(n, tetris_width, tetris_height);
             n.add(t);

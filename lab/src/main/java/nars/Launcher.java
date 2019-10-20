@@ -25,7 +25,7 @@ public class Launcher {
         @Override
         public void run() {
 
-            new Thread(()-> GameX.runRT(fps, (n) -> {
+            new Thread(()-> GameX.Companion.initFn(fps, (n) -> {
                 try {
 
                     return env.getConstructor(NAR.class).newInstance(n);

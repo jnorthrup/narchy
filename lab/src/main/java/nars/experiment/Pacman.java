@@ -141,7 +141,7 @@ public class Pacman extends GameX {
 
 
     public static void main(String[] args) {
-        GameX.runRT(fps*2, (n) -> {
+        GameX.Companion.initFn(fps*2, (n) -> {
 
             Pacman a = new Pacman(n);
             n.add(a);

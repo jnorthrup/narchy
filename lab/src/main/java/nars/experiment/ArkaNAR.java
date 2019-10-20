@@ -68,7 +68,7 @@ public class ArkaNAR extends GameX {
 
             Term id = $$("rl");
             float FPS = 25f;
-            NAR n = GameX.baseNAR(FPS, 2);
+            NAR n = GameX.Companion.baseNAR(FPS, 2);
 
             //GameX a = new FZero(id, n);
             //GameX a = new ArkaNAR(id, n, true, false);
@@ -109,7 +109,7 @@ public class ArkaNAR extends GameX {
     public static class MultiArkaNAR {
         public static void main(String[] args) {
 
-            NAR n = runRT(40, nn -> {
+            NAR n = Companion.initC(40, nn -> {
 
                 ArkaNAR a = new ArkaNAR($$("(noid,a)"), nn, cam, numeric);
                 a.ballSpeed.set( 0.7f * a.ballSpeed.floatValue() );
@@ -128,7 +128,7 @@ public class ArkaNAR extends GameX {
 
     public static void main(String[] args) {
 
-        runRT(fps*2, n -> {
+        Companion.initC(fps*2, n -> {
 
             ArkaNAR a = new ArkaNAR(n, cam, numeric);
             n.add(a);

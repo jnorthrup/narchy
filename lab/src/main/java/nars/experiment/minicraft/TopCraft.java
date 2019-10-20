@@ -89,7 +89,7 @@ public class TopCraft extends GameX {
     }
 
     public static void main(String[] args) {
-        runRT(20, n -> {
+        Companion.initFn(20, n -> {
             try {
                 TopCraft tc = new TopCraft(n);
 

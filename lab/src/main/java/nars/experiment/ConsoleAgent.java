@@ -155,7 +155,7 @@ public class ConsoleAgent extends GameX {
     public static void main(String[] args) {
 
 
-        GameX.runRT(fps, (n) -> {
+        GameX.Companion.initFn(fps, (n) -> {
             ConsoleAgent a = new ConsoleAgent(3, 1, n);
             SpaceGraph.window(new Gridding(a.R, a.W), 800, 400);
             return a;

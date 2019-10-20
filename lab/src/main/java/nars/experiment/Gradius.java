@@ -35,7 +35,7 @@ public class Gradius extends GameX {
     int lastScore;
 
     public static void main(String[] args) {
-        GameX.runRT(40f, nar -> {
+        GameX.Companion.initFn(40f, nar -> {
             Gradius g = new Gradius(nar);
             nar.add(g);
 //            g.what().onTask(t -> {

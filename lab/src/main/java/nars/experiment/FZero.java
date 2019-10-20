@@ -50,7 +50,7 @@ public class FZero extends GameX {
     static float fps = 20f;
 
     public static void main(String[] args) {
-        GameX.runRT(fps*2, n -> {
+        GameX.Companion.initFn(fps*2, n -> {
 
 
             FZero f = new FZero($.the("fz"), n);

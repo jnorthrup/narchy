@@ -41,7 +41,7 @@ public class RDP extends Game {
     }
 
     public static void main(String[] args) {
-        GameX.runRT(16f, (n)->{
+        GameX.Companion.initFn(16f, (n)->{
             try {
                 return new RDP(n,
                         //"localhost"
