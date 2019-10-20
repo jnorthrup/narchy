@@ -18,8 +18,8 @@ public class FireFlower extends Sprite {
     public FireFlower(LevelScene world, int x, int y) {
         sheet = Art.items;
 
-        this.x = x;
-        this.y = y;
+        this.x = (float) x;
+        this.y = (float) y;
         this.world = world;
         xPicO = 8;
         yPicO = 15;
@@ -36,9 +36,9 @@ public class FireFlower extends Sprite {
     public void collideCheck() {
         float xMarioD = world.mario.x - x;
         float yMarioD = world.mario.y - y;
-        float w = 16;
+        float w = 16.0F;
         if (xMarioD > -w && xMarioD < w) {
-            if (yMarioD > -height && yMarioD < world.mario.height) {
+            if (yMarioD > (float) -height && yMarioD < (float) world.mario.height) {
                 world.mario.getFlower();
                 spriteContext.removeSprite(this);
             }

@@ -62,8 +62,8 @@ public class a extends GamePanel {
 
 	static final int SPRITE_COUNT = 8;
 
-	static final float OY = 32;
-	static final float D = -256;
+	static final float OY = 32.0F;
+	static final float D = -256.0F;
 
 	static final float GRAVITY = 0.4f;
 	static final float LOW_GRAVITY = 0.2f;
@@ -145,10 +145,10 @@ public class a extends GamePanel {
 		
 		for (y = 0; y < 236; y++) {
 			for (x = 0; x < 256; x++) {
-                float Y = 107.5f - y;
+                float Y = 107.5f - (float) y;
                 float py = OY + zy * D + Y * yy;
                 float K = OY / (OY - py);
-				floorMap[(y << 8) | x][0] = ((int) (1024 + (x - 127.5f) * K)) - 1024;
+				floorMap[(y << 8) | x][0] = ((int) (1024.0F + ((float) x - 127.5f) * K)) - 1024;
 				floorMap[(y << 8) | x][1] = (int) ((Y * zy - yy * D) * K);
 			}
 		}
@@ -169,10 +169,10 @@ public class a extends GamePanel {
 			for (j = 0; j < 2; j++) {
 				for (y = 0; y < 16; y++) {
 					for (x = 0; x < 8; x++) {
-                        int color = 0x03 & S.charAt(3 + i * 35 + (j << 4) + y) >> (x << 1);
+                        int color = 0x03 & (int) S.charAt(3 + i * 35 + (j << 4) + y) >> (x << 1);
 						sprites[i][15 - y][x + (j << 3)] = sprites[i + 8][x + (j << 3)][15 - y] = sprites[i + 16][y][x + (j << 3)] = sprites[i + 24][x + (j << 3)][y] = (color == 0) ? sprites[0][15 - y][x
 								+ (j << 3)]
-								: (color == 1) ? 0 : (color == 2) ? ((S.charAt(i * 35) << 8) | (S.charAt(i * 35 + 2) >> 8)) : (S.charAt(i * 35 + 1) << 8) | (S.charAt(i * 35 + 2) & 0xFF);
+								: (color == 1) ? 0 : (color == 2) ? (((int) S.charAt(i * 35) << 8) | ((int) S.charAt(i * 35 + 2) >> 8)) : ((int) S.charAt(i * 35 + 1) << 8) | ((int) S.charAt(i * 35 + 2) & 0xFF);
 					}
 				}
 			}
@@ -192,9 +192,9 @@ public class a extends GamePanel {
 		
 		for (y = 0; y < 43; y++) {
 			for (x = 0; x < 8; x++) {
-                int color = 0x03 & S.charAt(283 + y) >> (x << 1);
-				pixels[x] = pixels[15 - x] = (color == 0) ? 0 : 0xFF000000 | ((color == 1) ? 0 : (color == 2) ? ((S.charAt(280) << 8) | (S.charAt(282) >> 8)) : (S.charAt(281) << 8)
-						| (S.charAt(282) & 0xFF));
+                int color = 0x03 & (int) S.charAt(283 + y) >> (x << 1);
+				pixels[x] = pixels[15 - x] = (color == 0) ? 0 : 0xFF000000 | ((color == 1) ? 0 : (color == 2) ? (((int) S.charAt(280) << 8) | ((int) S.charAt(282) >> 8)) : ((int) S.charAt(281) << 8)
+						| ((int) S.charAt(282) & 0xFF));
 			}
 			bunnySprite.setRGB(0, y, 16, 1, pixels, 0, 16);
 		}
@@ -206,12 +206,12 @@ public class a extends GamePanel {
 	public void paintComponent(Graphics g2) {
 		
 		
-		if (nextFrameStartTime - System.nanoTime() > 0) {
+		if (nextFrameStartTime - System.nanoTime() > 0L) {
 			return;
 		}
 
 		do {
-			nextFrameStartTime += 16666667;
+			nextFrameStartTime += 16666667L;
 
 			
 
@@ -230,17 +230,17 @@ public class a extends GamePanel {
 						fadingOut = false;
 						time = 60;
 
-						playerX = 56;
-						playerY = -256;
-						playerZ = 2048;
-						playerAngle = 0;
-						playerVx = 0;
-						playerVy = 0;
-						playerVz = 0;
-						playerVa = 0;
+						playerX = 56.0F;
+						playerY = -256.0F;
+						playerZ = 2048.0F;
+						playerAngle = (float) 0;
+						playerVx = (float) 0;
+						playerVy = (float) 0;
+						playerVz = (float) 0;
+						playerVa = (float) 0;
 						playerGravity = GRAVITY;
-						playerRestoreVx = 0;
-						playerRestoreVz = 0;
+						playerRestoreVx = (float) 0;
+						playerRestoreVz = (float) 0;
 						playerRestoreCount = 0;
 						playerFalling = false;
 						playerRestoring = false;
@@ -258,7 +258,7 @@ public class a extends GamePanel {
 							level++;
 						}
 
-						random = new Random(level);
+						random = new Random((long) level);
 
 						
 						world = new int[128][8];
@@ -268,7 +268,7 @@ public class a extends GamePanel {
 									world[y][x] = TILE_CHECKER;
 								} else if (y < 4) {
 									world[y][x] = TILE_SOLID;
-								} else if ((S.charAt(324 + (y >> 1) + 60 * level) >> (((y & 1) << 3) + x) & 1) == 1) {
+								} else if (((int) S.charAt(324 + (y >> 1) + 60 * level) >> (((y & 1) << 3) + x) & 1) == 1) {
 									if (random.nextBoolean()) {
 										z = TILE_SOLID;
 									} else {
@@ -300,8 +300,8 @@ public class a extends GamePanel {
 							k = random.nextInt(128);
 							for (i = 0; i < 2; i++) {
 								g3.setColor(i == 0 ? Color.LIGHT_GRAY : Color.WHITE);
-								for (float p = 0; p < 70; p += 0.25f) {
-									g3.fillOval(40 + k + (int) ((p + (i << 3)) * Math.cos(p) / 2), 20 + (j << 6) - (i << 2) + (int) (p * Math.sin(p) / 5), 8, 8);
+								for (float p = (float) 0; p < 70.0F; p += 0.25f) {
+									g3.fillOval(40 + k + (int) ((double) (p + (float) (i << 3)) * Math.cos((double) p) / 2.0), 20 + (j << 6) - (i << 2) + (int) ((double) p * Math.sin((double) p) / 5.0), 8, 8);
 								}
 							}
 						}
@@ -328,15 +328,15 @@ public class a extends GamePanel {
 					continue;
 				}
 			} else if (showingBoard) {
-				playerZ -= 7;
-				if (playerZ <= 0) {
-					playerZ = 0;
-					playerY = 256;
+				playerZ -= 7.0F;
+				if (playerZ <= (float) 0) {
+					playerZ = (float) 0;
+					playerY = 256.0F;
 					showingBoard = false;
 				}
 			} else {
 
-				if (playerZ > 0) {
+				if (playerZ > (float) 0) {
 					
 					if (++timeCounter == 60) {
 						timeCounter = 0;
@@ -360,11 +360,11 @@ public class a extends GamePanel {
 					if (--playerRestoreCount == 0) {
 						playerRestoring = false;
 						playerFalling = false;
-						playerVx = 0;
-						playerVy = 0;
-						playerVz = 0;
-						playerAngle = 0;
-						playerY = 256;
+						playerVx = (float) 0;
+						playerVy = (float) 0;
+						playerVz = (float) 0;
+						playerAngle = (float) 0;
+						playerY = 256.0F;
 						playerRestoreVx = playerX;
 						playerRestoreVz = playerZ;
 					}
@@ -372,15 +372,15 @@ public class a extends GamePanel {
 				} else {
 
 					if (playerFalling) {
-						if (playerY < -256) {
+						if (playerY < -256.0F) {
 							playerRestoreCount = 64;
-							playerRestoreVx = (playerRestoreVx - playerX) / 64;
-							playerRestoreVz = (playerRestoreVz - playerZ) / 64;
+							playerRestoreVx = (playerRestoreVx - playerX) / 64.0F;
+							playerRestoreVz = (playerRestoreVz - playerZ) / 64.0F;
 							playerRestoring = true;
 						}
 					} else {
 						
-						if (playerVz == 0) {
+						if (playerVz == (float) 0) {
 							if (a[VK_UP]) {
 								playerZ++;
 							} else if (a[VK_DOWN]) {
@@ -389,7 +389,7 @@ public class a extends GamePanel {
 						} else {
 							playerZ += playerVz;
 						}
-						if (playerVx == 0) {
+						if (playerVx == (float) 0) {
 							if (a[VK_RIGHT]) {
 								playerX++;
 							} else if (a[VK_LEFT]) {
@@ -404,21 +404,21 @@ public class a extends GamePanel {
 					playerVy -= playerGravity;
 					playerY += playerVy;
 					playerAngle += playerVa;
-					if (!playerFalling && playerY <= 0) {
+					if (!playerFalling && playerY <= (float) 0) {
 
 						
 						i = 0;
-						z = (int) (playerZ + 48) >> 4;
+						z = (int) (playerZ + 48.0F) >> 4;
 						if (z >= 0 && z < 128) {
 							x = (int) playerX >> 4;
 							if (x >= 0 && x < 8 && world[z][x] > 0) {
 								i = world[z][x];
 							} else {
-								x = (int) (playerX - 4) >> 4;
+								x = (int) (playerX - 4.0F) >> 4;
 								if (x >= 0 && x < 8 && world[z][x] > 0) {
 									i = world[z][x];
 								} else {
-									x = (int) (playerX + 4) >> 4;
+									x = (int) (playerX + 4.0F) >> 4;
 									if (x >= 0 && x < 8 && world[z][x] > 0) {
 										i = world[z][x];
 									}
@@ -426,27 +426,27 @@ public class a extends GamePanel {
 							}
 
 							if (i > 0) {
-								playerY = 0;
-								playerVx = 0;
-								playerVz = 0;
-								playerAngle = 0;
-								playerVa = 0;
+								playerY = (float) 0;
+								playerVx = (float) 0;
+								playerVz = (float) 0;
+								playerAngle = (float) 0;
+								playerVa = (float) 0;
 								playerVy = JUMP_SPEED;
 								playerGravity = GRAVITY;
 								i = world[z][x];
                                 switch (i) {
                                     case TILE_SOLID:
-                                        playerRestoreVx = (x << 4) + 8;
-                                        playerRestoreVz = (z << 4) - 42;
+                                        playerRestoreVx = (float) ((x << 4) + 8);
+                                        playerRestoreVz = (float) ((z << 4) - 42);
                                         break;
                                     case TILE_EXCLAMATION:
                                         world[z][x] = TILE_EMPTY;
                                         break;
                                     case TILE_UP:
-                                        playerVz = 1;
+                                        playerVz = 1.0F;
                                         break;
                                     case TILE_DOWN:
-                                        playerVz = -1;
+                                        playerVz = -1.0F;
                                         break;
                                     case TILE_LEFT:
                                         playerVx = -0.5f;
@@ -457,10 +457,10 @@ public class a extends GamePanel {
                                         playerVa = V_ANGLE;
                                         break;
                                     case TILE_DOUBLE_UP:
-                                        playerVz = 2;
+                                        playerVz = 2.0F;
                                         break;
                                     case TILE_DOUBLE_DOWN:
-                                        playerVz = -2;
+                                        playerVz = -2.0F;
                                         break;
                                     case TILE_DOUBLE_LEFT:
                                         playerVx = -1.25f;
@@ -516,7 +516,7 @@ public class a extends GamePanel {
 					if (j >= 0 && j < 2048) {
 						k = world[j >> 4][i >> 4];
 						if (k > 0) {
-							pixels[z] = sprites[k - 1 + (playerY < 0 ? 0 : shadowMap[z - 5120])][0x0F & j][0x0F & i];
+							pixels[z] = sprites[k - 1 + (playerY < (float) 0 ? 0 : shadowMap[z - 5120])][0x0F & j][0x0F & i];
 						}
 					}
 				}
@@ -525,15 +525,15 @@ public class a extends GamePanel {
 		image.setRGB(0, 0, 256, 256, pixels, 0, 256);
 
 		
-		g.translate(128, 134 - playerY);
-		g.scale(2, 2);
-		if (playerAngle != 0) {
-			g.rotate(playerAngle);
+		g.translate(128.0, (double) (134 - playerY));
+		g.scale(2.0, 2.0);
+		if (playerAngle != (float) 0) {
+			g.rotate((double) playerAngle);
 		}
 		g.drawImage(bunnySprite, -7, -21, null);
 		g.setTransform(affineTransform);
 
-		if (playerY < 0) {
+		if (playerY < (float) 0) {
 			
 			for (z = 0; z < 21760; z++) {
 				pixels[z] = 0;

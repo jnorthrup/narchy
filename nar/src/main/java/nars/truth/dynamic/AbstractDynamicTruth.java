@@ -147,8 +147,8 @@ public abstract class AbstractDynamicTruth {
 			//adjust sequence length
             int r = y.eventRange();
 			if (s!=ETERNAL && r > 0) {
-				if (e - s > r)
-					e -= r;
+				if (e - s > (long) r)
+                    e = e - (long) r;
 			}
 		}
 

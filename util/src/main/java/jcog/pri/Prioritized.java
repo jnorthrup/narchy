@@ -36,7 +36,7 @@ public interface Prioritized extends Deleteable {
     /**
      * common instance for a 'zero budget'.
      */
-    Prioritized Zero = new PriRO(0);
+    Prioritized Zero = new PriRO((float) 0);
 
 
     static String toString(Prioritized b) {
@@ -57,7 +57,7 @@ public interface Prioritized extends Deleteable {
 
     
     static Ansi.Color budgetSummaryColor(Prioritized tv) {
-        int s = (int) Math.floor(tv.priElseZero() * 5);
+        int s = (int) Math.floor((double) (tv.priElseZero() * 5.0F));
         switch (s) {
             default:
                 return Ansi.Color.DEFAULT;
@@ -79,11 +79,11 @@ public interface Prioritized extends Deleteable {
     }
 
     default float priElseZero() {
-        return priElse(0);
+        return priElse((float) 0);
     }
 
     default float priElseNeg1() {
-        return priElse(-1);
+        return priElse(-1.0F);
     }
 
     /** deleted if pri()==NaN */

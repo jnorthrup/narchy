@@ -9,12 +9,12 @@ public class CursorView extends TextEditRenderable {
   private final CursorPosition cursor;
 
   public CursorView(CursorPosition cursor) {
-    color.set(1f, 0.5f, 0, 0.5f);
+    color.set(1f, 0.5f, (float) 0, 0.5f);
     this.cursor = cursor;
   }
 
   public static float getWidth() {
-    return 1;
+    return 1.0F;
   }
 
   public CursorPosition getCursor() {
@@ -23,7 +23,7 @@ public class CursorView extends TextEditRenderable {
 
   @Override
   public void innerDraw(GL2 gl) {
-    Draw.rect(gl, -0.5f, -0.5f, 1f, 1f, 0);
+    Draw.rect(gl, -0.5f, -0.5f, 1f, 1f, (float) 0);
 //    Texture texture = textureProvider.getTexture(gl, "◆");
 //    texture.enable(gl);
 //    texture.bind(gl);

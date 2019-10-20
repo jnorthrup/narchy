@@ -27,7 +27,7 @@ public class NBitsConverter extends UGen {
     public NBitsConverter(AudioContext ac, int n) {
         super(ac, 1, 1);
         toRange = 1 << (n - 1);
-        invToRange = (float) (1. / toRange);
+        invToRange = (float) (1. / (double) toRange);
 
     }
 
@@ -39,7 +39,7 @@ public class NBitsConverter extends UGen {
         
 
         for (int i = 0; i < bufferSize; i++) {
-            bufOut[0][i] = invToRange * (int) (bufIn[0][i] * toRange);
+            bufOut[0][i] = invToRange * (float) (int) (bufIn[0][i] * (float) toRange);
         }
     }
 }

@@ -121,8 +121,8 @@ public class Vector4f extends Tuple4f {
  private float length()
   {
     return
-      (float) Math.sqrt(this.x*this.x + this.y*this.y +
-                        this.z*this.z + this.w*this.w);
+      (float) Math.sqrt((double) (this.x * this.x + this.y * this.y +
+              this.z * this.z + this.w * this.w));
   }
 
   /**
@@ -153,8 +153,8 @@ public class Vector4f extends Tuple4f {
   public final void normalize(Vector4f v1)
   {
 
-      float norm = (float) (1.0 / Math.sqrt(v1.x * v1.x + v1.y * v1.y +
-              v1.z * v1.z + v1.w * v1.w));
+      float norm = (float) (1.0 / Math.sqrt((double) (v1.x * v1.x + v1.y * v1.y +
+              v1.z * v1.z + v1.w * v1.w)));
       this.x = v1.x*norm;
     this.y = v1.y*norm;
     this.z = v1.z*norm;
@@ -168,8 +168,8 @@ public class Vector4f extends Tuple4f {
   public final void normalize()
   {
 
-      float norm = (float) (1.0 / Math.sqrt(this.x * this.x + this.y * this.y +
-              this.z * this.z + this.w * this.w));
+      float norm = (float) (1.0 / Math.sqrt((double) (this.x * this.x + this.y * this.y +
+              this.z * this.z + this.w * this.w)));
       this.x *= norm;
     this.y *= norm;
     this.z *= norm;
@@ -186,7 +186,7 @@ public class Vector4f extends Tuple4f {
     */   
    public final float angle(Vector4f v1) 
    { 
-      double vDot = this.dot(v1) / ( this.length()*v1.length() );
+      double vDot = (double) (this.dot(v1) / (this.length() * v1.length()));
       if( vDot < -1.0) vDot = -1.0;
       if( vDot >  1.0) vDot =  1.0;
       return((float) (Math.acos( vDot )));

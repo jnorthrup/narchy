@@ -42,13 +42,13 @@ public final class M {
         if ((ent.flags & (Defines.FL_SWIM | Defines.FL_FLY)) != 0)
             return;
 
-        if (ent.velocity[2] > 100) {
+        if (ent.velocity[2] > 100.0F) {
             ent.groundentity = null;
             return;
         }
 
 
-        float[] point = {0, 0, 0};
+        float[] point = {(float) 0, (float) 0, (float) 0};
         point[0] = ent.s.origin[0];
         point[1] = ent.s.origin[1];
         point[2] = ent.s.origin[2] - 0.25f;
@@ -57,7 +57,7 @@ public final class M {
                 Defines.MASK_MONSTERSOLID);
 
         
-        if (trace.plane.normal[2] < 0.7 && !trace.startsolid) {
+        if ((double) trace.plane.normal[2] < 0.7 && !trace.startsolid) {
             ent.groundentity = null;
             return;
         }
@@ -70,7 +70,7 @@ public final class M {
             Math3D.VectorCopy(trace.endpos, ent.s.origin);
             ent.groundentity = trace.ent;
             ent.groundentity_linkcount = trace.ent.linkcount;
-            ent.velocity[2] = 0;
+            ent.velocity[2] = (float) 0;
         }
     }
     
@@ -80,21 +80,21 @@ public final class M {
      */
 
     public static boolean M_CheckBottom(edict_t ent) {
-        float[] mins = { 0, 0, 0 };
+        float[] mins = {(float) 0, (float) 0, (float) 0};
 
         Math3D.VectorAdd(ent.s.origin, ent.mins, mins);
-        float[] maxs = {0, 0, 0};
+        float[] maxs = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorAdd(ent.s.origin, ent.maxs, maxs);
 
 
-        float[] start = {0, 0, 0};
-        start[2] = mins[2] - 1;
+        float[] start = {(float) 0, (float) 0, (float) 0};
+        start[2] = mins[2] - 1.0F;
         int x;
         for (x = 0; x <= 1; x++)
 
             start[0] = x != 0 ? maxs[0] : mins[0];
 
-        float[] stop = {0, 0, 0};
+        float[] stop = {(float) 0, (float) 0, (float) 0};
         for (int y = 0; y <= 1; y++) {
 
                 start[1] = y != 0 ? maxs[1] : mins[1];
@@ -108,12 +108,12 @@ public final class M {
                     
                     start[0] = stop[0] = (mins[0] + maxs[0]) * 0.5f;
                     start[1] = stop[1] = (mins[1] + maxs[1]) * 0.5f;
-                    stop[2] = start[2] - 2 * GameBase.STEPSIZE;
+                    stop[2] = start[2] - (float) (2 * GameBase.STEPSIZE);
                     trace_t trace = game_import_t.trace(start, Globals.vec3_origin,
                             Globals.vec3_origin, stop, ent,
                             Defines.MASK_MONSTERSOLID);
 
-                    if (trace.fraction == 1.0)
+                    if ((double) trace.fraction == 1.0)
                         return false;
                     float bottom;
                     float mid = bottom = trace.endpos[2];
@@ -131,11 +131,11 @@ public final class M {
                                     stop, ent, Defines.MASK_MONSTERSOLID);
 
                             float te2 = trace.endpos[2];
-                            if (trace.fraction != 1.0
+                            if ((double) trace.fraction != 1.0
                                     && te2 > bottom)
                                 bottom = te2;
-                            if (trace.fraction == 1.0
-                                    || mid - te2 > GameBase.STEPSIZE)
+                            if ((double) trace.fraction == 1.0
+                                    || mid - te2 > (float) GameBase.STEPSIZE)
                                 return false;
                         }
 
@@ -162,13 +162,13 @@ public final class M {
         float move = ideal - current;
         float speed = ent.yaw_speed;
         if (ideal > current) {
-            if (move >= 180)
-                move -= 360;
+            if (move >= 180.0F)
+                move -= 360.0F;
         } else {
-            if (move <= -180)
-                move += 360;
+            if (move <= -180.0F)
+                move += 360.0F;
         }
-        if (move > 0) {
+        if (move > (float) 0) {
             if (move > speed)
                 move = speed;
         } else {
@@ -194,7 +194,7 @@ public final class M {
             return;
 
         
-        if ((Lib.rand() & 3) == 1
+        if (((int) Lib.rand() & 3) == 1
                 || !SV.SV_StepDirection(ent, ent.ideal_yaw, dist)) {
             if (ent.inuse)
                 SV.SV_NewChaseDir(ent, goal, dist);
@@ -210,23 +210,23 @@ public final class M {
                 && (ent.flags & (Defines.FL_FLY | Defines.FL_SWIM)) == 0)
             return false;
 
-        yaw = (float) (yaw * Math.PI * 2 / 360);
+        yaw = (float) ((double) yaw * Math.PI * 2.0 / 360.0);
 
-        float[] move = {0, 0, 0};
-        move[0] = (float) Math.cos(yaw) * dist;
-        move[1] = (float) Math.sin(yaw) * dist;
-        move[2] = 0;
+        float[] move = {(float) 0, (float) 0, (float) 0};
+        move[0] = (float) Math.cos((double) yaw) * dist;
+        move[1] = (float) Math.sin((double) yaw) * dist;
+        move[2] = (float) 0;
 
         return SV.SV_movestep(ent, move, true);
     }
 
     public static void M_CatagorizePosition(edict_t ent) {
-        float[] point = { 0, 0, 0 };
+        float[] point = {(float) 0, (float) 0, (float) 0};
 
 
         point[0] = ent.s.origin[0];
         point[1] = ent.s.origin[1];
-        point[2] = ent.s.origin[2] + ent.mins[2] + 1;
+        point[2] = ent.s.origin[2] + ent.mins[2] + 1.0F;
         int cont = GameBase.gi.pointcontents.pointcontents(point);
 
         if (0 == (cont & Defines.MASK_WATER)) {
@@ -237,13 +237,13 @@ public final class M {
 
         ent.watertype = cont;
         ent.waterlevel = 1;
-        point[2] += 26;
+        point[2] += 26.0F;
         cont = GameBase.gi.pointcontents.pointcontents(point);
         if (0 == (cont & Defines.MASK_WATER))
             return;
 
         ent.waterlevel = 2;
-        point[2] += 22;
+        point[2] += 22.0F;
         cont = GameBase.gi.pointcontents.pointcontents(point);
         if (0 != (cont & Defines.MASK_WATER))
             ent.waterlevel = 3;
@@ -255,36 +255,36 @@ public final class M {
             int dmg;
             if (0 == (ent.flags & Defines.FL_SWIM)) {
                 if (ent.waterlevel < 3) {
-                    ent.air_finished = GameBase.level.time + 12;
+                    ent.air_finished = GameBase.level.time + 12.0F;
                 } else if (ent.air_finished < GameBase.level.time) {
                     
                     if (ent.pain_debounce_time < GameBase.level.time) {
-                        dmg = (int) (2f + 2f * Math.floor(GameBase.level.time
-                                - ent.air_finished));
+                        dmg = (int) (2 + 2 * Math.floor((double) (GameBase.level.time
+                                - ent.air_finished)));
                         if (dmg > 15)
                             dmg = 15;
                         GameCombat.T_Damage(ent, GameBase.g_edicts[0],
                                 GameBase.g_edicts[0], Globals.vec3_origin,
                                 ent.s.origin, Globals.vec3_origin, dmg, 0,
                                 Defines.DAMAGE_NO_ARMOR, Defines.MOD_WATER);
-                        ent.pain_debounce_time = GameBase.level.time + 1;
+                        ent.pain_debounce_time = GameBase.level.time + 1.0F;
                     }
                 }
             } else {
                 if (ent.waterlevel > 0) {
-                    ent.air_finished = GameBase.level.time + 9;
+                    ent.air_finished = GameBase.level.time + 9.0F;
                 } else if (ent.air_finished < GameBase.level.time) {
                     
                     if (ent.pain_debounce_time < GameBase.level.time) {
-                        dmg = (int) (2 + 2 * Math.floor(GameBase.level.time
-                                - ent.air_finished));
+                        dmg = (int) (2.0 + 2.0 * Math.floor((double) (GameBase.level.time
+                                - ent.air_finished)));
                         if (dmg > 15)
                             dmg = 15;
                         GameCombat.T_Damage(ent, GameBase.g_edicts[0],
                                 GameBase.g_edicts[0], Globals.vec3_origin,
                                 ent.s.origin, Globals.vec3_origin, dmg, 0,
                                 Defines.DAMAGE_NO_ARMOR, Defines.MOD_WATER);
-                        ent.pain_debounce_time = GameBase.level.time + 1;
+                        ent.pain_debounce_time = GameBase.level.time + 1.0F;
                     }
                 }
             }
@@ -293,8 +293,8 @@ public final class M {
         if (ent.waterlevel == 0) {
             if ((ent.flags & Defines.FL_INWATER) != 0) {
                 game_import_t.sound(ent, Defines.CHAN_BODY, game_import_t
-                        .soundindex("player/watr_out.wav"), 1,
-                        Defines.ATTN_NORM, 0);
+                        .soundindex("player/watr_out.wav"), 1.0F,
+                        (float) Defines.ATTN_NORM, (float) 0);
                 ent.flags &= ~Defines.FL_INWATER;
             }
             return;
@@ -313,7 +313,7 @@ public final class M {
         if ((ent.watertype & Defines.CONTENTS_SLIME) != 0
                 && 0 == (ent.flags & Defines.FL_IMMUNE_SLIME)) {
             if (ent.damage_debounce_time < GameBase.level.time) {
-                ent.damage_debounce_time = GameBase.level.time + 1;
+                ent.damage_debounce_time = GameBase.level.time + 1.0F;
                 GameCombat.T_Damage(ent, GameBase.g_edicts[0],
                         GameBase.g_edicts[0], Globals.vec3_origin,
                         ent.s.origin, Globals.vec3_origin, 4 * ent.waterlevel,
@@ -324,26 +324,26 @@ public final class M {
         if (0 == (ent.flags & Defines.FL_INWATER)) {
             if (0 == (ent.svflags & Defines.SVF_DEADMONSTER)) {
                 if ((ent.watertype & Defines.CONTENTS_LAVA) != 0)
-                    if (Globals.rnd.nextFloat() <= 0.5)
+                    if ((double) Globals.rnd.nextFloat() <= 0.5)
                         game_import_t.sound(ent, Defines.CHAN_BODY, game_import_t
-                                .soundindex("player/lava1.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                                .soundindex("player/lava1.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
                     else
                         game_import_t.sound(ent, Defines.CHAN_BODY, game_import_t
-                                .soundindex("player/lava2.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                                .soundindex("player/lava2.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
                 else if ((ent.watertype & Defines.CONTENTS_SLIME) != 0)
                     game_import_t.sound(ent, Defines.CHAN_BODY, game_import_t
-                            .soundindex("player/watr_in.wav"), 1,
-                            Defines.ATTN_NORM, 0);
+                            .soundindex("player/watr_in.wav"), 1.0F,
+                            (float) Defines.ATTN_NORM, (float) 0);
                 else if ((ent.watertype & Defines.CONTENTS_WATER) != 0)
                     game_import_t.sound(ent, Defines.CHAN_BODY, game_import_t
-                            .soundindex("player/watr_in.wav"), 1,
-                            Defines.ATTN_NORM, 0);
+                            .soundindex("player/watr_in.wav"), 1.0F,
+                            (float) Defines.ATTN_NORM, (float) 0);
             }
 
             ent.flags |= Defines.FL_INWATER;
-            ent.damage_debounce_time = 0;
+            ent.damage_debounce_time = (float) 0;
         }
     }
 
@@ -353,15 +353,15 @@ public final class M {
         @Override
         public boolean think(edict_t ent) {
 
-            ent.s.origin[2] += 1;
-            float[] end = {0, 0, 0};
+            ent.s.origin[2] += 1.0F;
+            float[] end = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorCopy(ent.s.origin, end);
-            end[2] -= 256;
+            end[2] -= 256.0F;
 
             trace_t trace = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs, end,
                     ent, Defines.MASK_MONSTERSOLID);
 
-            if (trace.fraction == 1 || trace.allsolid)
+            if (trace.fraction == 1.0F || trace.allsolid)
                 return true;
 
             Math3D.VectorCopy(trace.endpos, ent.s.origin);
@@ -441,7 +441,7 @@ public final class M {
                 move.frame[index].ai.ai(self, move.frame[index].dist
                         * self.monsterinfo.scale);
             else
-                move.frame[index].ai.ai(self, 0);
+                move.frame[index].ai.ai(self, (float) 0);
 
         if (move.frame[index].think != null)
             move.frame[index].think.think(self);
@@ -471,7 +471,7 @@ public final class M {
             self.s.effects |= Defines.EF_FLIES;
             self.s.sound = game_import_t.soundindex("infantry/inflies1.wav");
             self.think = M_FliesOff;
-            self.nextthink = GameBase.level.time + 60;
+            self.nextthink = GameBase.level.time + 60.0F;
             return true;
         }
     };
@@ -486,11 +486,11 @@ public final class M {
             if (self.waterlevel != 0)
                 return true;
 
-            if (Globals.rnd.nextFloat() > 0.5)
+            if ((double) Globals.rnd.nextFloat() > 0.5)
                 return true;
 
             self.think = M_FliesOn;
-            self.nextthink = GameBase.level.time + 5 + 10
+            self.nextthink = GameBase.level.time + 5.0F + 10.0F
                     * Globals.rnd.nextFloat();
             return true;
         }

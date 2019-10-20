@@ -8,8 +8,6 @@ import alice.tuprolog.*;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * This class provides basic ISO I/O predicates.
@@ -630,16 +628,16 @@ public class ISOIOLibrary extends PrologLib {
 
                 NumberTerm n = (NumberTerm)position;
                 long pos = n.longValue();
-                if(pos < 0){
+                if(pos < 0L){
                     throw PrologError.domain_error(prolog, 2, "+long", position);
                 }
 
                 int size = in.available();
 
-                if(pos > size){
+                if(pos > (long) size){
                     throw PrologError.system_error(new Struct("Invalid operation. Input position is greater than file size."));
                 }
-                if(pos == size){
+                if(pos == (long) size){
                     entry.put("end_of_file", new Struct("at"));
                 }
                 
@@ -1059,7 +1057,7 @@ public class ISOIOLibrary extends PrologLib {
                     prolog.output(ch);
                 } else {
                     try {
-                        stream.write((byte) ch.charAt(0));
+                        stream.write((int) (byte) ch.charAt(0));
                     }catch(IOException ioe){
                         ioe.printStackTrace();
                         throw PrologError.system_error(new Struct("An I/O error has occurred."));
@@ -1121,7 +1119,7 @@ public class ISOIOLibrary extends PrologLib {
             prolog.output("\n");
         } else {
             try {
-                stream.write('\n');
+                stream.write((int) '\n');
             } catch (IOException e) {
                 throw PrologError.permission_error(prolog,
                         "output", "stream", new Struct(outputStreamName),
@@ -1391,7 +1389,7 @@ public class ISOIOLibrary extends PrologLib {
                         open_apices2 = !open_apices2;
                         break;
                     default:
-                        if (ch == '.') {
+                        if (ch == (int) '.') {
                             if (!open_apices && !open_apices2) {
                                 break label;
                             }
@@ -1698,7 +1696,7 @@ public class ISOIOLibrary extends PrologLib {
                         int res = argNumber.intValue() % 26;
                         int div = argNumber.intValue()/26;
                         char ch = 'A';
-                        int num = (ch+res);
+                        int num = ((int) ch +res);
                         result = new String(Character.toChars(num));
                         if(div != 0){
                             result += div;

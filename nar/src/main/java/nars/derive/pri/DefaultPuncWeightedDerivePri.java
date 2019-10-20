@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
 
     long lastUpdate = ETERNAL;
-    static final float updateDurs = 1;
+    static final float updateDurs = 1.0F;
 
     /** cache of punctuation priorities */
     private transient float beliefPri;
@@ -28,7 +28,7 @@ public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
 
     @Override
     public void reset(Derivation d) {
-        if (lastUpdate == ETERNAL || d.time - lastUpdate > updateDurs * d.dur) {
+        if (lastUpdate == ETERNAL || (float) (d.time - lastUpdate) > updateDurs * d.dur) {
             cache(d.nar);
             lastUpdate = d.time;
         }

@@ -22,13 +22,13 @@ public class SignalView extends Gridding {
 
     static final int SELECT_BUTTON = 0;
     static final int PAN_BUTTON = 2;
-    static final float PAN_SPEED = 1 / 100f;
+    static final float PAN_SPEED = 1.0F / 100f;
 
     //    public final FloatRange gain = new FloatRange(1, 0, 100);
     static final float selectorAlpha = 0.5f;
 
 
-    double time = 0;
+    double time = (double) 0;
 
     boolean paused = false;
 
@@ -39,7 +39,7 @@ public class SignalView extends Gridding {
         FreqSpectrogram g = new FreqSpectrogram(128, 512);
         add(g);
 
-        WaveBitmap w = new WaveBitmap(new ArrayTensor(in.data), in.sampleRate, in.data.length, 250);
+        WaveBitmap w = new WaveBitmap(new ArrayTensor(in.data), (float) in.sampleRate, in.data.length, 250);
         add(w);
 
         var t = new Timeline2D() {
@@ -94,8 +94,8 @@ public class SignalView extends Gridding {
 
                 if (finger.pressedNow(2)) {
                     float wheel;
-                    if ((wheel = finger.rotationY(true)) != 0) {
-                        timeScale(((1f + wheel * 0.1f)));
+                    if ((wheel = finger.rotationY(true)) != (float) 0) {
+                        timeScale((double) ((1f + wheel * 0.1f)));
                         //pan(+1);
                         return this;
                     }
@@ -115,13 +115,13 @@ public class SignalView extends Gridding {
             protected void renderContent(ReSurface r) {
                 super.renderContent(r);
 
-                float sStart = selectStart;
+                float sStart = (float) selectStart;
                 if (sStart == sStart) {
-                    float sEnd = selectEnd;
+                    float sEnd = (float) selectEnd;
                     if (sEnd == sEnd) {
                         r.on((gl, rr) -> {
                             float ss = Util.clamp(x(selectStart), left(), right());
-                            gl.glColor4f(1f, 0.8f, 0, selectorAlpha);
+                            gl.glColor4f(1f, 0.8f, (float) 0, selectorAlpha);
                             float ee = Util.clamp(x(selectEnd), left(), right());
                             if (ee - ss > ScalarValue.EPSILON) {
                                 Draw.rect(x() + ss, y(), ee - ss, h(), gl);

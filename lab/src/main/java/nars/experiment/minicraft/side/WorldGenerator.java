@@ -13,7 +13,6 @@
 package nars.experiment.minicraft.side;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -37,13 +36,13 @@ public class WorldGenerator {
 
         int seed = random.nextInt();
         System.out.println("Seed: " + seed);
-        random.setSeed(seed);
-        int median = (int) (.5 * height);
+        random.setSeed((long) seed);
+        int median = (int) (.5 * (double) height);
 
         int minDirtDepth = 2;
         int maxDirtDepth = 5;
-        int minSurface = (int) (.25 * height);
-        int maxSurface = (int) (.75 * height);
+        int minSurface = (int) (.25 * (double) height);
+        int maxSurface = (int) (.75 * (double) height);
 
         int surface = median;
         int dirtDepth = 3;
@@ -123,7 +122,7 @@ public class WorldGenerator {
 
 
                 if (world[i][j] != TileID.NONE) {
-                    carve(world, i, j - 1, 1 + random.nextDouble() * 2, TileID.SAND, new TileID[]{
+                    carve(world, i, j - 1, 1.0 + random.nextDouble() * 2.0, TileID.SAND, new TileID[]{
                             TileID.WATER, TileID.NONE}, false);
                     break;
                 }
@@ -131,20 +130,20 @@ public class WorldGenerator {
             }
         }
 
-        uniformlyAddMinerals(world, TileID.COAL_ORE, .01f, (int) (height * .4),
-                (int) (height * .9), new TileID[]{TileID.DIRT, TileID.SAND, TileID.WATER,
+        uniformlyAddMinerals(world, TileID.COAL_ORE, .01f, (int) ((double) height * .4),
+                (int) ((double) height * .9), new TileID[]{TileID.DIRT, TileID.SAND, TileID.WATER,
                         TileID.NONE}, random);
 
-        uniformlyAddMinerals(world, TileID.IRON_ORE, .005f, (int) (height * .5), height,
+        uniformlyAddMinerals(world, TileID.IRON_ORE, .005f, (int) ((double) height * .5), height,
                 new TileID[]{TileID.DIRT, TileID.SAND, TileID.WATER, TileID.NONE}, random);
 
-        uniformlyAddMinerals(world, TileID.DIAMOND_ORE, .001f, (int) (height * .9), height,
+        uniformlyAddMinerals(world, TileID.DIAMOND_ORE, .001f, (int) ((double) height * .9), height,
                 new TileID[]{TileID.DIRT, TileID.SAND, TileID.WATER, TileID.NONE}, random);
 
         TileID[] caveIgnore = {TileID.DIRT, TileID.COAL_ORE, TileID.WATER,
                 TileID.GRASS, TileID.SAND, TileID.NONE};
 
-        int caveCount = (int) (width / 16 + random.nextDouble() * 3);
+        int caveCount = (int) ((double) (width / 16) + random.nextDouble() * 3.0);
         for (int i = 0; i < caveCount; i++) {
             int posX = random.nextInt(width);
             int posY = random.nextInt(height / 8) + height * 7 / 8;
@@ -163,7 +162,7 @@ public class WorldGenerator {
                 if (posX < 0 || posX >= width || posY <= median || posY >= height) {
                     break;
                 }
-                double caveSize = 1 + random.nextDouble() * .45;
+                double caveSize = 1.0 + random.nextDouble() * .45;
                 carve(world, posX, posY, caveSize, TileID.NONE, caveIgnore, false);
             }
         }
@@ -183,14 +182,14 @@ public class WorldGenerator {
         int missesAllowed = 100;
         int width = world.length;
         int totalHeight = maxDepth - minDepth;
-        int desired = (int) (density * width * totalHeight);
+        int desired = (int) (density * (float) width * (float) totalHeight);
         int added = 0;
         int iterations = 0;
         while (added < desired && added - iterations < missesAllowed) {
             int posX = random.nextInt(width);
             int posY = random.nextInt(totalHeight) + minDepth;
             if (world[posX][posY] == TileID.STONE) {
-                double mineralSize = 1 + random.nextDouble() * .6;
+                double mineralSize = 1.0 + random.nextDouble() * .6;
                 carve(world, posX, posY, mineralSize, mineral, ignoreTypes, false);
                 added++;
             }
@@ -227,7 +226,7 @@ public class WorldGenerator {
                 if (ignoreThis) {
                     continue;
                 }
-                if (Math.sqrt(i * i + j * j) <= distance) {
+                if (Math.sqrt((double) (i * i + j * j)) <= distance) {
                     world[currentX][currentY] = type;
                 }
             }

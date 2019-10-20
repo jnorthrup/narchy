@@ -86,7 +86,7 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
     //        - Last 2 are prompts, requiring the network to produce the 1st and 2nd
     //          target pattern in the sequence, regardless of when they occurred.
     //        - No output allowed except when prompted.
-    public final Random rng = new XoRoShiRo128PlusRandom(1);
+    public final Random rng = new XoRoShiRo128PlusRandom(1L);
     public boolean loop = true;
 
     public int epoch = 0;
@@ -96,7 +96,7 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
     public int targets = 0; //numActions
     public int prompts = 0;
 
-    public float reward = 0;
+    public float reward = (float) 0;
 
     public ArrayTensor sequenceState;
     public ArrayTensor sequenceActions;
@@ -138,7 +138,7 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
 
             update(a);
 
-            rewardStat.addValue(reward);
+            rewardStat.addValue((double) reward);
 
             if (i % windowLen == 0) {
                 System.out.println(Texts.n4(rewardStat.getMean()));
@@ -424,7 +424,7 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
 
         reward =
                 //1f - maxError;                // error = 0, reward = 1
-                2 * (-0.5f + (1f - maxError)); // error = -1, reward = 1
+                2.0F * (-0.5f + (1f - maxError)); // error = -1, reward = 1
 
 //        if( _reward > 0.5f ) {
 //            int g = 0;
@@ -437,7 +437,7 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
         updateReward();
 
         int nextAction = a.act(reward, state.data);
-        actions.fill(0);
+        actions.fill((float) 0);
         actions.setAt(nextAction, 1f);
 
         ++seq;

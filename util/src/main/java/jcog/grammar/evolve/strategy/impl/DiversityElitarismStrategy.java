@@ -58,7 +58,7 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
     @Override
     protected void evolve() {
         int popSize = population.size();
-        int oldPopSize = (int) (popSize * 0.9);
+        int oldPopSize = (int) ((double) popSize * 0.9);
 
         List<Node> newPopulation = new UniqueList<>(popSize);
         
@@ -69,7 +69,7 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
 
         boolean allPerfect = true;
         for (double fitness : rankings.first().getFitness()) {
-            if (Math.round(fitness * 10000) != 0) {
+            if (Math.round(fitness * 10000.0) != 0L) {
                 allPerfect = false;
                 break;
             }
@@ -94,7 +94,7 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
 
             double random = rng.nextDouble();
 
-            if (random <= crossoverProb && oldPopSize - newPopulation.size() >= 2) {
+            if (random <= (double) crossoverProb && oldPopSize - newPopulation.size() >= 2) {
                 Node selectedA = sel.select(rr);
                 Node selectedB = sel.select(rr);
 
@@ -103,7 +103,7 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
                     newPopulation.add(newIndividuals.getOne());
                     newPopulation.add(newIndividuals.getTwo());
                 }
-            } else if (random <= crossoverProb + param.getMutationPobability()) {
+            } else if (random <= (double) (crossoverProb + param.getMutationPobability())) {
                 Node mutant = sel.select(rr);
                 mutant = variation.mutate(mutant);
                 newPopulation.add(mutant);

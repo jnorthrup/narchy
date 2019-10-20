@@ -44,7 +44,7 @@ public enum DerivationFailure {
         if (volMax > 0 && x.volume() > volMax)
             return VolMax;
 
-        if (punc == BELIEF || punc == GOAL) {
+        if ((int) punc == (int) BELIEF || (int) punc == (int) GOAL) {
             if(x.hasVarQuery())
                 return QueryVar;
             if(x.hasXternal())

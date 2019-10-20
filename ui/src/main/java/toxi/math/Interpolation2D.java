@@ -64,7 +64,7 @@ public class Interpolation2D {
         double dx2 = (x2 - x) * denom;
         double dy1 = y - y1;
         double dy2 = y2 - y;
-        return (float) (tl * dx2 * dy2 + tr * dx1 * dy2 + bl * dx2 * dy1 + br
+        return (float) ((double) tl * dx2 * dy2 + (double) tr * dx1 * dy2 + (double) bl * dx2 * dy1 + (double) br
                 * dx1 * dy1);
     }
 
@@ -87,7 +87,7 @@ public class Interpolation2D {
      */
     public static float bilinear(Vec2D p, Vec2D p1, Vec2D p2, float tl,
             float tr, float bl, float br) {
-        return bilinear(p.x, p.y, p1.x, p1.y, p2.x, p2.y, tl, tr, bl, br);
+        return bilinear((double) p.x, (double) p.y, (double) p1.x, (double) p1.y, (double) p2.x, (double) p2.y, tl, tr, bl, br);
     }
 
 }

@@ -79,7 +79,7 @@ protected void addSpringInfo(Surface aChild)
 /**
  * Removes spring info for child.
  */
-protected void removeSpringInfo(Surface aChild)  { _sinfos.remove(aChild); _ow = _oh = 0; }
+protected void removeSpringInfo(Surface aChild)  { _sinfos.remove(aChild); _ow = _oh = (float) 0; }
 
 ///**
 // * Returns preferred width.

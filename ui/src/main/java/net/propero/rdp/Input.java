@@ -161,8 +161,8 @@ public abstract class Input {
         try {
             String debugString = "Sending keypresses: ";
             for (int i = 0; i < pressSequence.length(); i += 2) {
-                int scancode = pressSequence.charAt(i);
-                int action = pressSequence.charAt(i + 1);
+                int scancode = (int) pressSequence.charAt(i);
+                int action = (int) pressSequence.charAt(i + 1);
                 int flags = 0;
 
                 switch (action) {
@@ -180,7 +180,7 @@ public abstract class Input {
                         break;
                 }
 
-                long t = getTime();
+                long t = (long) getTime();
 
                 debugString += "(0x"
                         + Integer.toHexString(scancode)
@@ -258,14 +258,14 @@ public abstract class Input {
             return;
 
         if (lastKeyEvent.isShiftDown())
-            sendScancode(getTime(), RDP_KEYRELEASE, 0x2a); 
+            sendScancode((long) getTime(), RDP_KEYRELEASE, 0x2a);
         if (lastKeyEvent.isAltDown() || serverAltDown) {
-            sendScancode(getTime(), RDP_KEYRELEASE, 0x38); 
-            sendScancode(getTime(), RDP_KEYPRESS | KBD_FLAG_QUIET, 0x38); 
-            sendScancode(getTime(), RDP_KEYRELEASE | KBD_FLAG_QUIET, 0x38); 
+            sendScancode((long) getTime(), RDP_KEYRELEASE, 0x38);
+            sendScancode((long) getTime(), RDP_KEYPRESS | KBD_FLAG_QUIET, 0x38);
+            sendScancode((long) getTime(), RDP_KEYRELEASE | KBD_FLAG_QUIET, 0x38);
         }
         if (lastKeyEvent.isControlDown()) {
-            sendScancode(getTime(), RDP_KEYRELEASE, 0x1d); 
+            sendScancode((long) getTime(), RDP_KEYRELEASE, 0x1d);
             
             
             
@@ -285,11 +285,11 @@ public abstract class Input {
             return;
 
         if (lastKeyEvent.isShiftDown())
-            sendScancode(getTime(), RDP_KEYPRESS, 0x2a); 
+            sendScancode((long) getTime(), RDP_KEYPRESS, 0x2a);
         if (lastKeyEvent.isAltDown())
-            sendScancode(getTime(), RDP_KEYPRESS, 0x38); 
+            sendScancode((long) getTime(), RDP_KEYPRESS, 0x38);
         if (lastKeyEvent.isControlDown())
-            sendScancode(getTime(), RDP_KEYPRESS, 0x1d); 
+            sendScancode((long) getTime(), RDP_KEYPRESS, 0x1d);
     }
 
     /**
@@ -590,7 +590,7 @@ public abstract class Input {
         public void keyPressed(KeyEvent e) {
             lastKeyEvent = e;
             modifiersValid = true;
-            long time = getTime();
+            long time = (long) getTime();
 
             
             
@@ -614,7 +614,7 @@ public abstract class Input {
         public void keyTyped(KeyEvent e) {
             lastKeyEvent = e;
             modifiersValid = true;
-            long time = getTime();
+            long time = (long) getTime();
 
             
             
@@ -647,7 +647,7 @@ public abstract class Input {
 
             lastKeyEvent = e;
             modifiersValid = true;
-            long time = getTime();
+            long time = (long) getTime();
 
             logger.debug("RELEASED keychar='{}' keycode=0x{} char='{}" + '\'', e.getKeyChar(), Integer.toHexString(e.getKeyCode()), (char) e.getKeyCode());
             if (rdp != null) {

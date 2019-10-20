@@ -75,10 +75,10 @@ public class WidgetTest {
                 ),
                 "Slider", () -> grid(
                         Splitting.row(
-                                grid(new FloatSlider("solid slider", .25f, 0, 1    /* pause */),
-                                        new FloatSlider("knob slider", 0.75f, 0, 1).type(SliderModel.KnobHoriz)),
+                                grid(new FloatSlider("solid slider", .25f, (float) 0, 1.0F    /* pause */),
+                                        new FloatSlider("knob slider", 0.75f, (float) 0, 1.0F).type(SliderModel.KnobHoriz)),
                                 0.9f,
-                                new FloatSlider(0.33f, 0, 1).type(SliderModel.KnobVert)
+                                new FloatSlider(0.33f, (float) 0, 1.0F).type(SliderModel.KnobVert)
                         ),
                         new XYSlider()
                 ),
@@ -139,9 +139,9 @@ public class WidgetTest {
                 "Empty", () -> wiringDemo((g) -> {
                 }),
                 "Intro", () -> wiringDemo(g -> {
-                    g.add(WidgetTest.widgetDemo()).posRel(1, 1, 0.5f, 0.25f);
+                    g.add(WidgetTest.widgetDemo()).posRel(1.0F, 1.0F, 0.5f, 0.25f);
                     for (int i = 1; i < 3; i++)
-                        g.add(new WizardFrame(new ProtoWidget())).posRel(0.5f, 0.5f, 0.45f / i, 0.35f / i);
+                        g.add(new WizardFrame(new ProtoWidget())).posRel(0.5f, 0.5f, 0.45f / (float) i, 0.35f / (float) i);
                 }),
                 //"", ()-> wiringDemo((g)->{})
                 "Basic", () -> wiringDemo((g) -> {

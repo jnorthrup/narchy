@@ -164,7 +164,7 @@ public final class Narsese {
                         :
                         (byte) (((Character) x[2]).charValue());
 
-        if (punct == COMMAND)
+        if ((int) punct == (int) COMMAND)
             return new AbstractCommandTask(content);
 
         Object _t = x[3];
@@ -177,8 +177,8 @@ public final class Narsese {
         else
             t = null;
 
-        if (t == null && (punct == BELIEF || punct == GOAL))
-            t = $.t(1, nar.confDefault(punct)); //HACK
+        if (t == null && ((int) punct == (int) BELIEF || (int) punct == (int) GOAL))
+            t = $.t(1.0F, nar.confDefault(punct)); //HACK
 
 
         long[] occ = occurrence(nar.time, x[4]);

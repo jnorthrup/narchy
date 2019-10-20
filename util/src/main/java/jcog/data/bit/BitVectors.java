@@ -34,7 +34,7 @@ public enum BitVectors {
 
 
 	public static void ensureFromTo( long bitVectorLength, long from, long to ) {
-        if ( from < 0 ) throw new ArrayIndexOutOfBoundsException( "Start index (" + from + ") is negative" );
+        if ( from < 0L) throw new ArrayIndexOutOfBoundsException( "Start index (" + from + ") is negative" );
         if ( from > to ) throw new IllegalArgumentException( "Start index (" + from + ") is greater than end index (" + to + ')');
         if ( to > bitVectorLength ) throw new ArrayIndexOutOfBoundsException( "End index (" + to + ") is greater than bit vector length (" + bitVectorLength + ')');
     }
@@ -42,10 +42,10 @@ public enum BitVectors {
 	/** An immutable, singleton empty bit vector. */
 	public static final BitVector EMPTY_VECTOR = new AbstractBitVector() {
 		@Override
-		public long length() { return 0; }
+		public long length() { return 0L; }
 		@Override
 		public BitVector copy(long from, long to ) {
-			ensureFromTo( 0, from, to );
+			ensureFromTo(0L, from, to );
 			return EMPTY_VECTOR; 
 		}
 		@Override
@@ -62,14 +62,14 @@ public enum BitVectors {
 	/** An immutable bit vector of length one containing a zero. */
 	public static final BitVector ZERO = new AbstractBitVector() {
 		@Override
-		public long length() { return 1; }
+		public long length() { return 1L; }
 		@Override
 		public BitVector copy(long from, long to ) {
-			ensureFromTo( 1, from, to );
+			ensureFromTo(1L, from, to );
 			return from == to ? EMPTY_VECTOR : this; 
 		}
 		@Override
-		public boolean getBoolean(long index ) { if ( index > 0 ) throw new IndexOutOfBoundsException(); else return false; }
+		public boolean getBoolean(long index ) { if ( index > 0L) throw new IndexOutOfBoundsException(); else return false; }
 		@Override
 		public BitVector copy() {
 			return this;
@@ -82,14 +82,14 @@ public enum BitVectors {
 	/** An immutable bit vector of length one containing a one. */
 	public static final BitVector ONE = new AbstractBitVector() {
 		@Override
-		public long length() { return 1; }
+		public long length() { return 1L; }
 		@Override
 		public BitVector copy(long from, long to ) {
-			ensureFromTo( 1, from, to );
+			ensureFromTo(1L, from, to );
 			return from == to ? EMPTY_VECTOR : this; 
 		}
 		@Override
-		public boolean getBoolean(long index ) { if ( index > 0 ) throw new IndexOutOfBoundsException(); else return true; }
+		public boolean getBoolean(long index ) { if ( index > 0L) throw new IndexOutOfBoundsException(); else return true; }
 		@Override
 		public BitVector copy() {
 			return this;
@@ -115,8 +115,8 @@ public enum BitVectors {
         long length = v.length();
         dos.writeLong( length );
 		long i;
-        long l = length - length % Long.SIZE;
-        for(i = 0; i < l; i += Long.SIZE ) dos.writeLong( v.getLong( i, i + Long.SIZE ) );
+        long l = length - length % (long) Long.SIZE;
+        for(i = 0L; i < l; i = i + (long) Long.SIZE) dos.writeLong( v.getLong( i, i + (long) Long.SIZE) );
 		if ( i < length ) dos.writeLong( v.getLong( i, length ) );
 	}
 	

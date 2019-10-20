@@ -12,10 +12,10 @@ import static java.awt.RenderingHints.*;
  */
 public class ScaledBitmap2D extends MonoBufImgBitmap2D /* TODO extends ArrayBitmap2D directly, bypassing Swing */ /*implements ImageObserver*/ {
 
-    float sx1 = 0;
-    float sy1 = 0;
-    float sx2 = 1;
-    float sy2 = 1;
+    float sx1 = (float) 0;
+    float sy1 = (float) 0;
+    float sx2 = 1.0F;
+    float sy2 = 1.0F;
 
     /**
      * output pixel width / height
@@ -105,10 +105,10 @@ public class ScaledBitmap2D extends MonoBufImgBitmap2D /* TODO extends ArrayBitm
         //boolean stillChanging =
         outgfx.drawImage(in,
                 0, 0, pw, ph,
-                Math.round(sx1 * sw),
-                Math.round(sy1 * sh),
-                Math.round(sx2 * sw),
-                Math.round(sy2 * sh),
+                Math.round(sx1 * (float) sw),
+                Math.round(sy1 * (float) sh),
+                Math.round(sx2 * (float) sw),
+                Math.round(sy2 * (float) sh),
                 Color.BLACK, null);
 //        while (stillChanging) {
 //

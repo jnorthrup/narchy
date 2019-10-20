@@ -53,8 +53,8 @@ public abstract class Draw extends Image {
 		
 		draw_chars = GL_FindImage("pics/conchars.pcx", it_pic);
 		GL_Bind(draw_chars.texnum);
-		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (float) GL_NEAREST);
+		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (float) GL_NEAREST);
 	}
 
 	/*
@@ -81,17 +81,17 @@ public abstract class Draw extends Image {
         GL_Bind(draw_chars.texnum);
 
 		gl.glBegin (GL_QUADS);
-        float fcol = col * 0.0625f;
-        float frow = row * 0.0625f;
+        float fcol = (float) col * 0.0625f;
+        float frow = (float) row * 0.0625f;
         gl.glTexCoord2f (fcol, frow);
-		gl.glVertex2f (x, y);
+		gl.glVertex2f ((float) x, (float) y);
         float size = 0.0625f;
         gl.glTexCoord2f (fcol + size, frow);
-		gl.glVertex2f (x+8, y);
+		gl.glVertex2f ((float) (x + 8), (float) y);
 		gl.glTexCoord2f (fcol + size, frow + size);
-		gl.glVertex2f (x+8, y+8);
+		gl.glVertex2f ((float) (x + 8), (float) (y + 8));
 		gl.glTexCoord2f (fcol, frow + size);
-		gl.glVertex2f (x, y+8);
+		gl.glVertex2f ((float) x, (float) (y + 8));
 		gl.glEnd ();
 	}
 
@@ -149,13 +149,13 @@ public abstract class Draw extends Image {
 		GL_Bind(image.texnum);
 		gl.glBegin (GL_QUADS);
 		gl.glTexCoord2f (image.sl, image.tl);
-		gl.glVertex2f (x, y);
+		gl.glVertex2f ((float) x, (float) y);
 		gl.glTexCoord2f (image.sh, image.tl);
-		gl.glVertex2f (x+w, y);
+		gl.glVertex2f ((float) (x + w), (float) y);
 		gl.glTexCoord2f (image.sh, image.th);
-		gl.glVertex2f (x+w, y+h);
+		gl.glVertex2f ((float) (x + w), (float) (y + h));
 		gl.glTexCoord2f (image.sl, image.th);
-		gl.glVertex2f (x, y+h);
+		gl.glVertex2f ((float) x, (float) (y + h));
 		gl.glEnd ();
 
 		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) !=0 ) ) && !image.has_alpha)
@@ -188,13 +188,13 @@ public abstract class Draw extends Image {
 
 		gl.glBegin (GL_QUADS);
 		gl.glTexCoord2f (image.sl, image.tl);
-		gl.glVertex2f (x, y);
+		gl.glVertex2f ((float) x, (float) y);
 		gl.glTexCoord2f (image.sh, image.tl);
-		gl.glVertex2f (x+image.width, y);
+		gl.glVertex2f ((float) (x + image.width), (float) y);
 		gl.glTexCoord2f (image.sh, image.th);
-		gl.glVertex2f (x+image.width, y+image.height);
+		gl.glVertex2f ((float) (x + image.width), (float) (y + image.height));
 		gl.glTexCoord2f (image.sl, image.th);
-		gl.glVertex2f (x, y+image.height);
+		gl.glVertex2f ((float) x, (float) (y + image.height));
 		gl.glEnd ();
 
 		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) )  && !image.has_alpha)
@@ -224,14 +224,14 @@ public abstract class Draw extends Image {
 
 		GL_Bind(image.texnum);
 		gl.glBegin (GL_QUADS);
-		gl.glTexCoord2f(x/64.0f, y/64.0f);
-		gl.glVertex2f (x, y);
-		gl.glTexCoord2f( (x+w)/64.0f, y/64.0f);
-		gl.glVertex2f(x+w, y);
-		gl.glTexCoord2f( (x+w)/64.0f, (y+h)/64.0f);
-		gl.glVertex2f(x+w, y+h);
-		gl.glTexCoord2f( x/64.0f, (y+h)/64.0f );
-		gl.glVertex2f (x, y+h);
+		gl.glTexCoord2f((float) x /64.0f, (float) y /64.0f);
+		gl.glVertex2f ((float) x, (float) y);
+		gl.glTexCoord2f((float) (x + w) /64.0f, (float) y /64.0f);
+		gl.glVertex2f((float) (x + w), (float) y);
+		gl.glTexCoord2f((float) (x + w) /64.0f, (float) (y + h) /64.0f);
+		gl.glVertex2f((float) (x + w), (float) (y + h));
+		gl.glTexCoord2f((float) x /64.0f, (float) (y + h) /64.0f );
+		gl.glVertex2f ((float) x, (float) (y + h));
 		gl.glEnd ();
 
 		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) )  && !image.has_alpha)
@@ -265,13 +265,13 @@ public abstract class Draw extends Image {
 
 		gl.glBegin (GL_QUADS);
 
-		gl.glVertex2f(x,y);
-		gl.glVertex2f(x+w, y);
-		gl.glVertex2f(x+w, y+h);
-		gl.glVertex2f(x, y+h);
+		gl.glVertex2f((float) x, (float) y);
+		gl.glVertex2f((float) (x + w), (float) y);
+		gl.glVertex2f((float) (x + w), (float) (y + h));
+		gl.glVertex2f((float) x, (float) (y + h));
 
 		gl.glEnd();
-		gl.glColor3f(1,1,1);
+		gl.glColor3f(1.0F, 1.0F, 1.0F);
 		gl.glEnable(GL_TEXTURE_2D);
 	}
 
@@ -286,16 +286,16 @@ public abstract class Draw extends Image {
     public void Draw_FadeScreen()	{
 		gl.glEnable(GL_BLEND);
 		gl.glDisable(GL_TEXTURE_2D);
-		gl.glColor4f(0, 0, 0, 0.8f);
+		gl.glColor4f((float) 0, (float) 0, (float) 0, 0.8f);
 		gl.glBegin(GL_QUADS);
 
-		gl.glVertex2f(0,0);
-		gl.glVertex2f(vid.getWidth(), 0);
-		gl.glVertex2f(vid.getWidth(), vid.getHeight());
-		gl.glVertex2f(0, vid.getHeight());
+		gl.glVertex2f((float) 0, (float) 0);
+		gl.glVertex2f((float) vid.getWidth(), (float) 0);
+		gl.glVertex2f((float) vid.getWidth(), (float) vid.getHeight());
+		gl.glVertex2f((float) 0, (float) vid.getHeight());
 
 		gl.glEnd();
-		gl.glColor4f(1,1,1,1);
+		gl.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		gl.glEnable(GL_TEXTURE_2D);
 		gl.glDisable(GL_BLEND);
 	}
@@ -321,15 +321,15 @@ public abstract class Draw extends Image {
         int trows;
         if (rows<=256)
 		{
-			hscale = 1;
+			hscale = 1.0F;
 			trows = rows;
 		}
 		else
 		{
-			hscale = rows/256.0f;
+			hscale = (float) rows /256.0f;
 			trows = 256;
 		}
-        float t = rows * hscale / 256;
+        float t = (float) rows * hscale / 256.0F;
 
         int row;
         int fracstep;
@@ -345,7 +345,7 @@ public abstract class Draw extends Image {
 
 			for (i=0 ; i<trows ; i++)
 			{
-				row = (int)(i*hscale);
+				row = (int)((float) i *hscale);
 				if (row > rows)
 					break;
 				sourceIndex = cols*row;
@@ -354,7 +354,7 @@ public abstract class Draw extends Image {
 				frac = fracstep >> 1;
 				for (j=0 ; j<256 ; j++)
 				{
-					image32.put(destIndex + j, r_rawpalette[data[sourceIndex + (frac>>16)] & 0xff]);
+					image32.put(destIndex + j, r_rawpalette[(int) data[sourceIndex + (frac >> 16)] & 0xff]);
 					frac += fracstep;
 				}
 			}
@@ -368,7 +368,7 @@ public abstract class Draw extends Image {
 
 			for (i=0 ; i<trows ; i++)
 			{
-				row = (int)(i*hscale);
+				row = (int)((float) i *hscale);
 				if (row > rows)
 					break;
 				sourceIndex = cols*row;
@@ -391,21 +391,21 @@ public abstract class Draw extends Image {
 						   GL_UNSIGNED_BYTE, 
 						   image8 );
 		}
-		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (float) GL_LINEAR);
+		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (float) GL_LINEAR);
 
 		if ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) ) 
 			gl.glDisable (GL_ALPHA_TEST);
 
 		gl.glBegin (GL_QUADS);
-		gl.glTexCoord2f (0, 0);
-		gl.glVertex2f (x, y);
-		gl.glTexCoord2f (1, 0);
-		gl.glVertex2f (x+w, y);
-		gl.glTexCoord2f (1, t);
-		gl.glVertex2f (x+w, y+h);
-		gl.glTexCoord2f (0, t);
-		gl.glVertex2f (x, y+h);
+		gl.glTexCoord2f ((float) 0, (float) 0);
+		gl.glVertex2f ((float) x, (float) y);
+		gl.glTexCoord2f (1.0F, (float) 0);
+		gl.glVertex2f ((float) (x + w), (float) y);
+		gl.glTexCoord2f (1.0F, t);
+		gl.glVertex2f ((float) (x + w), (float) (y + h));
+		gl.glTexCoord2f ((float) 0, t);
+		gl.glVertex2f ((float) x, (float) (y + h));
 		gl.glEnd ();
 
 		if ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) ) 

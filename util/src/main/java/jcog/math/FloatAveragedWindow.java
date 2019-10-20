@@ -46,10 +46,10 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
     }
 
     public final double max() {
-        return window.maxValue();
+        return (double) window.maxValue();
     }
     public final double min() {
-        return window.minValue();
+        return (double) window.minValue();
     }
 
     public final FloatAveragedWindow fill(float value) {
@@ -67,7 +67,7 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
             /** alpha param ignored */
             @Override
             public double apply(Tensor window, float alpha) {
-                double total = 0;
+                double total = (double) 0;
                 int count = 0;
                 //TODO Tensor reduce function
                 int vol = window.volume();
@@ -76,10 +76,10 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
                     if (v != v)
                         continue;
 
-                    total += v;
+                    total = total + (double) v;
                     count++;
                 }
-                return count > 0 ? total / count : Double.NaN;
+                return count > 0 ? total / (double) count : Double.NaN;
             }
         },
         Exponential {
@@ -95,9 +95,9 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
 
                     double prev = next;
                     next = (prev == prev) ?
-                            ((1 - a) * prev) + (a * v)
+                            ((double) (1.0F - a) * prev) + (double) (a * v)
                             :
-                            v; //initial value
+                            (double) v; //initial value
                 }
                 return next;
             }
@@ -111,7 +111,7 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
     }
 
     public FloatAveragedWindow(int windowSize, float alpha, boolean atomic) {
-        this(windowSize, new FloatRange(alpha, 0, 1f), atomic);
+        this(windowSize, new FloatRange(alpha, (float) 0, 1f), atomic);
     }
 
     public FloatAveragedWindow(int windowSize, float alpha, float fill) {
@@ -250,7 +250,7 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
 
 
     public double mean() {
-        return window.sumValues() / window.volume();
+        return (double) (window.sumValues() / (float) window.volume());
     }
 
     /** @standard deviation */

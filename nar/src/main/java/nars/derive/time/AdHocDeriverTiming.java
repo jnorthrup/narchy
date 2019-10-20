@@ -36,18 +36,18 @@ public class AdHocDeriverTiming implements TriFunction<What, Task, Term, long[]>
 
         long[] tt1 = taskTime(task);
         if (tt1[0]==ETERNAL) {
-            tt1[0] = Math.round(now - dur/2);
-            tt1[1] = Math.round(now + dur/2);
+            tt1[0] = (long) Math.round((float) now - dur / 2.0F);
+            tt1[1] = (long) Math.round((float) now + dur / 2.0F);
             result = tt1;
         } else {
 //            return presentDuration(4);
 //        } else {
 
 
-            double focus = 0.5f;
+            double focus = 0.5;
             long range =
                     //Math.max(Math.abs(tt[0] - now), Math.abs(tt[1] - now));
-                    Math.round(Math.max(dur, Math.min(Math.abs(tt1[0] - now), Math.abs(tt1[1] - now)) * focus));
+                    Math.round(Math.max((double) dur, (double) Math.min(Math.abs(tt1[0] - now), Math.abs(tt1[1] - now)) * focus));
 
             //float factor = rng.nextFloat();
             long center;

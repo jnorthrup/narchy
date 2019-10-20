@@ -83,12 +83,12 @@ public class Sprite implements SoundSource {
 
     @Override
     public float getX(float alpha) {
-        return (xOld + (x - xOld) * alpha) - xPicO;
+        return (xOld + (x - xOld) * alpha) - (float) xPicO;
     }
 
     @Override
     public float getY(float alpha) {
-        return (yOld + (y - yOld) * alpha) - yPicO;
+        return (yOld + (y - yOld) * alpha) - (float) yPicO;
     }
 
     public void collideCheck() {

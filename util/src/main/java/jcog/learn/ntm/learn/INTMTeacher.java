@@ -3,9 +3,7 @@ package jcog.learn.ntm.learn;
 import jcog.learn.ntm.NTM;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @FunctionalInterface
 public interface INTMTeacher {

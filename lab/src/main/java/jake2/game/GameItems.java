@@ -31,7 +31,6 @@ import jake2.util.Math3D;
 
 import java.util.Arrays;
 import java.util.StringTokenizer;
-import java.util.stream.Stream;
 
 
 public class GameItems {
@@ -63,7 +62,7 @@ public class GameItems {
                 for (count = 0, ent = master; ent != null; ent = ent.chain, count++)
                     ;
 
-                int choice = Lib.rand() % count;
+                int choice = (int) Lib.rand() % count;
     
                 for (count = 0, ent = master; count < choice; ent = ent.chain, count++)
                     ;
@@ -148,8 +147,8 @@ public class GameItems {
             }
     
             if (0 == (ent.spawnflags & Defines.DROPPED_ITEM)
-                    && (GameBase.deathmatch.value != 0))
-                SetRespawn(ent, ent.item.quantity);
+                    && (GameBase.deathmatch.value != (float) 0))
+                SetRespawn(ent, (float) ent.item.quantity);
     
             return true;
         }
@@ -180,8 +179,8 @@ public class GameItems {
                 ent.solid = Defines.SOLID_NOT;
             } else {
                 if ((ent.spawnflags & Defines.DROPPED_ITEM) == 0
-                        && (GameBase.deathmatch.value != 0))
-                    SetRespawn(ent, 30);
+                        && (GameBase.deathmatch.value != (float) 0))
+                    SetRespawn(ent, 30.0F);
             }
     
             return true;
@@ -220,35 +219,35 @@ public class GameItems {
     
                 
                 if (ent.item.use != null)
-                    other.client.pers.selected_item = other.client.ps.stats[Defines.STAT_SELECTED_ITEM] = (short) ITEM_INDEX(ent.item);
+                    other.client.pers.selected_item =  other.client.ps.stats[Defines.STAT_SELECTED_ITEM] = (short) ITEM_INDEX(ent.item);
     
                 if (ent.item.pickup == Pickup_Health) {
                     switch (ent.count) {
                         case 2:
                             game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
-                                            .soundindex("items/s_health.wav"), 1,
-                                    Defines.ATTN_NORM, 0);
+                                            .soundindex("items/s_health.wav"), 1.0F,
+                                    (float) Defines.ATTN_NORM, (float) 0);
                             break;
                         case 10:
                             game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
-                                            .soundindex("items/n_health.wav"), 1,
-                                    Defines.ATTN_NORM, 0);
+                                            .soundindex("items/n_health.wav"), 1.0F,
+                                    (float) Defines.ATTN_NORM, (float) 0);
                             break;
                         case 25:
                             game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
-                                            .soundindex("items/l_health.wav"), 1,
-                                    Defines.ATTN_NORM, 0);
+                                            .soundindex("items/l_health.wav"), 1.0F,
+                                    (float) Defines.ATTN_NORM, (float) 0);
                             break;
                         default:
                             game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
-                                            .soundindex("items/m_health.wav"), 1,
-                                    Defines.ATTN_NORM, 0);
+                                            .soundindex("items/m_health.wav"), 1.0F,
+                                    (float) Defines.ATTN_NORM, (float) 0);
                             break;
                     }
                 } else if (ent.item.pickup_sound != null) {
                     game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
-                            .soundindex(ent.item.pickup_sound), 1,
-                            Defines.ATTN_NORM, 0);
+                            .soundindex(ent.item.pickup_sound), 1.0F,
+                            (float) Defines.ATTN_NORM, (float) 0);
                 }
             }
     
@@ -262,7 +261,7 @@ public class GameItems {
             
             Com.dprintln("Picked up:" + ent.classname);
     
-            if (!((GameBase.coop.value != 0) && (ent.item.flags & Defines.IT_STAY_COOP) != 0)
+            if (!((GameBase.coop.value != (float) 0) && (ent.item.flags & Defines.IT_STAY_COOP) != 0)
                     || 0 != (ent.spawnflags & (Defines.DROPPED_ITEM | Defines.DROPPED_PLAYER_ITEM))) {
                 if ((ent.flags & Defines.FL_RESPAWN) != 0)
                     ent.flags &= ~Defines.FL_RESPAWN;
@@ -289,8 +288,8 @@ public class GameItems {
         @Override
         public boolean think(edict_t ent) {
             ent.touch = Touch_Item;
-            if (GameBase.deathmatch.value != 0) {
-                ent.nextthink = GameBase.level.time + 29;
+            if (GameBase.deathmatch.value != (float) 0) {
+                ent.nextthink = GameBase.level.time + 29.0F;
                 ent.think = GameUtil.G_FreeEdictA;
             }
             return false;
@@ -313,13 +312,13 @@ public class GameItems {
                 timeout = 300;
             }
     
-            if (ent.client.quad_framenum > GameBase.level.framenum)
-                ent.client.quad_framenum += timeout;
+            if (ent.client.quad_framenum > (float) GameBase.level.framenum)
+                ent.client.quad_framenum = ent.client.quad_framenum + (float) timeout;
             else
-                ent.client.quad_framenum = GameBase.level.framenum + timeout;
+                ent.client.quad_framenum = (float) (GameBase.level.framenum + timeout);
     
             game_import_t.sound(ent, Defines.CHAN_ITEM, game_import_t
-                    .soundindex("items/damage.wav"), 1, Defines.ATTN_NORM, 0);
+                    .soundindex("items/damage.wav"), 1.0F, (float) Defines.ATTN_NORM, (float) 0);
         }
     };
     
@@ -331,13 +330,13 @@ public class GameItems {
             ent.client.pers.inventory[ITEM_INDEX(item)]--;
             GameUtil.ValidateSelectedItem(ent);
     
-            if (ent.client.invincible_framenum > GameBase.level.framenum)
-                ent.client.invincible_framenum += 300;
+            if (ent.client.invincible_framenum > (float) GameBase.level.framenum)
+                ent.client.invincible_framenum += 300.0F;
             else
-                ent.client.invincible_framenum = GameBase.level.framenum + 300;
+                ent.client.invincible_framenum = (float) (GameBase.level.framenum + 300);
     
             game_import_t.sound(ent, Defines.CHAN_ITEM, game_import_t
-                    .soundindex("items/protect.wav"), 1, Defines.ATTN_NORM, 0);
+                    .soundindex("items/protect.wav"), 1.0F, (float) Defines.ATTN_NORM, (float) 0);
         }
     };
     static final ItemUseAdapter Use_Breather = new ItemUseAdapter() {
@@ -349,13 +348,13 @@ public class GameItems {
     
             GameUtil.ValidateSelectedItem(ent);
     
-            if (ent.client.breather_framenum > GameBase.level.framenum)
-                ent.client.breather_framenum += 300;
+            if (ent.client.breather_framenum > (float) GameBase.level.framenum)
+                ent.client.breather_framenum += 300.0F;
             else
-                ent.client.breather_framenum = GameBase.level.framenum + 300;
+                ent.client.breather_framenum = (float) (GameBase.level.framenum + 300);
     
             game_import_t.sound(ent, Defines.CHAN_ITEM, game_import_t
-                    .soundindex("items/damage.wav"), 1, Defines.ATTN_NORM, 0);
+                    .soundindex("items/damage.wav"), 1.0F, (float) Defines.ATTN_NORM, (float) 0);
         }
     };
     static final ItemUseAdapter Use_Envirosuit = new ItemUseAdapter() {
@@ -366,13 +365,13 @@ public class GameItems {
             ent.client.pers.inventory[ITEM_INDEX(item)]--;
             GameUtil.ValidateSelectedItem(ent);
     
-            if (ent.client.enviro_framenum > GameBase.level.framenum)
-                ent.client.enviro_framenum += 300;
+            if (ent.client.enviro_framenum > (float) GameBase.level.framenum)
+                ent.client.enviro_framenum += 300.0F;
             else
-                ent.client.enviro_framenum = GameBase.level.framenum + 300;
+                ent.client.enviro_framenum = (float) (GameBase.level.framenum + 300);
     
             game_import_t.sound(ent, Defines.CHAN_ITEM, game_import_t
-                    .soundindex("items/damage.wav"), 1, Defines.ATTN_NORM, 0);
+                    .soundindex("items/damage.wav"), 1.0F, (float) Defines.ATTN_NORM, (float) 0);
         }
     };
     static final ItemUseAdapter Use_Silencer = new ItemUseAdapter() {
@@ -386,7 +385,7 @@ public class GameItems {
             ent.client.silencer_shots += 30;
     
             game_import_t.sound(ent, Defines.CHAN_ITEM, game_import_t
-                    .soundindex("items/damage.wav"), 1, Defines.ATTN_NORM, 0);
+                    .soundindex("items/damage.wav"), 1.0F, (float) Defines.ATTN_NORM, (float) 0);
         }
     };
     static final EntInteractAdapter Pickup_Key = new EntInteractAdapter() {
@@ -394,7 +393,7 @@ public class GameItems {
         public String getID() { return "pickup_key";}
         @Override
         public boolean interact(edict_t ent, edict_t other) {
-            if (GameBase.coop.value != 0) {
+            if (GameBase.coop.value != (float) 0) {
                 if (Lib.strcmp(ent.classname, "key_power_cube") == 0) {
                     if ((other.client.pers.power_cubes & ((ent.spawnflags & 0x0000ff00) >> 8)) != 0)
                         return false;
@@ -434,13 +433,13 @@ public class GameItems {
     
             if (weapon && 0 == oldcount) {
                 if (other.client.pers.weapon != ent.item
-                        && (0 == GameBase.deathmatch.value || other.client.pers.weapon == FindItem("blaster")))
+                        && ((float) 0 == GameBase.deathmatch.value || other.client.pers.weapon == FindItem("blaster")))
                     other.client.newweapon = ent.item;
             }
     
             if (0 == (ent.spawnflags & (Defines.DROPPED_ITEM | Defines.DROPPED_PLAYER_ITEM))
-                    && (GameBase.deathmatch.value != 0))
-                SetRespawn(ent, 30);
+                    && (GameBase.deathmatch.value != (float) 0))
+                SetRespawn(ent, 30.0F);
             return true;
         }
     };
@@ -521,8 +520,8 @@ public class GameItems {
             }
     
             if (0 == (ent.spawnflags & Defines.DROPPED_ITEM)
-                    && (GameBase.deathmatch.value != 0))
-                SetRespawn(ent, 20);
+                    && (GameBase.deathmatch.value != (float) 0))
+                SetRespawn(ent, 20.0F);
     
             return true;
         }
@@ -537,9 +536,9 @@ public class GameItems {
     
             other.client.pers.inventory[ITEM_INDEX(ent.item)]++;
     
-            if (GameBase.deathmatch.value != 0) {
+            if (GameBase.deathmatch.value != (float) 0) {
                 if (0 == (ent.spawnflags & Defines.DROPPED_ITEM))
-                    SetRespawn(ent, ent.item.quantity);
+                    SetRespawn(ent, (float) ent.item.quantity);
                 
                 if (0 == quantity)
                     ent.item.use.use(other, ent.item);
@@ -554,20 +553,20 @@ public class GameItems {
         public boolean interact(edict_t ent, edict_t other) {
 
             int quantity = other.client.pers.inventory[ITEM_INDEX(ent.item)];
-            if ((GameBase.skill.value == 1 && quantity >= 2)
-                    || (GameBase.skill.value >= 2 && quantity >= 1))
+            if ((GameBase.skill.value == 1.0F && quantity >= 2)
+                    || (GameBase.skill.value >= 2.0F && quantity >= 1))
                 return false;
     
-            if ((GameBase.coop.value != 0)
+            if ((GameBase.coop.value != (float) 0)
                     && (ent.item.flags & Defines.IT_STAY_COOP) != 0
                     && (quantity > 0))
                 return false;
     
             other.client.pers.inventory[ITEM_INDEX(ent.item)]++;
     
-            if (GameBase.deathmatch.value != 0) {
+            if (GameBase.deathmatch.value != (float) 0) {
                 if (0 == (ent.spawnflags & Defines.DROPPED_ITEM))
-                    SetRespawn(ent, ent.item.quantity);
+                    SetRespawn(ent, (float) ent.item.quantity);
                 if (((int) GameBase.dmflags.value & Defines.DF_INSTANT_ITEMS) != 0
                         || ((ent.item.use == Use_Quad) && 0 != (ent.spawnflags & Defines.DROPPED_PLAYER_ITEM))) {
                     if ((ent.item.use == Use_Quad)
@@ -586,15 +585,15 @@ public class GameItems {
         public String getID() { return "pickup_adrenaline";}
         @Override
         public boolean interact(edict_t ent, edict_t other) {
-            if (GameBase.deathmatch.value == 0)
+            if (GameBase.deathmatch.value == (float) 0)
                 other.max_health += 1;
     
             if (other.health < other.max_health)
                 other.health = other.max_health;
     
             if (0 == (ent.spawnflags & Defines.DROPPED_ITEM)
-                    && (GameBase.deathmatch.value != 0))
-                SetRespawn(ent, ent.item.quantity);
+                    && (GameBase.deathmatch.value != (float) 0))
+                SetRespawn(ent, (float) ent.item.quantity);
     
             return true;
     
@@ -608,8 +607,8 @@ public class GameItems {
             other.max_health += 2;
     
             if (0 == (ent.spawnflags & Defines.DROPPED_ITEM)
-                    && (GameBase.deathmatch.value != 0))
-                SetRespawn(ent, ent.item.quantity);
+                    && (GameBase.deathmatch.value != (float) 0))
+                SetRespawn(ent, (float) ent.item.quantity);
     
             return true;
         }
@@ -647,8 +646,8 @@ public class GameItems {
             }
     
             if (0 == (ent.spawnflags & Defines.DROPPED_ITEM)
-                    && (GameBase.deathmatch.value != 0))
-                SetRespawn(ent, ent.item.quantity);
+                    && (GameBase.deathmatch.value != (float) 0))
+                SetRespawn(ent, (float) ent.item.quantity);
     
             return true;
     
@@ -711,10 +710,10 @@ public class GameItems {
         public boolean think(edict_t ent) {
 
 
-            ent.mins[0] = ent.mins[1] = ent.mins[2] = -15;
+            ent.mins[0] = ent.mins[1] = ent.mins[2] = -15.0F;
             
             
-            ent.maxs[0] = ent.maxs[1] = ent.maxs[2] = 15;
+            ent.maxs[0] = ent.maxs[1] = ent.maxs[2] = 15.0F;
     
             if (ent.model != null)
                 game_import_t.setmodel(ent, ent.model);
@@ -724,8 +723,8 @@ public class GameItems {
             ent.movetype = Defines.MOVETYPE_TOSS;
             ent.touch = Touch_Item;
 
-            float[] v = {0, 0, -128};
-            float[] dest = {0, 0, 0};
+            float[] v = {(float) 0, (float) 0, -128.0F};
+            float[] dest = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorAdd(ent.s.origin, v, dest);
 
             trace_t tr = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs, dest, ent,
@@ -779,8 +778,8 @@ public class GameItems {
                 ent.flags &= ~Defines.FL_POWER_ARMOR;
                 game_import_t
                         .sound(ent, Defines.CHAN_AUTO, game_import_t
-                                .soundindex("misc/power2.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                                .soundindex("misc/power2.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
             } else {
                 int index = ITEM_INDEX(FindItem("cells"));
                 if (0 == ent.client.pers.inventory[index]) {
@@ -791,8 +790,8 @@ public class GameItems {
                 ent.flags |= Defines.FL_POWER_ARMOR;
                 game_import_t
                         .sound(ent, Defines.CHAN_AUTO, game_import_t
-                                .soundindex("misc/power1.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                                .soundindex("misc/power1.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
             }
         }
     };
@@ -885,8 +884,8 @@ public class GameItems {
         dropped.spawnflags = Defines.DROPPED_ITEM;
         dropped.s.effects = item.world_model_flags;
         dropped.s.renderfx = Defines.RF_GLOW;
-        Math3D.VectorSet(dropped.mins, -15, -15, -15);
-        Math3D.VectorSet(dropped.maxs, 15, 15, 15);
+        Math3D.VectorSet(dropped.mins, -15.0F, -15.0F, -15.0F);
+        Math3D.VectorSet(dropped.maxs, 15.0F, 15.0F, 15.0F);
         game_import_t.setmodel(dropped, dropped.item.world_model);
         dropped.solid = Defines.SOLID_TRIGGER;
         dropped.movetype = Defines.MOVETYPE_TOSS;
@@ -895,13 +894,13 @@ public class GameItems {
     
         dropped.owner = ent;
 
-        float[] right = {0, 0, 0};
-        float[] forward = {0, 0, 0};
+        float[] right = {(float) 0, (float) 0, (float) 0};
+        float[] forward = {(float) 0, (float) 0, (float) 0};
         if (ent.client != null) {
 
             Math3D.AngleVectors(ent.client.v_angle, forward, right, null);
-            float[] offset = {0, 0, 0};
-            Math3D.VectorSet(offset, 24, 0, -16);
+            float[] offset = {(float) 0, (float) 0, (float) 0};
+            Math3D.VectorSet(offset, 24.0F, (float) 0, -16.0F);
             Math3D.G_ProjectSource(ent.s.origin, offset, forward, right,
                     dropped.s.origin);
             trace_t trace = game_import_t.trace(ent.s.origin, dropped.mins, dropped.maxs,
@@ -912,11 +911,11 @@ public class GameItems {
             Math3D.VectorCopy(ent.s.origin, dropped.s.origin);
         }
     
-        Math3D.VectorScale(forward, 100, dropped.velocity);
-        dropped.velocity[2] = 300;
+        Math3D.VectorScale(forward, 100.0F, dropped.velocity);
+        dropped.velocity[2] = 300.0F;
     
         dropped.think = drop_make_touchable;
-        dropped.nextthink = GameBase.level.time + 1;
+        dropped.nextthink = GameBase.level.time + 1.0F;
     
         game_import_t.linkentity(dropped);
     
@@ -976,9 +975,9 @@ public class GameItems {
     
         other.client.pers.inventory[ITEM_INDEX(ent.item)]++;
     
-        if (GameBase.deathmatch.value != 0) {
+        if (GameBase.deathmatch.value != (float) 0) {
             if (0 == (ent.spawnflags & Defines.DROPPED_ITEM))
-                SetRespawn(ent, ent.item.quantity);
+                SetRespawn(ent, (float) ent.item.quantity);
             
             if (0 == quantity)
                 ent.item.use.use(other, ent.item);
@@ -1188,7 +1187,7 @@ public class GameItems {
         }
     
         
-        if (GameBase.deathmatch.value != 0) {
+        if (GameBase.deathmatch.value != (float) 0) {
             if (((int) GameBase.dmflags.value & Defines.DF_NO_ARMOR) != 0) {
                 if (item.pickup == Pickup_Armor
                         || item.pickup == Pickup_PowerArmor) {
@@ -1224,20 +1223,20 @@ public class GameItems {
             }
         }
     
-        if (GameBase.coop.value != 0
+        if (GameBase.coop.value != (float) 0
                 && (Lib.strcmp(ent.classname, "key_power_cube") == 0)) {
             ent.spawnflags |= (1 << (8 + GameBase.level.power_cubes));
             GameBase.level.power_cubes++;
         }
     
         
-        if ((GameBase.coop.value != 0)
+        if ((GameBase.coop.value != (float) 0)
                 && (item.flags & Defines.IT_STAY_COOP) != 0) {
             item.drop = null;
         }
     
         ent.item = item;
-        ent.nextthink = GameBase.level.time + 2 * Defines.FRAMETIME;
+        ent.nextthink = GameBase.level.time + 2.0F * Defines.FRAMETIME;
         
         ent.think = droptofloor;
         ent.s.effects = item.world_model_flags;
@@ -1251,7 +1250,7 @@ public class GameItems {
      * QUAKED item_health (.3 .3 1) (-16 -16 -16) (16 16 16)
      */
     public static void SP_item_health(edict_t self) {
-        if (GameBase.deathmatch.value != 0
+        if (GameBase.deathmatch.value != (float) 0
                 && ((int) GameBase.dmflags.value & Defines.DF_NO_HEALTH) != 0) {
             GameUtil.G_FreeEdict(self);
         }
@@ -1266,7 +1265,7 @@ public class GameItems {
      * QUAKED item_health_small (.3 .3 1) (-16 -16 -16) (16 16 16)
      */
     static void SP_item_health_small(edict_t self) {
-        if (GameBase.deathmatch.value != 0
+        if (GameBase.deathmatch.value != (float) 0
                 && ((int) GameBase.dmflags.value & Defines.DF_NO_HEALTH) != 0) {
             GameUtil.G_FreeEdict(self);
             return;
@@ -1283,7 +1282,7 @@ public class GameItems {
      * QUAKED item_health_large (.3 .3 1) (-16 -16 -16) (16 16 16)
      */
     static void SP_item_health_large(edict_t self) {
-        if (GameBase.deathmatch.value != 0
+        if (GameBase.deathmatch.value != (float) 0
                 && ((int) GameBase.dmflags.value & Defines.DF_NO_HEALTH) != 0) {
             GameUtil.G_FreeEdict(self);
             return;
@@ -1299,7 +1298,7 @@ public class GameItems {
      * QUAKED item_health_mega (.3 .3 1) (-16 -16 -16) (16 16 16)
      */
     static void SP_item_health_mega(edict_t self) {
-        if (GameBase.deathmatch.value != 0
+        if (GameBase.deathmatch.value != (float) 0
                 && ((int) GameBase.dmflags.value & Defines.DF_NO_HEALTH) != 0) {
             GameUtil.G_FreeEdict(self);
             return;
@@ -1342,35 +1341,35 @@ public class GameItems {
     
             
             if (ent.item.use != null)
-                other.client.pers.selected_item = other.client.ps.stats[Defines.STAT_SELECTED_ITEM] = (short) ITEM_INDEX(ent.item);
+                other.client.pers.selected_item =  other.client.ps.stats[Defines.STAT_SELECTED_ITEM] = (short) ITEM_INDEX(ent.item);
     
             if (ent.item.pickup == Pickup_Health) {
                 switch (ent.count) {
                     case 2:
                         game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
-                                        .soundindex("items/s_health.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                                        .soundindex("items/s_health.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
                         break;
                     case 10:
                         game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
-                                        .soundindex("items/n_health.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                                        .soundindex("items/n_health.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
                         break;
                     case 25:
                         game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
-                                        .soundindex("items/l_health.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                                        .soundindex("items/l_health.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
                         break;
                     default:
                         game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
-                                        .soundindex("items/m_health.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                                        .soundindex("items/m_health.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
                         break;
                 }
             } else if (ent.item.pickup_sound != null) {
                 game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
-                        .soundindex(ent.item.pickup_sound), 1,
-                        Defines.ATTN_NORM, 0);
+                        .soundindex(ent.item.pickup_sound), 1.0F,
+                        (float) Defines.ATTN_NORM, (float) 0);
             }
         }
     
@@ -1382,7 +1381,7 @@ public class GameItems {
         if (!taken)
             return;
     
-        if (!((GameBase.coop.value != 0) && (ent.item.flags & Defines.IT_STAY_COOP) != 0)
+        if (!((GameBase.coop.value != (float) 0) && (ent.item.flags & Defines.IT_STAY_COOP) != 0)
                 || 0 != (ent.spawnflags & (Defines.DROPPED_ITEM | Defines.DROPPED_PLAYER_ITEM))) {
             if ((ent.flags & Defines.FL_RESPAWN) != 0)
                 ent.flags &= ~Defines.FL_RESPAWN;

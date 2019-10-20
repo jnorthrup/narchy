@@ -29,7 +29,7 @@ public abstract class ScalarReward extends Reward {
     /** target freq */
 
 
-    final MutableTruth goal = new MutableTruth(1, 0.5f);
+    final MutableTruth goal = new MutableTruth(1.0F, 0.5);
 
     /** whether reinforcement tasks are stamped */
     private final boolean stamped;
@@ -39,9 +39,9 @@ public abstract class ScalarReward extends Reward {
     protected transient volatile float reward = NaN;
 
     final MutableTruth RimplAPos =
-        new MutableTruth(1, NAL.truth.EVI_MIN);
+        new MutableTruth(1.0F, NAL.truth.EVI_MIN);
     final MutableTruth RimplANeg =
-        new MutableTruth(0, NAL.truth.EVI_MIN);
+        new MutableTruth((float) 0, NAL.truth.EVI_MIN);
 //    final MutableTruth RimplAMaybe =
 //        new MutableTruth(0.5f, NAL.truth.EVI_MIN);
 //    final MutableTruth RimplRandomP =
@@ -189,7 +189,7 @@ public abstract class ScalarReward extends Reward {
         float cMax = nar.confDefault(GOAL);
         goal.conf(cMax);
 
-        float strength = 1;
+        float strength = 1.0F;
         float cMin = Math.min(NAL.truth.CONF_MAX,
             Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue()) * strength
             //nar.confMin.floatValue() * strength
@@ -200,7 +200,7 @@ public abstract class ScalarReward extends Reward {
 //        RimplRandomP.freq(game.random().nextFloat()); RimplRandomN.freq(game.random().nextFloat());
 
         RimplAPos.freq(goal.freq());
-        RimplANeg.freq(1 - goal.freq());
+        RimplANeg.freq(1.0F - goal.freq());
         RimplAPos.conf(cMin);
         RimplANeg.conf(cMin);
 //        RimplAMaybe.conf(cMin);
@@ -212,13 +212,13 @@ public abstract class ScalarReward extends Reward {
     @Override
     public final double happiness(long start, long end, float dur) {
 
-        double b = rewardFreq(true, start, end, dur);
-        if (b!=b) return NaN;
+        double b = (double) rewardFreq(true, start, end, dur);
+        if (b!=b) return (double) NaN;
 
-        double g = rewardFreq(false, start, end, dur);
-        if (g!=g) return NaN;
+        double g = (double) rewardFreq(false, start, end, dur);
+        if (g!=g) return (double) NaN;
 
-        return (1 - Math.abs(b - g));
+        return (1.0 - Math.abs(b - g));
 
     }
 
@@ -231,7 +231,7 @@ public abstract class ScalarReward extends Reward {
         Truth t = (beliefOrGoal ? c.beliefs() : c.goals()).truth(start, end, dur, nar());
         if (t!=null) {
             float f = t.freq();
-            return negate ? 1 - f : f;
+            return negate ? 1.0F - f : f;
         } else
             return NaN;
     }

@@ -42,19 +42,19 @@ public class SplitMix64Random implements Rand {
     /**
      * 2<sup>53</sup> &minus; 1.
      */
-    private static final long DOUBLE_MASK = (1L << 53) - 1;
+    private static final long DOUBLE_MASK = (1L << 53) - 1L;
     /**
      * 2<sup>-53</sup>.
      */
-    private static final double NORM_53 = 1.0 / (1L << 53);
+    private static final double NORM_53 = 1.0 / (double) (1L << 53);
     /**
      * 2<sup>24</sup> &minus; 1.
      */
-    private static final long FLOAT_MASK = (1L << 24) - 1;
+    private static final long FLOAT_MASK = (1L << 24) - 1L;
     /**
      * 2<sup>-24</sup>.
      */
-    private static final double NORM_24 = 1.0 / (1L << 24);
+    private static final double NORM_24 = 1.0 / (double) (1L << 24);
 
     /**
      * The internal state of the algorithm (a Weyl generator using the {@link #PHI} as increment).
@@ -72,7 +72,7 @@ public class SplitMix64Random implements Rand {
      * @param seed a nonzero seed for the generator (if zero, the generator will be seeded with -1).
      */
     public SplitMix64Random(long seed) {
-        if (seed == 0) seed = -1;
+        if (seed == 0L) seed = -1L;
         setSeed(seed);
     }
 
@@ -144,7 +144,7 @@ public class SplitMix64Random implements Rand {
     //@Override
     public int nextInt(int n) {
         if (n <= 0) throw new IllegalArgumentException();
-        return (int) ((staffordMix13(x += PHI) >>> 1) % n);
+        return (int) ((staffordMix13(x += PHI) >>> 1) % (long) n);
     }
 
     /**
@@ -158,23 +158,23 @@ public class SplitMix64Random implements Rand {
      * @return the next pseudorandom {@code long} value between {@code 0} (inclusive) and {@code n} (exclusive).
      */
     public long nextLong(long n) {
-        if (n <= 0) throw new IllegalArgumentException();
+        if (n <= 0L) throw new IllegalArgumentException();
         
         while (true) {
             long bits = staffordMix13(x += PHI) >>> 1;
             long value = bits % n;
-            if (bits - value + (n - 1) >= 0) return value;
+            if (bits - value + (n - 1L) >= 0L) return value;
         }
     }
 
     //@Override
     public double nextDouble() {
-        return (staffordMix13(x += PHI) & DOUBLE_MASK) * NORM_53;
+        return (double) (staffordMix13(x += PHI) & DOUBLE_MASK) * NORM_53;
     }
 
     //@Override
     public float nextFloat() {
-        return (float) ((staffordMix4Upper32(x += PHI) & FLOAT_MASK) * NORM_24);
+        return (float) ((double) ((long) staffordMix4Upper32(x += PHI) & FLOAT_MASK) * NORM_24);
     }
 
     //@Override
@@ -222,7 +222,7 @@ public class SplitMix64Random implements Rand {
         @Override
         public int nextInt(int n) {
             if (n <= 0) throw new IllegalArgumentException();
-            return (int) ((staffordMix13(x += PHI) >>> 1) % n);
+            return (int) ((staffordMix13(x += PHI) >>> 1) % (long) n);
         }
 
         @Override
@@ -232,12 +232,12 @@ public class SplitMix64Random implements Rand {
 
         @Override
         public double nextDouble() {
-            return (staffordMix13(x += PHI) & DOUBLE_MASK) * NORM_53;
+            return (double) (staffordMix13(x += PHI) & DOUBLE_MASK) * NORM_53;
         }
 
         @Override
         public float nextFloat() {
-            return (float) ((staffordMix4Upper32(x += PHI) & FLOAT_MASK) * NORM_24);
+            return (float) ((double) ((long) staffordMix4Upper32(x += PHI) & FLOAT_MASK) * NORM_24);
         }
 
         @Override
@@ -250,7 +250,7 @@ public class SplitMix64Random implements Rand {
             int i = bytes.length, n = 0;
             while (i != 0) {
                 n = Math.min(i, 8);
-                for (long bits = staffordMix13(x += PHI); n-- != 0; bits >>= 8) bytes[--i] = (byte) bits;
+                for (long bits = staffordMix13(x += PHI); n-- != 0; bits >>= 8L) bytes[--i] = (byte) bits;
             }
         }
 

@@ -8,7 +8,6 @@ import spacegraph.space2d.container.PaintSurface;
 import spacegraph.video.Draw;
 
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 public class CodiCA extends CA {
     private int CAChanged;
@@ -53,7 +52,7 @@ public class CodiCA extends CA {
 
     @Override
     protected void InitCA() {
-        step = 0;
+        step = 0L;
         CAChanged = 1;
         SignalingInited = false;
         uninitialized = true;
@@ -138,7 +137,7 @@ public class CodiCA extends CA {
     @Override
     protected void next() {
 
-        if (step == 0)
+        if (step == 0L)
             InitCA();
         step++;
         if (CAChanged == 1)
@@ -379,8 +378,8 @@ public class CodiCA extends CA {
 
         @Override
         protected void paint(GL2 gl, ReSurface reSurface) {
-            float tw = w()/c.sizeX;
-            float th = h()/c.sizeY;
+            float tw = w()/ (float) c.sizeX;
+            float th = h()/ (float) c.sizeY;
 
 
             for (int x = 0; x < c.sizeX; x++) {
@@ -391,9 +390,9 @@ public class CodiCA extends CA {
                         if (type == 0)
                             continue;
 
-                        float px = x * tw;
-                        float py = y * th;
-                        float pz = z * tw;
+                        float px = (float) x * tw;
+                        float py = (float) y * th;
+                        float pz = (float) z * tw;
 
 
                         float r, g, b;
@@ -406,12 +405,12 @@ public class CodiCA extends CA {
                             case AXON:
                                 r = 0.75f;
                                 g = 0f;
-                                b = 0;
+                                b = (float) 0;
                                 break;
                             case DEND:
                                 r = 0f;
                                 g = 0.75f;
-                                b = 0;
+                                b = (float) 0;
                                 break;
                             default:
                                 throw new UnsupportedOperationException();
@@ -421,7 +420,7 @@ public class CodiCA extends CA {
 //
 //                        }
 
-                        float gate = ca.Gate / 3f;
+                        float gate = (float) ca.Gate / 3f;
                         b += gate * 0.5f;
 
                         gl.glColor4f(r, g, b, 0.5f);
@@ -429,13 +428,13 @@ public class CodiCA extends CA {
 
                         int activation = ca.Activ;
                         if (activation != 0) {
-                            float a = 0.5f + 0.5f * Math.abs(activation) / 32f;
+                            float a = 0.5f + 0.5f * (float) Math.abs(activation) / 32f;
 
                             if (activation > 0)
                                 gl.glColor4f(1f, 0.25f + 0.5f * a, 0f, a);
                             else
                                 gl.glColor4f(0f, 0.25f + 0.5f * a, 1f, a);
-                            Draw.rect(px + tw / 4, py + th / 4, tw / 2, th / 2, gl);
+                            Draw.rect(px + tw / 4.0F, py + th / 4.0F, tw / 2.0F, th / 2.0F, gl);
                         }
 
 
@@ -455,7 +454,7 @@ public class CodiCA extends CA {
                 c.next();
                 return true;
             }
-        }.setFPS(20);
+        }.setFPS(20.0F);
 
         SpaceGraph.window(new CodiSurface(c), 1000, 1000);
     }

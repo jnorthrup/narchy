@@ -14,7 +14,7 @@ public class TanhActivation implements IDifferentiableFunction
 
     @Override
     public double derivative(double y) {
-        return 1 - Util.sqr(Math.tanh(y));
+        return 1.0 - Util.sqr(Math.tanh(y));
     }
 
 

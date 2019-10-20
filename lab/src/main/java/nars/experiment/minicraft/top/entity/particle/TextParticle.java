@@ -21,12 +21,12 @@ public class TextParticle extends Entity {
         this.x = x;
         this.y = y;
         this.col = col;
-        xx = x;
-        yy = y;
-        zz = 2;
+        xx = (double) x;
+        yy = (double) y;
+        zz = 2.0;
         xa = random.nextGaussian() * 0.3;
         ya = random.nextGaussian() * 0.2;
-        za = random.nextFloat() * 0.7 + 2;
+        za = (double) random.nextFloat() * 0.7 + 2.0;
     }
 
     @Override
@@ -38,8 +38,8 @@ public class TextParticle extends Entity {
         xx += xa;
         yy += ya;
         zz += za;
-        if (zz < 0) {
-            zz = 0;
+        if (zz < (double) 0) {
+            zz = (double) 0;
             za *= -0.5;
             xa *= 0.6;
             ya *= 0.6;

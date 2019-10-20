@@ -34,15 +34,15 @@ public class RecycledSummaryStatistics implements FloatProcedure, StatisticalSum
 
     @Override
     public final void value(float each) {
-        accept(each);
+        accept((double) each);
     }
 
     public final void clear() {
-        count = 0;
-        sSum = 0;
-        mean = 0;
-        min = Float.POSITIVE_INFINITY;
-        max = Float.NEGATIVE_INFINITY;
+        count = 0L;
+        sSum = (double) 0;
+        mean = (double) 0;
+        min = (double) Float.POSITIVE_INFINITY;
+        max = (double) Float.NEGATIVE_INFINITY;
     }
     /**
      * Records another value into the summary information.
@@ -57,7 +57,7 @@ public class RecycledSummaryStatistics implements FloatProcedure, StatisticalSum
         double tmpMean = mean;
 
         double delta = value - tmpMean;
-        mean += delta / ++count;
+        mean += delta / (double) ++count;
         sSum += delta * (value - mean);
 
         
@@ -101,7 +101,7 @@ public class RecycledSummaryStatistics implements FloatProcedure, StatisticalSum
      */
     @Override
     public final double getSum() {
-        return (float) getMean() * count;
+        return (double) ((float) getMean() * (float) count);
 
 
 
@@ -174,10 +174,10 @@ public class RecycledSummaryStatistics implements FloatProcedure, StatisticalSum
         double min = getMin();
         double max = getMax();
         double range = max - min;
-        if (range < Float.MIN_NORMAL*64f /* estimate of an FP epsilon */)
+        if (range < (double) (Float.MIN_NORMAL * 64f) /* estimate of an FP epsilon */)
             return 0.5f;
         else
-            return (float) ((n - min) / (range));
+            return (float) (((double) n - min) / (range));
     }
 
     /**
@@ -192,9 +192,9 @@ public class RecycledSummaryStatistics implements FloatProcedure, StatisticalSum
     public double getStandardDeviation() {
         double v = getVariance();
         if (v==v)
-            return (float) Math.sqrt(v);
+            return (double) (float) Math.sqrt(v);
         else
-            return Float.NaN;
+            return (double) Float.NaN;
     }
 
     @Override
@@ -205,8 +205,8 @@ public class RecycledSummaryStatistics implements FloatProcedure, StatisticalSum
     @Override
     public double getVariance() {
         long c = count;
-        if (c == 0) return Float.NaN;
-        return sSum / (c);
+        if (c == 0L) return (double) Float.NaN;
+        return sSum / (double) (c);
     }
 
     /** returns the proportion that is lies between min and max. if min==max, then returns 0.  clips to 0..1.0 */
@@ -226,8 +226,8 @@ public class RecycledSummaryStatistics implements FloatProcedure, StatisticalSum
 
     public static float norm(float x, double min, double max) {
         double r = max - min;
-        if (r < Double.MIN_NORMAL) return 0;
-        return Util.unitize( (float)((x - min) / r) );
+        if (r < Double.MIN_NORMAL) return (float) 0;
+        return Util.unitize( (float)(((double) x - min) / r) );
     }
 
 

@@ -149,7 +149,7 @@ public class EjmlOps {
 	public static DMatrixRMaj colMean(DMatrixRMaj y, int i) {
         DMatrixRMaj colmean = new DMatrixRMaj(1,y.numCols);
 		sumCols(y,colmean);
-		divide(colmean, y.numRows);
+		divide(colmean, (double) y.numRows);
 		return colmean;
 	}
 

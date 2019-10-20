@@ -11,7 +11,7 @@ public class FloatNormalized implements FloatSupplier {
     }
 
     public FloatNormalized(FloatSupplier in, float minStart, float maxStart) {
-        this(in, minStart, maxStart, minStart!=0 && Math.signum(minStart) != Math.signum(maxStart) );
+        this(in, minStart, maxStart, minStart!= (float) 0 && Math.signum(minStart) != Math.signum(maxStart) );
     }
 
     public FloatNormalized(FloatSupplier in, float minStart, float maxStart, boolean polar) {

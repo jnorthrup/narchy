@@ -109,11 +109,11 @@ public final class Cbuf {
 
         String build = "";
         for (i = 0; i < text.length(); i++) {
-            if (text.charAt(i) == '+') {
+            if ((int) text.charAt(i) == (int) '+') {
                 i++;
 
                 int j;
-                for (j = i; j < text.length() && (text.charAt(j) != '+') && (text.charAt(j) != '-'); j++);
+                for (j = i; j < text.length() && ((int) text.charAt(j) != (int) '+') && ((int) text.charAt(j) != (int) '-'); j++);
 
                 build += text.substring(i, j);
                 build += "\n";
@@ -161,16 +161,16 @@ public final class Cbuf {
             int i;
 
             for (i = 0; i < Globals.cmd_text.cursize; i++) {
-                if (text[i] == '"')
+                if ((int) text[i] == (int) '"')
                     quotes++;
-                if (quotes % 2 == 0 && text[i] == ';')
+                if (quotes % 2 == 0 && (int) text[i] == (int) ';')
                     break; 
-                if (text[i] == '\n')
+                if ((int) text[i] == (int) '\n')
                     break;
             }
 
             System.arraycopy(text, 0, line, 0, i);
-            line[i] = 0;
+            line[i] = (byte) 0;
 
             
             
@@ -187,7 +187,7 @@ public final class Cbuf {
 
                 System.arraycopy(text, i, tmp, 0, Globals.cmd_text.cursize);
                 System.arraycopy(tmp, 0, text, 0, Globals.cmd_text.cursize);
-                text[Globals.cmd_text.cursize] = '\0';
+                text[Globals.cmd_text.cursize] = (byte) '\0';
 
             }
 
@@ -228,7 +228,7 @@ public final class Cbuf {
     public static void CopyToDefer() {
         System.arraycopy(Globals.cmd_text_buf, 0, Globals.defer_text_buf, 0,
                 Globals.cmd_text.cursize);
-        Globals.defer_text_buf[Globals.cmd_text.cursize] = 0;
+        Globals.defer_text_buf[Globals.cmd_text.cursize] = (byte) 0;
         Globals.cmd_text.cursize = 0;
     }
 
@@ -237,7 +237,7 @@ public final class Cbuf {
      */
     public static void InsertFromDefer() {
         InsertText(new String(Globals.defer_text_buf).trim());
-        Globals.defer_text_buf[0] = 0;
+        Globals.defer_text_buf[0] = (byte) 0;
     }
 
 }

@@ -59,14 +59,14 @@ public class RdpApplet extends Applet {
         g.setColor(new Color(0x000000));
         int width = g.getFontMetrics().stringWidth(
                 "Launching properJavaRDP session...");
-        int x = (int) (g.getClipBounds().getWidth() / 2) - (width / 2);
-        int y = (int) (g.getClipBounds().getHeight() / 2);
+        int x = (int) (g.getClipBounds().getWidth() / 2.0) - (width / 2);
+        int y = (int) (g.getClipBounds().getHeight() / 2.0);
         if (!redirectOutput)
             g.drawString("Launching properJavaRDP session...", x, y);
         width = g.getFontMetrics().stringWidth(
                 "Connect to:" + getParameter("server"));
-        x = (int) (g.getClipBounds().getWidth() / 2) - (width / 2);
-        y = (int) (g.getClipBounds().getHeight() / 2) + 20;
+        x = (int) (g.getClipBounds().getWidth() / 2.0) - (width / 2);
+        y = (int) (g.getClipBounds().getHeight() / 2.0) + 20;
         if (!redirectOutput)
             g.drawString("Connecting to:" + getParameter("server"), x, y);
     }

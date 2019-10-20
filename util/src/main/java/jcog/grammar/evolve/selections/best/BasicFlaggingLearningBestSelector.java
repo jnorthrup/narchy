@@ -52,7 +52,7 @@ public class BasicFlaggingLearningBestSelector implements BestSelector {
             FinalSolution bestOfJob = jobEvolutionTrace.getFinalGeneration().get(0);
             double accuracy = bestOfJob.getLearningPerformances().get("flag accuracy");
             int bestJobLength = bestOfJob.getSolution().length();
-            accuracy = (Double.isNaN(accuracy))?0:accuracy;
+            accuracy = (Double.isNaN(accuracy))? (double) 0 :accuracy;
             double individualIndex = accuracy;
             if ((individualIndex > bestIndividualIndex) || ((individualIndex == bestIndividualIndex) && (bestLength > bestJobLength))) {
                     bestLength = bestJobLength;

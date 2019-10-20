@@ -353,9 +353,9 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
         }
 
 
-        if ((keychar & 0xff00) == 0) {
+        if (((int) keychar & 0xff00) == 0) {
             try {
-                out.write(keychar);
+                out.write((int) keychar);
                 out.flush();
             } catch (Exception ee) {
             }
@@ -368,7 +368,7 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
     }
 
     public void keyTyped(char keychar) {
-        if ((keychar & 0xff00) != 0) {
+        if (((int) keychar & 0xff00) != 0) {
             char[] foo = new char[1];
             foo[0] = keychar;
             try {

@@ -15,14 +15,14 @@ public class SineString extends KarplusStrongString {
         clear();
         int capacity = buffer.capacity();
         for (int i = 0; i < capacity; i++) {
-            buffer.enqueue((Math.sin(i * 2 * Math.PI / capacity)) * getMaxVolume());
+            buffer.enqueue((Math.sin((double) i * 2.0 * Math.PI / (double) capacity)) * getMaxVolume());
         }
     }
 
     public void tic() {
         double first = buffer.dequeue();
         double second = buffer.peek();
-        double last = (first + second) * (deltaVolume / 2);
+        double last = (first + second) * (deltaVolume / 2.0);
 		buffer.enqueue(last * deltaVolume);
     }
 

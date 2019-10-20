@@ -69,13 +69,13 @@ public abstract class DelayEvent extends UGen {
      * Reset timer to zero.
      */
     private void reset() {
-        count = 0;
+        count = 0L;
     }
 
     @Override
     public void gen() {
         if (sampleDelay - count > threshold) {
-            count += bufferSize;
+            count = count + (long) bufferSize;
         } else {
             trigger();
         }
@@ -93,7 +93,7 @@ public abstract class DelayEvent extends UGen {
      * @return the sample delay in milliseconds.
      */
     public double getSampleDelay() {
-        return context.samplesToMs(sampleDelay);
+        return context.samplesToMs((double) sampleDelay);
     }
 
     /**
@@ -104,7 +104,7 @@ public abstract class DelayEvent extends UGen {
      * @return This DelayEvent instance.
      */
     public DelayEvent setSampleDelay(float sampleDelay) {
-        this.sampleDelay = (long) context.msToSamples(sampleDelay);
+        this.sampleDelay = (long) context.msToSamples((double) sampleDelay);
         return this;
     }
 
@@ -114,7 +114,7 @@ public abstract class DelayEvent extends UGen {
      * @return The count in milliseconds.
      */
     public double getCount() {
-        return context.samplesToMs(count);
+        return context.samplesToMs((double) count);
     }
 
     /**
@@ -138,7 +138,7 @@ public abstract class DelayEvent extends UGen {
      */
     private DelayEvent triggeredAfter(boolean f) {
         triggerAfter = f;
-        threshold = f ? 0 : bufferSize;
+        threshold = (long) (f ? 0 : bufferSize);
         return this;
     }
 

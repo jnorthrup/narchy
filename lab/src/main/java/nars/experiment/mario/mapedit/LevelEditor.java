@@ -68,10 +68,10 @@ public class LevelEditor extends JFrame implements ActionListener {
 
             int id = i;
             bitmapCheckboxes[i].addActionListener(arg0 -> {
-                int bm = Level.TILE_BEHAVIORS[tilePicker.pickedTile & 0xff] & 0xff;
+                int bm = (int) Level.TILE_BEHAVIORS[(int) tilePicker.pickedTile & 0xff] & 0xff;
                 bm &= 255 - (1 << id);
                 if (bitmapCheckboxes[id].isSelected()) bm |= (1 << id);
-                Level.TILE_BEHAVIORS[tilePicker.pickedTile & 0xff] = (byte) bm;
+                Level.TILE_BEHAVIORS[(int) tilePicker.pickedTile & 0xff] = (byte) bm;
 
                 try {
                     Level.saveBehaviors(new DataOutputStream(new FileOutputStream("tiles.dat")));
@@ -116,7 +116,7 @@ public class LevelEditor extends JFrame implements ActionListener {
     }
 
     public void setPickedTile(byte pickedTile) {
-        int bm = Level.TILE_BEHAVIORS[pickedTile & 0xff] & 0xff;
+        int bm = (int) Level.TILE_BEHAVIORS[(int) pickedTile & 0xff] & 0xff;
 
         for (int i = 0; i < 8; i++) {
             bitmapCheckboxes[i].setSelected((bm & (1 << i)) > 0);

@@ -1077,7 +1077,7 @@ class MJCellUI extends Frame {
 		
 		mjb.stop();
 		try {
-			Thread.sleep(200);
+			Thread.sleep(200L);
 		} catch (InterruptedException e) {
 		}
 
@@ -1105,9 +1105,9 @@ class MJCellUI extends Frame {
 		ta.append("Cycle: " + mjb.Cycle + '\n');
 		ta.append("Population: " + mjb.Population + '\n');
 
-        double dTmp = 100.0 * mjb.Population
-				/ (mjb.UnivSize.x * mjb.UnivSize.y);
-		dTmp = (Math.round(dTmp * 100.0) / 100.0);
+        double dTmp = 100.0 * (double) mjb.Population
+				/ (double) (mjb.UnivSize.x * mjb.UnivSize.y);
+		dTmp = ((double) Math.round(dTmp * 100.0) / 100.0);
 		ta.append("Density: " + dTmp + "%\n");
 		ta.append("\nDistribution:\n");
 		for (int i = 0; i < mjb.StatesCount; i++) {
@@ -1142,7 +1142,7 @@ class MJCellUI extends Frame {
 		
 		mjb.stop();
 		try {
-			Thread.sleep(200);
+			Thread.sleep(200L);
 		} catch (InterruptedException e) {
 		}
 

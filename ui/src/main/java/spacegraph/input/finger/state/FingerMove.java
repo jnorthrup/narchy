@@ -15,7 +15,7 @@ public abstract class FingerMove extends Dragging {
 
     /** for locking specific axes */
     FingerMove(int button, boolean xAxis, boolean yAxis) {
-        this(button, xAxis ? 1 : 0, yAxis ? 1 : 0);
+        this(button, (float) (xAxis ? 1 : 0), (float) (yAxis ? 1 : 0));
         assert(xAxis || yAxis);
     }
 
@@ -44,8 +44,8 @@ public abstract class FingerMove extends Dragging {
         if (next !=null) {
 
 
-            float tx = xSpeed != 0 ? (next.x - start.x) * xSpeed : 0;
-            float ty = ySpeed != 0 ? (next.y - start.y) * ySpeed : 0;
+            float tx = xSpeed != (float) 0 ? (next.x - start.x) * xSpeed : (float) 0;
+            float ty = ySpeed != (float) 0 ? (next.y - start.y) * ySpeed : (float) 0;
 
             if (incremental())
                 start.set(next);

@@ -124,10 +124,10 @@ public class RevoluteJointDef extends JointDef {
     public RevoluteJointDef(Body2D b1, Body2D b2) {
         this();
         bodyA = b1;
-        localAnchorA.set(0,0);
+        localAnchorA.set((float) 0, (float) 0);
         bodyB = b2;
-        localAnchorB.set(0,0);
-        referenceAngle = 0;
+        localAnchorB.set((float) 0, (float) 0);
+        referenceAngle = (float) 0;
     }
 
     /**

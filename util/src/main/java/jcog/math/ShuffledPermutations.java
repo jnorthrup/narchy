@@ -38,7 +38,7 @@ public class ShuffledPermutations extends Permutations {
 
     @Override
     public final int permute(int index) {
-        return ind[shuffle[index]];
+        return ind[(int) shuffle[index]];
     }
 
     int[] nextPermute(int[] target) {

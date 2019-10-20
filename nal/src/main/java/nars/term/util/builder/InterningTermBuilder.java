@@ -103,7 +103,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
                 c = statements;
             } else {
                 c = newOpCache(o.str,
-                        cacheSizePerOp, x -> newCompound(ops[x.op], x.dt, x.subs(), x.key));
+                        cacheSizePerOp, x -> newCompound(ops[(int) x.op], x.dt, x.subs(), x.key));
             }
             terms[i] = c;
         }
@@ -147,7 +147,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     private Term compoundInterned(Op op, int dt, Term[] u) {
         InternedCompoundByComponents x = new Intermed.InternedCompoundByComponentsArray(op, dt, u);
-        return terms[x.op].apply(x);
+        return terms[(int) x.op].apply(x);
     }
 
     @Override
@@ -250,7 +250,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     private boolean internable(Op op) {
-        return internable(op.id);
+        return internable((int) op.id);
     }
 
     private boolean internable(int opID) {
@@ -313,7 +313,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
                 }
             }
 
-            return this.terms[op.id].apply(new Intermed.InternedCompoundByComponentsArray(op, dt, subject, predicate)).negIf(negate);
+            return this.terms[(int) op.id].apply(new Intermed.InternedCompoundByComponentsArray(op, dt, subject, predicate)).negIf(negate);
 
             //return statements.apply(InternedCompound.get(op, dt, subject, predicate));
         }
@@ -330,7 +330,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     private Term _statement(Intermed.InternedCompoundByComponents c) {
         Term[] s = c.subs();
-        return super.statement(Op.the(c.op), c.dt, s[0], s[1]);
+        return super.statement(Op.the((int) c.op), c.dt, s[0], s[1]);
     }
 
     /** compound1 does not traverse the subterms interning pathway so an explicit resolution step for the only argument is applied here */
@@ -351,7 +351,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         u = resolve(ConjBuilder.preSort(dt,u));
 
         return u.length > 1 && internable(u) ?
-                terms[CONJ.id].apply(
+                terms[(int) CONJ.id].apply(
                         new Intermed.InternedCompoundByComponentsArray(CONJ, dt, u)) :
                 super.conj(true, dt, u);
     }

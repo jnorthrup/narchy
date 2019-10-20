@@ -7,7 +7,7 @@ public class ViolinString extends VariableDeltaString {
 
     public ViolinString(double frequency) {
         super(frequency);
-        setDeltaVolume(1);
+        setDeltaVolume(1.0);
         setMaxVolume(0.1);
         setInitialVolume(0.002);
     }
@@ -16,7 +16,7 @@ public class ViolinString extends VariableDeltaString {
     public void pluck() {
         clear();
         for (int i = 0; i < buffer.capacity(); i++) {
-            buffer.enqueue((Math.random() - 0.5) * 2 * getInitialVolume());
+            buffer.enqueue((Math.random() - 0.5) * 2.0 * getInitialVolume());
         }
         resetTics();
         setDeltaVolume(1.2);
@@ -28,7 +28,7 @@ public class ViolinString extends VariableDeltaString {
     public void tic() {
         double first = buffer.dequeue();
         double second = buffer.peek();
-        double last = (first + second) * (deltaVolume / 2);
+        double last = (first + second) * (deltaVolume / 2.0);
         last = checkMax(last);
         buffer.enqueue(last);
         oneTic();

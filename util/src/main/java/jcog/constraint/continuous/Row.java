@@ -13,7 +13,7 @@ class Row {
     public final Map<Symbol, Double> cells;
 
     public Row() {
-        this(0);
+        this((double) 0);
     }
 
     public Row(double constant) {

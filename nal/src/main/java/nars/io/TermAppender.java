@@ -8,7 +8,6 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 
 import java.io.IOException;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 import static nars.Op.*;
@@ -183,7 +182,7 @@ public enum TermAppender {
 
         Term sub = neg.unneg();
 
-        if ((sub.opID() == CONJ.id) && sub.hasAny(NEG.bit)) {
+        if ((sub.opID() == (int) CONJ.id) && sub.hasAny(NEG.bit)) {
             int dt;
             if ((((dt = sub.dt()) == DTERNAL) || (dt == XTERNAL))) {
                 Subterms cxx = sub.subterms();

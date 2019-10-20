@@ -83,7 +83,7 @@ public class MovieGenerator {
         formatter.setGroupingUsed(false);
 
 
-        String indexString = formatter.format(pngIndex);
+        String indexString = formatter.format((long) pngIndex);
 
 
         String filename = baseFilename + indexString + ".png";

@@ -29,7 +29,7 @@ import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
 
-    private static final short MOVE_AND_RESIZE_BUTTON = 1;
+    private static final short MOVE_AND_RESIZE_BUTTON = (short) 1;
 
 
     /* render context */
@@ -40,14 +40,14 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
     private final Zoomed content;
 
-    private final Fingering windowResize = new FingerResizeWindow(this, MOVE_AND_RESIZE_BUTTON) {
+    private final Fingering windowResize = new FingerResizeWindow(this, (int) MOVE_AND_RESIZE_BUTTON) {
         @Override
         public Surface touchNext(Surface prev, Surface next) {
             return layers;
         }
     };
 
-    private final Fingering windowMove = new FingerMoveWindow(MOVE_AND_RESIZE_BUTTON) {
+    private final Fingering windowMove = new FingerMoveWindow((int) MOVE_AND_RESIZE_BUTTON) {
 
         @Override
         protected JoglDisplay window() {
@@ -56,8 +56,8 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
         @Override
         public void move(float dx, float dy) {
-            int nx = Math.round(windowStartX + dx);
-            int ny = Math.round(windowStartY - dy);
+            int nx = Math.round((float) windowStartX + dx);
+            int ny = Math.round((float) windowStartY - dy);
             if (nx != windowStartX || ny != windowStartY)
                 video.setPosition(nx, ny);
         }
@@ -77,7 +77,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
         public Surface finger(Finger finger) {
 
             //check windowResize first since it is a more exclusive condition than windowMove
-            if (finger.pressed(MOVE_AND_RESIZE_BUTTON)) {
+            if (finger.pressed((int) MOVE_AND_RESIZE_BUTTON)) {
                 if (/*finger.tryFingering(windowResize) || */finger.test(windowMove))
                     return null;
             }
@@ -87,9 +87,9 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
         @Override
         protected void renderContent(ReSurface rr) {
-            rr.pw = video.getWidth();
-            rr.ph = video.getHeight();
-            rr.x1 = rr.y1 = 0;
+            rr.pw = (float) video.getWidth();
+            rr.ph = (float) video.getHeight();
+            rr.x1 = rr.y1 = (float) 0;
             rr.x2 = w();
             rr.y2 = h();
             super.renderContent(rr);
@@ -124,7 +124,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
                 JoglWindow w = video;
                 int W = w.getWidth();
                 int H = w.getHeight();
-                layers.resize(W, H);
+                layers.resize((float) W, (float) H);
             }
 
             @Override
@@ -186,10 +186,10 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
         g.glMatrixMode(GL_PROJECTION);
         g.glLoadIdentity();
 
-        g.glOrtho(0, w, 0, h, -1.5, 1.5);
+        g.glOrtho((double) 0, (double) w, (double) 0, (double) h, -1.5, 1.5);
         g.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
 
-        rendering.start(g, w, h, dtS, video.renderFPS);
+        rendering.start(g, (float) w, (float) h, dtS, video.renderFPS);
 
         layers.renderIfVisible(rendering);
 

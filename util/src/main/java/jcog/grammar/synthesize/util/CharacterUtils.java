@@ -18,19 +18,19 @@ import java.util.*;
 
 public class CharacterUtils {
     public static boolean isNewlineOrTabCharacter(char c) {
-        return c == '\n' || c == '\t';
+        return (int) c == (int) '\n' || (int) c == (int) '\t';
     }
 
     public static boolean isNumeric(char c) {
-        return c >= '0' && c <= '9';
+        return (int) c >= (int) '0' && (int) c <= (int) '9';
     }
 
     public static boolean isAlphaUpperCase(char c) {
-        return c >= 'A' && c <= 'Z';
+        return (int) c >= (int) 'A' && (int) c <= (int) 'Z';
     }
 
     public static boolean isAlphaLowerCase(char c) {
-        return c >= 'a' && c <= 'z';
+        return (int) c >= (int) 'a' && (int) c <= (int) 'z';
     }
 
     public static boolean isAlpha(char c) {
@@ -46,11 +46,11 @@ public class CharacterUtils {
     }
 
     public static boolean isSingleQuote(char c) {
-        return c == 39;
+        return (int) c == 39;
     }
 
     public static boolean isDoubleQuote(char c) {
-        return c == 34;
+        return (int) c == 34;
     }
 
     public static class CharacterGeneralization {
@@ -76,7 +76,7 @@ public class CharacterUtils {
     private static final List<CharacterGeneralization> generalizations = new ArrayList<>();
 
     static {
-        for (char c = 0; c < 128; c++) {
+        for (char c = (char) 0; (int) c < 128; c++) {
             allCharacters.add(c);
             if (isNumeric(c)) {
                 numericCharacters.add(c);

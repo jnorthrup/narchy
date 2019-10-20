@@ -71,7 +71,7 @@ public class Gridding extends MutableListContainer {
 
     public boolean isGrid() {
         float a = aspect;
-        return a!=0 && a!=Float.POSITIVE_INFINITY;
+        return a!= (float) 0 && a!=Float.POSITIVE_INFINITY;
     }
 
     public Gridding aspect(float gridAspect) {
@@ -107,7 +107,7 @@ public class Gridding extends MutableListContainer {
 
 
 
-        if (a!=0 && Float.isFinite(a)) {
+        if (a!= (float) 0 && Float.isFinite(a)) {
 
 
             float h = h();
@@ -118,23 +118,23 @@ public class Gridding extends MutableListContainer {
             float actualAspect = h / w;
 
             int x;
-            int s = (int) Math.ceil((float)Math.sqrt(n));
+            int s = (int) Math.ceil((double) (float) Math.sqrt((double) n));
             if (actualAspect/a > 1f) {
-                x = Math.round(lerp((actualAspect)/n, s, 1f));
+                x = Math.round(lerp((actualAspect)/ (float) n, (float) s, 1f));
             } else if (actualAspect/a < 1f) {
                 
-                x = Math.round(lerp(1f-(1f/actualAspect)/n, n, (float)s));
+                x = Math.round(lerp(1f-(1f/actualAspect)/ (float) n, (float) n, (float)s));
             } else {
                 x = s;
             }
 
             x = Math.max(1, x);
-            int y = (int)Math.max(1, Math.ceil((float)n / x));
+            int y = (int)Math.max(1.0, Math.ceil((double) ((float) n / (float) x)));
 
             assert(y*x >= s);
 
             if (y==1) {
-                a = 0; 
+                a = (float) 0;
             } else if (x == 1) {
                 a = Float.POSITIVE_INFINITY; 
             } else {
@@ -143,7 +143,7 @@ public class Gridding extends MutableListContainer {
             }
         }
 
-        if (a == 0) {
+        if (a == (float) 0) {
             
             layoutGrid(children, n, 1, margin);
         } else /*if (!Float.isFinite(aa))*/ {
@@ -159,13 +159,13 @@ public class Gridding extends MutableListContainer {
 
         float hm = margin/2f;
 
-        float mx = (1 + 1 + nx/2f) * hm;
-        float my = (1 + 1 + ny/2f) * hm;
+        float mx = (1.0F + 1.0F + (float) nx /2f) * hm;
+        float my = (1.0F + 1.0F + (float) ny /2f) * hm;
 
-        float dx = nx > 0 ? (1f-hm)/nx : 0;
-        float dxc = (1f - mx)/nx;
-        float dy = ny > 0 ? (1f-hm)/ny : 0;
-        float dyc = (1f - my)/ny;
+        float dx = nx > 0 ? (1f-hm)/ (float) nx : (float) 0;
+        float dxc = (1f - mx)/ (float) nx;
+        float dy = ny > 0 ? (1f-hm)/ (float) ny : (float) 0;
+        float dyc = (1f - my)/ (float) ny;
 
 
         int n = children.length;
@@ -178,7 +178,7 @@ public class Gridding extends MutableListContainer {
 
             float px = hm;
 
-            float py = (((ny-1)-y) * dy) + hm;
+            float py = ((float) ((ny - 1) - y) * dy) + hm;
             float y1 = py * H;
 
             for (int x = 0; x < nx; x++) {

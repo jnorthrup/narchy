@@ -58,7 +58,7 @@ public class RLBooster  {
     private final WritableTensor history;
     private final boolean nothingAction;
 
-    public double lastReward = Float.NaN;
+    public double lastReward = (double) Float.NaN;
     public float[] actionFeedback = null;
 
 //    public RLBooster(NAgent env, IntIntToObjectFunc<Agent> rl, int actionDiscretization) {
@@ -81,7 +81,7 @@ public class RLBooster  {
         this.env = g;
 
 
-        conf.set(Util.lerp(conf.get() /* HACK */, 2 * g.nar().confMin.floatValue(), g.nar().confDefault(GOAL)));
+        conf.set(Util.lerp(conf.get() /* HACK */, 2.0F * g.nar().confMin.floatValue(), g.nar().confDefault(GOAL)));
 
 
         boolean includeActions = true;
@@ -134,7 +134,7 @@ public class RLBooster  {
 
         for (Term s : inputs) {
             Concept c = n.concept(s);
-            Truth t = c!=null ? c.beliefs().truth(start, end, Tense.occToDT((end-start)), n) : null;
+            Truth t = c!=null ? c.beliefs().truth(start, end, (float) Tense.occToDT((end - start)), n) : null;
             input[i++] = t!=null ? t.freq() : valueMissing();
         }
 
@@ -163,17 +163,17 @@ public class RLBooster  {
             //y = (y - 0.5f) * 2; //polarize
             if (actionDiscretization > 2) for (int d = 0; d < actionDiscretization - 1; d++) {
                 //float yd = ((((float)d)/(actionDiscretization-1)) - 0.5f)*2;
-                float yd = ((float) (d)) / (actionDiscretization - 1);
-                feedback[k++] = y * Util.sqr(1 - Math.abs(yd - y)); //window
+                float yd = ((float) (d)) / (float) (actionDiscretization - 1);
+                feedback[k++] = y * Util.sqr(1.0F - Math.abs(yd - y)); //window
             }
             else feedback[k++] = y;
         }
 
         float feedbackSum = Util.sum(feedback);
-        Util.normalize(feedback, 0, feedbackSum);
+        Util.normalize(feedback, (float) 0, feedbackSum);
         if (this.nothingAction) {
-            feedback[feedback.length-1] = (1-Util.max(feedback))*1f/(1+Util.variance(feedback)); //HACK TODO estimate better
-            Util.normalize(feedback, 0, Util.sum(feedback)); //normalize again
+            feedback[feedback.length-1] = (1.0F -Util.max(feedback))*1f/(1.0F +Util.variance(feedback)); //HACK TODO estimate better
+            Util.normalize(feedback, (float) 0, Util.sum(feedback)); //normalize again
         }
 
         return feedback;
@@ -190,7 +190,7 @@ public class RLBooster  {
     public void accept(Game g) {
         NAR nar = env.nar();
 
-        double reward = ((HAPPINESS.valueOf((float)env.happiness()) - 0.5f) * 2);
+        double reward = (double) ((HAPPINESS.valueOf((float) env.happiness()) - 0.5f) * 2.0F);
 
         //System.out.println(reward);
         lastReward = reward;
@@ -232,9 +232,9 @@ public class RLBooster  {
             What W = w.x;
             for (int o = 0; o < actions.length; o++) {
                 float freq = (o == A) ?
-                    ((actionDiscretization > 2) ? (((float) 1+level) / (actionDiscretization - 1)) : 1)
+                    ((actionDiscretization > 2) ? (((float) 1+ (float) level) / (float) (actionDiscretization - 1)) : 1.0F)
                     :
-                    ((actionDiscretization > 2) ? Float.NaN : 0);
+                    ((actionDiscretization > 2) ? Float.NaN : (float) 0);
 
 //                System.out.println(actions[o].term() + " " + freq);
 

@@ -10,7 +10,6 @@ import nars.term.Term;
 import java.util.Arrays;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
 
 import static nars.Op.NEG;
 
@@ -73,7 +72,7 @@ public abstract class RemappedSubterms<S extends Subterms> extends MappedSubterm
             byte[] q = mx.map, r;
 
             //palindrome or repeats?
-            if ((q.length==2 && q[0]==q[1]) || (q.length==3 && q[0]==q[2]) || (q.length==4 && q[0] == q[3] && q[1]==q[2]) /* ... */) {
+            if ((q.length==2 && (int) q[0] == (int) q[1]) || (q.length==3 && (int) q[0] == (int) q[2]) || (q.length==4 && (int) q[0] == (int) q[3] && (int) q[1] == (int) q[2]) /* ... */) {
                 //obvious palindrome/repeats
                 return x;
             } else {
@@ -232,7 +231,7 @@ public abstract class RemappedSubterms<S extends Subterms> extends MappedSubterm
         protected ReversedSubterms(Subterms base) {
             super(base);
             size = (byte) base.subs();
-            assert(size > 1);
+            assert((int) size > 1);
             this.hash = Subterms.hash(this);
         }
 
@@ -244,12 +243,12 @@ public abstract class RemappedSubterms<S extends Subterms> extends MappedSubterm
 
         @Override
         public int subs() {
-            return size;
+            return (int) size;
         }
 
         @Override
         public int subMap(int i) {
-            return (size) - i;
+            return (int) (size) - i;
         }
     }
 
@@ -277,12 +276,12 @@ public abstract class RemappedSubterms<S extends Subterms> extends MappedSubterm
 
         @Override
         protected final boolean wrapsNeg() {
-            return negs>0;
+            return (int) negs >0;
         }
 
         @Override
         protected final int negs() {
-            return negs;
+            return (int) negs;
         }
 
 
@@ -293,7 +292,7 @@ public abstract class RemappedSubterms<S extends Subterms> extends MappedSubterm
 
         @Override
         public final int subMap(int i) {
-            return map[i];
+            return (int) map[i];
         }
 
 

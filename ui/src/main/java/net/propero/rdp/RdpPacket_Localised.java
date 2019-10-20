@@ -70,7 +70,7 @@ public class RdpPacket_Localised extends RdpPacket {
             throw new ArrayIndexOutOfBoundsException(
                     "memory accessed out of Range!");
         }
-        return bb.get(where) & 0xff; 
+        return (int) bb.get(where) & 0xff;
     }
 
     
@@ -80,7 +80,7 @@ public class RdpPacket_Localised extends RdpPacket {
             throw new ArrayIndexOutOfBoundsException(
                     "memory accessed out of Range!");
         }
-        return bb.get() & 0xff; 
+        return (int) bb.get() & 0xff;
     }
 
     @Override
@@ -138,7 +138,7 @@ public class RdpPacket_Localised extends RdpPacket {
         dst.setPosition(dstOffset);
         setPosition(srcOffset);
         for (int i = 0; i < len; i++)
-            dst.set8(bb.get());
+            dst.set8((int) bb.get());
         dst.setPosition(olddstpos);
         setPosition(oldpos);
     }
@@ -186,13 +186,13 @@ public class RdpPacket_Localised extends RdpPacket {
     @Override
     public int getLittleEndian16(int where) {
         bb.order(ByteOrder.LITTLE_ENDIAN);
-        return bb.getShort(where);
+        return (int) bb.getShort(where);
     }
 
     @Override
     public int getLittleEndian16() {
         bb.order(ByteOrder.LITTLE_ENDIAN);
-        return bb.getShort();
+        return (int) bb.getShort();
     }
 
     @Override
@@ -204,13 +204,13 @@ public class RdpPacket_Localised extends RdpPacket {
     @Override
     public int getBigEndian16(int where) {
         bb.order(ByteOrder.BIG_ENDIAN);
-        return bb.getShort(where);
+        return (int) bb.getShort(where);
     }
 
     @Override
     public int getBigEndian16() {
         bb.order(ByteOrder.BIG_ENDIAN);
-        return bb.getShort();
+        return (int) bb.getShort();
     }
 
     @Override

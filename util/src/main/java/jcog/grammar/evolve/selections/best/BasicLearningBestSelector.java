@@ -54,9 +54,9 @@ public class BasicLearningBestSelector implements BestSelector {
             double precision = bestOfJob.getLearningPerformances().get("match precision");
             double recall = bestOfJob.getLearningPerformances().get("match recall");
             int bestJobLength = bestOfJob.getSolution().length();
-            precision = (Double.isNaN(precision))?0:precision;
-            recall = (Double.isNaN(recall))?0:recall;
-            double individualIndex = (precision+recall)/2;
+            precision = (Double.isNaN(precision))? (double) 0 :precision;
+            recall = (Double.isNaN(recall))? (double) 0 :recall;
+            double individualIndex = (precision+recall)/ 2.0;
             if ((individualIndex > bestIndividualIndex) || ((individualIndex == bestIndividualIndex) && (bestLength > bestJobLength))) {
                     bestLength = bestJobLength;
                     best = bestOfJob;

@@ -28,10 +28,10 @@ final class Scene {
         while (!line.isEmpty()) {
             switch (line) {
                 case "camera:": {
-                    vv3 position = new vv3(0, 0, 0);
-                    vv3 direction = new vv3(1, 0, 0);
-                    double fov = 90;
-                    double size = 0;
+                    vv3 position = new vv3((double) 0, (double) 0, (double) 0);
+                    vv3 direction = new vv3(1.0, (double) 0, (double) 0);
+                    double fov = 90.0;
+                    double size = (double) 0;
                     while (Utils.isIndented(line = Utils.nextLineOrEmpty(scanner))) {
                         Scanner s = new Scanner(line);
                         switch (s.next()) {
@@ -52,8 +52,8 @@ final class Scene {
                     camera = new Camera(position, direction, fov, size);
                 }
                 case "cube:": {
-                    vv3 position = new vv3(0, 0, 0);
-                    double sideLength = 1;
+                    vv3 position = new vv3((double) 0, (double) 0, (double) 0);
+                    double sideLength = 1.0;
                     Entity.Surface surface = null;
                     String texture = "";
                     while (Utils.isIndented(line = Utils.nextLineOrEmpty(scanner))) {
@@ -77,8 +77,8 @@ final class Scene {
                     break;
                 }
                 case "sphere:": {
-                    vv3 position = new vv3(0, 0, 0);
-                    double radius = 1;
+                    vv3 position = new vv3((double) 0, (double) 0, (double) 0);
+                    double radius = 1.0;
                     Entity.Surface surface = null;
                     String texture = "";
                     while (Utils.isIndented(line = Utils.nextLineOrEmpty(scanner))) {
@@ -102,7 +102,7 @@ final class Scene {
                     break;
                 }
                 case "light:": {
-                    vv3 position = new vv3(0, 0, 0);
+                    vv3 position = new vv3((double) 0, (double) 0, (double) 0);
                     int color = 0xffffff;
                     while (Utils.isIndented(line = Utils.nextLineOrEmpty(scanner))) {
                         Scanner s = new Scanner(line);
@@ -158,21 +158,21 @@ final class Scene {
 
                 vv3 tangent = collision.normal.direction.cross(collision.normal.direction.cross(ray.direction)).normalizeThis();
                 double nProj = -ray.direction.dot(collision.normal.direction);
-                ray.direction.scaleThis(1 / nProj);
+                ray.direction.scaleThis(1.0 / nProj);
                 double tProj = ray.direction.dot(tangent);
                 double r = 1.5;
                 ray = new Ray3(
                         collision.normal.position.minus(collision.normal.direction.scale(0.001)),
-                        collision.normal.direction.scale(-1).add(tangent.scale(tProj / r)).normalizeThis()
+                        collision.normal.direction.scale(-1.0).add(tangent.scale(tProj / r)).normalizeThis()
                 );
                 collision = castRay(ray);
                 tangent = collision.normal.direction.cross(collision.normal.direction.cross(ray.direction)).normalizeThis();
                 nProj = -ray.direction.dot(collision.normal.direction);
-                ray.direction.scaleThis(1 / nProj);
+                ray.direction.scaleThis(1.0 / nProj);
                 tProj = ray.direction.dot(tangent);
                 ray = new Ray3(
                         collision.normal.position.minus(collision.normal.direction.scale(0.001)),
-                        collision.normal.direction.scale(-1).add(tangent.scale(tProj * r)).normalizeThis()
+                        collision.normal.direction.scale(-1.0).add(tangent.scale(tProj * r)).normalizeThis()
                 );
                 continue;
             }
@@ -182,7 +182,7 @@ final class Scene {
             if (surface == Entity.Surface.Specular) {
                 ray = new Ray3(
                         collision.normal.position,
-                        ray.direction.minus(collision.normal.direction.scale(2 * ray.direction.dot(collision.normal.direction)))
+                        ray.direction.minus(collision.normal.direction.scale(2.0 * ray.direction.dot(collision.normal.direction)))
                 );
             } else {
                 //return 0x000000;
@@ -195,9 +195,9 @@ final class Scene {
 
 
     private int getDiffuseColor(Collision collision) {
-        double intensityR = 0;
-        double intensityG = 0;
-        double intensityB = 0;
+        double intensityR = (double) 0;
+        double intensityG = (double) 0;
+        double intensityB = (double) 0;
         for (Light light : lights) {
             vv3 lightVector = light.position.minus(collision.normal.position);
             double lightVectorLenSq = lightVector.lengthSquared();
@@ -205,13 +205,13 @@ final class Scene {
             Collision c = castRay(new Ray3(collision.normal.position, lightDirection));
             if (c == null || c.normal.position.minus(collision.normal.position).lengthSquared() > lightVectorLenSq || c.entity.surface == Entity.Surface.Transparent) {
                 double intensity = Math.abs(collision.normal.direction.dot(lightDirection)) / lightVectorLenSq;
-                intensityR += (double) (light.color >> 16) / 255 * intensity;
-                intensityG += (double) ((light.color >> 8) & 0xff) / 255 * intensity;
-                intensityB += (double) (light.color & 0xff) / 255 * intensity;
+                intensityR += (double) (light.color >> 16) / 255.0 * intensity;
+                intensityG += (double) ((light.color >> 8) & 0xff) / 255.0 * intensity;
+                intensityB += (double) (light.color & 0xff) / 255.0 * intensity;
             }
         }
 
-        double m = 10;
+        double m = 10.0;
         intensityR *= m;
         intensityG *= m;
         intensityB *= m;
@@ -239,31 +239,31 @@ final class Scene {
                     axis1 = vv3.Y_AXIS;
                     axis2 = vv3.Z_AXIS;
                 }
-                double x = 5 * (fp.dot(axis1) / cube.sideLength + 0.5) % 1;
-                double y = 5 * (fp.dot(axis2) / cube.sideLength + 0.5) % 1;
+                double x = 5.0 * (fp.dot(axis1) / cube.sideLength + 0.5) % 1.0;
+                double y = 5.0 * (fp.dot(axis2) / cube.sideLength + 0.5) % 1.0;
                 textureColor = cube.texture.getRGB(
-                        (int) (x * cube.texture.getWidth()),
-                        (int) (y * cube.texture.getHeight())
+                        (int) (x * (double) cube.texture.getWidth()),
+                        (int) (y * (double) cube.texture.getHeight())
                 );
             } else if (collision.entity instanceof Entity.Sphere) {
                 Entity.Sphere sphere = (Entity.Sphere) collision.entity;
                 vv3 rp = collision.normal.position.minus(sphere.position);
-                double x = Math.atan2(rp.y, rp.x) / (2 * Math.PI) + 0.5;
+                double x = Math.atan2(rp.y, rp.x) / (2.0 * Math.PI) + 0.5;
                 double y = Math.asin(rp.z / rp.length()) / Math.PI + 0.5;
                 textureColor = sphere.texture.getRGB(
-                        (int) (x * sphere.texture.getWidth()),
-                        (int) ((1 - y) * sphere.texture.getHeight())
+                        (int) (x * (double) sphere.texture.getWidth()),
+                        (int) ((1.0 - y) * (double) sphere.texture.getHeight())
                 );
             }
             if (textureColor != -1) {
-                intensityR *= (double) ((textureColor >> 16) & 0xff) / 255;
-                intensityG *= (double) ((textureColor >> 8) & 0xff) / 255;
-                intensityB *= (double) (textureColor & 0xff) / 255;
+                intensityR *= (double) ((textureColor >> 16) & 0xff) / 255.0;
+                intensityG *= (double) ((textureColor >> 8) & 0xff) / 255.0;
+                intensityB *= (double) (textureColor & 0xff) / 255.0;
             }
         }
-        int r = (int) (intensityR * 256);
-        int g = (int) (intensityG * 256);
-        int b = (int) (intensityB * 256);
+        int r = (int) (intensityR * 256.0);
+        int g = (int) (intensityG * 256.0);
+        int b = (int) (intensityB * 256.0);
         if (r > 255) {
             r = 255;
         }
@@ -293,7 +293,7 @@ final class Scene {
         }
 
         static boolean isIndented(String line) {
-            return !line.isEmpty() && (line.charAt(0) == '\t' || line.charAt(0) == ' ');
+            return !line.isEmpty() && ((int) line.charAt(0) == (int) '\t' || (int) line.charAt(0) == (int) ' ');
         }
 
         static Entity.Surface readSurface(Scanner scanner) {
@@ -310,7 +310,7 @@ final class Scene {
 
         static vv3 readVector3(Scanner scanner) {
             String str = scanner.nextLine().trim();
-            if (str.charAt(0) != '(' || str.charAt(str.length() - 1) != ')') {
+            if ((int) str.charAt(0) != (int) '(' || (int) str.charAt(str.length() - 1) != (int) ')') {
                 throw new RuntimeException("Coordinates must be parenthesized!");
             }
             str = str.substring(1, str.length() - 1);

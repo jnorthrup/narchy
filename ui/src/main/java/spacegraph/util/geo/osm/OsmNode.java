@@ -29,9 +29,9 @@ public class OsmNode extends OsmElement {
     @Override
     public double coord(int dimension, boolean maxOrMin) {
         switch (dimension) {
-            case 0: return pos.x;
-            case 1: return pos.y;
-            case 2: return pos.z;
+            case 0: return (double) pos.x;
+            case 1: return (double) pos.y;
+            case 2: return (double) pos.z;
         }
         return Double.NaN;
     }

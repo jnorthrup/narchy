@@ -62,7 +62,7 @@ public class SymbolRootNode extends SymbolNode {
 	 */
 	@Override
 	protected SymbolNode findChildWithChar(char c) {
-		return rootsChildren[c];
+		return rootsChildren[(int) c];
 	}
 
 	/*
@@ -73,9 +73,9 @@ public class SymbolRootNode extends SymbolNode {
 	 */
 	private void init() {
         int len = rootsChildren.length;
-		for (char i = 0; i < len; i++) {
-			rootsChildren[i] = new SymbolNode(this, i);
-			rootsChildren[i].setValid(true);
+		for (char i = (char) 0; (int) i < len; i++) {
+			rootsChildren[(int) i] = new SymbolNode(this, i);
+			rootsChildren[(int) i].setValid(true);
 		}
 	}
 

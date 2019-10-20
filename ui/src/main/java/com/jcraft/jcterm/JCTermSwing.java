@@ -304,9 +304,9 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
         }
 
         char keychar = e.getKeyChar();
-        if ((keychar & 0xff00) == 0) {
+        if (((int) keychar & 0xff00) == 0) {
             try {
-                out.write(e.getKeyChar());
+                out.write((int) e.getKeyChar());
                 out.flush();
             } catch (Exception ee) {
             }
@@ -315,7 +315,7 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
 
     public void keyTyped(KeyEvent e) {
         char keychar = e.getKeyChar();
-        if ((keychar & 0xff00) != 0) {
+        if (((int) keychar & 0xff00) != 0) {
             char[] foo = new char[1];
             foo[0] = keychar;
             try {

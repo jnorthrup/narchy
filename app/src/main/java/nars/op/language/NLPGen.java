@@ -56,7 +56,7 @@ public class NLPGen {
     private void train(String natural, String narsese) {
         final int maxVars = 6;
         for (int i = 0; i < maxVars; i++) {
-            String v = String.valueOf((char) ('A' + i));
+            String v = String.valueOf((char) ((int) 'A' + i));
             narsese = narsese.replaceAll(v, '%' + v);
         }
 
@@ -91,7 +91,7 @@ public class NLPGen {
                                     String var = x.toString();
                                     if (!var.startsWith("%"))
                                         continue;
-                                    var = String.valueOf(((char) (var.charAt(1) - '1' + 'A')));
+                                    var = String.valueOf(((char) ((int) var.charAt(1) - (int) '1' + (int) 'A')));
                                     r[0] = r[0].replace(var, y.toString());
                                 }
 

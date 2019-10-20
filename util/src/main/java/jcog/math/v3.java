@@ -48,7 +48,7 @@ import static jcog.Util.notNaN;
 public class v3 implements java.io.Serializable, Cloneable, Tensor {
 
 
-    public static v2 one = new v2(1, 1);
+    public static v2 one = new v2(1.0F, 1.0F);
     /**
      * The x coordinate.
      */
@@ -174,7 +174,7 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
      */
     public final float length() {
         return (float)
-                Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+                Math.sqrt((double) (this.x * this.x + this.y * this.y + this.z * this.z));
     }
 
 //    public static v3 cross(v3 a, v3 b) {
@@ -224,7 +224,7 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
      * @param v1 the un-normalized vector
      */
     public final void normalize(v3 v1) {
-        float norm = (float) (1.0 / Math.sqrt(v1.x * v1.x + v1.y * v1.y + v1.z * v1.z));
+        float norm = (float) (1.0 / Math.sqrt((double) (v1.x * v1.x + v1.y * v1.y + v1.z * v1.z)));
         set(v1.x * norm,
                 v1.y * norm,
                 v1.z * norm);
@@ -235,7 +235,7 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
      */
     public final float normalize() {
 
-        float norm = (float) Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+        float norm = (float) Math.sqrt((double) (this.x * this.x + this.y * this.y + this.z * this.z));
         if (norm >= Float.MIN_NORMAL) {
 
             set(this.x / norm,
@@ -263,10 +263,10 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
      */
     public final float angle(v3 v1) {
         float div = this.length() * v1.length();
-        if (Util.equals(div, 0, Float.MIN_NORMAL))
+        if (Util.equals(div, (float) 0, Float.MIN_NORMAL))
             return Float.NaN;
 
-        double vDot = this.dot(v1) / div;
+        double vDot = (double) (this.dot(v1) / div);
         if (vDot < -1.0) vDot = -1.0;
         if (vDot > 1.0) vDot = 1.0;
         return ((float) (Math.acos(vDot)));
@@ -352,7 +352,7 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
     }
 
     public final void zero() {
-        set(0, 0, 0);
+        set((float) 0, (float) 0, (float) 0);
     }
 
     /**
@@ -426,7 +426,7 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
     }
 
     public void add(float dx, float dy) {
-        add(dx, dy, 0);
+        add(dx, dy, (float) 0);
     }
 
     public void add(float dx, float dy, float dz) {
@@ -611,9 +611,9 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
      */
     public int hashCode() {
         long bits = 1L;
-        bits = 31L * bits + VecMathUtil.floatToIntBits(x);
-        bits = 31L * bits + VecMathUtil.floatToIntBits(y);
-        bits = 31L * bits + VecMathUtil.floatToIntBits(z);
+        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(x);
+        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(y);
+        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(z);
         return (int) (bits ^ (bits >> 32));
     }
 

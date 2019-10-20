@@ -35,7 +35,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.util.stream.IntStream;
 
 public final class B extends GamePanel {
 
@@ -425,7 +424,7 @@ public final class B extends GamePanel {
 	private static void getData(String input, int index, int[] output) {
         int counter = 0;
 		while (counter < output.length) {
-			output[counter] = input.charAt(index * output.length + counter) - 0x20;
+			output[counter] = (int) input.charAt(index * output.length + counter) - 0x20;
 			counter++;
 		}
 	}

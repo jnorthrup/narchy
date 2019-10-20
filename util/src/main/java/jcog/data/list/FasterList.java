@@ -16,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.*;
-import java.util.stream.IntStream;
 
 /**
  * Less-safe faster FastList with direct array access
@@ -946,7 +945,7 @@ public class FasterList<X> extends FastList<X> {
         }
 
 
-        MutableList<Iterable<X>> result = new FasterList((int) (Math.ceil((float) size()) / chunkSize));
+        MutableList<Iterable<X>> result = new FasterList((int) (Math.ceil((double) (float) size()) / (double) chunkSize));
         int i = 0;
 
         int size = this.size();

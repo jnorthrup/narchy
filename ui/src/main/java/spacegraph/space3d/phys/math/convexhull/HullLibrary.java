@@ -511,7 +511,7 @@ public class HullLibrary {
 		
 		
 		tmp1.sub(verts.get(p3), verts.get(p0));
-		if (tmp1.dot(tmp2) < 0) {
+		if (tmp1.dot(tmp2) < (float) 0) {
             int swap_tmp = p2;
 			p2 = p3;
 			p3 = swap_tmp;
@@ -631,7 +631,7 @@ public class HullLibrary {
 		vcount[0] = 0;
 
         if (scale != null) {
-			scale.set(1, 1, 1);
+			scale.set(1.0F, 1.0F, 1.0F);
 		}
 
 		float[] bmin = { Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE };
@@ -911,8 +911,8 @@ public class HullLibrary {
 			v.cross(u, dir);
             int ma = -1;
 			for (float x = 0f; x <= 360f; x += 45f) {
-                float s = (float) Math.sin(BulletGlobals.SIMD_RADS_PER_DEG * (x));
-                float c = (float) Math.cos(BulletGlobals.SIMD_RADS_PER_DEG * (x));
+                float s = (float) Math.sin((double) (BulletGlobals.SIMD_RADS_PER_DEG * (x)));
+                float c = (float) Math.cos((double) (BulletGlobals.SIMD_RADS_PER_DEG * (x)));
 
 				tmp1.scale(s, u);
 				tmp2.scale(c, v);
@@ -927,8 +927,8 @@ public class HullLibrary {
 				if (ma != -1 && ma != mb) {
                     int mc = ma;
 					for (float xx = x - 40f; xx <= x; xx += 5f) {
-						s = (float) Math.sin(BulletGlobals.SIMD_RADS_PER_DEG * (xx));
-						c = (float) Math.cos(BulletGlobals.SIMD_RADS_PER_DEG * (xx));
+						s = (float) Math.sin((double) (BulletGlobals.SIMD_RADS_PER_DEG * (xx)));
+						c = (float) Math.cos((double) (BulletGlobals.SIMD_RADS_PER_DEG * (xx)));
 
 						tmp1.scale(s, u);
 						tmp2.scale(c, v);
@@ -964,7 +964,7 @@ public class HullLibrary {
         v3 cp = new v3();
 		cp.cross(tmp1, tmp2);
         float m = cp.length();
-		if (m == 0) {
+		if (m == (float) 0) {
 			out.set(1f, 0f, 0f);
 			return out;
 		}

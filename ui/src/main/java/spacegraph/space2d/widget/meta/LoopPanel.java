@@ -40,7 +40,7 @@ public class LoopPanel extends Gridding {
         }
 
         heapPlot = new Plot2D(128, Plot2D.Line)
-                .add("heap", Util::memoryUsed, 0, 1);
+                .add("heap", Util::memoryUsed, (float) 0, 1.0F);
 
         set(
                         //new ButtonSet(ButtonSet.Mode.One,
@@ -67,7 +67,7 @@ public class LoopPanel extends Gridding {
                                         //HACK maybe necessary
                                         if (o) {
                                             pause = false;
-                                            loop.setFPS(fps.intValue());
+                                            loop.setFPS((float) fps.intValue());
                                         } else {
                                             pause = true;
                                             loop.stop();
@@ -92,7 +92,7 @@ public class LoopPanel extends Gridding {
                 int g = Math.round(loop.getFPS());
                 if (f > 0) {
                     if (f != g) {
-                        loop.setFPS(f);
+                        loop.setFPS((float) f);
                         fpsLabel.set(f);
                     }
                 } else {

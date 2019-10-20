@@ -68,8 +68,8 @@ final class LayoutParser {
             }
 
             
-            if (getchar() == '/') {
-                if (nextchar() == '/') {
+            if ((int) getchar() == (int) '/') {
+                if ((int) nextchar() == (int) '/') {
                     skiptoeol();
                     
                     continue;
@@ -84,13 +84,13 @@ final class LayoutParser {
         int c;
         int len = 0;
         
-        if (getchar() == '\"') {
+        if ((int) getchar() == (int) '\"') {
             nextchar();
             tokenPos = index;
             while (true) {
-                c = getchar();
+                c = (int) getchar();
                 nextchar();
-                if (c == '\"' || c == 0) {
+                if (c == (int) '\"' || c == 0) {
                     tokenLength = len;
                     return;
                 }
@@ -101,13 +101,13 @@ final class LayoutParser {
         }
 
         
-        c = getchar();
+        c = (int) getchar();
         tokenPos = index;
         do {
             if (len < Defines.MAX_TOKEN_CHARS) {
                 ++len;
             }
-            c = nextchar();
+            c = (int) nextchar();
         } while (c > 32);
 
         if (len == Defines.MAX_TOKEN_CHARS) {
@@ -143,7 +143,7 @@ final class LayoutParser {
         if (max > 0) {
             int p = this.tokenPos;
             int limit;
-            if (s.charAt(p) == '-') {
+            if ((int) s.charAt(p) == (int) '-') {
                 negative = true;
                 limit = Integer.MIN_VALUE;
                 i++;
@@ -190,12 +190,12 @@ final class LayoutParser {
     }
 
     private char getchar() {
-        return index < length ? data.charAt(index) : 0;
+        return index < length ? data.charAt(index) : (char) 0;
     }
 
     private char nextchar() {
         int i = ++index;
-        return i < length ? data.charAt(i) : 0;
+        return i < length ? data.charAt(i) : (char) 0;
     }
 
     private char prevchar() {
@@ -203,7 +203,7 @@ final class LayoutParser {
             --index;
             return data.charAt(index);
         }
-        return 0;
+        return (char) 0;
     }
 
     private boolean isEof() {
@@ -211,15 +211,15 @@ final class LayoutParser {
     }
 
     private char skipwhites() {
-        char c = 0;
-        while (index < length && ((c = data.charAt(index)) <= ' ') && c != 0)
+        char c = (char) 0;
+        while (index < length && ((int) (c = data.charAt(index)) <= (int) ' ') && (int) c != 0)
             ++index;
         return c;
     }
 
     private char skiptoeol() {
-        char c = 0;
-        while (index < length && (c = data.charAt(index)) != '\n' && c != 0)
+        char c = (char) 0;
+        while (index < length && (int) (c = data.charAt(index)) != (int) '\n' && (int) c != 0)
             ++index;
         return c;
     }

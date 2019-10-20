@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
 import java.util.function.BiConsumer;
-import java.util.stream.IntStream;
 
 import static jcog.Texts.n4;
 
@@ -74,7 +73,7 @@ public enum MetaGoal {
         Why.eval(why, pri, whies.array(), learner);
     }
 
-    private final Why.Evaluator<Cause> learner = (CC, w, p)-> learn(CC[w], p);
+    private final Why.Evaluator<Cause> learner = (CC, w, p)-> learn(CC[(int) w], p);
     private final int g = ordinal(); //just in case this isnt JIT'd
 
     private void learn(Cause cause, float pri) {
@@ -122,7 +121,7 @@ public enum MetaGoal {
             return;
 
         float[] wants = n.emotion.want;
-        if (Util.equals(Util.sumAbs(wants),0))
+        if (Util.equals(Util.sumAbs(wants), (float) 0))
             return; //flat metagoal early exit
 
         double[] want = Util.toDouble(wants);
@@ -142,7 +141,7 @@ public enum MetaGoal {
             //}
             double v = 0.0;
             for (int w = 0; w < want.length; w++) {
-                double v1 = want[w] * credit[w];
+                double v1 = want[w] * (double) credit[w];
                 v += v1;
             }
 
@@ -186,15 +185,15 @@ public enum MetaGoal {
     @Deprecated public static float privaluate(FasterList<Cause> values, short[] effect) {
 
         int effects = effect.length;
-        if (effects == 0) return 0;
+        if (effects == 0) return (float) 0;
 
-        float value = 0;
+        float value = (float) 0;
         Object[] vv = values.array();
         for (short c : effect)
-            value += ((Cause) vv[c]).pri();
+            value += ((Cause) vv[(int) c]).pri();
 
 
-        return value / effects;
+        return value / (float) effects;
     }
 
 
@@ -207,7 +206,7 @@ public enum MetaGoal {
             synchronized (this) {
                 forEachKeyValue((k, v) -> {
                     Cause c = k.getOne();
-                    MetaGoal m = mv[k.getTwo()];
+                    MetaGoal m = mv[(int) k.getTwo()];
                     tt.put(c, m, v);
                 });
             }
@@ -246,7 +245,7 @@ public enum MetaGoal {
         public synchronized void print(PrintStream out) {
             keyValuesView().toSortedListBy(x -> -x.getTwo()).forEach(x ->
                     out.println(
-                            n4(x.getTwo()) + '\t' + MetaGoal.values()[x.getOne().getTwo()] + '\t' + x.getOne().getOne()
+                            n4(x.getTwo()) + '\t' + MetaGoal.values()[(int) x.getOne().getTwo()] + '\t' + x.getOne().getOne()
                     )
             );
         }

@@ -43,7 +43,7 @@ public class Clip extends UGen implements DataBeadReceiver {
      */
     private Clip(AudioContext context, int channels) {
         super(context, channels, channels);
-        setRange(-1, 1);
+        setRange(-1.0F, 1.0F);
     }
 
     @Override

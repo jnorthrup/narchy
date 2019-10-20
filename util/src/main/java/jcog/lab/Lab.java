@@ -428,17 +428,17 @@ public class Lab<X> {
         return var(key, Float.NaN, Float.NaN, Float.NaN, (x) -> get.apply(x).floatValue() /* HACK */, (x, v) -> {
             int i = Math.round(v);
             apply.value(x, i);
-            return i;
+            return (float) i;
         });
     }
 
     public Lab<X> var(String key, int min, int max, int inc, Function<X, Integer> get, ObjectIntProcedure<X> apply) {
-        return var(key, min, max, inc < 0 ? Float.NaN : inc,
+        return var(key, (float) min, (float) max, inc < 0 ? Float.NaN : (float) inc,
             (x) -> get!=null ? get.apply(x).floatValue() : null /* HACK */,
             (x, v) -> {
                 int i = Math.round(v);
                 apply.value(x, i);
-                return i;
+                return (float) i;
         });
     }
 
@@ -453,10 +453,10 @@ public class Lab<X> {
 
     /** TODO use an IntVar impl */
     public Lab<X> var(String id, int min, int max, int inc, ObjectIntProcedure<X> apply) {
-        vars.put(id, new FloatVar<>(id, min, max, inc, null, (X x, float v) -> {
+        vars.put(id, new FloatVar<>(id, (float) min, (float) max, (float) inc, null, (X x, float v) -> {
             int vv = Math.round(v);
             apply.value(x, vv);
-            return vv;
+            return (float) vv;
         }));
         return this;
     }
@@ -505,7 +505,7 @@ public class Lab<X> {
             Boolean.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p) -> {
                 Function<X, Boolean> get = ObjectGraph.getter(p);
                 BiConsumer<X, Boolean> set = ObjectGraph.setter(p);
-                var(k, 0, 1, 0.5f,
+                var(k, (float) 0, 1.0F, 0.5f,
                         (x)->get.apply(x) ? 1f : 0f,
                         (x, v) -> {
                             boolean b = (v >= 0.5f);
@@ -517,7 +517,7 @@ public class Lab<X> {
             AtomicBoolean.class, (sample, k, p) -> {
                 Function<X, AtomicBoolean> get = ObjectGraph.getter(p);
                 AtomicBoolean fr = get.apply(sample);
-                var(k, 0, 1, 0.5f, (x, v) -> {
+                var(k, (float) 0, 1.0F, 0.5f, (x, v) -> {
                     boolean b = v >= 0.5f;
                     get.apply(x).set(b);
                     return b ? 1f : 0f;

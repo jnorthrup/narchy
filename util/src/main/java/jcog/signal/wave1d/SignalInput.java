@@ -37,7 +37,7 @@ public class SignalInput extends Loop {
         this.s = this.e = src.time();
 
         int r = src.sampleRate();
-        int samples = Math.round(bufferSeconds * r);
+        int samples = Math.round(bufferSeconds * (float) r);
         return set(src, r, samples);
     }
 
@@ -82,9 +82,9 @@ public class SignalInput extends Loop {
                         //a complete buffer
 
                         this.e = source.time();
-                        this.s = this.e - Math.round(dataPtr/((double)sampleRate)*1000.0);
+                        this.s = this.e - Math.round((double) dataPtr /((double)sampleRate)*1000.0);
 
-                        wave.emit(new RealTimeTensor(data.clone(), s, e-1));
+                        wave.emit(new RealTimeTensor(data.clone(), s, e- 1L));
                         dataPtr = 0;
 
                         //if (dataPtr==0)

@@ -10,7 +10,6 @@ import net.beadsproject.beads.core.UGen;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.stream.Collectors;
 
 /**
  * An Envelope generates a sequence of timed transitions (segments) between
@@ -105,7 +104,7 @@ public class Envelope extends UGen {
          */
         Segment(float endValue, float duration, float curvature, Auvent trigger) {
             this.endValue = endValue;
-            this.duration = (int) context.msToSamples(duration);
+            this.duration = (long) (int) context.msToSamples((double) duration);
             this.curvature = Math.abs(curvature);
             this.trigger = trigger;
         }
@@ -126,8 +125,8 @@ public class Envelope extends UGen {
     private Envelope(AudioContext context) {
         super(context, 1);
         segments = new LinkedList<>();
-        currentStartValue = 0;
-        currentValue = 0;
+        currentStartValue = (float) 0;
+        currentValue = (float) 0;
         currentSegment = null;
         lock = false;
         unchanged = false;
@@ -301,17 +300,17 @@ public class Envelope extends UGen {
             for (int i = 0; i < bufferSize; ++i) {
                 if (currentSegment == null) {
                     getNextSegment();
-                } else if (currentSegment.duration == 0) {
+                } else if (currentSegment.duration == 0L) {
                     getNextSegment();
                     iChanged = true;
                 } else {
                     iChanged = true;
 
 
-                    float ratio = currentSegment.curvature != 1.0f ? (float) Math.pow((double) currentTime / currentSegment.duration, currentSegment.curvature) : (float) currentTime / currentSegment.duration;
+                    float ratio = currentSegment.curvature != 1.0f ? (float) Math.pow((double) currentTime / (double) currentSegment.duration, (double) currentSegment.curvature) : (float) currentTime / (float) currentSegment.duration;
                     currentValue = (1f - ratio) * currentStartValue + ratio * currentSegment.endValue;
                     currentTime++;
-                    if (currentTime > currentSegment.duration) getNextSegment();
+                    if ((long) currentTime > currentSegment.duration) getNextSegment();
                 }
                 myBufOut[i] = currentValue;
             }

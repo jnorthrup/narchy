@@ -97,7 +97,7 @@ public class JeneticSymbolicRegression {
 
         EvolutionResult<ProgramGene<Double>, Double> result = engine.stream()
 			//.limit(Limits.byFitnessThreshold(0.01))
-			.limit(Limits.byFixedGeneration(10))
+			.limit(Limits.byFixedGeneration(10L))
 			.collect(EvolutionResult.toBestEvolutionResult());
 
         ProgramGene<Double> program = result.getBestPhenotype()
@@ -125,7 +125,7 @@ public class JeneticSymbolicRegression {
 
 	// The function we want to determine.
 	private static double f(double x) {
-		return 4*x*x*x - 3*x*x + x;
+		return 4.0 *x*x*x - 3.0 *x*x + x;
 	}
 
 }

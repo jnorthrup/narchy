@@ -64,8 +64,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static spacegraph.SpaceGraph.window;
 
@@ -109,22 +107,22 @@ public class WebcamStereoTest {
 
         // Take a crude guess at the intrinsic parameters. Bundle adjustment will fix this later.
         int width = buff01.getWidth(), height = buff01.getHeight();
-        double fx = width/2;
+        double fx = (double) (width / 2);
         double fy = fx;
-        double cx = width/2;
-        double cy = height/2;
+        double cx = (double) (width / 2);
+        double cy = (double) (height / 2);
 
         // Compute a transform from projective to metric by assuming we know the camera's calibration
         EstimatePlaneAtInfinityGivenK estimateV = new EstimatePlaneAtInfinityGivenK();
-        estimateV.setCamera1(fx,fy,0,cx,cy);
-        estimateV.setCamera2(fx,fy,0,cx,cy);
+        estimateV.setCamera1(fx,fy, (double) 0,cx,cy);
+        estimateV.setCamera2(fx,fy, (double) 0,cx,cy);
 
         Vector3D_F64 v = new Vector3D_F64(); // plane at infinity
         if( !estimateV.estimatePlaneAtInfinity(P2,v))
             throw new RuntimeException("Failed!");
 
-        DMatrixRMaj K = PerspectiveOps.pinholeToMatrix(fx,fy,0,cx,cy);
-        DMatrixRMaj H = MultiViewOps.createProjectiveToMetric(K,v.x,v.y,v.z,1,null);
+        DMatrixRMaj K = PerspectiveOps.pinholeToMatrix(fx,fy, (double) 0,cx,cy);
+        DMatrixRMaj H = MultiViewOps.createProjectiveToMetric(K,v.x,v.y,v.z, 1.0,null);
         DMatrixRMaj P2m = new DMatrixRMaj(3,4);
         CommonOps_DDRM.mult(P2,H,P2m);
 
@@ -215,7 +213,7 @@ public class WebcamStereoTest {
         System.out.println("\n\nComputing Stereo Disparity");
         BundlePinholeSimplified cp = structure.getCameras().get(0).getModel();
         CameraPinholeBrown intrinsic = new CameraPinholeBrown();
-        intrinsic.fsetK(cp.f,cp.f,0,cx,cy,width,height);
+        intrinsic.fsetK(cp.f,cp.f, (double) 0,cx,cy,width,height);
         intrinsic.fsetRadial(cp.k1,cp.k2);
 
         Se3_F64 leftToRight = structure.views.get(1).worldToView;
@@ -246,7 +244,7 @@ public class WebcamStereoTest {
         rectifyImages(colorLeft, colorRight, leftToRight, intrinsicLeft,intrinsicRight,
                 rectColorLeft, rectColorRight,rectMask, rectifiedK,rectifiedR);
 
-        if(rectifiedK.get(0,0) < 0)
+        if(rectifiedK.get(0,0) < (double) 0)
             throw new RuntimeException("Egads");
 
         System.out.println("Rectified K");
@@ -263,7 +261,7 @@ public class WebcamStereoTest {
         // compute disparity
         StereoDisparity<GrayS16, GrayF32> disparityAlg =
                 FactoryStereoDisparity.regionSubpixelWta(DisparityAlgorithms.RECT_FIVE,
-                        minDisparity, maxDisparity, 6, 6, 30, 3, 0.05, GrayS16.class);
+                        minDisparity, maxDisparity, 6, 6, 30.0, 3, 0.05, GrayS16.class);
 
         // Apply the Laplacian across the image to add extra resistance to changes in lighting or camera gain
         GrayS16 derivLeft = new GrayS16(width,height);
@@ -302,15 +300,15 @@ public class WebcamStereoTest {
         CameraPinhole rectifiedPinhole = PerspectiveOps.matrixToPinhole(rectifiedK,disparity.width,disparity.height,null);
 
         // skew the view to make the structure easier to see
-        Se3_F64 cameraToWorld = SpecialEuclideanOps_F64.eulerXyz(-baseline*5,0,0,0,0.2,0,null);
+        Se3_F64 cameraToWorld = SpecialEuclideanOps_F64.eulerXyz(-baseline* 5.0, (double) 0, (double) 0, (double) 0,0.2, (double) 0,null);
 
         PointCloudViewer pcv = VisualizeData.createPointCloudViewer();
         pcv.setCameraHFov(PerspectiveOps.computeHFov(rectifiedPinhole));
         pcv.setCameraToWorld(cameraToWorld);
-        pcv.setTranslationStep(baseline/3);
+        pcv.setTranslationStep(baseline/ 3.0);
         pcv.addCloud(d2c.getCloud(),d2c.getCloudColor());
         pcv.setDotSize(1);
-        pcv.setTranslationStep(baseline/10);
+        pcv.setTranslationStep(baseline/ 10.0);
 
         pcv.getComponent().setPreferredSize(new Dimension(left.getWidth(), left.getHeight()));
         ShowImages.showWindow(pcv.getComponent(), "Point Cloud", true);
@@ -477,7 +475,7 @@ public class WebcamStereoTest {
          */
         public static List<AssociatedPair> computeMatches(BufferedImage left , BufferedImage right ) {
             DetectDescribePoint detDesc = FactoryDetectDescribe.surfStable(
-                    new ConfigFastHessian(0, 2, 400, 1, 9, 4, 4), null,null, GrayF32.class);
+                    new ConfigFastHessian((float) 0, 2, 400, 1, 9, 4, 4), null,null, GrayF32.class);
 //		DetectDescribePoint detDesc = FactoryDetectDescribe.sift(null,new ConfigSiftDetector(2,0,200,5),null,null);
 
             ScoreAssociation<BrightFeature> scorer = FactoryAssociation.scoreEuclidean(BrightFeature.class,true);

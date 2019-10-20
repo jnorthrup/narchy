@@ -906,8 +906,8 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      * @param a1 the axis and angle to be converted
      */
     public final void set(AxisAngle4f a1) {
-        float mag = (float) Math.sqrt(a1.x * a1.x + a1.y * a1.y + a1.z * a1.z);
-        if (mag < EPS) {
+        float mag = (float) Math.sqrt((double) (a1.x * a1.x + a1.y * a1.y + a1.z * a1.z));
+        if ((double) mag < EPS) {
             m00 = 1.0f;
             m01 = 0.0f;
             m02 = 0.0f;
@@ -925,8 +925,8 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
             float ay = a1.y * mag;
             float az = a1.z * mag;
 
-            float sinTheta = (float) Math.sin(a1.angle);
-            float cosTheta = (float) Math.cos(a1.angle);
+            float sinTheta = (float) Math.sin((double) a1.angle);
+            float cosTheta = (float) Math.cos((double) a1.angle);
             float t = 1.0f - cosTheta;
 
             m00 = t * ax * ax + cosTheta;
@@ -1117,17 +1117,17 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
         
 
         
-        temp[0] = m1.m00;
-        temp[1] = m1.m01;
-        temp[2] = m1.m02;
+        temp[0] = (double) m1.m00;
+        temp[1] = (double) m1.m01;
+        temp[2] = (double) m1.m02;
 
-        temp[3] = m1.m10;
-        temp[4] = m1.m11;
-        temp[5] = m1.m12;
+        temp[3] = (double) m1.m10;
+        temp[4] = (double) m1.m11;
+        temp[5] = (double) m1.m12;
 
-        temp[6] = m1.m20;
-        temp[7] = m1.m21;
-        temp[8] = m1.m22;
+        temp[6] = (double) m1.m20;
+        temp[7] = (double) m1.m21;
+        temp[8] = (double) m1.m22;
 
 
         int[] row_perm = new int[3];
@@ -1415,8 +1415,8 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      */
     public final void rotX(float angle) {
 
-        float sinAngle = (float) Math.sin(angle);
-        float cosAngle = (float) Math.cos(angle);
+        float sinAngle = (float) Math.sin((double) angle);
+        float cosAngle = (float) Math.cos((double) angle);
 
         this.m00 = 1.0f;
         this.m01 = 0.0f;
@@ -1439,8 +1439,8 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      */
     public final void rotY(float angle) {
 
-        float sinAngle = (float) Math.sin(angle);
-        float cosAngle = (float) Math.cos(angle);
+        float sinAngle = (float) Math.sin((double) angle);
+        float cosAngle = (float) Math.cos((double) angle);
 
         this.m00 = cosAngle;
         this.m01 = 0.0f;
@@ -1463,8 +1463,8 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      */
     public final void rotZ(float angle) {
 
-        float sinAngle = (float) Math.sin(angle);
-        float cosAngle = (float) Math.cos(angle);
+        float sinAngle = (float) Math.sin((double) angle);
+        float cosAngle = (float) Math.cos((double) angle);
 
         this.m00 = cosAngle;
         this.m01 = -sinAngle;
@@ -1895,12 +1895,12 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      * Perform cross product normalization of this matrix.
      */
     public final void normalizeCP() {
-        float mag = 1.0f / (float) Math.sqrt(m00 * m00 + m10 * m10 + m20 * m20);
+        float mag = 1.0f / (float) Math.sqrt((double) (m00 * m00 + m10 * m10 + m20 * m20));
         m00 *= mag;
         m10 *= mag;
         m20 *= mag;
 
-        mag = 1.0f / (float) Math.sqrt(m01 * m01 + m11 * m11 + m21 * m21);
+        mag = 1.0f / (float) Math.sqrt((double) (m01 * m01 + m11 * m11 + m21 * m21));
         m01 *= mag;
         m11 *= mag;
         m21 *= mag;
@@ -1918,12 +1918,12 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      * @param m1 Provides the matrix values to be normalized
      */
     public final void normalizeCP(Matrix3f m1) {
-        float mag = 1.0f / (float) Math.sqrt(m1.m00 * m1.m00 + m1.m10 * m1.m10 + m1.m20 * m1.m20);
+        float mag = 1.0f / (float) Math.sqrt((double) (m1.m00 * m1.m00 + m1.m10 * m1.m10 + m1.m20 * m1.m20));
         m00 = m1.m00 * mag;
         m10 = m1.m10 * mag;
         m20 = m1.m20 * mag;
 
-        mag = 1.0f / (float) Math.sqrt(m1.m01 * m1.m01 + m1.m11 * m1.m11 + m1.m21 * m1.m21);
+        mag = 1.0f / (float) Math.sqrt((double) (m1.m01 * m1.m01 + m1.m11 * m1.m11 + m1.m21 * m1.m21));
         m01 = m1.m01 * mag;
         m11 = m1.m11 * mag;
         m21 = m1.m21 * mag;
@@ -2014,15 +2014,15 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      */
     public int hashCode() {
         long bits = 1L;
-        bits = 31L * bits + VecMathUtil.floatToIntBits(m00);
-        bits = 31L * bits + VecMathUtil.floatToIntBits(m01);
-        bits = 31L * bits + VecMathUtil.floatToIntBits(m02);
-        bits = 31L * bits + VecMathUtil.floatToIntBits(m10);
-        bits = 31L * bits + VecMathUtil.floatToIntBits(m11);
-        bits = 31L * bits + VecMathUtil.floatToIntBits(m12);
-        bits = 31L * bits + VecMathUtil.floatToIntBits(m20);
-        bits = 31L * bits + VecMathUtil.floatToIntBits(m21);
-        bits = 31L * bits + VecMathUtil.floatToIntBits(m22);
+        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m00);
+        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m01);
+        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m02);
+        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m10);
+        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m11);
+        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m12);
+        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m20);
+        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m21);
+        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m22);
         return (int) (bits ^ (bits >> 32));
     }
 

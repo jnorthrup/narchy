@@ -23,7 +23,7 @@ public class EdgeDirected3D extends ForceDirected3D {
             if (A instanceof SpaceWidget) {
                 for (EDraw<?> e : ((SpaceWidget<?>) A).edges()) {
                     float attraction = e.attraction;
-                    if (attraction > 0) {
+                    if (attraction > (float) 0) {
                         SimpleSpatial B = e.tgt();
 
                         if ((B.body != null)) {

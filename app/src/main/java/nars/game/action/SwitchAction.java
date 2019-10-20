@@ -16,7 +16,7 @@ import java.util.function.IntPredicate;
 
 public class SwitchAction extends DigitizedScalar implements FloatSupplier {
 
-    static final float EXP_IF_UNKNOWN = 0;
+    static final float EXP_IF_UNKNOWN = (float) 0;
 
     private final Deciding decider;
     final float[] exp;
@@ -60,7 +60,7 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
         int d = decide(w.start, w.end);
 
         if (d!=-1 && action.test(d))
-            value.set((d +0.5f)/exp.length);
+            value.set(((float) d +0.5f)/ (float) exp.length);
         else
             value.set(Float.NaN);
 

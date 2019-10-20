@@ -79,9 +79,9 @@ public abstract class What extends PriNARPart implements Sampler<TaskLink>, Iter
 	 * present-moment perception duration, in global clock cycles,
 	 * specific to this What, and freely adjustable
 	 */
-	public final FloatRange dur = new FloatRange(1, 1, 1024);
+	public final FloatRange dur = new FloatRange(1.0F, 1.0F, 1024.0F);
 
-	public final FloatRange commitDurs = new FloatRange(1, 0.5f, 4);
+	public final FloatRange commitDurs = new FloatRange(1.0F, 0.5f, 4.0F);
 
 	final AtomicLong nextUpdate = new AtomicLong(Long.MIN_VALUE);
 
@@ -116,7 +116,7 @@ public abstract class What extends PriNARPart implements Sampler<TaskLink>, Iter
 	//new DefaultPuncWeightedDerivePri(); //<- extreme without disabling either pre or post amp
 	//new DirectDerivePri();
 
-	private float durBase = 1;
+	private float durBase = 1.0F;
 	//private transient long deadline = Long.MIN_VALUE;
 
 
@@ -227,7 +227,7 @@ public abstract class What extends PriNARPart implements Sampler<TaskLink>, Iter
         long now = time();
 		if (now > nextUpdate) {
             float durBase = nar.dur();
-            long nextNextUpdate = now + (long) Math.ceil(durBase * commitDurs.floatValue());
+            long nextNextUpdate = now + (long) Math.ceil((double) (durBase * commitDurs.floatValue()));
 			if (this.nextUpdate.compareAndSet(nextUpdate, nextNextUpdate)) {
 				if (busy.compareAndSet(false, true)) {
 					try {

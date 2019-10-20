@@ -90,14 +90,14 @@ public class SurfacedCuboid<X> extends SimpleSpatial<X> implements SurfaceGraph 
         if (front != null) {
 
 
-            gl.glTranslatef(-0.5f, -0.5f, 0.5f + (shape instanceof SphereShape ? 5 : 0) + zOffset);
+            gl.glTranslatef(-0.5f, -0.5f, 0.5f + (float) (shape instanceof SphereShape ? 5 : 0) + zOffset);
 
             //gl.glScalef(1f/pixelScale, 1f/pixelScale, 1f/pixelScale);
 
             gl.glDepthMask(false);
 
 
-            rendering.start(gl, pixelScale, pixelScale, dtS , 10);
+            rendering.start(gl, pixelScale, pixelScale, dtS , 10.0F);
             rendering.psw = rendering.psh = pixelScale;
 //            rendering.w = front.w();
 //            rendering.h = front.h();

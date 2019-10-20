@@ -90,7 +90,7 @@ public class RevoluteJoint extends Joint {
         localAnchorB.set(def.localAnchorB);
         m_referenceAngle = def.referenceAngle;
 
-        m_motorImpulse = 0;
+        m_motorImpulse = (float) 0;
 
         m_lowerAngle = def.lowerAngle;
         m_upperAngle = def.upperAngle;

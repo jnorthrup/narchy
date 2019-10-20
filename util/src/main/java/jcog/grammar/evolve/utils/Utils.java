@@ -33,8 +33,6 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  *
@@ -47,8 +45,8 @@ public class Utils {
      * character to a digit, or -1 if it wasnt a digit
      */
     public static int i(char c) {
-        if ((c >= '0' && c <= '9'))
-            return c - '0';
+        if (((int) c >= (int) '0' && (int) c <= (int) '9'))
+            return (int) c - (int) '0';
         return -1;
     }
 
@@ -106,11 +104,11 @@ public class Utils {
         for (Ranking r : population) {
             double[] fitness = r.getFitness();
             for (int i = 0; i < out.length; i++) {
-                out[i] += fitness[i];
+                out[i] = (float) ((double) out[i] + fitness[i]);
             }
         }
         for (int i = 0; i < out.length; i++) {
-            out[i] /= population.size();
+            out[i] = out[i] / (float) population.size();
         }
         return out;
     }
@@ -189,7 +187,7 @@ public class Utils {
         for (Ranking r : population) {
             tmp.add(r.getDescription());
         }
-        return 100 * tmp.size() / (double) population.size();
+        return (double) (100 * tmp.size()) / (double) population.size();
     }
 
     
@@ -209,12 +207,12 @@ public class Utils {
 
     public static String humanReadableByteCount(long bytes, boolean si) {
         int unit = si ? 1000 : 1024;
-        if (bytes < unit) {
+        if (bytes < (long) unit) {
             return bytes + " B";
         }
-        int exp = (int) (Math.log(bytes) / Math.log(unit));
+        int exp = (int) (Math.log((double) bytes) / Math.log((double) unit));
         String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
-        return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+        return String.format("%.1f %sB", (double) bytes / Math.pow((double) unit, (double) exp), pre);
     }
 
     private static final transient CharHashSet quoteList = new CharHashSet(
@@ -299,8 +297,8 @@ public class Utils {
 
             
             
-            if (((c - old) > 1 || last == c)) {
-                if ((old - start) > 1) {
+            if ((((int) c - (int) old) > 1 || (int) last == (int) c)) {
+                if (((int) old - (int) start) > 1) {
                     each.accept(
                         new RegexRange(escape(start) + '-' + escape(old))
                     );

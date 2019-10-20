@@ -8,8 +8,8 @@ public class MyPerception  {
     public static final int RADAR_ANGLES = 8;
     public static final int RADAR_DISTS = 2; 
     private static final long serialVersionUID = 1L;
-    public static final double RADAR_R = Math.PI*2.0 / RADAR_ANGLES; 
-    public static final double RADAR_D = 25;
+    public static final double RADAR_R = Math.PI*2.0 / (double) RADAR_ANGLES;
+    public static final double RADAR_D = 25.0;
     public static final int RADAR_D0 = 1;
     private final Player player;
 
@@ -28,7 +28,7 @@ public class MyPerception  {
 
         
 
-        input[j++] = 0.8f * (MathUtils.normalizeAngle(player.angle,0)/(Math.PI) - 1.0);
+        input[j++] = 0.8 * (MathUtils.normalizeAngle(player.angle, (double) 0)/(Math.PI) - 1.0);
 
         for (int d = RADAR_D0; d <= RADAR_DISTS; d++) {
             for (int a = -RADAR_ANGLES; a <= RADAR_ANGLES; a++) {
@@ -41,11 +41,11 @@ public class MyPerception  {
     }
 
     public double yPerc(int d, int a) {
-        return player.y + Math.sin(player.angle - a * RADAR_R) * d * RADAR_D;
+        return player.y + Math.sin(player.angle - (double) a * RADAR_R) * (double) d * RADAR_D;
     }
 
     public double xPerc(int d, int a) {
-        return player.x + Math.cos(player.angle - a * RADAR_R) * d * RADAR_D;
+        return player.x + Math.cos(player.angle - (double) a * RADAR_R) * (double) d * RADAR_D;
     }
 
     public static boolean isUnipolar() {

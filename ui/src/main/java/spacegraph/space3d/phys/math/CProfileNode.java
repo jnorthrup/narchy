@@ -55,8 +55,8 @@ class CProfileNode {
 	public CProfileNode(String name, CProfileNode parent) {
 		this.name = name;
 		this.totalCalls = 0;
-		this.totalTime = 0;
-		this.startTime = 0;
+		this.totalTime = (float) 0;
+		this.startTime = 0L;
 		this.recursionCounter = 0;
 		this.parent = parent;
 		this.child = null;
@@ -123,7 +123,7 @@ class CProfileNode {
 		if (--recursionCounter == 0 && totalCalls != 0) {
             long time = BulletStats.profileGetTicks();
 			time -= startTime;
-			totalTime += time / BulletStats.profileGetTickRate();
+			totalTime += (float) time / BulletStats.profileGetTickRate();
 		}
 		return (recursionCounter == 0);
 	}

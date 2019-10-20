@@ -68,7 +68,7 @@ public interface CommandTask extends Task {
 
 	@Override
 	default float pri() {
-		return 0;
+		return (float) 0;
 	}
 
 	@Override

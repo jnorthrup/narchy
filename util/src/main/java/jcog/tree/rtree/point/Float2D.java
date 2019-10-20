@@ -33,23 +33,23 @@ public class Float2D implements HyperPoint, Comparable<Float2D> {
 
     @Override
     public double distance(HyperPoint p) {
-        if (p == this) return 0;
+        if (p == this) return (double) 0;
         Float2D p2 = (Float2D) p;
 
         float dx = p2.x - x;
         float dy = p2.y - y;
-        return  Math.sqrt(dx * dx + dy * dy);
+        return  Math.sqrt((double) (dx * dx + dy * dy));
     }
 
     @Override
     public double distance(HyperPoint p, int d) {
-        if (p == this) return 0;
+        if (p == this) return (double) 0;
         Float2D p2 = (Float2D) p;
         switch (d) {
             case 0:
-                return Math.abs(p2.x - x);
+                return (double) Math.abs(p2.x - x);
             case 1:
-                return Math.abs(p2.y - y);
+                return (double) Math.abs(p2.y - y);
             default:
                 throw new ArrayIndexOutOfBoundsException();
         }

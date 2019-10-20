@@ -56,7 +56,7 @@ public class Quat4f extends Tuple4f {
      * @param w the w scalar component
      */
     public Quat4f(float x, float y, float z, float w) {
-        float mag = (float) (1.0 / Math.sqrt(x * x + y * y + z * z + w * w));
+        float mag = (float) (1.0 / Math.sqrt((double) (x * x + y * y + z * z + w * w)));
         this.x = x * mag;
         this.y = y * mag;
         this.z = z * mag;
@@ -70,7 +70,7 @@ public class Quat4f extends Tuple4f {
      * @param q the array of length 4 containing xyzw in order
      */
     public Quat4f(float[] q) {
-        float mag = (float) (1.0 / Math.sqrt(q[0] * q[0] + q[1] * q[1] + q[2] * q[2] + q[3] * q[3]));
+        float mag = (float) (1.0 / Math.sqrt((double) (q[0] * q[0] + q[1] * q[1] + q[2] * q[2] + q[3] * q[3])));
         x = q[0] * mag;
         y = q[1] * mag;
         z = q[2] * mag;
@@ -104,7 +104,7 @@ public class Quat4f extends Tuple4f {
      * @param t1 the Tuple4f containing the initialization x y z w data
      */
     public Quat4f(Tuple4f t1) {
-        float mag = (float) (1.0 / Math.sqrt(t1.x * t1.x + t1.y * t1.y + t1.z * t1.z + t1.w * t1.w));
+        float mag = (float) (1.0 / Math.sqrt((double) (t1.x * t1.x + t1.y * t1.y + t1.z * t1.z + t1.w * t1.w)));
         x = t1.x * mag;
         y = t1.y * mag;
         z = t1.z * mag;
@@ -272,7 +272,7 @@ public class Quat4f extends Tuple4f {
         float norm = (q1.x * q1.x + q1.y * q1.y + q1.z * q1.z + q1.w * q1.w);
 
         if (norm > 0.0f) {
-            norm = 1.0f / (float) Math.sqrt(norm);
+            norm = 1.0f / (float) Math.sqrt((double) norm);
             this.x = norm * q1.x;
             this.y = norm * q1.y;
             this.z = norm * q1.z;
@@ -294,7 +294,7 @@ public class Quat4f extends Tuple4f {
         float norm = (this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w);
 
         if (norm > 0.0f) {
-            norm = 1.0f / (float) Math.sqrt(norm);
+            norm = 1.0f / (float) Math.sqrt((double) norm);
             this.x *= norm;
             this.y *= norm;
             this.z *= norm;
@@ -317,9 +317,9 @@ public class Quat4f extends Tuple4f {
     public final void set(Matrix4f m1) {
         float ww = 0.25f * (m1.m00 + m1.m11 + m1.m22 + m1.m33);
 
-        if (ww >= 0) {
+        if (ww >= (float) 0) {
             if (ww >= EPS2) {
-                this.w = (float) Math.sqrt(ww);
+                this.w = (float) Math.sqrt((double) ww);
                 ww = 0.25f / this.w;
                 this.x = (m1.m21 - m1.m12) * ww;
                 this.y = (m1.m02 - m1.m20) * ww;
@@ -327,42 +327,42 @@ public class Quat4f extends Tuple4f {
                 return;
             }
         } else {
-            this.w = 0;
-            this.x = 0;
-            this.y = 0;
-            this.z = 1;
+            this.w = (float) 0;
+            this.x = (float) 0;
+            this.y = (float) 0;
+            this.z = 1.0F;
             return;
         }
 
-        this.w = 0;
+        this.w = (float) 0;
         ww = -0.5f * (m1.m11 + m1.m22);
 
-        if (ww >= 0) {
+        if (ww >= (float) 0) {
             if (ww >= EPS2) {
-                this.x = (float) Math.sqrt(ww);
+                this.x = (float) Math.sqrt((double) ww);
                 ww = 1.0f / (2.0f * this.x);
                 this.y = m1.m10 * ww;
                 this.z = m1.m20 * ww;
                 return;
             }
         } else {
-            this.x = 0;
-            this.y = 0;
-            this.z = 1;
+            this.x = (float) 0;
+            this.y = (float) 0;
+            this.z = 1.0F;
             return;
         }
 
-        this.x = 0;
+        this.x = (float) 0;
         ww = 0.5f * (1.0f - m1.m22);
 
         if (ww >= EPS2) {
-            this.y = (float) Math.sqrt(ww);
+            this.y = (float) Math.sqrt((double) ww);
             this.z = m1.m21 / (2.0f * this.y);
             return;
         }
 
-        this.y = 0;
-        this.z = 1;
+        this.y = (float) 0;
+        this.z = 1.0F;
     }
 
 
@@ -431,9 +431,9 @@ public class Quat4f extends Tuple4f {
     public final void set(Matrix3f m1) {
         float ww = 0.25f * (m1.m00 + m1.m11 + m1.m22 + 1.0f);
 
-        if (ww >= 0) {
+        if (ww >= (float) 0) {
             if (ww >= EPS2) {
-                this.w = (float) Math.sqrt(ww);
+                this.w = (float) Math.sqrt((double) ww);
                 ww = 0.25f / this.w;
                 this.x = (m1.m21 - m1.m12) * ww;
                 this.y = (m1.m02 - m1.m20) * ww;
@@ -441,40 +441,40 @@ public class Quat4f extends Tuple4f {
                 return;
             }
         } else {
-            this.w = 0;
-            this.x = 0;
-            this.y = 0;
-            this.z = 1;
+            this.w = (float) 0;
+            this.x = (float) 0;
+            this.y = (float) 0;
+            this.z = 1.0F;
             return;
         }
 
-        this.w = 0;
+        this.w = (float) 0;
         ww = -0.5f * (m1.m11 + m1.m22);
-        if (ww >= 0) {
+        if (ww >= (float) 0) {
             if (ww >= EPS2) {
-                this.x = (float) Math.sqrt(ww);
+                this.x = (float) Math.sqrt((double) ww);
                 ww = 0.5f / this.x;
                 this.y = m1.m10 * ww;
                 this.z = m1.m20 * ww;
                 return;
             }
         } else {
-            this.x = 0;
-            this.y = 0;
-            this.z = 1;
+            this.x = (float) 0;
+            this.y = (float) 0;
+            this.z = 1.0F;
             return;
         }
 
-        this.x = 0;
+        this.x = (float) 0;
         ww = 0.5f * (1.0f - m1.m22);
         if (ww >= EPS2) {
-            this.y = (float) Math.sqrt(ww);
+            this.y = (float) Math.sqrt((double) ww);
             this.z = m1.m21 / (2.0f * this.y);
             return;
         }
 
-        this.y = 0;
-        this.z = 1;
+        this.y = (float) 0;
+        this.z = 1.0F;
     }
 
 
@@ -556,16 +556,16 @@ public class Quat4f extends Tuple4f {
         if (amag < EPS*EPS) {
             this.x = this.y = this.z = this.w = 0.0f;
         } else {
-            if (Util.equals(angle, 0, EPS)) {
-                this.w = 1; this.x = this.y = this.z = 0;
+            if (Util.equals(angle, (float) 0, EPS)) {
+                this.w = 1.0F; this.x = this.y = this.z = (float) 0;
             } else {
-                amag = (float) (1.0f / Math.sqrt(amag));
+                amag = (float) (1.0 / Math.sqrt((double) amag));
 
-                double ha = angle / 2.0;
+                double ha = (double) angle / 2.0;
                 float mag = (float) Math.sin(ha) * amag;
                 w = (float) Math.cos(ha);
                 if (mag < EPS * EPS) {
-                    this.x = this.y = this.z = 0;
+                    this.x = this.y = this.z = (float) 0;
                 } else {
                     this.x = ax * mag;
                     this.y = ay * mag;
@@ -590,7 +590,7 @@ public class Quat4f extends Tuple4f {
 
         float dot = x * q1.x + y * q1.y + z * q1.z + w * q1.w;
 
-        if (dot < 0) {
+        if (dot < (float) 0) {
             
             q1.x = -q1.x;
             q1.y = -q1.y;
@@ -601,11 +601,11 @@ public class Quat4f extends Tuple4f {
 
         float s2;
         float s1;
-        if ((1.0 - dot) > EPS) {
-            float om = (float) Math.acos(dot);
-            float sinom = (float) Math.sin(om);
-            s1 = (float) (Math.sin((1.0 - alpha) * om) / sinom);
-            s2 = (float) (Math.sin(alpha * om) / sinom);
+        if ((1.0 - (double) dot) > (double) EPS) {
+            float om = (float) Math.acos((double) dot);
+            float sinom = (float) Math.sin((double) om);
+            s1 = (float) (Math.sin((1.0 - (double) alpha) * (double) om) / (double) sinom);
+            s2 = (float) (Math.sin((double) (alpha * om)) / (double) sinom);
         } else {
             s1 = 1.0f - alpha;
             s2 = alpha;

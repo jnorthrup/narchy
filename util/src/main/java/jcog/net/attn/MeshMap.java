@@ -18,8 +18,8 @@ import java.util.function.BiConsumer;
 /** UDPeer-backed lossy hashmap with event notification */
 public class MeshMap<K,V> extends UDPeer /* implements Map<K,V>*/ {
 
-    static final float seedFPS = 4;
-    static final float mapFPS = 4;
+    static final float seedFPS = 4.0F;
+    static final float mapFPS = 4.0F;
 
     static final ConcurrentHashMap<String,MeshMap> the = new ConcurrentHashMap<>();
     static final UDPeer seed;

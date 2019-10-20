@@ -47,7 +47,6 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 
 import static jake2.Defines.*;
-import static jake2.Defines.ca_active;
 
 /**
  * SND_DMA TODO implement sound system
@@ -69,13 +68,13 @@ public class SND_DMA extends SND_MIX {
 
     static boolean sound_started;
 
-    static final float[] listener_origin = { 0, 0, 0 };
+    static final float[] listener_origin = {(float) 0, (float) 0, (float) 0};
 
-    static final float[] listener_forward = { 0, 0, 0 };
+    static final float[] listener_forward = {(float) 0, (float) 0, (float) 0};
 
-    static final float[] listener_right = { 0, 0, 0 };
+    static final float[] listener_right = {(float) 0, (float) 0, (float) 0};
 
-    static final float[] listener_up = { 0, 0, 0 };
+    static final float[] listener_up = {(float) 0, (float) 0, (float) 0};
 
     static boolean s_registering;
 
@@ -456,13 +455,13 @@ public class SND_DMA extends SND_MIX {
         }
 
 
-        float[] source_vec = {0, 0, 0};
+        float[] source_vec = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorSubtract(origin, listener_origin, source_vec);
 
         float dist = Math3D.VectorNormalize(source_vec);
-        dist -= SOUND_FULLVOLUME;
-        if (dist < 0)
-            dist = 0; 
+        dist = dist - (float) SOUND_FULLVOLUME;
+        if (dist < (float) 0)
+            dist = (float) 0;
         dist *= dist_mult;
 
         float dot = Math3D.DotProduct(listener_right, source_vec);
@@ -502,7 +501,7 @@ public class SND_DMA extends SND_MIX {
             return;
         }
 
-        float[] origin = {0, 0, 0};
+        float[] origin = {(float) 0, (float) 0, (float) 0};
         if (ch.fixed_origin) {
             Math3D.VectorCopy(ch.origin, origin);
         } else
@@ -560,7 +559,7 @@ public class SND_DMA extends SND_MIX {
         }
 
         
-        if (ps.attenuation == ATTN_STATIC)
+        if (ps.attenuation == (float) ATTN_STATIC)
             ch.dist_mult = ps.attenuation * 0.001f;
         else
             ch.dist_mult = ps.attenuation * 0.0005f;
@@ -587,12 +586,12 @@ public class SND_DMA extends SND_MIX {
         String model = "male";
         int n = CS_PLAYERSKINS + ent.number - 1;
         if (cl.configstrings[n] != null) {
-            int p = cl.configstrings[n].indexOf('\\');
+            int p = cl.configstrings[n].indexOf((int) '\\');
             if (p >= 0) {
                 p++;
                 model = cl.configstrings[n].substring(p);
                 
-                p = model.indexOf('/');
+                p = model.indexOf((int) '/');
                 if (p > 0)
                     model = model.substring(0, p - 1);
             }
@@ -652,7 +651,7 @@ public class SND_DMA extends SND_MIX {
         if (sfx == null)
             return;
 
-        if (sfx.name.charAt(0) == '*')
+        if ((int) sfx.name.charAt(0) == (int) '*')
             sfx = RegisterSexedSound(cl_entities[entnum].current, sfx.name);
 
 
@@ -660,7 +659,7 @@ public class SND_DMA extends SND_MIX {
         if (sc == null)
             return;
 
-        int vol = (int) (fvol * 255);
+        int vol = (int) (fvol * 255.0F);
 
 
         playsound_t ps = AllocPlaysound();
@@ -676,25 +675,25 @@ public class SND_DMA extends SND_MIX {
         ps.entnum = entnum;
         ps.entchannel = entchannel;
         ps.attenuation = attenuation;
-        ps.volume = vol;
+        ps.volume = (float) vol;
         ps.sfx = sfx;
 
 
-        int start = (int) (cl.frame.servertime * 0.001f * dma.speed + s_beginofs);
+        int start = (int) ((float) cl.frame.servertime * 0.001f * (float) dma.speed + (float) s_beginofs);
         if (start < paintedtime) {
             start = paintedtime;
-            s_beginofs = (int) (start - (cl.frame.servertime * 0.001f * dma.speed));
-        } else if (start > paintedtime + 0.3f * dma.speed) {
-            start = (int) (paintedtime + 0.1f * dma.speed);
-            s_beginofs = (int) (start - (cl.frame.servertime * 0.001f * dma.speed));
+            s_beginofs = (int) ((float) start - ((float) cl.frame.servertime * 0.001f * (float) dma.speed));
+        } else if ((float) start > (float) paintedtime + 0.3f * (float) dma.speed) {
+            start = (int) ((float) paintedtime + 0.1f * (float) dma.speed);
+            s_beginofs = (int) ((float) start - ((float) cl.frame.servertime * 0.001f * (float) dma.speed));
         } else {
             s_beginofs -= 10;
         }
 
         if (timeofs == 0.0f)
-            ps.begin = paintedtime;
+            ps.begin = (long) paintedtime;
         else
-            ps.begin = (long) (start + timeofs * dma.speed);
+            ps.begin = (long) ((float) start + timeofs * (float) dma.speed);
 
         
         playsound_t sort;
@@ -722,7 +721,7 @@ public class SND_DMA extends SND_MIX {
             Com.Printf("S_StartLocalSound: can't cache " + sound + '\n');
             return;
         }
-        StartSound(null, cl.playernum + 1, 0, sfx, 1, 1, 0);
+        StartSound(null, cl.playernum + 1, 0, sfx, 1.0F, 1.0F, (float) 0);
     }
 
     /*
@@ -877,12 +876,12 @@ public class SND_DMA extends SND_MIX {
 
         if (s_rawend < paintedtime)
             s_rawend = paintedtime;
-        float scale = (float) rate / dma.speed;
+        float scale = (float) rate / (float) dma.speed;
 
 
         int i;
         if (channels == 2 && width == 2) {
-            if (scale == 1.0) { 
+            if ((double) scale == 1.0) {
             
             
             
@@ -1068,7 +1067,7 @@ public class SND_DMA extends SND_MIX {
         }
 
 
-        int endtime = (int) (soundtime + s_mixahead.value * dma.speed);
+        int endtime = (int) ((float) soundtime + s_mixahead.value * (float) dma.speed);
 
 
         endtime = (endtime + dma.submission_chunk - 1)
@@ -1095,7 +1094,7 @@ public class SND_DMA extends SND_MIX {
         int i = 1;
         while (i < Cmd.Argc()) {
             String name = Cmd.Argv(i);
-            if (name.indexOf('.') == -1)
+            if (name.indexOf((int) '.') == -1)
                 name += ".wav";
 
             sfx_t sfx = RegisterSound(name);
@@ -1122,7 +1121,7 @@ public class SND_DMA extends SND_MIX {
                 Com.Printf("(%2db) %6i : %s\n", new Vargs(3).add(sc.width * 8)
                         .add(size).add(sfx.name));
             } else {
-                if (sfx.name.charAt(0) == '*')
+                if ((int) sfx.name.charAt(0) == (int) '*')
                     Com.Printf("  placeholder : " + sfx.name + '\n');
                 else
                     Com.Printf("  not loaded  : " + sfx.name + '\n');

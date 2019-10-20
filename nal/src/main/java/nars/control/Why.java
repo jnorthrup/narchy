@@ -24,7 +24,7 @@ import static nars.Op.SETe;
 public enum Why { ;
 
 	public static Term why(short why) {
-		return IdempotInt.the(why);
+		return IdempotInt.the((int) why);
 	}
 
 	static Term why(short[] why, int capacity) {
@@ -191,9 +191,9 @@ public enum Why { ;
             Subterms s = why.subterms();
             int n = s.subs();
 
-			assert (why.opID() == SETe.id  && n > 1);
+			assert (why.opID() == (int) SETe.id && n > 1);
 
-            float priEach = pri/n;
+            float priEach = pri/ (float) n;
 			for (int i = 0; i < n; i++)
 				eval(s.sub(i), priEach, causes, each);
 		}
@@ -228,11 +228,11 @@ public enum Why { ;
 	}
 	private static void toSet(Term w, IntConsumer each) {
 		if (w instanceof IdempotInt) {
-			each.accept(s(w));
+			each.accept((int) s(w));
 		} else {
             Subterms ww = w.subterms();
             int wn = ww.subs();
-			assert (w.opID() == SETe.id  && wn > 1);
+			assert (w.opID() == (int) SETe.id && wn > 1);
 			for (int i = 0; i < wn; i++)
 				toSet(ww.sub(i), each);
 		}

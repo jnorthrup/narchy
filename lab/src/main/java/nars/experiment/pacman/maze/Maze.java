@@ -2,7 +2,6 @@ package nars.experiment.pacman.maze;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Maze {
 
@@ -62,9 +61,9 @@ public class Maze {
             for (int y = 0; y < height; y++) {
 
                 if ((x % 2) == 1 && (y % 2) == 1)
-                    tiles[x][y] = 1;
+                    tiles[x][y] = (byte) 1;
                 else
-                    tiles[x][y] = 2;
+                    tiles[x][y] = (byte) 2;
 
                 if ((x * y) % 2 == 1) {
 
@@ -103,26 +102,26 @@ public class Maze {
 
                 if (iy == 1 && ix > 2 && ix < ghostCage.width - 3) {
 
-                    full.tiles[ix + offset.x][1 + offset.y] = 3;
+                    full.tiles[ix + offset.x][1 + offset.y] = (byte) 3;
                     continue;
 
                 }
 
                 if (ix == 0 || iy == 0 || ix == ghostCage.width - 1 || iy == ghostCage.height - 1) {
 
-                    full.tiles[ix + offset.x][iy + offset.y] = 1;
+                    full.tiles[ix + offset.x][iy + offset.y] = (byte) 1;
                     continue;
 
                 }
 
                 if (ix == 1 || iy == 1 || ix == ghostCage.width - 2 || iy == ghostCage.height - 2) {
 
-                    full.tiles[ix + offset.x][iy + offset.y] = 2;
+                    full.tiles[ix + offset.x][iy + offset.y] = (byte) 2;
                     continue;
 
                 }
 
-                full.tiles[ix + offset.x][iy + offset.y] = 0;
+                full.tiles[ix + offset.x][iy + offset.y] = (byte) 0;
 
             }
         }
@@ -171,15 +170,15 @@ public class Maze {
 
         for (int x = 0; x < width; x++) {
 
-            if (tiles[x][0] == 1) {
+            if ((int) tiles[x][0] == 1) {
 
-                tiles[x][height - 1] = 1;
+                tiles[x][height - 1] = (byte) 1;
 
             }
 
-            if (tiles[x][height - 1] == 1) {
+            if ((int) tiles[x][height - 1] == 1) {
 
-                tiles[x][0] = 1;
+                tiles[x][0] = (byte) 1;
 
             }
 
@@ -223,11 +222,11 @@ public class Maze {
 
                     if (!isClosed(p.x - 1, p.y + i) && !isClosed(p.x + 1, p.y + i)) {
 
-                        if (Math.random() >= 1.5 * (height - i + 3 * walls) / (2 * height + walls)) {
+                        if (Math.random() >= 1.5 * (double) (height - i + 3 * walls) / (double) (2 * height + walls)) {
 
                             walls++;
 
-                            tiles[p.x][p.y + i] = 1;
+                            tiles[p.x][p.y + i] = (byte) 1;
                             i += 4;
 
                         }
@@ -264,10 +263,10 @@ public class Maze {
                     if (!isWall(tiles[x - 2][y + 1]) || !isWall(tiles[x - 1][y + 2])) corners[2] = true;
                     if (!isWall(tiles[x + 2][y + 1]) || !isWall(tiles[x + 1][y + 2])) corners[3] = true;
 
-                    if (corners[0] && corners[1]) tiles[x][y - 1] = 2;
-                    else if (corners[1] && corners[3]) tiles[x + 1][y] = 2;
-                    else if (corners[2] && corners[3]) tiles[x][y + 1] = 2;
-                    else if (corners[0] && corners[2]) tiles[x - 1][y] = 2;
+                    if (corners[0] && corners[1]) tiles[x][y - 1] = (byte) 2;
+                    else if (corners[1] && corners[3]) tiles[x + 1][y] = (byte) 2;
+                    else if (corners[2] && corners[3]) tiles[x][y + 1] = (byte) 2;
+                    else if (corners[0] && corners[2]) tiles[x - 1][y] = (byte) 2;
 
                 }
 
@@ -348,15 +347,15 @@ public class Maze {
 
     public static boolean isWall(byte b) {
 
-        if (b == 3) return true;
-        return b == 2;
+        if ((int) b == 3) return true;
+        return (int) b == 2;
 
     }
 
     public static boolean isWall(byte b, Direction d) {
 
-        if (b == 3 && d != Direction.up) return true;
-        return b == 2;
+        if ((int) b == 3 && d != Direction.up) return true;
+        return (int) b == 2;
 
     }
 

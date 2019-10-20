@@ -39,7 +39,7 @@ class PullBackSpring2D extends VerletSpring2D {
 
     public PullBackSpring2D(VerletParticle2D a, VerletParticle2D b,
                             float strength) {
-        super(a, b, 0, strength);
+        super(a, b, (float) 0, strength);
         a.lock();
         setRestLength(0.5f);
     }

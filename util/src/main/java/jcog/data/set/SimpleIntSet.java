@@ -42,7 +42,7 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
      * @param capacity the number of items to store
      */
     public SimpleIntSet(int capacity) {
-        int size = getNextPow2TwinPrime((int) Math.max(capacity / loadFactor, 4));
+        int size = getNextPow2TwinPrime((int) Math.max((float) capacity / loadFactor, 4.0F));
         alloc(size);
         this.size = 0;
     }
@@ -117,7 +117,7 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
     }
 
     private void enlargeIfNeeded() {
-        if (size + 1 < keys.length * loadFactor)
+        if ((float) (size + 1) < (float) keys.length * loadFactor)
             return;
 
 

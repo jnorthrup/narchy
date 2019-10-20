@@ -98,7 +98,7 @@ public class AxisSweep3 extends AxisSweep3Internal {
 		
 		@Override
 		public int getPos(int index) {
-			return pos[index] & 0xFFFF;
+			return (int) pos[index] & 0xFFFF;
 		}
 
 		@Override
@@ -108,7 +108,7 @@ public class AxisSweep3 extends AxisSweep3Internal {
 
 		@Override
 		public int getHandle(int index) {
-			return handle[index] & 0xFFFF;
+			return (int) handle[index] & 0xFFFF;
 		}
 
 		@Override
@@ -130,9 +130,9 @@ public class AxisSweep3 extends AxisSweep3Internal {
 		public int getMinEdges(int edgeIndex) {
 			switch (edgeIndex) {
 				default:
-				case 0: return minEdges0 & 0xFFFF;
-				case 1: return minEdges1 & 0xFFFF;
-				case 2: return minEdges2 & 0xFFFF;
+				case 0: return (int) minEdges0 & 0xFFFF;
+				case 1: return (int) minEdges1 & 0xFFFF;
+				case 2: return (int) minEdges2 & 0xFFFF;
 			}
 		}
 		
@@ -149,9 +149,9 @@ public class AxisSweep3 extends AxisSweep3Internal {
 		public int getMaxEdges(int edgeIndex) {
 			switch (edgeIndex) {
 				default:
-				case 0: return maxEdges0 & 0xFFFF;
-				case 1: return maxEdges1 & 0xFFFF;
-				case 2: return maxEdges2 & 0xFFFF;
+				case 0: return (int) maxEdges0 & 0xFFFF;
+				case 1: return (int) maxEdges1 & 0xFFFF;
+				case 2: return (int) maxEdges2 & 0xFFFF;
 			}
 		}
 		

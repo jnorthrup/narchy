@@ -14,7 +14,7 @@ public abstract class ControlSensor {
 
     @SuppressWarnings("ConstructorNotProtectedInAbstractClass")
     public ControlSensor(double min, double max, int quantization) {
-        range = new NumericRange((min + max) / 2, (max - min) / 2);
+        range = new NumericRange((min + max) / 2.0, (max - min) / 2.0);
         this.quantization = quantization;
     }
     

@@ -30,7 +30,7 @@ public class ColorToggle extends ToggleButton {
 
             r.on((gl)-> {
 
-                gl.glColor3f(1, 1, 1);
+                gl.glColor3f(1.0F, 1.0F, 1.0F);
                 gl.glLineWidth(3f);
                 Draw.rectStroke(bounds, gl);
             });

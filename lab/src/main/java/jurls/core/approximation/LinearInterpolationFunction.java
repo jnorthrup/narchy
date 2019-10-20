@@ -7,7 +7,6 @@ package jurls.core.approximation;
 
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 /**
@@ -36,7 +35,7 @@ public class LinearInterpolationFunction implements ParameterizedFunction, Unary
         Map.Entry<Double, Double> eHigh = evidence.higherEntry(x);
         
         if (eLow == null && eHigh == null)
-            return 0;        
+            return (double) 0;
         else if ((eLow!=null) && (eHigh!=null)) {
             double lk = eLow.getKey();
             double hk = eHigh.getKey();
@@ -113,12 +112,12 @@ public class LinearInterpolationFunction implements ParameterizedFunction, Unary
 
     @Override
     public double minOutputDebug() {
-        return 0;
+        return (double) 0;
     }
 
     @Override
     public double maxOutputDebug() {
-        return 0;
+        return (double) 0;
     }
 
 

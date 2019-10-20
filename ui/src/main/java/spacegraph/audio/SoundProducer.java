@@ -18,7 +18,7 @@ import jcog.math.FloatRange;
     @Deprecated
     abstract class Amplifiable implements SoundProducer {
 
-        public final FloatRange amp = new FloatRange(1f, 0, 1f);
+        public final FloatRange amp = new FloatRange(1f, (float) 0, 1f);
 
         public final float amp() { return amp.floatValue(); }
 

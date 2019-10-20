@@ -83,8 +83,8 @@ public class Z extends GamePanel {
 	private static final int ENTITYCOLOURS = 6;
 	private static final float ENTITYDEPTH = 9e6f;
 	private static final float ENTITYCOLLISION = 400f;
-	private static final float ENTITYRADIUS = 32f / TILESIZE * 32f / TILESIZE / 2f * 1e6f;
-	private static final float ENTITYCENTRE = ENTITYSIZE / 2 + 0.5f;
+	private static final float ENTITYRADIUS = 32f / (float) TILESIZE * 32f / (float) TILESIZE / 2f * 1e6f;
+	private static final float ENTITYCENTRE = (float) (ENTITYSIZE / 2) + 0.5f;
 	private static final int ENTITYSCALE = 2;
 
 	private static final int ZOMBIEDEPTH = 3;
@@ -251,16 +251,16 @@ public class Z extends GamePanel {
 
 		
 		for (i = 0; i < 36000; i++) { 
-			cos[i] = (float) Math.cos(i / DEGREES);
+			cos[i] = (float) Math.cos((double) (i / DEGREES));
 			sin[(i + 9000) % 36000] = cos[i];
 		}
 		for (i = 0; i < SCREENWIDTH; i++) { 
-			rayAngleFix[i] = (float) Math.atan2((SCREENWIDTH / 2 - i), SCREENDEPTH);
-			cosRayAngleFix[i] = (float) Math.cos(rayAngleFix[i]);
+			rayAngleFix[i] = (float) Math.atan2((double) (SCREENWIDTH / 2 - i), (double) SCREENDEPTH);
+			cosRayAngleFix[i] = (float) Math.cos((double) rayAngleFix[i]);
 		}
 		for (i = 0; i < DEPTH; i++)
 			
-			zMap[i] = DEPTH * DEPTHRATIO / (DEPTH * DEPTHRATIO - i) - 1f;
+			zMap[i] = (float) DEPTH * DEPTHRATIO / ((float) DEPTH * DEPTHRATIO - (float) i) - 1f;
 
 		heightSY[0] = SCREENHEIGHT - 1; 
 
@@ -282,35 +282,35 @@ public class Z extends GamePanel {
 				r = 1f;
 			}
 			audioData[i] = new byte[2 * (int) (r * RATE)];
-			for (j = 0; j < r * RATE; j++) {
-				x = j / (r * RATE); 
-				y = 2 * x - 1f;
-				z = (float) Math.PI * j / RATE;
+			for (j = 0; (float) j < r * RATE; j++) {
+				x = (float) j / (r * RATE);
+				y = 2.0F * x - 1f;
+				z = (float) Math.PI * (float) j / RATE;
 				
 				switch (i) {
 				case PLAYERATTACKSOUND: 
-					k = (int) (AMPLITUDE / 5f * Math.random());
+					k = (int) ((double) (AMPLITUDE / 5f) * Math.random());
 					break;
 				case BOXFOUNDSOUND: 
-					k = (int) (AMPLITUDE / 5f * (1f - x) * Math.cos(500 * z));
+					k = (int) ((double) (AMPLITUDE / 5f) * (double) (1f - x) * Math.cos((double) (500 * z)));
 					break;
 				case ZOMBIEALERTSOUND: 
-					k = (int) (AMPLITUDE / 2f * Math.cos((300 - 20 * y * y) * z));
+					k = (int) ((double) (AMPLITUDE / 2f) * Math.cos((double) ((300.0F - 20.0F * y * y) * z)));
 					break;
 				case ZOMBIEATTACKSOUND: 
-					k = (int) (AMPLITUDE / 2f * Math.cos((500 - 200 * x) * z) * (Math.cos(100 * z)));
+					k = (int) ((double) (AMPLITUDE / 2f) * Math.cos((double) ((500.0F - 200.0F * x) * z)) * (Math.cos((double) (100 * z))));
 					break;
 				case AMBIENTSOUND1: 
-					k = (int) (AMPLITUDE / 2f * Math.cos((250 - 20 * y * y) * z));
+					k = (int) ((double) (AMPLITUDE / 2f) * Math.cos((double) ((250.0F - 20.0F * y * y) * z)));
 					break;
 				default: 
-					k = (int) (AMPLITUDE / 20f * x * Math.cos((500 + 500 * x) * z));
+					k = (int) ((double) (AMPLITUDE / 20f) * (double) x * Math.cos((double) ((500.0F + 500.0F * x) * z)));
 				}
 				
 				if (j < 1000)
-					k *= j / 1000f;
-				if (r * RATE - j < 1000)
-					k *= (r * RATE - j) / 1000f;
+                    k = (int) ((float) k * (float) j / 1000f);
+				if (r * RATE - (float) j < 1000.0F)
+                    k = (int) ((float) k * (r * RATE - (float) j) / 1000f);
 				
 				audioData[i][2 * j + 1] = (byte) (k & 0xff);
 				audioData[i][2 * j] = (byte) ((k >> 8) & 0xff);
@@ -334,9 +334,9 @@ public class Z extends GamePanel {
 
 		
 		for (i = 0; i < 0x10000; i++) {
-			x = 2f * (float) Math.PI / 0x10000 * i;
-			heightX[i] = (float) (1.0 - Math.cos(x) - 0.2 * Math.cos(x * 5f)) / 2f;
-			heightZ[i] = (float) (1.0 - Math.cos(x) - 0.2 * Math.cos(x * 7f)) / 2f;
+			x = 2f * (float) Math.PI / (float) 0x10000 * (float) i;
+			heightX[i] = (float) (1.0 - Math.cos((double) x) - 0.2 * Math.cos((double) (x * 5f))) / 2f;
+			heightZ[i] = (float) (1.0 - Math.cos((double) x) - 0.2 * Math.cos((double) (x * 7f))) / 2f;
 		}
 
 		
@@ -344,11 +344,11 @@ public class Z extends GamePanel {
 			for (j = 0; j < TILESIZE; j++) {
 				for (k = 0; k < TILESIZE; k++) {
 					
-					x = 0.5f - j / (float) TILESIZE;
-					if (x < 0)
+					x = 0.5f - (float) j / (float) TILESIZE;
+					if (x < (float) 0)
 						x = -x;
-					z = 0.5f - k / (float) TILESIZE;
-					if (z < 0)
+					z = 0.5f - (float) k / (float) TILESIZE;
+					if (z < (float) 0)
 						z = -z;
 					
 					switch (i) {
@@ -358,7 +358,7 @@ public class Z extends GamePanel {
 						tileColour[i][j][k] = 0x000100 * (16 + (3 * j + 17 * k) % 32);
 						if (i == FOREST) {
 							y = 100f * ((0.5f - x) * (0.5f - z) - 0.15f);
-							if (y > 0) {
+							if (y > (float) 0) {
 								tileHeight[i][j][k] = y;
 								tileColour[i][j][k] = 0x010100 + 0x000100 * (int) (15.0 * Math.random());
 							}
@@ -383,7 +383,7 @@ public class Z extends GamePanel {
 							if (i == BUILDING) {
 								tileColour[i][j][k] = 0x402020; 
 							} else { 
-								tileHeight[i][j][k] = 0;
+								tileHeight[i][j][k] = (float) 0;
 								tileColour[i][j][k] = 0x401010 + 0x010101 * (int) (10.0 * Math.random());
 							}
 					}
@@ -414,7 +414,7 @@ public class Z extends GamePanel {
 				c = -1;
 				for (k = 0; k < ZOMBIEHEIGHT; k++) {
 					
-					m = ((zombie.charAt(k + ZOMBIEHEIGHT * j) - 48) >> (2 * i)) & 3;
+					m = (((int) zombie.charAt(k + ZOMBIEHEIGHT * j) - 48) >> (2 * i)) & 3;
 					if (c != m) {
 						n++; 
 						entityColour[j][i + 2][n][ENTITYZOMBIE] = c = m;
@@ -511,10 +511,10 @@ public class Z extends GamePanel {
 		
 
 		
-		if (deadTime >= 0) {
+		if (deadTime >= 0L) {
 			deadTime -= deltaTime;
-			playerX = playerZ = 0x8080; 
-			playerA = 0; 
+			playerX = playerZ = (float) 0x8080;
+			playerA = (float) 0;
 			blood = 0; 
 			for (i = 0; i < 3; i++)
 				gauge[i] = 100f; 
@@ -527,10 +527,10 @@ public class Z extends GamePanel {
 		
 
 		
-		if (keyboard[Event.LEFT] || keyboard['a']) 
-			playerA += ROTATERATE * deltaTime;
-		if (keyboard[Event.RIGHT] || keyboard['d'])
-			playerA -= ROTATERATE * deltaTime;
+		if (keyboard[Event.LEFT] || keyboard[(int) 'a'])
+			playerA += ROTATERATE * (float) deltaTime;
+		if (keyboard[Event.RIGHT] || keyboard[(int) 'd'])
+			playerA -= ROTATERATE * (float) deltaTime;
 		playerA = (playerA + 2f * (float) Math.PI) % (2f * (float) Math.PI);
 		sinPlayerA = sin[(int) (DEGREES * playerA)];
 		cosPlayerA = cos[(int) (DEGREES * playerA)];
@@ -538,18 +538,18 @@ public class Z extends GamePanel {
 		
 		rx = playerX;
 		rz = playerZ;
-		r = deltaTime * TRANSLATERATE / (gauge[1] < STARVATION ? 2 : 1); 
-		if (keyboard[Event.UP] || keyboard['w']) { 
+		r = (float) deltaTime * TRANSLATERATE / (float) (gauge[1] < STARVATION ? 2 : 1);
+		if (keyboard[Event.UP] || keyboard[(int) 'w']) {
 			rx += -r * sinPlayerA;
 			rz += -r * cosPlayerA;
 		}
-		if (keyboard[Event.DOWN] || keyboard['s']) { 
+		if (keyboard[Event.DOWN] || keyboard[(int) 's']) {
 			rx += r * sinPlayerA;
 			rz += r * cosPlayerA;
 		}
 
 		
-		sound[PLAYERATTACKSOUND] = attacking = (draw = keyboard[' ']) && !lastAttacking;
+		sound[PLAYERATTACKSOUND] = attacking = (draw = keyboard[(int) ' ']) && !lastAttacking;
 		lastAttacking = draw;
 
 		
@@ -564,7 +564,7 @@ public class Z extends GamePanel {
 		tileType = map[px >> 8][pz >> 8];
 		playerY = 50f * (heightX[px] * heightZ[pz] - 0.1f);
 		outside = true;
-		if (playerY > -1) {
+		if (playerY > -1.0F) {
             switch (tileType) {
                 case FOREST:
                     if (tx < 0x60 || tx > 0xA0 || tz < 0x60 || tz > 0xA0) {
@@ -608,7 +608,7 @@ public class Z extends GamePanel {
 				
 				if (r < ENTITYDEPTH) {
 					draw = true; 
-					if (dx * sinPlayerA + dz * cosPlayerA < 0) { 
+					if (dx * sinPlayerA + dz * cosPlayerA < (float) 0) {
 						drawEntity = true;
 						drawList1[drawCount1++] = i;
 					}
@@ -629,7 +629,7 @@ public class Z extends GamePanel {
 						if (r > FORGETRANGE)
 							entityS[i] = IDLE;
 						if (entityS[i] == ATTACK) {
-							if ((int) ((time / 1e9) % 4) == 0)
+							if ((int) (((double) time / 1e9) % 4.0) == 0)
 								sound[ZOMBIEALERTSOUND] = true; 
 							
 							tx = (int) entityX[i] & 0xff00;
@@ -649,20 +649,20 @@ public class Z extends GamePanel {
 									
 									
 									if (map[tx >> 8][tz >> 8] == FOREST ? ((int) entityWX[i] & 0xff) == 0x80 : dx * dx > dz * dz ^ Math.random() < 0.25) {
-										if (dx > 0) { 
-											entityWX[i] = tx;
-											entityWZ[i] = tz + 0x80;
+										if (dx > (float) 0) {
+											entityWX[i] = (float) tx;
+											entityWZ[i] = (float) (tz + 0x80);
 										} else {
-											entityWX[i] = tx + 0x100;
-											entityWZ[i] = tz + 0x80;
+											entityWX[i] = (float) (tx + 0x100);
+											entityWZ[i] = (float) (tz + 0x80);
 										}
 									} else {
-										if (dz > 0) { 
-											entityWX[i] = tx + 0x80;
-											entityWZ[i] = tz;
+										if (dz > (float) 0) {
+											entityWX[i] = (float) (tx + 0x80);
+											entityWZ[i] = (float) tz;
 										} else {
-											entityWX[i] = tx + 0x80;
-											entityWZ[i] = tz + 0x100;
+											entityWX[i] = (float) (tx + 0x80);
+											entityWZ[i] = (float) (tz + 0x100);
 										}
 									}
 								}
@@ -672,24 +672,24 @@ public class Z extends GamePanel {
 								x = sin[(int) (DEGREES * entityA[i])];
 								z = cos[(int) (DEGREES * entityA[i])];
 								y = rx * z - rz * x;
-								if (y > 0)
-									entityA[i] -= deltaTime * ROTATERATE * j / 10f;
+								if (y > (float) 0)
+									entityA[i] -= (float) deltaTime * ROTATERATE * (float) j / 10f;
 								else
-									entityA[i] += deltaTime * ROTATERATE * j / 10f;
+									entityA[i] += (float) deltaTime * ROTATERATE * (float) j / 10f;
 								entityA[i] = (entityA[i] + 2f * (float) Math.PI) % (2f * (float) Math.PI);
 							}
 							
 							if (r > ENTITYCOLLISION) {
 								entityLTX[i] = (int) entityX[i] & 0xff00;
 								entityLTZ[i] = (int) entityZ[i] & 0xff00;
-								entityX[i] += deltaTime * TRANSLATERATE * x / 2;
-								entityZ[i] += deltaTime * TRANSLATERATE * z / 2;
+								entityX[i] += (float) deltaTime * TRANSLATERATE * x / 2.0F;
+								entityZ[i] += (float) deltaTime * TRANSLATERATE * z / 2.0F;
 							}
 						}
-						
-						entityX[i] += deltaTime * TRANSLATERATE * (Math.random() - 0.5f) / 10f;
-						entityZ[i] += deltaTime * TRANSLATERATE * (Math.random() - 0.5f) / 10f;
-						entityA[i] += deltaTime * ROTATERATE * (Math.random() - 0.5f);
+
+                        entityX[i] = (float) ((double) entityX[i] + (double) deltaTime * (double) TRANSLATERATE * (Math.random() - 0.5) / 10);
+                        entityZ[i] = (float) ((double) entityZ[i] + (double) deltaTime * (double) TRANSLATERATE * (Math.random() - 0.5) / 10);
+                        entityA[i] = (float) ((double) entityA[i] + (double) deltaTime * (double) ROTATERATE * (Math.random() - 0.5));
 						entityA[i] = (entityA[i] + 2f * (float) Math.PI) % (2f * (float) Math.PI);
 					}
 				}
@@ -697,7 +697,7 @@ public class Z extends GamePanel {
 				if (r < ENTITYCOLLISION) {
 					if (i < ENEMIES) { 
 						sound[ZOMBIEATTACKSOUND] = true; 
-						gauge[2] -= deltaTime * ZOMBIEDAMAGE;
+						gauge[2] -= (float) deltaTime * ZOMBIEDAMAGE;
 					} else { 
 						j = (i & 3) % 3;
 						entityS[i] = DEAD;
@@ -711,9 +711,9 @@ public class Z extends GamePanel {
 			
 			if (!draw && i >= ENEMIES) { 
 				
-				n = (int) (buildings * (float) Math.random());
-				x = TILESIZE * (buildingX[n] + 0.1f + 0.8f * (float) Math.random());
-				z = TILESIZE * (buildingZ[n] + 0.1f + 0.8f * (float) Math.random());
+				n = (int) ((float) buildings * (float) Math.random());
+				x = (float) TILESIZE * ((float) buildingX[n] + 0.1f + 0.8f * (float) Math.random());
+				z = (float) TILESIZE * ((float) buildingZ[n] + 0.1f + 0.8f * (float) Math.random());
 				dx = x - playerX;
 				dz = z - playerZ;
 				if (dx * dx + dz * dz < ENTITYDEPTH) { 
@@ -725,18 +725,18 @@ public class Z extends GamePanel {
 					draw = true;
 				}
 				
-				if (Math.random() > SPAWNOUTSIDE)
+				if (Math.random() > (double) SPAWNOUTSIDE)
 					draw = true;
 			}
 			if (!draw) { 
 				
-				ray = (int) (36000 * Math.random());
-				r = TILESIZE * (3f * (float) Math.random() + 6f);
+				ray = (int) (36000.0 * Math.random());
+				r = (float) TILESIZE * (3f * (float) Math.random() + 6f);
 				entityX[i] = playerX + r * sin[ray];
 				entityZ[i] = playerZ + r * cos[ray];
 				entityS[i] = IDLE;
 				if (i < ENEMIES)
-					entityA[i] = (int) (36000 * Math.random());
+					entityA[i] = (float) (int) (36000.0 * Math.random());
 			}
 		}
 
@@ -820,7 +820,7 @@ public class Z extends GamePanel {
 				
 
 				
-				if (heightYT[i] <= 0) 
+				if (heightYT[i] <= (float) 0)
 					c = 0x000020 + 0x010101 * (0x20 * i) / DEPTH;
 				else { 
 					c = tileColour[tileType][tx & 0xff][tz & 0xff];
@@ -858,14 +858,14 @@ public class Z extends GamePanel {
 						m = (int) (DEGREES * entityA[k]);
 
 
-                        dx /= ENTITYSCALE;
-                        dz /= ENTITYSCALE;
+                        dx = dx / (float) ENTITYSCALE;
+                        dz = dz / (float) ENTITYSCALE;
 
 						
-						ex = (int) (dx * cos[m] - dz * sin[m] + ENTITYCENTRE + 1) - 1;
+						ex = (int) (dx * cos[m] - dz * sin[m] + ENTITYCENTRE + 1.0F) - 1;
 						if (ex < 0 || ex >= ENTITYSIZE)
 							continue;
-						ez = (int) (dx * sin[m] + dz * cos[m] + ENTITYCENTRE + 1) - 1;
+						ez = (int) (dx * sin[m] + dz * cos[m] + ENTITYCENTRE + 1.0F) - 1;
 						if (ez < 0 || ez >= ENTITYSIZE)
 							continue;
 
@@ -887,7 +887,7 @@ public class Z extends GamePanel {
 					lsy = heightSY[i - 1];
 					for (j = 0; j < entityColours[ex][ez][n]; j++) {
 						
-						y = heightY[i] + 0.045f * (float) entityHeight[ex][ez][j][n] * ENTITYSCALE;
+						y = heightY[i] + 0.045f * (float) entityHeight[ex][ez][j][n] * (float) ENTITYSCALE;
 						m = entityColour[ex][ez][j][n];
 						if (n == ENTITYZOMBIE)
 							switch (m) { 
@@ -973,21 +973,21 @@ public class Z extends GamePanel {
 		
 
 		
-		if (playerX != 0x8080 || playerZ != 0x8080) {
-			gauge[0] -= deltaTime * SUPPLYUSAGE;
-			gauge[1] -= deltaTime * SUPPLYUSAGE / 2;
-			gauge[2] -= gauge[0] < WATERLOSS ? deltaTime * SUPPLYUSAGE * 2 : 0;
+		if (playerX != (float) 0x8080 || playerZ != (float) 0x8080) {
+			gauge[0] -= (float) deltaTime * SUPPLYUSAGE;
+			gauge[1] -= (float) deltaTime * SUPPLYUSAGE / 2.0F;
+			gauge[2] -= gauge[0] < WATERLOSS ? (float) deltaTime * SUPPLYUSAGE * 2.0F : (float) 0;
 		}
 
 		
 		for (i = 0; i < 3; i++) {
-			if (gauge[i] < 0) {
-				if (deadTime <= 0)
+			if (gauge[i] < (float) 0) {
+				if (deadTime <= 0L)
 					deadTime = DEADTIME;
-				gauge[i] = 0; 
+				gauge[i] = (float) 0;
 			}
 			for (j = 0; j < 100; j++) {
-				c = j < gauge[i] ? (0xff << (8 * i)) : 0;
+				c = (float) j < gauge[i] ? (0xff << (8 * i)) : 0;
 				for (k = 0; k < 8; k++) {
 					screenData[SCREENWIDTH * (10 + 10 * i + k) + 10 + j] = c;
 				}
@@ -999,8 +999,8 @@ public class Z extends GamePanel {
 		draw = gauge[2] < BLOODLOSS; 
 		for (i = 0; i < 150; i++) {
 			for (j = 0; j < i; j++) {
-				n = -80 + i + (keyboard[' '] ? 0 : 100) + SCREENWIDTH / 2;
-				m = 40 + j + (keyboard[' '] ? 350 : 16);
+				n = -80 + i + (keyboard[(int) ' '] ? 0 : 100) + SCREENWIDTH / 2;
+				m = 40 + j + (keyboard[(int) ' '] ? 350 : 16);
 				if (m < SCREENHEIGHT)
 					screenData[SCREENWIDTH * m + n] = draw ? 0 : 0x040208 + 0x010101 * (150 - i + j) / 10 + 0x010000 * ((300 - i + j) * blood / 500);
 				else
@@ -1009,11 +1009,11 @@ public class Z extends GamePanel {
 		}
 		
 		for (i = 0; i < SCREENWIDTH / 2; i++) {
-			n = SCREENWIDTH / 2 + i + (keyboard[' '] ? 0 : 100);
+			n = SCREENWIDTH / 2 + i + (keyboard[(int) ' '] ? 0 : 100);
 			if (n >= SCREENWIDTH)
 				break;
 			for (j = 0; j < 32 + i / 10; j++) {
-				m = i - j + (keyboard[' '] ? 350 : 16);
+				m = i - j + (keyboard[(int) ' '] ? 350 : 16);
 				if (m >= 0 && m < SCREENHEIGHT && j < 2 * i) {
 					screenData[SCREENWIDTH * m + n] = draw ? 0 : 0x040208 + 0x010101 * j + 0x010000 * ((300 - i + j) * blood / 1000);
 				}
@@ -1021,9 +1021,9 @@ public class Z extends GamePanel {
 		}
 
 		
-		if ((int) ((time / 1e9) % 9) == 0)
+		if ((int) (((double) time / 1e9) % 9.0) == 0)
 			sound[AMBIENTSOUND1] = true;
-		if ((int) ((time / 1e9) % 25) == 0)
+		if ((int) (((double) time / 1e9) % 25.0) == 0)
 			sound[AMBIENTSOUND2] = true;
 
 		
@@ -1038,7 +1038,7 @@ public class Z extends GamePanel {
 		
 		
 
-		if (deadTime < 0 && gs != null) {
+		if (deadTime < 0L && gs != null) {
 			gs.drawImage(screen, 0, 0, null);
 		}
 		Thread.yield();
@@ -1050,9 +1050,9 @@ public class Z extends GamePanel {
 		if (awtEvent instanceof KeyEvent) {
             KeyEvent e = (KeyEvent) awtEvent;
 			if (e.getID() == KeyEvent.KEY_PRESSED) {
-				keyboard[e.getKeyChar()] = true;
+				keyboard[(int) e.getKeyChar()] = true;
 			} else if (e.getID() == KeyEvent.KEY_RELEASED) {
-				keyboard[e.getKeyChar()] = false;
+				keyboard[(int) e.getKeyChar()] = false;
 			}
 		}
 	}

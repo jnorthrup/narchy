@@ -17,7 +17,7 @@ public class drum_machine_01 {
         synth.setup();
         while (true) {
             synth.keyDown(148);
-            Util.sleepMS(300);
+            Util.sleepMS(300L);
         }
     }
 

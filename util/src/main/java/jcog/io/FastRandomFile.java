@@ -23,7 +23,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
   protected java.io.RandomAccessFile raf = null;
     protected byte[] buff = new byte[65536];
   protected int buffptr = 0;
-  protected long fp = 0;
+  protected long fp = 0L;
 
   public FastRandomFile(String name, String mode, String inCharset) throws java.io.IOException
   {
@@ -97,8 +97,8 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 
 
 
-    if (circularFileSize > 0 && fp == circularFileSize)
-      seek(0);
+    if (circularFileSize > 0L && fp == circularFileSize)
+      seek(0L);
     fp++;
     buff[buffptr++] = b;
     if (buffptr == buff.length)
@@ -135,13 +135,13 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
       byte b4 = (byte)(s & 0xFF);
 
 
-      int skipBackWriteAmount = Math.min(4, (int)(fp - buffptr - targetFp));
+      int skipBackWriteAmount = Math.min(4, (int)(fp - (long) buffptr - targetFp));
     if (skipBackWriteAmount > 0)
     {
       intWriteBuf[0] = b1; intWriteBuf[1] = b2; intWriteBuf[2] = b3; intWriteBuf[3] = b4;
       raf.seek(targetFp);
       raf.write(intWriteBuf, 0, skipBackWriteAmount);
-      raf.seek(fp - buffptr);
+      raf.seek(fp - (long) buffptr);
     }
 
     if (skipBackWriteAmount < 1)
@@ -156,7 +156,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 
   public void write(byte[] b, int off, int len) throws java.io.IOException
   {
-    if (/*crypto || */circularFileSize > 0)
+    if (/*crypto || */circularFileSize > 0L)
     {
       while (len-- > 0)
         write(b[off++]);
@@ -170,7 +170,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
         {
           System.arraycopy(b, off, buff, buffptr, len);
           buffptr += len;
-          fp += len;
+            fp = fp + (long) len;
           break;
         }
         else
@@ -179,7 +179,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
           buffptr += rem;
           off += rem;
           len -= rem;
-          fp += rem;
+            fp = fp + (long) rem;
           flush();
         }
       }
@@ -251,7 +251,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 
   public long readLong() throws java.io.IOException
   {
-    return ((long)(readInt()) << 32) + (readInt() & 0xFFFFFFFFL);
+    return ((long)(readInt()) << 32) + ((long) readInt() & 0xFFFFFFFFL);
   }
 
   
@@ -284,14 +284,14 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
         int c;
         while (incount < utflen) {
         
-        c = bytearr[incount] & 0xFF;
+        c = (int) bytearr[incount] & 0xFF;
         if (c > 127) break;
         incount++;
         chararr[outcount++]=(char)c;
       }
 
         while (incount < utflen) {
-        c = bytearr[incount] & 0xFF;
+        c = (int) bytearr[incount] & 0xFF;
         if (c < 128) {
           incount++;
           chararr[outcount++]=(char)c;
@@ -307,7 +307,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
                     incount += 2;
                     if (incount > utflen)
                         throw new java.io.UTFDataFormatException("bad UTF data: missing second byte of 2 byte char at " + incount);
-                    c2 = bytearr[incount - 1];
+                    c2 = (int) bytearr[incount - 1];
 
                     if ((c2 & 0xC0) != 0x80)
                         throw new java.io.UTFDataFormatException("bad UTF data: second byte format after 110xxxx is wrong char: 0x" +
@@ -319,8 +319,8 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
                     incount += 3;
                     if (incount > utflen)
                         throw new java.io.UTFDataFormatException("bad UTF data: missing extra bytes of 3 byte char at " + incount);
-                    c2 = bytearr[incount - 2];
-                    int c3 = bytearr[incount - 1];
+                    c2 = (int) bytearr[incount - 2];
+                    int c3 = (int) bytearr[incount - 1];
 
                     if (((c2 & 0xC0) != 0x80) || ((c3 & 0xC0) != 0x80))
                         throw new java.io.UTFDataFormatException("bad UTF data: extra byte format after 1110xxx is wrong char2: 0x" +
@@ -337,7 +337,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
     }
     else
     {
-      int len = readShort();
+      int len = (int) readShort();
       if (len > 0)
       {
           byte[] bytes = new byte[len];
@@ -372,14 +372,14 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
         int c;
         while (incount < utflen) {
         
-        c = bytearr[incount] & 0xFF;
+        c = (int) bytearr[incount] & 0xFF;
         if (c > 127) break;
         incount++;
         sb.setCharAt(outcount++, (char)c);
       }
 
         while (incount < utflen) {
-        c = bytearr[incount] & 0xFF;
+        c = (int) bytearr[incount] & 0xFF;
         if (c < 128) {
           incount++;
           sb.setCharAt(outcount++, (char)c);
@@ -395,7 +395,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
                     incount += 2;
                     if (incount > utflen)
                         throw new java.io.UTFDataFormatException("bad UTF data: missing second byte of 2 byte char at " + incount);
-                    c2 = bytearr[incount - 1];
+                    c2 = (int) bytearr[incount - 1];
 
                     if ((c2 & 0xC0) != 0x80)
                         throw new java.io.UTFDataFormatException("bad UTF data: second byte format after 110xxxx is wrong char: 0x" +
@@ -407,8 +407,8 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
                     incount += 3;
                     if (incount > utflen)
                         throw new java.io.UTFDataFormatException("bad UTF data: missing extra bytes of 3 byte char at " + incount);
-                    c2 = bytearr[incount - 2];
-                    int c3 = bytearr[incount - 1];
+                    c2 = (int) bytearr[incount - 2];
+                    int c3 = (int) bytearr[incount - 1];
 
                     if (((c2 & 0xC0) != 0x80) || ((c3 & 0xC0) != 0x80))
                         throw new java.io.UTFDataFormatException("bad UTF data: extra byte format after 1110xxx is wrong char2: 0x" +
@@ -427,7 +427,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
     else
     {
       
-      int len = readShort();
+      int len = (int) readShort();
       if (len > 0)
       {
           byte[] bytes = new byte[len];
@@ -448,7 +448,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
         int c = 0;
 
       for (int i = 0; i < strlen; i++) {
-        c = s.charAt(i);
+        c = (int) s.charAt(i);
         if (c < 128) {
           utflen++;
         } else if (c > 0x07FF) {
@@ -473,7 +473,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
         write((byte) ((utflen) & 0xFF));
       }
       for (int i = 0; i < strlen; i++) {
-        c = s.charAt(i);
+        c = (int) s.charAt(i);
         if (c < 128) {
           write((byte) c);
         } else if (c > 0x07FF) {
@@ -488,15 +488,15 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
     }
     else
     {
-      if (s.length() > Short.MAX_VALUE)
+      if (s.length() > (int) Short.MAX_VALUE)
       {
         System.out.println("WARNING: String length exceeded 32k!!! Truncating...");
-        writeShort(Short.MAX_VALUE);
-        write(s.substring(0, Short.MAX_VALUE).getBytes(myCharset));
+        writeShort((int) Short.MAX_VALUE);
+        write(s.substring(0, (int) Short.MAX_VALUE).getBytes(myCharset));
       }
       else
       {
-        writeShort((short)s.length());
+        writeShort((int) (short) s.length());
         write(s.getBytes(myCharset));
       }
     }
@@ -534,14 +534,14 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 
   public void writeLong(long s) throws java.io.IOException
   {
-    writeBuffer[0] = (byte)((s >>> 56) & 0xFF);
-    writeBuffer[1] = (byte)((s >>> 48) & 0xFF);
-    writeBuffer[2] = (byte)((s >>> 40) & 0xFF);
-    writeBuffer[3] = (byte)((s >>> 32) & 0xFF);
-    writeBuffer[4] = (byte)((s >>> 24) & 0xFF);
-    writeBuffer[5] = (byte)((s >>> 16) & 0xFF);
-    writeBuffer[6] = (byte)((s >>> 8) & 0xFF);
-    writeBuffer[7] = (byte)(s & 0xFF);
+    writeBuffer[0] = (byte)((s >>> 56) & 0xFFL);
+    writeBuffer[1] = (byte)((s >>> 48) & 0xFFL);
+    writeBuffer[2] = (byte)((s >>> 40) & 0xFFL);
+    writeBuffer[3] = (byte)((s >>> 32) & 0xFFL);
+    writeBuffer[4] = (byte)((s >>> 24) & 0xFFL);
+    writeBuffer[5] = (byte)((s >>> 16) & 0xFFL);
+    writeBuffer[6] = (byte)((s >>> 8) & 0xFFL);
+    writeBuffer[7] = (byte)(s & 0xFFL);
     write(writeBuffer, 0, 8);
   }
 
@@ -603,7 +603,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
       int len = s.length();
     for (int i = 0; i < len ; i++)
     {
-      int v = s.charAt(i);
+      int v = (int) s.charAt(i);
       write((byte)((v >>> 8) & 0xFF));
       write((byte)(v & 0xFF));
     }
@@ -614,14 +614,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
     raf.readFully(b, off, len);
 
 
-
-
-
-
-
-
-
-      fp += len;
+      fp = fp + (long) len;
   }
 
   public char readChar() throws java.io.IOException
@@ -661,7 +654,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 
   public int skipBytes(int n) throws java.io.IOException
   {
-    seek(getFilePointer() + n);
+    seek(getFilePointer() + (long) n);
     return n;
   }
 

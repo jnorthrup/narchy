@@ -252,7 +252,7 @@ public abstract class RelationConstraint<U extends Unify> extends UnifyConstrain
 
             if (x instanceof Compound && y instanceof Compound) {
                 Op xo = x.op();
-                if (xo.set && y.opID() == xo.id) {
+                if (xo.set && y.opID() == (int) xo.id) {
                     Subterms xx = x.subterms(), yy = y.subterms();
                     if (xx.equals(yy))
                         return true;
@@ -287,7 +287,7 @@ public abstract class RelationConstraint<U extends Unify> extends UnifyConstrain
                 return false;
 
             Op xo = x.op();
-            return xo.set && (xo.id == y.opID());
+            return xo.set && ((int) xo.id == y.opID());
         }
     }
 

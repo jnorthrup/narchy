@@ -95,17 +95,17 @@ public class qfiles {
 			version = b.get();
 			encoding = b.get();
 			bits_per_pixel = b.get();
-			xmin = b.getShort() & 0xffff;
-			ymin = b.getShort() & 0xffff;
-			xmax = b.getShort() & 0xffff;
-			ymax = b.getShort() & 0xffff;
-			hres = b.getShort() & 0xffff;
-			vres = b.getShort() & 0xffff;
+			xmin = (int) b.getShort() & 0xffff;
+			ymin = (int) b.getShort() & 0xffff;
+			xmax = (int) b.getShort() & 0xffff;
+			ymax = (int) b.getShort() & 0xffff;
+			hres = (int) b.getShort() & 0xffff;
+			vres = (int) b.getShort() & 0xffff;
 			b.get(palette = new byte[PALETTE_SIZE]);
 			reserved = b.get();
 			color_planes = b.get();
-			bytes_per_line = b.getShort() & 0xffff;
-			palette_type = b.getShort() & 0xffff;
+			bytes_per_line = (int) b.getShort() & 0xffff;
+			palette_type = (int) b.getShort() & 0xffff;
 			b.get(filler = new byte[FILLER_SIZE]);
 
 			
@@ -147,18 +147,18 @@ public class qfiles {
 			b.order(ByteOrder.LITTLE_ENDIAN);
 
 			
-			id_length = b.get() & 0xFF;
-			colormap_type = b.get() & 0xFF;
-			image_type = b.get() & 0xFF;
-			colormap_index = b.getShort() & 0xFFFF;
-			colormap_length = b.getShort() & 0xFFFF;
-			colormap_size = b.get() & 0xFF;
-			x_origin = b.getShort() & 0xFFFF;
-			y_origin = b.getShort() & 0xFFFF;
-			width = b.getShort() & 0xFFFF;
-			height = b.getShort() & 0xFFFF;
-			pixel_size = b.get() & 0xFF;
-			attributes = b.get() & 0xFF;
+			id_length = (int) b.get() & 0xFF;
+			colormap_type = (int) b.get() & 0xFF;
+			image_type = (int) b.get() & 0xFF;
+			colormap_index = (int) b.getShort() & 0xFFFF;
+			colormap_length = (int) b.getShort() & 0xFFFF;
+			colormap_size = (int) b.get() & 0xFF;
+			x_origin = (int) b.getShort() & 0xFFFF;
+			y_origin = (int) b.getShort() & 0xFFFF;
+			width = (int) b.getShort() & 0xFFFF;
+			height = (int) b.getShort() & 0xFFFF;
+			pixel_size = (int) b.get() & 0xFF;
+			attributes = (int) b.get() & 0xFF;
 
 			
 			data = b.slice();
@@ -174,7 +174,7 @@ public class qfiles {
 	========================================================================
 	*/
 	
-	public static final int IDALIASHEADER =	(('2'<<24)+('P'<<16)+('D'<<8)+'I');
+	public static final int IDALIASHEADER =	(((int) '2' <<24)+((int) 'P' <<16)+((int) 'D' <<8)+ (int) 'I');
 	public static final int ALIAS_VERSION = 8;
 	
 	//public static final int MAX_TRIANGLES = 4096;
@@ -194,8 +194,8 @@ public class qfiles {
 	}
 
 	public static class dtriangle_t {
-		public final short[] index_xyz = { 0, 0, 0 };
-		public final short[] index_st = { 0, 0, 0 };
+		public final short[] index_xyz = {(short) 0, (short) 0, (short) 0};
+		public final short[] index_st = {(short) 0, (short) 0, (short) 0};
 		
 		public dtriangle_t(ByteBuffer b) {
 			index_xyz[0] = b.getShort();
@@ -215,8 +215,8 @@ public class qfiles {
 	public static final int DTRIVERTX_SIZE = 4;
 	
 	public static class  daliasframe_t {
-		public final float[] scale = {0, 0, 0}; 
-		public final float[] translate = {0, 0, 0};	
+		public final float[] scale = {(float) 0, (float) 0, (float) 0};
+		public final float[] translate = {(float) 0, (float) 0, (float) 0};
 		public final String name; 
 		public int[] verts;	
 		
@@ -307,7 +307,7 @@ public class qfiles {
 	========================================================================
 	*/
 	
-	public static final int IDSPRITEHEADER = (('2'<<24)+('S'<<16)+('D'<<8)+'I');
+	public static final int IDSPRITEHEADER = (((int) '2' <<24)+((int) 'S' <<16)+((int) 'D' <<8)+ (int) 'I');
 	public static final int SPRITE_VERSION = 2;
 
 	public static class dsprframe_t {
@@ -404,7 +404,7 @@ public class qfiles {
 	==============================================================================
 	*/
 
-	public static final int IDBSPHEADER = (('P'<<24)+('S'<<16)+('B'<<8)+'I');
+	public static final int IDBSPHEADER = (((int) 'P' <<24)+((int) 'S' <<16)+((int) 'B' <<8)+ (int) 'I');
 
 	
 
@@ -443,9 +443,9 @@ public class qfiles {
 			firstface = bb.getInt();
 			numfaces = bb.getInt();
 		}
-		public final float[] mins = { 0, 0, 0 };
-		public final float[] maxs = { 0, 0, 0 };
-		public final float[] origin = { 0, 0, 0 }; 
+		public final float[] mins = {(float) 0, (float) 0, (float) 0};
+		public final float[] maxs = {(float) 0, (float) 0, (float) 0};
+		public final float[] origin = {(float) 0, (float) 0, (float) 0};
 		public final int headnode;
 		public final int firstface;
 		public final int numfaces; 
@@ -458,7 +458,7 @@ public class qfiles {
 		
 		public static final int SIZE = 3 * 4; 
 		
-		public final float[] point = { 0, 0, 0 };
+		public final float[] point = {(float) 0, (float) 0, (float) 0};
 		
 		public dvertex_t(ByteBuffer b) {
 			point[0] = b.getFloat();
@@ -482,7 +482,7 @@ public class qfiles {
 			type = (bb.getInt());
 		}
 
-		public final float[] normal = { 0, 0, 0 };
+		public final float[] normal = {(float) 0, (float) 0, (float) 0};
 		public final float dist;
 		public final int type; 
 
@@ -508,16 +508,16 @@ public class qfiles {
 			for (int j = 0; j < 3; j++)
 				maxs[j] = bb.getShort();
 
-			firstface = bb.getShort() & 0xffff;
-			numfaces = bb.getShort() & 0xffff;
+			firstface = (int) bb.getShort() & 0xffff;
+			numfaces = (int) bb.getShort() & 0xffff;
 
 		}
 
 		public final int planenum;
 		public final int[] children = { 0, 0 };
 		
-		public final short[] mins = { 0, 0, 0 }; 
-		public final short[] maxs = { 0, 0, 0 };
+		public final short[] mins = {(short) 0, (short) 0, (short) 0};
+		public final short[] maxs = {(short) 0, (short) 0, (short) 0};
 
 		/*
 		unsigned short	firstface;
@@ -560,7 +560,7 @@ public class qfiles {
 		public final int lightofs; 
 		
 		public dface_t(ByteBuffer b) {
-			planenum = b.getShort() & 0xFFFF;
+			planenum = (int) b.getShort() & 0xFFFF;
 			side = b.getShort();
 			firstedge = b.getInt();
 			numedges = b.getShort();
@@ -592,11 +592,11 @@ public class qfiles {
 			maxs[1] = bb.getShort();
 			maxs[2] = bb.getShort();
 
-			firstleafface = bb.getShort() & 0xffff;
-			numleaffaces = bb.getShort() & 0xffff;
+			firstleafface = (int) bb.getShort() & 0xffff;
+			numleaffaces = (int) bb.getShort() & 0xffff;
 
-			firstleafbrush = bb.getShort() & 0xffff;
-			numleafbrushes = bb.getShort() & 0xffff;
+			firstleafbrush = (int) bb.getShort() & 0xffff;
+			numleafbrushes = (int) bb.getShort() & 0xffff;
 		}
 
 		public static final int SIZE = 4 + 8 * 2 + 4 * 2;
@@ -606,8 +606,8 @@ public class qfiles {
 		public final short cluster;
 		public final short area;
 
-		public final short[] mins = { 0, 0, 0 }; 
-		public final short[] maxs = { 0, 0, 0 };
+		public final short[] mins = {(short) 0, (short) 0, (short) 0};
+		public final short[] maxs = {(short) 0, (short) 0, (short) 0};
 
 		public final int firstleafface; 
 		public final int numleaffaces; 
@@ -621,7 +621,7 @@ public class qfiles {
 		public dbrushside_t(ByteBuffer bb) {
 			bb.order(ByteOrder.LITTLE_ENDIAN);
 
-			planenum = bb.getShort() & 0xffff;
+			planenum = (int) bb.getShort() & 0xffff;
 			texinfo = bb.getShort();
 		}
 

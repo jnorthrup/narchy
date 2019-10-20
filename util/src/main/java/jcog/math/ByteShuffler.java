@@ -13,17 +13,17 @@ public class ByteShuffler {
 
     public byte[] shuffle(Random rng, int len, boolean copy) {
         assert(len >= 2 && len < 127);
-        for (byte i = 0; i < ((byte)len); i++)
-            order[i] = i; 
+        for (byte i = (byte) 0; (int) i < (int) ((byte) len); i++)
+            order[(int) i] = i;
 
-        long rndInt = 0;
+        long rndInt = 0L;
         int generate = 0;
         for (int i = 0; i < len; i++) {
             if ((generate++ & 8) == 0)
                 rndInt = rng.nextLong();
             else
-                rndInt >>= 8;
-            int j = ((int)(rndInt & 0xff)) % len;
+                rndInt >>= 8L;
+            int j = ((int)(rndInt & 0xffL)) % len;
             if (i!=j) {
                 byte x = order[i];
                 order[i] = order[j];
@@ -50,14 +50,14 @@ public class ByteShuffler {
 
         assert(len >= 2 && len < 127);
 
-        long rndInt = 0;
+        long rndInt = 0L;
         int generate = 0;
         for (int i = from; i < to; i++) {
             if ((generate++ & 8) == 0)
                 rndInt = rng.nextLong();
             else
-                rndInt >>= 8;
-            int j = from + ((int)(rndInt & 0xff)) % len;
+                rndInt >>= 8L;
+            int j = from + ((int)(rndInt & 0xffL)) % len;
             if (i!=j) {
                 Object x = a[i];
                 a[i] = a[j];

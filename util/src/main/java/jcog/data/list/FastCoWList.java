@@ -390,7 +390,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     public double sumBy(FloatFunction<X> each) {
         double sum = 0.0;
         for (X x : array()) {
-            double floatValueOf = each.floatValueOf(x);
+            double floatValueOf = (double) each.floatValueOf(x);
             sum += floatValueOf;
         }
         return sum;
@@ -406,7 +406,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
 
     /** NaN valued items are not included */
     public double meanBy(ToDoubleFunction<X> each) {
-        double s =  0;
+        double s = (double) 0;
         int i = 0;
         for (X x : array()) {
             double v = each.applyAsDouble(x);
@@ -415,20 +415,20 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
                 i++;
             }
         }
-        return i > 0 ? s/i : Float.NaN;
+        return i > 0 ? s/ (double) i : (double) Float.NaN;
     }
     /** NaN valued items are not included */
     public double meanByFloat(FloatFunction<X> each) {
-        double s =  0;
+        double s = (double) 0;
         int i = 0;
         for (X x : array()) {
             float v = each.floatValueOf(x);
             if (v==v) {
-                s += v;
+                s = s + (double) v;
                 i++;
             }
         }
-        return i > 0 ? s/i : Float.NaN;
+        return i > 0 ? s/ (double) i : (double) Float.NaN;
     }
 
     public <Y> Y[] toArray(Y[] _target, Function<X, Y> f) {

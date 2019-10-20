@@ -102,7 +102,7 @@ public enum DynamicStatementTruth { ;
 
                         if (tdt == DTERNAL)
                             tdt = 0;
-                        long tWhen = (subjOrPred ? (-tdt) : (+tdt));
+                        long tWhen = (long) (subjOrPred ? (-tdt) : (+tdt));
 
                         if (xx.subs() != 2)
                             return Null; //something invalid happened
@@ -133,7 +133,7 @@ public enum DynamicStatementTruth { ;
 
                 long cs = c.shift();
                 //temporal information not available or was destroyed
-                outerDT = cs == ETERNAL ? DTERNAL : Tense.occToDT(subjOrPred ? -cs - sect.eventRange() : cs);
+                outerDT = cs == ETERNAL ? DTERNAL : Tense.occToDT(subjOrPred ? -cs - (long) sect.eventRange() : cs);
 
             } else {
 

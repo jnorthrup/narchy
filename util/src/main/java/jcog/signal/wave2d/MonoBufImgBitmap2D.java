@@ -6,7 +6,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.util.function.Supplier;
-import java.util.stream.IntStream;
 
 /**
  * 2D monochrome adapter to BufferedImage
@@ -51,22 +50,22 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
             } else {
                 float sum = rFactor + gFactor + bFactor;
                 if (sum < Float.MIN_NORMAL)
-                    return 0;
+                    return (float) 0;
 
                 int[] rgb = raster.getPixel(xx, yy, tmp4);
                 float r, g, b;
                 if (alpha) {
                     //HACK handle either ARGB and RGBA intelligently
                     ColorModel colormodel = img.getColorModel();
-                    r = colormodel.getRed(rgb);
-                    g = colormodel.getGreen(rgb);
-                    b = colormodel.getBlue(rgb);
+                    r = (float) colormodel.getRed(rgb);
+                    g = (float) colormodel.getGreen(rgb);
+                    b = (float) colormodel.getBlue(rgb);
 
                     //r = rgb[1]; g = rgb[2]; b = rgb[3];
                 } else {
-                    r = rgb[0];
-                    g = rgb[1];
-                    b = rgb[2];
+                    r = (float) rgb[0];
+                    g = (float) rgb[1];
+                    b = (float) rgb[2];
                 }
                 return (r * rFactor + g * gFactor + b * bFactor) / (256f * sum);
             }
@@ -128,7 +127,7 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
         if (raster != null) {
 
             if (img.getType() == BufferedImage.TYPE_BYTE_GRAY) {
-                return raster.getSample(xx, yy, 0)/256f;
+                return (float) raster.getSample(xx, yy, 0) /256f;
             } else {
 
                 /* HACK */
@@ -138,13 +137,13 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
                     //ARGB
                     switch (mode) {
                         case R:
-                            v = rgb[1];
+                            v = (float) rgb[1];
                             break;
                         case G:
-                            v = rgb[2];
+                            v = (float) rgb[2];
                             break;
                         case B:
-                            v = rgb[3];
+                            v = (float) rgb[3];
                             break;
                         case RGB:
                             int sum = 0;
@@ -152,7 +151,7 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
                                 int i1 = rgb[i];
                                 sum += i1;
                             }
-                            v = (sum) / 3f;
+                            v = (float) (sum) / 3f;
                             break;
                         default:
                             throw new UnsupportedOperationException();
@@ -160,13 +159,13 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
                 } else {
                     switch (mode) {
                         case R:
-                            v = rgb[0];
+                            v = (float) rgb[0];
                             break;
                         case G:
-                            v = rgb[1];
+                            v = (float) rgb[1];
                             break;
                         case B:
-                            v = rgb[2];
+                            v = (float) rgb[2];
                             break;
                         case RGB:
                             int sum = 0;
@@ -174,7 +173,7 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
                                 int i1 = rgb[i];
                                 sum += i1;
                             }
-                            v = (sum) / 3f;
+                            v = (float) (sum) / 3f;
                             break;
                         default:
                             throw new UnsupportedOperationException();

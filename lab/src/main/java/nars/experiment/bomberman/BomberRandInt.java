@@ -51,7 +51,7 @@ public class BomberRandInt {
      * @return a random integer
      */
     public int draw() {
-        int result = low + (int) ((high - low + 1) * nextRandom());
+        int result = low + (int) ((double) (high - low + 1) * nextRandom());
         return result;
     }
 
@@ -62,7 +62,7 @@ public class BomberRandInt {
      */
     private static double nextRandom() {
         /** pick a random element in the stack */
-        int position = (int) (Math.random() * BUFFER_SIZE);
+        int position = (int) (Math.random() * (double) BUFFER_SIZE);
         if (position == BUFFER_SIZE)
             position = BUFFER_SIZE - 1;
         /** store the value of that element */

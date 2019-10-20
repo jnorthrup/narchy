@@ -101,7 +101,7 @@ public abstract class Material {
 
         float r = m_radius;
 
-        float c = 2;
+        float c = 2.0F;
 
         float dd = Util.sqr(Math.max(ln * c, r));
 
@@ -120,7 +120,7 @@ public abstract class Material {
 
                 float xx = x * x;
                 float yy = y * y;
-                return (y < 0 && (xx + yy < rr)) || (y > 0 && (xx / rr + yy / dd < 1));
+                return (y < (float) 0 && (xx + yy < rr)) || (y > (float) 0 && (xx / rr + yy / dd < 1.0F));
             });
         }
 

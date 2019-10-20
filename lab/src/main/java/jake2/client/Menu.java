@@ -190,7 +190,7 @@ public final class Menu extends Key {
 
     static void PushMenu(xcommand_t draw, keyfunc_t key) {
 
-        if (Cvar.VariableValue("maxclients") == 1 && Globals.server_state != 0)
+        if (Cvar.VariableValue("maxclients") == 1.0F && Globals.server_state != 0)
             Cvar.Set("paused", "1");
 
 
@@ -338,7 +338,7 @@ public final class Menu extends Key {
     public static void Print(int cx, int cy, String str) {
         
         for (int n = 0; n < str.length(); n++) {
-            DrawCharacter(cx, cy, str.charAt(n) + 128);
+            DrawCharacter(cx, cy, (int) str.charAt(n) + 128);
             
             cx += 8;
         }
@@ -346,7 +346,7 @@ public final class Menu extends Key {
 
     public static void PrintWhite(int cx, int cy, String str) {
         for (int n = 0; n < str.length(); n++) {
-            DrawCharacter(cx, cy, str.charAt(n));
+            DrawCharacter(cx, cy, (int) str.charAt(n));
             
             cx += 8;
         }
@@ -592,7 +592,7 @@ public final class Menu extends Key {
     }
 
     static void Multiplayer_MenuInit() {
-        s_multiplayer_menu.x = (int) (viddef.getWidth() * 0.50f - 64);
+        s_multiplayer_menu.x = (int) ((float) viddef.getWidth() * 0.50f - 64.0F);
         s_multiplayer_menu.nitems = 0;
 
         s_join_network_server_action.type = MTYPE_ACTION;
@@ -773,7 +773,7 @@ public final class Menu extends Key {
 
     static void KeyCursorDrawFunc(menuframework_s menu) {
         if (bind_grab)
-            re.DrawChar(menu.x, menu.y + menu.cursor * 9, '=');
+            re.DrawChar(menu.x, menu.y + menu.cursor * 9, (int) '=');
         else
             re.DrawChar(menu.x, menu.y + menu.cursor * 9, 12 + (Timer
                     .Milliseconds() / 250 & 1));
@@ -819,7 +819,7 @@ public final class Menu extends Key {
 
     static void Keys_MenuInit() {
 
-        s_keys_menu.x = (int) (viddef.getWidth() * 0.50);
+        s_keys_menu.x = (int) ((double) viddef.getWidth() * 0.50);
         s_keys_menu.nitems = 0;
         s_keys_menu.cursordraw = new mcallback() {
             @Override
@@ -1198,7 +1198,7 @@ public final class Menu extends Key {
         menuaction_s item = (menuaction_s) Menu_ItemAtCursor(s_keys_menu);
 
         if (bind_grab) {
-            if (key != K_ESCAPE && key != '`') {
+            if (key != K_ESCAPE && key != (int) '`') {
 
 
                 String cmd = "bind \"" + Key.KeynumToString(key) + "\" \""
@@ -1329,7 +1329,7 @@ public final class Menu extends Key {
     }
 
     static void ControlsSetMenuItemValues() {
-        s_options_sfxvolume_slider.curvalue = Cvar.VariableValue("s_volume") * 10;
+        s_options_sfxvolume_slider.curvalue = Cvar.VariableValue("s_volume") * 10.0F;
         s_options_cdvolume_box.curvalue = 1 - ((int) Cvar
                 .VariableValue("cd_nocd"));
 
@@ -1341,26 +1341,26 @@ public final class Menu extends Key {
         	}
         }
 
-        s_options_sensitivity_slider.curvalue = (sensitivity.value) * 2;
+        s_options_sensitivity_slider.curvalue = (sensitivity.value) * 2.0F;
 
-        Cvar.SetValue("cl_run", ClampCvar(0, 1, cl_run.value));
+        Cvar.SetValue("cl_run", ClampCvar((float) 0, 1.0F, cl_run.value));
         s_options_alwaysrun_box.curvalue = (int) cl_run.value;
 
-        s_options_invertmouse_box.curvalue = m_pitch.value < 0 ? 1 : 0;
+        s_options_invertmouse_box.curvalue = m_pitch.value < (float) 0 ? 1 : 0;
 
-        Cvar.SetValue("lookspring", ClampCvar(0, 1, lookspring.value));
+        Cvar.SetValue("lookspring", ClampCvar((float) 0, 1.0F, lookspring.value));
         s_options_lookspring_box.curvalue = (int) lookspring.value;
 
-        Cvar.SetValue("lookstrafe", ClampCvar(0, 1, lookstrafe.value));
+        Cvar.SetValue("lookstrafe", ClampCvar((float) 0, 1.0F, lookstrafe.value));
         s_options_lookstrafe_box.curvalue = (int) lookstrafe.value;
 
-        Cvar.SetValue("freelook", ClampCvar(0, 1, freelook.value));
+        Cvar.SetValue("freelook", ClampCvar((float) 0, 1.0F, freelook.value));
         s_options_freelook_box.curvalue = (int) freelook.value;
 
-        Cvar.SetValue("crosshair", ClampCvar(0, 3, Globals.crosshair.value));
+        Cvar.SetValue("crosshair", ClampCvar((float) 0, 3.0F, Globals.crosshair.value));
         s_options_crosshair_box.curvalue = (int) Globals.crosshair.value;
 
-        Cvar.SetValue("in_joystick", ClampCvar(0, 1, in_joystick.value));
+        Cvar.SetValue("in_joystick", ClampCvar((float) 0, 1.0F, in_joystick.value));
         s_options_joystick_box.curvalue = (int) in_joystick.value;
 
         s_options_noalttab_box.curvalue = (int) win_noalttab.value;
@@ -1378,15 +1378,15 @@ public final class Menu extends Key {
     }
 
     static void LookspringFunc(Object unused) {
-        Cvar.SetValue("lookspring", 1 - lookspring.value);
+        Cvar.SetValue("lookspring", 1.0F - lookspring.value);
     }
 
     static void LookstrafeFunc(Object unused) {
-        Cvar.SetValue("lookstrafe", 1 - lookstrafe.value);
+        Cvar.SetValue("lookstrafe", 1.0F - lookstrafe.value);
     }
 
     static void UpdateVolumeFunc(Object unused) {
-        Cvar.SetValue("s_volume", s_options_sfxvolume_slider.curvalue / 10);
+        Cvar.SetValue("s_volume", s_options_sfxvolume_slider.curvalue / 10.0F);
     }
 
     static void UpdateCDVolumeFunc(Object unused) {
@@ -1488,9 +1488,9 @@ public final class Menu extends Key {
                 UpdateVolumeFunc(o);
             }
         };
-        s_options_sfxvolume_slider.minvalue = 0;
-        s_options_sfxvolume_slider.maxvalue = 10;
-        s_options_sfxvolume_slider.curvalue = Cvar.VariableValue("s_volume") * 10;
+        s_options_sfxvolume_slider.minvalue = (float) 0;
+        s_options_sfxvolume_slider.maxvalue = 10.0F;
+        s_options_sfxvolume_slider.curvalue = Cvar.VariableValue("s_volume") * 10.0F;
 
         s_options_cdvolume_box.type = MTYPE_SPINCONTROL;
         s_options_cdvolume_box.x = 0;
@@ -1528,8 +1528,8 @@ public final class Menu extends Key {
                 MouseSpeedFunc(o);
             }
         };
-        s_options_sensitivity_slider.minvalue = 2;
-        s_options_sensitivity_slider.maxvalue = 22;
+        s_options_sensitivity_slider.minvalue = 2.0F;
+        s_options_sensitivity_slider.maxvalue = 22.0F;
 
         s_options_alwaysrun_box.type = MTYPE_SPINCONTROL;
         s_options_alwaysrun_box.x = 0;
@@ -1888,7 +1888,7 @@ public final class Menu extends Key {
         /*
          * * draw the credits
          */
-        for (i = 0, y = (int) (viddef.getHeight() - ((cls.realtime - credits_start_time) / 40.0F)); credits[i] != null
+        for (i = 0, y = (int) ((float) viddef.getHeight() - ((float) (cls.realtime - credits_start_time) / 40.0F)); credits[i] != null
                 && y < viddef.getHeight(); y += 10, i++) {
 
             if (y <= -8)
@@ -1896,7 +1896,7 @@ public final class Menu extends Key {
 
             boolean bold = false;
             int stringoffset = 0;
-            if (credits[i].length() > 0 && credits[i].charAt(0) == '+') {
+            if (credits[i].length() > 0 && (int) credits[i].charAt(0) == (int) '+') {
                 bold = true;
                 stringoffset = 1;
             } else {
@@ -1912,9 +1912,9 @@ public final class Menu extends Key {
                 if (bold)
                     re
                             .DrawChar(x, y,
-                                    credits[i].charAt(j + stringoffset) + 128);
+                                    (int) credits[i].charAt(j + stringoffset) + 128);
                 else
-                    re.DrawChar(x, y, credits[i].charAt(j + stringoffset));
+                    re.DrawChar(x, y, (int) credits[i].charAt(j + stringoffset));
             }
         }
 
@@ -2060,7 +2060,7 @@ public final class Menu extends Key {
 
     static void Game_MenuInit() {
 
-        s_game_menu.x = (int) (viddef.getWidth() * 0.50);
+        s_game_menu.x = (int) ((double) viddef.getWidth() * 0.50);
         s_game_menu.nitems = 0;
 
         s_easy_game_action.type = MTYPE_ACTION;
@@ -2509,7 +2509,7 @@ public final class Menu extends Key {
 
     static void JoinServer_MenuInit() {
 
-        s_joinserver_menu.x = (int) (viddef.getWidth() * 0.50 - 120);
+        s_joinserver_menu.x = (int) ((double) viddef.getWidth() * 0.50 - 120.0);
         s_joinserver_menu.nitems = 0;
 
         s_joinserver_address_book_action.type = MTYPE_ACTION;
@@ -2676,7 +2676,7 @@ public final class Menu extends Key {
 
         String x = mapnames[s_startmap_list.curvalue];
 
-        int pos = x.indexOf('\n');
+        int pos = x.indexOf((int) '\n');
         if (pos == -1)
             startmap = x;
         else
@@ -2686,9 +2686,9 @@ public final class Menu extends Key {
         int timelimit = Lib.atoi(s_timelimit_field.buffer.toString());
         int fraglimit = Lib.atoi(s_fraglimit_field.buffer.toString());
 
-        Cvar.SetValue("maxclients", ClampCvar(0, maxclients, maxclients));
-        Cvar.SetValue("timelimit", ClampCvar(0, timelimit, timelimit));
-        Cvar.SetValue("fraglimit", ClampCvar(0, fraglimit, fraglimit));
+        Cvar.SetValue("maxclients", ClampCvar((float) 0, (float) maxclients, (float) maxclients));
+        Cvar.SetValue("timelimit", ClampCvar((float) 0, (float) timelimit, (float) timelimit));
+        Cvar.SetValue("fraglimit", ClampCvar((float) 0, (float) fraglimit, (float) fraglimit));
         Cvar.Set("hostname", s_hostname_field.buffer.toString());
         
         
@@ -2804,7 +2804,7 @@ public final class Menu extends Key {
         /*
          * * initialize the menu stuff
          */
-        s_startserver_menu.x = (int) (viddef.getWidth() * 0.50);
+        s_startserver_menu.x = (int) ((double) viddef.getWidth() * 0.50);
         s_startserver_menu.nitems = 0;
 
         s_startmap_list.type = MTYPE_SPINCONTROL;
@@ -2825,7 +2825,7 @@ public final class Menu extends Key {
             s_rules_box.itemnames = dm_coop_names;
         
 
-        if (Cvar.VariableValue("coop") != 0)
+        if (Cvar.VariableValue("coop") != (float) 0)
             s_rules_box.curvalue = 1;
         else
             s_rules_box.curvalue = 0;
@@ -2872,7 +2872,7 @@ public final class Menu extends Key {
         s_maxclients_field.statusbar = null;
         s_maxclients_field.length = 3;
         s_maxclients_field.visible_length = 3;
-        if (Cvar.VariableValue("maxclients") == 1)
+        if (Cvar.VariableValue("maxclients") == 1.0F)
             s_maxclients_field.buffer = new StringBuffer("8");
         else
             s_maxclients_field.buffer = new StringBuffer(Cvar
@@ -3144,7 +3144,7 @@ public final class Menu extends Key {
 
         int dmflags = (int) Cvar.VariableValue("dmflags");
 
-        s_dmoptions_menu.x = (int) (viddef.getWidth() * 0.50);
+        s_dmoptions_menu.x = (int) ((double) viddef.getWidth() * 0.50);
         s_dmoptions_menu.nitems = 0;
 
         s_falls_box.type = MTYPE_SPINCONTROL;
@@ -3519,7 +3519,7 @@ public final class Menu extends Key {
 
     static void DownloadOptions_MenuInit() {
 
-        s_downloadoptions_menu.x = (int) (viddef.getWidth() * 0.50);
+        s_downloadoptions_menu.x = (int) ((double) viddef.getWidth() * 0.50);
         s_downloadoptions_menu.nitems = 0;
 
         s_download_title.type = MTYPE_SEPARATOR;
@@ -3539,7 +3539,7 @@ public final class Menu extends Key {
             }
         };
         s_allow_download_box.itemnames = yes_no_names;
-        s_allow_download_box.curvalue = (Cvar.VariableValue("allow_download") != 0) ? 1
+        s_allow_download_box.curvalue = (Cvar.VariableValue("allow_download") != (float) 0) ? 1
                 : 0;
 
         s_allow_download_maps_box.type = MTYPE_SPINCONTROL;
@@ -3554,7 +3554,7 @@ public final class Menu extends Key {
         };
         s_allow_download_maps_box.itemnames = yes_no_names;
         s_allow_download_maps_box.curvalue = (Cvar
-                .VariableValue("allow_download_maps") != 0) ? 1 : 0;
+                .VariableValue("allow_download_maps") != (float) 0) ? 1 : 0;
 
         s_allow_download_players_box.type = MTYPE_SPINCONTROL;
         s_allow_download_players_box.x = 0;
@@ -3568,7 +3568,7 @@ public final class Menu extends Key {
         };
         s_allow_download_players_box.itemnames = yes_no_names;
         s_allow_download_players_box.curvalue = (Cvar
-                .VariableValue("allow_download_players") != 0) ? 1 : 0;
+                .VariableValue("allow_download_players") != (float) 0) ? 1 : 0;
 
         s_allow_download_models_box.type = MTYPE_SPINCONTROL;
         s_allow_download_models_box.x = 0;
@@ -3582,7 +3582,7 @@ public final class Menu extends Key {
         };
         s_allow_download_models_box.itemnames = yes_no_names;
         s_allow_download_models_box.curvalue = (Cvar
-                .VariableValue("allow_download_models") != 0) ? 1 : 0;
+                .VariableValue("allow_download_models") != (float) 0) ? 1 : 0;
 
         s_allow_download_sounds_box.type = MTYPE_SPINCONTROL;
         s_allow_download_sounds_box.x = 0;
@@ -3596,7 +3596,7 @@ public final class Menu extends Key {
         };
         s_allow_download_sounds_box.itemnames = yes_no_names;
         s_allow_download_sounds_box.curvalue = (Cvar
-                .VariableValue("allow_download_sounds") != 0) ? 1 : 0;
+                .VariableValue("allow_download_sounds") != (float) 0) ? 1 : 0;
 
         Menu_AddItem(s_downloadoptions_menu, s_download_title);
         Menu_AddItem(s_downloadoptions_menu, s_allow_download_box);
@@ -3810,7 +3810,7 @@ public final class Menu extends Key {
 
 
         String scratch = skin;
-        int pos = scratch.lastIndexOf('.');
+        int pos = scratch.lastIndexOf((int) '.');
         if (pos != -1)
             scratch = scratch.substring(0, pos) + "_i.pcx";
 
@@ -3908,8 +3908,8 @@ public final class Menu extends Key {
 
                 if (!pcxnames[k].contains("_i.pcx")) {
                     if (IconOfSkinExists(pcxnames[k], pcxnames, npcxfiles - 1)) {
-                        a = pcxnames[k].lastIndexOf('/');
-                        b = pcxnames[k].lastIndexOf('\\');
+                        a = pcxnames[k].lastIndexOf((int) '/');
+                        b = pcxnames[k].lastIndexOf((int) '\\');
 
                         if (a > b)
                             c = a;
@@ -3917,7 +3917,7 @@ public final class Menu extends Key {
                             c = b;
 
                         scratch = pcxnames[k].substring(c + 1);
-                        int pos = scratch.lastIndexOf('.');
+                        int pos = scratch.lastIndexOf((int) '.');
                         if (pos != -1)
                             scratch = scratch.substring(0, pos);
 
@@ -3935,8 +3935,8 @@ public final class Menu extends Key {
             s_pmi[s_numplayermodels].skindisplaynames = skinnames;
 
             
-            a = dirnames[i].lastIndexOf('/');
-            b = dirnames[i].lastIndexOf('\\');
+            a = dirnames[i].lastIndexOf((int) '/');
+            b = dirnames[i].lastIndexOf((int) '\\');
 
             if (a > b)
                 c = a;
@@ -3987,16 +3987,16 @@ public final class Menu extends Key {
         if (s_numplayermodels == 0)
             return false;
 
-        if (hand.value < 0 || hand.value > 2)
+        if (hand.value < (float) 0 || hand.value > 2.0F)
             Cvar.SetValue("hand", 0);
 
         String currentdirectory = skin.string;
 
         String currentskin;
-        if (currentdirectory.lastIndexOf('/') != -1) {
+        if (currentdirectory.lastIndexOf((int) '/') != -1) {
             currentskin = Lib.rightFrom(currentdirectory, '/');
             currentdirectory = Lib.leftFrom(currentdirectory, '/');
-        } else if (currentdirectory.lastIndexOf('\\') != -1) {
+        } else if (currentdirectory.lastIndexOf((int) '\\') != -1) {
             currentskin = Lib.rightFrom(currentdirectory, '\\');
             currentdirectory = Lib.leftFrom(currentdirectory, '\\');
         } else {
@@ -4096,7 +4096,7 @@ public final class Menu extends Key {
         s_player_handedness_box.itemnames = handedness;
 
         for (i = 0; i < rate_tbl.length - 1; i++)
-            if (Cvar.VariableValue("rate") == rate_tbl[i])
+            if (Cvar.VariableValue("rate") == (float) rate_tbl[i])
                 break;
 
         s_player_rate_title.type = MTYPE_SEPARATOR;
@@ -4160,10 +4160,10 @@ public final class Menu extends Key {
         refdef.y = viddef.getHeight() / 2 - 72;
         refdef.width = 144;
         refdef.height = 168;
-        refdef.fov_x = 40;
+        refdef.fov_x = 40.0F;
         refdef.fov_y = Math3D
-                .CalcFov(refdef.fov_x, refdef.width, refdef.height);
-        refdef.time = cls.realtime * 0.001f;
+                .CalcFov(refdef.fov_x, (float) refdef.width, (float) refdef.height);
+        refdef.time = (float) cls.realtime * 0.001f;
 
         if (s_pmi[s_player_model_box.curvalue].skindisplaynames != null) {
 
@@ -4182,14 +4182,14 @@ public final class Menu extends Key {
 
             entity.skin = re.RegisterSkin(scratch);
             entity.flags = RF_FULLBRIGHT;
-            entity.origin[0] = 80;
-            entity.origin[1] = 0;
-            entity.origin[2] = 0;
+            entity.origin[0] = 80.0F;
+            entity.origin[1] = (float) 0;
+            entity.origin[2] = (float) 0;
             Math3D.VectorCopy(entity.origin, entity.oldorigin);
             entity.frame = 0;
             entity.oldframe = 0;
             entity.backlerp = 0.0f;
-            entity.angles[1] = yaw++;
+            entity.angles[1] = (float) yaw++;
             if (++yaw > 360)
                 yaw -= 360;
 
@@ -4202,8 +4202,8 @@ public final class Menu extends Key {
             Menu_Draw(s_player_config_menu);
 
             DrawTextBox(
-                    (int) ((refdef.x) * (320.0F / viddef.getWidth()) - 8),
-                    (int) ((viddef.getHeight() / 2) * (240.0F / viddef.getHeight()) - 77),
+                    (int) ((float) (refdef.x) * (320.0F / (float) viddef.getWidth()) - 8.0F),
+                    (int) ((float) (viddef.getHeight() / 2) * (240.0F / (float) viddef.getHeight()) - 77.0F),
                     refdef.width / 8, refdef.height / 8);
             refdef.height += 4;
 
@@ -4472,7 +4472,7 @@ public final class Menu extends Key {
                         + f.parent.y, 11);
             } else {
                 re.DrawChar(f.x + f.parent.x + (offset + 2) * 8 + 8, f.y
-                        + f.parent.y, ' ');
+                        + f.parent.y, (int) ' ');
             }
         }
     }
@@ -4525,7 +4525,7 @@ public final class Menu extends Key {
             break;
         }
 
-        if (key > 127) {
+        if ((int) key > 127) {
             switch (key) {
             case K_DEL:
             default:
@@ -4536,8 +4536,8 @@ public final class Menu extends Key {
         /*
          * * support pasting from the clipboard
          */
-        if ((Character.toUpperCase(key) == 'V' && keydown[K_CTRL])
-                || (((key == K_INS) || (key == K_KP_INS)) && keydown[K_SHIFT])) {
+        if (((int) Character.toUpperCase(key) == (int) 'V' && keydown[K_CTRL])
+                || ((((int) key == K_INS) || ((int) key == K_KP_INS)) && keydown[K_SHIFT])) {
             String cbd;
 
             if ((cbd = Sys.GetClipboardData()) != null) {
@@ -4744,14 +4744,14 @@ public final class Menu extends Key {
     public static void Menu_DrawString(int x, int y, String string) {
 
         for (int i = 0; i < string.length(); i++) {
-            re.DrawChar((x + i * 8), y, string.charAt(i));
+            re.DrawChar((x + i * 8), y, (int) string.charAt(i));
         }
     }
 
     public static void Menu_DrawStringDark(int x, int y, String string) {
 
         for (int i = 0; i < string.length(); i++) {
-            re.DrawChar((x + i * 8), y, string.charAt(i) + 128);
+            re.DrawChar((x + i * 8), y, (int) string.charAt(i) + 128);
         }
     }
 
@@ -4759,7 +4759,7 @@ public final class Menu extends Key {
 
         int l = string.length();
         for (int i = 0; i < l; i++) {
-            re.DrawChar((x - i * 8), y, string.charAt(l - i - 1));
+            re.DrawChar((x - i * 8), y, (int) string.charAt(l - i - 1));
         }
     }
 
@@ -4767,7 +4767,7 @@ public final class Menu extends Key {
 
         int l = string.length();
         for (int i = 0; i < l; i++) {
-            re.DrawChar((x - i * 8), y, string.charAt(l - i - 1) + 128);
+            re.DrawChar((x - i * 8), y, (int) string.charAt(l - i - 1) + 128);
         }
     }
 
@@ -4875,7 +4875,7 @@ public final class Menu extends Key {
     }
 
     public static void Slider_DoSlide(menuslider_s s, int dir) {
-        s.curvalue += dir;
+        s.curvalue = s.curvalue + (float) dir;
 
         if (s.curvalue > s.maxvalue)
             s.curvalue = s.maxvalue;
@@ -4895,10 +4895,10 @@ public final class Menu extends Key {
 
         s.range = (s.curvalue - s.minvalue) / (s.maxvalue - s.minvalue);
 
-        if (s.range < 0)
-            s.range = 0;
-        if (s.range > 1)
-            s.range = 1;
+        if (s.range < (float) 0)
+            s.range = (float) 0;
+        if (s.range > 1.0F)
+            s.range = 1.0F;
         re.DrawChar(s.x + s.parent.x + RCOLUMN_OFFSET, s.y + s.parent.y, 128);
         int i;
         for (i = 0; i < SLIDER_RANGE; i++)
@@ -4908,8 +4908,8 @@ public final class Menu extends Key {
                 + s.parent.y, 130);
         re
                 .DrawChar(
-                        (int) (8 + RCOLUMN_OFFSET + s.parent.x + s.x + (SLIDER_RANGE - 1)
-                                * 8 * s.range), s.y + s.parent.y, 131);
+                        (int) (8.0F + (float) RCOLUMN_OFFSET + (float) s.parent.x + (float) s.x + (float) (SLIDER_RANGE - 1)
+                                * 8.0F * s.range), s.y + s.parent.y, 131);
     }
 
     public static void SpinControl_DoEnter(menulist_s s) {
@@ -4940,7 +4940,7 @@ public final class Menu extends Key {
                     + s.parent.y, s.name);
         }
 
-        if (s.itemnames[s.curvalue].indexOf('\n') == -1) {
+        if (s.itemnames[s.curvalue].indexOf((int) '\n') == -1) {
             Menu_DrawString(RCOLUMN_OFFSET + s.x + s.parent.x,
                     s.y + s.parent.y, s.itemnames[s.curvalue]);
         } else {
@@ -4950,7 +4950,7 @@ public final class Menu extends Key {
 
             String line2 = Lib.rightFrom(s.itemnames[s.curvalue], '\n');
 
-            int pos = line2.indexOf('\n');
+            int pos = line2.indexOf((int) '\n');
             if (pos != -1)
                 line2 = line2.substring(0, pos);
 

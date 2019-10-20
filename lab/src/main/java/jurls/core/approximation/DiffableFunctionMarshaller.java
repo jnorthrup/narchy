@@ -58,7 +58,7 @@ public class DiffableFunctionMarshaller implements ParameterizedFunction {
 
         for (int i = 0; i < numInputs; ++i) {
             inputScalars[i] = gc.getInputScalars()[i];
-            inputValues[i] = 0;
+            inputValues[i] = (double) 0;
         }
 
         for (int i = 0; i < gc.getParameterScalars().size(); ++i) {

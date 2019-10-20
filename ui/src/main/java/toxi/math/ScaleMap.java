@@ -74,7 +74,7 @@ public class ScaleMap {
     public double getClippedValueFor(double val) {
         double t = MathUtils.clipNormalized((val - in.min) / interval);
         if (Double.isNaN(t)) {
-            t = 0;
+            t = (double) 0;
         }
         return mapFunction.interpolate(out.min, out.max, t);
     }
@@ -112,7 +112,7 @@ public class ScaleMap {
     public double getMappedValueFor(double val) {
         double t = ((val - in.min) / interval);
         if (Double.isNaN(t)) {
-            t = 0;
+            t = (double) 0;
         }
         return mapFunction.interpolate(out.min, out.max, t);
     }

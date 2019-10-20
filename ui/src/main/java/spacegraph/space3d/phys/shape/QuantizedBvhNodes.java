@@ -130,16 +130,16 @@ public class QuantizedBvhNodes implements Serializable {
 	}
 
 	public long getQuantizedAabbMin(int nodeId) {
-		return (buf[nodeId * STRIDE] & 0xFFFFFFFFL) | ((buf[nodeId*STRIDE+1] & 0xFFFFL) << 32);
+		return ((long) buf[nodeId * STRIDE] & 0xFFFFFFFFL) | (((long) buf[nodeId * STRIDE + 1] & 0xFFFFL) << 32);
 	}
 
 	public void setQuantizedAabbMin(int nodeId, long value) {
 		buf[nodeId * STRIDE] = (int)value;
-		setQuantizedAabbMin(nodeId, 2, (short)((value & 0xFFFF00000000L) >>> 32));
+		setQuantizedAabbMin(nodeId, 2, (int) (short) ((value & 0xFFFF00000000L) >>> 32));
 	}
 
 	public void setQuantizedAabbMax(int nodeId, long value) {
-		setQuantizedAabbMax(nodeId, 0, (short)value);
+		setQuantizedAabbMax(nodeId, 0, (int) (short) value);
 		buf[nodeId*STRIDE+2] = (int)(value >>> 16);
 	}
 
@@ -161,7 +161,7 @@ public class QuantizedBvhNodes implements Serializable {
 	}
 
 	public long getQuantizedAabbMax(int nodeId) {
-		return ((buf[nodeId*STRIDE+1] & 0xFFFF0000L) >>> 16) | ((buf[nodeId*STRIDE+2] & 0xFFFFFFFFL) << 16);
+		return (((long) buf[nodeId * STRIDE + 1] & 0xFFFF0000L) >>> 16) | (((long) buf[nodeId * STRIDE + 2] & 0xFFFFFFFFL) << 16);
 	}
 
 	public void setQuantizedAabbMax(int nodeId, int index, int value) {

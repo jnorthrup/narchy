@@ -39,7 +39,7 @@ class BayazitDecomposer {
 	}
 
 	private static float getSignedArea(FasterList<v2> vect) {
-        float area = 0;
+        float area = (float) 0;
 		for (int i = 0; i < vect.size(); i++) {
             int j = (i + 1) % vect.size();
             v2 vi = vect.get(i);
@@ -52,7 +52,7 @@ class BayazitDecomposer {
 	}
 
 	private static float getSignedArea(v2[] vect) {
-        float area = 0;
+        float area = (float) 0;
 		for (int i = 0; i < vect.length; i++) {
             int j = (i + 1) % vect.length;
             v2 vi = vect[i];
@@ -140,33 +140,33 @@ class BayazitDecomposer {
 				
 				
 				if (lowerIndex == (upperIndex + 1) % vertices.size()) {
-                    v2 sp = new v2((lowerInt.x + upperInt.x) / 2,
-                            (lowerInt.y + upperInt.y) / 2);
+                    v2 sp = new v2((lowerInt.x + upperInt.x) / 2.0F,
+                            (lowerInt.y + upperInt.y) / 2.0F);
 					lowerPoly = copy(i, upperIndex, vertices);
 					lowerPoly.add(sp);
 					upperPoly = copy(lowerIndex, i, vertices);
 					upperPoly.add(sp);
 				} else {
-					double bestIndex = lowerIndex;
+					double bestIndex = (double) lowerIndex;
 					while (upperIndex < lowerIndex)
 						upperIndex += vertices.size();
-                    double highestScore = 0;
+                    double highestScore = (double) 0;
                     for (int j = lowerIndex; j <= upperIndex; ++j) {
 						if (canSee(i, j, vertices)) {
-							double score = 1 / (squareDist(at(i, vertices), at(j, vertices)) + 1);
+							double score = (double) (1 / (squareDist(at(i, vertices), at(j, vertices)) + 1.0F));
 							if (reflex(j, vertices)) {
 								if (rightOn(at(j - 1, vertices), at(j, vertices), at(i, vertices))
 										&& leftOn(at(j + 1, vertices), at(j, vertices),
 												at(i, vertices))) {
-									score += 3;
+									score += 3.0;
 								} else {
-									score += 2;
+									score += 2.0;
 								}
 							} else {
-								score += 1;
+								score += 1.0;
 							}
 							if (score > highestScore) {
-								bestIndex = j;
+								bestIndex = (double) j;
 								highestScore = score;
 							}
 						}
@@ -191,7 +191,7 @@ class BayazitDecomposer {
 		
 		
 		for (int i = 0; i < list.size(); i++) {
-			list.set(i, Simplify2D.collinearSimplify(list.get(i), 0));
+			list.set(i, Simplify2D.collinearSimplify(list.get(i), (float) 0));
 		}
 		
 		for (int i = list.size() - 1; i >= 0; i--) {
@@ -240,7 +240,7 @@ class BayazitDecomposer {
         float b2 = q1.x - q2.x;
         float c2 = a2 * q1.x + b2 * q1.y;
         float det = a1 * b2 - a2 * b1;
-		if (!Util.equals(det, 0, Epsilon)) {
+		if (!Util.equals(det, (float) 0, Epsilon)) {
 			
 			i.x = (b2 * c1 - b1 * c2) / det;
 			i.y = (a1 * c2 - a2 * c1) / det;
@@ -330,19 +330,19 @@ class BayazitDecomposer {
 	}
 
 	private static boolean left(v2 a, v2 b, v2 c) {
-		return area(a, b, c) > 0;
+		return area(a, b, c) > (float) 0;
 	}
 
 	private static boolean leftOn(v2 a, v2 b, v2 c) {
-		return area(a, b, c) >= 0;
+		return area(a, b, c) >= (float) 0;
 	}
 
 	private static boolean right(v2 a, v2 b, v2 c) {
-		return area(a, b, c) < 0;
+		return area(a, b, c) < (float) 0;
 	}
 
 	private static boolean rightOn(v2 a, v2 b, v2 c) {
-		return area(a, b, c) <= 0;
+		return area(a, b, c) <= (float) 0;
 	}
 
 	public static float area(v2 a, v2 b, v2 c) {

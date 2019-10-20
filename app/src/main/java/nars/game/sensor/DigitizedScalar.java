@@ -13,7 +13,6 @@ import org.apache.commons.math3.exception.OutOfRangeException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static nars.Op.BELIEF;
 import static nars.Op.SETe;
@@ -70,15 +69,15 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
     public static final ScalarEncoder Fluid = (v, i, indices) -> {
 
 
-        float vv = v * (indices);
-        int which = (int) Math.ceil(vv);
+        float vv = v * (float) (indices);
+        int which = (int) Math.ceil((double) vv);
         float f;
         if (i < which) {
             f = 1f;
         } else if (i > which) {
             f = 0f;
         } else {
-            f = 1f-Math.max(0,(vv - which));
+            f = 1f-Math.max((float) 0,(vv - (float) which));
         }
 
         return f;
@@ -96,9 +95,9 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
      * hard
      */
     public static final ScalarEncoder Needle = (v, i, indices) -> {
-        float vv = v * indices;
-        int which = (int) Math.floor(vv);
-        return i == which ? 1 : 0;
+        float vv = v * (float) indices;
+        int which = (int) Math.floor((double) vv);
+        return (float) (i == which ? 1 : 0);
     };
 
     /**
@@ -111,9 +110,9 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
      */
     public static final ScalarEncoder FuzzyNeedle = (v, i, indices) -> {
 
-        float dr = 1f / (indices - 1);
+        float dr = 1f / (float) (indices - 1);
 
-        return Math.max(0, (1f - Math.abs((i * dr) - v) / dr));
+        return Math.max((float) 0, (1f - Math.abs(((float) i * dr) - v) / dr));
     };
 
 
@@ -127,7 +126,7 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
         float dv = 1f;
         for (int j = 0; j < i; j++) {
             dv /= 2f;
-            b = Math.max(0, b - dv);
+            b = Math.max((float) 0, b - dv);
         }
 
 
@@ -161,7 +160,7 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
                  //   )
                 ,
                 nar, (prev, next) -> {
-                if (next < 0 || next > 1)
+                if (next < (float) 0 || next > 1.0F)
                     throw new OutOfRangeException(next, 0, 1);
                 return next == next ? $.t(next, nar.confDefault(BELIEF)) : null;
             }

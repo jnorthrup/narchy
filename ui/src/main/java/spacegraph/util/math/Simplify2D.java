@@ -5,8 +5,6 @@ import jcog.data.list.FasterList;
 import jcog.math.v2;
 
 import java.security.InvalidParameterException;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class Simplify2D {
 	
@@ -57,7 +55,7 @@ public class Simplify2D {
 	
 	
 	public static FasterList<v2> collinearSimplify(FasterList<v2> vertices) {
-		return collinearSimplify(vertices, 0);
+		return collinearSimplify(vertices, (float) 0);
 	}
 
 	
@@ -97,7 +95,7 @@ public class Simplify2D {
 				maxIndex = k;
 			}
 		}
-		if (maxDistance <= _distanceTolerance)
+		if (maxDistance <= (double) _distanceTolerance)
 			for (int k = i + 1; k < j; k++)
 				usePt.clear(k);
 		else {
@@ -107,8 +105,8 @@ public class Simplify2D {
 	}
 
 	private static double distancePointPoint(v2 p, v2 p2) {
-		double dx = p.x - p2.x;
-		double dy = p.y - p2.x;
+		double dx = (double) (p.x - p2.x);
+		double dy = (double) (p.y - p2.x);
 		return Math.sqrt(dx * dx + dy * dy);
 	}
 
@@ -123,29 +121,29 @@ public class Simplify2D {
 		 * r>1 Point is on the forward extension of AB 0<r<1 Point is interior
 		 * to AB
 		 */
-		double r = ((p.x - A.x) * (B.x - A.x) + (p.y - A.y) * (B.y - A.y))
-				/ ((B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y));
+		double r = (double) (((p.x - A.x) * (B.x - A.x) + (p.y - A.y) * (B.y - A.y))
+				/ ((B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y)));
 		if (r <= 0.0) return distancePointPoint(p, A);
 		if (r >= 1.0) return distancePointPoint(p, B);
 		/*
 		 * (2) (Ay-Cy)(Bx-Ax)-(Ax-Cx)(By-Ay) s = -----------------------------
 		 * Curve^2 Then the distance from C to Point = |s|*Curve.
 		 */
-		double s = ((A.y - p.y) * (B.x - A.x) - (A.x - p.x) * (B.y - A.y))
-				/ ((B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y));
-		return Math.abs(s) * Math.sqrt(((B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y)));
+		double s = (double) (((A.y - p.y) * (B.x - A.x) - (A.x - p.x) * (B.y - A.y))
+				/ ((B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y)));
+		return Math.abs(s) * Math.sqrt((double) ((B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y)));
 	}
 
 	
 	public static FasterList<v2> reduceByArea(FasterList<v2> vertices, float areaTolerance) {
 		if (vertices.size() <= 3) return vertices;
-		if (areaTolerance < 0) {
+		if (areaTolerance < (float) 0) {
 			throw new InvalidParameterException(
 					"areaTolerance: must be equal to or greater then zero.");
 		}
 		v2 v1 = vertices.get(vertices.size() - 2);
 		v2 v2 = vertices.get(vertices.size() - 1);
-		areaTolerance *= 2;
+		areaTolerance *= 2.0F;
         v2 v3;
 		FasterList<jcog.math.v2> result = new FasterList<jcog.math.v2>();
         for (int index = 0; index < vertices.size(); ++index, v2 = v3) {
@@ -192,8 +190,8 @@ public class Simplify2D {
 			float dy0 = vertices.get(middle).y - vertices.get(lower).y;
 			float dx1 = vertices.get(upper).y - vertices.get(middle).x;
 			float dy1 = vertices.get(upper).y - vertices.get(middle).y;
-			float norm0 = (float) Math.sqrt(dx0 * dx0 + dy0 * dy0);
-			float norm1 = (float) Math.sqrt(dx1 * dx1 + dy1 * dy1);
+			float norm0 = (float) Math.sqrt((double) (dx0 * dx0 + dy0 * dy0));
+			float norm1 = (float) Math.sqrt((double) (dx1 * dx1 + dy1 * dy1));
 			if (!(norm0 > 0.0f && norm1 > 0.0f) && newNVertices > 3) {
 				
 				mergeMe[i] = true;
@@ -205,7 +203,7 @@ public class Simplify2D {
 			dy1 /= norm1;
 			float cross = dx0 * dy1 - dx1 * dy0;
 			float dot = dx0 * dx1 + dy0 * dy1;
-			if (Math.abs(cross) < tolerance && dot > 0 && newNVertices > 3) {
+			if (Math.abs(cross) < tolerance && dot > (float) 0 && newNVertices > 3) {
 				mergeMe[i] = true;
 				--newNVertices;
 			} else

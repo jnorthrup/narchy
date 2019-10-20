@@ -84,7 +84,7 @@ public class WheelJointDef extends JointDef {
 
     public WheelJointDef() {
         super(JointType.WHEEL);
-        localAxisA.set(1, 0);
+        localAxisA.set(1.0F, (float) 0);
         enableMotor = false;
         maxMotorTorque = 0f;
         motorSpeed = 0f;

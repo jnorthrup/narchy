@@ -26,7 +26,7 @@ public class Mat {
         double[] w = this.w, dw = this.dw;
         for (int i = 0; i < w.length; i++)
             w[i] += -alpha * dw[i];
-        Arrays.fill(dw, 0);
+        Arrays.fill(dw, (double) 0);
         //Util.mul(0.9f, dw);
     }
 

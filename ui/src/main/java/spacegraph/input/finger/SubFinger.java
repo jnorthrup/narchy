@@ -42,7 +42,7 @@ public abstract class SubFinger extends Finger {
 
         /** radius in proportion to of min window dimension */
         float radius = 0.2f;
-        public float theta = 0;
+        public float theta = (float) 0;
 
         public PolarSubFinger(Finger parent) {
             super(parent, 0);
@@ -60,7 +60,7 @@ public abstract class SubFinger extends Finger {
 
             float rotSpeed = 0.05f;
             theta += rotSpeed; //rotSpeed * (rng.nextFloat() * 2 - 1);
-            posRel.set( radius * Math.cos(theta), radius * Math.sin(theta) );
+            posRel.set((double) radius * Math.cos((double) theta), (double) radius * Math.sin((double) theta) );
 
             super.update();
         }

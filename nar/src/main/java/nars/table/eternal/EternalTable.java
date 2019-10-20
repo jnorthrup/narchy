@@ -336,7 +336,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
                         Arrays.equals(x.stamp(), input.stamp()) &&
                         Util.equals(x.conf(), input.conf(), nar.confResolution.floatValue())) {
 
-                    yt = $.t((x.freq() + input.freq()) / 2, x.conf()).dither(nar);
+                    yt = $.t((x.freq() + input.freq()) / 2.0F, x.conf()).dither(nar);
                 }
 
             } else {
@@ -372,7 +372,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
                 if (conclusion != null) {
                     //a previous conclusion exists; try if by originality this one is stronger
-                    if (conclusion.evi() * oldBelief.originality() >= yt.evi() * x.originality()) {
+                    if (conclusion.evi() * (double) oldBelief.originality() >= yt.evi() * (double) x.originality()) {
                         continue;
                     }
                 }

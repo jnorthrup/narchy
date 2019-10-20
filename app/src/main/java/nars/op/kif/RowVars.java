@@ -1,8 +1,6 @@
 package nars.op.kif;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class RowVars {
 
@@ -78,7 +76,7 @@ public class RowVars {
             HashSet<String> preds = ar.get(rowvar);
             for (String pred : preds) {
                 int start = f.theFormula.indexOf('(' + pred);
-                int end = f.theFormula.indexOf(')', start);
+                int end = f.theFormula.indexOf((int) ')', start);
                 String simpleFS = f.theFormula.substring(start, end + 1);
                 Formula simpleF = new Formula();
                 simpleF.read(simpleFS);

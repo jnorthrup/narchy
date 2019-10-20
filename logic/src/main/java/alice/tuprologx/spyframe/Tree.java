@@ -64,7 +64,7 @@ public static final Font defaultfont=new Font(Font.SANS_SERIF, Font.PLAIN, 12);
    */
   public final void setStructure(T str){
     root=totree.makeTreeFrom(str);
-    setViewParams(5, 5, 2, null);
+    setViewParams(5.0F, 5.0F, 2.0F, null);
   }
 
   /**Sets the horizontal spacing and remeasures the tree nodes. Changes will
@@ -92,7 +92,7 @@ public static final Font defaultfont=new Font(Font.SANS_SERIF, Font.PLAIN, 12);
     if(font==null) font=defaultfont;
     textheight=(float)font.getStringBounds("Ij", frc).getHeight();
     levels=0;
-    if(root==null) return 0;
+    if(root==null) return (float) 0;
       float width=pose(root, -xspace, 0)-xspace;
     setPreferredSize(new Dimension(1+(int)width, 1+(int)height()));
     invalidate();
@@ -104,7 +104,7 @@ public static final Font defaultfont=new Font(Font.SANS_SERIF, Font.PLAIN, 12);
    * @return the total height.
    */
   public float height(){
-    return levels==0?0:levels*(yspace+2*border+textheight)-yspace;
+    return levels==0? (float) 0 : (float) levels *(yspace+ 2.0F *border+textheight)-yspace;
   }
 
   /** Measures recursively a subtree the root of which is this and centers the
@@ -117,20 +117,20 @@ public static final Font defaultfont=new Font(Font.SANS_SERIF, Font.PLAIN, 12);
    * node itself or they are not.
    */
   protected float pose(Node node, float xpos, int level){
-    if(node==null) return 0;
+    if(node==null) return (float) 0;
     if(level>=levels) levels=level+1;
     node.x=xpos+xspace;
-    node.y=level*(textheight+2*border+yspace);
-    node.w=2*border+(float)font.getStringBounds(node.text, frc).getWidth();
+    node.y= (float) level *(textheight+ 2.0F *border+yspace);
+    node.w= 2.0F *border+(float)font.getStringBounds(node.text, frc).getWidth();
       float nodew=xspace+node.w;
-    float kidsw=0;
+    float kidsw= (float) 0;
     for(Node n: node.kids)
       kidsw+=pose(n, xpos+kidsw, level+1);
     if(kidsw>=nodew){
-      node.x+=(kidsw-nodew)/2;
+      node.x+=(kidsw-nodew)/ 2.0F;
       return kidsw;
     } else{
-      for(Node n: node.kids) n.xShift((nodew-kidsw)/2);
+      for(Node n: node.kids) n.xShift((nodew-kidsw)/ 2.0F);
       return nodew;
     }
   }
@@ -145,7 +145,7 @@ public static final Font defaultfont=new Font(Font.SANS_SERIF, Font.PLAIN, 12);
           RenderingHints.VALUE_ANTIALIAS_ON);
       g2.setFont(font);
       asc=g2.getFontMetrics().getAscent();
-      rect.height=2*border+textheight;
+      rect.height= 2.0F *border+textheight;
       paintTree(g2, root);
     }
   }
@@ -160,12 +160,12 @@ public static final Font defaultfont=new Font(Font.SANS_SERIF, Font.PLAIN, 12);
   protected void paintTree(Graphics2D g2, Node node){
     for(Node kid: node.kids){
       paintTree(g2, kid);
-      line.x1=node.x+node.w/2;
-      line.y1=node.y+border+textheight/2;
+      line.x1=node.x+node.w/ 2.0F;
+      line.y1=node.y+border+textheight/ 2.0F;
       g2.setColor(Color.BLACK);
       g2.draw(line);
     }
-    line.x2=node.x+node.w/2;
+    line.x2=node.x+node.w/ 2.0F;
     line.y2=node.y;
     paintNode(g2, node);
   }
@@ -175,12 +175,12 @@ public static final Font defaultfont=new Font(Font.SANS_SERIF, Font.PLAIN, 12);
    * @param node to be painted.
    */
   public void paintNode(Graphics2D g2, Node node){
-    rect.setFrame(node.x, node.y, node.w, rect.height);
+    rect.setFrame((double) node.x, (double) node.y, (double) node.w, (double) rect.height);
     g2.setColor(node.bgcolor);
     g2.fill(rect);
     g2.setColor(node.bordercolor);
     g2.draw(rect);
     g2.setColor(node.textcolor);
-    g2.drawString(node.text, node.x+border, node.y+border+asc);
+    g2.drawString(node.text, node.x+border, node.y+border+ (float) asc);
   }
 }

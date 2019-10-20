@@ -85,7 +85,7 @@ public class AutoBuilder<X, Y> {
         if (!builders.isEmpty()) {
             target.add(pair(obj,
                     //builders.stream().map(b -> b.apply(obj, relation)).filter(Objects::nonNull)::iterator
-                    builders.stream().map(b -> b.apply(obj, relation)).filter(Objects::nonNull).limit(maxClassBuilders)::iterator
+                    builders.stream().map(b -> b.apply(obj, relation)).filter(Objects::nonNull).limit((long) maxClassBuilders)::iterator
             ));
         }
 

@@ -45,7 +45,7 @@ public abstract class IntrinAtomic extends Atomic implements Idempotent {
 				throw new UnsupportedOperationException();
 		}
 
-		return (short)((group<<8) | id);
+		return (short)(((int) group <<8) | (int) id);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public abstract class IntrinAtomic extends Atomic implements Idempotent {
 
 	@Override
 	public final int hashCode() {
-		return i;
+		return (int) i;
 	}
 
 	@Override
@@ -81,6 +81,6 @@ public abstract class IntrinAtomic extends Atomic implements Idempotent {
 	}
 
 	@Deprecated public final byte id() {
-		return (byte) (i & 0xff);
+		return (byte) ((int) i & 0xff);
 	}
 }

@@ -179,7 +179,7 @@ public class Path2D extends FloatArrayList {
         float[] a = array();
         int n = points();
         if (n <= 2)
-            return RectFloat.XYWH(a[0], a[1], 1, 1);
+            return RectFloat.XYWH(a[0], a[1], 1.0F, 1.0F);
 
         float x1 = Float.POSITIVE_INFINITY, y1 = Float.POSITIVE_INFINITY, x2 = Float.NEGATIVE_INFINITY, y2 = Float.NEGATIVE_INFINITY;
         for (int i = 0; i < n; ) {

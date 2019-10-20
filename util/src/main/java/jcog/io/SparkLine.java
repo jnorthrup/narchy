@@ -5,7 +5,6 @@ import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 
@@ -28,10 +27,10 @@ public enum SparkLine {
 	 */
 	public static String render(Collection<Integer> values) {
 		int max = Collections.max(values), min = Collections.min(values);
-        float scale = (max - min) / 7.0f;
+        float scale = (float) (max - min) / 7.0f;
 		StringBuilder result = new StringBuilder();
 		for (Integer value : values) {
-			int index = Math.round((value - min) / scale);
+			int index = Math.round((float) (value - min) / scale);
 			String s = String.valueOf(ticks.get(index));
 			result.append(s);
 		}

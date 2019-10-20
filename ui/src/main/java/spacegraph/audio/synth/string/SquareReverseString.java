@@ -6,7 +6,7 @@ package spacegraph.audio.synth.string;
 public class SquareReverseString extends KarplusStrongString {
 
     public SquareReverseString (double frequency) {
-        super(frequency * 2, .996);
+        super(frequency * 2.0, .996);
         setMaxVolume(0.2);
     }
 
@@ -15,7 +15,7 @@ public class SquareReverseString extends KarplusStrongString {
         int capacity = buffer.capacity();
         int half = capacity / 2;
         for (int i = 0; i < half; i++) {
-            buffer.enqueue(getMaxVolume() * -1);
+            buffer.enqueue(getMaxVolume() * -1.0);
         }
         int otherHalf = capacity - half;
         for (int i = 0; i < otherHalf; i++) {
@@ -26,8 +26,8 @@ public class SquareReverseString extends KarplusStrongString {
     public void tic() {
         double first = buffer.dequeue();
         double second = buffer.peek();
-        double last = (first + second) * (deltaVolume / 2);
-        buffer.enqueue(last * -1);
+        double last = (first + second) * (deltaVolume / 2.0);
+        buffer.enqueue(last * -1.0);
     }
 
     public void release() {

@@ -347,7 +347,7 @@ public class Prolog {
     }
 
     public Prolog solveWhile(Term g, Predicate<Solution> eachSolution) {
-        return solveWhile(g, eachSolution, -1);
+        return solveWhile(g, eachSolution, -1L);
     }
 
     public Prolog solveWhile(Term g, Predicate<Solution> eachSolution, long timeoutMS) {

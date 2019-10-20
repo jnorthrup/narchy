@@ -19,7 +19,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static com.github.benmanes.caffeine.base.UnsafeAccess.UNSAFE;
@@ -602,7 +601,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         if (es == 0)
             this.initialSegmentCapacity = MIN_SEGMENT_CAPACITY;
         else {
-            int sc = (int) ((1L + (4L * es) / 3) >>> SEGMENT_BITS);
+            int sc = (int) ((1L + (4L * (long) es) / 3L) >>> SEGMENT_BITS);
             if (sc < MIN_SEGMENT_CAPACITY)
                 sc = MIN_SEGMENT_CAPACITY;
             int capacity = MIN_SEGMENT_CAPACITY;
@@ -1098,11 +1097,11 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         for (int i = 0; i < ss; i++) {
             Segment seg = segs.getFast(i);
             if (seg != null) {
-                long opaque = seg.count.getOpaque();
+                long opaque = (long) seg.count.getOpaque();
                 sum += opaque;
             }
         }
-        return (sum >= Integer.MAX_VALUE) ? Integer.MAX_VALUE : (int) sum;
+        return (sum >= (long) Integer.MAX_VALUE) ? Integer.MAX_VALUE : (int) sum;
     }
 
     /**
@@ -3582,7 +3581,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     //try {
 //UNSAFE = getUnsafe();
     //    static final Unsafe UNSAFE;
-    static final long tableBase = UNSAFE.arrayBaseOffset(Node[].class);
+    static final long tableBase = (long) UNSAFE.arrayBaseOffset(Node[].class);
     static final int tableShift;
 
 

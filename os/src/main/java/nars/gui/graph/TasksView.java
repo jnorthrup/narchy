@@ -34,22 +34,22 @@ public class TasksView implements Timeline2D.EventBuffer<Task> {
         NAR n = NARS.tmp();
         n.log();
         //n.inputAt(0, "(x &&+1 y). |");
-        n.inputAt(0, "(x ==>+1 y). |");
-        n.inputAt(2,"y! |");
-        n.inputAt(3,"x. |");
+        n.inputAt(0L, "(x ==>+1 y). |");
+        n.inputAt(2L,"y! |");
+        n.inputAt(3L,"x. |");
         n.run(10);
 
         Iterable<Task> tasks = ()->n.tasks().filter(x->!x.isEternal()).iterator();
 
-        Timeline2D t = timeline(tasks).setTime(0, n.time());
+        Timeline2D t = timeline(tasks).setTime(0L, n.time());
         SpaceGraph.window(t.withControls(),
                 1200, 500);
     }
 
     public static Timeline2D timeline(Iterable<Task> tasks) {
         //TODO
-        long start = 0;
-        long end = 10;
+        long start = 0L;
+        long end = 10L;
         return new Timeline2D(start, end).addEvents(new TasksView(tasks), TaskRenderer, new Timeline2DEvents.LaneTimelineUpdater());
     }
 
@@ -61,9 +61,9 @@ public class TasksView implements Timeline2D.EventBuffer<Task> {
     @Override
     public long[] range(Task t) {
         if (t.op()!=CONJ)
-            return new long[] { t.start(), t.end()+1 };
+            return new long[] { t.start(), t.end()+ 1L};
         else
-            return new long[] { t.start(), t.term().eventRange() + t.end()+1 };
+            return new long[] { t.start(), (long) t.term().eventRange() + t.end()+ 1L};
     }
 
 
@@ -86,24 +86,24 @@ public class TasksView implements Timeline2D.EventBuffer<Task> {
                     r = 0.8f * (1f - f);
                     g = 0.8f * f;
                     b = 0.2f + 0.8f * x.conf();
-                    a = 1;
+                    a = 1.0F;
                     break;
                 }
                 case GOAL: {
                     float f = x.freq();
                     g = 0.8f * f;
-                    b = r = 0;
+                    b = r = (float) 0;
                     a = 0.2f + 0.8f * x.conf();
                     break;
                 }
                 case QUESTION:
-                    r = 0;
+                    r = (float) 0;
                     g = 0.25f;
                     b = 1f;
                     a = 0.25f;
                     break;
                 case QUEST:
-                    r = 0;
+                    r = (float) 0;
                     g = 0.5f;
                     b = 0.75f;
                     a = 0.25f;
@@ -118,7 +118,7 @@ public class TasksView implements Timeline2D.EventBuffer<Task> {
 
         @Override
         public Surface move(float dxIgnored, float dy) {
-            return super.move(0, dy); 
+            return super.move((float) 0, dy);
         }
 
         @Override

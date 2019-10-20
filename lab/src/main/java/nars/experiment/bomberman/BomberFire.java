@@ -112,7 +112,7 @@ public class BomberFire extends Thread {
             frame += 1;
             /** sleep for 65 ms */
             try {
-                sleep(65);
+                sleep(65L);
             } catch (Exception e) {
             }
             /** if frame is greater than 7 then it's finish burning */

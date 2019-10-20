@@ -36,7 +36,7 @@ public class RayCastOutput {
 
     public RayCastOutput() {
         normal = new v2();
-        fraction = 0;
+        fraction = (float) 0;
     }
 
     public void set(RayCastOutput rco) {

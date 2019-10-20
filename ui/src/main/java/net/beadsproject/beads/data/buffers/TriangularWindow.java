@@ -19,13 +19,13 @@ public class TriangularWindow extends WaveFactory {
         ArrayTensor b = new ArrayTensor(size);
 
         for (int i = 0; i < bufferSize; i++) {
-            b.data[i] = tri((i + 0.5f) / bufferSize) / bufferSize;
+            b.data[i] = tri(((float) i + 0.5f) / (float) bufferSize) / (float) bufferSize;
         }
         return b;
     }
 
     private static float tri(float x) {
-        return x < .5 ? 4 * x : 4 * (1 - x);
+        return (double) x < .5 ? 4.0F * x : 4.0F * (1.0F - x);
     }
 
     @Override

@@ -23,34 +23,34 @@ import static nars.Op.ImgInt;
 @Skill({"G%C3%B6del_numbering_for_sequences"}) public enum Intrin  { ;
 
     /** code pages: categories of 8-bit numerically indexable items. */
-    public static final short ANOMs = 0;
+    public static final short ANOMs = (short) 0;
 
-    public static final short VARDEPs = 1;
-    public static final short VARINDEPs = 2;
-    public static final short VARQUERYs = 3;
-    public static final short VARPATTERNs = 4;
+    public static final short VARDEPs = (short) 1;
+    public static final short VARINDEPs = (short) 2;
+    public static final short VARQUERYs = (short) 3;
+    public static final short VARPATTERNs = (short) 4;
 
-    public static final short IMGs = 5; // TODO make this a misc category
+    public static final short IMGs = (short) 5; // TODO make this a misc category
 
     /** 0..255 */
-    public static final short INT_POSs = 6;
+    public static final short INT_POSs = (short) 6;
 
     /** -1..-255 */
-    public static final short INT_NEGs = 7;
+    public static final short INT_NEGs = (short) 7;
 
     /** ASCII 0..255 */
-    public static final short CHARs = 8;
+    public static final short CHARs = (short) 8;
 
 
 
     /** @param i positive values only  */
     public static Term _term(short /* short */ i) {
-        byte num = (byte) (i & 0xff);
-        switch (group(i)) {
+        byte num = (byte) ((int) i & 0xff);
+        switch (group((int) i)) {
             case ANOMs:
-                return Anom.the(num);
+                return Anom.the((int) num);
             case IMGs:
-                return num == '/' ? ImgExt : ImgInt;
+                return (int) num == (int) '/' ? ImgExt : ImgInt;
             case VARDEPs:
                 return NormalizedVariable.the(Op.VAR_DEP.id, num);
             case VARINDEPs:
@@ -60,9 +60,9 @@ import static nars.Op.ImgInt;
             case VARPATTERNs:
                 return NormalizedVariable.the(Op.VAR_PATTERN.id, num);
             case INT_POSs:
-                return IdempotInt.the(num);
+                return IdempotInt.the((int) num);
             case INT_NEGs:
-                return IdempotInt.the(-num);
+                return IdempotInt.the(-(int) num);
             case CHARs:
                 return Atomic.the((char)num);
             default:
@@ -75,7 +75,7 @@ import static nars.Op.ImgInt;
     }
 
     public static Term term(short i) {
-        return i < 0 ? neg((short) -i) : _term(i);
+        return (int) i < 0 ? neg((short) -(int) i) : _term(i);
     }
 
     static Neg.NegIntrin neg(short i) {
@@ -90,16 +90,16 @@ import static nars.Op.ImgInt;
     public static short id(Term t) {
 
         if (t instanceof Neg.NegIntrin)
-            return (short) -((Neg.NegIntrin)t).sub;
+            return (short) -(int) ((Neg.NegIntrin) t).sub;
 
         if (NAL.DEBUG) {
             if (t instanceof Neg) {
                 t = t.unneg();
-                assert (!(t instanceof Atomic) || ((Atomic) t).intrin() == 0) : "should have been wrapped in NegIntrin";
+                assert (!(t instanceof Atomic) || (int) ((Atomic) t).intrin() == 0) : "should have been wrapped in NegIntrin";
             }
         }
 
-        return t instanceof Atomic ? ((Atomic) t).intrin() : 0;
+        return t instanceof Atomic ? ((Atomic) t).intrin() : (short) 0;
     }
 
     public static boolean intrinsic(Term[] t) {
@@ -107,16 +107,16 @@ import static nars.Op.ImgInt;
     }
 
     public static boolean intrin(Term x) {
-        return x instanceof IntrinAtomic || id(x)!=0;
+        return x instanceof IntrinAtomic || (int) id(x) !=0;
     }
 
     public static int isVariable(short i, int ifNot) {
-        switch (group(i)) {
+        switch (group((int) i)) {
             case VARDEPs:
             case VARINDEPs:
             case VARPATTERNs:
             case VARQUERYs:
-                return i & 0xff;
+                return (int) i & 0xff;
             default:
                 return ifNot;
         }

@@ -94,18 +94,18 @@ public class PerformacesObjective implements Objective {
             List<Bounds> annotatedMask = new ArrayList<>(expectedMatchMask);
             annotatedMask.addAll(expectedUnmatchMask);
 
-            stats.tp = countIdenticalRanges(result, expectedMatchMask);
-            stats.fp = Bounds.countRangesThatCollideZone(result, annotatedMask) - stats.tp;
-            statsChars.tp = intersection(result, expectedMatchMask);
-            statsChars.fp = intersection(result, expectedUnmatchMask);
+            stats.tp = (long) countIdenticalRanges(result, expectedMatchMask);
+            stats.fp = (long) Bounds.countRangesThatCollideZone(result, annotatedMask) - stats.tp;
+            statsChars.tp = (long) intersection(result, expectedMatchMask);
+            statsChars.fp = (long) intersection(result, expectedUnmatchMask);
 
             
             
             if (!isUnannotated(example)){
-                statsFlagging.tp = isTruePositive(result, example.match) ? 1 : 0;
-                statsFlagging.fp = isFalsePositive(result, example.unmatch) ? 1 : 0;
-                statsFlagging.fn = isFalseNegative(result, example.match) ? 1 : 0;
-                statsFlagging.tn = isTrueNegative(result, example.unmatch) ? 1 : 0;
+                statsFlagging.tp = (long) (isTruePositive(result, example.match) ? 1 : 0);
+                statsFlagging.fp = (long) (isFalsePositive(result, example.unmatch) ? 1 : 0);
+                statsFlagging.fn = (long) (isFalseNegative(result, example.match) ? 1 : 0);
+                statsFlagging.tn = (long) (isTrueNegative(result, example.unmatch) ? 1 : 0);
                 statsOverallFlagging.add(statsFlagging);
             }
             
@@ -114,8 +114,8 @@ public class PerformacesObjective implements Objective {
             i++;
         }
 
-        statsCharsOverall.tn = dataSetView.getNumberUnmatchedChars() - statsCharsOverall.fp;
-        statsCharsOverall.fn = dataSetView.getNumberMatchedChars() - statsCharsOverall.tp;
+        statsCharsOverall.tn = (long) dataSetView.getNumberUnmatchedChars() - statsCharsOverall.fp;
+        statsCharsOverall.fn = (long) dataSetView.getNumberMatchedChars() - statsCharsOverall.tp;
 
         double charAccuracy = statsCharsOverall.accuracy();
         double charPrecision = statsCharsOverall.precision();
@@ -128,7 +128,7 @@ public class PerformacesObjective implements Objective {
         fitness[2] = charPrecision;
         fitness[3] = charRecall;
         fitness[4] = charAccuracy;
-        double fmeasure = 2 * (precision * recall) / (precision + recall);
+        double fmeasure = 2.0 * (precision * recall) / (precision + recall);
         fitness[5] = fmeasure;
         
         fitness[6] = statsOverallFlagging.accuracy();

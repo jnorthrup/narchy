@@ -35,7 +35,7 @@ public class a extends Applet implements Runnable {
 
 	@Override
 	public void start() {
-		enableEvents(8);
+		enableEvents(8L);
 		new Thread(this).start();
 	}
 
@@ -63,9 +63,9 @@ public class a extends Applet implements Runnable {
         Color[] colors = new Color[26];
         int[] colorValues = new int[26];
 		for (i = 0; i < 13; i++) {
-			j = S.charAt(i * 3 + 1);
-			colorValues[i << 1] = 0xFF000000 | (S.charAt(i * 3) << 8) | (j >> 8);
-			colorValues[(i << 1) + 1] = 0xFF000000 | ((j & 0xFF) << 16) | S.charAt(i * 3 + 2);
+			j = (int) S.charAt(i * 3 + 1);
+			colorValues[i << 1] = 0xFF000000 | ((int) S.charAt(i * 3) << 8) | (j >> 8);
+			colorValues[(i << 1) + 1] = 0xFF000000 | ((j & 0xFF) << 16) | (int) S.charAt(i * 3 + 2);
 			colors[i << 1] = new Color(colorValues[i << 1]);
 			colors[(i << 1) + 1] = new Color(colorValues[(i << 1) + 1]);
 		}
@@ -75,9 +75,9 @@ public class a extends Applet implements Runnable {
         int x;
         int k;
         for (i = 0, k = 39; i < 10; i++) {
-			palettes[i] = new int[S.charAt(k++)];
+			palettes[i] = new int[(int) S.charAt(k++)];
 			for (j = 0; j < palettes[i].length; j += 2) {
-				x = S.charAt(k++);
+				x = (int) S.charAt(k++);
 				palettes[i][j] = x >> 8;
 				palettes[i][j + 1] = x & 0xFF;
 			}
@@ -91,12 +91,12 @@ public class a extends Applet implements Runnable {
 			for (j = 0; j < 10; j++) {
 				digitSprites[i][j] = new BufferedImage(8, 8, 2);
 				for (k = 0; k < 8; k++) {
-					x = S.charAt(117 + (j << 2) + (k >> 1));
+					x = (int) S.charAt(117 + (j << 2) + (k >> 1));
 					if ((k & 1) == 0) {
 						x >>= 8;
 					}
 					for (y = 0; y < 8; y++) {
-						pixels[y] = ((x & 1) == 1) ? (i < 2 ? colorValues[i] : Color.HSBtoRGB(i / 32f, 1, 1)) : 0;
+						pixels[y] = ((x & 1) == 1) ? (i < 2 ? colorValues[i] : Color.HSBtoRGB((float) i / 32f, 1.0F, 1.0F)) : 0;
 						x >>= 1;
 					}
 					digitSprites[i][j].setRGB(0, k, 8, 1, pixels, 0, 8);
@@ -111,7 +111,7 @@ public class a extends Applet implements Runnable {
         final int ORIENTATION_REVERSED = 1;
 		final int ORIENTATION_ORIGINAL = 0;
 		for (i = 0; i < 22; i++) {
-            int z = S.charAt(106 + (i >> 1));
+            int z = (int) S.charAt(106 + (i >> 1));
             if ((i & 1) == 0) {
 				z >>= 8;
 			}
@@ -119,7 +119,7 @@ public class a extends Applet implements Runnable {
 			sprites[ORIENTATION_ORIGINAL][i] = new BufferedImage(8, palettes[z].length, 2);
 			sprites[ORIENTATION_REVERSED][i] = new BufferedImage(8, palettes[z].length, 2);
 			for (k = 0; k < palettes[z].length; k++) {
-				x = S.charAt(j + (k >> 1));
+				x = (int) S.charAt(j + (k >> 1));
 				if ((k & 1) == 0) {
 					x >>= 8;
 				}
@@ -136,10 +136,10 @@ public class a extends Applet implements Runnable {
 
         Color[] SKY_COLORS = new Color[36];
         for (i = 0; i <= 35; i++) {
-            float scale = (i / 35f);
+            float scale = ((float) i / 35f);
 			scale = scale * scale * scale;
 			scale *= scale;
-			SKY_COLORS[i] = new Color(Color.HSBtoRGB((184 * scale - 124) / 360f, .6f + 0.11f * scale, .83f - 0.1f * scale));
+			SKY_COLORS[i] = new Color(Color.HSBtoRGB((184.0F * scale - 124.0F) / 360f, .6f + 0.11f * scale, .83f - 0.1f * scale));
 		}
 
         long nextFrameStartTime = System.nanoTime();
@@ -147,11 +147,11 @@ public class a extends Applet implements Runnable {
         Graphics2D g2 = null;
 		final float ROBBER_SPEED = 0.5f;
         float robberVx = ROBBER_SPEED;
-        float robberX = 524;
-        float copY = 133;
-        float copVy = 0;
-        float ballBounceVy = 0;
-        float ballBounceY = 0;
+        float robberX = 524.0F;
+        float copY = 133.0F;
+        float copVy = (float) 0;
+        float ballBounceVy = (float) 0;
+        float ballBounceY = (float) 0;
         boolean playing = false;
         boolean advancing = false;
         boolean newGameRequest = false;
@@ -257,7 +257,7 @@ public class a extends Applet implements Runnable {
 
             int[] object;
             do {
-				nextFrameStartTime += 16666667;
+				nextFrameStartTime += 16666667L;
 
 				
 
@@ -292,10 +292,10 @@ public class a extends Applet implements Runnable {
 					insideElevator = false;
 					advancing = false;
 					copVx = 0;
-					copVy = 0;
+					copVy = (float) 0;
 					robberCounter = 0;
 					timeCounter = 0;
-					ballBounceY = 0;
+					ballBounceY = (float) 0;
 					penaltyCount = 0;
 					hitPlaneDelay = 0;
 					copOrientation = ORIENTATION_ORIGINAL;
@@ -306,8 +306,8 @@ public class a extends Applet implements Runnable {
 					oldRoom = 7;
 					timeRemaining = 50;
 					robberY = 101;
-					copY = 133;
-					robberX = 524;
+					copY = 133.0F;
+					robberX = 524.0F;
 					copX = 1132;
 					robberVy = -32;
 					robberVx = ROBBER_SPEED;
@@ -406,8 +406,8 @@ public class a extends Applet implements Runnable {
 				
 				ballBounceVy += BALL_GRAVITY;
 				ballBounceY += ballBounceVy;
-				if (ballBounceVy > 0 && ballBounceY >= 0) {
-					ballBounceY = 0;
+				if (ballBounceVy > (float) 0 && ballBounceY >= (float) 0) {
+					ballBounceY = (float) 0;
 					ballBounceVy = level < 4 ? LOW_BALL_SPEED : HIGH_BALL_SPEED;
 				}
 
@@ -432,7 +432,7 @@ public class a extends Applet implements Runnable {
 						stairsOffset = 3;
 					}
 					if (stepping) {
-						if (copY == groundY) {
+						if (copY == (float) groundY) {
 							stepping = false;
 						} else {
 							copY--;
@@ -443,7 +443,7 @@ public class a extends Applet implements Runnable {
 
 				
 				if (insideElevator) {
-					copY = groundY = 69 + (elevatorFloor << 5);
+					copY =  groundY = 69 + (elevatorFloor << 5);
 					if (a[VK_DOWN] && elevatorCounter >= ELEVATOR_OPENING && elevatorCounter < ELEVATOR_OPENED) {
 						insideElevator = false;
 					}
@@ -453,17 +453,17 @@ public class a extends Applet implements Runnable {
 						copVy += GRAVITY;
 						copY += copVy;
 						copSprite = SPRITE_COP_JUMPING;
-						if (copY >= groundY) {
-							copY = groundY;
+						if (copY >= (float) groundY) {
+							copY = (float) groundY;
 							jumping = false;
 							copSprite = SPRITE_COP_STANDING;
 						}
 					} else if (a[VK_DOWN]) {
 						copSprite = SPRITE_COP_DUCKING;
-						copY = groundY + 3;
+						copY = (float) (groundY + 3);
 						copVx = 0;
 					} else {
-						copY = groundY;
+						copY = (float) groundY;
 						if (a[VK_LEFT]) {
 							copVx = -1;
 							copOrientation = ORIENTATION_REVERSED;
@@ -509,20 +509,20 @@ public class a extends Applet implements Runnable {
 					}
 
 					
-					if ((groundY == 133 || groundY == 69) && copY - copX >= groundY - 91) {
+					if ((groundY == 133 || groundY == 69) && copY - (float) copX >= (float) (groundY - 91)) {
 						stepping = true;
 						jumping = false;
-						copY = groundY - 91 + copX;
+						copY = (float) (groundY - 91 + copX);
 						while (((((int) copY) + 1) & 3) != stairsOffset) {
 							copX--;
 							copY--;
 						}
 						copSprite = SPRITE_COP_STANDING;
 						groundY -= 32;
-					} else if (groundY == 101 && copY + copX >= 1211) {
+					} else if (groundY == 101 && copY + (float) copX >= 1211.0F) {
 						stepping = true;
 						jumping = false;
-						copY = 1211 - copX;
+						copY = (float) (1211 - copX);
 						while (((((int) copY) + 1) & 3) != stairsOffset) {
 							copX++;
 							copY--;
@@ -536,7 +536,7 @@ public class a extends Applet implements Runnable {
 				room = (copX + 4) / 152;
 				if (room != oldRoom) {
 					enemyDirection = oldRoom - room;
-					ballBounceY = 0;
+					ballBounceY = (float) 0;
 					ballBounceVy = level < 4 ? LOW_BALL_SPEED : HIGH_BALL_SPEED;
 
 					
@@ -662,7 +662,7 @@ public class a extends Applet implements Runnable {
 				}
 				if (robberY == groundY) {
 					
-					if (robberX > copX) {
+					if (robberX > (float) copX) {
 						robberVx = ROBBER_SPEED;
 						robberOrientation = ORIENTATION_ORIGINAL;
 					} else {
@@ -670,8 +670,8 @@ public class a extends Applet implements Runnable {
 						robberOrientation = ORIENTATION_REVERSED;
 					}
 				}
-				if (robberX < -8 || robberX > 1216) {
-					if (robberX < -8) {
+				if (robberX < -8.0F || robberX > 1216.0F) {
+					if (robberX < -8.0F) {
 						robberVx = ROBBER_SPEED;
 						robberOrientation = ORIENTATION_ORIGINAL;
 					} else {
@@ -748,7 +748,7 @@ public class a extends Applet implements Runnable {
 					if (!insideElevator) {
 						
 						y = (int) copY + (jumping ? 12 : 19);
-						if (copY <= object[OBJ_Y] + object[OBJ_Y2] && y >= object[OBJ_Y] && copX <= object[OBJ_X] + 5 && copX + 5 >= object[OBJ_X]) {
+						if (copY <= (float) (object[OBJ_Y] + object[OBJ_Y2]) && y >= object[OBJ_Y] && copX <= object[OBJ_X] + 5 && copX + 5 >= object[OBJ_X]) {
 							
 							if (j <= MAP_SUITCASE) {
 								map[(groundY - 37) >> 5][room] = MAP_EMPTY;
@@ -769,7 +769,7 @@ public class a extends Applet implements Runnable {
 				}
 
 				
-				if (!insideElevator && copY <= robberY + 19 && copY + 19 >= robberY && copX + 1 <= robberX + 7 && copX + 6 >= robberX) {
+				if (!insideElevator && copY <= (float) (robberY + 19) && copY + 19.0F >= (float) robberY && (float) (copX + 1) <= robberX + 7.0F && (float) (copX + 6) >= robberX) {
 					advancing = true;
 				}
 
@@ -967,7 +967,7 @@ public class a extends Applet implements Runnable {
 			
 			if (room == 0 || room == 7) {
 				if (room == 7) {
-					g.scale(-1, 1);
+					g.scale(-1.0, 1.0);
 					g.translate(-143, 0);
 				}
 				for (j = 0; j < 3; j++) {
@@ -1003,7 +1003,7 @@ public class a extends Applet implements Runnable {
 				}
 				if (room == 7) {
 					g.translate(143, 0);
-					g.scale(-1, 1);
+					g.scale(-1.0, 1.0);
 				}
 			}
 
@@ -1024,7 +1024,7 @@ public class a extends Applet implements Runnable {
 			}
 
 			
-			while (nextFrameStartTime - System.nanoTime() > 0) {
+			while (nextFrameStartTime - System.nanoTime() > 0L) {
 				Thread.yield();
 			}
 		}

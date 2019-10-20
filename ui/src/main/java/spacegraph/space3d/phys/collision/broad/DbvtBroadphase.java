@@ -85,7 +85,7 @@ public class DbvtBroadphase extends Broadphase {
 
 
         boolean releasepaircache = (paircache == null);
-		predictedframes = 2;
+		predictedframes = 2.0F;
 		stageCurrent = 0;
 		fupdates = 1;
 		dupdates = 1;

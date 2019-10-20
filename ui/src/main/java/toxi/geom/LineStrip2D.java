@@ -35,8 +35,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class LineStrip2D implements Iterable<Vec2D> {
 
@@ -98,7 +96,7 @@ public class LineStrip2D implements Iterable<Vec2D> {
             for (Vec2D v : vertices) {
                 centroid.addSelf(v);
             }
-            return centroid.scaleSelf(1f / num);
+            return centroid.scaleSelf(1f / (float) num);
         }
         return null;
     }
@@ -141,17 +139,17 @@ public class LineStrip2D implements Iterable<Vec2D> {
             }
         }
         float arcLen = getLength();
-        if (arcLen > 0) {
-            double delta = step / arcLen;
+        if (arcLen > (float) 0) {
+            double delta = (double) (step / arcLen);
             int currIdx = 0;
-            for (double t = 0; t < 1.0; t += delta) {
-                double currT = t * arcLen;
-                while (currT >= arcLenIndex[currIdx]) {
+            for (double t = (double) 0; t < 1.0; t += delta) {
+                double currT = t * (double) arcLen;
+                while (currT >= (double) arcLenIndex[currIdx]) {
                     currIdx++;
                 }
                 ReadonlyVec2D p = vertices.get(currIdx - 1);
                 ReadonlyVec2D q = vertices.get(currIdx);
-                float frac = (float) ((currT - arcLenIndex[currIdx - 1]) / (arcLenIndex[currIdx] - arcLenIndex[currIdx - 1]));
+                float frac = (float) ((currT - (double) arcLenIndex[currIdx - 1]) / (double) (arcLenIndex[currIdx] - arcLenIndex[currIdx - 1]));
                 Vec2D i = p.interpolateTo(q, frac);
                 uniform.add(i);
             }
@@ -182,7 +180,7 @@ public class LineStrip2D implements Iterable<Vec2D> {
         if (arcLenIndex == null || arcLenIndex.length != vertices.size()) {
             arcLenIndex = new float[vertices.size()];
         }
-        float arcLen = 0;
+        float arcLen = (float) 0;
         for (int i = 1; i < arcLenIndex.length; i++) {
             ReadonlyVec2D p = vertices.get(i - 1);
             ReadonlyVec2D q = vertices.get(i);
@@ -204,19 +202,19 @@ public class LineStrip2D implements Iterable<Vec2D> {
     public Vec2D getPointAt(float t) {
         int num = vertices.size();
         if (num > 1) {
-            if (t <= 0.0) {
+            if ((double) t <= 0.0) {
                 return vertices.get(0);
-            } else if (t >= 1.0) {
+            } else if ((double) t >= 1.0) {
                 return vertices.get(num - 1);
             }
             float totalLength = this.getLength();
-            double offp = 0, offq = 0;
+            double offp = (double) 0, offq = (double) 0;
             for (int i = 1; i < num; i++) {
                 Vec2D p = vertices.get(i - 1);
                 Vec2D q = vertices.get(i);
-                offq += q.distanceTo(p) / totalLength;
-                if (offp <= t && offq >= t) {
-                    return p.interpolateTo(q, (float) MathUtils.mapInterval(t,
+                offq = offq + (double) q.distanceTo(p) / totalLength;
+                if (offp <= (double) t && offq >= (double) t) {
+                    return p.interpolateTo(q, (float) MathUtils.mapInterval((double) t,
                             offp, offq, 0.0, 1.0));
                 }
                 offp = offq;

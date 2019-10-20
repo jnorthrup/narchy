@@ -56,12 +56,12 @@ public final class IdempotInt extends Atomic implements Idempotent {
     public final short intrin() {
 	    if (i <= ANON_INT_MAX) {
 	        if (i >= 0) {
-	            return (short) ((Intrin.INT_POSs<<8)|i);
+	            return (short) (((int) Intrin.INT_POSs <<8)|i);
             } else if ( i >= -ANON_INT_MAX) {
-                return (short) ((Intrin.INT_NEGs<<8)|(-i));
+                return (short) (((int) Intrin.INT_NEGs <<8)|(-i));
             }
         }
-        return 0;
+        return (short) 0;
     }
 
     public static IdempotInt the(int i) {

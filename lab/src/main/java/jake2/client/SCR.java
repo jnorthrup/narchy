@@ -177,7 +177,7 @@ public final class SCR extends Globals {
 
         int x = scr_vrect.x;
         int y = scr_vrect.y + scr_vrect.height;
-        re.DrawFill(x, (int) (y - scr_graphheight.value), w,
+        re.DrawFill(x, (int) ((float) y - scr_graphheight.value), w,
                 (int) scr_graphheight.value, 8);
 
         for (int a = 0; a < w; a++) {
@@ -186,9 +186,9 @@ public final class SCR extends Globals {
             int color = values[i].color;
             v = v * scr_graphscale.value + scr_graphshift.value;
 
-            if (v < 0)
+            if (v < (float) 0)
                 v += scr_graphheight.value
-                        * (1 + (int) (-v / scr_graphheight.value));
+                        * (float) (1 + (int) (-v / scr_graphheight.value));
             int h = (int) v % (int) scr_graphheight.value;
             re.DrawFill(x + w - 1 - a, y - h, 1, h, color);
         }
@@ -226,13 +226,13 @@ public final class SCR extends Globals {
 
         scr_centerstring = str;
         scr_centertime_off = scr_centertime.value;
-        scr_centertime_start = cl.time;
+        scr_centertime_start = (float) cl.time;
 
         
         scr_center_lines = 1;
         int s = 0;
         while (s < str.length()) {
-            if (str.charAt(s) == '\n')
+            if ((int) str.charAt(s) == (int) '\n')
                 scr_center_lines++;
             s++;
         }
@@ -249,7 +249,7 @@ public final class SCR extends Globals {
 
                 int l;
                 for (l = 0; l < 40 && (l + s) < str.length(); l++)
-                    if (str.charAt(s + l) == '\n' || str.charAt(s + l) == 0)
+                    if ((int) str.charAt(s + l) == (int) '\n' || (int) str.charAt(s + l) == 0)
                         break;
                 for (int i = 0; i < (40 - l) / 2; i++)
                     line.append(' ');
@@ -262,7 +262,7 @@ public final class SCR extends Globals {
 
                 Com.Printf(line.toString());
 
-                while (s < str.length() && str.charAt(s) != '\n')
+                while (s < str.length() && (int) str.charAt(s) != (int) '\n')
                     s++;
 
                 if (s == str.length())
@@ -287,7 +287,7 @@ public final class SCR extends Globals {
 
         int y;
         if (scr_center_lines <= 4)
-            y = (int) (viddef.getHeight() * 0.35);
+            y = (int) ((double) viddef.getHeight() * 0.35);
         else
             y = 48;
 
@@ -298,12 +298,12 @@ public final class SCR extends Globals {
             int l;
             for (l = 0; l < 40; l++)
                 if (start + l == cs.length() - 1
-                        || cs.charAt(start + l) == '\n')
+                        || (int) cs.charAt(start + l) == (int) '\n')
                     break;
             int x = (viddef.getWidth() - l * 8) / 2;
             SCR.AddDirtyPoint(x, y);
             for (int j = 0; j < l; j++, x += 8) {
-                re.DrawChar(x, y, cs.charAt(start + j));
+                re.DrawChar(x, y, (int) cs.charAt(start + j));
                 if (remaining == 0)
                     return;
                 remaining--;
@@ -312,7 +312,7 @@ public final class SCR extends Globals {
 
             y += 8;
 
-            while (start < cs.length() && cs.charAt(start) != '\n')
+            while (start < cs.length() && (int) cs.charAt(start) != (int) '\n')
                 start++;
 
             if (start == cs.length())
@@ -324,7 +324,7 @@ public final class SCR extends Globals {
     static void CheckDrawCenterString() {
         scr_centertime_off -= cls.frametime;
 
-        if (scr_centertime_off <= 0)
+        if (scr_centertime_off <= (float) 0)
             return;
 
         DrawCenterString();
@@ -340,9 +340,9 @@ public final class SCR extends Globals {
     static void CalcVrect() {
 
 
-        if (scr_viewsize.value < 40)
+        if (scr_viewsize.value < 40.0F)
             Cvar.Set("viewsize", "40");
-        if (scr_viewsize.value > 100)
+        if (scr_viewsize.value > 100.0F)
             Cvar.Set("viewsize", "100");
 
         int size = (int) scr_viewsize.value;
@@ -363,7 +363,7 @@ public final class SCR extends Globals {
      * Keybinding command =================
      */
     static void SizeUp_f() {
-        Cvar.SetValue("viewsize", scr_viewsize.value + 10);
+        Cvar.SetValue("viewsize", scr_viewsize.value + 10.0F);
     }
 
     /*
@@ -372,7 +372,7 @@ public final class SCR extends Globals {
      * Keybinding command =================
      */
     static void SizeDown_f() {
-        Cvar.SetValue("viewsize", scr_viewsize.value - 10);
+        Cvar.SetValue("viewsize", scr_viewsize.value - 10.0F);
     }
 
     /*
@@ -390,16 +390,16 @@ public final class SCR extends Globals {
         if (Cmd.Argc() > 2)
             rotate = Float.parseFloat(Cmd.Argv(2));
         else
-            rotate = 0;
-        float[] axis = {0, 0, 0};
+            rotate = (float) 0;
+        float[] axis = {(float) 0, (float) 0, (float) 0};
         if (Cmd.Argc() == 6) {
             axis[0] = Float.parseFloat(Cmd.Argv(3));
             axis[1] = Float.parseFloat(Cmd.Argv(4));
             axis[2] = Float.parseFloat(Cmd.Argv(5));
         } else {
-            axis[0] = 0;
-            axis[1] = 0;
-            axis[2] = 1;
+            axis[0] = (float) 0;
+            axis[1] = (float) 0;
+            axis[2] = 1.0F;
         }
 
         re.SetSky(Cmd.Argv(1), rotate, axis);
@@ -479,10 +479,10 @@ public final class SCR extends Globals {
     static void DrawPause() {
         Dimension dim = new Dimension();
 
-        if (scr_showpause.value == 0) 
+        if (scr_showpause.value == (float) 0)
             return;
 
-        if (cl_paused.value == 0)
+        if (cl_paused.value == (float) 0)
             return;
 
         re.DrawGetPicSize(dim, "pause");
@@ -517,7 +517,7 @@ public final class SCR extends Globals {
         if (cls.key_dest == key_console)
             scr_conlines = 0.5f; 
         else
-            scr_conlines = 0; 
+            scr_conlines = (float) 0;
 
         if (scr_conlines < scr_con_current) {
             scr_con_current -= scr_conspeed.value * cls.frametime;
@@ -553,7 +553,7 @@ public final class SCR extends Globals {
             return;
         }
 
-        if (scr_con_current != 0) {
+        if (scr_con_current != (float) 0) {
             Console.DrawConsole(scr_con_current);
         } else {
             if (cls.key_dest == key_game || cls.key_dest == key_message)
@@ -570,9 +570,9 @@ public final class SCR extends Globals {
         S.StopAllSounds();
         cl.sound_prepped = false; 
 
-        if (cls.disable_screen != 0)
+        if (cls.disable_screen != (float) 0)
             return;
-        if (developer.value != 0)
+        if (developer.value != (float) 0)
             return;
         if (cls.state == ca_disconnected)
             return; 
@@ -584,7 +584,7 @@ public final class SCR extends Globals {
             scr_draw_loading = 1;
 
         UpdateScreen();
-        cls.disable_screen = Timer.Milliseconds();
+        cls.disable_screen = (float) Timer.Milliseconds();
         cls.disable_servercount = cl.servercount;
     }
 
@@ -592,7 +592,7 @@ public final class SCR extends Globals {
      * ================ SCR_EndLoadingPlaque ================
      */
     public static void EndLoadingPlaque() {
-        cls.disable_screen = 0;
+        cls.disable_screen = (float) 0;
         Console.ClearNotify();
     }
 
@@ -615,18 +615,18 @@ public final class SCR extends Globals {
 
         int i;
         if (Cmd.Argc() == 2) {
-            if ( re.BeginFrame(0) ) {
+            if ( re.BeginFrame((float) 0) ) {
                 for (i = 0; i < 128; i++) {
-                    cl.refdef.viewangles[1] = i / 128.0f * 360.0f;
+                    cl.refdef.viewangles[1] = (float) i / 128.0f * 360.0f;
                     re.RenderFrame(cl.refdef);
                 }
                 re.EndFrame();
             }
         } else {
             for (i = 0; i < 128; i++) {
-                cl.refdef.viewangles[1] = i / 128.0f * 360.0f;
+                cl.refdef.viewangles[1] = (float) i / 128.0f * 360.0f;
 
-                if( re.BeginFrame(0) ) {
+                if( re.BeginFrame((float) 0) ) {
                     re.RenderFrame(cl.refdef);
                     re.EndFrame();
                 }
@@ -634,7 +634,7 @@ public final class SCR extends Globals {
         }
 
         int stop = Timer.Milliseconds();
-        float time = (stop - start) / 1000.0f;
+        float time = (float) (stop - start) / 1000.0f;
         Com.Printf("%f seconds (%f fps)\n", new Vargs(2).add(time).add(
                 128.0f / time));
     }
@@ -656,12 +656,12 @@ public final class SCR extends Globals {
     static void TileClear() {
         clear.clear();
 
-        if (scr_drawall.value != 0)
+        if (scr_drawall.value != (float) 0)
             DirtyScreen(); 
 
         if (scr_con_current == 1.0f)
             return; 
-        if (scr_viewsize.value == 100)
+        if (scr_viewsize.value == 100.0F)
             return; 
         if (cl.cinematictime > 0)
             return; 
@@ -690,7 +690,7 @@ public final class SCR extends Globals {
         scr_dirty.y2 = -9999;
 
 
-        int top = (int) (scr_con_current * viddef.getHeight());
+        int top = (int) (scr_con_current * (float) viddef.getHeight());
         if (top >= clear.y1)
             clear.y1 = top;
 
@@ -753,7 +753,7 @@ public final class SCR extends Globals {
 
         int current = 0;
         for (int i = 0; i < string.length(); i++) {
-            if (string.charAt(i) == '\n') {
+            if ((int) string.charAt(i) == (int) '\n') {
                 lines++;
                 current = 0;
             } else {
@@ -778,7 +778,7 @@ public final class SCR extends Globals {
         for (int l = 0; l < string.length();) {
             
             line = new StringBuffer(1024);
-            while (l < string.length() && string.charAt(l) != '\n') {
+            while (l < string.length() && (int) string.charAt(l) != (int) '\n') {
                 line.append(string.charAt(l));
                 l++;
             }
@@ -788,7 +788,7 @@ public final class SCR extends Globals {
             else
                 x = margin;
             for (int i = 0; i < line.length(); i++) {
-                re.DrawChar(x, y, line.charAt(i) ^ xor);
+                re.DrawChar(x, y, (int) line.charAt(i) ^ xor);
                 x += 8;
             }
             if (l < string.length()) {
@@ -825,10 +825,10 @@ public final class SCR extends Globals {
         for (int i = 0; i < l; i++) {
             ptr = num.charAt(i);
             int frame;
-            if (ptr == '-')
+            if ((int) ptr == (int) '-')
                 frame = STAT_MINUS;
             else
-                frame = ptr - '0';
+                frame = (int) ptr - (int) '0';
 
             re.DrawPic(x, y, sb_nums[color][frame]);
             x += CHAR_WIDTH;
@@ -917,7 +917,7 @@ public final class SCR extends Globals {
             int value;
             if (parser.tokenEquals("pic")) {
                 parser.next();
-                value = cl.frame.playerstate.stats[parser.tokenAsInt()];
+                value = (int) cl.frame.playerstate.stats[parser.tokenAsInt()];
                 if (value >= MAX_IMAGES)
                     Com.Error(ERR_DROP, "Pic >= MAX_IMAGES");
                 if (cl.configstrings[CS_IMAGES + value] != null) {
@@ -1010,7 +1010,7 @@ public final class SCR extends Globals {
                 parser.next();
                 width = parser.tokenAsInt();
                 parser.next();
-                value = cl.frame.playerstate.stats[parser.tokenAsInt()];
+                value = (int) cl.frame.playerstate.stats[parser.tokenAsInt()];
                 DrawField(x, y, 0, width, value);
                 continue;
             }
@@ -1018,7 +1018,7 @@ public final class SCR extends Globals {
             if (parser.tokenEquals("hnum")) {
 
                 width = 3;
-                value = cl.frame.playerstate.stats[STAT_HEALTH];
+                value = (int) cl.frame.playerstate.stats[STAT_HEALTH];
                 int color;
                 if (value > 25)
                     color = 0; 
@@ -1027,7 +1027,7 @@ public final class SCR extends Globals {
                 else
                     color = 1;
 
-                if ((cl.frame.playerstate.stats[STAT_FLASHES] & 1) != 0)
+                if (((int) cl.frame.playerstate.stats[STAT_FLASHES] & 1) != 0)
                     re.DrawPic(x, y, "field_3");
 
                 DrawField(x, y, color, width, value);
@@ -1037,7 +1037,7 @@ public final class SCR extends Globals {
             if (parser.tokenEquals("anum")) {
 
                 width = 3;
-                value = cl.frame.playerstate.stats[STAT_AMMO];
+                value = (int) cl.frame.playerstate.stats[STAT_AMMO];
                 int color;
                 if (value > 5)
                     color = 0; 
@@ -1046,7 +1046,7 @@ public final class SCR extends Globals {
                 else
                     continue; 
 
-                if ((cl.frame.playerstate.stats[STAT_FLASHES] & 4) != 0)
+                if (((int) cl.frame.playerstate.stats[STAT_FLASHES] & 4) != 0)
                     re.DrawPic(x, y, "field_3");
 
                 DrawField(x, y, color, width, value);
@@ -1056,11 +1056,11 @@ public final class SCR extends Globals {
             if (parser.tokenEquals("rnum")) {
 
                 width = 3;
-                value = cl.frame.playerstate.stats[STAT_ARMOR];
+                value = (int) cl.frame.playerstate.stats[STAT_ARMOR];
                 if (value < 1)
                     continue;
 
-                if ((cl.frame.playerstate.stats[STAT_FLASHES] & 2) != 0)
+                if (((int) cl.frame.playerstate.stats[STAT_FLASHES] & 2) != 0)
                     re.DrawPic(x, y, "field_3");
 
                 int color = 0;
@@ -1073,7 +1073,7 @@ public final class SCR extends Globals {
                 int index = parser.tokenAsInt();
                 if (index < 0 || index >= MAX_CONFIGSTRINGS)
                     Com.Error(ERR_DROP, "Bad stat_string index");
-                index = cl.frame.playerstate.stats[index];
+                index = (int) cl.frame.playerstate.stats[index];
                 if (index < 0 || index >= MAX_CONFIGSTRINGS)
                     Com.Error(ERR_DROP, "Bad stat_string index");
                 Console.DrawString(x, y, cl.configstrings[index]);
@@ -1106,7 +1106,7 @@ public final class SCR extends Globals {
 
             if (parser.tokenEquals("if")) { 
                 parser.next();
-                value = cl.frame.playerstate.stats[parser.tokenAsInt()];
+                value = (int) cl.frame.playerstate.stats[parser.tokenAsInt()];
                 if (value == 0) {
                     parser.next();
                     
@@ -1139,7 +1139,7 @@ public final class SCR extends Globals {
     static final int STAT_LAYOUTS = 13;
 
     static void DrawLayout() {
-        if (cl.frame.playerstate.stats[STAT_LAYOUTS] != 0)
+        if ((int) cl.frame.playerstate.stats[STAT_LAYOUTS] != 0)
             SCR.ExecuteLayoutString(cl.layout);
     }
 
@@ -1151,14 +1151,14 @@ public final class SCR extends Globals {
      * This is called every frame, and can also be called explicitly to flush
      * text to the screen. ==================
      */
-    private static final float[] separation = { 0, 0 };
+    private static final float[] separation = {(float) 0, (float) 0};
     
     static void UpdateScreen2() {
 
 
-        if (cls.disable_screen != 0) {
-            if (Timer.Milliseconds() - cls.disable_screen > 120000) {
-                cls.disable_screen = 0;
+        if (cls.disable_screen != (float) 0) {
+            if ((float) Timer.Milliseconds() - cls.disable_screen > 120000.0F) {
+                cls.disable_screen = (float) 0;
                 Com.Printf("Loading plaque timed out.\n");
             }
             return;
@@ -1171,19 +1171,19 @@ public final class SCR extends Globals {
          * * range check cl_camera_separation so we don't inadvertently fry
          * someone's * brain
          */
-        if (cl_stereo_separation.value > 1.0)
+        if ((double) cl_stereo_separation.value > 1.0)
             Cvar.SetValue("cl_stereo_separation", 1.0f);
-        else if (cl_stereo_separation.value < 0)
+        else if (cl_stereo_separation.value < (float) 0)
             Cvar.SetValue("cl_stereo_separation", 0.0f);
 
         int numframes;
-        if (cl_stereo.value != 0) {
+        if (cl_stereo.value != (float) 0) {
             numframes = 2;
-            separation[0] = -cl_stereo_separation.value / 2;
-            separation[1] = cl_stereo_separation.value / 2;
+            separation[0] = -cl_stereo_separation.value / 2.0F;
+            separation[1] = cl_stereo_separation.value / 2.0F;
         } else {
-            separation[0] = 0;
-            separation[1] = 0;
+            separation[0] = (float) 0;
+            separation[1] = (float) 0;
             numframes = 1;
         }
 
@@ -1242,9 +1242,9 @@ public final class SCR extends Globals {
     
                     DrawStats();
     
-                    if ((cl.frame.playerstate.stats[STAT_LAYOUTS] & 1) != 0)
+                    if (((int) cl.frame.playerstate.stats[STAT_LAYOUTS] & 1) != 0)
                         DrawLayout();
-                    if ((cl.frame.playerstate.stats[STAT_LAYOUTS] & 2) != 0)
+                    if (((int) cl.frame.playerstate.stats[STAT_LAYOUTS] & 2) != 0)
                         CL_inv.DrawInventory();
     
                     DrawNet();
@@ -1332,15 +1332,15 @@ public final class SCR extends Globals {
             }
 
             int diff = cls.realtime - lasttime;
-            if (diff > (int) (fps.value * 1000)) {
-                fpsvalue = (cls.framecount - lastframes) * 100000 / diff
+            if (diff > (int) (fps.value * 1000.0F)) {
+                fpsvalue = (float) ((cls.framecount - lastframes) * 100000) / (float) diff
                         / 100.0f + " fps";
                 lastframes = cls.framecount;
                 lasttime = cls.realtime;
             }
             int x = viddef.getWidth() - 8 * fpsvalue.length() - 2;
             for (int i = 0; i < fpsvalue.length(); i++) {
-                re.DrawChar(x, 2, fpsvalue.charAt(i));
+                re.DrawChar(x, 2, (int) fpsvalue.charAt(i));
                 x += 8;
             }
         } else if (fps.modified) {
@@ -1396,8 +1396,8 @@ public final class SCR extends Globals {
 
         qfiles.pcx_t pcx = new qfiles.pcx_t(raw);
 
-        if (pcx.manufacturer != 0x0a || pcx.version != 5 || pcx.encoding != 1
-                || pcx.bits_per_pixel != 8 || pcx.xmax >= 640
+        if ((int) pcx.manufacturer != 0x0a || (int) pcx.version != 5 || (int) pcx.encoding != 1
+                || (int) pcx.bits_per_pixel != 8 || pcx.xmax >= 640
                 || pcx.ymax >= 480) {
 
             VID.Printf(Defines.PRINT_ALL, "Bad pcx file " + filename + '\n');
@@ -1421,7 +1421,7 @@ public final class SCR extends Globals {
 
 
         int count = 0;
-        byte dataByte = 0;
+        byte dataByte = (byte) 0;
         int runLength = 0;
 
 
@@ -1432,8 +1432,8 @@ public final class SCR extends Globals {
 
                 dataByte = pcx.data.get(p++);
 
-                if ((dataByte & 0xC0) == 0xC0) {
-                    runLength = dataByte & 0x3F;
+                if (((int) dataByte & 0xC0) == 0xC0) {
+                    runLength = (int) dataByte & 0x3F;
                     dataByte = pcx.data.get(p++);
                     
                     while (runLength-- > 0) {
@@ -1535,7 +1535,7 @@ public final class SCR extends Globals {
             
             cl.cinematic_file.get(counts);
             for (int j = 0; j < 256; j++)
-                cin.h_count[j] = counts[j] & 0xFF;
+                cin.h_count[j] = (int) counts[j] & 0xFF;
 
 
             int numhnodes = 256;
@@ -1568,7 +1568,7 @@ public final class SCR extends Globals {
      */
     private static byte[] Huff1Decompress(byte[] in, int size) {
 
-        int count = (in[0] & 0xFF) | ((in[1] & 0xFF)<< 8) | ((in[2] & 0xFF) << 16) | ((in[3] & 0xFF) << 24);
+        int count = ((int) in[0] & 0xFF) | (((int) in[1] & 0xFF)<< 8) | (((int) in[2] & 0xFF) << 16) | (((int) in[3] & 0xFF) << 24);
 
         int input = 4;
         byte[] out = new byte[count];
@@ -1581,7 +1581,7 @@ public final class SCR extends Globals {
         int[] hnodes = cin.hnodes1;
         int nodenum = cin.numhnodes1[0];
         while (count != 0) {
-            int inbyte = in[input++] & 0xFF;
+            int inbyte = (int) in[input++] & 0xFF;
 
             if (nodenum < 256) {
                 index = hnodesbase + (nodenum << 9);
@@ -1736,7 +1736,7 @@ public final class SCR extends Globals {
             return;
         }
 
-        int frame = (int) ((cls.realtime - cl.cinematictime) * 14.0f / 1000);
+        int frame = (int) ((float) (cls.realtime - cl.cinematictime) * 14.0f / 1000.0F);
         
         if (frame <= cl.cinematicframe)
             return;

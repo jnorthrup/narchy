@@ -13,9 +13,9 @@ public class Use {
 
 	public final String id;
 
-	static final long MAX_TIME_SEC = 10;
-	static final long MAX_TIME_NS = MAX_TIME_SEC * 1_000_000_000;
-	static final long MIN_TIME_NS = 10;
+	static final long MAX_TIME_SEC = 10L;
+	static final long MAX_TIME_NS = MAX_TIME_SEC * 1_000_000_000L;
+	static final long MIN_TIME_NS = 10L;
 
 //	final AtomicLong totalNS = new AtomicLong();
 	final AtomicHistogram timeNS = new AtomicHistogram(MIN_TIME_NS, MAX_TIME_NS, 0);
@@ -73,12 +73,12 @@ public class Use {
 		double mean = timeCopy.getMean();
 		double Z = 0.9; //90%
 		long N = timeCopy.getTotalCount();
-		double confInterval = Z * timeCopy.getStdDeviation()/Math.sqrt(N) / mean;
+		double confInterval = Z * timeCopy.getStdDeviation()/Math.sqrt((double) N) / mean;
 
 		return
-			Texts.timeStr(mean * N) + //total time, estimate
-			" mean=" + Texts.timeStr(Math.round(mean)) +
-			"±" + Texts.n2(confInterval*100) + "% x " + N;
+			Texts.timeStr(mean * (double) N) + //total time, estimate
+			" mean=" + Texts.timeStr((double) Math.round(mean)) +
+			"±" + Texts.n2(confInterval* 100.0) + "% x " + N;
 			//+ Texts.histogramString(timeCopy, false);
 	}
 }

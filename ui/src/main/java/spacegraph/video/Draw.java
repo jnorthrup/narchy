@@ -101,8 +101,8 @@ public enum Draw {
     private static final v3 b = new v3();
 
 
-    public static final int colorBLACK = Draw.rgbInt(0,0,0);
-    public static final int colorWHITE = Draw.rgbInt(1,1,1);
+    public static final int colorBLACK = Draw.rgbInt((float) 0, (float) 0, (float) 0);
+    public static final int colorWHITE = Draw.rgbInt(1.0F, 1.0F, 1.0F);
 
 
 	public static void drawCoordSystem(GL gl) {
@@ -417,44 +417,44 @@ public enum Draw {
      *  wo,ho - outer width/height
      *  */
     public static void rectFrame(float cx, float cy, float wi, float hi, float wo, float ho, GL2 gl) {
-        float vthick = (ho - hi) / 2;
+        float vthick = (ho - hi) / 2.0F;
         //N
-        Draw.rect(cx-wo/2, cy-ho/2, wo, vthick, gl );
+        Draw.rect(cx-wo/ 2.0F, cy-ho/ 2.0F, wo, vthick, gl );
         //S
-        Draw.rect(cx-wo/2, cy+ho/2 - vthick, wo, vthick, gl );
+        Draw.rect(cx-wo/ 2.0F, cy+ho/ 2.0F - vthick, wo, vthick, gl );
 
-        float hthick = (wo - wi) / 2;
+        float hthick = (wo - wi) / 2.0F;
         //W
-        Draw.rect(cx-wo/2, cy - hi/2, hthick, hi, gl );
+        Draw.rect(cx-wo/ 2.0F, cy - hi/ 2.0F, hthick, hi, gl );
         //E
-        Draw.rect(cx+wo/2 - hthick, cy - hi/2, hthick, hi, gl );
+        Draw.rect(cx+wo/ 2.0F - hthick, cy - hi/ 2.0F, hthick, hi, gl );
     }
 
     /** a rectangle but instead of drawing the outside edges, draws a cross-hair cross through the center
      * TODO rotation angle param
      * */
     public static void rectCross(float cx, float cy, float wi, float hi, float wo, float ho, GL2 gl) {
-        float vthick = (ho - hi) / 2;
-        Draw.rect(cx-wo/2, cy-vthick/2, wo, vthick, gl ); //horiz
-        float hthick = (wo - wi) / 2;
-        Draw.rect(cx-hthick/2, cy - hi/2, hthick, hi, gl ); //vert
+        float vthick = (ho - hi) / 2.0F;
+        Draw.rect(cx-wo/ 2.0F, cy-vthick/ 2.0F, wo, vthick, gl ); //horiz
+        float hthick = (wo - wi) / 2.0F;
+        Draw.rect(cx-hthick/ 2.0F, cy - hi/ 2.0F, hthick, hi, gl ); //vert
     }
 
 
     public static void circle(GL2 gl, v2 center, boolean solid, float radius, int NUM_CIRCLE_POINTS) {
 
 
-        float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
-        float c = (float) Math.cos(theta);
-        float s = (float) Math.sin(theta);
+        float theta = 2.0F * MathUtils.PI / (float) NUM_CIRCLE_POINTS;
+        float c = (float) Math.cos((double) theta);
+        float s = (float) Math.sin((double) theta);
         float cx = center.x;
         float cy = center.y;
         gl.glBegin(solid ? GL_TRIANGLE_FAN : GL_LINE_LOOP);
 
-        float y = 0;
+        float y = (float) 0;
         float x = radius;
         for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
-            gl.glVertex3f(x + cx, y + cy, 0);
+            gl.glVertex3f(x + cx, y + cy, (float) 0);
 
             float temp = x;
             x = c * x - s * y;
@@ -467,12 +467,12 @@ public enum Draw {
     public static void particles(GL2 gl, v2[] centers, float radius, int NUM_CIRCLE_POINTS, ParticleColor[] colors, int count) {
 
 
-        float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
-        float c = (float) Math.cos(theta);
-        float s = (float) Math.sin(theta);
+        float theta = 2.0F * MathUtils.PI / (float) NUM_CIRCLE_POINTS;
+        float c = (float) Math.cos((double) theta);
+        float s = (float) Math.sin((double) theta);
 
         float x = radius;
-        float y = 0;
+        float y = (float) 0;
 
         for (int i = 0; i < count; i++) {
             v2 center = centers[i];
@@ -480,13 +480,13 @@ public enum Draw {
             float cy = center.y;
             gl.glBegin(GL_TRIANGLE_FAN);
             if (colors == null) {
-                gl.glColor4f(1, 1, 1, .4f);
+                gl.glColor4f(1.0F, 1.0F, 1.0F, .4f);
             } else {
                 ParticleColor color = colors[i];
                 gl.glColor4b(color.r, color.g, color.b, color.a);
             }
             for (int j = 0; j < NUM_CIRCLE_POINTS; j++) {
-                gl.glVertex3f(x + cx, y + cy, 0);
+                gl.glVertex3f(x + cx, y + cy, (float) 0);
                 float temp = x;
                 x = c * x - s * y;
                 y = s * temp + c * y;
@@ -503,13 +503,13 @@ public enum Draw {
     public static void rectAlphaCorners(float left, float bottom, float x2, float y2, float[] color, float[] cornerAlphas, GL2 gl) {
         gl.glBegin(GL2ES3.GL_QUADS);
         gl.glColor4f(color[0], color[1], color[2], cornerAlphas[0]);
-        gl.glVertex3f(left, bottom, 0);
+        gl.glVertex3f(left, bottom, (float) 0);
         gl.glColor4f(color[0], color[1], color[2], cornerAlphas[1]);
-        gl.glVertex3f(x2, bottom, 0);
+        gl.glVertex3f(x2, bottom, (float) 0);
         gl.glColor4f(color[0], color[1], color[2], cornerAlphas[2]);
-        gl.glVertex3f(x2, y2, 0);
+        gl.glVertex3f(x2, y2, (float) 0);
         gl.glColor4f(color[0], color[1], color[2], cornerAlphas[3]);
-        gl.glVertex3f(left, y2, 0);
+        gl.glVertex3f(left, y2, (float) 0);
         gl.glEnd();
 
     }
@@ -521,12 +521,12 @@ public enum Draw {
     }
 
     public static void rect(GL2 gl, float x1, float y1, float w, float h, float z) {
-        if (z == 0) {
+        if (z == (float) 0) {
             rect(x1, y1, w, h, gl);
         } else {
 
             gl.glBegin(GL2ES3.GL_QUADS);
-            gl.glNormal3f(0, 0, 1);
+            gl.glNormal3f((float) 0, (float) 0, 1.0F);
             gl.glVertex3f(x1, y1, z);
             gl.glVertex3f(x1 + w, y1, z);
             gl.glVertex3f(x1 + w, y1 + h, z);
@@ -559,7 +559,7 @@ public enum Draw {
             gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         }
 
-        boolean repeat = repeatScale > 0;
+        boolean repeat = repeatScale > (float) 0;
         if (repeat) {
             gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
             gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -605,10 +605,10 @@ public enum Draw {
 
         st.getRotation(tmpQ);
 
-        if (twist != 0)
-            tmpQ.setAngle(0, 1, 0, twist);
+        if (twist != (float) 0)
+            tmpQ.setAngle((float) 0, 1.0F, (float) 0, twist);
 
-        v3 ww = new v3(0, 0, 1);
+        v3 ww = new v3((float) 0, (float) 0, 1.0F);
         tmpQ.rotateVector(ww, ww);
 
 
@@ -638,7 +638,7 @@ public enum Draw {
 
         );
 
-        gl.glColor4f(e.r / 2f, e.g / 2f, e.b / 2f, e.a * 2 / 3);
+        gl.glColor4f(e.r / 2f, e.g / 2f, e.b / 2f, e.a * 2.0F / 3.0F);
         gl.glVertex3f(tx, ty, tz);
 
         gl.glEnd();
@@ -669,7 +669,7 @@ public enum Draw {
 
     public static int hsb(float hue, float saturation, float brightness) {
         float[] f = new float[4];
-        hsb(f, hue, saturation, brightness, 1);
+        hsb(f, hue, saturation, brightness, 1.0F);
         return rgbInt(f[0], f[1], f[2]);
     }
 
@@ -677,12 +677,12 @@ public enum Draw {
         if (target == null || target.length < 4)
             target = new float[4];
 
-        float r = 0, g = 0, b = 0;
-        if (saturation == 0) {
-            r = g = b = (int) (brightness * 255.0f + 0.5f);
+        float r = (float) 0, g = (float) 0, b = (float) 0;
+        if (saturation == (float) 0) {
+            r = g = b = (float) (int) (brightness * 255.0f + 0.5f);
         } else {
-            float h = (hue - (float) Math.floor(hue)) * 6.0f;
-            float f = h - (float) Math.floor(h);
+            float h = (hue - (float) Math.floor((double) hue)) * 6.0f;
+            float f = h - (float) Math.floor((double) h);
             float p = brightness * (1.0f - saturation);
             float q = brightness * (1.0f - saturation * f);
             float t = brightness * (1.0f - (saturation * (1.0f - f)));
@@ -731,12 +731,12 @@ public enum Draw {
 
         float r, g, b;
         if (saturation < Float.MIN_NORMAL) {
-            r = g = b = (int) (brightness * 255.0f + 0.5f);
+            r = g = b = (float) (int) (brightness * 255.0f + 0.5f);
         } else if (brightness < Float.MIN_NORMAL) {
             return 0;
         } else {
-            float h = (hue - (float) Math.floor(hue)) * 6.0f;
-            float f = h - (float) Math.floor(h);
+            float h = (hue - (float) Math.floor((double) hue)) * 6.0f;
+            float f = h - (float) Math.floor((double) h);
             float p = brightness * (1.0f - saturation);
             float q = brightness * (1.0f - saturation * f);
             float t = brightness * (1.0f - (saturation * (1.0f - f)));
@@ -794,8 +794,8 @@ public enum Draw {
         if (s == 0f) {
             r = g = b = l; // achromatic
         } else {
-            float q = l < 0.5f ? l * (1 + s) : l + s - l * s;
-            float p = 2 * l - q;
+            float q = l < 0.5f ? l * (1.0F + s) : l + s - l * s;
+            float p = 2.0F * l - q;
             r = hueToRgb(p, q, h + 1f/3f);
             g = hueToRgb(p, q, h);
             b = hueToRgb(p, q, h - 1f/3f);
@@ -810,8 +810,8 @@ public enum Draw {
         if (s == 0f) {
             r = g = b = l; // achromatic
         } else {
-            float q = l < 0.5f ? l * (1 + s) : l + s - l * s;
-            float p = 2 * l - q;
+            float q = l < 0.5f ? l * (1.0F + s) : l + s - l * s;
+            float p = 2.0F * l - q;
             r = hueToRgb(p, q, h + 1f/3f);
             g = hueToRgb(p, q, h);
             b = hueToRgb(p, q, h - 1f/3f);
@@ -842,13 +842,13 @@ public enum Draw {
      */
     public static void colorBipolar(GL2 gl, float v) {
         float r, g, b;
-        if (v < 0) {
+        if (v < (float) 0) {
             r = -v / 2f;
             g = 0f;
             b = -v;
         } else {
             r = v;
-            g = v / 2;
+            g = v / 2.0F;
             b = 0f;
         }
         gl.glColor3f(r, g, b);
@@ -863,14 +863,14 @@ public enum Draw {
         float r, g, b;
         if (v != v) {
             r = g = b = 0.5f;
-        } else if (v < 0) {
+        } else if (v < (float) 0) {
             v = unitize(-v);
             r = v;
             g = 0f;
-            b = v / 2;
+            b = v / 2.0F;
         } else {
             v = unitize(v);
-            r = v / 2;
+            r = v / 2.0F;
             g = v;
             b = 0f;
         }
@@ -878,7 +878,7 @@ public enum Draw {
     }
 
     public static int rgbInt(float r, float g, float b) {
-        return  ((int) (255 * r) << 16) | ((int) (255 * g) << 8) | ((int) (255 * b));
+        return  ((int) (255.0F * r) << 16) | ((int) (255.0F * g) << 8) | ((int) (255.0F * b));
     }
 
     public static void colorUnipolarHue(GL2 gl, float v, float hueMin, float hueMax) {
@@ -890,7 +890,7 @@ public enum Draw {
     }
 
     public static void colorUnipolarHue(float[] c, float v) {
-        colorUnipolarHue(c, v, 0, 1);
+        colorUnipolarHue(c, v, (float) 0, 1.0F);
     }
 
     public static void colorUnipolarHue(float[] c, float v, float hueMin, float hueMax) {
@@ -906,7 +906,7 @@ public enum Draw {
     }
 
     public static void colorHash(int hash, float[] color, float sat, float bri, float alpha) {
-        Draw.hsb(color, (Math.abs(hash) % 500) / 500f * 360.0f, sat, bri, alpha);
+        Draw.hsb(color, (float) (Math.abs(hash) % 500) / 500f * 360.0f, sat, bri, alpha);
     }
 
     public static void colorHash(int hash, float[] color, float alpha) {
@@ -923,7 +923,7 @@ public enum Draw {
         colorHash(gl, hash, 0.7f, 0.7f, alpha);
     }
     public static void colorHashRange(GL2 gl, int hash, float hueStart, float hueEnd, float alpha) {
-        float h = Util.lerpSafe( ((float)Math.abs(hash))/Integer.MAX_VALUE, hueStart, hueEnd);
+        float h = Util.lerpSafe( ((float)Math.abs(hash))/ (float) Integer.MAX_VALUE, hueStart, hueEnd);
         Draw.hsb(gl, h, 0.7f, 0.7f, alpha);
     }
 
@@ -952,8 +952,8 @@ public enum Draw {
 
     private static void bounds(GL2 gl, float x1, float y1, float w, float h, Consumer<GL2> c) {
         gl.glPushMatrix();
-        gl.glTranslatef(x1, y1, 0);
-        gl.glScalef(w, h, 1);
+        gl.glTranslatef(x1, y1, (float) 0);
+        gl.glScalef(w, h, 1.0F);
         c.accept(gl);
         gl.glPopMatrix();
     }
@@ -995,7 +995,7 @@ public enum Draw {
 
 
     public static void poly(int n, float rad, boolean fill, GL2 gl) {
-        poly(n, rad, 0, fill, gl);
+        poly(n, rad, (float) 0, fill, gl);
     }
 
     /** TODO https://stackoverflow.com/questions/8779570/opengl-drawing-a-hexigon-with-vertices#8779622 */
@@ -1006,7 +1006,7 @@ public enum Draw {
         gl.glBegin(fill ? GL_TRIANGLE_FAN : GL_LINE_LOOP);
 
         for (int i = 0; i < n; ++i) {
-            double theta = angle + (i/((float)n)) * (float)(2*Math.PI);
+            double theta = (double) (angle + ((float) i / ((float) n)) * (float) (2.0 * Math.PI));
             gl.glVertex2f(rad * (float)Math.cos(theta), rad * (float)Math.sin(theta) );
         }
 
@@ -1131,14 +1131,14 @@ public enum Draw {
     }
 
     public static void halfTriEdge2D(float fx, float fy, float tx, float ty, float base, GL2 gl) {
-        float len = (float) Math.sqrt(sqr(fx - tx) + sqr(fy - ty));
-        float theta = (float) (Math.atan2(ty - fy, tx - fx) * 180 / Math.PI) + 270f;
+        float len = (float) Math.sqrt((double) (sqr(fx - tx) + sqr(fy - ty)));
+        float theta = (float) (Math.atan2((double) (ty - fy), (double) (tx - fx)) * 180.0 / Math.PI) + 270f;
 
         //isosceles triangle
         gl.glPushMatrix();
-        gl.glTranslatef((tx + fx) / 2, (ty + fy) / 2, 0);
-        gl.glRotatef(theta, 0, 0, 1);
-        tri2f(gl, -base / 2, -len / 2, +base / 2, -len / 2, 0, +len / 2);
+        gl.glTranslatef((tx + fx) / 2.0F, (ty + fy) / 2.0F, (float) 0);
+        gl.glRotatef(theta, (float) 0, (float) 0, 1.0F);
+        tri2f(gl, -base / 2.0F, -len / 2.0F, +base / 2.0F, -len / 2.0F, (float) 0, +len / 2.0F);
         gl.glPopMatrix();
     }
 
@@ -1171,22 +1171,22 @@ public enum Draw {
                     0, GL.GL_FLOAT, GL.GL_STATIC_DRAW);
             if (wireframe) {
                 vbo.glBegin(GL.GL_LINES);
-                vbo.glColor4f(1, 0, 0, 1);
+                vbo.glColor4f(1.0F, (float) 0, (float) 0, 1.0F);
                 vbo.glVertex3f(triangle[0].x, triangle[0].y, triangle[0].z);
                 vbo.glVertex3f(triangle[1].x, triangle[1].y, triangle[1].z);
-                vbo.glColor4f(0, 1, 0, 1);
+                vbo.glColor4f((float) 0, 1.0F, (float) 0, 1.0F);
                 vbo.glVertex3f(triangle[2].x, triangle[2].y, triangle[2].z);
                 vbo.glVertex3f(triangle[1].x, triangle[1].y, triangle[1].z);
-                vbo.glColor4f(0, 0, 1, 1);
+                vbo.glColor4f((float) 0, (float) 0, 1.0F, 1.0F);
                 vbo.glVertex3f(triangle[2].x, triangle[2].y, triangle[2].z);
                 vbo.glVertex3f(triangle[0].x, triangle[0].y, triangle[0].z);
             } else {
                 vbo.glBegin(GL.GL_TRIANGLES);
-                vbo.glColor4f(1, 0, 0, 1);
+                vbo.glColor4f(1.0F, (float) 0, (float) 0, 1.0F);
                 vbo.glVertex3f(triangle[0].x, triangle[0].y, triangle[0].z);
-                vbo.glColor4f(0, 1, 0, 1);
+                vbo.glColor4f((float) 0, 1.0F, (float) 0, 1.0F);
                 vbo.glVertex3f(triangle[1].x, triangle[1].y, triangle[1].z);
-                vbo.glColor4f(0, 0, 1, 1);
+                vbo.glColor4f((float) 0, (float) 0, 1.0F, 1.0F);
                 vbo.glVertex3f(triangle[2].x, triangle[2].y, triangle[2].z);
             }
             vbo.glEnd(gl);

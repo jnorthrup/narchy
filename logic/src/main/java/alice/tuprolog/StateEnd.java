@@ -20,10 +20,8 @@ package alice.tuprolog;
 import jcog.data.list.FasterList;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.EMPTY_LIST;
 

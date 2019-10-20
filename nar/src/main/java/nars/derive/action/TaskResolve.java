@@ -50,7 +50,7 @@ public class TaskResolve extends NativeHow {
 
 	static @Nullable Task get(Term x, byte punc, When<What> w, @Nullable Predicate<Task> filter) {
 
-		if (punc == 0)
+		if ((int) punc == 0)
 			punc = TaskLink.randomPunc(x, w.x.random()); //flat-lined tasklink
 
         TaskTable table =
@@ -67,7 +67,7 @@ public class TaskResolve extends NativeHow {
 //            boolean beliefOrGoal = punc == BELIEF || punc == GOAL;
 
 		//TODO abstract TaskLinkResolver strategy
-		Task y = (punc == BELIEF && NAL.TASKLINK_ANSWER_BELIEF) || (punc == GOAL && NAL.TASKLINK_ANSWER_GOAL) ? table.match(w, null, filter, w.dur, false) : table.sample(w, null, filter);
+		Task y = ((int) punc == (int) BELIEF && NAL.TASKLINK_ANSWER_BELIEF) || ((int) punc == (int) GOAL && NAL.TASKLINK_ANSWER_GOAL) ? table.match(w, null, filter, w.dur, false) : table.sample(w, null, filter);
 
 //            if (y == null) {
 //                if (!beliefOrGoal) {

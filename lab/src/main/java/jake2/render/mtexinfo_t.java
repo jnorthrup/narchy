@@ -28,8 +28,8 @@ import java.util.Arrays;
 public class mtexinfo_t {
 
     public float[][] vecs = {
-            {0, 0, 0, 0},
-            {0, 0, 0, 0}
+            {(float) 0, (float) 0, (float) 0, (float) 0},
+            {(float) 0, (float) 0, (float) 0, (float) 0}
     };
 	public int flags;
 	public int numframes;
@@ -37,8 +37,8 @@ public class mtexinfo_t {
 	public image_t image;
 	
 	public void clear() {
-		Arrays.fill(vecs[0], 0);
-		Arrays.fill(vecs[1], 0);
+		Arrays.fill(vecs[0], (float) 0);
+		Arrays.fill(vecs[1], (float) 0);
 		
 		flags = 0;
 		numframes = 0;

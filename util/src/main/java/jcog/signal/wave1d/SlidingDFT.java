@@ -50,7 +50,7 @@ public class SlidingDFT {
         timeBufIdx = new int[numChannels];
 
 
-        double d1 = (Math.PI * 2 / fftSize);
+        double d1 = (Math.PI * 2.0 / (double) fftSize);
         int binsH = bins / 2;
         for (int bin = 0, j = bins, k = binsH, m = binsH; bin < binsH; bin++, j--, k--, m++) {
             float d2 = (float) Math.cos(d1);
@@ -78,7 +78,7 @@ public class SlidingDFT {
             float imag = f[i++];
             float amp = real*real + imag*imag;
             if (amp!=amp)
-                amp = 0; //HACK why
+                amp = (float) 0; //HACK why
 
             fftBuf[k++] = amp;
         }
@@ -106,7 +106,7 @@ public class SlidingDFT {
             timeBufC[timeBufIdxC] = f1;
             for (int k = 0, m = 0; m < fftSizeP2; k++) {
 
-                float re1 = fftBufDC[m] + ((k & 1) == 0 ? +1 : -1) * delta;
+                float re1 = fftBufDC[m] + (float) ((k & 1) == 0 ? +1 : -1) * delta;
                 float im1 = fftBufDC[m + 1];
 
                 float re2 = cos[k];

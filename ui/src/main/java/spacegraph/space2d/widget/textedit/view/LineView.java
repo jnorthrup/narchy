@@ -33,7 +33,7 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
     }
 
     public static double getHeight() {
-        return 1;
+        return 1.0;
     }
 
     public float getWidth() {
@@ -60,11 +60,11 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
 //            if (cc.size() > 1)
 //                cc.sortThis();
 
-            float width = 0;
+            float width = (float) 0;
             for (CharView c : cc) {
-                float w = CharView.width() / 2;
+                float w = CharView.width() / 2.0F;
                 width += w;
-                c.position.set(width, 0, 0);
+                c.position.set(width, (float) 0, (float) 0);
                 width += w;
             }
             this.width = width;
@@ -142,7 +142,7 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
 
         gl.glPushMatrix();
 
-        gl.glTranslatef(position.x - x1 + dx, dy, position.z);
+        gl.glTranslatef(position.x - (float) x1 + dx, dy, position.z);
 
         gl.glColor4f(color.x, color.y, color.z, color.w);
 

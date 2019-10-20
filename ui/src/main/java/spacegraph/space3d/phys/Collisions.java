@@ -645,8 +645,8 @@ public abstract class Collisions<X> extends BulletGlobals {
         }
 
         public boolean needsCollision(Broadphasing proxy0) {
-            boolean collides = ((proxy0.collisionFilterGroup & collisionFilterMask) & 0xFFFF) != 0;
-            collides = collides && ((collisionFilterGroup & proxy0.collisionFilterMask) & 0xFFFF) != 0;
+            boolean collides = (((int) proxy0.collisionFilterGroup & (int) collisionFilterMask) & 0xFFFF) != 0;
+            collides = collides && (((int) collisionFilterGroup & (int) proxy0.collisionFilterMask) & 0xFFFF) != 0;
             return collides;
         }
 
@@ -679,8 +679,8 @@ public abstract class Collisions<X> extends BulletGlobals {
         }
 
         public boolean needsCollision(Broadphasing proxy0) {
-            boolean collides = ((proxy0.collisionFilterGroup & collisionFilterMask) & 0xFFFF) != 0;
-            collides = collides && ((collisionFilterGroup & proxy0.collisionFilterMask) & 0xFFFF) != 0;
+            boolean collides = (((int) proxy0.collisionFilterGroup & (int) collisionFilterMask) & 0xFFFF) != 0;
+            collides = collides && (((int) collisionFilterGroup & (int) proxy0.collisionFilterMask) & 0xFFFF) != 0;
             return collides;
         }
 
@@ -714,7 +714,7 @@ public abstract class Collisions<X> extends BulletGlobals {
                 hitNormalWorld.set(convexResult.hitNormalLocal);
                 hitCollidable.getWorldTransform(new Transform()).basis.transform(hitNormalWorld);
 			}
-			if (hitNormalWorld.length() > 2) {
+			if (hitNormalWorld.length() > 2.0F) {
 				System.out.println("CollisionWorld.addSingleResult world " + hitNormalWorld);
 			}
 

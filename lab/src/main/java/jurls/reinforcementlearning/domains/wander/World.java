@@ -1,7 +1,6 @@
 package jurls.reinforcementlearning.domains.wander;
 
 import java.awt.*;
-import java.util.stream.IntStream;
 
 public class World {
 	public static final int SIZE = 300;
@@ -36,7 +35,7 @@ public class World {
 		return x > -dMax && x < dMax;
 	}
 	public boolean isCollision() {
-		if(!inside(player.x, SIZE-player.r) || !inside(player.y, SIZE-player.r)) {
+		if(!inside(player.x, (double) SIZE -player.r) || !inside(player.y, (double) SIZE -player.r)) {
 			return true;
 		}
             
@@ -50,7 +49,7 @@ public class World {
 	}
 
 	public boolean pointInObstacle(double x, double y) {
-		if(!inside(x, SIZE) || !inside(y, SIZE)) {
+		if(!inside(x, (double) SIZE) || !inside(y, (double) SIZE)) {
 			return true;
 		}
         int bound = obstacles.length;

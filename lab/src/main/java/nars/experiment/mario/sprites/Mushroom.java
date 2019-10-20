@@ -27,8 +27,8 @@ public class Mushroom extends Sprite {
     public Mushroom(LevelScene world, int x, int y) {
         sheet = Art.items;
 
-        this.x = x;
-        this.y = y;
+        this.x = (float) x;
+        this.y = (float) y;
         this.world = world;
         xPicO = 8;
         yPicO = 15;
@@ -44,9 +44,9 @@ public class Mushroom extends Sprite {
     public void collideCheck() {
         float xMarioD = world.mario.x - x;
         float yMarioD = world.mario.y - y;
-        float w = 16;
+        float w = 16.0F;
         if (xMarioD > -w && xMarioD < w) {
-            if (yMarioD > -height && yMarioD < world.mario.height) {
+            if (yMarioD > (float) -height && yMarioD < (float) world.mario.height) {
                 world.mario.getMushroom();
                 spriteContext.removeSprite(this);
             }
@@ -64,26 +64,26 @@ public class Mushroom extends Sprite {
         layer = 1;
 
 
-        if (xa > 2) {
+        if (xa > 2.0F) {
             facing = 1;
         }
-        if (xa < -2) {
+        if (xa < -2.0F) {
             facing = -1;
         }
 
         float sideWaysSpeed = 1.75f;
-        xa = facing * sideWaysSpeed;
+        xa = (float) facing * sideWaysSpeed;
 
         boolean mayJump = (onGround);
 
         xFlipPic = facing == -1;
 
-        runTime += (Math.abs(xa)) + 5;
+        runTime += (Math.abs(xa)) + 5.0F;
 
 
-        if (!move(xa, 0)) facing = -facing;
+        if (!move(xa, (float) 0)) facing = -facing;
         onGround = false;
-        move(0, ya);
+        move((float) 0, ya);
 
         ya *= 0.85f;
         if (onGround) {
@@ -93,73 +93,73 @@ public class Mushroom extends Sprite {
         }
 
         if (!onGround) {
-            ya += 2;
+            ya += 2.0F;
         }
     }
 
     private boolean move(float xa, float ya) {
-        while (xa > 8) {
-            if (!move(8, 0)) return false;
-            xa -= 8;
+        while (xa > 8.0F) {
+            if (!move(8.0F, (float) 0)) return false;
+            xa -= 8.0F;
         }
-        while (xa < -8) {
-            if (!move(-8, 0)) return false;
-            xa += 8;
+        while (xa < -8.0F) {
+            if (!move(-8.0F, (float) 0)) return false;
+            xa += 8.0F;
         }
-        while (ya > 8) {
-            if (!move(0, 8)) return false;
-            ya -= 8;
+        while (ya > 8.0F) {
+            if (!move((float) 0, 8.0F)) return false;
+            ya -= 8.0F;
         }
-        while (ya < -8) {
-            if (!move(0, -8)) return false;
-            ya += 8;
+        while (ya < -8.0F) {
+            if (!move((float) 0, -8.0F)) return false;
+            ya += 8.0F;
         }
 
         boolean collide = false;
-        if (ya > 0) {
-            if (isBlocking(x + xa - width, y + ya, xa, 0)) collide = true;
-            else if (isBlocking(x + xa + width, y + ya, xa, 0)) collide = true;
-            else if (isBlocking(x + xa - width, y + ya + 1, xa, ya)) collide = true;
-            else if (isBlocking(x + xa + width, y + ya + 1, xa, ya)) collide = true;
+        if (ya > (float) 0) {
+            if (isBlocking(x + xa - (float) width, y + ya, xa, (float) 0)) collide = true;
+            else if (isBlocking(x + xa + (float) width, y + ya, xa, (float) 0)) collide = true;
+            else if (isBlocking(x + xa - (float) width, y + ya + 1.0F, xa, ya)) collide = true;
+            else if (isBlocking(x + xa + (float) width, y + ya + 1.0F, xa, ya)) collide = true;
         }
-        if (ya < 0) {
-            if (isBlocking(x + xa, y + ya - height, xa, ya)) collide = true;
-            else if (collide || isBlocking(x + xa - width, y + ya - height, xa, ya)) collide = true;
-            else if (collide || isBlocking(x + xa + width, y + ya - height, xa, ya)) collide = true;
+        if (ya < (float) 0) {
+            if (isBlocking(x + xa, y + ya - (float) height, xa, ya)) collide = true;
+            else if (collide || isBlocking(x + xa - (float) width, y + ya - (float) height, xa, ya)) collide = true;
+            else if (collide || isBlocking(x + xa + (float) width, y + ya - (float) height, xa, ya)) collide = true;
         }
-        if (xa > 0) {
-            if (isBlocking(x + xa + width, y + ya - height, xa, ya)) collide = true;
-            if (isBlocking(x + xa + width, y + ya - height / 2, xa, ya)) collide = true;
-            if (isBlocking(x + xa + width, y + ya, xa, ya)) collide = true;
+        if (xa > (float) 0) {
+            if (isBlocking(x + xa + (float) width, y + ya - (float) height, xa, ya)) collide = true;
+            if (isBlocking(x + xa + (float) width, y + ya - (float) (height / 2), xa, ya)) collide = true;
+            if (isBlocking(x + xa + (float) width, y + ya, xa, ya)) collide = true;
 
-            if (avoidCliffs && onGround && !world.level.isBlocking((int) ((x + xa + width) / 16), (int) ((y) / 16 + 1), xa, 1))
+            if (avoidCliffs && onGround && !world.level.isBlocking((int) ((x + xa + (float) width) / 16.0F), (int) ((y) / 16.0F + 1.0F), xa, 1.0F))
                 collide = true;
         }
-        if (xa < 0) {
-            if (isBlocking(x + xa - width, y + ya - height, xa, ya)) collide = true;
-            if (isBlocking(x + xa - width, y + ya - height / 2, xa, ya)) collide = true;
-            if (isBlocking(x + xa - width, y + ya, xa, ya)) collide = true;
+        if (xa < (float) 0) {
+            if (isBlocking(x + xa - (float) width, y + ya - (float) height, xa, ya)) collide = true;
+            if (isBlocking(x + xa - (float) width, y + ya - (float) (height / 2), xa, ya)) collide = true;
+            if (isBlocking(x + xa - (float) width, y + ya, xa, ya)) collide = true;
 
-            if (avoidCliffs && onGround && !world.level.isBlocking((int) ((x + xa - width) / 16), (int) ((y) / 16 + 1), xa, 1))
+            if (avoidCliffs && onGround && !world.level.isBlocking((int) ((x + xa - (float) width) / 16.0F), (int) ((y) / 16.0F + 1.0F), xa, 1.0F))
                 collide = true;
         }
 
         if (collide) {
-            if (xa < 0) {
-                x = (int) ((x - width) / 16) * 16 + width;
-                this.xa = 0;
+            if (xa < (float) 0) {
+                x = (float) ((int) ((x - (float) width) / 16.0F) * 16 + width);
+                this.xa = (float) 0;
             }
-            if (xa > 0) {
-                x = (int) ((x + width) / 16 + 1) * 16 - width - 1;
-                this.xa = 0;
+            if (xa > (float) 0) {
+                x = (float) ((int) ((x + (float) width) / 16.0F + 1.0F) * 16 - width - 1);
+                this.xa = (float) 0;
             }
-            if (ya < 0) {
-                y = (int) ((y - height) / 16) * 16 + height;
+            if (ya < (float) 0) {
+                y = (float) ((int) ((y - (float) height) / 16.0F) * 16 + height);
                 int jumpTime = 0;
-                this.ya = 0;
+                this.ya = (float) 0;
             }
-            if (ya > 0) {
-                y = (int) (y / 16 + 1) * 16 - 1;
+            if (ya > (float) 0) {
+                y = (float) ((int) (y / 16.0F + 1.0F) * 16 - 1);
                 onGround = true;
             }
             return false;
@@ -171,9 +171,9 @@ public class Mushroom extends Sprite {
     }
 
     private boolean isBlocking(float _x, float _y, float xa, float ya) {
-        int x = (int) (_x / 16);
-        int y = (int) (_y / 16);
-        if (x == (int) (this.x / 16) && y == (int) (this.y / 16)) return false;
+        int x = (int) (_x / 16.0F);
+        int y = (int) (_y / 16.0F);
+        if (x == (int) (this.x / 16.0F) && y == (int) (this.y / 16.0F)) return false;
 
         boolean blocking = world.level.isBlocking(x, y, xa, ya);
 
@@ -185,9 +185,9 @@ public class Mushroom extends Sprite {
 
     @Override
     public void bumpCheck(int xTile, int yTile) {
-        if (x + width > xTile * 16 && x - width < xTile * 16 + 16 && yTile == (int) ((y - 1) / 16)) {
+        if (x + (float) width > (float) (xTile * 16) && x - (float) width < (float) (xTile * 16 + 16) && yTile == (int) ((y - 1.0F) / 16.0F)) {
             facing = -world.mario.facing;
-            ya = -10;
+            ya = -10.0F;
         }
     }
 

@@ -28,6 +28,6 @@ public interface ParameterizedFunction {
     double maxOutputDebug();
 
     default double getParameter(int i) {
-        return 0;
+        return (double) 0;
     }
 }

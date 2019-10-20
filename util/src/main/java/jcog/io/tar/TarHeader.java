@@ -79,7 +79,7 @@ public class TarHeader {
 	public static final int SIZELEN = 12;
 	public static final int MODTIMELEN = 12;
 	public static final int CHKSUMLEN = 8;
-	public static final byte LF_OLDNORM = 0;
+	public static final byte LF_OLDNORM = (byte) 0;
 
 	/*
 	 * File Types
@@ -156,7 +156,7 @@ public class TarHeader {
 
         int end = offset + length;
 		for (int i = offset; i < end; ++i) {
-			if (header[i] == 0)
+			if ((int) header[i] == 0)
 				break;
 			result.append((char) header[i]);
 		}
@@ -183,7 +183,7 @@ public class TarHeader {
 		}
 
 		for (; i < length; ++i) {
-			buf[offset + i] = 0;
+			buf[offset + i] = (byte) 0;
 		}
 
 		return offset + length;
@@ -211,17 +211,17 @@ public class TarHeader {
 		header.mode = permissions;
 
 		if (name.length() > 100) {
-			header.namePrefix = new StringBuilder(name.substring(0, name.lastIndexOf('/')));
-			header.name = new StringBuilder(name.substring(name.lastIndexOf('/') + 1));
+			header.namePrefix = new StringBuilder(name.substring(0, name.lastIndexOf((int) '/')));
+			header.name = new StringBuilder(name.substring(name.lastIndexOf((int) '/') + 1));
 		} else {
 			header.name = new StringBuilder(name);
 		}
 		if (dir) {
 			header.linkFlag = TarHeader.LF_DIR;
-			if (header.name.charAt(header.name.length() - 1) != '/') {
+			if ((int) header.name.charAt(header.name.length() - 1) != (int) '/') {
 				header.name.append('/');
 			}
-			header.size = 0;
+			header.size = 0L;
 		} else {
 			header.linkFlag = TarHeader.LF_NORMAL;
 			header.size = size;

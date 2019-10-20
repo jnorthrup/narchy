@@ -22,7 +22,6 @@ package jurls.core.reinforcementlearning;
     import java.util.ArrayList;
     import java.util.Arrays;
     import java.util.List;
-    import java.util.stream.IntStream;
 
     /**
  *
@@ -54,11 +53,11 @@ public class QZeroAgent extends LearnerAndActor {
         Utils.join(stateAction, previousState, previousAction);
         double q0 = parameterizedFunction.value(stateAction);
         double q = q0 + rLParameters.getAlpha() * (reward
-                + this.rLParameters.getGamma() * Utils.v(
-                        parameterizedFunction,
-                        stateAction,
-                        state, numActions
-                ).getA() - q0);
+                + this.rLParameters.getGamma() * (double) Utils.v(
+                parameterizedFunction,
+                stateAction,
+                state, numActions
+        ).getA() - q0);
         Utils.join(stateAction, previousState, previousAction);
         parameterizedFunction.learn(stateAction, q);
 
@@ -87,7 +86,7 @@ public class QZeroAgent extends LearnerAndActor {
         double x = Math.random();
         int i = -1;
 
-        while (x > 0) {
+        while (x > (double) 0) {
             ++i;
             x -= actionProbabilityPairs[i].getV();
         }

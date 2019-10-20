@@ -9,7 +9,7 @@ public class FloatFirstOrderDifference implements FloatSupplier {
     final FloatSupplier in;
 
     float lastValue;
-    float lastDifference = 0;
+    float lastDifference = (float) 0;
     private final AtomicLong lastUpdate;
     private final LongSupplier clock;
     private boolean nanIfZero;
@@ -24,7 +24,7 @@ public class FloatFirstOrderDifference implements FloatSupplier {
     @Override
     public float asFloat() {
         float x = update();
-        if (nanIfZero && x == 0)
+        if (nanIfZero && x == (float) 0)
             return Float.NaN;
         return x;
     }
@@ -43,7 +43,7 @@ public class FloatFirstOrderDifference implements FloatSupplier {
         this.lastValue = currentValue;
 
         if (lastValue!=lastValue) {
-            return lastDifference = 0;
+            return lastDifference = (float) 0;
         } else {
             return (lastDifference = (currentValue - lastValue));
         }

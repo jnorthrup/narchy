@@ -117,10 +117,10 @@ public abstract class Tuple4b implements java.io.Serializable, Cloneable {
      */
     Tuple4b()
     {
-	this.x = 0;
-	this.y = 0;
-	this.z = 0;
-	this.w = 0;
+	this.x = (byte) 0;
+	this.y = (byte) 0;
+	this.z = (byte) 0;
+	this.w = (byte) 0;
     }
 
 
@@ -130,10 +130,10 @@ public abstract class Tuple4b implements java.io.Serializable, Cloneable {
      */  
     public String toString()
     {
-        return("("  + (this.x & 0xff) +
-	       ", " + (this.y & 0xff) +
-	       ", " + (this.z & 0xff) +
-	       ", " + (this.w & 0xff) + ')');
+        return("("  + ((int) this.x & 0xff) +
+	       ", " + ((int) this.y & 0xff) +
+	       ", " + ((int) this.z & 0xff) +
+	       ", " + ((int) this.w & 0xff) + ')');
     }
 
 
@@ -201,8 +201,8 @@ public abstract class Tuple4b implements java.io.Serializable, Cloneable {
     public boolean equals(Tuple4b t1)
     {
         try {
-           return(this.x == t1.x && this.y == t1.y && 
-                  this.z == t1.z && this.w == t1.w);
+           return((int) this.x == (int) t1.x && (int) this.y == (int) t1.y &&
+                   (int) this.z == (int) t1.z && (int) this.w == (int) t1.w);
         }
         catch (NullPointerException e2) {return false;}
 
@@ -218,8 +218,8 @@ public abstract class Tuple4b implements java.io.Serializable, Cloneable {
     {
         try {
             Tuple4b t2 = (Tuple4b) t1;
-           return(this.x == t2.x && this.y == t2.y && 
-                  this.z == t2.z && this.w == t2.w);
+           return((int) this.x == (int) t2.x && (int) this.y == (int) t2.y &&
+                   (int) this.z == (int) t2.z && (int) this.w == (int) t2.w);
         }
         catch (NullPointerException | ClassCastException e2) {return false;}
 
@@ -235,10 +235,10 @@ public abstract class Tuple4b implements java.io.Serializable, Cloneable {
      * @return the integer hash code value
      */  
     public int hashCode() {
-	return (((x & 0xff)) |
-		((y & 0xff) <<  8) |
-		((z & 0xff) << 16) |
-		((w & 0xff) << 24));
+	return ((((int) x & 0xff)) |
+		(((int) y & 0xff) <<  8) |
+		(((int) z & 0xff) << 16) |
+		(((int) w & 0xff) << 24));
     }
 
     /**

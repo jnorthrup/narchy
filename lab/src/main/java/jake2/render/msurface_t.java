@@ -39,8 +39,8 @@ public class msurface_t
 	public int firstedge; 
 	public int numedges; 
 
-	public final short[] texturemins = { 0, 0 };
-	public final short[] extents = { 0, 0 };
+	public final short[] texturemins = {(short) 0, (short) 0};
+	public final short[] extents = {(short) 0, (short) 0};
 
 	public int light_s;
     public int light_t;
@@ -74,8 +74,8 @@ public class msurface_t
 		firstedge = 0;
 		numedges = 0;
 
-		texturemins[0] = texturemins[1] = -1;
-		extents[0] = extents[1] = 0;
+		texturemins[0] = texturemins[1] = (short) -1;
+		extents[0] = extents[1] = (short) 0;
 
 		light_s = light_t = 0;
 		dlight_s = dlight_t = 0;
@@ -93,7 +93,7 @@ public class msurface_t
 		lightmaptexturenum = 0;
 
         Arrays.fill(styles, (byte) 0);
-        Arrays.fill(cached_light, 0);
+        Arrays.fill(cached_light, (float) 0);
 		if (samples != null) samples.clear();
 	}
 }

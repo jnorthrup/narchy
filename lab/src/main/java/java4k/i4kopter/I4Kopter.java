@@ -84,13 +84,13 @@ public class I4Kopter extends Applet {
         helicopterBuffer1.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                                            RenderingHints.VALUE_ANTIALIAS_ON);
         
-        helicopterBuffer1.setColor(new Color(0,0,0,0.0f)); 
+        helicopterBuffer1.setColor(new Color((float) 0, (float) 0, (float) 0,0.0f));
         helicopterBuffer1.fillRect(0,0, 50, 25);
 
         helicopterBuffer1.setColor(Color.WHITE);
         helicopterBuffer1.fillOval(16,10, 21, 12);  
         helicopterBuffer1.fillPolygon(new int[] {2,22,17}, new int[] {10,15,19}, 3); 
-        helicopterBuffer1.setColor(new Color(0,0,1,0.55f));
+        helicopterBuffer1.setColor(new Color((float) 0, (float) 0, 1.0F,0.55f));
         helicopterBuffer1.fillOval(9,4, 35, 10);    
         helicopterBuffer1.fillOval(0,7, 7,7);       
         helicopterBuffer1.setColor(Color.GREEN);
@@ -101,7 +101,7 @@ public class I4Kopter extends Applet {
 
         AffineTransform transform = helicopterBuffer2.getTransform();
         
-        transform.rotate(Math.toRadians(-12), 26, 14);
+        transform.rotate(Math.toRadians(-12.0), 26.0, 14.0);
         helicopterBuffer2.setTransform(transform);
         helicopterBuffer2.drawImage(helicopterImage1, 2, 2, null);
         helicopterBuffer2.setTransform(helicopterBuffer1.getTransform());
@@ -184,12 +184,12 @@ public class I4Kopter extends Applet {
             speed = 0.0;
             gravity = 1.6;
             heliY = h /2;
-            lasted = 0;
+            lasted = 0L;
             loop();
             Graphics g = getGraphics();
             g.setColor(Color.YELLOW);
-            g.drawString(" you lasted: "+ lasted /1000+" seconds ", heliX+200, 200);
-            try{ Thread.sleep(1400); }catch(Exception e){}
+            g.drawString(" you lasted: "+ lasted / 1000L +" seconds ", heliX+200, 200);
+            try{ Thread.sleep(1400L); }catch(Exception e){}
         }
     }
 
@@ -240,7 +240,7 @@ public class I4Kopter extends Applet {
         }else{
             speed += (gravity*1.2);
         }
-        heliY += speed;
+        heliY = (int) ((double) heliY + speed);
     }
 
     void loop(){
@@ -298,10 +298,10 @@ public class I4Kopter extends Applet {
                     if(offset == 0){ paused = true;}
 
                     offset += dx;
-                    lasted += 49; 
+                    lasted += 49L;
                 }
                 try{
-                    Thread.sleep(40);
+                    Thread.sleep(40L);
                 }catch(Exception ex){}
                 
             }
@@ -329,7 +329,7 @@ public class I4Kopter extends Applet {
         }
 
         
-        if(k.getKeyChar() == ' '){
+        if((int) k.getKeyChar() == (int) ' '){
             paused = true;
         }
     }

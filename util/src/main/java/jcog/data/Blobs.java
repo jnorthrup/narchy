@@ -132,7 +132,7 @@ public class Blobs {
         String hashString = copyAndHash(input, tempFile);
 
         long tempLength = tempFile.length();
-        if (tempLength == 0) {
+        if (tempLength == 0L) {
             if (tempFile.delete()) {
                 if (logger.isDebugEnabled()) logger.debug("Deleted empty file '{}'.");
             } else {
@@ -286,7 +286,7 @@ public class Blobs {
         id = prepareId(id);
         File file = getFileFor(id);
         if (file == null) {
-            return -1;
+            return -1L;
         }
         return file.length();
     }

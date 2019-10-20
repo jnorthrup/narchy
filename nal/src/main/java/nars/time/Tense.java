@@ -59,7 +59,7 @@ public enum Tense {
      * occur at the same time, relative to duration: order = concurrent
      */
     public static boolean simultaneous(long a, long b, float tolerance) {
-		return a == b || a == ETERNAL || b == ETERNAL ? true : Math.abs(a - b) <= tolerance;
+		return a == b || a == ETERNAL || b == ETERNAL ? true : (float) Math.abs(a - b) <= tolerance;
     }
 
 
@@ -73,7 +73,7 @@ public enum Tense {
 //                    throw new WTF("maybe you meant ETERNAL or TIMELESS");
             //}
             if (x == ETERNAL) return ETERNAL;
-            else if (x == 0) return 0;
+            else if (x == 0L) return 0L;
             else if (x == TIMELESS) return TIMELESS;
             else return _dither(x, false, dither);
         } else {
@@ -87,11 +87,11 @@ public enum Tense {
             switch (direction) {
                 case -1:
                     if (y > x)
-                        y -= dither; //grow backwrads
+                        y = y - (long) dither; //grow backwrads
                     break;
                 case +1:
                     if (y < x)
-                        y += dither; //grow forwards
+                        y = y + (long) dither; //grow forwards
                     break;
                 case 0:
                 default:
@@ -109,7 +109,7 @@ public enum Tense {
         //return Util.round(t, dither);
 
 		//logarithmic dithering
-		return relative && NAL.DT_DITHER_LOGARITHMICALLY && t > dither * dither ? (long) Util.round(Math.pow(dither, Util.round(Math.log(t) / Math.log(dither), 1f / dither)), dither) : Util.round(t, dither);
+		return relative && NAL.DT_DITHER_LOGARITHMICALLY && t > (long) (dither * dither) ? (long) Util.round(Math.pow((double) dither, Util.round(Math.log((double) t) / Math.log((double) dither), (double) (1f / (float) dither))), (double) dither) : Util.round(t, dither);
     }
 
     public static int dither(int dt, NAL n) {
@@ -148,7 +148,7 @@ public enum Tense {
                 case 0:
                     return 0;
                 default:
-                    return (int) _dither(dt, true, dither);
+                    return (int) _dither((long) dt, true, dither);
         }
 
         return dt; 

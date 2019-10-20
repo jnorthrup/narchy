@@ -503,8 +503,8 @@ public class NEWTWin {
         public void keyPressed(KeyEvent e) {
            System.err.println(e);
            if( !e.isAutoRepeat() ) {
-               int keyCode = e.getKeyCode();
-               if( KeyEvent.VK_HOME == keyCode ) {
+               int keyCode = (int) e.getKeyCode();
+               if((int) KeyEvent.VK_HOME == keyCode ) {
                    shouldReparent = true;
                }
            }

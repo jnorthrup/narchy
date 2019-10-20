@@ -39,7 +39,7 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
 
         this.timed = agent.nar();
 
-        this.net = new NeuralGasNet(3, (short)blobs) {
+        this.net = new NeuralGasNet(3, (int) (short) blobs) {
 
             @Override
             public @NotNull Centroid newCentroid(int i, int dims) {
@@ -92,11 +92,11 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
                 int nodes = net.size();
                 for (int i = 0; i < nodes; i++) {
                     Centroid n = net.node(i);
-                    float e = (float) ((1f + n.localDistance()) * (1f + n.localError()));
+                    float e = (float) ((1 + n.localDistance()) * (1 + n.localError()));
                     float x = (float) n.getEntry(0);
                     float y = (float) n.getEntry(1);
                     float c = (float) n.getEntry(2);
-                    gl.glColor4f(c, 0, (0.25f * (1f-c)), 0.75f );
+                    gl.glColor4f(c, (float) 0, (0.25f * (1f-c)), 0.75f );
                     float r = 0.1f / (1f + e);
                     Draw.rect(x, 1f - y, r, r, gl);
                 }
@@ -120,7 +120,7 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
 
         net.setLambdaPeriod(64);
         
-        net.setWinnerUpdateRate(0.05f, 0.01f);
+        net.setWinnerUpdateRate(0.05, 0.01);
 
 
         for (int w = 0; w < width; w++) {
@@ -128,7 +128,7 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
                 float color = src.brightness(w, h);
                 if (timed.random().nextFloat() - 0.05f <= color)
                 
-                    net.put(w/((float)width), h/((float)height), color );
+                    net.put((double) (w / ((float) width)), (double) (h / ((float) height)), (double) color);
             }
         }
     }

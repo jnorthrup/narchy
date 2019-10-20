@@ -85,7 +85,7 @@ public enum Conj {
      *                 TODO test for subsequences
      */
     public static boolean eventOf(Term container, Term _x, long when, int polarity) {
-        if (container.opID() != CONJ.id)
+        if (container.opID() != (int) CONJ.id)
             return false;
 
         Term x;
@@ -138,16 +138,16 @@ public enum Conj {
             if (conj.eventRange() < x.eventRange())
                 return false;
 
-            return ConjList.events(conj).contains(ConjList.events(x,0));
+            return ConjList.events(conj).contains(ConjList.events(x, 0L));
 
         } else {
 
 
             return conj.eventsOR(
                     when == ETERNAL ?
-                            (w, cc) -> x.equals(cc) || (cc.opID() == CONJ.id && _eventOf(cc, x, ETERNAL))
+                            (w, cc) -> x.equals(cc) || (cc.opID() == (int) CONJ.id && _eventOf(cc, x, ETERNAL))
                             :
-                            (w, cc) -> w == when && (x.equals(cc) || (cc.opID() == CONJ.id && _eventOf(cc, x, 0)))
+                            (w, cc) -> w == when && (x.equals(cc) || (cc.opID() == (int) CONJ.id && _eventOf(cc, x, 0L)))
                     //    !(w == when && x.equals(cc))
                     , when, true, conj.dt() == XTERNAL);
         }
@@ -161,7 +161,7 @@ public enum Conj {
             if (valid.accept(when, what))
                 candidates.add(what);
             return true;
-        }, 0, decomposeParallel, true);
+        }, 0L, decomposeParallel, true);
 
         return candidates.isEmpty() ? Null : candidates.get(random);
     }
@@ -1156,7 +1156,7 @@ public enum Conj {
 
     private static void events(byte[] events, ByteProcedure each) {
         for (byte e : events) {
-            if (e != 0) {
+            if ((int) e != 0) {
                 each.value(e);
             } else
                 break; //null-terminator
@@ -1200,7 +1200,7 @@ public enum Conj {
 
     private static boolean eventsAND(byte[] events, BytePredicate each) {
         for (byte e : events) {
-            if (e != 0) {
+            if ((int) e != 0) {
                 if (!each.accept(e))
                     return false;
             } else
@@ -1218,7 +1218,7 @@ public enum Conj {
 
     private static <X> boolean eventsANDwith(byte[] events, ByteObjectPredicate<X> each, X x) {
         for (byte e : events) {
-            if (e != 0) {
+            if ((int) e != 0) {
                 if (!each.accept(e, x))
                     return false;
             } else
@@ -1229,7 +1229,7 @@ public enum Conj {
 
     private static <X> boolean eventsORwith(byte[] events, ByteObjectPredicate<X> each, X x) {
         for (byte e : events) {
-            if (e != 0) {
+            if ((int) e != 0) {
                 if (each.accept(e, x))
                     return true;
             } else
@@ -1240,7 +1240,7 @@ public enum Conj {
 
     private static boolean eventsOR(byte[] events, BytePredicate each) {
         for (byte e : events) {
-            if (e != 0) {
+            if ((int) e != 0) {
                 if (each.accept(e))
                     return true;
             } else
@@ -1260,7 +1260,7 @@ public enum Conj {
      * whether the conjunction is a sequence (includes check for factored inner sequence)
      */
     public static boolean isSeq(Term x) {
-        if (x instanceof Compound && x.opID() == CONJ.id) {// || (x instanceof Sequence))
+        if (x instanceof Compound && x.opID() == (int) CONJ.id) {// || (x instanceof Sequence))
             int dt = x.dt();
             return dt == DTERNAL ? ConjSeq._isSeq(x) : !dtSpecial(dt);
         }

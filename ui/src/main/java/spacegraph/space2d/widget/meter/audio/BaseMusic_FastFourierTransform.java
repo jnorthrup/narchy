@@ -35,9 +35,9 @@ class BaseMusic_FastFourierTransform {
      *                    This value is automatically rounded up to the nearest power of 2.
      */
     public BaseMusic_FastFourierTransform(int pSampleSize) {
-        nu = (int)Math.ceil( Math.log( pSampleSize ) / Math.log( 2 ) );
+        nu = (int)Math.ceil( Math.log((double) pSampleSize) / Math.log(2.0) );
         
-        ss = (int)Math.pow( 2, nu );
+        ss = (int)Math.pow(2.0, (double) nu);
         ss2 = ss >> 1; 
         
         xre = new float[ ss ];
@@ -117,7 +117,7 @@ class BaseMusic_FastFourierTransform {
         }
         
         for (int i = 0; i < ss2; i++ ) {
-            mag[ i ] = Math.abs( ( (float)( Math.sqrt( ( xre[ i ] * xre[ i ] ) + ( xim[ i ] * xim[ i ] ) ) ) / ss ) );
+            mag[ i ] = Math.abs( ( (float)( Math.sqrt((double) ((xre[i] * xre[i]) + (xim[i] * xim[i]))) ) / (float) ss) );
         }
         return mag;
     }
@@ -141,7 +141,7 @@ class BaseMusic_FastFourierTransform {
     public float[] calculateFrequencyTable( float pSampleRate ) {
         float wFr = pSampleRate / 2.0f;
 
-        float wBw = wFr / ss2;
+        float wBw = wFr / (float) ss2;
 
         float[] wFt = new float[ss2];
 
@@ -183,10 +183,10 @@ class BaseMusic_FastFourierTransform {
             k = 0;
             while ( k < ss ) {
                 for (int i = 0; i < n2; i++ ) {
-                    float p = bitrev(k >> nu1, nu);
-                    float arg = 2 * (float) Math.PI * p / ss;
-                    fftSin[ x ] = (float)Math.sin( arg );
-                    fftCos[ x ] = (float)Math.cos( arg );
+                    float p = (float) bitrev(k >> nu1, nu);
+                    float arg = 2.0F * (float) Math.PI * p / (float) ss;
+                    fftSin[ x ] = (float)Math.sin((double) arg);
+                    fftCos[ x ] = (float)Math.cos((double) arg);
                     k++;
                     x++;
                 }

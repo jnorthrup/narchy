@@ -36,7 +36,7 @@ public class Gradius4K extends GamePanel {
 
     
     public boolean[] keys = new boolean[32768];
-    public long updateMS = 20;
+    public long updateMS = 20L;
     public BufferedImage image;
     public static final int VK_LEFT = 0x25;
     public static final int VK_RIGHT = 0x27;
@@ -45,7 +45,7 @@ public class Gradius4K extends GamePanel {
     public static final int VK_SHOOT = 0x42;
     public int score;
     public int playerDead = 1;
-    public float SPEED = 3;
+    public float SPEED = 3.0F;
     public float cameraX;
     public float[] player = new float[256];
 
@@ -93,7 +93,7 @@ public class Gradius4K extends GamePanel {
     }
 
     public Gradius4K() {
-        enableEvents(8);
+        enableEvents(8L);
 
         JFrame f = new JFrame();
         f.setContentPane(this);
@@ -121,14 +121,14 @@ public class Gradius4K extends GamePanel {
         int s = 0;
         int v = 0;
 
-        float dx = 0;
-        float dy = 0;
+        float dx = (float) 0;
+        float dy = (float) 0;
 
         BufferedImage[] sprites = new BufferedImage[14 * 4096];
         Graphics2D g = (Graphics2D) image.getGraphics();
 
         AffineTransform defaultTransform = g.getTransform();
-        Random random = new Random(7);
+        Random random = new Random(7L);
 
         final String S = "\uff00\u0000\u0100\u0000\u0000\u0100\u0000\u0000\u0100\u0000\u0100\u0000\u0000\u0100\u0000\u0000\u0100\u01ff\uf000\u0c00\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u00f0\u001c\u00f0\uf000\ufc00\u0000\uf000\ue000\u0000\u0000\u0000\u0000\u0000\u0000\u0300\u00ff\u003c\u0fc0\u00ff\u003c\u3ff0\u0100\u8000\u8000\u0100\u8000\u8000\u0100\u8000\u0080\u8001\u0080\u0080\u8001\u0080\u8080\u8001\u0080\u8080\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u00fe\u0000\u0000\u008c\u0000\u00e0\u0000\u0000\u00f8\u0000\u003f\u00fe\u00fc\u803f\u00ff\u00fe\ue03f\u00ff\u000f\u00ff\uf000\u0003\u003c\uc000\u0000\u0000\u00ff\u0000\u0000\u00ff\u0003\u003c\uc000\u000f\u00ff\uf000\uc3c3\u00c3\u7c00\u8181\u0081\u3000\u0000\u0000\u0000\u0000\u0000\u001f\u8181\u0081\u301f\uc3c3\u00c3\u7c1f\u0d01\u0205\uba1b\ub6b7\u1776\u0a1a\u0202\u0101\u130e\u2322\u9062\u8689\u4464\u4952\u087e\u0304\u3f08\u8050\u888f\u22f7\uf722\u8f88\u5585\u0a3f\u807f\u4443\u142b\u2b28\u2c2b\u2b17\u4344\u7f80\u150e\u6412\u8c84\uc9fa\u8889\u244f\u1514\u0f0c\u0a07\u3912\u603c\u9292\uc2a2\u1122\u2010\u3f40\u1b06\u5b2a\uc7a2\u54be\ube54\ua2c7\u2a5b\u061b\u1807\u403e\u807e\ufe81\u7142\ua2cb\u4e92\u1e2e\u0407\u4538\u5458\u5762\ucacc\u9ce9\u93ba\u2b55\u990f\uf191\u322e\u4120\u4442\u526d\ud52d\ua4a6\u1c07\u6330\ucf47\u9c9e\u9e9c\u47cf\u3063\u0718\u0505\u790f\u8949\u9191\u84e5\ud584\ubfb5\u2191\u0101\u8202\uee92\uaae9\u8a8c\u8acb\ua1a5\u0820";
 
@@ -142,17 +142,17 @@ public class Gradius4K extends GamePanel {
                         for (z = 0; z < 16; z++) { 
 
                             
-                            dx = 0.393f * k;
-                            dy = 0.393f * z;
+                            dx = 0.393f * (float) k;
+                            dy = 0.393f * (float) z;
 
-                            int red1 = 127 + (int) (127 * Math.sin(dx));
-                            int red2 = 127 + (int) (127 * Math.sin(dy));
+                            int red1 = 127 + (int) (127.0 * Math.sin((double) dx));
+                            int red2 = 127 + (int) (127.0 * Math.sin((double) dy));
 
-                            int green1 = 127 + (int) (127 * Math.sin(dx + 1.05f));
-                            int green2 = 127 + (int) (127 * Math.sin(dy + 1.05f));
+                            int green1 = 127 + (int) (127.0 * Math.sin((double) (dx + 1.05f)));
+                            int green2 = 127 + (int) (127.0 * Math.sin((double) (dy + 1.05f)));
 
-                            int blue1 = 127 + (int) (127 * Math.sin(dx + 2.09f));
-                            int blue2 = 127 + (int) (127 * Math.sin(dy + 2.09f));
+                            int blue1 = 127 + (int) (127.0 * Math.sin((double) (dx + 2.09f)));
+                            int blue2 = 127 + (int) (127.0 * Math.sin((double) (dy + 2.09f)));
 
                             
                             if (i == 1) {
@@ -184,13 +184,13 @@ public class Gradius4K extends GamePanel {
                                 
                                 for (y = 0; y < 16; y++) {
                                     for (x = 0; x < 16; x++) {
-                                        dx = 7.5f - x;
-                                        dy = 7.5f - y;
-                                        float radius = (float) Math.sqrt(dx * dx + dy * dy) / 8;
-                                        if (radius <= 1) {
-                                            int red = red1 + (int) ((red2 - red1) * radius);
-                                            int green = green1 + (int) ((green2 - green1) * radius);
-                                            int blue = blue1 + (int) ((blue2 - blue1) * radius);
+                                        dx = 7.5f - (float) x;
+                                        dy = 7.5f - (float) y;
+                                        float radius = (float) Math.sqrt((double) (dx * dx + dy * dy)) / 8.0F;
+                                        if (radius <= 1.0F) {
+                                            int red = red1 + (int) ((float) (red2 - red1) * radius);
+                                            int green = green1 + (int) ((float) (green2 - green1) * radius);
+                                            int blue = blue1 + (int) ((float) (blue2 - blue1) * radius);
 
                                             orbs[i][j][k][z][y][x] = 0xFF000000 | (red << 16) | (green << 8) | blue;
                                         }
@@ -201,7 +201,7 @@ public class Gradius4K extends GamePanel {
 
                                 
                                 for (y = 0; y < 16; y++) {
-                                    v = S.charAt(144 + (y >> 1) + ((s - 1) << 3));
+                                    v = (int) S.charAt(144 + (y >> 1) + ((s - 1) << 3));
                                     if ((y & 1) == 0) {
                                         v &= 0xFF;
                                     } else {
@@ -224,15 +224,15 @@ public class Gradius4K extends GamePanel {
         int[][][] halfPipe = new int[256][256][2];
         for (y = 0; y < 256; y++) {
             for (x = 0; x < 256; x++) {
-                float d = x - 128;
-                float e = y - 128;
-                float A = e * e + 4096;
-                float t = (8192 + (float) Math.sqrt(67108864 + 49152 * A)) / (2 * A);
+                float d = (float) (x - 128);
+                float e = (float) (y - 128);
+                float A = e * e + 4096.0F;
+                float t = (8192.0F + (float) Math.sqrt((double) (67108864 + 49152.0F * A))) / (2.0F * A);
                 float hx = d * t;
-                halfPipe[y][x][0] = ((int) (512 + hx)) & 0xFF;
-                float hz = 64 - 64 * t;
+                halfPipe[y][x][0] = ((int) (512.0F + hx)) & 0xFF;
+                float hz = 64.0F - 64.0F * t;
                 float hy = e * t;
-                halfPipe[y][x][1] = ((int) (512 + Math.atan2(hy, hz) * 128)) & 0xFF;
+                halfPipe[y][x][1] = ((int) (512.0 + Math.atan2((double) hy, (double) hz) * 128.0)) & 0xFF;
             }
         }
 
@@ -254,13 +254,13 @@ public class Gradius4K extends GamePanel {
         tileImage.setRGB(0, 0, 32, 32, background, 0, 32);
 
 
-        float halfPipeOffset = 0;
+        float halfPipeOffset = (float) 0;
         ArrayList<float[]> queue = new ArrayList<float[]>();
         int[][] levelMap = null;
         Graphics2D g2 = null;
         boolean bossMode = false;
-        float cameraVx = 0;
-        float mag = 0;
+        float cameraVx = (float) 0;
+        float mag = (float) 0;
         int counter = 0;
         int playerGun = 2;
         int level = 1;
@@ -280,26 +280,26 @@ public class Gradius4K extends GamePanel {
 
                 
                 queue.clear();
-                cameraX = 0;
-                cameraVx = level == 3 ? 8 : 0.5f;
+                cameraX = (float) 0;
+                cameraVx = level == 3 ? 8.0F : 0.5f;
                 bossMode = false;
-                halfPipeOffset = 0;
+                halfPipeOffset = (float) 0;
 
                 if (fireworks < 0) {
                     
                     fireworks = 0;
                     queue.add(player);
-                    player[OBJ_X] -= 2304;
+                    player[OBJ_X] -= 2304.0F;
                 } else {
                     
                     player = new float[256];
                     queue.add(player);
-                    player[OBJ_TYPE] = TYPE_PLAYER;
-                    player[OBJ_SPRITE] = 4816;
+                    player[OBJ_TYPE] = (float) TYPE_PLAYER;
+                    player[OBJ_SPRITE] = 4816.0F;
                     player[OBJ_SCALE_X] = 1.5f;
-                    player[OBJ_SCALE_Y] = 1;
-                    player[OBJ_X] = 64;
-                    player[OBJ_Y] = 128;
+                    player[OBJ_SCALE_Y] = 1.0F;
+                    player[OBJ_X] = 64.0F;
+                    player[OBJ_Y] = 128.0F;
                     playerGun = 1;
                 }
 
@@ -311,7 +311,7 @@ public class Gradius4K extends GamePanel {
                 }
                 for (y = 0, z = 18 * level; y < 6; y++) {
                     for (x = 0; x < 3; x++) {
-                        k = S.charAt(z++);
+                        k = (int) S.charAt(z++);
                         for (i = 0; i < 16; i++) {
                             levelMap[y + 1][24 + (x << 4) + i] = k & 1;
                             k >>= 1;
@@ -324,15 +324,15 @@ public class Gradius4K extends GamePanel {
                     for (x = 0; x < 6; x++) {
                         float[] enemy = new float[256];
                         queue.add(enemy);
-                        enemy[OBJ_TYPE] = TYPE_ENEMY;
-                        enemy[OBJ_X] = 785 + (x << 8) + (random.nextInt(8) << 5);
-                        enemy[OBJ_Y] = enemy[OBJ_Y2] = 128;
-                        enemy[OBJ_SPRITE] = 2302;
-                        enemy[OBJ_SCALE_X] = 2;
-                        enemy[OBJ_SCALE_Y] = 24;
-                        enemy[OBJ_HITS] = 4096;
-                        enemy[OBJ_SHOOT_DELAY] = 64;
-                        enemy[OBJ_FORCE_FIELD] = 1;
+                        enemy[OBJ_TYPE] = (float) TYPE_ENEMY;
+                        enemy[OBJ_X] = (float) (785 + (x << 8) + (random.nextInt(8) << 5));
+                        enemy[OBJ_Y] = enemy[OBJ_Y2] = 128.0F;
+                        enemy[OBJ_SPRITE] = 2302.0F;
+                        enemy[OBJ_SCALE_X] = 2.0F;
+                        enemy[OBJ_SCALE_Y] = 24.0F;
+                        enemy[OBJ_HITS] = 4096.0F;
+                        enemy[OBJ_SHOOT_DELAY] = 64.0F;
+                        enemy[OBJ_FORCE_FIELD] = 1.0F;
                     }
                 }
 
@@ -341,12 +341,12 @@ public class Gradius4K extends GamePanel {
 
                         float[] powerUp = new float[256];
                         queue.add(powerUp);
-                        powerUp[OBJ_TYPE] = TYPE_POWER_UP;
-                        powerUp[OBJ_X] = 264 + (x << 5);
-                        powerUp[OBJ_Y] = 128;
-                        powerUp[OBJ_SCALE_X] = 1;
-                        powerUp[OBJ_SCALE_Y] = 1;
-                        powerUp[OBJ_SPRITE] = 18463;
+                        powerUp[OBJ_TYPE] = (float) TYPE_POWER_UP;
+                        powerUp[OBJ_X] = (float) (264 + (x << 5));
+                        powerUp[OBJ_Y] = 128.0F;
+                        powerUp[OBJ_SCALE_X] = 1.0F;
+                        powerUp[OBJ_SCALE_Y] = 1.0F;
+                        powerUp[OBJ_SPRITE] = 18463.0F;
                     }
                 }
 
@@ -355,30 +355,30 @@ public class Gradius4K extends GamePanel {
 
                         float[] shrinker = new float[256];
                         queue.add(shrinker);
-                        shrinker[OBJ_TYPE] = TYPE_ENEMY;
-                        shrinker[OBJ_X] = 800 + (random.nextInt(22) << 6);
-                        shrinker[OBJ_Y] = shrinker[OBJ_Y2] = 64 + (random.nextInt(3) << 6);
-                        shrinker[OBJ_SCALE_X] = 4;
-                        shrinker[OBJ_SCALE_Y] = 4;
-                        shrinker[OBJ_SPRITE] = 2338;
-                        shrinker[OBJ_HITS] = 4096;
-                        shrinker[OBJ_TIMER] = 4096;
-                        shrinker[OBJ_SHRINKER] = 1;
+                        shrinker[OBJ_TYPE] = (float) TYPE_ENEMY;
+                        shrinker[OBJ_X] = (float) (800 + (random.nextInt(22) << 6));
+                        shrinker[OBJ_Y] = shrinker[OBJ_Y2] = (float) (64 + (random.nextInt(3) << 6));
+                        shrinker[OBJ_SCALE_X] = 4.0F;
+                        shrinker[OBJ_SCALE_Y] = 4.0F;
+                        shrinker[OBJ_SPRITE] = 2338.0F;
+                        shrinker[OBJ_HITS] = 4096.0F;
+                        shrinker[OBJ_TIMER] = 4096.0F;
+                        shrinker[OBJ_SHRINKER] = 1.0F;
                     }
                 }
 
                 if (level == 7) {
                     for (k = 0; k < 3; k++) {
                         for (j = 0; j < 3; j++) {
-                            mag = 2.09f * j;
-                            dy = (float) Math.sin(mag);
-                            dx = (float) Math.cos(mag);
+                            mag = 2.09f * (float) j;
+                            dy = (float) Math.sin((double) mag);
+                            dx = (float) Math.cos((double) mag);
                             for (i = 0; i < 7; i++) {
 
                                 float[] blade = new float[256];
                                 queue.add(blade);
-                                blade[OBJ_TYPE] = TYPE_ENEMY;
-                                blade[OBJ_X2] = (k << 8) + 896;
+                                blade[OBJ_TYPE] = (float) TYPE_ENEMY;
+                                blade[OBJ_X2] = (float) ((k << 8) + 896);
                                 switch (k) {
                                     case 0:
                                         blade[OBJ_Y2] = 0.01f;
@@ -390,64 +390,64 @@ public class Gradius4K extends GamePanel {
                                         blade[OBJ_Y2] = 0.012f;
                                         break;
                                 }
-                                blade[OBJ_SCALE_X] = 1;
-                                blade[OBJ_SCALE_Y] = 1;
-                                blade[OBJ_SPRITE] = 2301;
-                                blade[OBJ_HITS] = 4096;
-                                blade[OBJ_TIMER] = 4096;
+                                blade[OBJ_SCALE_X] = 1.0F;
+                                blade[OBJ_SCALE_Y] = 1.0F;
+                                blade[OBJ_SPRITE] = 2301.0F;
+                                blade[OBJ_HITS] = 4096.0F;
+                                blade[OBJ_TIMER] = 4096.0F;
                                 blade[OBJ_ANGLE] = mag;
-                                blade[OBJ_RADIUS] = i << 4;
-                                blade[OBJ_FAN_BLADE] = 1;
+                                blade[OBJ_RADIUS] = (float) (i << 4);
+                                blade[OBJ_FAN_BLADE] = 1.0F;
                             }
                         }
                     }
                 }
             }
 
-            if (cameraX >= 2304) {
-                cameraVx = 0;
+            if (cameraX >= 2304.0F) {
+                cameraVx = (float) 0;
                 if (!bossMode) {
                     bossMode = true;
 
 
                     float[] boss = new float[256];
                     queue.add(boss);
-                    boss[OBJ_TYPE] = TYPE_ENEMY;
-                    boss[OBJ_X] = 2624;
-                    boss[OBJ_Y] = boss[OBJ_Y2] = 128;
-                    boss[OBJ_VX] = -1;
+                    boss[OBJ_TYPE] = (float) TYPE_ENEMY;
+                    boss[OBJ_X] = 2624.0F;
+                    boss[OBJ_Y] = boss[OBJ_Y2] = 128.0F;
+                    boss[OBJ_VX] = -1.0F;
                     switch (level) {
                         case 0:
-                            boss[OBJ_SPRITE] = 21128;
+                            boss[OBJ_SPRITE] = 21128.0F;
                             break;
                         case 1:
-                            boss[OBJ_SPRITE] = 26679;
+                            boss[OBJ_SPRITE] = 26679.0F;
                             break;
                         case 2:
-                            boss[OBJ_SPRITE] = 29320;
+                            boss[OBJ_SPRITE] = 29320.0F;
                             break;
                         case 3:
-                            boss[OBJ_SPRITE] = 35123;
+                            boss[OBJ_SPRITE] = 35123.0F;
                             break;
                         case 4:
-                            boss[OBJ_SPRITE] = 39148;
+                            boss[OBJ_SPRITE] = 39148.0F;
                             break;
                         case 5:
-                            boss[OBJ_SPRITE] = 43096;
+                            boss[OBJ_SPRITE] = 43096.0F;
                             break;
                         case 6:
-                            boss[OBJ_SPRITE] = 54784;
+                            boss[OBJ_SPRITE] = 54784.0F;
                             break;
                         default:
-                            boss[OBJ_SPRITE] = 51319;
+                            boss[OBJ_SPRITE] = 51319.0F;
                             break;
                     }
-                    boss[OBJ_SCALE_X] = 4 + (level >> 1);
-                    boss[OBJ_SCALE_Y] = 4 + (level >> 1);
-                    boss[OBJ_RADIUS] = 8 + 1.5f * level;
-                    boss[OBJ_HITS] = 512;
-                    boss[OBJ_SHOOT_DELAY] = 32 - level;
-                    boss[OBJ_BOSS] = 1;
+                    boss[OBJ_SCALE_X] = (float) (4 + (level >> 1));
+                    boss[OBJ_SCALE_Y] = (float) (4 + (level >> 1));
+                    boss[OBJ_RADIUS] = 8.0F + 1.5f * (float) level;
+                    boss[OBJ_HITS] = 512.0F;
+                    boss[OBJ_SHOOT_DELAY] = (float) (32 - level);
+                    boss[OBJ_BOSS] = 1.0F;
                 }
             }
             cameraX += cameraVx;
@@ -464,10 +464,10 @@ public class Gradius4K extends GamePanel {
                 } else if ((fireworks & 3) == 0) {
                     float[] explosionSeed = new float[256];
                     queue.add(explosionSeed);
-                    explosionSeed[OBJ_TYPE] = TYPE_EXPLOSION_SEED;
-                    explosionSeed[OBJ_X] = random.nextInt(256) + cameraX;
-                    explosionSeed[OBJ_Y] = random.nextInt(256);
-                    explosionSeed[OBJ_NONRENDERABLE] = 1;
+                    explosionSeed[OBJ_TYPE] = (float) TYPE_EXPLOSION_SEED;
+                    explosionSeed[OBJ_X] = (float) random.nextInt(256) + cameraX;
+                    explosionSeed[OBJ_Y] = (float) random.nextInt(256);
+                    explosionSeed[OBJ_NONRENDERABLE] = 1.0F;
                 }
             }
 
@@ -476,32 +476,32 @@ public class Gradius4K extends GamePanel {
                     halfPipeOffset += 0.5f;
                 }
             } else if (((counter++) & 0xFF) == 0) {
-                float Y = 0;
+                float Y = (float) 0;
                 for (i = 0; i < 16; i++) {
-                    Y = 48 + (random.nextInt(6) << 5);
+                    Y = (float) (48 + (random.nextInt(6) << 5));
                     if (levelMap[(int) Y >> 5][((int) cameraX >> 5) + 8] == 0 && levelMap[((int) Y >> 5) + 1][((int) cameraX >> 5) + 8] == 0) {
                         break;
                     }
                 }
 
                 if (level != 3) {
-                    if (!(level == 1 || level == 7) || cameraX < 384 || (level == 7 && cameraX > 1408)) {
+                    if (!(level == 1 || level == 7) || cameraX < 384.0F || (level == 7 && cameraX > 1408.0F)) {
                         if (random.nextBoolean()) {
                             for (i = 0; i < 5; i++) {
 
                                 float[] enemy = new float[256];
                                 queue.add(enemy);
-                                enemy[OBJ_TYPE] = TYPE_ENEMY;
-                                enemy[OBJ_X] = cameraX + 256 + i * 24;
+                                enemy[OBJ_TYPE] = (float) TYPE_ENEMY;
+                                enemy[OBJ_X] = cameraX + 256.0F + (float) (i * 24);
                                 enemy[OBJ_Y] = enemy[OBJ_Y2] = Y;
-                                enemy[OBJ_VX] = -1;
-                                enemy[OBJ_SPRITE] = 8518;
-                                enemy[OBJ_SCALE_X] = 1;
-                                enemy[OBJ_SCALE_Y] = 1;
-                                enemy[OBJ_ANGLE] = -1.2f * i;
-                                enemy[OBJ_RADIUS] = 8;
-                                enemy[OBJ_HITS] = 1;
-                                enemy[OBJ_SHOOT_DELAY] = 240;
+                                enemy[OBJ_VX] = -1.0F;
+                                enemy[OBJ_SPRITE] = 8518.0F;
+                                enemy[OBJ_SCALE_X] = 1.0F;
+                                enemy[OBJ_SCALE_Y] = 1.0F;
+                                enemy[OBJ_ANGLE] = -1.2f * (float) i;
+                                enemy[OBJ_RADIUS] = 8.0F;
+                                enemy[OBJ_HITS] = 1.0F;
+                                enemy[OBJ_SHOOT_DELAY] = 240.0F;
                             }
                         } else if (level == 6) {
                             for (i = 0; i < 3; i++) {
@@ -509,50 +509,50 @@ public class Gradius4K extends GamePanel {
                                 dx = 6.28f * random.nextFloat();
                                 float[] enemy = new float[256];
                                 queue.add(enemy);
-                                enemy[OBJ_TYPE] = TYPE_ENEMY;
-                                enemy[OBJ_X] = cameraX + 256 + 20 * i;
-                                enemy[OBJ_Y] = Y + 20 * i;
-                                enemy[OBJ_SPRITE] = 47180;
-                                enemy[OBJ_SCALE_X] = 1;
-                                enemy[OBJ_SCALE_Y] = 1;
-                                enemy[OBJ_HITS] = 1;
-                                enemy[OBJ_SHOOT_DELAY] = 240;
-                                enemy[OBJ_VX] = (float) Math.cos(dx);
-                                enemy[OBJ_VY] = (float) Math.sin(dy);
-                                enemy[OBJ_ATTRACTOR] = 1;
+                                enemy[OBJ_TYPE] = (float) TYPE_ENEMY;
+                                enemy[OBJ_X] = cameraX + 256.0F + (float) (20 * i);
+                                enemy[OBJ_Y] = Y + (float) (20 * i);
+                                enemy[OBJ_SPRITE] = 47180.0F;
+                                enemy[OBJ_SCALE_X] = 1.0F;
+                                enemy[OBJ_SCALE_Y] = 1.0F;
+                                enemy[OBJ_HITS] = 1.0F;
+                                enemy[OBJ_SHOOT_DELAY] = 240.0F;
+                                enemy[OBJ_VX] = (float) Math.cos((double) dx);
+                                enemy[OBJ_VY] = (float) Math.sin((double) dy);
+                                enemy[OBJ_ATTRACTOR] = 1.0F;
                             }
                         } else {
                             
                             for (i = 0; i < 3; i++) {
                                 float[] enemy = new float[256];
                                 queue.add(enemy);
-                                enemy[OBJ_TYPE] = TYPE_ENEMY;
-                                enemy[OBJ_X] = cameraX + 256;
-                                enemy[OBJ_Y] = enemy[OBJ_Y2] = Y + 20 * i;
-                                enemy[OBJ_VX] = -1;
-                                enemy[OBJ_SPRITE] = 12375;
-                                enemy[OBJ_SCALE_X] = 1;
-                                enemy[OBJ_SCALE_Y] = 1;
-                                enemy[OBJ_HITS] = 1;
-                                enemy[OBJ_SHOOT_DELAY] = 240;
+                                enemy[OBJ_TYPE] = (float) TYPE_ENEMY;
+                                enemy[OBJ_X] = cameraX + 256.0F;
+                                enemy[OBJ_Y] = enemy[OBJ_Y2] = Y + (float) (20 * i);
+                                enemy[OBJ_VX] = -1.0F;
+                                enemy[OBJ_SPRITE] = 12375.0F;
+                                enemy[OBJ_SCALE_X] = 1.0F;
+                                enemy[OBJ_SCALE_Y] = 1.0F;
+                                enemy[OBJ_HITS] = 1.0F;
+                                enemy[OBJ_SHOOT_DELAY] = 240.0F;
                             }
                         }
-                    } else if (level == 1 && cameraX > 512) {
+                    } else if (level == 1 && cameraX > 512.0F) {
 
                         float[] enemy = new float[256];
                         queue.add(enemy);
-                        enemy[OBJ_TYPE] = TYPE_ENEMY;
-                        enemy[OBJ_X] = cameraX + 320;
-                        enemy[OBJ_Y] = enemy[OBJ_Y2] = Y + 20 * i;
+                        enemy[OBJ_TYPE] = (float) TYPE_ENEMY;
+                        enemy[OBJ_X] = cameraX + 320.0F;
+                        enemy[OBJ_Y] = enemy[OBJ_Y2] = Y + (float) (20 * i);
                         enemy[OBJ_VX] = -0.5f;
-                        enemy[OBJ_SPRITE] = 2301;
-                        enemy[OBJ_SCALE_X] = 4;
-                        enemy[OBJ_SCALE_Y] = 4;
-                        enemy[OBJ_HITS] = 2;
-                        enemy[OBJ_TIMER] = 4096;
-                        enemy[OBJ_SHOOT_DELAY] = 4096;
-                        enemy[OBJ_BUBBLE] = 1;
-                        enemy[OBJ_RADIUS] = 8;
+                        enemy[OBJ_SPRITE] = 2301.0F;
+                        enemy[OBJ_SCALE_X] = 4.0F;
+                        enemy[OBJ_SCALE_Y] = 4.0F;
+                        enemy[OBJ_HITS] = 2.0F;
+                        enemy[OBJ_TIMER] = 4096.0F;
+                        enemy[OBJ_SHOOT_DELAY] = 4096.0F;
+                        enemy[OBJ_BUBBLE] = 1.0F;
+                        enemy[OBJ_RADIUS] = 8.0F;
                     }
                 }
             }
@@ -562,7 +562,7 @@ public class Gradius4K extends GamePanel {
             for (i = queue.size() - 1; i >= 0; i--) {
                 float[] object = queue.get(i);
 
-                if (object[OBJ_REMOVE] == 1) {
+                if (object[OBJ_REMOVE] == 1.0F) {
                     queue.remove(i);
                     continue;
                 }
@@ -575,20 +575,20 @@ public class Gradius4K extends GamePanel {
 
                         
                         if (keys[VK_UP]) {
-                            if (object[OBJ_Y] > 11) {
+                            if (object[OBJ_Y] > 11.0F) {
                                 object[OBJ_Y] -= SPEED;
                             }
                         } else if (keys[VK_DOWN]) {
-                            if (object[OBJ_Y] < 220) {
+                            if (object[OBJ_Y] < 220.0F) {
                                 object[OBJ_Y] += SPEED;
                             }
                         }
                         if (keys[VK_LEFT]) {
-                            if (object[OBJ_X] > cameraX + 13) {
+                            if (object[OBJ_X] > cameraX + 13.0F) {
                                 object[OBJ_X] -= SPEED;
                             }
                         } else if (keys[VK_RIGHT]) {
-                            if (object[OBJ_X] < cameraX + 243) {
+                            if (object[OBJ_X] < cameraX + 243.0F) {
                                 object[OBJ_X] += SPEED;
                             }
                         }
@@ -604,10 +604,10 @@ public class Gradius4K extends GamePanel {
 
                                     float[] bullet = new float[256];
                                     queue.add(bullet);
-                                    bullet[OBJ_TYPE] = TYPE_BULLET;
-                                    bullet[OBJ_X] = object[OBJ_X] + 24 * (float) Math.cos(0.25f * j);
-                                    bullet[OBJ_Y] = object[OBJ_Y] + (k == 0 ? 24 : -24) * (float) Math.sin(0.25f * j);
-                                    bullet[OBJ_SPRITE] = 733;
+                                    bullet[OBJ_TYPE] = (float) TYPE_BULLET;
+                                    bullet[OBJ_X] = object[OBJ_X] + 24.0F * (float) Math.cos((double) (0.25f * (float) j));
+                                    bullet[OBJ_Y] = object[OBJ_Y] + (float) (k == 0 ? 24 : -24) * (float) Math.sin((double) (0.25f * (float) j));
+                                    bullet[OBJ_SPRITE] = 733.0F;
                                     bullet[OBJ_VX] = 7.5f + cameraVx;
                                     bullet[OBJ_SCALE_X] = 1.5f;
                                     bullet[OBJ_SCALE_Y] = 0.25f;
@@ -618,16 +618,16 @@ public class Gradius4K extends GamePanel {
                         
                         for (j = queue.size() - 1; j >= 0; j--) {
                             float[] enemy = queue.get(j);
-                            if ((enemy[OBJ_TYPE] == TYPE_ENEMY || enemy[OBJ_TYPE] == TYPE_POWER_UP) && object[OBJ_X] - 12 < enemy[OBJ_X] + 8 * enemy[OBJ_SCALE_X]
-                                    && object[OBJ_X] + 12 > enemy[OBJ_X] - 8 * enemy[OBJ_SCALE_X] && object[OBJ_Y] - 8 < enemy[OBJ_Y] + 8 * enemy[OBJ_SCALE_Y]
-                                    && object[OBJ_Y] + 8 > enemy[OBJ_Y] - 8 * enemy[OBJ_SCALE_Y]) {
-                                if (enemy[OBJ_TYPE] == TYPE_POWER_UP) {
+                            if ((enemy[OBJ_TYPE] == (float) TYPE_ENEMY || enemy[OBJ_TYPE] == (float) TYPE_POWER_UP) && object[OBJ_X] - 12.0F < enemy[OBJ_X] + 8.0F * enemy[OBJ_SCALE_X]
+                                    && object[OBJ_X] + 12.0F > enemy[OBJ_X] - 8.0F * enemy[OBJ_SCALE_X] && object[OBJ_Y] - 8.0F < enemy[OBJ_Y] + 8.0F * enemy[OBJ_SCALE_Y]
+                                    && object[OBJ_Y] + 8.0F > enemy[OBJ_Y] - 8.0F * enemy[OBJ_SCALE_Y]) {
+                                if (enemy[OBJ_TYPE] == (float) TYPE_POWER_UP) {
                                     
-                                    enemy[OBJ_REMOVE] = 1;
+                                    enemy[OBJ_REMOVE] = 1.0F;
                                     if (playerGun < 5) {
                                         playerGun++;
                                     }
-                                } else if (enemy[OBJ_DISABLED] == 0) {
+                                } else if (enemy[OBJ_DISABLED] == (float) 0) {
                                     
                                     playerExploded = true;
                                 }
@@ -648,125 +648,125 @@ public class Gradius4K extends GamePanel {
                         object[OBJ_Y] += object[OBJ_VY];
                         object[OBJ_SCALE_X] *= 0.8f;
                         object[OBJ_SCALE_Y] *= 0.8f;
-                        if (--object[OBJ_TIMER] == 0) {
-                            object[OBJ_REMOVE] = 1;
+                        if (--object[OBJ_TIMER] == (float) 0) {
+                            object[OBJ_REMOVE] = 1.0F;
                         }
                         break;
                     case TYPE_EXPLOSION_SEED:
-                        object[OBJ_REMOVE] = 1;
-                        for (j = (object[OBJ_WALL_EXPLOSION] == 1) ? 16 : 128; j >= 0; j--) {
+                        object[OBJ_REMOVE] = 1.0F;
+                        for (j = (object[OBJ_WALL_EXPLOSION] == 1.0F) ? 16 : 128; j >= 0; j--) {
 
                             float[] explosion = new float[256];
                             queue.add(explosion);
-                            explosion[OBJ_TYPE] = TYPE_EXPLOSION;
+                            explosion[OBJ_TYPE] = (float) TYPE_EXPLOSION;
                             explosion[OBJ_X] = object[OBJ_X];
                             explosion[OBJ_Y] = object[OBJ_Y];
                             dx = 6.28f * random.nextFloat();
-                            dy = ((object[OBJ_WALL_EXPLOSION] == 1) ? 1 : 3) * random.nextFloat();
-                            explosion[OBJ_VX] = dy * (float) Math.sin(dx);
-                            explosion[OBJ_VY] = dy * (float) Math.cos(dx);
-                            explosion[OBJ_SPRITE] = 56;
-                            explosion[OBJ_TIMER] = 15;
-                            explosion[OBJ_SCALE_X] = 4;
-                            explosion[OBJ_SCALE_Y] = 4;
+                            dy = (float) ((object[OBJ_WALL_EXPLOSION] == 1.0F) ? 1 : 3) * random.nextFloat();
+                            explosion[OBJ_VX] = dy * (float) Math.sin((double) dx);
+                            explosion[OBJ_VY] = dy * (float) Math.cos((double) dx);
+                            explosion[OBJ_SPRITE] = 56.0F;
+                            explosion[OBJ_TIMER] = 15.0F;
+                            explosion[OBJ_SCALE_X] = 4.0F;
+                            explosion[OBJ_SCALE_Y] = 4.0F;
                         }
-                        if (object[OBJ_MAKE_POWER_UP] == 1) {
+                        if (object[OBJ_MAKE_POWER_UP] == 1.0F) {
 
                             float[] powerUp = new float[256];
                             queue.add(powerUp);
-                            powerUp[OBJ_TYPE] = TYPE_POWER_UP;
+                            powerUp[OBJ_TYPE] = (float) TYPE_POWER_UP;
                             powerUp[OBJ_X] = object[OBJ_X];
                             powerUp[OBJ_Y] = object[OBJ_Y];
-                            powerUp[OBJ_SCALE_X] = 1;
-                            powerUp[OBJ_SCALE_Y] = 1;
-                            powerUp[OBJ_SPRITE] = 18463;
+                            powerUp[OBJ_SCALE_X] = 1.0F;
+                            powerUp[OBJ_SCALE_Y] = 1.0F;
+                            powerUp[OBJ_SPRITE] = 18463.0F;
                         }
                         break;
                     case TYPE_BULLET:
                         object[OBJ_X] += object[OBJ_VX];
                         object[OBJ_Y] += object[OBJ_VY];
-                        if (object[OBJ_X] < cameraX - 32 || object[OBJ_X] > cameraX + 287 || object[OBJ_Y] < -32 || object[OBJ_Y] > 287) {
+                        if (object[OBJ_X] < cameraX - 32.0F || object[OBJ_X] > cameraX + 287.0F || object[OBJ_Y] < -32.0F || object[OBJ_Y] > 287.0F) {
                             
-                            object[OBJ_REMOVE] = 1;
+                            object[OBJ_REMOVE] = 1.0F;
                         } else if (levelMap[((int) object[OBJ_Y] >> 5) & 7][((int) object[OBJ_X] >> 5) & 0xFF] == 1) {
                             
-                            object[OBJ_REMOVE] = 1;
-                            if (object[OBJ_ENEMY_BULLET] == 0) {
+                            object[OBJ_REMOVE] = 1.0F;
+                            if (object[OBJ_ENEMY_BULLET] == (float) 0) {
                                 float[] explosionSeed = new float[256];
                                 queue.add(explosionSeed);
-                                explosionSeed[OBJ_TYPE] = TYPE_EXPLOSION_SEED;
+                                explosionSeed[OBJ_TYPE] = (float) TYPE_EXPLOSION_SEED;
                                 explosionSeed[OBJ_X] = object[OBJ_X];
                                 explosionSeed[OBJ_Y] = object[OBJ_Y];
-                                explosionSeed[OBJ_NONRENDERABLE] = 1;
-                                explosionSeed[OBJ_WALL_EXPLOSION] = 1;
+                                explosionSeed[OBJ_NONRENDERABLE] = 1.0F;
+                                explosionSeed[OBJ_WALL_EXPLOSION] = 1.0F;
                             }
-                        } else if (object[OBJ_ENEMY_BULLET] == 1) {
+                        } else if (object[OBJ_ENEMY_BULLET] == 1.0F) {
                             if (fireworks > 0) {
                                 
-                                object[OBJ_REMOVE] = 1;
+                                object[OBJ_REMOVE] = 1.0F;
                             } else if (playerDead == 0 
-                                    && object[OBJ_X] >= player[OBJ_X] - 8 && object[OBJ_Y] >= player[OBJ_Y] - 8 && object[OBJ_X] <= player[OBJ_X] + 8 && object[OBJ_Y] <= player[OBJ_Y] + 8) {
+                                    && object[OBJ_X] >= player[OBJ_X] - 8.0F && object[OBJ_Y] >= player[OBJ_Y] - 8.0F && object[OBJ_X] <= player[OBJ_X] + 8.0F && object[OBJ_Y] <= player[OBJ_Y] + 8.0F) {
                                 playerExploded = true;
                             }
                         } else {
                             
                             for (j = queue.size() - 1; j >= 0; j--) {
                                 float[] enemy = queue.get(j);
-                                if (enemy[OBJ_TYPE] == TYPE_ENEMY && enemy[OBJ_DISABLED] == 0 && object[OBJ_X] >= enemy[OBJ_X] - 8 * enemy[OBJ_SCALE_X]
-                                        && object[OBJ_Y] >= enemy[OBJ_Y] - 8 * enemy[OBJ_SCALE_Y] && object[OBJ_X] <= enemy[OBJ_X] + 8 * enemy[OBJ_SCALE_X]
-                                        && object[OBJ_Y] <= enemy[OBJ_Y] + 8 * enemy[OBJ_SCALE_Y]) {
+                                if (enemy[OBJ_TYPE] == (float) TYPE_ENEMY && enemy[OBJ_DISABLED] == (float) 0 && object[OBJ_X] >= enemy[OBJ_X] - 8.0F * enemy[OBJ_SCALE_X]
+                                        && object[OBJ_Y] >= enemy[OBJ_Y] - 8.0F * enemy[OBJ_SCALE_Y] && object[OBJ_X] <= enemy[OBJ_X] + 8.0F * enemy[OBJ_SCALE_X]
+                                        && object[OBJ_Y] <= enemy[OBJ_Y] + 8.0F * enemy[OBJ_SCALE_Y]) {
 
-                                    object[OBJ_REMOVE] = 1;
+                                    object[OBJ_REMOVE] = 1.0F;
                                     score++;
 
                                     float[] explosionSeed = new float[256];
                                     queue.add(explosionSeed);
-                                    explosionSeed[OBJ_TYPE] = TYPE_EXPLOSION_SEED;
-                                    explosionSeed[OBJ_NONRENDERABLE] = 1;
-                                    if (--enemy[OBJ_HITS] == 0) {
+                                    explosionSeed[OBJ_TYPE] = (float) TYPE_EXPLOSION_SEED;
+                                    explosionSeed[OBJ_NONRENDERABLE] = 1.0F;
+                                    if (--enemy[OBJ_HITS] == (float) 0) {
 
-                                        if (enemy[OBJ_BOSS] == 1) {
+                                        if (enemy[OBJ_BOSS] == 1.0F) {
                                             
                                             fireworks = 512;
                                         }
 
                                         
-                                        enemy[OBJ_REMOVE] = 1;
-                                        if (enemy[OBJ_BUBBLE] == 1 && enemy[OBJ_SCALE_X] > 1) {
+                                        enemy[OBJ_REMOVE] = 1.0F;
+                                        if (enemy[OBJ_BUBBLE] == 1.0F && enemy[OBJ_SCALE_X] > 1.0F) {
                                             for (k = 0; k < 2; k++) {
 
                                                 float[] bubble = new float[256];
                                                 queue.add(bubble);
-                                                bubble[OBJ_TYPE] = TYPE_ENEMY;
+                                                bubble[OBJ_TYPE] = (float) TYPE_ENEMY;
                                                 bubble[OBJ_VX] = random.nextFloat() - 0.5f;
-                                                bubble[OBJ_SPRITE] = 2301;
+                                                bubble[OBJ_SPRITE] = 2301.0F;
                                                 bubble[OBJ_SCALE_X] = enemy[OBJ_SCALE_X] * 0.75f;
                                                 bubble[OBJ_SCALE_Y] = enemy[OBJ_SCALE_Y] * 0.75f;
                                                 bubble[OBJ_X] = enemy[OBJ_X];
-                                                bubble[OBJ_Y] = bubble[OBJ_Y2] = enemy[OBJ_Y] + (k - 0.5f) * bubble[OBJ_SCALE_Y] * 16;
-                                                bubble[OBJ_HITS] = 1;
-                                                bubble[OBJ_TIMER] = 4096;
-                                                bubble[OBJ_SHOOT_DELAY] = 4096;
-                                                bubble[OBJ_BUBBLE] = 1;
-                                                bubble[OBJ_RADIUS] = 8;
+                                                bubble[OBJ_Y] = bubble[OBJ_Y2] = enemy[OBJ_Y] + ((float) k - 0.5f) * bubble[OBJ_SCALE_Y] * 16.0F;
+                                                bubble[OBJ_HITS] = 1.0F;
+                                                bubble[OBJ_TIMER] = 4096.0F;
+                                                bubble[OBJ_SHOOT_DELAY] = 4096.0F;
+                                                bubble[OBJ_BUBBLE] = 1.0F;
+                                                bubble[OBJ_RADIUS] = 8.0F;
                                                 bubble[OBJ_ANGLE] = 6.28f * random.nextFloat();
                                             }
                                         } else {
                                             explosionSeed[OBJ_X] = enemy[OBJ_X];
                                             explosionSeed[OBJ_Y] = enemy[OBJ_Y];
-                                            explosionSeed[OBJ_MAKE_POWER_UP] = random.nextInt(13) == 0 ? 1 : 0;
+                                            explosionSeed[OBJ_MAKE_POWER_UP] = (float) (random.nextInt(13) == 0 ? 1 : 0);
                                         }
                                     } else {
                                         
                                         explosionSeed[OBJ_X] = object[OBJ_X];
                                         explosionSeed[OBJ_Y] = object[OBJ_Y];
-                                        explosionSeed[OBJ_WALL_EXPLOSION] = 1;
+                                        explosionSeed[OBJ_WALL_EXPLOSION] = 1.0F;
 
-                                        if (enemy[OBJ_SHRINKER] == 1) {
+                                        if (enemy[OBJ_SHRINKER] == 1.0F) {
                                             enemy[OBJ_SCALE_X] -= 0.25f;
                                             enemy[OBJ_SCALE_Y] -= 0.25f;
                                             if (enemy[OBJ_SCALE_X] <= 0.5f) {
-                                                enemy[OBJ_HITS] = 1;
+                                                enemy[OBJ_HITS] = 1.0F;
                                             }
                                         }
                                     }
@@ -778,24 +778,24 @@ public class Gradius4K extends GamePanel {
                     case TYPE_ENEMY:
                         if (fireworks > 0) {
                             
-                            object[OBJ_REMOVE] = 1;
+                            object[OBJ_REMOVE] = 1.0F;
                         }
-                        if (object[OBJ_FAN_BLADE] == 1) {
+                        if (object[OBJ_FAN_BLADE] == 1.0F) {
                             object[OBJ_ANGLE] += object[OBJ_Y2];
-                            object[OBJ_X] = object[OBJ_X2] + object[OBJ_RADIUS] * (float) Math.cos(object[OBJ_ANGLE]);
-                            object[OBJ_Y] = 128 + object[OBJ_RADIUS] * (float) Math.sin(object[OBJ_ANGLE]);
-                        } else if (object[OBJ_ATTRACTOR] == 1) {
-                            if ((object[OBJ_VX] < 0 && (levelMap[(((int) object[OBJ_Y]) >> 5) & 7][(((int) (object[OBJ_X] - 12 * object[OBJ_SCALE_X])) >> 5) & 0xFF] == 1))
-                                    || (object[OBJ_VY] > 0 && (levelMap[(((int) object[OBJ_Y]) >> 5) & 7][(((int) (object[OBJ_X] + 12 * object[OBJ_SCALE_X])) >> 5) & 0xFF] == 1))) {
+                            object[OBJ_X] = object[OBJ_X2] + object[OBJ_RADIUS] * (float) Math.cos((double) object[OBJ_ANGLE]);
+                            object[OBJ_Y] = 128.0F + object[OBJ_RADIUS] * (float) Math.sin((double) object[OBJ_ANGLE]);
+                        } else if (object[OBJ_ATTRACTOR] == 1.0F) {
+                            if ((object[OBJ_VX] < (float) 0 && (levelMap[(((int) object[OBJ_Y]) >> 5) & 7][(((int) (object[OBJ_X] - 12.0F * object[OBJ_SCALE_X])) >> 5) & 0xFF] == 1))
+                                    || (object[OBJ_VY] > (float) 0 && (levelMap[(((int) object[OBJ_Y]) >> 5) & 7][(((int) (object[OBJ_X] + 12.0F * object[OBJ_SCALE_X])) >> 5) & 0xFF] == 1))) {
                                 object[OBJ_VX] = -object[OBJ_VX];
                             }
-                            if ((object[OBJ_VY] < 0 && (levelMap[((int) (object[OBJ_Y] - 12 * object[OBJ_SCALE_Y]) >> 5) & 7][(((int) (object[OBJ_X])) >> 5) & 0xFF] == 1))
-                                    || (object[OBJ_VY] > 0 && (levelMap[((int) (object[OBJ_Y] + 12 * object[OBJ_SCALE_Y]) >> 5) & 7][(((int) (object[OBJ_X])) >> 5) & 0xFF] == 1))) {
+                            if ((object[OBJ_VY] < (float) 0 && (levelMap[((int) (object[OBJ_Y] - 12.0F * object[OBJ_SCALE_Y]) >> 5) & 7][(((int) (object[OBJ_X])) >> 5) & 0xFF] == 1))
+                                    || (object[OBJ_VY] > (float) 0 && (levelMap[((int) (object[OBJ_Y] + 12.0F * object[OBJ_SCALE_Y]) >> 5) & 7][(((int) (object[OBJ_X])) >> 5) & 0xFF] == 1))) {
                                 object[OBJ_VY] = -object[OBJ_VY];
                             }
                             dx = player[OBJ_X] - object[OBJ_X];
                             dy = player[OBJ_Y] - object[OBJ_Y];
-                            mag = 64 * (float) Math.sqrt(dx * dx + dy * dy);
+                            mag = 64.0F * (float) Math.sqrt((double) (dx * dx + dy * dy));
                             object[OBJ_VX] += dx / mag;
                             object[OBJ_VY] += dy / mag;
                             object[OBJ_VX] *= 0.995f;
@@ -803,79 +803,79 @@ public class Gradius4K extends GamePanel {
                             object[OBJ_X] += object[OBJ_VX];
                             object[OBJ_Y] += object[OBJ_VY];
                         } else {
-                            if ((object[OBJ_VX] < 0 && (levelMap[(((int) object[OBJ_Y]) >> 5) & 7][(((int) (object[OBJ_X] - 12 * object[OBJ_SCALE_X])) >> 5) & 0xFF] == 1 || (object[OBJ_BUBBLE] == 0 && object[OBJ_X] < cameraX
-                                    + 12 * object[OBJ_SCALE_X])))
-                                    || (object[OBJ_VX] > 0 && (levelMap[(((int) object[OBJ_Y]) >> 5) & 7][(((int) (object[OBJ_X] + 12 * object[OBJ_SCALE_X])) >> 5) & 0xFF] == 1 || (object[OBJ_BOSS] == 1 && object[OBJ_X]
-                                    + 8 * object[OBJ_SCALE_X] >= 2560)))) {
+                            if ((object[OBJ_VX] < (float) 0 && (levelMap[(((int) object[OBJ_Y]) >> 5) & 7][(((int) (object[OBJ_X] - 12.0F * object[OBJ_SCALE_X])) >> 5) & 0xFF] == 1 || (object[OBJ_BUBBLE] == (float) 0 && object[OBJ_X] < cameraX
+                                    + 12.0F * object[OBJ_SCALE_X])))
+                                    || (object[OBJ_VX] > (float) 0 && (levelMap[(((int) object[OBJ_Y]) >> 5) & 7][(((int) (object[OBJ_X] + 12.0F * object[OBJ_SCALE_X])) >> 5) & 0xFF] == 1 || (object[OBJ_BOSS] == 1.0F && object[OBJ_X]
+                                    + 8.0F * object[OBJ_SCALE_X] >= 2560.0F)))) {
                                 object[OBJ_VX] = -object[OBJ_VX] + cameraVx;
                             }
 
-                            if (levelMap[(((int) (object[OBJ_Y] - 8 * object[OBJ_SCALE_Y])) >> 5) & 7][((((int) object[OBJ_X])) >> 5) & 0xFF] == 1) {
+                            if (levelMap[(((int) (object[OBJ_Y] - 8.0F * object[OBJ_SCALE_Y])) >> 5) & 7][((((int) object[OBJ_X])) >> 5) & 0xFF] == 1) {
                                 object[OBJ_Y2]++;
                             }
-                            if (levelMap[(((int) (object[OBJ_Y] + 8 * object[OBJ_SCALE_Y])) >> 5) & 7][((((int) object[OBJ_X])) >> 5) & 0xFF] == 1) {
+                            if (levelMap[(((int) (object[OBJ_Y] + 8.0F * object[OBJ_SCALE_Y])) >> 5) & 7][((((int) object[OBJ_X])) >> 5) & 0xFF] == 1) {
                                 object[OBJ_Y2]--;
                             }
                             object[OBJ_X] += object[OBJ_VX];
-                            object[OBJ_Y] = object[OBJ_Y2] + object[OBJ_RADIUS] * (float) Math.sin(object[OBJ_ANGLE]);
+                            object[OBJ_Y] = object[OBJ_Y2] + object[OBJ_RADIUS] * (float) Math.sin((double) object[OBJ_ANGLE]);
                             object[OBJ_ANGLE] += 0.075f;
                         }
-                        if (object[OBJ_FORCE_FIELD] == 1) {
-                            object[OBJ_SPRITE] = object[OBJ_SPRITE] == 766 ? 2302 : 766;
+                        if (object[OBJ_FORCE_FIELD] == 1.0F) {
+                            object[OBJ_SPRITE] = (float) (object[OBJ_SPRITE] == 766.0F ? 2302 : 766);
                         }
-                        if (object[OBJ_TIMER] > 0) {
+                        if (object[OBJ_TIMER] > (float) 0) {
                             object[OBJ_TIMER]--;
                         } else {
                             object[OBJ_TIMER] = object[OBJ_SHOOT_DELAY];
 
-                            if (object[OBJ_FORCE_FIELD] == 1) {
+                            if (object[OBJ_FORCE_FIELD] == 1.0F) {
                                 
-                                object[OBJ_DISABLED] = object[OBJ_DISABLED] == 1 ? 0 : 1;
+                                object[OBJ_DISABLED] = (float) (object[OBJ_DISABLED] == 1.0F ? 0 : 1);
                             } else {
 
                                 float[] bullet = new float[256];
                                 queue.add(bullet);
                                 bullet[OBJ_X] = object[OBJ_X];
                                 bullet[OBJ_Y] = object[OBJ_Y];
-                                bullet[OBJ_TYPE] = TYPE_BULLET;
-                                bullet[OBJ_ENEMY_BULLET] = 1;
-                                bullet[OBJ_SPRITE] = 2338;
+                                bullet[OBJ_TYPE] = (float) TYPE_BULLET;
+                                bullet[OBJ_ENEMY_BULLET] = 1.0F;
+                                bullet[OBJ_SPRITE] = 2338.0F;
                                 bullet[OBJ_SCALE_X] = 0.5f;
                                 bullet[OBJ_SCALE_Y] = 0.5f;
-                                bullet[OBJ_NONRENDERABLE] = 0;
+                                bullet[OBJ_NONRENDERABLE] = (float) 0;
                                 dx = player[OBJ_X] - bullet[OBJ_X];
                                 dy = player[OBJ_Y] - bullet[OBJ_Y];
-                                mag = 0.5f * (float) Math.sqrt(dx * dx + dy * dy);
+                                mag = 0.5f * (float) Math.sqrt((double) (dx * dx + dy * dy));
                                 bullet[OBJ_VX] = dx / mag + cameraVx;
                                 bullet[OBJ_VY] = dy / mag;
                             }
                         }
-                        if (object[OBJ_X] + 128 < cameraX) {
-                            object[OBJ_REMOVE] = 1;
+                        if (object[OBJ_X] + 128.0F < cameraX) {
+                            object[OBJ_REMOVE] = 1.0F;
                         }
                         break;
                     case TYPE_POWER_UP:
-                        if (object[OBJ_X] + 8 < cameraX) {
-                            object[OBJ_REMOVE] = 1;
+                        if (object[OBJ_X] + 8.0F < cameraX) {
+                            object[OBJ_REMOVE] = 1.0F;
                         }
-                        if (object[OBJ_TIMER] > 0) {
+                        if (object[OBJ_TIMER] > (float) 0) {
                             object[OBJ_TIMER]--;
                         } else {
-                            object[OBJ_TIMER] = 4;
-                            object[OBJ_SPRITE] = (object[OBJ_SPRITE] == 17137) ? 18463 : 17137;
+                            object[OBJ_TIMER] = 4.0F;
+                            object[OBJ_SPRITE] = (float) ((object[OBJ_SPRITE] == 17137.0F) ? 18463 : 17137);
                         }
                         break;
                 }
             }
 
             if (playerExploded) {
-                player[OBJ_REMOVE] = 1;
+                player[OBJ_REMOVE] = 1.0F;
                 float[] explosionSeed = new float[256];
                 queue.add(explosionSeed);
-                explosionSeed[OBJ_TYPE] = TYPE_EXPLOSION_SEED;
+                explosionSeed[OBJ_TYPE] = (float) TYPE_EXPLOSION_SEED;
                 explosionSeed[OBJ_X] = player[OBJ_X];
                 explosionSeed[OBJ_Y] = player[OBJ_Y];
-                explosionSeed[OBJ_NONRENDERABLE] = 1;
+                explosionSeed[OBJ_NONRENDERABLE] = 1.0F;
 
                 this.playerDead = DIE_TIME;
             }
@@ -895,9 +895,9 @@ public class Gradius4K extends GamePanel {
             
             for (i = queue.size() - 1; i >= 0; i--) {
                 float[] object = queue.get(i);
-                if (object[OBJ_NONRENDERABLE] == 0 && object[OBJ_DISABLED] == 0) {
-                    g.translate(object[OBJ_X] - 8 * object[OBJ_SCALE_X] - cameraX, object[OBJ_Y] - 8 * object[OBJ_SCALE_Y]);
-                    g.scale(object[OBJ_SCALE_X], object[OBJ_SCALE_Y]);
+                if (object[OBJ_NONRENDERABLE] == (float) 0 && object[OBJ_DISABLED] == (float) 0) {
+                    g.translate((double) (object[OBJ_X] - 8.0F * object[OBJ_SCALE_X] - cameraX), (double) (object[OBJ_Y] - 8.0F * object[OBJ_SCALE_Y]));
+                    g.scale((double) object[OBJ_SCALE_X], (double) object[OBJ_SCALE_Y]);
                     g.drawImage(sprites[(int) object[OBJ_SPRITE]], 0, 0, null);
                     g.setTransform(defaultTransform);
                 }

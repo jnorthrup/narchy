@@ -136,7 +136,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
         LP, HP, BP_PEAK, BP_SKIRT, NOTCH, AP, PEAKING_EQ, LOW_SHELF, HIGH_SHELF, BUTTERWORTH_LP, BUTTERWORTH_HP, BESSEL_LP, BESSEL_HP, CUSTOM_FILTER
     }
 
-    private float a0 = 1;
+    private float a0 = 1.0F;
     private float a1;
     private float a2;
     private float b0;
@@ -144,14 +144,14 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     private float b2;
 
     private int channels = 1;
-    private float freq = 100;
-    private float q = 1;
+    private float freq = 100.0F;
+    private float q = 1.0F;
     private float gain;
     private Type type;
     private final float samplingfreq;
 	private final float two_pi_over_sf;
 	private final float pi_over_sf;
-    private static final float SQRT2 = (float) Math.sqrt(2);
+    private static final float SQRT2 = (float) Math.sqrt(2.0);
 
     
     protected double w;
@@ -219,8 +219,8 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
         bo1m = new float[this.channels];
         bo2m = new float[this.channels];
         samplingfreq = context.getSampleRate();
-        two_pi_over_sf = (float) (Math.PI * 2 / samplingfreq);
-        pi_over_sf = (float) (Math.PI / samplingfreq);
+        two_pi_over_sf = (float) (Math.PI * 2.0 / (double) samplingfreq);
+        pi_over_sf = (float) (Math.PI / (double) samplingfreq);
         setType(itype);
         setFrequency(freq).setQ(q).setGain(gain);
     }
@@ -532,15 +532,15 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      */
     private void reset() {
         for (int i = 0; i < channels; i++) {
-            bi1m[i] = 0;
-            bi2m[i] = 0;
-            bo1m[i] = 0;
-            bo2m[i] = 0;
+            bi1m[i] = (float) 0;
+            bi2m[i] = (float) 0;
+            bo1m[i] = (float) 0;
+            bo2m[i] = (float) 0;
         }
-        bi1 = 0;
-        bi2 = 0;
-        bo1 = 0;
-        bo2 = 0;
+        bi1 = (float) 0;
+        bi2 = (float) 0;
+        bo1 = (float) 0;
+        bo2 = (float) 0;
     }
 
     protected static class ValCalculator {
@@ -552,13 +552,13 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
         @Override
         public void calcVals() {
             float w = two_pi_over_sf * freq;
-            float cosw = (float) Math.cos(w);
-            float a = (float) Math.sin(w) / q * .5f;
-            b1 = 1 - cosw;
+            float cosw = (float) Math.cos((double) w);
+            float a = (float) Math.sin((double) w) / q * .5f;
+            b1 = 1.0F - cosw;
             b2 = b0 = b1 * .5f;
-            a0 = 1 + a;
-            a1 = -2 * cosw;
-            a2 = 1 - a;
+            a0 = 1.0F + a;
+            a1 = -2.0F * cosw;
+            a2 = 1.0F - a;
         }
     }
 
@@ -566,13 +566,13 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
         @Override
         public void calcVals() {
             float w = two_pi_over_sf * freq;
-            float cosw = (float) Math.cos(w);
-            float a = (float) Math.sin(w) / q * .5f;
-            b1 = -1 - cosw;
+            float cosw = (float) Math.cos((double) w);
+            float a = (float) Math.sin((double) w) / q * .5f;
+            b1 = -1.0F - cosw;
             b2 = b0 = b1 * -.5f;
-            a0 = 1 + a;
-            a1 = -2 * cosw;
-            a2 = 1 - a;
+            a0 = 1.0F + a;
+            a1 = -2.0F * cosw;
+            a2 = 1.0F - a;
         }
     }
 
@@ -580,13 +580,13 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
         @Override
         public void calcVals() {
             float w = two_pi_over_sf * freq;
-            float sinw = (float) Math.sin(w);
+            float sinw = (float) Math.sin((double) w);
             float a = sinw / q * .5f;
-            b1 = 0;
-            b2 = 0 - (b0 = sinw * .5f);
-            a0 = 1 + a;
-            a1 = -2 * (float) Math.cos(w);
-            a2 = 1 - a;
+            b1 = (float) 0;
+            b2 = (float) 0 - (b0 = sinw * .5f);
+            a0 = 1.0F + a;
+            a1 = -2.0F * (float) Math.cos((double) w);
+            a2 = 1.0F - a;
         }
     }
 
@@ -595,11 +595,11 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
         public void calcVals() {
             float w = two_pi_over_sf * freq;
             
-            b1 = 0;
-            b2 = 0 - (b0 = (float) Math.sin(w) / q * .5f);
-            a0 = 1 + b0;
-            a1 = -2 * (float) Math.cos(w);
-            a2 = 1 - b0;
+            b1 = (float) 0;
+            b2 = (float) 0 - (b0 = (float) Math.sin((double) w) / q * .5f);
+            a0 = 1.0F + b0;
+            a1 = -2.0F * (float) Math.cos((double) w);
+            a2 = 1.0F - b0;
         }
     }
 
@@ -607,11 +607,11 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
         @Override
         public void calcVals() {
             float w = two_pi_over_sf * freq;
-            float a = (float) Math.sin(w) / q * .5f;
-            b2 = b0 = 1;
-            a1 = b1 = -2 * (float) Math.cos(w);
-            a0 = 1 + a;
-            a2 = 1 - a;
+            float a = (float) Math.sin((double) w) / q * .5f;
+            b2 = b0 = 1.0F;
+            a1 = b1 = -2.0F * (float) Math.cos((double) w);
+            a0 = 1.0F + a;
+            a2 = 1.0F - a;
         }
     }
 
@@ -619,23 +619,23 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
         @Override
         public void calcVals() {
             float w = two_pi_over_sf * freq;
-            float a = (float) (Math.sin(w) / q * .5);
-            a2 = b0 = 1 - a;
-            a1 = b1 = (float) (-2 * Math.cos(w));
-            a0 = b2 = 1 + a;
+            float a = (float) (Math.sin((double) w) / (double) q * .5);
+            a2 = b0 = 1.0F - a;
+            a1 = b1 = (float) (-2.0 * Math.cos((double) w));
+            a0 = b2 = 1.0F + a;
         }
     }
 
     private class PeakingEQValCalculator extends ValCalculator {
         @Override
         public void calcVals() {
-            float A = (float) Math.pow(10, gain * .025);
+            float A = (float) Math.pow(10.0, (double) gain * .025);
             float w = two_pi_over_sf * freq;
 
-            float a = (float) (Math.sin(w) / q * .5);
-            b2 = 2 - (b0 = 1 + a * A);
-            a1 = b1 = -2 * (float) Math.cos(w);
-            a2 = 2 - (a0 = 1 + a / A);
+            float a = (float) (Math.sin((double) w) / (double) q * .5);
+            b2 = 2.0F - (b0 = 1.0F + a * A);
+            a1 = b1 = -2.0F * (float) Math.cos((double) w);
+            a2 = 2.0F - (a0 = 1.0F + a / A);
             /*
              * peakingEQ: H(s) = (s^2 + s*(A/Q) + 1) / (s^2 + s/(A*Q) + 1)
              *
@@ -648,18 +648,18 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     private class LowShelfValCalculator extends ValCalculator {
         @Override
         public void calcVals() {
-            float A = (float) Math.pow(10, gain * .025);
+            float A = (float) Math.pow(10.0, (double) gain * .025);
             float w = two_pi_over_sf * freq;
-            float cosw = (float) Math.cos(w);
-            float a = (float) (Math.sin(w) / q * .5);
-            float b = 2 * a * (float) Math.sqrt(A);
-            float c = (A - 1) * cosw;
-            b0 = A * (A + 1 - c + b);
-            b1 = 2 * A * ((A - 1) - (A + 1) * cosw);
-            b2 = A * (A + 1 - c - b);
-            a0 = A + 1 + c + b;
-            a1 = -2 * ((A - 1) + (A + 1) * cosw);
-            a2 = A + 1 + c - b;
+            float cosw = (float) Math.cos((double) w);
+            float a = (float) (Math.sin((double) w) / (double) q * .5);
+            float b = 2.0F * a * (float) Math.sqrt((double) A);
+            float c = (A - 1.0F) * cosw;
+            b0 = A * (A + 1.0F - c + b);
+            b1 = 2.0F * A * ((A - 1.0F) - (A + 1.0F) * cosw);
+            b2 = A * (A + 1.0F - c - b);
+            a0 = A + 1.0F + c + b;
+            a1 = -2.0F * ((A - 1.0F) + (A + 1.0F) * cosw);
+            a2 = A + 1.0F + c - b;
             /*
              * lowShelf: H(s) = A * (s^2 + (sqrt(A)/Q)*s + A)/(A*s^2 +
              * (sqrt(A)/Q)*s + 1)
@@ -676,19 +676,19 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     private class HighShelfValCalculator extends ValCalculator {
         @Override
         public void calcVals() {
-            float A = (float) Math.pow(10, gain * .025);
+            float A = (float) Math.pow(10.0, (double) gain * .025);
             float w = two_pi_over_sf * freq;
-            float cosw = (float) Math.cos(w);
-            float a = (float) (Math.sin(w) / q * .5);
-            float b = 2 * a * (float) Math.sqrt(A);
-            float c = (A - 1) * cosw;
+            float cosw = (float) Math.cos((double) w);
+            float a = (float) (Math.sin((double) w) / (double) q * .5);
+            float b = 2.0F * a * (float) Math.sqrt((double) A);
+            float c = (A - 1.0F) * cosw;
 
-            b0 = A * (A + 1 + c + b);
-            b1 = -2 * A * (A - 1 + (A + 1) * cosw);
-            b2 = A * (A + 1 + c - b);
-            a0 = A + 1 - c + b;
-            a1 = 2 * (A - 1 - (A + 1) * cosw);
-            a2 = A + 1 - c - b;
+            b0 = A * (A + 1.0F + c + b);
+            b1 = -2.0F * A * (A - 1.0F + (A + 1.0F) * cosw);
+            b2 = A * (A + 1.0F + c - b);
+            a0 = A + 1.0F - c + b;
+            a1 = 2.0F * (A - 1.0F - (A + 1.0F) * cosw);
+            a2 = A + 1.0F - c - b;
             /*
              * highShelf: H(s) = A * (A*s^2 + (sqrt(A)/Q)*s + 1)/(s^2 +
              * (sqrt(A)/Q)*s + A)
@@ -705,12 +705,12 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     private class ButterworthLPValCalculator extends ValCalculator {
         @Override
         public void calcVals() {
-            float k = (float) Math.tan(freq * pi_over_sf);
+            float k = (float) Math.tan((double) (freq * pi_over_sf));
             b0 = b2 = k * k;
             b1 = 2f * b0;
-            a0 = b0 + (SQRT2 * k) + 1;
-            a1 = 2f * (b0 - 1);
-            a2 = b0 - (SQRT2 * k) + 1;
+            a0 = b0 + (SQRT2 * k) + 1.0F;
+            a1 = 2f * (b0 - 1.0F);
+            a2 = b0 - (SQRT2 * k) + 1.0F;
             
         }
     }
@@ -718,12 +718,12 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     private class ButterworthHPValCalculator extends ValCalculator {
         @Override
         public void calcVals() {
-            float k = (float) Math.tan(freq * pi_over_sf);
-            b0 = b2 = 1;
-            b1 = -2;
-            float k2p1 = k * k + 1;
+            float k = (float) Math.tan((double) (freq * pi_over_sf));
+            b0 = b2 = 1.0F;
+            b1 = -2.0F;
+            float k2p1 = k * k + 1.0F;
             a0 = k2p1 + (SQRT2 * k);
-            a1 = 2f * (k2p1 - 2);
+            a1 = 2f * (k2p1 - 2.0F);
             a2 = k2p1 - (SQRT2 * k);
 
         }
@@ -735,14 +735,14 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
         @Override
         public void calcVals() {
             float hbw = pi_over_sf * .5f * freq / q;
-            float root = (float) Math.sqrt(1 + 4 * q * q);
-            float k1 = (float) Math.tan(hbw * (root - 1));
-            float k2 = (float) Math.tan(hbw * (root + 1));
+            float root = (float) Math.sqrt((double) (1 + 4.0F * q * q));
+            float k1 = (float) Math.tan((double) (hbw * (root - 1.0F)));
+            float k2 = (float) Math.tan((double) (hbw * (root + 1.0F)));
             b2 = -(b0 = k2 - k1);
-            b1 = 0;
-            float mp1 = k1 * k2 + 1;
+            b1 = (float) 0;
+            float mp1 = k1 * k2 + 1.0F;
             a0 = mp1 + b0;
-            a1 = 2 * (mp1 - 2);
+            a1 = 2.0F * (mp1 - 2.0F);
             a2 = mp1 - b0;
         }
     }
@@ -750,25 +750,25 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     private class BesselLPValCalculator extends ValCalculator {
         @Override
         public void calcVals() {
-            float w = (float) Math.tan(pi_over_sf * freq);
-            b2 = b0 = 3 * w * w;
-            b1 = 2 * b0;
-            a0 = 1 + 3 * w + b0;
-            a1 = -2 + b1;
-            a2 = 1 - 3 * w + b0;
+            float w = (float) Math.tan((double) (pi_over_sf * freq));
+            b2 = b0 = 3.0F * w * w;
+            b1 = 2.0F * b0;
+            a0 = 1.0F + 3.0F * w + b0;
+            a1 = -2.0F + b1;
+            a2 = 1.0F - 3.0F * w + b0;
         }
     }
 
     private class BesselHPValCalculator extends ValCalculator {
         @Override
         public void calcVals() {
-            float w = (float) Math.tan(pi_over_sf * freq);
-            b2 = b0 = 3;
-            b1 = -6;
+            float w = (float) Math.tan((double) (pi_over_sf * freq));
+            b2 = b0 = 3.0F;
+            b1 = -6.0F;
             float w2 = w * w;
-            a0 = w2 + 3 * w + 3;
-            a1 = 2 * w2 - 6;
-            a2 = w2 - 3 * w + 3;
+            a0 = w2 + 3.0F * w + 3.0F;
+            a1 = 2.0F * w2 - 6.0F;
+            a2 = w2 - 3.0F * w + 3.0F;
         }
     }
 
@@ -1470,7 +1470,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      * @version .9.1
      */
     static class CustomCoeffCalculator {
-        static final float a0 = 1;
+        static final float a0 = 1.0F;
         float a1;
         float a2;
         float b0;
@@ -1498,7 +1498,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
          * Constructor with default sampling frequency of 44100.
          */
         CustomCoeffCalculator() {
-            setSamplingFrequency(44100);
+            setSamplingFrequency(44100.0F);
         }
 
         /**
@@ -1508,7 +1508,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
          */
         void setSamplingFrequency(float sf) {
             sampFreq = sf;
-            two_pi_over_sf = (float) (Math.PI * 2 / sf);
+            two_pi_over_sf = (float) (Math.PI * 2.0 / (double) sf);
         }
 
         /**

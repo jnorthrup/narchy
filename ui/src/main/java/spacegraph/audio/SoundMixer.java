@@ -53,8 +53,8 @@ public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProduce
 			sort();
 		}
 
-		Arrays.fill(leftBuf, 0);
-		Arrays.fill(rightBuf, 0);
+		Arrays.fill(leftBuf, (float) 0);
+		Arrays.fill(rightBuf, (float) 0);
 
         int l = leftBuf.length;
 
@@ -63,15 +63,15 @@ public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProduce
 
 			if (i < audibleSources) {
                 float[] buf = this.buf;
-				Arrays.fill(buf, 0);
+				Arrays.fill(buf, (float) 0);
 
                 boolean kontinues = sound.producer.read(buf, readRate);
 
                 float pan = sound.pan;
 
                 float amp = sound.amplitude;
-                float rp = (pan <= 0 ? 1 : 1 + pan) * amp;
-                float lp = (pan >= 0 ? 1 : 1 - pan) * amp;
+                float rp = (pan <= (float) 0 ? 1.0F : 1.0F + pan) * amp;
+                float lp = (pan >= (float) 0 ? 1.0F : 1.0F - pan) * amp;
 
 				for (int j = 0; j < l; j++) {
                     float bj = buf[j];

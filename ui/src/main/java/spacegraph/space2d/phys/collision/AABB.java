@@ -98,7 +98,7 @@ public class AABB {
             return false;
         }
         float dy = upperBound.y - lowerBound.y;
-        if (dy < 0) {
+        if (dy < (float) 0) {
             return false;
         }
         return lowerBound.isValid() && upperBound.isValid();

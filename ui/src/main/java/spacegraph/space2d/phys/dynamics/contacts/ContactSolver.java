@@ -154,15 +154,15 @@ public class ContactSolver {
                     vcp.normalImpulse = m_step.dtRatio * cp.normalImpulse;
                     vcp.tangentImpulse = m_step.dtRatio * cp.tangentImpulse;
                 } else {
-                    vcp.normalImpulse = 0;
-                    vcp.tangentImpulse = 0;
+                    vcp.normalImpulse = (float) 0;
+                    vcp.tangentImpulse = (float) 0;
                 }
 
                 vcp.rA.setZero();
                 vcp.rB.setZero();
-                vcp.normalMass = 0;
-                vcp.tangentMass = 0;
-                vcp.velocityBias = 0;
+                vcp.normalMass = (float) 0;
+                vcp.tangentMass = (float) 0;
+                vcp.velocityBias = (float) 0;
                 pc.localPoints[j].x = cp.localPoint.x;
                 pc.localPoints[j].y = cp.localPoint.y;
             }
@@ -461,8 +461,8 @@ public class ContactSolver {
                     Mat22 R1 = vc.normalMass;
                     float xx = R1.ex.x * bx + R1.ey.x * by;
                     float xy = R1.ex.y * bx + R1.ey.y * by;
-                    xx *= -1;
-                    xy *= -1;
+                    xx *= -1.0F;
+                    xy *= -1.0F;
 
                     if (xx >= 0.0f && xy >= 0.0f) {
 
@@ -1018,8 +1018,8 @@ class PositionSolverManifold {
                 separation = tempx * normal.x + tempy * normal.y - pc.radiusA - pc.radiusB;
                 point.x = clipPointx;
                 point.y = clipPointy;
-                normal.x *= -1;
-                normal.y *= -1;
+                normal.x *= -1.0F;
+                normal.y *= -1.0F;
             }
             break;
         }

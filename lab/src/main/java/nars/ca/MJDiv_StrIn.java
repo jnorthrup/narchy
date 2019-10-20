@@ -37,11 +37,11 @@ public class MJDiv_StrIn {
 			sTok = sTok.trim();
 			if (sTok.contains("(")) 
 			{
-                int iPos = sTok.indexOf('(');
+                int iPos = sTok.indexOf((int) '(');
                 String sBff = sTok.substring(0, iPos);
 				int iCnt = Integer.valueOf(sBff);
 				sBff = sTok.substring(iPos + 1); 
-				iPos = sBff.indexOf(')');
+				iPos = sBff.indexOf((int) ')');
 				if (iPos >= 0)
 					sBff = sBff.substring(0, iPos);
 				while (iCnt > 0) {

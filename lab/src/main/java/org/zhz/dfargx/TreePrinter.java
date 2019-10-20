@@ -33,7 +33,7 @@ public class TreePrinter {
         int j = 0;
         while (!q.isEmpty()) {
             Node node = q.poll();
-            int width = 4 * (int) Math.pow(2, h - t);
+            int width = 4 * (int) Math.pow(2.0, (double) (h - t));
             if (node instanceof LNull) {
                 for (int i = 0; i < width * 2; i++) {
                     out.print(' ');
@@ -60,7 +60,7 @@ public class TreePrinter {
                     } else out.print(' ');
                 }
             }
-            if (++j == Math.pow(2, t) - 1) {
+            if ((double) ++j == Math.pow(2.0, (double) t) - 1.0) {
                 out.println();
                 t += 1;
             }

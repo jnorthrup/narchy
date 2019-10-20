@@ -54,7 +54,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
 
         @Override
         protected Term atom(byte id) {
-            return atoms[id];
+            return atoms[(int) id];
         }
     }
 
@@ -75,7 +75,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
 
     @Override
     public int volume() {
-        return volume;
+        return (int) volume;
     }
 
     @Override
@@ -103,17 +103,17 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
 
         shadow.writeUnsignedByte(o.ordinal());
         shadow.writeUnsignedByte(subs);
-        byte[] numAtoms = {0};
+        byte[] numAtoms = {(byte) 0};
         ByteFunction0 nextUniqueAtom = () -> numAtoms[0]++;
         int structure = o.bit, hashCode = 1;
-        byte volume = 1;
+        byte volume = (byte) 1;
 
         for (Term x : subterms) {
             x.recurseTermsOrdered(child -> {
-                shadow.writeUnsignedByte((byte) child.op().ordinal());
+                shadow.writeUnsignedByte((int) (byte) child.op().ordinal());
                 if (child.op().atomic) {
-                    int aid = atoms.getIfAbsentPut(child, nextUniqueAtom);
-                    shadow.writeUnsignedByte((byte) aid);
+                    int aid = (int) atoms.getIfAbsentPut(child, nextUniqueAtom);
+                    shadow.writeUnsignedByte((int) (byte) aid);
                 } else {
                     shadow.writeUnsignedByte(child.subs());
 
@@ -122,17 +122,17 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
             });
             structure |= x.structure();
             hashCode = Util.hashCombine(hashCode, x.hashCode());
-            volume += x.volume();
+            volume = (byte) ((int) volume + x.volume());
         }
 
-        hashCode = Util.hashCombine(hashCode, o.id);
+        hashCode = Util.hashCombine(hashCode, (int) o.id);
 
-        assert (volume < 127);
+        assert ((int) volume < 127);
 
 
         Term[] a = new Term[atoms.size()];
         for (ObjectBytePair<Term> p : atoms.keyValuesView()) {
-            a[p.getTwo()] = p.getOne();
+            a[(int) p.getTwo()] = p.getOne();
         }
         boolean normalized = false;
 
@@ -162,12 +162,12 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
 
     @Override
     public Op op() {
-        return ov[shadow[0]];
+        return ov[(int) shadow[0]];
     }
 
     @Override
     public int subs() {
-        return shadow[1];
+        return (int) shadow[1];
     }
 
     @Override
@@ -197,7 +197,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
 
         int[] o = new int[1];
         subtermOffsets(at, (sub, offset) -> {
-            if (sub == subterm) {
+            if ((int) sub == subterm) {
                 o[0] = offset;
                 return false;
             }
@@ -210,10 +210,10 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
     private void subtermOffsets(int at, ByteIntPredicate each) {
         byte[] shadow = this.shadow;
 
-        assert (!ov[shadow[at]].atomic);
+        assert (!ov[(int) shadow[at]].atomic);
 
         byte subterms = shadow[at + 1];
-        if (subterms == 0)
+        if ((int) subterms == 0)
             return;
 
         byte[] stack = new byte[MAX_LAYERS];
@@ -221,26 +221,26 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
 
         at += 2;
 
-        byte depth = 0;
-        for (byte i = 0; i < subterms; ) {
-            if (depth == 0) {
-                if (!each.test(i, at) || i == subterms - 1)
+        byte depth = (byte) 0;
+        for (byte i = (byte) 0; (int) i < (int) subterms; ) {
+            if ((int) depth == 0) {
+                if (!each.test(i, at) || (int) i == (int) subterms - 1)
                     return;
             }
 
             byte op = shadow[at++];
 
 
-            if (ov[op].atomic) {
+            if (ov[(int) op].atomic) {
                 at++;
             } else {
-                stack[++depth] = shadow[at++];
+                stack[(int) ++depth] = shadow[at++];
             }
 
 
-            if (--stack[depth] == 0)
+            if ((int) --stack[(int) depth] == 0)
                 depth--;
-            if (depth == 0)
+            if ((int) depth == 0)
                 i++;
         }
 
@@ -267,7 +267,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
      * subterm, or sub-subterm, etc.
      */
     public Term term(int offset) {
-        Op opAtSub = ov[shadow[offset]];
+        Op opAtSub = ov[(int) shadow[offset]];
 		return opAtSub.atomic ? atom(shadow[offset + 1]) : TermBuilder.newCompound(opAtSub,
 			Op.terms.subterms(new SubtermView(this, offset).toArray(EmptyTermArray))
 
@@ -278,7 +278,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
 
     public Term sub(byte i, int containerOffset) {
 
-        return term(subtermOffsetAt(i, containerOffset));
+        return term(subtermOffsetAt((int) i, containerOffset));
 
     }
 
@@ -295,7 +295,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
             int aa = atomCount();
             if (aa == f.atomCount()) {
                 if (Arrays.equals(shadow, f.shadow)) {
-                    for (byte i = 0; i < aa; i++)
+                    for (byte i = (byte) 0; (int) i < aa; i++)
                         if (!atom(i).equals(f.atom(i)))
                             return false;
                     return true;
@@ -376,8 +376,8 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
         public int subs() {
             int offset = this.offset;
             byte[] s = c.shadow;
-            Op op = ov[s[offset]];
-			return op.atomic ? 0 : s[offset + 1];
+            Op op = ov[(int) s[offset]];
+			return (int) (op.atomic ? (byte) 0 : s[offset + 1]);
         }
 
         @Override

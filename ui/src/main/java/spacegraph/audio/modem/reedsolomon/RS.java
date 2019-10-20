@@ -54,7 +54,7 @@ public class RS implements Settings {
 
     static void zero_fill_from(byte[] buf, int from, int to) {
         for (int i = from; i < to; i++)
-            buf[i] = 0;
+            buf[i] = (byte) 0;
     }
 
     /* debugging routines */
@@ -171,7 +171,7 @@ public class RS implements Settings {
 
         for (i = 0; i < nbytes; i++) {
             // !!!: byte-ify
-            int dbyte = ((msg[i] ^ LFSR[Settings.kParityBytes - 1]) & 0xFF);
+            int dbyte = (((int) msg[i] ^ LFSR[Settings.kParityBytes - 1]) & 0xFF);
             for (int j = Settings.kParityBytes - 1; j > 0; j--) {
                 LFSR[j] = LFSR[j - 1] ^ Galois.gmult(genPoly[j], dbyte);
             }

@@ -127,21 +127,21 @@ public class DbvtAabbMm {
 	}
 
 	public void SignedExpand(v3 e) {
-		if (e.x > 0) {
+		if (e.x > (float) 0) {
 			mx.x += e.x;
 		}
 		else {
 			mi.x += e.x;
 		}
 		
-		if (e.y > 0) {
+		if (e.y > (float) 0) {
 			mx.y += e.y;
 		}
 		else {
 			mi.y += e.y;
 		}
 		
-		if (e.z > 0) {
+		if (e.z > (float) 0) {
 			mx.z += e.z;
 		}
 		else {
@@ -197,10 +197,10 @@ public class DbvtAabbMm {
 				break;
 		}
 		
-		if ((n.dot(px) + o) < 0) {
+		if ((n.dot(px) + o) < (float) 0) {
 			return -1;
 		}
-		if ((n.dot(pi) + o) >= 0) {
+		if ((n.dot(pi) + o) >= (float) 0) {
 			return +1;
 		}
 		return 0;
@@ -240,7 +240,7 @@ public class DbvtAabbMm {
 		s1[0] = xform.dot(d0);
 		s1[1] = s1[0];
 
-        float[] s0 = {0, 0};
+        float[] s0 = {(float) 0, (float) 0};
         a.addSpan(d0, s0, 0, s0, 1);
 		b.addSpan(d1, s1, 0, s1, 1);
 		if (s0[0] > (s1[1])) {
@@ -286,7 +286,7 @@ public class DbvtAabbMm {
 		if (tzmax < txmax) {
 			txmax = tzmax;
 		}
-		return (txmax > 0);
+		return (txmax > (float) 0);
 	}
 
 	public static float Proximity(DbvtAabbMm a, DbvtAabbMm b) {
@@ -323,7 +323,7 @@ public class DbvtAabbMm {
             float cx = coord(mx, i);
             float cd = coord(d, i);
             float ci = coord(mi, i);
-			if (cd < 0) {
+			if (cd < (float) 0) {
 				smi[smi_idx] += cx * cd;
 				smx[smx_idx] += ci * cd;
 			}

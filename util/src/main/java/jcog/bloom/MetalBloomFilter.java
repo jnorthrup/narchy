@@ -5,7 +5,6 @@ import jcog.bloom.hash.Hasher;
 
 import java.util.Arrays;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 
 public class MetalBloomFilter<E> {
     protected final Hasher<E> hasher;
@@ -44,7 +43,7 @@ public class MetalBloomFilter<E> {
 
         int bound = numberOfHashes;
         for (int i = 0; i < bound; i++) {
-            if (cells[indices[i]] > 0) {
+            if ((int) cells[indices[i]] > 0) {
                 return true;
             }
         }
@@ -69,7 +68,7 @@ public class MetalBloomFilter<E> {
     }
 
     private void increment(int idx) {
-        if (cells[idx] < Byte.MAX_VALUE) {
+        if ((int) cells[idx] < (int) Byte.MAX_VALUE) {
             cells[idx]++;
         }
     }

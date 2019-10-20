@@ -47,7 +47,7 @@ public class JavaDynamicClassLoader extends AbstractDynamicClassLoader
 	    			is = aURL.openConnection().getInputStream();
 	    		}
 	    		
-	    		if(aURL.toString().indexOf('/', aURL.toString().length() - 1) != -1)
+	    		if(aURL.toString().indexOf((int) '/', aURL.toString().length() - 1) != -1)
 	    		{
 	    			aURL = new URL(aURL + classNameReplaced + ".class");
 	    			is = aURL.openConnection().getInputStream();

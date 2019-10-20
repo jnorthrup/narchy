@@ -718,13 +718,13 @@ public class KBmanager implements Serializable {
 
         StringBuilder newstring = new StringBuilder();
         for (int i = 0; i < fname.length(); i++) {
-            if (fname.charAt(i) == 92 && fname.charAt(i+1) != 92)
+            if ((int) fname.charAt(i) == 92 && (int) fname.charAt(i + 1) != 92)
                 newstring = newstring.append("\\\\");
-            if (fname.charAt(i) == 92 && fname.charAt(i+1) == 92) {
+            if ((int) fname.charAt(i) == 92 && (int) fname.charAt(i + 1) == 92) {
                 newstring = newstring.append("\\\\");
                 i++;
             }
-            if (fname.charAt(i) != 92)
+            if ((int) fname.charAt(i) != 92)
                 newstring = newstring.append(fname.charAt(i));
         }
         return newstring.toString();

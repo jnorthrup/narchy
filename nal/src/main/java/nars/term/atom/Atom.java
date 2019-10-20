@@ -3,8 +3,6 @@ package nars.term.atom;
 import nars.Op;
 import nars.Idempotent;
 
-import java.util.stream.IntStream;
-
 import static nars.Op.*;
 
 /**
@@ -150,7 +148,7 @@ public class Atom extends AbstractAtomic implements Idempotent {
         int P = prefix.length;
         if (b.length - o >= P) {
             for (int i = 0; i < P; i++) {
-                if (b[i + o] != prefix[i]) {
+                if ((int) b[i + o] != (int) prefix[i]) {
                     return false;
                 }
             }

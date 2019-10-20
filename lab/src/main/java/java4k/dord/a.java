@@ -27,7 +27,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.stream.IntStream;
 
 public class a extends GamePanel {
 
@@ -853,7 +852,7 @@ public class a extends GamePanel {
       if (i != TILE_EMPTY) {
         for(y = 0; y < 10; y++) {
           for(x = 0; x < 5; x++) {
-            k = S.charAt(j++);
+            k = (int) S.charAt(j++);
               switch (k) {
                   case 'a':
                       k = 0xff000000;
@@ -902,9 +901,9 @@ public class a extends GamePanel {
       }
     }
     
-    long nextFrameStartTime = 0;
-      float playerVy = 0;
-      float playerY = 0;
+    long nextFrameStartTime = 0L;
+      float playerVy = (float) 0;
+      float playerY = (float) 0;
       int arrowTime = 0;
       int playerX = 0;
       int playerSpriteOffset = 0;
@@ -977,13 +976,13 @@ public class a extends GamePanel {
 
           int[] enemy;
           do {
-        nextFrameStartTime += 10000000;
+        nextFrameStartTime += 10000000L;
 
 
               int p;
               if (resetDelay > 0) {
           if (--resetDelay == 0) {
-            playerVy = 0;
+            playerVy = (float) 0;
             level = (level + advanceLevel + LEVELS) % LEVELS;
             
             
@@ -997,38 +996,38 @@ public class a extends GamePanel {
             for(y = 0; y < MAP_HEIGHT; y++) {
               for(x = 0; x < MAP_WIDTH; x++) {
                 p = k;
-                k = S.charAt(j++);
-                if (k <= '9') {
-                  blocks[k - '0'][0] = x;
-                  blocks[k - '0'][1] = y;
+                k = (int) S.charAt(j++);
+                if (k <= (int) '9') {
+                  blocks[k - (int) '0'][0] = x;
+                  blocks[k - (int) '0'][1] = y;
                   appearingBlocks++;
-                  k = CHAR_EMPTY;
-                } else if (k == CHAR_PLAYER) {
+                  k = (int) CHAR_EMPTY;
+                } else if (k == (int) CHAR_PLAYER) {
                   
                   playerX = 10 * x;
-                  playerY = 10 * y;
-                  k = p == CHAR_ANTIGRAVITY 
-                      ? CHAR_ANTIGRAVITY : CHAR_EMPTY;                 
-                } else if (k >= CHAR_RED_ENEMY) {
-                  for(i = 0; i < (k == CHAR_ORANGE_ENEMY ? 3 : 1); i++) {
+                  playerY = (float) (10 * y);
+                  k = (int) (p == (int) CHAR_ANTIGRAVITY
+                          ? CHAR_ANTIGRAVITY : CHAR_EMPTY);
+                } else if (k >= (int) CHAR_RED_ENEMY) {
+                  for(i = 0; i < (k == (int) CHAR_ORANGE_ENEMY ? 3 : 1); i++) {
                     
                     enemy = new int[8];
                     enemy[ENEMY_X] = 10 * (x + i);
                     enemy[ENEMY_Y] = 10 * y;
-                    enemy[ENEMY_V] = k == CHAR_MAGENETA_ENEMY ? 0 : 1;
-                    enemy[ENEMY_TYPE] = k - CHAR_RED_ENEMY;
+                    enemy[ENEMY_V] = k == (int) CHAR_MAGENETA_ENEMY ? 0 : 1;
+                    enemy[ENEMY_TYPE] = k - (int) CHAR_RED_ENEMY;
                     enemy[ENEMY_RADIUS] = YELLOW_RADIUS * (i + 1);
                     enemy[ENEMY_CX] = enemy[ENEMY_X] - enemy[ENEMY_RADIUS];
                     enemy[ENEMY_CY] = enemy[ENEMY_Y];                    
                     enemies.add(enemy);
                   }                                    
-                  k = p == CHAR_ANTIGRAVITY 
-                      ? CHAR_ANTIGRAVITY : CHAR_EMPTY; 
+                  k = (int) (p == (int) CHAR_ANTIGRAVITY
+                          ? CHAR_ANTIGRAVITY : CHAR_EMPTY);
                 }
-                if (k == CHAR_DIAMOND) {
+                if (k == (int) CHAR_DIAMOND) {
                   diamonds++;
                 }
-                map[y][x] = k - 'a';
+                map[y][x] = k - (int) 'a';
               }
             }
             nextFrameStartTime = System.nanoTime();
@@ -1097,7 +1096,7 @@ public class a extends GamePanel {
           
           floorY = -1;
           vk = -1;
-          if (playerVy == 0) {
+          if (playerVy == (float) 0) {
             playerSpriteOffset = 2;
           }
         }
@@ -1142,7 +1141,7 @@ public class a extends GamePanel {
               arrowTime = 0;
             }
           } else {
-            if (vk * playerVy < 0        
+            if ((float) vk * playerVy < (float) 0
               || (map 
                   [((floorY + ((int)playerY) + FRAME_HEIGHT) % FRAME_HEIGHT) / 10]
                   [((playerX + FRAME_WIDTH) % FRAME_WIDTH) / 10] 
@@ -1154,14 +1153,14 @@ public class a extends GamePanel {
               || insideOfBrick) {
               
               if (k == 1) {                
-                playerVy += vk * GRAVITY;
+                playerVy += (float) vk * GRAVITY;
                 if (playerVy > MAX_VY) {
                   playerVy = MAX_VY;
                 } else if (playerVy < -MAX_VY) {
                   playerVy = -MAX_VY;
                 }
-                playerY += playerVy % 1;
-                remainderVy = (int)(playerVy - (playerVy % 1)); 
+                playerY += playerVy % 1.0F;
+                remainderVy = (int)(playerVy - (playerVy % 1.0F));
               } else if (remainderVy > 0) {
                 playerY++;
                 remainderVy--;
@@ -1170,16 +1169,16 @@ public class a extends GamePanel {
                 remainderVy++;
               }                  
             } else {
-              playerVy = 0;
+              playerVy = (float) 0;
               remainderVy = 0;
               if (keysReleased && a[KEY_X]) {                
                 keysReleased = false;                
-                playerVy = vk * JUMP_VY;
+                playerVy = (float) vk * JUMP_VY;
               }
             }
           }
           playerX = (playerX + FRAME_WIDTH) % FRAME_WIDTH;
-          playerY = (playerY + FRAME_HEIGHT) % FRAME_HEIGHT;
+          playerY = (playerY + (float) FRAME_HEIGHT) % (float) FRAME_HEIGHT;
           for(i = 0; i < 2; i++) {
             for(j = 0; j < 2; j++) {
                 int mx = ((9 * j + playerX + FRAME_WIDTH) % FRAME_WIDTH) / 10;
@@ -1191,7 +1190,7 @@ public class a extends GamePanel {
                   
                   playerX = x;
                   playerY = Y;
-                  if (k > 0 && vk * playerVy < 0) {
+                  if (k > 0 && (float) vk * playerVy < (float) 0) {
                     playerVy = -playerVy;
                   }    
                 }
@@ -1276,11 +1275,11 @@ public class a extends GamePanel {
             } else if (enemy[ENEMY_TYPE] == ENEMY_TYPE_YELLOW
                 || enemy[ENEMY_TYPE] == ENEMY_TYPE_ORANGE) {
               
-              float d = enemy[ENEMY_TYPE] == ENEMY_TYPE_ORANGE ? 16 : 8;
-              enemy[ENEMY_X] = enemy[ENEMY_CX] + (int)(enemy[ENEMY_RADIUS] 
-                  * (float)Math.cos(enemy[ENEMY_V] / d));
-              enemy[ENEMY_Y] = enemy[ENEMY_CY] + (int)(enemy[ENEMY_RADIUS] 
-                  * (float)Math.sin(enemy[ENEMY_V] / d));
+              float d = (float) (enemy[ENEMY_TYPE] == ENEMY_TYPE_ORANGE ? 16 : 8);
+              enemy[ENEMY_X] = enemy[ENEMY_CX] + (int)((float) enemy[ENEMY_RADIUS]
+                  * (float)Math.cos((double) (enemy[ENEMY_V] / d)));
+              enemy[ENEMY_Y] = enemy[ENEMY_CY] + (int)((float) enemy[ENEMY_RADIUS]
+                  * (float)Math.sin((double) (enemy[ENEMY_V] / d)));
               enemy[ENEMY_V]++;
             } else if (enemy[ENEMY_TYPE] == ENEMY_TYPE_SPIKES) {
 
@@ -1399,7 +1398,7 @@ public class a extends GamePanel {
       }
 
       
-      while(nextFrameStartTime - System.nanoTime() > 0);
+      while(nextFrameStartTime - System.nanoTime() > 0L);
     }
   }
   
@@ -1435,7 +1434,7 @@ public class a extends GamePanel {
     frame.pack();
     frame.setLocationRelativeTo(null);
     frame.setVisible(true);    
-    Thread.sleep(250);
+    Thread.sleep(250L);
     applet.start();
     applet.requestFocus();
   }

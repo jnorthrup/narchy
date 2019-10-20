@@ -36,7 +36,7 @@ public class UDPeerSim {
     public void tellSome(int from, int payloadLength, int ttl) {
         byte[] msg = new byte[payloadLength];
         random.nextBytes(msg);
-        peer[from].tellSome(msg , (byte)ttl );
+        peer[from].tellSome(msg , (int) (byte) ttl);
     }
 
 
@@ -49,7 +49,7 @@ public class UDPeerSim {
     }
 
     protected long delay(InetSocketAddress from, InetSocketAddress to, int length) {
-        return 0;
+        return 0L;
     }
 
     public void pingRing(int depth) {
@@ -76,7 +76,7 @@ public class UDPeerSim {
         new UDPeerSim(5) {
             @Override
             protected long delay(InetSocketAddress from, InetSocketAddress to, int length) {
-                return 25 + Math.abs(from.getPort() - to.getPort()) * 50;
+                return (long) (25 + Math.abs(from.getPort() - to.getPort()) * 50);
             }
         };
     }
@@ -109,7 +109,7 @@ public class UDPeerSim {
                 return;
 
             long d = delay(addr, to, o.length());
-            if (d > delayThreshold) {
+            if (d > (long) delayThreshold) {
                 sim.schedule(new TimerTask() {
                     @Override
                     public void run() {

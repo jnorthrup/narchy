@@ -43,12 +43,12 @@ public class PushButton extends AbstractButton  {
     }
 
     public static PushButton awesome(String icon) {
-        return new PushButton(ImageTexture.awesome(icon).view(1));
+        return new PushButton(ImageTexture.awesome(icon).view(1.0F));
     }
     public static PushButton awesome(String icon, String label) {
         return new PushButton(Splitting.column(
                 new VectorLabel(label), 0.1f,
-                ImageTexture.awesome(icon).view(1)));
+                ImageTexture.awesome(icon).view(1.0F)));
     }
 
     public PushButton clicked(@Nullable Runnable onClick) {

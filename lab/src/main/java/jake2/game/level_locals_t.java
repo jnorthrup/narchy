@@ -43,8 +43,8 @@ public class level_locals_t
 	public float intermissiontime; 
 	public String changemap;
 	public boolean exitintermission;
-	public float[] intermission_origin= { 0, 0, 0 };
-	public float[] intermission_angle= { 0, 0, 0 };
+	public float[] intermission_origin= {(float) 0, (float) 0, (float) 0};
+	public float[] intermission_angle= {(float) 0, (float) 0, (float) 0};
 
 	public edict_t sight_client; 
 

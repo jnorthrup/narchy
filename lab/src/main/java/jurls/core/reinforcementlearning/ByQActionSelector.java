@@ -8,7 +8,6 @@ package jurls.core.reinforcementlearning;
 import jurls.core.utils.ActionValuePair;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -30,7 +29,7 @@ public class ByQActionSelector implements ActionSelector {
         ActionValuePair[] ret = list.toArray(new ActionValuePair[0]);
 
         boolean seen = false;
-        double best = 0;
+        double best = (double) 0;
         for (ActionValuePair pair : ret) {
             double valuePair1V = pair.getV();
             if (!seen || Double.compare(valuePair1V, best) < 0) {
@@ -62,7 +61,7 @@ public class ByQActionSelector implements ActionSelector {
             );
         }
 
-        sum = 0;
+        sum = (double) 0;
         double result = 0.0;
         for (ActionValuePair actionValuePair : ret) {
             double v = actionValuePair.getV();

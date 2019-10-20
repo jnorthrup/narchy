@@ -58,10 +58,10 @@ public abstract class ConstraintAsPremisePredicate<C extends UnifyConstraint<Der
                 costPath += yInBelief.length;
             }
             Term t = m.ref.replace(x, extractXterm).replace(y, extractYterm);
-            return new RelationConstraintAsPremisePredicate(t, cost + costPath * 0.01f, (RelationConstraint) m, extractX, extractY);
+            return new RelationConstraintAsPremisePredicate(t, cost + (float) costPath * 0.01f, (RelationConstraint) m, extractX, extractY);
         } else {
             Term t = m.ref.replace(x, extractXterm);
-            return new UnaryConstraintAsPremisePredicate(t, cost + costPath * 0.01f, (UnaryConstraint) m, extractX);
+            return new UnaryConstraintAsPremisePredicate(t, cost + (float) costPath * 0.01f, (UnaryConstraint) m, extractX);
         }
     }
 

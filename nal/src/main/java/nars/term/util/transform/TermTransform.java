@@ -4,7 +4,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 public interface TermTransform extends UnaryOperator<Term> {

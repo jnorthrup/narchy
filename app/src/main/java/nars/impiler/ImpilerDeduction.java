@@ -66,20 +66,20 @@ public class ImpilerDeduction extends Search<Term, Task> {
 			return null;
 		return ((when)->{
 
-			double F = 0, E = 0;
+			double F = (double) 0, E = (double) 0;
 			for (Task x : t) {
 				Term subj = x.sub(0);
-				long eStart = when - subj.eventRange();
+				long eStart = when - (long) subj.eventRange();
 				Truth sTruth = beliefOrGoal ? nar.beliefTruth(subj, eStart) : nar.goalTruth(subj, eStart);
 				if (sTruth!=null) {
 					Truth implTruth = x.truth();
 					boolean neg = implTruth.isNegative();
-					Truth c = NALTruth.Deduction.apply(sTruth, implTruth.negIf(neg), 0, nar); //TODO correct truth func for goal
+					Truth c = NALTruth.Deduction.apply(sTruth, implTruth.negIf(neg), (float) 0, nar); //TODO correct truth func for goal
 					if (c != null) {
 						double ce = c.evi();
 						E += ce;
 						float cf = c.freq();
-						F += (neg ? 1 - cf : cf) * ce;
+						F += (double) (neg ? 1.0F - cf : cf) * ce;
 					}
 				}
 			}
@@ -198,9 +198,9 @@ public class ImpilerDeduction extends Search<Term, Task> {
 			if (edt == DTERNAL) edt = 0;
 
 			if (forward) {
-				offset += ee.sub(0).eventRange() + edt;
+                offset = offset + (long) ee.sub(0).eventRange() + edt;
 			} else {
-				offset += -ee.sub(1).eventRange() - edt;
+                offset = offset + (long) -ee.sub(1).eventRange() - edt;
 			}
 
 			if (tAccum == null) {
@@ -229,7 +229,7 @@ public class ImpilerDeduction extends Search<Term, Task> {
 		cc.clear();
 
 		Term before = Null, next = Null;
-        offset = 0;
+        offset = 0L;
 		long range = Long.MAX_VALUE;
 		int zDT = 0;
         for (int i = 0, pathTasksLength = pathTasks.length; i < pathTasksLength; i++) {
@@ -261,9 +261,9 @@ public class ImpilerDeduction extends Search<Term, Task> {
 			zDT = dt;
 
 			if (i == 0)
-				cc.add(0, forward ? next : before);
+				cc.add(0L, forward ? next : before);
 
-			offset += (forward ? next : before).eventRange() + dt;
+            offset = offset + (long) (forward ? next : before).eventRange() + dt;
 
 			if (i != n - 1) {
 				if (!cc.add(offset, (forward ? before : next)))
@@ -285,12 +285,12 @@ public class ImpilerDeduction extends Search<Term, Task> {
 
 
 		if (range == Long.MAX_VALUE)
-			range = 0; //all eternal
+			range = 0L; //all eternal
 
 		long finalStart = start, finalEnd = start + range;
 		Task z = Task.tryTask(implication, BELIEF, tAccum, (ttt, tr) ->
 			NALTask.the(ttt, BELIEF, tr.dither(nar), now, finalStart, finalEnd, Stamp.sample(STAMP_CAPACITY,
-				Stamp.toMutableSet(Math.round(n / 2f * STAMP_CAPACITY), i -> pathTasks[i].stamp(), n),
+				Stamp.toMutableSet(Math.round((float) n / 2f * (float) STAMP_CAPACITY), i -> pathTasks[i].stamp(), n),
 				nar.random())));
 		if (z != null) {
 

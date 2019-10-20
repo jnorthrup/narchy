@@ -40,7 +40,7 @@ public class GenCursor {
             trigger = true;
 
             Direction move = openDirs[rand.nextInt(openDirs.length)];
-            maze.tiles[motion(move, 1).x][motion(move, 1).y] = 1;
+            maze.tiles[motion(move, 1).x][motion(move, 1).y] = (byte) 1;
             this.x = motion(move, 2).x;
             this.y = motion(move, 2).y;
             path.add(move);
@@ -52,7 +52,7 @@ public class GenCursor {
                 Direction[] dirs = getPunchDirections();
 
                 for (int x = 0; x < dirs.length; x++)
-                    maze.tiles[motion(dirs[x], 1).x][motion(dirs[x], 1).y] = 1;
+                    maze.tiles[motion(dirs[x], 1).x][motion(dirs[x], 1).y] = (byte) 1;
 
                 trigger = false;
 

@@ -47,7 +47,7 @@ public class Hover<X extends Surface, Y extends Surface> extends Fingering {
         boolean focused = f.focused();
         if (focused && source.showing() && f.touching() == source) {
 
-            float hoverTimeS = (float) ((System.nanoTime() - startTime) / 1.0E9);
+            float hoverTimeS = (float) ((double) (System.nanoTime() - startTime) / 1.0E9);
             model.set(source, f, hoverTimeS);
             tgtBoundsPx = model.pos();
 
@@ -103,7 +103,7 @@ public class Hover<X extends Surface, Y extends Surface> extends Fingering {
 
     protected void hide() {
 
-        model.set(null, null, 0);
+        model.set(null, null, (float) 0);
         if (target != null) {
             target.delete();
             target = null;

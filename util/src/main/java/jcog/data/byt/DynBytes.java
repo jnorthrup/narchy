@@ -356,13 +356,13 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     @Override
     public final Appendable append(CharSequence csq, int start, int end) {
         for (int i = start; i < end;)
-            writeChar(csq.charAt(i++));
+            writeChar((int) csq.charAt(i++));
         return this;
     }
 
     @Override
     public final Appendable append(char c) {
-        writeChar(c);
+        writeChar((int) c);
         return this;
     }
 
@@ -409,11 +409,11 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     }
 
     private long readVarEncodedUnsignedLong() {
-        long unsigned = 0;
+        long unsigned = 0L;
         int i = 0;
         long b;
-        while (((b = bytes[len] & 0xff) & 0x80) != 0) {
-            unsigned |= (b & 0x7f) << i;
+        while (((b = (long) ((int) bytes[len] & 0xff)) & 0x80L) != 0L) {
+            unsigned |= (b & 0x7fL) << i;
             i += 7;
             len++;
         }
@@ -425,7 +425,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
         int unsigned = 0;
         int i = 0;
         int b;
-        while (((b = bytes[len] & 0xff) & 0x80) != 0) {
+        while (((b = (int) bytes[len] & 0xff) & 0x80) != 0) {
             unsigned |= (b & 0x7f) << i;
             i += 7;
             len++;

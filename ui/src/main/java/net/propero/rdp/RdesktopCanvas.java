@@ -110,7 +110,7 @@ public abstract class RdesktopCanvas extends Canvas {
      * @return
      */
     private static int parse_delta(byte[] buffer, int[] offset) {
-        int value = buffer[offset[0]++] & 0xff;
+        int value = (int) buffer[offset[0]++] & 0xff;
         int two_byte = value & 0x80;
 
         if ((value & 0x40) != 0) /* sign bit */
@@ -119,7 +119,7 @@ public abstract class RdesktopCanvas extends Canvas {
             value &= 0x3f;
 
         if (two_byte != 0)
-            value = (value << 8) | (buffer[offset[0]++] & 0xff);
+            value = (value << 8) | ((int) buffer[offset[0]++] & 0xff);
 
         return value;
     }
@@ -748,7 +748,7 @@ public abstract class RdesktopCanvas extends Canvas {
                 int psrc = 0;
                 for (i = 0; i < cy; i++) {
                     for (int j = 0; j < cx; j++) {
-                        if ((ipattern[(i + brushy) % 8] & (0x01 << ((j + brushx) % 8))) == 0)
+                        if (((int) ipattern[(i + brushy) % 8] & (0x01 << ((j + brushx) % 8))) == 0)
                             src[psrc] = fgcolor;
                         else
                             src[psrc] = bgcolor;
@@ -886,7 +886,7 @@ public abstract class RdesktopCanvas extends Canvas {
             int yfrom = y;
 
             if (line % 4 == 0)
-                flags = databytes[index++];
+                flags = (int) databytes[index++];
 
             if ((flags & 0xc0) == 0)
                 flags |= 0xc0; /* none = both */
@@ -1002,7 +1002,7 @@ public abstract class RdesktopCanvas extends Canvas {
                         index = 0x80;
                     }
 
-                    if ((data[pdata] & index) != 0) {
+                    if (((int) data[pdata] & index) != 0) {
                         if ((x + j >= newx) && (newx + j > 0) && (newy + i > 0) && (y + i >= top))
                             
                             backstore.setRGB(x + j, newy + i, fgcolor);
@@ -1026,7 +1026,7 @@ public abstract class RdesktopCanvas extends Canvas {
 
                     if (x + j >= newx && y + i >= top) {
                         if ((x + j > 0) && (y + i > 0)) {
-                            if ((data[pdata] & index) != 0)
+                            if (((int) data[pdata] & index) != 0)
                                 backstore.setRGB(x + j, y + i, fgcolor);
                             else
                                 backstore.setRGB(x + j, y + i, bgcolor);
@@ -1096,18 +1096,18 @@ public abstract class RdesktopCanvas extends Canvas {
                     switch (bpp) {
                         case 1:
                             s8 = pxormask + (k / 8);
-                            rv = xormask[s8] & (0x80 >> (k % 8));
+                            rv = (int) xormask[s8] & (0x80 >> (k % 8));
                             rv = rv != 0 ? 0xffffff : 0;
                             k += 1;
                             break;
                         case 8:
                             s8 = pxormask + k;
-                            rv = xormask[s8];
+                            rv = (int) xormask[s8];
                             rv = rv != 0 ? 0xffffff : 0;
                             k += 1;
                             break;
                         case 15: {
-                            int temp = (xormask[k] << 8) | xormask[k + 1];
+                            int temp = ((int) xormask[k] << 8) | (int) xormask[k + 1];
                             int red = (((temp >> 7) & 0xf8) | ((temp >> 12) & 0x7));
                             int green = (((temp >> 2) & 0xf8) | ((temp >> 8) & 0x7));
                             int blue = (((temp << 3) & 0xf8) | ((temp >> 2) & 0x7));
@@ -1116,7 +1116,7 @@ public abstract class RdesktopCanvas extends Canvas {
                         }
                         break;
                         case 16:
-                            int temp = (xormask[k] << 8) | xormask[k + 1];
+                            int temp = ((int) xormask[k] << 8) | (int) xormask[k + 1];
                             int red = ((temp >> 8) & 0xf8) | ((temp >> 13) & 0x7);
                             int green = ((temp >> 3) & 0xfc) | ((temp >> 9) & 0x3);
                             int blue = ((temp << 3) & 0xf8) | ((temp >> 2) & 0x7);
@@ -1125,12 +1125,12 @@ public abstract class RdesktopCanvas extends Canvas {
                             break;
                         case 24:
                             s8 = pxormask + k;
-                            rv = (xormask[s8] << 16) | (xormask[s8 + 1] << 8) | xormask[s8 + 2];
+                            rv = ((int) xormask[s8] << 16) | ((int) xormask[s8 + 1] << 8) | (int) xormask[s8 + 2];
                             k += 3;
                             break;
                         case 32:
                             s8 = pxormask + k;
-                            rv = (xormask[s8 + 1] << 16) | (xormask[s8 + 2] << 8) | xormask[s8 + 3];
+                            rv = ((int) xormask[s8 + 1] << 16) | ((int) xormask[s8 + 2] << 8) | (int) xormask[s8 + 3];
                             k += 4;
                             break;
                         default:
@@ -1138,11 +1138,11 @@ public abstract class RdesktopCanvas extends Canvas {
                             break;
                     }
                     if (rv != 0) {
-                        cursor[pcursor] |= (~(andmask[pandmask]) & nextbit);
-                        mask[pmask] |= nextbit;
+                        cursor[pcursor] = (byte) ((int) cursor[pcursor] | (~(int) (andmask[pandmask]) & nextbit));
+                        mask[pmask] = (byte) ((int) mask[pmask] | nextbit);
                     } else {
-                        cursor[pcursor] |= ((andmask[pandmask]) & nextbit);
-                        mask[pmask] |= (~(andmask[pandmask]) & nextbit);
+                        cursor[pcursor] = (byte) ((int) cursor[pcursor] | ((int) (andmask[pandmask]) & nextbit));
+                        mask[pmask] = (byte) ((int) mask[pmask] | (~(int) (andmask[pandmask]) & nextbit));
                     }
                     
 
@@ -1163,8 +1163,8 @@ public abstract class RdesktopCanvas extends Canvas {
         for (i = 0; i < h; i++) {
             for (j = 0; j < scanline; j++) {
                 for (int nextbit = 0x80; nextbit != 0; nextbit >>= 1) {
-                    boolean isCursor = (cursor[pcursor] & nextbit) != 0;
-                    boolean isMask = (mask[pmask] & nextbit) != 0;
+                    boolean isCursor = ((int) cursor[pcursor] & nextbit) != 0;
+                    boolean isMask = ((int) mask[pmask] & nextbit) != 0;
                     if (isMask) {
                         if (isCursor) {
                             cursormap[pcursormap] = fg;

@@ -122,7 +122,7 @@ public class BagClustering<X> {
         if (sizeBefore != cc) {
             centroidList = Arrays.copyOf(centroidList, cc);
 
-            int meanItemsPerCentroid = (int) Math.ceil(((float) s) / cc);
+            int meanItemsPerCentroid = (int) Math.ceil((double) (((float) s) / (float) cc));
             for (int i = sizeBefore; i < cc; i++)
                 centroidList[i] = listBuilder.valueOf(meanItemsPerCentroid); //allocate
         }
@@ -159,7 +159,7 @@ public class BagClustering<X> {
 
 //            net.alpha.setAt(0.8f / s);
         float lambdaFactor = 1f;
-            net.setLambdaPeriod((int) Math.ceil((bag.capacity()) * lambdaFactor));
+            net.setLambdaPeriod((int) Math.ceil((double) ((bag.capacity()) * lambdaFactor)));
 
             Consumer<VLink<X>> l = this::learn;
             for (int i = 0; i < learningIterations; i++) {
@@ -230,7 +230,7 @@ public class BagClustering<X> {
     public double distance(X x, X y) {
         //assert (!x.equals(y));
         //assert (x != y);
-        if (x == y) return 0;
+        if (x == y) return (double) 0;
 
         @Nullable VLink<X> xx = bag.get(x);
         if (xx != null && xx.centroid >= 0) {

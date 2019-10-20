@@ -751,7 +751,7 @@ public class SliderConstraint extends TypedConstraint {
             v3 axisB0 = new v3();
 			calculatedTransformB.basis.getColumn(1, axisB0);
 
-            float rot = (float) Math.atan2(axisB0.dot(axisA1), axisB0.dot(axisA0));
+            float rot = (float) Math.atan2((double) axisB0.dot(axisA1), (double) axisB0.dot(axisA0));
 			if (rot < lowerAngLimit) {
 				angDepth = rot - lowerAngLimit;
 				solveAngLim = true;

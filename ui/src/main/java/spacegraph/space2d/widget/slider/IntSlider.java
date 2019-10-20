@@ -5,7 +5,7 @@ import jcog.math.IntRange;
 public class IntSlider extends FloatSlider {
 
     private IntSlider(int v, int min, int max) {
-        super(v, min, max);
+        super((float) v, (float) min, (float) max);
     }
 
     public IntSlider(IntRange x) {

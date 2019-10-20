@@ -60,7 +60,7 @@ public class a extends GamePanel {
 
 
         for (i = 0; i < 9; i++) {
-			(imageGraphics[i] = (Graphics2D) (images[i] = new BufferedImage((S.charAt(i + 297) >> 8) << 2, (S.charAt(i + 297) & 0xFF) << 2, i < 2 ? BufferedImage.TYPE_INT_RGB
+			(imageGraphics[i] = (Graphics2D) (images[i] = new BufferedImage(((int) S.charAt(i + 297) >> 8) << 2, ((int) S.charAt(i + 297) & 0xFF) << 2, i < 2 ? BufferedImage.TYPE_INT_RGB
 					: BufferedImage.TYPE_INT_ARGB_PRE)).getGraphics()).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		}
 
@@ -95,20 +95,20 @@ public class a extends GamePanel {
                 for (i = 0; i < (q == 0 ? 70 : 32); i++) {
 					p = q == 0 ? 0 : 176;
 					k = (i << 1) + p;
-					x1 = (S.charAt(k) >> 8) << 2;
-					y1 = (S.charAt(k) & 0xFF) << 2;
-					x2 = (S.charAt(k + 1) >> 8) << 2;
-					y2 = (S.charAt(k + 1) & 0xFF) << 2;
+					x1 = ((int) S.charAt(k) >> 8) << 2;
+					y1 = ((int) S.charAt(k) & 0xFF) << 2;
+					x2 = ((int) S.charAt(k + 1) >> 8) << 2;
+					y2 = ((int) S.charAt(k + 1) & 0xFF) << 2;
 					g.setColor(j == 0 ? q == 0 ? Color.WHITE : new Color(255, 255, 128) : q == 0 ? new Color(0, 0, (63 - j) << 2) : new Color(255, 255, 0, (63 - j) >> 3));
-					g.setStroke(new BasicStroke(j + 5, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+					g.setStroke(new BasicStroke((float) (j + 5), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 					g.drawLine(x1, y1, x2, y2);
 					if (j == 0) {
-						vx = x2 - x1;
-						vy = y2 - y1;
-						mag = (float) Math.sqrt(vx * vx + vy * vy);
-						for (u = 0; u <= mag; u++) {
-							fx = x1 + vx * u / mag;
-							fy = y1 + vy * u / mag;
+						vx = (float) (x2 - x1);
+						vy = (float) (y2 - y1);
+						mag = (float) Math.sqrt((double) (vx * vx + vy * vy));
+						for (u = 0; (float) u <= mag; u++) {
+							fx = (float) x1 + vx * (float) u / mag;
+							fy = (float) y1 + vy * (float) u / mag;
 							ball = layers[q][((int) fy) >> 5][((int) fx) >> 5][boxSizes[q][((int) fy) >> 5][((int) fx) >> 5]++];
 							ball[0] = fx;
 							ball[1] = fy;
@@ -120,29 +120,29 @@ public class a extends GamePanel {
 				for (i = 0; i < (q == 0 ? 12 : 11); i++) {
 					p = q == 0 ? 140 : 240;
 					k = i * 3 + p;
-					x = (S.charAt(k) >> 8) << 2;
-					y = (S.charAt(k) & 0xFF) << 2;
-					z = (S.charAt(k + 1) >> 8) << 2;
+					x = ((int) S.charAt(k) >> 8) << 2;
+					y = ((int) S.charAt(k) & 0xFF) << 2;
+					z = ((int) S.charAt(k + 1) >> 8) << 2;
 
-                    float startAngle = (S.charAt(k + 1) & 0xFF) * 0.02464f;
-                    float endAngle = startAngle + S.charAt(k + 2) * 0.02464f;
+                    float startAngle = (float) ((int) S.charAt(k + 1) & 0xFF) * 0.02464f;
+                    float endAngle = startAngle + (float) S.charAt(k + 2) * 0.02464f;
 
 					x1 = -1;
 					y1 = 0;
 					for (float angle = startAngle; angle <= endAngle; angle += 0.125f) {
-						x2 = (int) (x + z * (float) Math.cos(angle));
-						y2 = (int) (y - z * (float) Math.sin(angle));
+						x2 = (int) ((float) x + (float) z * (float) Math.cos((double) angle));
+						y2 = (int) ((float) y - (float) z * (float) Math.sin((double) angle));
 						if (x1 >= 0) {
 							g.setColor(j == 0 ? q == 0 ? Color.WHITE : new Color(255, 255, 128) : q == 0 ? new Color(0, 0, (63 - j) << 2) : new Color(255, 255, 0, (63 - j) >> 5));
-							g.setStroke(new BasicStroke(j + 5, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+							g.setStroke(new BasicStroke((float) (j + 5), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 							g.drawLine(x1, y1, x2, y2);
 							if (j == 0) {
-								vx = x2 - x1;
-								vy = y2 - y1;
-								mag = (float) Math.sqrt(vx * vx + vy * vy);
-								for (u = 0; u <= mag; u++) {
-									fx = x1 + vx * u / mag;
-									fy = y1 + vy * u / mag;
+								vx = (float) (x2 - x1);
+								vy = (float) (y2 - y1);
+								mag = (float) Math.sqrt((double) (vx * vx + vy * vy));
+								for (u = 0; (float) u <= mag; u++) {
+									fx = (float) x1 + vx * (float) u / mag;
+									fy = (float) y1 + vy * (float) u / mag;
 									ball = layers[q][((int) fy) >> 5][((int) fx) >> 5][boxSizes[q][((int) fy) >> 5][((int) fx) >> 5]++];
 									ball[0] = fx;
 									ball[1] = fy;
@@ -185,7 +185,7 @@ public class a extends GamePanel {
         g = imageGraphics[IMAGE_GATE];
 		for (j = 63; j >= 0; j--) {
 			g.setColor(j == 0 ? Color.WHITE : new Color(0, 128, 255, (63 - j) >> 3));
-			g.setStroke(new BasicStroke(j + 5, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+			g.setStroke(new BasicStroke((float) (j + 5), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 			g.drawLine(32, 32, 64, 32);
 		}
 
@@ -194,7 +194,7 @@ public class a extends GamePanel {
         g = imageGraphics[IMAGE_PLUNGER];
 		for (j = 63; j >= 0; j--) {
 			g.setColor(j == 0 ? Color.WHITE : new Color(255, 0, 255, (63 - j) >> 3));
-			g.setStroke(new BasicStroke(j + 5, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+			g.setStroke(new BasicStroke((float) (j + 5), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 			g.drawLine(32, 32, 32, 160);
 		}
 
@@ -237,8 +237,8 @@ public class a extends GamePanel {
         boolean cameraOnTarget = false;
         boolean railGateEnabled = false;
         boolean lowerLeftGateEnabled = false;
-        float rightFlipperAngle = 0;
-        float leftFlipperAngle = 0;
+        float rightFlipperAngle = (float) 0;
+        float leftFlipperAngle = (float) 0;
         int ballCount = 0;
         int multiplier = 0;
         int extraBalls = 0;
@@ -266,7 +266,7 @@ public class a extends GamePanel {
         final int VK_LEFT_0 = 97;
         final int VK_SPACE = 32;
 		final int MAX_VELOCITY = 32;
-		final float MAX_VELOCITY2 = MAX_VELOCITY * MAX_VELOCITY;
+		final float MAX_VELOCITY2 = (float) (MAX_VELOCITY * MAX_VELOCITY);
 		final float BALL_RADIUS = 19.5f;
 		final float BALL_RADIUS2 = BALL_RADIUS * BALL_RADIUS;
         final int EXTRA_BALL_BONUS = 15000;
@@ -279,7 +279,7 @@ public class a extends GamePanel {
         while (true) {
 
 			do {
-				nextFrameStartTime += 16666667;
+				nextFrameStartTime += 16666667L;
 
 				
 
@@ -297,14 +297,14 @@ public class a extends GamePanel {
 					multiplier = 1;
 					ballCount = 1;
 					ball = balls[0] = new float[8];
-					ball[BALL_X] = 730;
-					ball[BALL_Y] = 854;
+					ball[BALL_X] = 730.0F;
+					ball[BALL_Y] = 854.0F;
 
 					
 					itemsTable = new int[12][extraBalls = 4];
 					for (i = 0; i < ITEMS; i++) {
-						itemsTable[i][0] = S.charAt((i << 1) + 273);
-						itemsTable[i][1] = S.charAt((i << 1) + 274);
+						itemsTable[i][0] = (int) S.charAt((i << 1) + 273);
+						itemsTable[i][1] = (int) S.charAt((i << 1) + 274);
 						itemsTable[i][3] = i > 8 ? 2 : i > 3 ? 1 : 0;
 					}
 				}
@@ -370,7 +370,7 @@ public class a extends GamePanel {
 				for (i = ballCount - 1; i >= 0; i--) {
 					ball = balls[i];
 
-					if (ball[BALL_Y] > 1170) {
+					if (ball[BALL_Y] > 1170.0F) {
 
 						
 						for (j = i; j < 2; j++) {
@@ -382,8 +382,8 @@ public class a extends GamePanel {
 							if (ballCount == 0 && !(gameOver = extraBalls == 0)) {
 								
 								ball = balls[ballCount++] = new float[8];
-								ball[BALL_X] = 730;
-								ball[BALL_Y] = 854;
+								ball[BALL_X] = 730.0F;
+								ball[BALL_Y] = 854.0F;
 								maxBallY = 854;
 								extraBalls--;
 								hit = false;
@@ -393,10 +393,10 @@ public class a extends GamePanel {
 						} else {
 							
 							ball = balls[ballCount++] = new float[8];
-							ball[BALL_X] = 475;
-							ball[BALL_Y] = 369;
-							ball[BALL_VX] = ball[BALL_VY] = 0;
-							ball[BALL_STUCK] = 80;
+							ball[BALL_X] = 475.0F;
+							ball[BALL_Y] = 369.0F;
+							ball[BALL_VX] = ball[BALL_VY] = (float) 0;
+							ball[BALL_STUCK] = 80.0F;
 						}
 
 						continue;
@@ -405,17 +405,17 @@ public class a extends GamePanel {
 					
 					mag = ball[BALL_VX] * ball[BALL_VX] + ball[BALL_VY] * ball[BALL_VY];
 					if (mag > MAX_VELOCITY2) {
-						mag = MAX_VELOCITY / (float) Math.sqrt(mag);
+						mag = (float) MAX_VELOCITY / (float) Math.sqrt((double) mag);
 						ball[BALL_VX] *= mag;
 						ball[BALL_VY] *= mag;
 					}
 
 					
-					if (ball[BALL_Y] > maxBallY) {
+					if (ball[BALL_Y] > (float) maxBallY) {
 						maxBallY = (int) ball[BALL_Y];
 
 						
-						cameraVy = ball[BALL_STUCK] < 80 && ball[BALL_STUCK] >= 48 ? 4 : 24;
+						cameraVy = ball[BALL_STUCK] < 80.0F && ball[BALL_STUCK] >= 48.0F ? 4 : 24;
 					}
 
 					
@@ -428,8 +428,8 @@ public class a extends GamePanel {
                         vx = t * ball[BALL_VX];
 						vy = t * ball[BALL_VY];
 						mag = vx * vx + vy * vy;
-						if (mag > 1) {
-							t = 1 / (float) Math.sqrt(mag);
+						if (mag > 1.0F) {
+							t = 1.0F / (float) Math.sqrt((double) mag);
 						}
 						ball[BALL_TIME] -= t;
 
@@ -443,201 +443,201 @@ public class a extends GamePanel {
 						ball[BALL_X] += t * ball[BALL_VX];
 
 						
-						if (ball[BALL_X] >= 200 && ball[BALL_X] <= 290) { 
-							if (ball[BALL_Y] < 240 && vy >= 240) {
-								ball[BALL_LAYER] = 1;
-							} else if (ball[BALL_Y] >= 240 && vy < 240) {
-								ball[BALL_LAYER] = 0;
+						if (ball[BALL_X] >= 200.0F && ball[BALL_X] <= 290.0F) {
+							if (ball[BALL_Y] < 240.0F && vy >= 240.0F) {
+								ball[BALL_LAYER] = 1.0F;
+							} else if (ball[BALL_Y] >= 240.0F && vy < 240.0F) {
+								ball[BALL_LAYER] = (float) 0;
 							}
 						}
-						if (ball[BALL_X] >= 360 && ball[BALL_X] <= 450) { 
-							if (ball[BALL_Y] < 310 && vy >= 310) {
-								ball[BALL_LAYER] = 1;
-							} else if (ball[BALL_Y] >= 310 && vy < 310) {
-								ball[BALL_LAYER] = 0;
+						if (ball[BALL_X] >= 360.0F && ball[BALL_X] <= 450.0F) {
+							if (ball[BALL_Y] < 310.0F && vy >= 310.0F) {
+								ball[BALL_LAYER] = 1.0F;
+							} else if (ball[BALL_Y] >= 310.0F && vy < 310.0F) {
+								ball[BALL_LAYER] = (float) 0;
 							}
 						}
-						if (ball[BALL_X] >= 627 && ball[BALL_X] <= 705) { 
-							if (ball[BALL_Y] < 350 && vy >= 350) {
-								ball[BALL_LAYER] = 1;
-							} else if (ball[BALL_Y] >= 350 && vy < 350) {
-								ball[BALL_LAYER] = 0;
+						if (ball[BALL_X] >= 627.0F && ball[BALL_X] <= 705.0F) {
+							if (ball[BALL_Y] < 350.0F && vy >= 350.0F) {
+								ball[BALL_LAYER] = 1.0F;
+							} else if (ball[BALL_Y] >= 350.0F && vy < 350.0F) {
+								ball[BALL_LAYER] = (float) 0;
 							}
 						}
 
 						
-						if (lowerLeftGateEnabled && ball[BALL_X] >= 49 && ball[BALL_X] <= 102 && ball[BALL_Y] > 907 && vy <= 907) {
+						if (lowerLeftGateEnabled && ball[BALL_X] >= 49.0F && ball[BALL_X] <= 102.0F && ball[BALL_Y] > 907.0F && vy <= 907.0F) {
 							ball[BALL_Y] = vy;
-							ball[BALL_VY] = 0;
-							ball[BALL_VX] = 2;
+							ball[BALL_VY] = (float) 0;
+							ball[BALL_VX] = 2.0F;
 						}
 
 						
-						if (ball[BALL_LAYER] == 1 && railGateEnabled && ball[BALL_X] >= 47 && ball[BALL_X] <= 135 && ball[BALL_Y] > 481 && vy <= 481) {
+						if (ball[BALL_LAYER] == 1.0F && railGateEnabled && ball[BALL_X] >= 47.0F && ball[BALL_X] <= 135.0F && ball[BALL_Y] > 481.0F && vy <= 481.0F) {
 							ball[BALL_Y] = vy;
-							ball[BALL_VY] = 0;
-							ball[BALL_VX] = -2;
+							ball[BALL_VY] = (float) 0;
+							ball[BALL_VX] = -2.0F;
 						}
 
 						
-						if (ball[BALL_LAYER] == 1 && ball[BALL_Y] >= 805 && ((ball[BALL_X] >= 90 && ball[BALL_X] <= 155) || (ball[BALL_X] >= 605 && ball[BALL_X] <= 660))) {
-							ball[BALL_LAYER] = ball[BALL_VX] = ball[BALL_VY] = 0;
+						if (ball[BALL_LAYER] == 1.0F && ball[BALL_Y] >= 805.0F && ((ball[BALL_X] >= 90.0F && ball[BALL_X] <= 155.0F) || (ball[BALL_X] >= 605.0F && ball[BALL_X] <= 660.0F))) {
+							ball[BALL_LAYER] = ball[BALL_VX] = ball[BALL_VY] = (float) 0;
 							score += multiplier * 25;
 						}
 
 						
-						if (ball[BALL_LAYER] == 0 && ball[BALL_Y] <= 100) {
-							if (ball[BALL_X] > 653 && vx <= 653) {
-								ball[BALL_X] = 653;
-								if (ball[BALL_VX] > 0) {
+						if (ball[BALL_LAYER] == (float) 0 && ball[BALL_Y] <= 100.0F) {
+							if (ball[BALL_X] > 653.0F && vx <= 653.0F) {
+								ball[BALL_X] = 653.0F;
+								if (ball[BALL_VX] > (float) 0) {
 									ball[BALL_VX] = -ball[BALL_VX];
 								}
 							}
-							if (ball[BALL_X] < 415 && vx >= 415) {
-								ball[BALL_X] = 415;
-								if (ball[BALL_VX] < 0) {
+							if (ball[BALL_X] < 415.0F && vx >= 415.0F) {
+								ball[BALL_X] = 415.0F;
+								if (ball[BALL_VX] < (float) 0) {
 									ball[BALL_VX] = -ball[BALL_VX];
 								}
 							}
 						}
 
 						
-						vx = ball[BALL_X] - 32;
-						vy = ball[BALL_Y] - 52;
-						if (vx * vx + vy * vy <= 1225) {
-							if (ball[BALL_STUCK] == 0) {
-								ball[BALL_STUCK] = 128;
+						vx = ball[BALL_X] - 32.0F;
+						vy = ball[BALL_Y] - 52.0F;
+						if (vx * vx + vy * vy <= 1225.0F) {
+							if (ball[BALL_STUCK] == (float) 0) {
+								ball[BALL_STUCK] = 128.0F;
 								score += multiplier * 25;
 							}
-							if (ball[BALL_STUCK] > 80) {
-								ball[BALL_X] = 32;
-								ball[BALL_Y] = 52;
-								ball[BALL_VX] = ball[BALL_VY] = 0;
+							if (ball[BALL_STUCK] > 80.0F) {
+								ball[BALL_X] = 32.0F;
+								ball[BALL_Y] = 52.0F;
+								ball[BALL_VX] = ball[BALL_VY] = (float) 0;
 							} else {
-								ball[BALL_X] = 475;
-								ball[BALL_Y] = 369;
+								ball[BALL_X] = 475.0F;
+								ball[BALL_Y] = 369.0F;
 								railGateEnabled = true;
 								lowerLeftGateEnabled = false;
 							}
 						}
 
 						
-						vx = ball[BALL_X] - 32;
-						vy = ball[BALL_Y] - 613;
-						if (vx * vx + vy * vy <= 1225) {
-							if (ball[BALL_STUCK] == 0) {
-								ball[BALL_STUCK] = 128;
+						vx = ball[BALL_X] - 32.0F;
+						vy = ball[BALL_Y] - 613.0F;
+						if (vx * vx + vy * vy <= 1225.0F) {
+							if (ball[BALL_STUCK] == (float) 0) {
+								ball[BALL_STUCK] = 128.0F;
 								score += multiplier * 25;
 							}
-							if (ball[BALL_STUCK] > 80) {
-								ball[BALL_X] = 32;
-								ball[BALL_Y] = 613;
-								ball[BALL_LAYER] = ball[BALL_VX] = ball[BALL_VY] = 0;
+							if (ball[BALL_STUCK] > 80.0F) {
+								ball[BALL_X] = 32.0F;
+								ball[BALL_Y] = 613.0F;
+								ball[BALL_LAYER] = ball[BALL_VX] = ball[BALL_VY] = (float) 0;
 								railGateEnabled = false;
 							} else {
-								ball[BALL_X] = 475;
-								ball[BALL_Y] = 369;
+								ball[BALL_X] = 475.0F;
+								ball[BALL_Y] = 369.0F;
 							}
 						}
 
 						
-						vx = ball[BALL_X] - 656;
-						vy = ball[BALL_Y] - 523;
-						if (vx * vx + vy * vy <= 1225) {
-							if (ball[BALL_STUCK] == 0) {
-								ball[BALL_STUCK] = 128;
+						vx = ball[BALL_X] - 656.0F;
+						vy = ball[BALL_Y] - 523.0F;
+						if (vx * vx + vy * vy <= 1225.0F) {
+							if (ball[BALL_STUCK] == (float) 0) {
+								ball[BALL_STUCK] = 128.0F;
 								score += multiplier * 10;
 							}
-							if (ball[BALL_STUCK] > 80) {
-								ball[BALL_X] = 656;
-								ball[BALL_Y] = 523;
-								ball[BALL_VX] = ball[BALL_VY] = 0;
+							if (ball[BALL_STUCK] > 80.0F) {
+								ball[BALL_X] = 656.0F;
+								ball[BALL_Y] = 523.0F;
+								ball[BALL_VX] = ball[BALL_VY] = (float) 0;
 							} else {
-								ball[BALL_X] = 624;
-								ball[BALL_Y] = 590;
-								ball[BALL_LAYER] = 0;
+								ball[BALL_X] = 624.0F;
+								ball[BALL_Y] = 590.0F;
+								ball[BALL_LAYER] = (float) 0;
 							}
 						}
 
 						
-						vx = ball[BALL_X] - 475;
-						vy = ball[BALL_Y] - 369;
-						if (vx * vx + vy * vy <= 1225) {
-							if (ball[BALL_STUCK] == 0) {
-								ball[BALL_STUCK] = 80;
+						vx = ball[BALL_X] - 475.0F;
+						vy = ball[BALL_Y] - 369.0F;
+						if (vx * vx + vy * vy <= 1225.0F) {
+							if (ball[BALL_STUCK] == (float) 0) {
+								ball[BALL_STUCK] = 80.0F;
 								score += multiplier * 5;
 							}
-							if (ball[BALL_STUCK] >= 48) {
-								ball[BALL_X] = 475;
-								ball[BALL_Y] = 369;
-								ball[BALL_VX] = ball[BALL_VY] = 0;
+							if (ball[BALL_STUCK] >= 48.0F) {
+								ball[BALL_X] = 475.0F;
+								ball[BALL_Y] = 369.0F;
+								ball[BALL_VX] = ball[BALL_VY] = (float) 0;
 							} else {
-								ball[BALL_VX] = -4;
-								ball[BALL_VY] = 8;
+								ball[BALL_VX] = -4.0F;
+								ball[BALL_VY] = 8.0F;
 							}
 						}
 
 						
-						vx = ball[BALL_X] - 624;
-						vy = ball[BALL_Y] - 590;
-						if (vx * vx + vy * vy <= 1225) {
-							if (ball[BALL_STUCK] == 0) {
-								ball[BALL_STUCK] = 80;
+						vx = ball[BALL_X] - 624.0F;
+						vy = ball[BALL_Y] - 590.0F;
+						if (vx * vx + vy * vy <= 1225.0F) {
+							if (ball[BALL_STUCK] == (float) 0) {
+								ball[BALL_STUCK] = 80.0F;
 								score += multiplier * 5;
 							}
-							if (ball[BALL_STUCK] >= 48) {
-								ball[BALL_X] = 624;
-								ball[BALL_Y] = 590;
-								ball[BALL_VX] = ball[BALL_VY] = 0;
+							if (ball[BALL_STUCK] >= 48.0F) {
+								ball[BALL_X] = 624.0F;
+								ball[BALL_Y] = 590.0F;
+								ball[BALL_VX] = ball[BALL_VY] = (float) 0;
 							} else {
-								ball[BALL_VX] = -4;
-								ball[BALL_VY] = 8;
+								ball[BALL_VX] = -4.0F;
+								ball[BALL_VY] = 8.0F;
 							}
 						}
 
 						
-						vx = ball[BALL_X] - 77;
-						vy = ball[BALL_Y] - 955;
-						if (vx * vx + vy * vy <= 1225) {
-							if (ball[BALL_STUCK] == 0) {
+						vx = ball[BALL_X] - 77.0F;
+						vy = ball[BALL_Y] - 955.0F;
+						if (vx * vx + vy * vy <= 1225.0F) {
+							if (ball[BALL_STUCK] == (float) 0) {
 								score += multiplier * 25;
-								ball[BALL_STUCK] = 80;
+								ball[BALL_STUCK] = 80.0F;
 							}
-							if (ball[BALL_STUCK] >= 48) {
-								ball[BALL_X] = 77;
-								ball[BALL_Y] = 955;
-								ball[BALL_VX] = ball[BALL_VY] = 0;
+							if (ball[BALL_STUCK] >= 48.0F) {
+								ball[BALL_X] = 77.0F;
+								ball[BALL_Y] = 955.0F;
+								ball[BALL_VX] = ball[BALL_VY] = (float) 0;
 								lowerLeftGateEnabled = true;
 							} else {
-								ball[BALL_VY] = -12;
+								ball[BALL_VY] = -12.0F;
 							}
 						}
 
 						
-						vx = ball[BALL_X] - 730;
-						vy = ball[BALL_Y] - 854;
-						if (vx * vx + vy * vy <= 1225) {
+						vx = ball[BALL_X] - 730.0F;
+						vy = ball[BALL_Y] - 854.0F;
+						if (vx * vx + vy * vy <= 1225.0F) {
 							if (plungerStrike > 0) {
-								ball[BALL_VY] = -plungerStrike;
-							} else if (ball[BALL_VY] > 0) {
-								ball[BALL_VY] = 0;
-								ball[BALL_X] = 730;
-								ball[BALL_Y] = 854;
+								ball[BALL_VY] = (float) -plungerStrike;
+							} else if (ball[BALL_VY] > (float) 0) {
+								ball[BALL_VY] = (float) 0;
+								ball[BALL_X] = 730.0F;
+								ball[BALL_Y] = 854.0F;
 							}
 						}
 
 						
-						if (ball[BALL_STUCK] > 0 && (cameraOnTarget || cameraVy != 4)) {
+						if (ball[BALL_STUCK] > (float) 0 && (cameraOnTarget || cameraVy != 4)) {
 							ball[BALL_STUCK]--;
 						}
 
 						
-						if (ball[BALL_LAYER] == 0) {
+						if (ball[BALL_LAYER] == (float) 0) {
 							for (j = 0; j < ITEMS; j++) {
 								if (itemsTable[j][2] == 0) {
-									vx = ball[BALL_X] - itemsTable[j][0];
-									vy = ball[BALL_Y] - itemsTable[j][1];
-									if (vx * vx + vy * vy < 900) {
+									vx = ball[BALL_X] - (float) itemsTable[j][0];
+									vy = ball[BALL_Y] - (float) itemsTable[j][1];
+									if (vx * vx + vy * vy < 900.0F) {
 										
 										score += multiplier * 25;
 										itemsTable[j][2] = 1;
@@ -667,13 +667,13 @@ public class a extends GamePanel {
                                                         float[] ball2;
                                                         if (ballCount < 3) {
                                                             ball2 = balls[ballCount++] = new float[8];
-                                                            ball2[BALL_X] = 475;
-                                                            ball2[BALL_Y] = 369;
+                                                            ball2[BALL_X] = 475.0F;
+                                                            ball2[BALL_Y] = 369.0F;
                                                         }
                                                         if (ballCount < 3) {
                                                             ball2 = balls[ballCount++] = new float[8];
-                                                            ball2[BALL_X] = 624;
-                                                            ball2[BALL_Y] = 590;
+                                                            ball2[BALL_X] = 624.0F;
+                                                            ball2[BALL_Y] = 590.0F;
                                                         }
                                                         break;
                                                 }
@@ -703,8 +703,8 @@ public class a extends GamePanel {
 								x1 = 0;
 							}
 
-							fx = 0;
-							fy = 0;
+							fx = (float) 0;
+							fy = (float) 0;
 							collision = false;
 							for (; y <= y2; y++) {
 								for (x = x1; x <= x2; x++) {
@@ -724,17 +724,17 @@ public class a extends GamePanel {
                             boolean flipperHit = false;
 
 							
-							for (float angle = leftFlipperAngle + (leftFlipperCounter > 0 && leftFlipperCounter <= FLIPPER_DELAY ? .3f : 0); angle >= leftFlipperAngle; angle -= .006f) {
-                                float sin = (float) Math.sin(angle);
-                                float cos = (float) Math.cos(angle);
-                                float X1 = 126 * cos + 21 * sin;
-                                vx = ball[BALL_X] - X1 - 221;
-                                float Y1 = 126 * sin - 21 * cos;
-                                vy = ball[BALL_Y] - Y1 - 949;
-                                float px = -21 * cos + 21 * sin - X1;
-                                float py = -21 * sin - 21 * cos - Y1;
+							for (float angle = leftFlipperAngle + (leftFlipperCounter > 0 && leftFlipperCounter <= FLIPPER_DELAY ? .3f : (float) 0); angle >= leftFlipperAngle; angle -= .006f) {
+                                float sin = (float) Math.sin((double) angle);
+                                float cos = (float) Math.cos((double) angle);
+                                float X1 = 126.0F * cos + 21.0F * sin;
+                                vx = ball[BALL_X] - X1 - 221.0F;
+                                float Y1 = 126.0F * sin - 21.0F * cos;
+                                vy = ball[BALL_Y] - Y1 - 949.0F;
+                                float px = -21.0F * cos + 21.0F * sin - X1;
+                                float py = -21.0F * sin - 21.0F * cos - Y1;
 								mag = (vx * px + vy * py) / (px * px + py * py);
-								if (mag >= 0 && mag <= 1) {
+								if (mag >= (float) 0 && mag <= 1.0F) {
 									vx -= mag * px;
 									vy -= mag * py;
 									mag = vx * vx + vy * vy;
@@ -748,17 +748,17 @@ public class a extends GamePanel {
 							}
 
 							
-							for (float angle = rightFlipperAngle + (rightFlipperCounter > 0 && rightFlipperCounter <= FLIPPER_DELAY ? .3f : 0); angle >= rightFlipperAngle; angle -= .006f) {
-                                float sin = (float) Math.sin(angle);
-                                float cos = (float) Math.cos(angle);
-                                float X1 = 126 * cos + 21 * sin;
-                                vx = ball[BALL_X] + X1 - 540;
-                                float Y1 = 126 * sin - 21 * cos;
-                                vy = ball[BALL_Y] - Y1 - 949;
-                                float px = 21 * cos - 21 * sin + X1;
-                                float py = -21 * sin - 21 * cos - Y1;
+							for (float angle = rightFlipperAngle + (rightFlipperCounter > 0 && rightFlipperCounter <= FLIPPER_DELAY ? .3f : (float) 0); angle >= rightFlipperAngle; angle -= .006f) {
+                                float sin = (float) Math.sin((double) angle);
+                                float cos = (float) Math.cos((double) angle);
+                                float X1 = 126.0F * cos + 21.0F * sin;
+                                vx = ball[BALL_X] + X1 - 540.0F;
+                                float Y1 = 126.0F * sin - 21.0F * cos;
+                                vy = ball[BALL_Y] - Y1 - 949.0F;
+                                float px = 21.0F * cos - 21.0F * sin + X1;
+                                float py = -21.0F * sin - 21.0F * cos - Y1;
 								mag = (vx * px + vy * py) / (px * px + py * py);
-								if (mag >= 0 && mag <= 1) {
+								if (mag >= (float) 0 && mag <= 1.0F) {
 									vx -= mag * px;
 									vy -= mag * py;
 									mag = vx * vx + vy * vy;
@@ -773,34 +773,34 @@ public class a extends GamePanel {
 
 							if (collision) {
 
-								mag = (float) Math.sqrt(fx * fx + fy * fy);
+								mag = (float) Math.sqrt((double) (fx * fx + fy * fy));
 								fx /= mag;
 								fy /= mag;
 								if (first) {
 									first = false;
-									fx += ((float) Math.random() - 0.5f) / 50;
-									fy += ((float) Math.random() - 0.5f) / 50;
+									fx += ((float) Math.random() - 0.5f) / 50.0F;
+									fy += ((float) Math.random() - 0.5f) / 50.0F;
 									mag = DAMPENING * (ball[BALL_VX] * fx + ball[BALL_VY] * fy);
 									ball[BALL_VX] -= mag * fx;
 									ball[BALL_VY] -= mag * fy;
 
-									if (ball[BALL_LAYER] == 0) {
+									if (ball[BALL_LAYER] == (float) 0) {
 
 										
 										if (flipperHit) {
-											if (ball[BALL_VY] > 0) {
+											if (ball[BALL_VY] > (float) 0) {
 												ball[BALL_VY] = -ball[BALL_VY];
 											}
-											ball[BALL_VY] -= FLIPPER_VELOCITY;
+                                            ball[BALL_VY] = ball[BALL_VY] - (float) FLIPPER_VELOCITY;
 										} else {
 
 											
 											if (rightBumper == 0) {
-												vx = ball[BALL_X] - 600;
-												vy = ball[BALL_Y] - 236;
+												vx = ball[BALL_X] - 600.0F;
+												vy = ball[BALL_Y] - 236.0F;
 												mag = vx * vx + vy * vy;
-												if (mag < 4700) {
-													mag = BUMPER_VELOCITY / (float) Math.sqrt(mag);
+												if (mag < 4700.0F) {
+													mag = (float) BUMPER_VELOCITY / (float) Math.sqrt((double) mag);
 													ball[BALL_VX] = mag * vx;
 													ball[BALL_VY] = mag * vy;
 													rightBumper = 8;
@@ -810,11 +810,11 @@ public class a extends GamePanel {
 
 											
 											if (leftBumper == 0) {
-												vx = ball[BALL_X] - 460;
-												vy = ball[BALL_Y] - 172;
+												vx = ball[BALL_X] - 460.0F;
+												vy = ball[BALL_Y] - 172.0F;
 												mag = vx * vx + vy * vy;
-												if (mag < 4700) {
-													mag = BUMPER_VELOCITY / (float) Math.sqrt(mag);
+												if (mag < 4700.0F) {
+													mag = (float) BUMPER_VELOCITY / (float) Math.sqrt((double) mag);
 													ball[BALL_VX] = mag * vx;
 													ball[BALL_VY] = mag * vy;
 													leftBumper = 8;
@@ -824,9 +824,9 @@ public class a extends GamePanel {
 
 											
 											if (rightSlingshot == 0) {
-												vx = ball[BALL_X] - 535;
-												vy = ball[BALL_Y] - 778;
-												if (vx * vx + vy * vy < 6972) {
+												vx = ball[BALL_X] - 535.0F;
+												vy = ball[BALL_Y] - 778.0F;
+												if (vx * vx + vy * vy < 6972.0F) {
 													ball[BALL_VX] = -22.35f;
 													ball[BALL_VY] = -8.75f;
 													rightSlingshot = 8;
@@ -836,9 +836,9 @@ public class a extends GamePanel {
 
 											
 											if (leftSlingshot == 0) {
-												vx = ball[BALL_X] - 218;
-												vy = ball[BALL_Y] - 778;
-												if (vx * vx + vy * vy < 6972) {
+												vx = ball[BALL_X] - 218.0F;
+												vy = ball[BALL_Y] - 778.0F;
+												if (vx * vx + vy * vy < 6972.0F) {
 													ball[BALL_VX] = 22.35f;
 													ball[BALL_VY] = -8.75f;
 													leftSlingshot = 8;
@@ -852,7 +852,7 @@ public class a extends GamePanel {
 								ball[BALL_Y] += fy;
 							}
 						} while (collision);
-					} while (ball[BALL_TIME] > 0);
+					} while (ball[BALL_TIME] > (float) 0);
 				}
 
 				if (ballCount > 0) {
@@ -908,15 +908,15 @@ public class a extends GamePanel {
 
 			
 			g.translate(219, 948);
-			g.scale(-1, 1);
-			g.rotate(-leftFlipperAngle);
+			g.scale(-1.0, 1.0);
+			g.rotate((double) -leftFlipperAngle);
 			g.drawImage(images[IMAGE_FLIPPER], -156, -52, null);
 			g.setTransform(transform);
 			g.translate(0, cameraY);
 
 			
 			g.translate(538, 948);
-			g.rotate(-rightFlipperAngle);
+			g.rotate((double) -rightFlipperAngle);
 			g.drawImage(images[IMAGE_FLIPPER], -156, -52, null);
 			g.setTransform(transform);
 			g.translate(0, cameraY);
@@ -954,8 +954,8 @@ public class a extends GamePanel {
 			
 			for (i = ballCount - 1; i >= 0; i--) {
 				ball = balls[i];
-				if (ball[BALL_LAYER] == 0) {
-					g.drawImage(images[IMAGE_BALL], (int) (ball[BALL_X] - 84), (int) (ball[BALL_Y] - 84), null);
+				if (ball[BALL_LAYER] == (float) 0) {
+					g.drawImage(images[IMAGE_BALL], (int) (ball[BALL_X] - 84.0F), (int) (ball[BALL_Y] - 84.0F), null);
 				}
 			}
 
@@ -968,8 +968,8 @@ public class a extends GamePanel {
 			
 			for (i = ballCount - 1; i >= 0; i--) {
 				ball = balls[i];
-				if (ball[BALL_LAYER] == 1) {
-					g.drawImage(images[IMAGE_BALL], (int) (ball[BALL_X] - 84), (int) (ball[BALL_Y] - 84), null);
+				if (ball[BALL_LAYER] == 1.0F) {
+					g.drawImage(images[IMAGE_BALL], (int) (ball[BALL_X] - 84.0F), (int) (ball[BALL_Y] - 84.0F), null);
 				}
 			}
 
@@ -994,7 +994,7 @@ public class a extends GamePanel {
 			}
 
 			
-			while (nextFrameStartTime - System.nanoTime() > 0) {
+			while (nextFrameStartTime - System.nanoTime() > 0L) {
 				Thread.yield();
 			}
 		}
@@ -1016,7 +1016,7 @@ public class a extends GamePanel {
 	  frame.pack();
 	  frame.setLocationRelativeTo(null);
 	  frame.setVisible(true);    
-	  Thread.sleep(250);
+	  Thread.sleep(250L);
 	  applet.start();
 	  applet.requestFocus();
 	}

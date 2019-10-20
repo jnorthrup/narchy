@@ -14,10 +14,10 @@ public enum GranulizerDemo {
         Audio audio = new Audio(16);
 
         Granulize ts =
-            new Granulize(SampleLoader.load("/tmp/awake.wav"), 0.25f, 0.9f, new XorShift128PlusRandom(1))
+            new Granulize(SampleLoader.load("/tmp/awake.wav"), 0.25f, 0.9f, new XorShift128PlusRandom(1L))
                     .setStretchFactor(0.25f);
 
-        audio.play(ts, SoundSource.center, 1, 1);
+        audio.play(ts, SoundSource.center, 1.0F, 1.0F);
 
         
 

@@ -4,7 +4,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 import static org.apache.commons.math3.util.MathArrays.scaleInPlace;
 
@@ -94,26 +93,26 @@ public class SimpleLSTM  {
 
         float scalingFactor = 1f - forgetRate;
 
-		if (scalingFactor >= 1)
+		if (scalingFactor >= 1.0F)
 			return; 
 
-		if (scalingFactor <= 0) {
+		if (scalingFactor <= (float) 0) {
 			clear();
 			return;
 		}
 
-		scaleInPlace(scalingFactor, context);
+		scaleInPlace((double) scalingFactor, context);
 		for (int c = 0; c < cell_blocks; c++)
-			scaleInPlace(scalingFactor, this.dSdG[c]);
+			scaleInPlace((double) scalingFactor, this.dSdG[c]);
 		for (int c = 0; c < cell_blocks; c++)
-			scaleInPlace(scalingFactor, this.dSdF[c]);
+			scaleInPlace((double) scalingFactor, this.dSdF[c]);
 
 
 	}
 
 	public double[] predict(double[] input)
 	{
-		return learn(input, null, -1);
+		return learn(input, null, -1.0F);
 	}
 
 
@@ -162,7 +161,7 @@ public class SimpleLSTM  {
 		for (int j = 0; j < cell_blocks; j++) {
             double[] wj = weightsF[j];
             double[] wg = weightsG[j];
-			double sf = 0, sg = 0;
+			double sf = (double) 0, sg = (double) 0;
 			for (int i = 0; i < full_input_dimension; i++)			{
                 double fi = full_input[i];
 				sf += wj[i] * fi;
@@ -236,7 +235,7 @@ public class SimpleLSTM  {
 			}
 			else {
 				
-				Arrays.fill(deltaH, 0);
+				Arrays.fill(deltaH, (double) 0);
 			}
 
             double SCALE_OUTPUT_DELTA = 1.0;
@@ -252,18 +251,18 @@ public class SimpleLSTM  {
                 double[] ah = this.actH;
 				for (int j = cell_blocks - 1; j >= 0; j--) {
 					dh[j] += dok * wk[j];
-					wk[j] += dok * ah[j] * learningRate;
+					wk[j] += dok * ah[j] * (double) learningRate;
 				}
 
 				
-				wk[cell_blocks] += dok /* * 1.0 */ * learningRate;
+				wk[cell_blocks] += dok /* * 1.0 */ * (double) learningRate;
 			}
 			
 			
 			for (int j = 0; j < cell_blocks; j++) {
                 double dhj = deltaH[j];
-				updateWeights(learningRate * dhj, full_input_dimension, dSdF[j], weightsF[j]);
-				updateWeights(learningRate * dhj, full_input_dimension, dSdG[j], weightsG[j]);
+				updateWeights((double) learningRate * dhj, full_input_dimension, dSdF[j], weightsF[j]);
+				updateWeights((double) learningRate * dhj, full_input_dimension, dSdG[j], weightsG[j]);
 			}
 		}
 		

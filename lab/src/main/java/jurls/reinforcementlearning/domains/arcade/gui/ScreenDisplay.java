@@ -45,8 +45,8 @@ public class ScreenDisplay extends JPanel {
     int windowHeight;
     /** Variables used to compute the GUI frames per second */
     int frameCount = 0;
-    double fps = 0;
-    long frameTime = 0;
+    double fps = (double) 0;
+    long frameTime = 0L;
     int updateRate = 5; 
     double fpsAlpha = 0.9;
     
@@ -54,7 +54,7 @@ public class ScreenDisplay extends JPanel {
     String centerString;
     MessageHistory messages;
 
-    long maxMessageAge = 3000;
+    long maxMessageAge = 3000L;
     
     public ScreenDisplay() {
         super();
@@ -107,15 +107,15 @@ public class ScreenDisplay extends JPanel {
             long time = System.currentTimeMillis();
 
             
-            if (time - frameTime >= 1000 / updateRate) {
-                if (fps == 0) {
-                    fps = frameCount;
+            if (time - frameTime >= (long) (1000 / updateRate)) {
+                if (fps == (double) 0) {
+                    fps = (double) frameCount;
                 } else {
 
-                    double ticksSinceUpdate = (time - frameTime) * updateRate / 1000.0;
+                    double ticksSinceUpdate = (double) ((time - frameTime) * (long) updateRate) / 1000.0;
                     double alpha = Math.pow(fpsAlpha, ticksSinceUpdate);
 
-                    fps = alpha * fps + (1 - alpha) * (frameCount * updateRate / ticksSinceUpdate);
+                    fps = alpha * fps + (1.0 - alpha) * ((double) (frameCount * updateRate) / ticksSinceUpdate);
                 }
 
                 frameCount = 0;
@@ -143,21 +143,21 @@ public class ScreenDisplay extends JPanel {
             messages.update(maxMessageAge);
 
             
-            rescale(g, xScaleFactor, yScaleFactor);
+            rescale(g, (double) xScaleFactor, (double) yScaleFactor);
             
             if (image != null) {
                 g.drawImage(image, 0, 0, null);
             }
 
             
-            rescale(g, 1.0 / xScaleFactor, 1.0 / yScaleFactor);
+            rescale(g, 1.0 / (double) xScaleFactor, 1.0 / (double) yScaleFactor);
 
             int statusBarTextOffset = statusBarY + 15;
 
             
-            if (fps > 0) {
+            if (fps > (double) 0) {
                 g.setColor(Color.BLACK);
-                double roundedFPS = (Math.round(fps * 10) / 10.0);
+                double roundedFPS = ((double) Math.round(fps * 10.0) / 10.0);
                 g.drawString("FPS: " + roundedFPS, 0, statusBarTextOffset);
             }
 

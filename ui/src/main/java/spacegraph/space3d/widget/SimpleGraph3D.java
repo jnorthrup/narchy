@@ -24,19 +24,19 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
     /** default */
     protected static final SpaceWidget.SimpleNodeVis<SpaceWidget<?>> defaultVis = w -> {
 
-        w.scale(16, 16, 2);
+        w.scale(16.0F, 16.0F, 2.0F);
 
         Draw.colorHash(w.id, w.shapeColor);
 
         for (EDraw<?> x : w.edges()) {
-            x.r = 1;
+            x.r = 1.0F;
             x.g = 0.5f;
-            x.b = 0;
-            x.a = 1;
-            x.width = x.pri() * 4;
+            x.b = (float) 0;
+            x.a = 1.0F;
+            x.width = x.pri() * 4.0F;
 
             x.attraction = 0.1f;
-            x.attractionDist = 8;
+            x.attractionDist = 8.0F;
         }
     };
 
@@ -77,7 +77,7 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
         return active;
     }
 
-    private static final Random rng2 = new XoRoShiRo128PlusRandom(1);
+    private static final Random rng2 = new XoRoShiRo128PlusRandom(1L);
 
     public static class DefaultSpaceWidget<X> extends SpaceWidget<X> {
 
@@ -87,7 +87,7 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
         DefaultSpaceWidget(X x) {
             super(x);
 
-            float initialRadius = 10;
+            float initialRadius = 10.0F;
             move((rng2.nextFloat()-0.5f)*initialRadius, (rng2.nextFloat()-0.5f)*initialRadius, (rng2.nextFloat()-0.5f)*initialRadius);
 
         }
@@ -95,7 +95,7 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
         @Override
         public Body3D newBody(boolean collidesWithOthersLikeThis) {
             Body3D d = super.newBody(collidesWithOthersLikeThis);
-            d.setMass(100);
+            d.setMass(100.0F);
             d.setDamping(0.9f, 0.1f);
             return d;
         }

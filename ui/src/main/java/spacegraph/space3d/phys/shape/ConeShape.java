@@ -47,7 +47,7 @@ public class ConeShape extends ConvexInternalShape {
 		this.radius = radius;
 		this.height = height;
 		setConeUpIndex(1);
-		sinAngle = (radius / (float) Math.sqrt(this.radius * this.radius + this.height * this.height));
+		sinAngle = (radius / (float) Math.sqrt((double) (this.radius * this.radius + this.height * this.height)));
 	}
 
 	public float getRadius() {
@@ -70,7 +70,7 @@ public class ConeShape extends ConvexInternalShape {
 		else {
             float v0 = VectorUtil.coord(v, coneIndices[0]);
             float v2 = VectorUtil.coord(v, coneIndices[2]);
-            float s = (float) Math.sqrt(v0 * v0 + v2 * v2);
+            float s = (float) Math.sqrt((double) (v0 * v0 + v2 * v2));
 			if (s > BulletGlobals.FLT_EPSILON) {
                 float d = radius / s;
 				VectorUtil.setCoord(out, coneIndices[0], VectorUtil.coord(v, coneIndices[0]) * d);

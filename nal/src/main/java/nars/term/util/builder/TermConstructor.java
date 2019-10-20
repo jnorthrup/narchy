@@ -6,8 +6,6 @@ import nars.term.Term;
 import nars.term.anon.Intrin;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.stream.IntStream;
-
 import static nars.time.Tense.DTERNAL;
 
 /** lowest-level (raw, possibly un-checked) compound construction interface */

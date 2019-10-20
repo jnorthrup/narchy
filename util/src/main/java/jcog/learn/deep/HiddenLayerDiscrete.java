@@ -1,7 +1,6 @@
 package jcog.learn.deep;
 
 import java.util.Random;
-import java.util.stream.IntStream;
 
 import static jcog.learn.deep.utils.*;
 
@@ -20,12 +19,12 @@ public class HiddenLayerDiscrete extends HiddenLayer {
         this.n_in = n_in;
         this.n_out = n_out;
 
-        if(rng == null)	this.rng = new Random(1234);
+        if(rng == null)	this.rng = new Random(1234L);
         else this.rng = rng;
 
         if(W == null) {
             this.W = new double[n_out][n_in];
-            double a = 1.0 / this.n_in;
+            double a = 1.0 / (double) this.n_in;
 
             for(int i = 0; i<n_out; i++) {
                 for(int j = 0; j<n_in; j++) {
@@ -44,7 +43,7 @@ public class HiddenLayerDiscrete extends HiddenLayer {
         int bound = n_in;
         double linear_output = 0.0;
         for (int j = 0; j < bound; j++) {
-            double v = w[j] * input[j];
+            double v = w[j] * (double) input[j];
             linear_output += v;
         }
         linear_output += b;

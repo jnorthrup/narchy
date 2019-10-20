@@ -108,7 +108,7 @@ public class AtomicMetalBitSet extends MetalBitSet {
     }
 
     public boolean getAndSet(short b, boolean pressed) {
-        return pressed ? getAndSet(b) : getAndClear(b);
+        return pressed ? getAndSet((int) b) : getAndClear((int) b);
     }
 
 }

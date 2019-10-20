@@ -83,13 +83,13 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     default double cost(int dim) {
         switch (dim) {
             case 0:
-                return (range(0)) * TIME_COST;
+                return (range(0)) * (double) TIME_COST;
                 //return Math.log(range(0)) * TIME_COST;
                 //return Math.sqrt(range(0)) * TIME_COST;
             case 1:
-                return (NAL.truth.TRUTH_EPSILON + range(1)) * FREQ_COST;
+                return ((double) NAL.truth.TRUTH_EPSILON + range(1)) * (double) FREQ_COST;
             case 2:
-                return (NAL.truth.TASK_REGION_CONF_EPSILON + range(2)) * CONF_COST;
+                return (NAL.truth.TASK_REGION_CONF_EPSILON + range(2)) * (double) CONF_COST;
         }
         throw new UnsupportedOperationException();
     }
@@ -98,11 +98,11 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     default double range(int dim) {
         switch (dim) {
             case 0:
-                return 1 + (end() - start());
+                return (double) (1L + (end() - start()));
             case 1:
-                return (1 + freqMaxI() - freqMinI()) * NAL.truth.TRUTH_EPSILON;
+                return (double) ((1 + freqMaxI() - freqMinI()) * NAL.truth.TRUTH_EPSILON);
             case 2:
-                return (1 + confMaxI() - confMinI()) * NAL.truth.TASK_REGION_CONF_EPSILON;
+                return (double) (1 + confMaxI() - confMinI()) * NAL.truth.TASK_REGION_CONF_EPSILON;
             default:
                 throw new UnsupportedOperationException();
         }
@@ -191,27 +191,27 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
 
     default double coord(int dimension, boolean maxOrMin) {
         switch (dimension) {
-            case 0: return maxOrMin ? end() : start();
-            case 1: return (maxOrMin ? freqMaxI() : freqMinI())*(NAL.truth.TRUTH_EPSILON);
-            case 2: return (maxOrMin ? confMaxI() : confMinI())*(NAL.truth.TASK_REGION_CONF_EPSILON);
+            case 0: return (double) (maxOrMin ? end() : start());
+            case 1: return (double) ((maxOrMin ? freqMaxI() : freqMinI()) * (NAL.truth.TRUTH_EPSILON));
+            case 2: return (double) (maxOrMin ? confMaxI() : confMinI()) *(NAL.truth.TASK_REGION_CONF_EPSILON);
             default: return Double.NaN;
         }
     }
 
     default double center(int dimension) {
         switch (dimension) {
-            case 0: return mid();
-            case 1: return (freqMinI() + freqMaxI())*(0.5 * NAL.truth.TRUTH_EPSILON);
-            case 2: return (confMinI() + confMaxI())*(0.5 * NAL.truth.TASK_REGION_CONF_EPSILON);
+            case 0: return (double) mid();
+            case 1: return (double) (freqMinI() + freqMaxI()) *(0.5 * (double) NAL.truth.TRUTH_EPSILON);
+            case 2: return (double) (confMinI() + confMaxI()) *(0.5 * NAL.truth.TASK_REGION_CONF_EPSILON);
             default: return Double.NaN;
         }
     }
 
     default float freqMean() {
-        return (freqMin() + freqMax()) / 2;
+        return (freqMin() + freqMax()) / 2.0F;
     }
     default float confMean() {
-        return (confMin() + confMax()) / 2;
+        return (confMin() + confMax()) / 2.0F;
     }
 
     float freqMin();
@@ -225,7 +225,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
                 (maxOrMin ? freqMax() : freqMin()) :
                 (maxOrMin ? confMax() : confMin()),
 
-            freqOrConf ? Truth.hashDiscretenessCoarse : Truth.hashDiscretenessFine);
+            freqOrConf ? (int) Truth.hashDiscretenessCoarse : Truth.hashDiscretenessFine);
     }
 
     default int freqMinI() {

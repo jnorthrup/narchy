@@ -6,15 +6,13 @@ import nars.experiment.pacman.maze.Maze.Direction;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public class Ghost extends Entity {
 
     public static final double[][] ghostShape = {
-            {0, 0.3}, {0.2, 0}, {0.8, 0}, {1, .3}, {1, 1}, {0.8, 0.7}, {0.5, 1}, {0.2, 0.7}, {0, 1}
+            {(double) 0, 0.3}, {0.2, (double) 0}, {0.8, (double) 0}, {1.0, .3}, {1.0, 1.0}, {0.8, 0.7}, {0.5, 1.0}, {0.2, 0.7}, {(double) 0, 1.0}
     };
 
     public Color color;
@@ -37,9 +35,9 @@ public class Ghost extends Entity {
         this.lead = 0.2;
         this.target = new Point(x, y);
         this.dir = Direction.up;
-        tilex = -1;
-        tiley = -1;
-        speed = 0;
+        tilex = -1.0;
+        tiley = -1.0;
+        speed = (double) 0;
         origin = new Point(x, y);
         jailTime = 0;
 
@@ -62,7 +60,7 @@ public class Ghost extends Entity {
             if (scared)
                 speed = PacmanGame.GHOST_SPEED_SCARED;
             else
-                speed = PacmanGame.GHOST_SPEED;
+                speed = (double) PacmanGame.GHOST_SPEED;
 
             if ((Math.abs(x - tilex) > 0.8) && (Math.abs(Math.abs(x - Math.floor(x)) - 0.5) > 0.35) ||
                     (Math.abs(y - tiley) > 0.8) && (Math.abs(Math.abs(y - Math.floor(y)) - 0.5) > 0.35) ||
@@ -93,12 +91,12 @@ public class Ghost extends Entity {
 
     public void reset() {
 
-        this.x = origin.x;
-        this.y = origin.y;
+        this.x = (double) origin.x;
+        this.y = (double) origin.y;
         jailTime = 500;
         out = false;
         scared = false;
-        speed = 0;
+        speed = (double) 0;
 
     }
 
@@ -111,7 +109,7 @@ public class Ghost extends Entity {
 
     public void bump() {
 
-        this.tilex = this.tiley = -1;
+        this.tilex = this.tiley = -1.0;
 
     }
 
@@ -132,7 +130,7 @@ public class Ghost extends Entity {
 
     void escape() {
 
-        if (y < maze.playerStart().y - 3) out = true;
+        if (y < (double) (maze.playerStart().y - 3)) out = true;
 
         if (!walled(Direction.up))
             dir = Direction.up;
@@ -161,16 +159,16 @@ public class Ghost extends Entity {
 
         final Direction l = Direction.left, r = Direction.right, u = Direction.up, d = Direction.down;
 
-        if (Math.abs(x - target.x) > Math.abs(y - target.y))
-            if (target.x < x)
-                if (target.y < y) prefer(new Direction[]{l, u, d, r});
+        if (Math.abs(x - (double) target.x) > Math.abs(y - (double) target.y))
+            if ((double) target.x < x)
+                if ((double) target.y < y) prefer(new Direction[]{l, u, d, r});
                 else prefer(new Direction[]{l, d, u, r});
-            else if (target.y < y) prefer(new Direction[]{r, u, d, l});
+            else if ((double) target.y < y) prefer(new Direction[]{r, u, d, l});
             else prefer(new Direction[]{r, d, u, l});
-        else if (target.y < y)
-            if (target.x < x) prefer(new Direction[]{u, l, r, d});
+        else if ((double) target.y < y)
+            if ((double) target.x < x) prefer(new Direction[]{u, l, r, d});
             else prefer(new Direction[]{u, r, l, d});
-        else if (target.x < x) prefer(new Direction[]{d, l, r, u});
+        else if ((double) target.x < x) prefer(new Direction[]{d, l, r, u});
         else prefer(new Direction[]{d, r, l, u});
     }
 
@@ -178,16 +176,16 @@ public class Ghost extends Entity {
 
         final Direction r = Direction.right, l = Direction.left, d = Direction.down, u = Direction.up;
 
-        if (Math.abs(x - target.x) > Math.abs(y - target.y))
-            if (target.x < x)
-                if (target.y < y) prefer(new Direction[]{r, d, u, l});
+        if (Math.abs(x - (double) target.x) > Math.abs(y - (double) target.y))
+            if ((double) target.x < x)
+                if ((double) target.y < y) prefer(new Direction[]{r, d, u, l});
                 else prefer(new Direction[]{r, u, d, l});
-            else if (target.y < y) prefer(new Direction[]{l, d, u, r});
+            else if ((double) target.y < y) prefer(new Direction[]{l, d, u, r});
             else prefer(new Direction[]{l, u, d, r});
-        else if (target.y < y)
-            if (target.x < x) prefer(new Direction[]{d, r, l, u});
+        else if ((double) target.y < y)
+            if ((double) target.x < x) prefer(new Direction[]{d, r, l, u});
             else prefer(new Direction[]{d, l, r, u});
-        else if (target.x < x) prefer(new Direction[]{u, r, l, d});
+        else if ((double) target.x < x) prefer(new Direction[]{u, r, l, d});
         else prefer(new Direction[]{u, l, r, d});
     }
 

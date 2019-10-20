@@ -173,7 +173,7 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
     }
 
     public static int i(int x, int cap) {
-        return (int)( (1L + x + Integer.MAX_VALUE) % cap);
+        return (int)( (1L + (long) x + (long) Integer.MAX_VALUE) % (long) cap);
     }
 
 
@@ -511,7 +511,7 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
     }
 
     public static float availablePct(int size, int targetCapacity) {
-        return /*Util.unitize*/(1f - ((float) size) / targetCapacity);
+        return /*Util.unitize*/(1f - ((float) size) / (float) targetCapacity);
     }
 
 

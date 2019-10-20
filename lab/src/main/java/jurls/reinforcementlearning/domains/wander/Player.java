@@ -8,7 +8,7 @@ import static jurls.reinforcementlearning.domains.wander.Obstacle.d;
 
 public class Player {
 
-    public static final double TURNING_ANGLE = MyPerception.RADAR_R/16f; 
+    public static final double TURNING_ANGLE = MyPerception.RADAR_R/ 16;
     public static final double STEP_SIZE = MyPerception.RADAR_D/4d;
     double acceleration = 0.05;
     private static final int MOVE_FORWARD = 0;
@@ -31,11 +31,11 @@ public class Player {
     private double yOld;
     private double xOld;
 
-    private double vangle = 0;
+    private double vangle = (double) 0;
 
     public Player(World world) {
         this.world = world;
-        r = 8;
+        r = 8.0;
         actions = new Action[6];
         actions[MOVE_FORWARD] = new MoveForward(this);
         actions[MOVE_BACKWARD] = new MoveBackward(this);
@@ -85,8 +85,8 @@ public class Player {
         if (world.isCollision()) {
             x = xOld;
             y = yOld;
-            vx = 0;
-            vy = 0;
+            vx = (double) 0;
+            vy = (double) 0;
         }
         else {
             xOld = x;
@@ -104,8 +104,8 @@ public class Player {
 
     public void randomizePosition() {
         while (world.isCollision()) {
-            x = xOld = d(-World.SIZE, World.SIZE);
-            y = yOld = d(-World.SIZE, World.SIZE);
+            x = xOld = d((double) -World.SIZE, (double) World.SIZE);
+            y = yOld = d((double) -World.SIZE, (double) World.SIZE);
         }
     }
 

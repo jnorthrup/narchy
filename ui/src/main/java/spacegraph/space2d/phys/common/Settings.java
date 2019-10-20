@@ -79,7 +79,7 @@ public class Settings {
      * </ul>
      */
     public static final float SINCOS_LUT_PRECISION = .00011f;
-    public static final int SINCOS_LUT_LENGTH = (int) Math.ceil(Math.PI * 2 / SINCOS_LUT_PRECISION);
+    public static final int SINCOS_LUT_LENGTH = (int) Math.ceil(Math.PI * 2.0 / (double) SINCOS_LUT_PRECISION);
     /**
      * Use if the table's precision is large (eg .006 or greater). Although it is more expensive, it
      * greatly increases accuracy. Look in the MathUtils source for some test results on the accuracy
@@ -243,7 +243,7 @@ public class Settings {
      * @return
      */
     public static float mixFriction(float friction1, float friction2) {
-        return (float) Math.sqrt(friction1 * friction2);
+        return (float) Math.sqrt((double) (friction1 * friction2));
     }
 
     /**

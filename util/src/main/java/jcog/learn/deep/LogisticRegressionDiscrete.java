@@ -22,7 +22,7 @@ public class LogisticRegressionDiscrete extends LogisticRegression {
         double[] dy = new double[n_out];
 
         for(int i = 0; i<n_out; i++) {
-            p_y_given_x[i] = 0;
+            p_y_given_x[i] = (double) 0;
             for(int j = 0; j<n_in; j++) {
                 p_y_given_x[i] += W[i][j] * x[j];
             }
@@ -44,9 +44,9 @@ public class LogisticRegressionDiscrete extends LogisticRegression {
 
     public void predict(int[] x, double[] y) {
         for(int i = 0; i<n_out; i++) {
-            y[i] = 0;
+            y[i] = (double) 0;
             for(int j = 0; j<n_in; j++) {
-                y[i] += W[i][j] * x[j];
+                y[i] += W[i][j] * (double) x[j];
             }
             y[i] += b[i];
         }
@@ -63,21 +63,21 @@ public class LogisticRegressionDiscrete extends LogisticRegression {
         int n_out = 2;
 
         double[][] train_X = {
-                {1, 1, 1, 0, 0, 0},
-                {1, 0, 1, 0, 0, 0},
-                {1, 1, 1, 0, 0, 0},
-                {0, 0, 1, 1, 1, 0},
-                {0, 0, 1, 1, 0, 0},
-                {0, 0, 1, 1, 1, 0}
+                {1.0, 1.0, 1.0, (double) 0, (double) 0, (double) 0},
+                {1.0, (double) 0, 1.0, (double) 0, (double) 0, (double) 0},
+                {1.0, 1.0, 1.0, (double) 0, (double) 0, (double) 0},
+                {(double) 0, (double) 0, 1.0, 1.0, 1.0, (double) 0},
+                {(double) 0, (double) 0, 1.0, 1.0, (double) 0, (double) 0},
+                {(double) 0, (double) 0, 1.0, 1.0, 1.0, (double) 0}
         };
 
         double[][] train_Y = {
-                {1, 0},
-                {1, 0},
-                {1, 0},
-                {0, 1},
-                {0, 1},
-                {0, 1}
+                {1.0, (double) 0},
+                {1.0, (double) 0},
+                {1.0, (double) 0},
+                {(double) 0, 1.0},
+                {(double) 0, 1.0},
+                {(double) 0, 1.0}
         };
 
 

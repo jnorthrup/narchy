@@ -218,10 +218,10 @@ public class DataTable extends Table implements Externalizable {
                 r[i] = (float) rr.getDouble(i);
             } else if (it == ColumnType.LONG) {
                 // || it == ColumnType.DOUBLE || it == ColumnType.INTEGER || it == ColumnType.LONG
-                r[i] = rr.getLong(i);
+                r[i] = (float) rr.getLong(i);
             } else if (it == ColumnType.INTEGER) {
                 // || it == ColumnType.DOUBLE || it == ColumnType.INTEGER || it == ColumnType.LONG
-                r[i] = rr.getInt(i);
+                r[i] = (float) rr.getInt(i);
             } else {
                 r[i] = Float.NaN; //TODO remove these
             }

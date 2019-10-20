@@ -36,7 +36,7 @@ public enum Perceive {
 
         Term xx = x.term();
 
-        MetaGoal.Perceive.learn(x, ((float)xx.volume())/Short.MAX_VALUE, n);
+        MetaGoal.Perceive.learn(x, ((float)xx.volume())/ (float) Short.MAX_VALUE, n);
 
         if (x instanceof SeriesBeliefTable.SeriesTask)
             return; //ignore
@@ -45,9 +45,9 @@ public enum Perceive {
         n.emotion.perceivedTaskStart.increment();
 
         byte punc = x.punc();
-        boolean cmd = punc == COMMAND;
+        boolean cmd = (int) punc == (int) COMMAND;
 
-        if (cmd || punc == GOAL && !x.isEternal()) {
+        if (cmd || (int) punc == (int) GOAL && !x.isEternal()) {
             if (execOperator(x, w)) {
 
             }
@@ -68,7 +68,7 @@ public enum Perceive {
                     float xPri = x.pri();
                     float xPriAfter = xPri * NAL.TaskEvalPriDecomposeRate;
                     x.pri(xPriAfter);
-                    float xp = (xPri - xPriAfter) / rt.size();
+                    float xp = (xPri - xPriAfter) / (float) rt.size();
                     for (Task y : rt) {
                         y.pri(xp);
                         perceive(y, w); //HACK

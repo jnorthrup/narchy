@@ -8,8 +8,8 @@ import java.util.ArrayList;
  * @version 0.4
  */
 public class Checkers {
-    private static final char TURN_DARK = 0x000F;
-    private static final char TURN_LIGHT = 0x00F0;
+    private static final char TURN_DARK = (char) 0x000F;
+    private static final char TURN_LIGHT = (char) 0x00F0;
     public final int HEIGHT;
     public final int WIDTH;
 
@@ -50,7 +50,7 @@ public class Checkers {
      * @return true if light player's turn, otherwise false
      */
     public boolean isTurnLight() {
-        return turn == TURN_LIGHT;
+        return (int) turn == (int) TURN_LIGHT;
     }
 
     /**
@@ -59,7 +59,7 @@ public class Checkers {
      * @return true if dark player's turn, otherwise false
      */
     public boolean isTurnDark() {
-        return turn == TURN_DARK;
+        return (int) turn == (int) TURN_DARK;
     }
 
 
@@ -290,7 +290,7 @@ public class Checkers {
      * is used in the <code>move</code> function.
      */
     private void advanceTurn() {
-        turn ^= 0x00FF;
+        turn = (char) ((int) turn ^ 0x00FF);
 
 
     }

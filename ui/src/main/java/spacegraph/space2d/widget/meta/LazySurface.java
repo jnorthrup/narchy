@@ -24,7 +24,7 @@ public class LazySurface extends MutableUnitContainer<Surface> {
     final AtomicInteger state = new AtomicInteger(0);
 
     public LazySurface(Supplier<Surface> async) {
-        this(async, ImageTexture.awesome("refresh" /* fa5: sync */).view(1)); //can this be shared?)
+        this(async, ImageTexture.awesome("refresh" /* fa5: sync */).view(1.0F)); //can this be shared?)
     }
 
     public LazySurface(Supplier<Surface> async, String msgWhileWaiting) {

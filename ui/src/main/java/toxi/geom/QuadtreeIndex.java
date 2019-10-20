@@ -66,7 +66,7 @@ public class QuadtreeIndex<V extends Vec2D> extends Rect implements SpatialIndex
     private float my;
 
     public QuadtreeIndex() {
-        this(null, 0.5f, 0.5f, 1, 1);
+        this(null, 0.5f, 0.5f, 1.0F, 1.0F);
     }
 
     public QuadtreeIndex(float x, float y, float w, float h) {
@@ -332,8 +332,8 @@ public class QuadtreeIndex<V extends Vec2D> extends Rect implements SpatialIndex
         type = Type.BRANCH;
 
         QuadtreeIndex<V> nw = this.nw, ne = this.ne, se = this.se, sw = this.sw;
-        float h2 = h / 2;
-        float w2 = w / 2;
+        float h2 = h / 2.0F;
+        float w2 = w / 2.0F;
         this.nw = new QuadtreeIndex(this, x, y, w2, h2);
         this.ne = new QuadtreeIndex(this, mx, y, w2, h2);
         this.sw = new QuadtreeIndex(this, x, my, w2, h2);

@@ -42,7 +42,7 @@ public final class BytesInput implements DataInput {
 
     public boolean readBoolean() {
 
-        int ch = this.bb.get();
+        int ch = (int) this.bb.get();
         return ch != 0;
 
     }
@@ -53,7 +53,7 @@ public final class BytesInput implements DataInput {
     }
 
     public int readUnsignedByte() {
-        return this.bb.get() & 255;
+        return (int) this.bb.get() & 255;
 
     }
 
@@ -63,7 +63,7 @@ public final class BytesInput implements DataInput {
     }
 
     public int readUnsignedShort() {
-        return this.bb.getShort() & '\uffff';
+        return (int) this.bb.getShort() & (int) '\uffff';
 
     }
 

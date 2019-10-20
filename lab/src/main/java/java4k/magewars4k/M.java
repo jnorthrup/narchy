@@ -61,7 +61,7 @@ public class M extends Applet implements Runnable {
 	private static final int PORT = 6789;
 	private static final String GROUP = "228.5.6.7";
 	private static final int RATE = 100000000;
-	private static final long TIMEOUT = 1000000000;
+	private static final long TIMEOUT = 1000000000L;
 
 	
 	
@@ -96,9 +96,9 @@ public class M extends Applet implements Runnable {
 	private static final int MAPSIZE = 7;
 
 	private static final int DAPPLE = 32;
-	private static final float ENTITYRADIUS = 32f / TILESIZE * 32f / TILESIZE / 2f;
-	private static final float COLLISIONRADIUS = 48f / TILESIZE * 48f / TILESIZE / 2f;
-	private static final float CENTRE = ENTITYSIZE / 2 - 0.5f;
+	private static final float ENTITYRADIUS = 32f / (float) TILESIZE * 32f / (float) TILESIZE / 2f;
+	private static final float COLLISIONRADIUS = 48f / (float) TILESIZE * 48f / (float) TILESIZE / 2f;
+	private static final float CENTRE = (float) (ENTITYSIZE / 2) - 0.5f;
 	private static final int ENTITYSCALE = 4;
 
 	private static final int PLAIN = 0;
@@ -111,7 +111,7 @@ public class M extends Applet implements Runnable {
 	
 
 	
-	private static final float SCALEXYZ = TILESIZE * 100f;
+	private static final float SCALEXYZ = (float) TILESIZE * 100f;
 	private static final float DEGREES = 18000f / (float) Math.PI;
 
 	private static final float ROTATERATE = 1e-9f;
@@ -125,8 +125,8 @@ public class M extends Applet implements Runnable {
 	private static final int PLAYERHEALTH = 100;
 	private static final int ENEMYHEALTH = 20;
 
-	private static final float TOOCLOSE = 100f / TILESIZE;
-	private static final float TOOFAR = 400f / TILESIZE;
+	private static final float TOOCLOSE = 100f / (float) TILESIZE;
+	private static final float TOOFAR = 400f / (float) TILESIZE;
 
 	private static final int X = 0;
 	private static final int Y = 1;
@@ -157,7 +157,7 @@ public class M extends Applet implements Runnable {
 	private final int[][][] LANbuffer = new int[PLAYERS][ENTITIES][VARIABLES];
 
 	
-	private final int processID = (int) ((System.nanoTime() >> 16) & 0xffffffff);
+	private final int processID = (int) ((System.nanoTime() >> 16) & 0xffffffffL);
 	private boolean receiveThread; 
 
 	
@@ -211,7 +211,7 @@ public class M extends Applet implements Runnable {
                     InetAddress pa = rxPacket.getAddress();
 					j = rxPacket.getPort(); 
 					
-					k = ((rxMsg[3] & 0xff) << 24) + ((rxMsg[2] & 0xff) << 16) + ((rxMsg[1] & 0xff) << 8) + (rxMsg[0] & 0xff);
+					k = (((int) rxMsg[3] & 0xff) << 24) + (((int) rxMsg[2] & 0xff) << 16) + (((int) rxMsg[1] & 0xff) << 8) + ((int) rxMsg[0] & 0xff);
 					
 					if (k == processID)
 						continue;
@@ -220,7 +220,7 @@ public class M extends Applet implements Runnable {
 					x1 = 0; 
 					y1 = 0; 
 					for (i = 1; i < PLAYERS; i++) {
-						if (address[i] != null && address[i].equals(pa) && port[i] == j && process[i] == k && timestamp[i] + TIMEOUT >= time)
+						if (address[i] != null && address[i].equals(pa) && port[i] == j && process[i] == (long) k && timestamp[i] + TIMEOUT >= time)
 							x1 = i; 
 						if (timestamp[i] + TIMEOUT < time)
 							y1 = i; 
@@ -233,7 +233,7 @@ public class M extends Applet implements Runnable {
 							
 							address[x1] = InetAddress.getByAddress(pa.getAddress());
 							port[x1] = j; 
-							process[x1] = k; 
+							process[x1] = (long) k;
 						}
 					}
 					
@@ -250,7 +250,7 @@ public class M extends Applet implements Runnable {
                             int[] LANvars = LANbuffer[x1][i];
 							for (j = 0; j < VARIABLES; j++) {
 								k = IDSIZE + 4 * (i * VARIABLES + j);
-								LANvars[j] = ((rxMsg[k + 3] & 0xff) << 24) + ((rxMsg[k + 2] & 0xff) << 16) + ((rxMsg[k + 1] & 0xff) << 8) + (rxMsg[k] & 0xff);
+								LANvars[j] = (((int) rxMsg[k + 3] & 0xff) << 24) + (((int) rxMsg[k + 2] & 0xff) << 16) + (((int) rxMsg[k + 1] & 0xff) << 8) + ((int) rxMsg[k] & 0xff);
 							}
 							LANbuffer[x1][i] = LANdata[x1][i];
 							LANdata[x1][i] = LANvars; 
@@ -301,16 +301,16 @@ public class M extends Applet implements Runnable {
 
 		
 		for (i = 0; i < 36000; i++) { 
-			cos[i] = (float) Math.cos(i / DEGREES);
+			cos[i] = (float) Math.cos((double) (i / DEGREES));
 			sin[(i + 9000) % 36000] = cos[i];
 		}
 		for (i = 0; i < SCREENWIDTH; i++) { 
-			rayAngleFix[i] = (float) Math.atan2((SCREENWIDTH / 2 - i), SCREENDEPTH);
-			cosRayAngleFix[i] = (float) Math.cos(rayAngleFix[i]);
+			rayAngleFix[i] = (float) Math.atan2((double) (SCREENWIDTH / 2 - i), (double) SCREENDEPTH);
+			cosRayAngleFix[i] = (float) Math.cos((double) rayAngleFix[i]);
 		}
 		for (i = 0; i < DEPTH; i++)
 			
-			zMap[i] = DEPTH * DEPTHRATIO / (DEPTH * DEPTHRATIO - i) - 1f;
+			zMap[i] = (float) DEPTH * DEPTHRATIO / ((float) DEPTH * DEPTHRATIO - (float) i) - 1f;
 
 
         int[] cMap = new int[8];
@@ -336,15 +336,15 @@ public class M extends Applet implements Runnable {
 		float z;
 		float y;
 		for (i = 0; i < TILESIZE; i++) {
-            float p1 = (float) Math.cos(i / (float) TILESIZE * 2 * (float) Math.PI);
-            float m1 = (2f * i) / TILESIZE - 1f;
-			if (m1 < 0)
+            float p1 = (float) Math.cos((double) (i / (float) TILESIZE * 2.0F * (float) Math.PI));
+            float m1 = (2f * (float) i) / (float) TILESIZE - 1f;
+			if (m1 < (float) 0)
 				m1 = -m1;
 			m1 = 3f * (1f - m1);
 			for (j = 0; j < TILESIZE; j++) {
-                float p2 = (float) Math.cos(j / (float) TILESIZE * 2 * (float) Math.PI);
-                float m2 = (2f * j) / TILESIZE - 1f;
-				if (m2 < 0)
+                float p2 = (float) Math.cos((double) (j / (float) TILESIZE * 2.0F * (float) Math.PI));
+                float m2 = (2f * (float) j) / (float) TILESIZE - 1f;
+				if (m2 < (float) 0)
 					m2 = -m2;
 				m2 = 3f * (1f - m2);
 				
@@ -379,7 +379,7 @@ public class M extends Applet implements Runnable {
         String wizard = "000000000066660006777760067II760067YY7600567765004U44U40044444g0";
 		for (i = 0; i < ENTITYSIZE; i++) {
 			for (j = 0; j < ENTITYSIZE; j++) {
-				k = wizard.charAt(i + ENTITYSIZE * j) - 48;
+				k = (int) wizard.charAt(i + ENTITYSIZE * j) - 48;
 				entityHeight[i][j] = k & 15;
 				entityColour[i][j] = k / 16;
 			}
@@ -398,16 +398,16 @@ public class M extends Applet implements Runnable {
 
         boolean allowSpawn = false;
         int[] health = new int[ENEMIES + 1];
-		float angleY = 0;
-		float playerZ = 0;
-		float playerY = 0;
-		float playerX = 0;
+		float angleY = (float) 0;
+		float playerZ = (float) 0;
+		float playerY = (float) 0;
+		float playerX = (float) 0;
         float[] zBuffer = new float[SCREENHEIGHT * SCREENWIDTH];
-		float rayAngle = 0;
+		float rayAngle = (float) 0;
 		float[] entity1 = null;
         float[][] drawList2 = new float[PLAYERS * (ENEMIES + 1)][];
         float[][] drawList1 = new float[PLAYERS * (ENEMIES + 1)][];
-		long sendTime = 0;
+		long sendTime = 0L;
         int z1 = 0;
 		do {
             long lastTime = time;
@@ -435,7 +435,7 @@ public class M extends Applet implements Runnable {
 			
 
 			if (time > sendTime) {
-				sendTime = time + RATE;
+				sendTime = time + (long) RATE;
 
 				
 				for (i = 0; i < ENTITIES; i++) {
@@ -461,13 +461,13 @@ public class M extends Applet implements Runnable {
 					for (j = 0; j < ENTITIES; j++) {
 						LANentity = LANdata[i][j];
 						entity1 = localData[i][j];
-						if ((entity1[T] = LANentity[T]) != 0) {
+						if ((entity1[T] = (float) LANentity[T]) != (float) 0) {
                             long LANdeltaTime = time - timestamp[i];
 							for (k = X; k <= Z; k++) {
 								
-								entity1[k] = (LANentity[k] + LANdeltaTime * TRANSLATERATE * LANentity[VX + k]) / SCALEXYZ;
+								entity1[k] = ((float) LANentity[k] + (float) LANdeltaTime * TRANSLATERATE * (float) LANentity[VX + k]) / SCALEXYZ;
 							}
-							entity1[A] = LANentity[A];
+							entity1[A] = (float) LANentity[A];
 						}
 					}
 				}
@@ -481,7 +481,7 @@ public class M extends Applet implements Runnable {
 				if (timestamp[i] + TIMEOUT > time) { 
 					for (j = 0; j <= ENEMIES; j++) {
 						entity1 = localData[i][j];
-						if (entity1[T] != 0) { 
+						if (entity1[T] != (float) 0) {
 							
 							for (k = ENEMIES + 1; k < ENTITIES; k++) {
 								
@@ -491,7 +491,7 @@ public class M extends Applet implements Runnable {
 								if (j != 0 && k > ENEMIES + PLAYERFIREBALLS)
 									continue;
 								entity2 = localData[0][k]; 
-								if (entity2[T] != 0) { 
+								if (entity2[T] != (float) 0) {
 									
 									dx = entity1[X] - entity2[X];
 									dz = entity1[Z] - entity2[Z];
@@ -522,14 +522,14 @@ public class M extends Applet implements Runnable {
 				if (timestamp[i] + TIMEOUT > time) { 
 					for (j = ENEMIES + 1; j < ENTITIES; j++) {
 						entity2 = localData[i][j];
-						if (entity2[T] != 0) { 
+						if (entity2[T] != (float) 0) {
 							
 							for (k = 0; k <= ENEMIES; k++) {
 								
 								if (j > ENEMIES + PLAYERFIREBALLS && k != 0)
 									continue;
 								entity1 = localData[0][k]; 
-								if (entity1[T] != 0) { 
+								if (entity1[T] != (float) 0) {
 									
 									dx = entity1[X] - entity2[X];
 									dz = entity1[Z] - entity2[Z];
@@ -558,10 +558,10 @@ public class M extends Applet implements Runnable {
 			for (i = ENEMIES + 1; i < ENTITIES; i++) {
 				entity1 = localData[0][i];
 				
-				mapX = (int) (entity1[X] + 1000) - 1000;
-				mapZ = (int) (entity1[Z] + 1000) - 1000;
-				tileX = (int) (TILESIZE * (entity1[X] - mapX));
-				tileZ = (int) (TILESIZE * (entity1[Z] - mapZ));
+				mapX = (int) (entity1[X] + 1000.0F) - 1000;
+				mapZ = (int) (entity1[Z] + 1000.0F) - 1000;
+				tileX = (int) ((float) TILESIZE * (entity1[X] - (float) mapX));
+				tileZ = (int) ((float) TILESIZE * (entity1[Z] - (float) mapZ));
 
 				
 				tileType = MOUNTAIN;
@@ -580,34 +580,34 @@ public class M extends Applet implements Runnable {
 			
 
 			
-			if (keyboard[Event.LEFT] || keyboard['a']) 
-				angleY += ROTATERATE * deltaTime;
-			if (keyboard[Event.RIGHT] || keyboard['d']) 
-				angleY -= ROTATERATE * deltaTime;
+			if (keyboard[Event.LEFT] || keyboard[(int) 'a'])
+				angleY += ROTATERATE * (float) deltaTime;
+			if (keyboard[Event.RIGHT] || keyboard[(int) 'd'])
+				angleY -= ROTATERATE * (float) deltaTime;
 			angleY = (angleY + 2f * (float) Math.PI) % (2f * (float) Math.PI);
             float sinAngleY = sin[(int) (DEGREES * angleY)];
             float cosAngleY = cos[(int) (DEGREES * angleY)];
 
 
-			float rx = 0;
-			float rz = 0;
-			if (keyboard[Event.UP] || keyboard['w']) { 
+			float rx = (float) 0;
+			float rz = (float) 0;
+			if (keyboard[Event.UP] || keyboard[(int) 'w']) {
 				rx = -sinAngleY;
 				rz = -cosAngleY;
 			}
-			if (keyboard[Event.DOWN] || keyboard['s']) { 
+			if (keyboard[Event.DOWN] || keyboard[(int) 's']) {
 
 				rx = sinAngleY;
 				rz = cosAngleY;
 			}
 
 
-            float x = playerX + TRANSLATERATE * deltaTime * rx;
-			z = playerZ + TRANSLATERATE * deltaTime * rz;
-			mapX = (int) (x + 1000) - 1000;
-			mapZ = (int) (z + 1000) - 1000;
-			tileX = (int) (TILESIZE * (x - mapX));
-			tileZ = (int) (TILESIZE * (z - mapZ));
+            float x = playerX + TRANSLATERATE * (float) deltaTime * rx;
+			z = playerZ + TRANSLATERATE * (float) deltaTime * rz;
+			mapX = (int) (x + 1000.0F) - 1000;
+			mapZ = (int) (z + 1000.0F) - 1000;
+			tileX = (int) ((float) TILESIZE * (x - (float) mapX));
+			tileZ = (int) ((float) TILESIZE * (z - (float) mapZ));
 
 			
 			tileType = MOUNTAIN;
@@ -617,8 +617,8 @@ public class M extends Applet implements Runnable {
 			
 			y = tiles[tileType][tileX][tileZ];
 
-			if (y >= 2) {
-				rx = rz = 0;
+			if (y >= 2.0F) {
+				rx = rz = (float) 0;
 			} else {
 				playerX = x;
 				playerY = y;
@@ -644,20 +644,20 @@ public class M extends Applet implements Runnable {
 			float depth;
 			for (j = 1; j <= ENEMIES; j++) {
 				entity1 = localData[0][j];
-				if (entity1[T] != 0) { 
+				if (entity1[T] != (float) 0) {
 					dx = entity1[X] - entity2[X];
                     float dy = entity1[Y] - entity2[Y];
 					dz = entity1[Z] - entity2[Z];
 					depth = dx * dx + dz * dz;
 
 					
-					k = ((entity1[X] - 3.5f) * (entity1[Z] - 3.5f) > 0) ? -1 : 1;
-					x = dx + (j - (ENEMIES + 1) / 2f) * 0.1f * k;
-					z = dz + (j - (ENEMIES + 1) / 2f) * 0.1f;
+					k = ((entity1[X] - 3.5f) * (entity1[Z] - 3.5f) > (float) 0) ? -1 : 1;
+					x = dx + ((float) j - (float) (ENEMIES + 1) / 2f) * 0.1f * (float) k;
+					z = dz + ((float) j - (float) (ENEMIES + 1) / 2f) * 0.1f;
 
 					
 					
-					angle = (int) (Math.atan2(x, z) * DEGREES);
+					angle = (int) (Math.atan2((double) x, (double) z) * (double) DEGREES);
 					angle = (angle + 36000) % 36000;
 					x = sin[angle]; 
 					z = cos[angle]; 
@@ -665,7 +665,7 @@ public class M extends Applet implements Runnable {
 					
 					
 					dy = (dy - 1f) / dx;
-					angle = (int) (Math.atan2(dx, dz) * DEGREES);
+					angle = (int) (Math.atan2((double) dx, (double) dz) * (double) DEGREES);
 					angle = (angle + 36000) % 36000;
 					dx = sin[angle]; 
 					dy *= dx;
@@ -686,9 +686,9 @@ public class M extends Applet implements Runnable {
 						LANdata[0][j][VZ] = +(int) (z * SCALEXYZ);
 						
 						if (angle > 19000) {
-							LANdata[0][j][A] -= (int) (ROTATERATE * 10f * deltaTime * DEGREES);
+							LANdata[0][j][A] -= (int) (ROTATERATE * 10f * (float) deltaTime * DEGREES);
 						} else if (angle < 17000) {
-							LANdata[0][j][A] += (int) (ROTATERATE * 10f * deltaTime * DEGREES);
+							LANdata[0][j][A] += (int) (ROTATERATE * 10f * (float) deltaTime * DEGREES);
 						}
 						LANdata[0][j][A] = (LANdata[0][j][A] + 36000) % 36000;
 
@@ -699,9 +699,9 @@ public class M extends Applet implements Runnable {
 						LANdata[0][j][VZ] = -(int) (z * SCALEXYZ);
 						
 						if (angle > 1000 && angle < 18000) {
-							LANdata[0][j][A] -= (int) (ROTATERATE * 10f * deltaTime * DEGREES);
+							LANdata[0][j][A] -= (int) (ROTATERATE * 10f * (float) deltaTime * DEGREES);
 						} else if (angle < 35000 && angle > 18000) {
-							LANdata[0][j][A] += (int) (ROTATERATE * 10f * deltaTime * DEGREES);
+							LANdata[0][j][A] += (int) (ROTATERATE * 10f * (float) deltaTime * DEGREES);
 						}
 						LANdata[0][j][A] = (LANdata[0][j][A] + 36000) % 36000;
 
@@ -709,15 +709,15 @@ public class M extends Applet implements Runnable {
 					} else {
 						
 						if (angle > 1000 && angle < 18000) {
-							LANdata[0][j][A] -= (int) (ROTATERATE * 10f * deltaTime * DEGREES);
+							LANdata[0][j][A] -= (int) (ROTATERATE * 10f * (float) deltaTime * DEGREES);
 						} else if (angle < 35000 && angle > 18000) {
-							LANdata[0][j][A] += (int) (ROTATERATE * 10f * deltaTime * DEGREES);
+							LANdata[0][j][A] += (int) (ROTATERATE * 10f * (float) deltaTime * DEGREES);
 						}
 						LANdata[0][j][A] = (LANdata[0][j][A] + 36000) % 36000;
 
 						
 						
-						if (localData[0][j + ENEMIES + PLAYERFIREBALLS][T] == 0 && (angle < 1000 || angle > 35000)) {
+						if (localData[0][j + ENEMIES + PLAYERFIREBALLS][T] == (float) 0 && (angle < 1000 || angle > 35000)) {
 
 							
 							LANdata[0][j + ENEMIES + PLAYERFIREBALLS][X] = LANdata[0][j][X];
@@ -742,7 +742,7 @@ public class M extends Applet implements Runnable {
 			float cosRayAngle;
 			if (mouse) {
 				for (i = ENEMIES + 1; i <= ENEMIES + PLAYERFIREBALLS; i++) {
-					if (localData[0][i][T] == 0) {
+					if (localData[0][i][T] == (float) 0) {
 						
 						mouse = false;
 						if (mouseX >= 00 && mouseX < SCREENWIDTH) {
@@ -759,7 +759,7 @@ public class M extends Applet implements Runnable {
 
 							LANdata[0][i][VX] = -(int) (sinRayAngle * 2f * SCALEXYZ);
 							
-							LANdata[0][i][VY] = -(int) (40f * ((float) (mouseY - SCREENHEIGHT / 2) / SCREENHEIGHT) * SCALEXYZ);
+							LANdata[0][i][VY] = -(int) (40f * ((float) (mouseY - SCREENHEIGHT / 2) / (float) SCREENHEIGHT) * SCALEXYZ);
 							LANdata[0][i][VZ] = -(int) (cosRayAngle * 2f * SCALEXYZ);
 
 							
@@ -776,7 +776,7 @@ public class M extends Applet implements Runnable {
 			
 
 			for (i = ENEMIES + 1; i < ENTITIES; i++) {
-				if (localData[0][i][T] != 0) { 
+				if (localData[0][i][T] != (float) 0) {
 					if (fireballTimeout[i - ENEMIES - 1] < time) {
 						LANdata[0][i][T] = 0;
 					}
@@ -788,10 +788,10 @@ public class M extends Applet implements Runnable {
 			
 
 			for (i = 1; i < ENTITIES; i++) {
-				if (localData[0][i][T] != 0) { 
+				if (localData[0][i][T] != (float) 0) {
 					LANentity = LANdata[0][i];
 					for (j = X; j <= Z; j++) {
-						LANentity[j] += deltaTime * TRANSLATERATE * LANentity[j + VX];
+                        LANentity[j] = (int) ((float) LANentity[j] + (float) deltaTime * TRANSLATERATE * (float) LANentity[j + VX]);
 					}
 				}
 			}
@@ -803,10 +803,10 @@ public class M extends Applet implements Runnable {
 			for (i = 1; i <= ENEMIES; i++) {
 				x = localData[0][i][X];
 				z = localData[0][i][Z];
-				mapX = (int) (x + 1000) - 1000;
-				mapZ = (int) (z + 1000) - 1000;
-				tileX = (int) (TILESIZE * (x - mapX));
-				tileZ = (int) (TILESIZE * (z - mapZ));
+				mapX = (int) (x + 1000.0F) - 1000;
+				mapZ = (int) (z + 1000.0F) - 1000;
+				tileX = (int) ((float) TILESIZE * (x - (float) mapX));
+				tileZ = (int) ((float) TILESIZE * (z - (float) mapZ));
 
 				
 				tileType = MOUNTAIN;
@@ -827,7 +827,7 @@ public class M extends Applet implements Runnable {
 				if (timestamp[i] + TIMEOUT > time) { 
 					for (j = 1; j <= ENEMIES; j++) {
 						entity1 = localData[i][j];
-						if (entity1[T] > 0) {
+						if (entity1[T] > (float) 0) {
 							if ((playerX > 3.5f) == (entity1[X] > 3.5f) && (playerZ > 3.5f) == (entity1[Z] > 3.5f))
 								found = true;
 							break;
@@ -863,8 +863,8 @@ public class M extends Applet implements Runnable {
 				if (allowSpawn && !castle[(j - 1) / 4 + 2 * ((k - 1) / 4)]) {
 					
 					for (i = 1; i <= ENEMIES; i++) {
-						LANdata[0][i][X] = (int) ((j + 0.5f) * SCALEXYZ);
-						LANdata[0][i][Z] = (int) ((k + 0.5f) * SCALEXYZ);
+						LANdata[0][i][X] = (int) (((float) j + 0.5f) * SCALEXYZ);
+						LANdata[0][i][Z] = (int) (((float) k + 0.5f) * SCALEXYZ);
 						LANdata[0][i][T] = (i % 6) + 1;
 						health[i] = ENEMYHEALTH;
 					}
@@ -883,7 +883,7 @@ public class M extends Applet implements Runnable {
 							
 							dx = entity1[X] - playerX;
 							dz = entity1[Z] - playerZ;
-							if (dx * dx + dz * dz < ENTITYDEPTH && dx * sinAngleY + dz * cosAngleY < 0)
+							if (dx * dx + dz * dz < ENTITYDEPTH && dx * sinAngleY + dz * cosAngleY < (float) 0)
 								drawList1[drawCount1++] = entity1;
 						}
 					}
@@ -920,10 +920,10 @@ public class M extends Applet implements Runnable {
 					z = playerZ - cosRayAngle * depth;
 
 					
-					mapX = (int) (x + 1000) - 1000;
-					mapZ = (int) (z + 1000) - 1000;
-					tileX = (int) (TILESIZE * (x - mapX));
-					tileZ = (int) (TILESIZE * (z - mapZ));
+					mapX = (int) (x + 1000.0F) - 1000;
+					mapZ = (int) (z + 1000.0F) - 1000;
+					tileX = (int) ((float) TILESIZE * (x - (float) mapX));
+					tileZ = (int) ((float) TILESIZE * (z - (float) mapZ));
 
 					
 					tileType = MOUNTAIN;
@@ -946,8 +946,8 @@ public class M extends Applet implements Runnable {
 							angle = (int) entity1[A];
 
 							
-							dx = dx * TILESIZE / ENTITYSCALE;
-							dz = dz * TILESIZE / ENTITYSCALE;
+							dx = dx * (float) TILESIZE / (float) ENTITYSCALE;
+							dz = dz * (float) TILESIZE / (float) ENTITYSCALE;
 
 							
 							x1 = (int) (dx * cos[angle] - dz * sin[angle] + CENTRE);
@@ -968,7 +968,7 @@ public class M extends Applet implements Runnable {
 					colour = 0x000200; 
 					if (drawObject) {
 						
-						y += (float) entityHeight[x1][z1] / ENTITYSCALE;
+						y += (float) entityHeight[x1][z1] / (float) ENTITYSCALE;
 						switch (entityColour[x1][z1]) {
 						case 0:
 							colour = (cMap[(int) entity1[T]] & 0x007f7f7f) + 0x080808 * (x1 + z1);
@@ -1013,7 +1013,7 @@ public class M extends Applet implements Runnable {
 								colour += 0x010101;
 						}
 						
-						colour *= (int) (16 * ((4f + (y < 2f ? y / 1f : 2f)) / (1f + depth))) & 255;
+						colour *= (int) (16.0F * ((4f + (y < 2f ? y / 1f : 2f)) / (1f + depth))) & 255;
 					}
 
 					
@@ -1050,7 +1050,7 @@ public class M extends Applet implements Runnable {
 				if (timestamp[i] + TIMEOUT > time) { 
 					for (j = ENEMIES + 1; j < ENTITIES; j++) {
 						entity1 = localData[i][j];
-						if (entity1[T] != 0) { 
+						if (entity1[T] != (float) 0) {
 
 							
 							dx = entity1[X] - playerX;
@@ -1059,17 +1059,17 @@ public class M extends Applet implements Runnable {
 							rz = dx * sinAngleY + dz * cosAngleY;
 
 							
-							if (dx * dx + dz * dz < ENTITYDEPTH && rz < 0) {
+							if (dx * dx + dz * dz < ENTITYDEPTH && rz < (float) 0) {
                                 int sx = SCREENWIDTH / 2 - (int) (SCREENDEPTH * rx / rz);
 								sy = SCREENHEIGHT / 2 + (int) (20f * (entity1[Y] - playerY - PLAYERHEIGHT) / rz);
 								
-								drawCount1 = (int) (50 / (rz * rz));
+								drawCount1 = (int) (50.0F / (rz * rz));
 								if (drawCount1 > 50000)
 									drawCount1 = 50000;
 								colour = cMap[(int) entity1[T]];
 								for (k = 0; k < drawCount1; k++) {
 									radius = 5f * (float) Math.random() / rz;
-									angle = (int) (36000 * Math.random());
+									angle = (int) (36000.0 * Math.random());
 									x1 = sx + (int) (radius * sin[angle]);
 									y1 = sy + (int) (radius * cos[angle]);
 									if (x1 > 0 && x1 < SCREENWIDTH && y1 >= 0 && y1 < SCREENHEIGHT) {

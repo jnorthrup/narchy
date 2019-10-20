@@ -15,7 +15,7 @@ public class DiscreteTruth implements Truth {
 
     private final int hash;
 
-    private static final DiscreteTruth[] shared = new DiscreteTruth[(int) Util.sqr(Math.ceil(1f/NAL.truth.TRUTH_EPSILON))];
+    private static final DiscreteTruth[] shared = new DiscreteTruth[(int) Util.sqr(Math.ceil((double) (1f / NAL.truth.TRUTH_EPSILON)))];
 
     /** gets the shared instance */
     public static DiscreteTruth the(float f, float c) {
@@ -40,8 +40,8 @@ public class DiscreteTruth implements Truth {
 
     private DiscreteTruth(float f, float c, float freqRes, float confRes) {
         this(
-            Truth.freq(f, freqRes),
-            Truth.conf(c, confRes)
+                (double) Truth.freq(f, freqRes),
+            Truth.conf((double) c, confRes)
         );
     }
 
@@ -51,17 +51,17 @@ public class DiscreteTruth implements Truth {
 
     @Override
     public Truth neg() {
-        return PreciseTruth.byEvi(1 - freq(), evi());
+        return PreciseTruth.byEvi(1.0F - freq(), evi());
     }
 
     @Override
     public float freq() {
-        return Util.toFloat(Truth.freqI(hash) /* & 0xffff*/, hashDiscretenessCoarse);
+        return Util.toFloat(Truth.freqI(hash) /* & 0xffff*/, (int) hashDiscretenessCoarse);
     }
 
     @Override
     public double confDouble() {
-        return Util.toFloat(Truth.confI(hash), hashDiscretenessCoarse);
+        return (double) Util.toFloat(Truth.confI(hash), (int) hashDiscretenessCoarse);
     }
 
     @Override

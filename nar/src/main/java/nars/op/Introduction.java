@@ -54,7 +54,7 @@ public abstract class Introduction extends TaskTransformAction {
                 });
 
         if (yy != null) {
-            yy.pri(0); //HACK
+            yy.pri((float) 0); //HACK
             Task.fund(yy, xt, ((TaskLinkWhat)w).links.grow.floatValue() /* priFactor.floatValue() */, true);
         }
         return yy;

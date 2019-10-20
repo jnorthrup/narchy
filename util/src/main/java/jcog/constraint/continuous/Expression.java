@@ -15,7 +15,7 @@ public class Expression {
     private final double constant;
 
     public Expression() {
-        this(0);
+        this((double) 0);
     }
 
     public Expression(double constant) {
@@ -39,7 +39,7 @@ public class Expression {
     }
 
     public Expression(List<DoubleTerm> terms) {
-        this(terms, 0);
+        this(terms, (double) 0);
     }
 
     public double getConstant() {

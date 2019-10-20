@@ -34,7 +34,7 @@ public class BulletBill extends Sprite {
         yPic = 5;
 
         xPic = 0;
-        ya = -5;
+        ya = -5.0F;
         this.facing = dir;
     }
 
@@ -44,15 +44,15 @@ public class BulletBill extends Sprite {
 
         float xMarioD = world.mario.x - x;
         float yMarioD = world.mario.y - y;
-        float w = 16;
+        float w = 16.0F;
         if (xMarioD > -w && xMarioD < w) {
-            if (yMarioD > -height && yMarioD < world.mario.height) {
-                if (world.mario.ya > 0 && yMarioD <= 0 && (!world.mario.onGround || !world.mario.wasOnGround)) {
+            if (yMarioD > (float) -height && yMarioD < (float) world.mario.height) {
+                if (world.mario.ya > (float) 0 && yMarioD <= (float) 0 && (!world.mario.onGround || !world.mario.wasOnGround)) {
                     world.mario.stomp(this);
                     dead = true;
 
-                    xa = 0;
-                    ya = 1;
+                    xa = (float) 0;
+                    ya = 1.0F;
                     deadTime = 100;
                 } else {
                     world.mario.getHurt();
@@ -69,24 +69,24 @@ public class BulletBill extends Sprite {
             if (deadTime == 0) {
                 deadTime = 1;
                 for (int i = 0; i < 8; i++) {
-                    world.addSprite(new Sparkle((int) (x + Math.random() * 16 - 8) + 4, (int) (y - Math.random() * 8) + 4, (float) (Math.random() * 2 - 1), (float) Math.random() * -1, 0, 1, 5));
+                    world.addSprite(new Sparkle((int) ((double) x + Math.random() * 16.0 - 8.0) + 4, (int) ((double) y - Math.random() * 8.0) + 4, (float) (Math.random() * 2.0 - 1.0), (float) Math.random() * -1.0F, 0, 1, 5));
                 }
                 spriteContext.removeSprite(this);
             }
 
             x += xa;
             y += ya;
-            ya *= 0.95;
-            ya += 1;
+            ya = (float) ((double) ya * 0.95);
+            ya += 1.0F;
 
             return;
         }
 
         float sideWaysSpeed = 4f;
 
-        xa = facing * sideWaysSpeed;
+        xa = (float) facing * sideWaysSpeed;
         xFlipPic = facing == -1;
-        move(xa, 0);
+        move(xa, (float) 0);
     }
 
     private boolean move(float xa, float ya) {
@@ -101,8 +101,8 @@ public class BulletBill extends Sprite {
         float xD = fireball.x - x;
         float yD = fireball.y - y;
 
-        if (xD > -16 && xD < 16) {
-            return yD > -height && yD < fireball.height;
+        if (xD > -16.0F && xD < 16.0F) {
+            return yD > (float) -height && yD < (float) fireball.height;
         }
         return false;
     }
@@ -114,14 +114,14 @@ public class BulletBill extends Sprite {
         float xD = shell.x - x;
         float yD = shell.y - y;
 
-        if (xD > -16 && xD < 16) {
-            if (yD > -height && yD < shell.height) {
+        if (xD > -16.0F && xD < 16.0F) {
+            if (yD > (float) -height && yD < (float) shell.height) {
 
 
                 dead = true;
 
-                xa = 0;
-                ya = 1;
+                xa = (float) 0;
+                ya = 1.0F;
                 deadTime = 100;
 
                 return true;

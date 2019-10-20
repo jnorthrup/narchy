@@ -41,7 +41,7 @@ public class CircleShape extends Shape {
     public CircleShape() {
         super(ShapeType.CIRCLE);
         center = new v2();
-        skinRadius = 0;
+        skinRadius = (float) 0;
     }
 
     public CircleShape(float radius) {
@@ -124,9 +124,9 @@ public class CircleShape extends Shape {
         float centery = xfq.s * center.x + xfq.c * center.y + xf.pos.y;
         float dx = p.x - centerx;
         float dy = p.y - centery;
-        float d1 = (float) Math.sqrt(dx * dx + dy * dy);
-        normalOut.x = dx * 1 / d1;
-        normalOut.y = dy * 1 / d1;
+        float d1 = (float) Math.sqrt((double) (dx * dx + dy * dy));
+        normalOut.x = dx * 1.0F / d1;
+        normalOut.y = dy * 1.0F / d1;
         return d1 - skinRadius;
     }
 
@@ -167,7 +167,7 @@ public class CircleShape extends Shape {
         }
 
 
-        float a = -(c + (float) Math.sqrt(sigma));
+        float a = -(c + (float) Math.sqrt((double) sigma));
 
         
         if (0.0f <= a && a <= input.maxFraction * rr) {

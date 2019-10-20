@@ -30,12 +30,12 @@ package spacegraph.space3d.phys.collision.broad;
  */
 public class CollisionFilterGroups {
 
-	public static final short DEFAULT_FILTER   = 1;
-	public static final short STATIC_FILTER    = 2;
-	public static final short KINEMATIC_FILTER = 4;
-	public static final short DEBRIS_FILTER    = 8;
-	public static final short SENSOR_TRIGGER   = 16;
-	public static final short CHARACTER_FILTER = 32;
-	public static final short ALL_FILTER       = -1; 
+	public static final short DEFAULT_FILTER   = (short) 1;
+	public static final short STATIC_FILTER    = (short) 2;
+	public static final short KINEMATIC_FILTER = (short) 4;
+	public static final short DEBRIS_FILTER    = (short) 8;
+	public static final short SENSOR_TRIGGER   = (short) 16;
+	public static final short CHARACTER_FILTER = (short) 32;
+	public static final short ALL_FILTER       = (short) -1;
 	
 }

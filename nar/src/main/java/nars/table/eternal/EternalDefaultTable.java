@@ -22,7 +22,7 @@ public class EternalDefaultTable extends DynamicTaskTable {
     public final MutableTruth truth;
 
     private EternalDefaultTable(Concept c, Truth t, byte punc, NAR n) {
-        super(c.term(), punc == BELIEF);
+        super(c.term(), (int) punc == (int) BELIEF);
 
         long[] stamp = n.evidence();
         long creation = n.time();

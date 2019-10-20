@@ -19,7 +19,7 @@ public class CosineWindow extends WaveFactory {
         int size = bufferSize;
         ArrayTensor b = new ArrayTensor(size);
         for (int i = 0; i < bufferSize; i++) {
-            b.data[i] = (float) Math.sin((double) i / bufferSize * Math.PI);
+            b.data[i] = (float) Math.sin((double) i / (double) bufferSize * Math.PI);
         }
         return b;
     }

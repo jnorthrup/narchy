@@ -26,12 +26,12 @@ public class FunctionRenderer2D extends JPanel {
             int n = 20;
             for (int i = 0; i < n; ++i) {
                 int x = i * getWidth() / n;
-                double mx = (i + 0.5) / n;
+                double mx = ((double) i + 0.5) / (double) n;
 
                 for (int j = 0; j < n; ++j) {
 
                     int y = j * getHeight() / n;
-                    double my = (j + 0.5) / n;
+                    double my = ((double) j + 0.5) / (double) n;
 
                     double z = renderFunction2D.compute(mx, my);
 

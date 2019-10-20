@@ -123,7 +123,7 @@ public interface Termlike {
      * average of complexity and volume
      */
     default float voluplexity() {
-        return (complexity() + volume()) / 2f;
+        return (float) (complexity() + volume()) / 2f;
     }
 
 

@@ -114,7 +114,7 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
      * @return the angle in radians in the range [0,PI]
      */
     public final float angle(v2 v1) {
-        double vDot = this.dot(v1) / (this.lengthSquared());
+        double vDot = (double) (this.dot(v1) / (this.lengthSquared()));
         if (vDot < -1.0) vDot = -1.0;
         if (vDot > 1.0) vDot = 1.0;
         return ((float) (Math.acos(vDot)));
@@ -130,12 +130,12 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
     }
 
     public boolean inUnit() {
-        return x >= 0 && x <= 1f && y >= 0 && y <= 1f;
+        return x >= (float) 0 && x <= 1f && y >= (float) 0 && y <= 1f;
     }
 
     public boolean inUnit(float scale) {
         float xx = x * scale, yy = y * scale;
-        return (xx >= 0 && xx <= 1f && yy >= 0 && yy <= 1f);
+        return (xx >= (float) 0 && xx <= 1f && yy >= (float) 0 && yy <= 1f);
     }
 
 //    public float minDimension() {
@@ -164,7 +164,7 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
      * @return the length of this vector
      */
     public final float length() {
-        return (float) Math.sqrt(this.x * this.x + this.y * this.y);
+        return (float) Math.sqrt((double) (this.x * this.x + this.y * this.y));
     }
 
     /**
@@ -468,8 +468,8 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
      */
     public int hashCode() {
         long bits = 1L;
-        bits = 31L * bits + VecMathUtil.floatToIntBits(x);
-        bits = 31L * bits + VecMathUtil.floatToIntBits(y);
+        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(x);
+        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(y);
         return (int) (bits ^ (bits >> 32));
     }
 
@@ -660,8 +660,8 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
      * @param alpha the alpha interpolation parameter
      */
     public final void interpolate(v2 t1, v2 t2, float alpha) {
-        this.x = (1 - alpha) * t1.x + alpha * t2.x;
-        this.y = (1 - alpha) * t1.y + alpha * t2.y;
+        this.x = (1.0F - alpha) * t1.x + alpha * t2.x;
+        this.y = (1.0F - alpha) * t1.y + alpha * t2.y;
     }
 
 
@@ -674,8 +674,8 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
      */
     public final void interpolate(v2 t1, float alpha) {
 
-        this.x = (1 - alpha) * this.x + alpha * t1.x;
-        this.y = (1 - alpha) * this.y + alpha * t1.y;
+        this.x = (1.0F - alpha) * this.x + alpha * t1.x;
+        this.y = (1.0F - alpha) * this.y + alpha * t1.y;
 
     }
 
@@ -703,14 +703,14 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
     public final float normalize(float scale) {
         float sqrNorm = (this.x * this.x + this.y * this.y);
         if (sqrNorm >= Float.MIN_NORMAL) {
-            float norm = (float) Math.sqrt(sqrNorm);
+            float norm = (float) Math.sqrt((double) sqrNorm);
             if (norm >= Util.sqrtMIN_NORMAL) {
                 set(scale * this.x / norm, scale * this.y / norm);
                 return norm;
             }
         }
-        this.x = this.y = 0;
-        return 0;
+        this.x = this.y = (float) 0;
+        return (float) 0;
     }
 
     /**
@@ -758,11 +758,11 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
 
 
     public float distanceSq(v2 v) {
-        return v == this ? 0 : Util.sqr(x - v.x) + Util.sqr(y - v.y);
+        return v == this ? (float) 0 : Util.sqr(x - v.x) + Util.sqr(y - v.y);
     }
 
     public final void setZero() {
-        set(0, 0);
+        set((float) 0, (float) 0);
     }
 
     public v2 addToNew(v2 u) {
@@ -795,7 +795,7 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
     }
 
     public float distance(v2 x) {
-        return (float) Math.sqrt(distanceSq(x));
+        return (float) Math.sqrt((double) distanceSq(x));
     }
 
     /**
@@ -824,15 +824,15 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
         float dx = nx - px;
         if (dx < Spatialization.EPSILONf) {
             px = this.x = nx;
-            dx = 0;
+            dx = (float) 0;
         }
         float dy = ny - py;
         if (dy < Spatialization.EPSILONf) {
             py = this.y = ny;
-            dy = 0;
+            dy = (float) 0;
         }
 
-        if (dx == 0 && dy == 0)
+        if (dx == (float) 0 && dy == (float) 0)
             return false;
 
         if (lerpOrLinear) {
@@ -844,7 +844,7 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
             if (lenSq < rate * rate) {
                 set(nx, ny); //finished
             } else {
-                added(new v2(dx, dy).scaled((float) (rate / Math.sqrt(lenSq))));
+                added(new v2(dx, dy).scaled((float) ((double) rate / Math.sqrt((double) lenSq))));
             }
 
         }

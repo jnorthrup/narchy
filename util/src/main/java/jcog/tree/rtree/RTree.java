@@ -235,7 +235,7 @@ public class RTree<X> implements Space<X> {
     public Stats stats() {
         Stats stats = new Stats();
         stats.setType(model);
-        stats.setMaxFill(model.max);
+        stats.setMaxFill((int) model.max);
 
         root.collectStats(stats, 0);
         return stats;

@@ -137,7 +137,7 @@ public enum BigArrays {
 	 * @return the associated displacement (in the associated {@linkplain #segment(long) segment}).
 	 */
 	public static int displacement( long index ) {
-		return (int)( index & SEGMENT_MASK );
+		return (int)( index & (long) SEGMENT_MASK);
 	}
 	
 	/** Computes the starting index of a given segment.
@@ -157,7 +157,7 @@ public enum BigArrays {
 	 * {@link #displacement(long) displacement(index(segment, displacement)) == displacement}.
 	 */
 	public static long index( int segment, int displacement ) {
-		return start( segment ) + displacement;
+		return start( segment ) + (long) displacement;
 	}
 	
 	/** Ensures that a range given by its first (inclusive) and last (exclusive) elements fits a big array of given length.
@@ -171,7 +171,7 @@ public enum BigArrays {
 	 * @throws ArrayIndexOutOfBoundsException if <code>from</code> or <code>to</code> are greater than <code>bigArrayLength</code> or negative.
 	 */
 	public static void ensureFromTo( long bigArrayLength, long from, long to ) {
-		if ( from < 0 ) throw new ArrayIndexOutOfBoundsException( "Start index (" + from + ") is negative" );
+		if ( from < 0L) throw new ArrayIndexOutOfBoundsException( "Start index (" + from + ") is negative" );
 		if ( from > to ) throw new IllegalArgumentException( "Start index (" + from + ") is greater than end index (" + to + ')');
 		if ( to > bigArrayLength ) throw new ArrayIndexOutOfBoundsException( "End index (" + to + ") is greater than big-array length (" + bigArrayLength + ')');
 	}
@@ -187,8 +187,8 @@ public enum BigArrays {
 	 * @throws ArrayIndexOutOfBoundsException if <code>offset</code> is negative or <code>offset</code>+<code>length</code> is greater than <code>bigArrayLength</code>.
 	 */
 	public static void ensureOffsetLength( long bigArrayLength, long offset, long length ) {
-		if ( offset < 0 ) throw new ArrayIndexOutOfBoundsException( "Offset (" + offset + ") is negative" );
-		if ( length < 0 ) throw new IllegalArgumentException( "Length (" + length + ") is negative" );
+		if ( offset < 0L) throw new ArrayIndexOutOfBoundsException( "Offset (" + offset + ") is negative" );
+		if ( length < 0L) throw new IllegalArgumentException( "Length (" + length + ") is negative" );
 		if ( offset + length > bigArrayLength ) throw new ArrayIndexOutOfBoundsException( "Last index (" + ( offset + length ) + ") is greater than big-array length (" + bigArrayLength + ')');
 	}
 
@@ -204,7 +204,7 @@ public enum BigArrays {
 	 */
 	private static void inPlaceMerge( long from, long mid, long to, LongComparator comp, BigSwapper swapper ) {
 		if ( from >= mid || mid >= to ) return;
-		if ( to - from == 2 ) {
+		if ( to - from == 2L) {
 			if ( comp.compare( mid, from ) < 0 ) {
 				swapper.swap( from, mid );
 			}
@@ -213,11 +213,11 @@ public enum BigArrays {
 		long firstCut;
 		long secondCut;
 		if ( mid - from > to - mid ) {
-			firstCut = from + ( mid - from ) / 2;
+			firstCut = from + ( mid - from ) / 2L;
 			secondCut = lowerBound( mid, to, firstCut, comp );
 		}
 		else {
-			secondCut = mid + ( to - mid ) / 2;
+			secondCut = mid + ( to - mid ) / 2L;
 			firstCut = upperBound( from, mid, secondCut, comp );
 		}
 
@@ -258,12 +258,12 @@ public enum BigArrays {
 	 */
 	private static long lowerBound( long mid, long to, long firstCut, LongComparator comp ) {
         long len = to - mid;
-		while ( len > 0 ) {
-            long half = len / 2;
+		while ( len > 0L) {
+            long half = len / 2L;
             long middle = mid + half;
 			if ( comp.compare( middle, firstCut ) < 0 ) {
-				mid = middle + 1;
-				len -= half + 1;
+				mid = middle + 1L;
+				len -= half + 1L;
 			}
 			else {
 				len = half;
@@ -298,10 +298,10 @@ public enum BigArrays {
         long length = to - from;
 
 		
-		if ( length < SMALL ) {
+		if ( length < (long) SMALL) {
 			for (long i = from; i < to; i++ ) {
-				for (long j = i; j > from && ( comp.compare( j - 1, j ) > 0 ); j-- ) {
-					swapper.swap( j, j - 1 );
+				for (long j = i; j > from && ( comp.compare( j - 1L, j ) > 0 ); j-- ) {
+					swapper.swap( j, j - 1L);
 				}
 			}
 			return;
@@ -314,7 +314,7 @@ public enum BigArrays {
 
 		
 		
-		if ( comp.compare( mid - 1, mid ) <= 0 ) return;
+		if ( comp.compare( mid - 1L, mid ) <= 0 ) return;
 
 		
 		inPlaceMerge( from, mid, to, comp, swapper );
@@ -336,29 +336,29 @@ public enum BigArrays {
 	public static void quickSort( long from, long to, LongComparator comp, BigSwapper swapper ) {
         long len = to - from;
 		
-		if ( len < SMALL ) {
+		if ( len < (long) SMALL) {
 			for (long i = from; i < to; i++ )
-				for (long j = i; j > from && ( comp.compare( j - 1, j ) > 0 ); j-- ) {
-					swapper.swap( j, j - 1 );
+				for (long j = i; j > from && ( comp.compare( j - 1L, j ) > 0 ); j-- ) {
+					swapper.swap( j, j - 1L);
 				}
 			return;
 		}
 
 
-        long m = from + len / 2;
-		if ( len > SMALL ) {
-			long l = from, n = to - 1;
-			if ( len > MEDIUM ) {
-                long s = len / 8;
-				l = med3( l, l + s, l + 2 * s, comp );
+        long m = from + len / 2L;
+		if ( len > (long) SMALL) {
+			long l = from, n = to - 1L;
+			if ( len > (long) MEDIUM) {
+                long s = len / 8L;
+				l = med3( l, l + s, l + 2L * s, comp );
 				m = med3( m - s, m, m + s, comp );
-				n = med3( n - 2 * s, n - s, n, comp );
+				n = med3( n - 2L * s, n - s, n, comp );
 			}
 			m = med3( l, m, n, comp ); 
 		}
 
 
-        long c = to - 1;
+        long c = to - 1L;
         long a = from;
         long b = a, d = c;
 		
@@ -390,12 +390,12 @@ public enum BigArrays {
         long s = Math.min(a - from, b - a);
 		vecSwap( swapper, from, b - s, s );
         long n = from + len;
-        s = Math.min( d - c, n - d - 1 );
+        s = Math.min( d - c, n - d - 1L);
 		vecSwap( swapper, b, n - s, s );
 
 		
-		if ( ( s = b - a ) > 1 ) quickSort( from, from + s, comp, swapper );
-		if ( ( s = d - c ) > 1 ) quickSort( n - s, n, comp, swapper );
+		if ( ( s = b - a ) > 1L) quickSort( from, from + s, comp, swapper );
+		if ( ( s = d - c ) > 1L) quickSort( n - s, n, comp, swapper );
 	}
 
 	/**
@@ -412,15 +412,15 @@ public enum BigArrays {
 	 */
 	private static long upperBound( long from, long mid, long secondCut, LongComparator comp ) {
         long len = mid - from;
-		while ( len > 0 ) {
-            long half = len / 2;
+		while ( len > 0L) {
+            long half = len / 2L;
             long middle = from + half;
 			if ( comp.compare( secondCut, middle ) < 0 ) {
 				len = half;
 			}
 			else {
-				from = middle + 1;
-				len -= half + 1;
+				from = middle + 1L;
+				len -= half + 1L;
 			}
 		}
 		return from;
@@ -430,6 +430,6 @@ public enum BigArrays {
 	 * Swaps x[a .. (a+n-1)] with x[b .. (b+n-1)].
 	 */
 	private static void vecSwap( BigSwapper swapper, long from, long l, long s ) {
-		for (int i = 0; i < s; i++, from++, l++ ) swapper.swap( from, l );
+		for (int i = 0; (long) i < s; i++, from++, l++ ) swapper.swap( from, l );
 	}
 }

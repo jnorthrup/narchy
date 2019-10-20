@@ -62,7 +62,7 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
 
         for (Spatial<X> xSpatial : prev) {
             if (!xSpatial.preactive) {
-                xSpatial.order = -1;
+                xSpatial.order = (short) -1;
             }
         }
 
@@ -91,11 +91,11 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
         SpaceGraph3D<X> s = new SpaceGraph3D<>(ss);
 
         EdgeDirected3D fd = new EdgeDirected3D();
-        fd.condense.set(fd.condense.get() * 1);
+        fd.condense.set(fd.condense.get() * 1.0F);
         s.dyn.addBroadConstraint(fd);
 
 
-        s.camPos(0, 0, 90);
+        s.camPos((float) 0, (float) 0, 90.0F);
         s.video.show(w, h);
 
         return s;

@@ -236,12 +236,12 @@ public class LevelGenerator {
                             int yy = 9;
                             if (y == h) yy = 8;
 
-                            if (level.getBlock(x, y) == 0) {
+                            if ((int) level.getBlock(x, y) == 0) {
                                 level.setBlock(x, y, (byte) (xx + yy * 16));
                             } else {
-                                if (level.getBlock(x, y) == (byte) (4 + 8 * 16))
+                                if ((int) level.getBlock(x, y) == (int) (byte) (4 + 8 * 16))
                                     level.setBlock(x, y, (byte) (4 + 11 * 16));
-                                if (level.getBlock(x, y) == (byte) (6 + 8 * 16))
+                                if ((int) level.getBlock(x, y) == (int) (byte) (6 + 8 * 16))
                                     level.setBlock(x, y, (byte) (6 + 11 * 16));
                             }
                         }
@@ -388,7 +388,7 @@ public class LevelGenerator {
                 int blocks = 0;
                 for (int xx = x - 1; xx < x + 1; xx++) {
                     for (int yy = y - 1; yy < y + 1; yy++) {
-                        if (level.getBlockCapped(xx, yy) == (byte) (1 + 9 * 16)) blocks++;
+                        if ((int) level.getBlockCapped(xx, yy) == (int) (byte) (1 + 9 * 16)) blocks++;
                     }
                 }
                 blockMap[x][y] = blocks == 4;

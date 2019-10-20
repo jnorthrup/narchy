@@ -174,7 +174,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          */
         @Override
         public final float floatValue() {
-            return value;
+            return (float) value;
         }
 
         /**
@@ -183,7 +183,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          */
         @Override
         public final double doubleValue() {
-            return value;
+            return (double) value;
         }
 
         /**
@@ -284,7 +284,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          */
         @Override
         public final float floatValue() {
-            return value;
+            return (float) value;
         }
 
         /**
@@ -293,7 +293,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          */
         @Override
         public final double doubleValue() {
-            return value;
+            return (double) value;
         }
 
         /**
@@ -302,7 +302,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          */
         @Override
         public final long longValue() {
-            return value;
+            return (long) value;
         }
 
 
@@ -413,7 +413,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          */
         @Override
         public final double doubleValue() {
-            return value;
+            return (double) value;
         }
 
         /**

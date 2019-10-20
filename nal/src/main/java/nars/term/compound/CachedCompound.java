@@ -178,7 +178,7 @@ public abstract class CachedCompound extends SeparateSubtermsCompound implements
 
     @Override
     public final int volume() {
-        return _volume;
+        return (int) _volume;
     }
 
     @Override
@@ -219,11 +219,11 @@ public abstract class CachedCompound extends SeparateSubtermsCompound implements
 
     @Override
     public final Op op() {
-        return Op.the(op);
+        return Op.the((int) op);
     }
 
     @Override
     public final int opID() {
-        return op;
+        return (int) op;
     }
 }

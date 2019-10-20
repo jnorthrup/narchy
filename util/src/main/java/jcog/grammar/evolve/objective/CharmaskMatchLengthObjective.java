@@ -64,7 +64,7 @@ public class CharmaskMatchLengthObjective implements Objective {
             evaluate = evaluator.evaluate(individual, context);
             StringBuilder builder = new StringBuilder();
             individual.describe(builder);
-            fitnessLenght = builder.length();
+            fitnessLenght = (double) builder.length();
         } catch (TreeEvaluationException ex) {
             logger.error("{}", ex);
             Arrays.fill(fitness, Double.POSITIVE_INFINITY);
@@ -91,21 +91,21 @@ public class CharmaskMatchLengthObjective implements Objective {
             List<Bounds> annotatedMask = new FastList(expectedMatchMask);
             annotatedMask.addAll(expectedUnmatchMask);
 
-            stats.tp = countIdenticalRanges(result, expectedMatchMask);
-            stats.fp = Bounds.countRangesThatCollideZone(result, annotatedMask) - stats.tp;
-            statsChars.tp = intersection(result, expectedMatchMask);
-            statsChars.fp = intersection(result, expectedUnmatchMask);
+            stats.tp = (long) countIdenticalRanges(result, expectedMatchMask);
+            stats.fp = (long) Bounds.countRangesThatCollideZone(result, annotatedMask) - stats.tp;
+            statsChars.tp = (long) intersection(result, expectedMatchMask);
+            statsChars.fp = (long) intersection(result, expectedUnmatchMask);
 
             statsOverall.add(stats);
             statsCharsOverall.add(statsChars);
             i++;
         }
 
-        statsCharsOverall.tn = dataSetView.getNumberUnmatchedChars() - statsCharsOverall.fp;
-        statsCharsOverall.fn = dataSetView.getNumberMatchedChars() - statsCharsOverall.tp;
+        statsCharsOverall.tn = (long) dataSetView.getNumberUnmatchedChars() - statsCharsOverall.fp;
+        statsCharsOverall.fn = (long) dataSetView.getNumberMatchedChars() - statsCharsOverall.tp;
 
         fitness[0] = (statsCharsOverall.fpr() + statsCharsOverall.fnr()) * 100.0;
-        fitness[1] = Math.abs(statsOverall.fp + statsOverall.tp - dataSetView.getNumberMatches()); 
+        fitness[1] = (double) Math.abs(statsOverall.fp + statsOverall.tp - (long) dataSetView.getNumberMatches());
         fitness[2] = fitnessLenght;
 
         return fitness;

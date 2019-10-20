@@ -9,7 +9,7 @@ public class RandomAgent extends Agent {
     final Random rng;
 
     public RandomAgent(int inputs, int actions) {
-        this(new XoRoShiRo128PlusRandom(1), inputs, actions);
+        this(new XoRoShiRo128PlusRandom(1L), inputs, actions);
     }
 
     public RandomAgent(Random rng, int inputs, int actions) {

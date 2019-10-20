@@ -25,7 +25,7 @@ final class RayTracer extends JPanel {
     private transient float grainMin;
 
 
-    double fps = 30;
+    double fps = 30.0;
 
     /** update rate (not alpha chanel) */
     float alpha = 0.85f;
@@ -61,15 +61,15 @@ final class RayTracer extends JPanel {
     protected void run() {
         FasterList<Renderer> r = new FasterList();
         int sw = 8, sh = 8;
-        float dw = 1f/sw, dh = 1f/sh;
+        float dw = 1f/ (float) sw, dh = 1f/ (float) sh;
         for (int i = 0; i < sw; i++) {
             for (int j = 0; j < sh; j++) {
-                r.add(new Renderer(i * dw, j * dh, (i+1)*dw, (j+1)*dh));
+                r.add(new Renderer((float) i * dw, (float) j * dh, (float) (i + 1) *dw, (float) (j + 1) *dh));
             }
         }
 
         long sceneTimeNS = Math.round((1.0/fps)*1E9);
-        long subSceneTimeNS = sceneTimeNS / r.size();
+        long subSceneTimeNS = sceneTimeNS / (long) r.size();
 
         while (true) {
 
@@ -180,7 +180,7 @@ final class RayTracer extends JPanel {
             resize();
         }
 
-        grainMin = 1f / (Math.max(W, H) * superSampling.floatValue());
+        grainMin = 1f / ((float) Math.max(W, H) * superSampling.floatValue());
 
         return scene.camera.update(input, CAMERA_EPSILON);
     }
@@ -195,11 +195,11 @@ final class RayTracer extends JPanel {
         @Deprecated private float eee;
 
         FloatAveragedWindow e = new FloatAveragedWindow(window, 0.5f, 0.5f).mode(FloatAveragedWindow.Mode.Mean);
-        FloatNormalized ee = new FloatNormalized(()->eee, 0, 0.000001f) {
+        FloatNormalized ee = new FloatNormalized(()->eee, (float) 0, 0.000001f) {
 
             @Override
             public float asFloat() {
-                float MIN_ERROR = 1f / (3*256);
+                float MIN_ERROR = 1f / (float) (3 * 256);
 
                 normalizer.min = MIN_ERROR; //HACK
                 float v = super.asFloat();
@@ -232,7 +232,7 @@ final class RayTracer extends JPanel {
 
 
             float iterCoverage = 0.03f;
-            iterPixels = (int)Math.ceil(iterCoverage * ((x2-x1)*(y2-y1)*W*H));
+            iterPixels = (int)Math.ceil((double) (iterCoverage * ((x2 - x1) * (y2 - y1) * (float) W * (float) H)));
 
 
             float grainMax = RayTracer.this.grainMax.floatValue();
@@ -244,8 +244,8 @@ final class RayTracer extends JPanel {
                         //f;
                         (float) Math.pow(
                                 //Util.sigmoid((ff - 0.5f) * 2)
-                                ff
-                                , 2f);
+                                (double) ff
+                                , 2);
 
 
                 float grain = Util.lerp(fff, grainMin, grainMax);
@@ -254,17 +254,17 @@ final class RayTracer extends JPanel {
                     //(float) (alpha * Util.lerp(Math.sqrt(fff), 0.5f, 1f));
                     //this.alpha / Math.max(1,grainPixels*grainPixels);
 
-                float grainPixels = Math.max(1, (float) Math.sqrt( grain * W * H));
+                float grainPixels = Math.max(1.0F, (float) Math.sqrt((double) (grain * (float) W * (float) H)));
 
                 int i = iterPixels;
                 if (i > 0) {
                     double ePixelAverage = renderStochastic(
-                            x1 * W, y1 * H, x2 * W, y2 * H,
+                            x1 * (float) W, y1 * (float) H, x2 * (float) W, y2 * (float) H,
                             alphaEffective,
                             grainPixels, i);
                     eee = ((float) ePixelAverage);
                 } else
-                    eee = 0;
+                    eee = (float) 0;
 
 
             } while (System.nanoTime() - start <= sceneTimeNS);
@@ -274,13 +274,13 @@ final class RayTracer extends JPanel {
         private double renderStochastic(float x1, float y1, float x2, float y2, float alpha, float grainPixels, int iterPixels) {
 
             float a = random.nextFloat() + 0.5f; //0.5..1.5
-            float pw = (float) (Math.sqrt(grainPixels) / a);
+            float pw = (float) (Math.sqrt((double) grainPixels) / (double) a);
             float ph = (grainPixels)/pw; //grainPixels * a;
-            float W = Math.max(1,(x2-x1) - pw), H = Math.max(1, (y2-y1) - ph);
+            float W = Math.max(1.0F,(x2-x1) - pw), H = Math.max(1.0F, (y2-y1) - ph);
 
 
             int SW = RayTracer.this.W, SH = RayTracer.this.H;
-            double eAvgSum = 0;
+            double eAvgSum = (double) 0;
             int renderedPixels = 0;
             while (iterPixels > renderedPixels) {
 
@@ -290,23 +290,23 @@ final class RayTracer extends JPanel {
                 float x = x1 + random.nextFloat() * W;
                 float y = y1 + random.nextFloat() * H;
 
-                float sx1 = Util.clamp(x, 0, SW - 1);
-                float sy1 = Util.clamp(y, 0, SH - 1);
-                float sx2 = Util.clamp(x + pw, 0, SW - 1);
-                float sy2 = Util.clamp(y + ph, 0, SH - 1);
+                float sx1 = Util.clamp(x, (float) 0, (float) (SW - 1));
+                float sy1 = Util.clamp(y, (float) 0, (float) (SH - 1));
+                float sx2 = Util.clamp(x + pw, (float) 0, (float) (SW - 1));
+                float sy2 = Util.clamp(y + ph, (float) 0, (float) (SH - 1));
 
 
                 /** recursion depth of each grain */
                 int grainDepthMax = 0;
                 double e = renderRecurse(alpha,
-                    Math.min(grainDepthMax, (int) Math.floor(Math.log(grainPixels*grainPixels)/Math.log(2))),
+                    Math.min(grainDepthMax, (int) Math.floor(Math.log((double) (grainPixels * grainPixels))/Math.log(2.0))),
                     sx1, sy1, sx2, sy2
                 );
                 int renderedArea = Math.max(1, (int) ((sy2 - sy1) * (sx2 - sx1)));
                 renderedPixels += renderedArea;
-                eAvgSum += e * renderedArea;
+                eAvgSum += e * (double) renderedArea;
             }
-            return eAvgSum / renderedPixels;
+            return eAvgSum / (double) renderedPixels;
         }
 
 
@@ -333,15 +333,15 @@ final class RayTracer extends JPanel {
             int x2 = Math.round(fx2);
             int y2 = Math.round(fy2);
             if (x2 < x1 || y2 < y1)
-                return 0;
+                return (double) 0;
 
-            double mx = (fx1 + fx2)/2f;
-            double my = (fy1 + fy2)/2f;
+            double mx = (double) ((fx1 + fx2) / 2f);
+            double my = (double) ((fy1 + fy2) / 2f);
 
             float subPixelScatter = 0f;
-            if(subPixelScatter >0) {
-                mx+= subPixelScatter * (0.5f + (random.nextFloat() - 0.5f) * (fx2 - fx1));
-                my+= subPixelScatter * (0.5f + (random.nextFloat() - 0.5f) * (fy2 - fy1));
+            if(subPixelScatter > (float) 0) {
+                mx = mx + (double) subPixelScatter * (0.5f + (random.nextFloat() - 0.5f) * (fx2 - fx1));
+                my = my + (double) subPixelScatter * (0.5f + (random.nextFloat() - 0.5f) * (fy2 - fy1));
             }
 
             int color = color(mx, my);
@@ -351,7 +351,7 @@ final class RayTracer extends JPanel {
             int W = RayTracer.this.W;
             int[] pixelCache = RayTracer.this.pixelCache;
 
-            long delta = 0;
+            long delta = 0L;
             int pixels = 0;
             for (int y = y1; y < y2+1; y++) {
                 int start = y * W + x1;
@@ -363,12 +363,12 @@ final class RayTracer extends JPanel {
                     if (d == 0)
                         continue;
 
-                    delta += d;
+                    delta = delta + (long) d;
                     pixelCache[i] = blend(current, color, alpha);
                 }
                 pixels+=ww;
             }
-            return delta / (3.0 * 256 * pixels);
+            return (double) delta / (3.0 * 256.0 * (double) pixels);
         }
     }
 
@@ -405,7 +405,7 @@ final class RayTracer extends JPanel {
 
 
     private static int blend(int current, int next, float alpha) {
-        if (alpha >= 1 - (1/256f))
+        if (alpha >= 1.0F - (1.0F /256f))
             return next;
 
         //TODO
@@ -431,8 +431,8 @@ final class RayTracer extends JPanel {
 
     private int color(double x, double y) {
         return scene.rayColor(scene.camera.ray(
-                x / W,
-                1 - y / H,
+                x / (double) W,
+                1.0 - y / (double) H,
                 A
         ));
     }

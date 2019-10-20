@@ -65,7 +65,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
     }
 
     public ConcurrentOpenHashMap(final int expectedItems, final int concurrencyLevel) {
-        this(expectedItems, concurrencyLevel, 2/3f);
+        this(expectedItems, concurrencyLevel, 2.0F /3f);
     }
 
     public ConcurrentOpenHashMap(final int expectedItems, final int concurrencyLevel, final float MapFillFactor) {
@@ -76,7 +76,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         final int numSections = concurrencyLevel;
         final int perSectionExpectedItems = expectedItems / numSections;
         final float mapFillFactor;
-        final int perSectionCapacity = (int) (perSectionExpectedItems / (mapFillFactor = MapFillFactor));
+        final int perSectionCapacity = (int) ((float) perSectionExpectedItems / (mapFillFactor = MapFillFactor));
         this.sections = (Section<K, V>[]) new Section[numSections];
 
         for (int i = 0; i < numSections; i++) {
@@ -87,10 +87,10 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
     public int size() {
         long size = 0L;
         for (final Section<K, V> s : sections) {
-            final long opaque = s.size.getOpaque();
+            final long opaque = (long) s.size.getOpaque();
             size += opaque;
         }
-        if (size >= Integer.MAX_VALUE)
+        if (size >= (long) Integer.MAX_VALUE)
             return Integer.MAX_VALUE-1;
         return (int) size;
     }
@@ -98,7 +98,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
     public long capacity() {
         long capacity = 0L;
         for (final Section<K, V> s : sections) {
-            final long l = s.capacity;
+            final long l = (long) s.capacity;
             capacity += l;
         }
         return capacity;
@@ -248,12 +248,12 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
             this.table = new AtomicReferenceArray(2 * this.capacity);
             this.size.set(0);
             this.usedBuckets.set(0);
-            this.resizeThreshold = (int) (this.capacity * (this.MapFillFactor = MapFillFactor));
+            this.resizeThreshold = (int) ((float) this.capacity * (this.MapFillFactor = MapFillFactor));
         }
 
         V get(final K key, final int keyHash) {
             boolean acquiredLock = false;
-            int bucket = signSafeMod(keyHash, capacity);
+            int bucket = signSafeMod((long) keyHash, capacity);
             long stamp = tryOptimisticRead();
 
             try {
@@ -279,7 +279,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                             acquiredLock = true;
                             table = this.table;
 
-                            bucket = signSafeMod(keyHash, capacity);
+                            bucket = signSafeMod((long) keyHash, capacity);
                             storedKey = (K) table.getOpaque(bucket);
                             storedValue = (V) table.getOpaque(bucket + 1);
                         }
@@ -302,7 +302,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
         V put(final K key, V value, final int keyHash, final boolean onlyIfAbsent, final Function<? super K, ? extends V> valueProvider) {
             final long stamp = writeLock();
-            int bucket = signSafeMod(keyHash, capacity);
+            int bucket = signSafeMod((long) keyHash, capacity);
 
 
             try {
@@ -359,7 +359,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
         private V remove(final K key, final Object value, final int keyHash) {
             final long stamp = writeLock();
-            int bucket = signSafeMod(keyHash, capacity);
+            int bucket = signSafeMod((long) keyHash, capacity);
 
             try {
                 while (true) {
@@ -474,7 +474,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
             this.table = newTable;
             capacity = newCapacity;
             usedBuckets.set(size.getOpaque());
-            resizeThreshold = (int) (capacity * MapFillFactor);
+            resizeThreshold = (int) ((float) capacity * MapFillFactor);
         }
 
         private static <K, V> void insertKeyValueNoLock(final AtomicReferenceArray table, final int capacity, final K key, final V value) {
@@ -500,18 +500,18 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
     private static final int R = 47;
 
     static <K> long hash(final K key) {
-        long hash = key.hashCode() * HashMixer;
+        long hash = (long) key.hashCode() * HashMixer;
         hash ^= hash >>> R;
         hash *= HashMixer;
         return hash;
     }
 
     static int signSafeMod(final long n, final int Max) {
-        return (int) (n & (Max - 1)) << 1;
+        return (int) (n & (long) (Max - 1)) << 1;
     }
 
     private static int alignToPowerOfTwo(final int n) {
-        return (int) Math.pow(2, 32 - Integer.numberOfLeadingZeros(n - 1));
+        return (int) Math.pow(2.0, (double) (32 - Integer.numberOfLeadingZeros(n - 1)));
     }
 
 //    private static class MyFasterList<V> extends FasterList<V> {

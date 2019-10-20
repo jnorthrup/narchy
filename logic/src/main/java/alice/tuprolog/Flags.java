@@ -17,7 +17,6 @@
  */
 package alice.tuprolog;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**

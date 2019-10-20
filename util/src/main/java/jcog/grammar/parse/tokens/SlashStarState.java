@@ -32,7 +32,7 @@ public class SlashStarState extends TokenizerState {
         int c = 0;
         int lastc = 0;
 		while (c >= 0) {
-			if ((lastc == '*') && (c == '/')) {
+			if ((lastc == (int) '*') && (c == (int) '/')) {
 				break;
 			}
 			lastc = c;

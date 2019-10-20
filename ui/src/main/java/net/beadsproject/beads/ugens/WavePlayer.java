@@ -63,7 +63,7 @@ public class WavePlayer extends UGen {
     private WavePlayer(AudioContext context, Tensor tensor) {
         super(context, 1);
         this.tensor = tensor;
-        phase = 0;
+        phase = (double) 0;
         one_over_sr = 1f / context.getSampleRate();
     }
 
@@ -100,7 +100,7 @@ public class WavePlayer extends UGen {
     @Override
     public void start() {
         super.start();
-        phase = 0;
+        phase = (double) 0;
     }
 
     /*
@@ -115,7 +115,7 @@ public class WavePlayer extends UGen {
         if (phaseEnvelope == null) {
             for (int i = 0; i < bufferSize; i++) {
                 frequency = frequencyEnvelope.getValue(0, i);
-                phase = (((phase + frequency * one_over_sr) % 1.0f) + 1.0f) % 1.0f;
+                phase = (((phase + (double) (frequency * one_over_sr)) % 1.0) + 1.0) % 1.0;
                 bo[i] = tensor.getFractInterp((float) phase);
             }
         } else {
@@ -254,7 +254,7 @@ public class WavePlayer extends UGen {
     private WavePlayer setPhase(UGen phaseController) {
         this.phaseEnvelope = phaseController;
         if (phaseController != null) {
-            phase = phaseController.getValue();
+            phase = (double) phaseController.getValue();
         }
         return this;
     }
@@ -267,7 +267,7 @@ public class WavePlayer extends UGen {
      * @return This WavePlayer instance.
      */
     public WavePlayer setPhase(float phase) {
-        this.phase = phase;
+        this.phase = (double) phase;
         this.phaseEnvelope = null;
         return this;
     }

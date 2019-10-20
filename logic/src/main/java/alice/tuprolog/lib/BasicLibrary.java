@@ -496,11 +496,11 @@ public class BasicLibrary extends PrologLib {
             if (val0n instanceof NumberTerm.Int) {
                 return new NumberTerm.Int(val0n.intValue() * -1);
             } else if (val0n instanceof NumberTerm.Double) {
-                return new NumberTerm.Double(val0n.doubleValue() * -1);
+                return new NumberTerm.Double(val0n.doubleValue() * -1.0);
             } else if (val0n instanceof NumberTerm.Long) {
-                return new NumberTerm.Long(val0n.longValue() * -1);
+                return new NumberTerm.Long(val0n.longValue() * -1L);
             } else if (val0n instanceof NumberTerm.Float) {
-                return new NumberTerm.Float(val0n.floatValue() * -1);
+                return new NumberTerm.Float(val0n.floatValue() * -1.0F);
             } else {
                 return null;
             }
@@ -520,7 +520,7 @@ public class BasicLibrary extends PrologLib {
     }
 
     static NumberTerm getIntegerNumber(long num) {
-        return num > Integer.MIN_VALUE && num < Integer.MAX_VALUE ? new NumberTerm.Int((int) num) : new NumberTerm.Long(num);
+        return num > (long) Integer.MIN_VALUE && num < (long) Integer.MAX_VALUE ? new NumberTerm.Int((int) num) : new NumberTerm.Long(num);
     }
 
     public Term expression_plus_2(Term arg0, Term arg1) {
@@ -788,13 +788,13 @@ public class BasicLibrary extends PrologLib {
             {
             	st2+=st.charAt(i);
 
-            	if (st.charAt(0)=='0' && st.charAt(1)==39 && st.charAt(2)==39 && st.length()==4)
+            	if ((int) st.charAt(0) == (int) '0' && (int) st.charAt(1) ==39 && (int) st.charAt(2) ==39 && st.length()==4)
             	{
                     String sti= String.valueOf(st.charAt(3));
                     byte[] b= sti.getBytes();
-            		st2= String.valueOf(b[0]);
+            		st2= String.valueOf((int) b[0]);
             	}
-            	if (st.charAt(0)=='0' && st.charAt(1)=='x' && st.charAt(2)>='a' && st.charAt(2)<='f' && st.length()==3)
+            	if ((int) st.charAt(0) == (int) '0' && (int) st.charAt(1) == (int) 'x' && (int) st.charAt(2) >= (int) 'a' && (int) st.charAt(2) <= (int) 'f' && st.length()==3)
             	{
                     String sti= String.valueOf(st.charAt(2));
                     int dec=java.lang.Integer.parseInt(sti, 16);
@@ -810,16 +810,16 @@ public class BasicLibrary extends PrologLib {
             String iBetween="";
             for(int i = 0; i<st2.length(); i++)
             {
-            	if((st2.charAt(i)<'0' || st2.charAt(i)>'9') && before)
+            	if(((int) st2.charAt(i) < (int) '0' || (int) st2.charAt(i) > (int) '9') && before)
             		numBefore++;
 
             	between=false;
-            	if(st2.charAt(i)>='0' && st2.charAt(i)<='9')
+            	if((int) st2.charAt(i) >= (int) '0' && (int) st2.charAt(i) <= (int) '9')
             	{
                     int k=0;
             		for(int j = i+1; j<st2.length(); j++)
             		{
-            			if(st2.charAt(j)>='0' && st2.charAt(j)<='9' && j-i>1)
+            			if((int) st2.charAt(j) >= (int) '0' && (int) st2.charAt(j) <= (int) '9' && j-i>1)
             			{
             				k+=i+1;
             				numBetween+=2;
@@ -828,7 +828,7 @@ public class BasicLibrary extends PrologLib {
             				j=st2.length();
             				between=true;
             			}
-            			else if(st2.charAt(j)>='0' && st2.charAt(j)<='9' && j-i==1)
+            			else if((int) st2.charAt(j) >= (int) '0' && (int) st2.charAt(j) <= (int) '9' && j-i==1)
             				k++;
             		}
 
@@ -841,20 +841,20 @@ public class BasicLibrary extends PrologLib {
             			before=false;
             	}
 
-            	if((st2.charAt(i)<'0' || st2.charAt(i)>'9') && after)
+            	if(((int) st2.charAt(i) < (int) '0' || (int) st2.charAt(i) > (int) '9') && after)
             		numAfter++;
             }
             String st3 = null;
             for(int i = 0; i<numBefore; i++)
             {
-            	if (st2.charAt(i)==' ')
+            	if ((int) st2.charAt(i) == (int) ' ')
             		st3=st2.substring(i+1);
-            	else if (st2.charAt(i)=='\\' && (st2.charAt(i+1)=='n' || st2.charAt(i+1)=='t'))
+            	else if ((int) st2.charAt(i) == (int) '\\' && ((int) st2.charAt(i + 1) == (int) 'n' || (int) st2.charAt(i + 1) == (int) 't'))
             	{
             		st3=st2.substring(i+2);
             		i++;
             	}
-            	else if (st2.charAt(i)!='-' && st2.charAt(i)!='+')
+            	else if ((int) st2.charAt(i) != (int) '-' && (int) st2.charAt(i) != (int) '+')
             		st3="";
             }
             for(int i = 0; i<numBetween; i+=2)
@@ -862,7 +862,7 @@ public class BasicLibrary extends PrologLib {
             	for(int j = java.lang.Integer.parseInt(String.valueOf(iBetween.charAt(i))); j<java.lang.Integer.parseInt(String.valueOf(iBetween.charAt(i + 1))); j++)
             	{
                     char st2i = st2.charAt(i);
-                    if (st2.charAt(j)!='.' && (st2i !='E' || (st2i !='E' && (st2.charAt(i+1)!='+' || st2.charAt(i+1)!='-'))) && (st2i !='e' || (st2i !='e' && (st2.charAt(i+1)!='+' || st2.charAt(i+1)!='-'))))
+                    if ((int) st2.charAt(j) != (int) '.' && ((int) st2i != (int) 'E' || ((int) st2i != (int) 'E' && ((int) st2.charAt(i + 1) != (int) '+' || (int) st2.charAt(i + 1) != (int) '-'))) && ((int) st2i != (int) 'e' || ((int) st2i != (int) 'e' && ((int) st2.charAt(i + 1) != (int) '+' || (int) st2.charAt(i + 1) != (int) '-'))))
             		{
             			st3="";
             		}
@@ -870,7 +870,7 @@ public class BasicLibrary extends PrologLib {
             }
             for(int i = 0; i<numAfter; i++)
             {
-                if ((st2.charAt(i) != 'E' || (st2.charAt(i) != 'E' && (st2.charAt(i + 1) != '+' || st2.charAt(i + 1) != '-'))) && st2.charAt(i) != '.' && (st2.charAt(i) != 'e' || (st2.charAt(i) != 'e' && (st2.charAt(i + 1) != '+' || st2.charAt(i + 1) != '-')))) {
+                if (((int) st2.charAt(i) != (int) 'E' || ((int) st2.charAt(i) != (int) 'E' && ((int) st2.charAt(i + 1) != (int) '+' || (int) st2.charAt(i + 1) != (int) '-'))) && (int) st2.charAt(i) != (int) '.' && ((int) st2.charAt(i) != (int) 'e' || ((int) st2.charAt(i) != (int) 'e' && ((int) st2.charAt(i + 1) != (int) '+' || (int) st2.charAt(i + 1) != (int) '-')))) {
                     st3 = "";
                     break;
                 }

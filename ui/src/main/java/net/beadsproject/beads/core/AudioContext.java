@@ -345,7 +345,7 @@ public class AudioContext {
      * @return the generated AudioFormat.
      */
     private static IOAudioFormat defaultAudioFormat(int inputs, int outputs) {
-        return new IOAudioFormat(44100, 16, inputs, outputs, true, true);
+        return new IOAudioFormat(44100.0F, 16, inputs, outputs, true, true);
     }
 
     /**
@@ -393,7 +393,7 @@ public class AudioContext {
      * @return number of samples.
      */
     public double msToSamples(double msTime) {
-        return msTime * (audioFormat.sampleRate / 1000.0);
+        return msTime * ((double) audioFormat.sampleRate / 1000.0);
     }
 
     /**
@@ -403,7 +403,7 @@ public class AudioContext {
      * @return duration in milliseconds.
      */
     public double samplesToMs(double sampleTime) {
-        return (sampleTime / audioFormat.sampleRate) * 1000.0;
+        return (sampleTime / (double) audioFormat.sampleRate) * 1000.0;
     }
 
     /**
@@ -432,7 +432,7 @@ public class AudioContext {
      * Get the runtime (in ms) since starting.
      */
     public double getTime() {
-        return samplesToMs(getTimeStep() * getBufferSize());
+        return samplesToMs((double) (getTimeStep() * (long) getBufferSize()));
     }
 
 
@@ -487,7 +487,7 @@ public class AudioContext {
      * Simply resets the timeStep to zero.
      */
     private void reset() {
-        timeStep = 0;
+        timeStep = 0L;
     }
 
     /**

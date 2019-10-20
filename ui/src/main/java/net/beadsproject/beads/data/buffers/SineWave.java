@@ -24,7 +24,7 @@ public class SineWave extends WaveFactory {
         ArrayTensor b = new ArrayTensor(size);
         float[] bd = b.data;
         for (int i = 0; i < bufferSize; i++) {
-            bd[i] = (float) Math.sin(2.0 * Math.PI * i / bufferSize);
+            bd[i] = (float) Math.sin(2.0 * Math.PI * (double) i / (double) bufferSize);
         }
         return b;
     }

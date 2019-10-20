@@ -10,10 +10,7 @@ import nars.io.TermIO;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Termlike;
 import nars.term.util.TermException;
-
-import java.util.Arrays;
 
 import static nars.time.Tense.DTERNAL;
 
@@ -47,7 +44,7 @@ public class SerialCompound extends DynBytes implements SameSubtermsCompound, Id
         if (v > NAL.term.COMPOUND_VOLUME_MAX)
             throw new TermException("complexity overflow");
 
-        this.volume = (byte) v;
+        this.volume = (short) (byte) v;
 
         TermIO.the.writeCompoundPrefix(o, dt, this);
         TermIO.the.writeSubterms(this, subterms);
@@ -67,7 +64,7 @@ public class SerialCompound extends DynBytes implements SameSubtermsCompound, Id
 
     @Override
     public final /*@NotNull*/ Op op() {
-        return Op.the(bytes[0]);
+        return Op.the((int) bytes[0]);
     }
 
     @Override
@@ -77,12 +74,12 @@ public class SerialCompound extends DynBytes implements SameSubtermsCompound, Id
 
     @Override
     public int subs() {
-        return bytes[1];
+        return (int) bytes[1];
     }
 
     @Override
     public int volume() {
-        return volume;
+        return (int) volume;
     }
 
     @Override

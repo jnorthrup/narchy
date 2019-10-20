@@ -24,7 +24,6 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.stream.IntStream;
 
 import static nars.Op.*;
 import static nars.io.NarseseParser.termDynamic;

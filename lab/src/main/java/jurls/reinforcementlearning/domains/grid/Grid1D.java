@@ -30,7 +30,7 @@ public class Grid1D implements World {
     public Grid1D(int size, int totalTime, double noise, double cycleSkew) {
         this.time = 0;
         this.size = size;
-        double VISUALIZE_PERIOD = Math.pow(10, 4);
+        double VISUALIZE_PERIOD = Math.pow(10.0, 4.0);
         this.REWARD_MAGNITUDE = 100.0;
         this.ENERGY_COST =  this.REWARD_MAGNITUDE / 100.0;
         this.JUMP_FRACTION = 0.0;        
@@ -62,36 +62,36 @@ public class Grid1D implements World {
 
 
         double stepSize = (    action[0] +
-                            2 * action[1] + 
-                            3 * action[2] + 
-                            4 * action[3] - 
-                                action[4] - 
-                            2 * action[5] - 
-                            3 * action[6] - 
-                            4 * action[7]);
+                2.0 * action[1] +
+                3.0 * action[2] +
+                4.0 * action[3] -
+                                action[4] -
+                2.0 * action[5] -
+                3.0 * action[6] -
+                4.0 * action[7]);
 
         
-        energy=(action[0] + 
-                 2 * action[1] + 
-                 3 * action[2] + 
-                 4 * action[3] + 
-                     action[4] + 
-                 2 * action[5] + 
-                 3 * action[6] + 
-                 4 * action[7]);
+        energy=(action[0] +
+                2.0 * action[1] +
+                3.0 * action[2] +
+                4.0 * action[3] +
+                     action[4] +
+                2.0 * action[5] +
+                3.0 * action[6] +
+                4.0 * action[7]);
 
         worldState += stepSize;
                 
         
         if (Math.random() < JUMP_FRACTION) {
-            worldState = size * Math.random();
+            worldState = (double) size * Math.random();
         }
         else {
             worldState += cycleSkew;
         }
         
         
-        worldState -= size * Math.floor( worldState / ((double)size) );
+        worldState -= (double) size * Math.floor( worldState / ((double)size) );
         simpleState = (int)Math.floor(worldState);
         if (simpleState == 9) simpleState = 0;
         
@@ -103,7 +103,7 @@ public class Grid1D implements World {
         for (int i = 0; i < sensor.length; i++) {
             sensor[i] = (Math.random()*noise);
         }            
-        sensor[simpleState] = 1 - (Math.random()*noise);
+        sensor[simpleState] = 1.0 - (Math.random()*noise);
         
         
         
@@ -138,7 +138,7 @@ public class Grid1D implements World {
         s += "\n";
         for (int i = 0; i < size; i++) {
             char c;
-            if (action[i] > 0)
+            if (action[i] > (double) 0)
                 c = 'X';
             else
                 c = '.';

@@ -12,19 +12,19 @@ public class SineWave extends SoundProducer.Amplifiable {
 
     public SineWave(float freq) {
         this.freq = freq;
-        x = 0;
+        x = (float) 0;
     }
 
 
     @Override public boolean read(float[] buf, int readRate) {
-        float dt = 1.0f / readRate;
+        float dt = 1.0f / (float) readRate;
 
 
-        float r = (freq ) * (float)(Math.PI* 2.0f);
+        float r = (freq ) * (float)(Math.PI* 2.0);
         float A = amp();
         float X = x;
         for (int i = 0; i < buf.length;) {
-            buf[i++] = (float)Math.sin(X * r) * A;
+            buf[i++] = (float)Math.sin((double) (X * r)) * A;
             X += dt;
         }
         x = X;
@@ -33,8 +33,8 @@ public class SineWave extends SoundProducer.Amplifiable {
 
     @Override
     public void skip(int samplesToSkip, int readRate) {
-        float dt = 1.0f / readRate;
-        x += dt * samplesToSkip;
+        float dt = 1.0f / (float) readRate;
+        x += dt * (float) samplesToSkip;
     }
 
 

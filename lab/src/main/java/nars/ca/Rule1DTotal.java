@@ -47,27 +47,27 @@ public class Rule1DTotal {
 
 
             int iTmp;
-            if (sTok.length() > 0 && sTok.charAt(0) == 'R')
+            if (sTok.length() > 0 && (int) sTok.charAt(0) == (int) 'R')
 				iRng = Integer.valueOf(sTok.substring(1));
-			else if (sTok.length() > 0 && sTok.charAt(0) == 'C') {
+			else if (sTok.length() > 0 && (int) sTok.charAt(0) == (int) 'C') {
 				iTmp = Integer.valueOf(sTok.substring(1));
 				if (iTmp >= 3) {
 					isHist = true; 
 					iClo = iTmp;
 				} else
 					isHist = false; 
-			} else if (sTok.length() > 0 && sTok.charAt(0) == 'M') 
+			} else if (sTok.length() > 0 && (int) sTok.charAt(0) == (int) 'M')
 																	
 			{
 				isCentr = (Integer.valueOf(sTok.substring(1)) > 0);
-			} else if (sTok.length() > 0 && sTok.charAt(0) == 'S') 
+			} else if (sTok.length() > 0 && (int) sTok.charAt(0) == (int) 'S')
 																	
 			{
 				iTmp = Integer.valueOf(sTok.substring(1));
 				if ((iTmp >= 0) && (iTmp <= MAX_RANGE * 2 + 1)) {
 					rulesS[iTmp] = true;
 				}
-			} else if (sTok.length() > 0 && sTok.charAt(0) == 'B') 
+			} else if (sTok.length() > 0 && (int) sTok.charAt(0) == (int) 'B')
 																	
 			{
 				iTmp = Integer.valueOf(sTok.substring(1));
@@ -175,62 +175,62 @@ public class Rule1DTotal {
             short bNewVal;
             if (isHist)
 			{
-				if (bOldVal <= 1) 
+				if ((int) bOldVal <= 1)
 				{
 					if (isCentr) 
-						if (OneRow[ic + ary1DOfs] == 1)
+						if ((int) OneRow[ic + ary1DOfs] == 1)
 							iCnt++;
 					for (i = 1; i <= iRng; i++) 
 					{
-						if (OneRow[ic - i + ary1DOfs] == 1)
+						if ((int) OneRow[ic - i + ary1DOfs] == 1)
 							iCnt++;
-						if (OneRow[ic + i + ary1DOfs] == 1)
+						if ((int) OneRow[ic + i + ary1DOfs] == 1)
 							iCnt++;
 					}
 
 					bNewVal = bOldVal; 
 
 					
-					if (bOldVal == 0) 
+					if ((int) bOldVal == 0)
 					{
 						if (rulesB[iCnt]) 
-							bNewVal = 1; 
+							bNewVal = (short) 1;
 					} else 
 					{
 						if (rulesS[iCnt]) 
 						{
-							bNewVal = 1;
+							bNewVal = (short) 1;
 						} else 
 						{
-							bNewVal = bOldVal < (iClo - 1)
-									? (short) (bOldVal + 1)
-									: 0;
+							bNewVal = (int) bOldVal < (iClo - 1)
+									? (short) ((int) bOldVal + 1)
+									: (short) 0;
 						}
 					}
 				} else 
 				{
-					bNewVal = bOldVal < (iClo - 1) ? (short) (bOldVal + 1) : 0;
+					bNewVal = (int) bOldVal < (iClo - 1) ? (short) ((int) bOldVal + 1) : (short) 0;
 				}
 			} else 
 			{
 				if (isCentr) 
-					if (OneRow[ic + ary1DOfs] > 0)
+					if ((int) OneRow[ic + ary1DOfs] > 0)
 						iCnt++;
 				for (i = 1; i <= iRng; i++) 
 				{
-					if (OneRow[ic - i + ary1DOfs] > 0)
+					if ((int) OneRow[ic - i + ary1DOfs] > 0)
 						iCnt++;
-					if (OneRow[ic + i + ary1DOfs] > 0)
+					if ((int) OneRow[ic + i + ary1DOfs] > 0)
 						iCnt++;
 				}
 
 				bNewVal = bOldVal; 
 
 				
-				if (bOldVal == 0) 
+				if ((int) bOldVal == 0)
 				{
 					if (rulesB[iCnt]) 
-						bNewVal = ColoringMethod == 1 ? 1 : (short) (mjb.Cycle
+						bNewVal = ColoringMethod == 1 ? (short) 1 : (short) (mjb.Cycle
 								% (mjb.StatesCount - 1) + 1);
 				} else 
 				{
@@ -238,12 +238,12 @@ public class Rule1DTotal {
 					{
 						if (ColoringMethod == 1) 
 						{
-							bNewVal = (short) (bOldVal < mjb.StatesCount - 1 ? bOldVal + 1 : mjb.StatesCount - 1);
+							bNewVal = (short) ((int) bOldVal < mjb.StatesCount - 1 ? (int) bOldVal + 1 : mjb.StatesCount - 1);
 						} else {
 							
 						}
 					} else
-						bNewVal = 0; 
+						bNewVal = (short) 0;
 				}
 			}
 			tmpState[ic][i1DNextRow] = bNewVal;

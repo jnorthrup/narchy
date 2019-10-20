@@ -538,8 +538,8 @@ public class M_Berserk {
         public String getID() { return "berserk_sight";}
         @Override
         public boolean interact(edict_t self, edict_t other) {
-            game_import_t.sound(self, Defines.CHAN_VOICE, sound_sight, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_VOICE, sound_sight, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
@@ -549,8 +549,8 @@ public class M_Berserk {
         public String getID() { return "berserk_search";}
         @Override
         public boolean think(edict_t self) {
-            game_import_t.sound(self, Defines.CHAN_VOICE, sound_search, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_VOICE, sound_search, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
@@ -567,18 +567,18 @@ public class M_Berserk {
                 return true;
 
             self.monsterinfo.currentmove = berserk_move_stand_fidget;
-            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_idle, 1,
-                    Defines.ATTN_IDLE, 0);
+            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_idle, 1.0F,
+                    (float) Defines.ATTN_IDLE, (float) 0);
             return true;
         }
     };
 
     static final mframe_t[] berserk_frames_stand = {
-            new mframe_t(GameAI.ai_stand, 0, berserk_fidget),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null) };
+            new mframe_t(GameAI.ai_stand, (float) 0, berserk_fidget),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null) };
 
     static final mmove_t berserk_move_stand = new mmove_t(FRAME_stand1, FRAME_stand5,
             berserk_frames_stand, null);
@@ -594,26 +594,26 @@ public class M_Berserk {
     };
 
     static final mframe_t[] berserk_frames_stand_fidget = {
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null) };
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null) };
 
     static final mmove_t berserk_move_stand_fidget = new mmove_t(FRAME_standb1,
             FRAME_standb20, berserk_frames_stand_fidget, berserk_stand);
@@ -668,12 +668,12 @@ public class M_Berserk {
      */
 
     static final mframe_t[] berserk_frames_run1 = {
-            new mframe_t(GameAI.ai_run, 21, null),
-            new mframe_t(GameAI.ai_run, 11, null),
-            new mframe_t(GameAI.ai_run, 21, null),
-            new mframe_t(GameAI.ai_run, 25, null),
-            new mframe_t(GameAI.ai_run, 18, null),
-            new mframe_t(GameAI.ai_run, 19, null) };
+            new mframe_t(GameAI.ai_run, 21.0F, null),
+            new mframe_t(GameAI.ai_run, 11.0F, null),
+            new mframe_t(GameAI.ai_run, 21.0F, null),
+            new mframe_t(GameAI.ai_run, 25.0F, null),
+            new mframe_t(GameAI.ai_run, 18.0F, null),
+            new mframe_t(GameAI.ai_run, 19.0F, null) };
 
     static final mmove_t berserk_move_run1 = new mmove_t(FRAME_run1, FRAME_run6,
             berserk_frames_run1, null);
@@ -696,9 +696,9 @@ public class M_Berserk {
         public String getID() { return "berserk_attack_spike";}
         @Override
         public boolean think(edict_t self) {
-            float[] aim = { Defines.MELEE_DISTANCE, 0f, -24f };
+            float[] aim = {(float) Defines.MELEE_DISTANCE, 0f, -24f };
 
-            GameWeapon.fire_hit(self, aim, (15 + (Lib.rand() % 6)), 400);
+            GameWeapon.fire_hit(self, aim, (15 + ((int) Lib.rand() % 6)), 400);
             
 
             return true;
@@ -710,21 +710,21 @@ public class M_Berserk {
         public String getID() { return "berserk_swing";}
         @Override
         public boolean think(edict_t self) {
-            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_punch, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_punch, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
 
     static final mframe_t[] berserk_frames_attack_spike = {
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, berserk_swing),
-            new mframe_t(GameAI.ai_charge, 0, berserk_attack_spike),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null) };
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, berserk_swing),
+            new mframe_t(GameAI.ai_charge, (float) 0, berserk_attack_spike),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null) };
 
     static final mmove_t berserk_move_attack_spike = new mmove_t(FRAME_att_c1,
             FRAME_att_c8, berserk_frames_attack_spike, berserk_run);
@@ -734,10 +734,10 @@ public class M_Berserk {
         public String getID() { return "berserk_attack_club";}
         @Override
         public boolean think(edict_t self) {
-            float[] aim = {0, 0, 0};
+            float[] aim = {(float) 0, (float) 0, (float) 0};
 
-            Math3D.VectorSet(aim, Defines.MELEE_DISTANCE, self.mins[0], -4);
-            GameWeapon.fire_hit(self, aim, (5 + (Lib.rand() % 6)), 400); 
+            Math3D.VectorSet(aim, (float) Defines.MELEE_DISTANCE, self.mins[0], -4.0F);
+            GameWeapon.fire_hit(self, aim, (5 + ((int) Lib.rand() % 6)), 400);
                                                                    
 
             return true;
@@ -745,18 +745,18 @@ public class M_Berserk {
     };
 
     static final mframe_t[] berserk_frames_attack_club = {
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, berserk_swing),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, berserk_attack_club),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null) };
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, berserk_swing),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, berserk_attack_club),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null) };
 
     static final mmove_t berserk_move_attack_club = new mmove_t(FRAME_att_c9,
             FRAME_att_c20, berserk_frames_attack_club, berserk_run);
@@ -771,18 +771,18 @@ public class M_Berserk {
     };
 
     static final mframe_t[] berserk_frames_attack_strike = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, berserk_swing),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, berserk_strike),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, berserk_swing),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, berserk_strike),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
             new mframe_t(GameAI.ai_move, 9.7f, null),
             new mframe_t(GameAI.ai_move, 13.6f, null) };
 
@@ -794,7 +794,7 @@ public class M_Berserk {
         public String getID() { return "berserk_melee";}
         @Override
         public boolean think(edict_t self) {
-            if ((Lib.rand() % 2) == 0)
+            if (((int) Lib.rand() % 2) == 0)
                 self.monsterinfo.currentmove = berserk_move_attack_spike;
             else
                 self.monsterinfo.currentmove = berserk_move_attack_club;
@@ -824,35 +824,35 @@ public class M_Berserk {
      */
 
     static final mframe_t[] berserk_frames_pain1 = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t berserk_move_pain1 = new mmove_t(FRAME_painc1, FRAME_painc4,
             berserk_frames_pain1, berserk_run);
 
     static final mframe_t[] berserk_frames_pain2 = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t berserk_move_pain2 = new mmove_t(FRAME_painb1,
             FRAME_painb20, berserk_frames_pain2, berserk_run);
@@ -868,14 +868,14 @@ public class M_Berserk {
             if (GameBase.level.time < self.pain_debounce_time)
                 return;
 
-            self.pain_debounce_time = GameBase.level.time + 3;
-            game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain, 1,
-                    Defines.ATTN_NORM, 0);
+            self.pain_debounce_time = GameBase.level.time + 3.0F;
+            game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
 
-            if (GameBase.skill.value == 3)
+            if (GameBase.skill.value == 3.0F)
                 return; 
 
-            if ((damage < 20) || (Lib.random() < 0.5))
+            if ((damage < 20) || ((double) Lib.random() < 0.5))
                 self.monsterinfo.currentmove = berserk_move_pain1;
             else
                 self.monsterinfo.currentmove = berserk_move_pain2;
@@ -887,43 +887,43 @@ public class M_Berserk {
         public String getID() { return "berserk_dead";}
         @Override
         public boolean think(edict_t self) {
-            Math3D.VectorSet(self.mins, -16, -16, -24);
-            Math3D.VectorSet(self.maxs, 16, 16, -8);
+            Math3D.VectorSet(self.mins, -16.0F, -16.0F, -24.0F);
+            Math3D.VectorSet(self.maxs, 16.0F, 16.0F, -8.0F);
             self.movetype = Defines.MOVETYPE_TOSS;
             self.svflags |= Defines.SVF_DEADMONSTER;
-            self.nextthink = 0;
+            self.nextthink = (float) 0;
             game_import_t.linkentity(self);
             return true;
         }
     };
 
     static final mframe_t[] berserk_frames_death1 = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t berserk_move_death1 = new mmove_t(FRAME_death1,
             FRAME_death13, berserk_frames_death1, berserk_dead);
 
     static final mframe_t[] berserk_frames_death2 = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t berserk_move_death2 = new mmove_t(FRAME_deathc1,
             FRAME_deathc8, berserk_frames_death2, berserk_dead);
@@ -938,8 +938,8 @@ public class M_Berserk {
             if (self.health <= self.gib_health) {
                 game_import_t
                         .sound(self, Defines.CHAN_VOICE, game_import_t
-                                .soundindex("misc/udeath.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                                .soundindex("misc/udeath.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
                 int n;
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
@@ -957,8 +957,8 @@ public class M_Berserk {
             if (self.deadflag == Defines.DEAD_DEAD)
                 return;
 
-            game_import_t.sound(self, Defines.CHAN_VOICE, sound_die, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_VOICE, sound_die, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             self.deadflag = Defines.DEAD_DEAD;
             self.takedamage = Defines.DAMAGE_YES;
 
@@ -974,7 +974,7 @@ public class M_Berserk {
      * Trigger_Spawn Sight
      */
     public static void SP_monster_berserk(edict_t self) {
-        if (GameBase.deathmatch.value != 0) {
+        if (GameBase.deathmatch.value != (float) 0) {
             GameUtil.G_FreeEdict(self);
             return;
         }
@@ -989,8 +989,8 @@ public class M_Berserk {
 
         self.s.modelindex = game_import_t
                 .modelindex("models/monsters/berserk/tris.md2");
-        Math3D.VectorSet(self.mins, -16, -16, -24);
-        Math3D.VectorSet(self.maxs, 16, 16, 32);
+        Math3D.VectorSet(self.mins, -16.0F, -16.0F, -24.0F);
+        Math3D.VectorSet(self.maxs, 16.0F, 16.0F, 32.0F);
         self.movetype = Defines.MOVETYPE_STEP;
         self.solid = Defines.SOLID_BBOX;
 

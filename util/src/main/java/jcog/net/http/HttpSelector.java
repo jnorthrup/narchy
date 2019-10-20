@@ -18,7 +18,7 @@ import java.util.Queue;
 class HttpSelector implements ConnectionStateChangeListener {
 
     //private final long TIMEOUT_CHECK_PERIOD_ms = 1_000;
-    private static final long TIMEOUT_PERIOD_ms = 5_000;
+    private static final long TIMEOUT_PERIOD_ms = 5_000L;
 
     private static final Logger logger = LoggerFactory.getLogger(HttpSelector.class);
     private final WebSocketSelector.UpgradeWebSocketHandler upgradeWebSocketHandler;

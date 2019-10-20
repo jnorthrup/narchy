@@ -58,7 +58,7 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
     public void mouseWheelMoved(MouseEvent e) {
 
         float y = e.getRotation()[1];
-        if (y != 0) {
+        if (y != (float) 0) {
 
         }
     }
@@ -136,7 +136,7 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
     @Deprecated /* TODO probably rewrite */ private boolean mouseMotionFunc(int px, int py, short[] buttons) {
 
 
-        ClosestRay cray = pickRay(px, py);
+        ClosestRay cray = pickRay((float) px, (float) py);
 
 
         /*System.out.println(mouseTouch.collisionObject + " touched with " +
@@ -214,7 +214,7 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
         int x = e.getX();
         int y = e.getY();
         if (!mouseMotionFunc(x, y, e.getButtonsDown())) {
-            pickConstrain(e.getButton(), 1, x, y);
+            pickConstrain((int) e.getButton(), 1, x, y);
 
         }
 
@@ -228,14 +228,14 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
 
         int dragThresh = 1;
         boolean dragging = Math.abs(mouseDragDX) < dragThresh;
-        if (dragging && mouseClick(e.getButton(), e.getX(), e.getY())) {
+        if (dragging && mouseClick((int) e.getButton(), (float) e.getX(), (float) e.getY())) {
 
         } else {
 
             int x = e.getX();
             int y = e.getY();
             if (!mouseMotionFunc(x, y, e.getButtonsDown())) {
-                pickConstrain(e.getButton(), 0, x, y);
+                pickConstrain((int) e.getButton(), 0, x, y);
             }
 
         }

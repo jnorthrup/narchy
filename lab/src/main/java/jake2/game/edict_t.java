@@ -71,15 +71,15 @@ public class edict_t {
     /** SVF_NOCLIENT, SVF_DEADMONSTER, SVF_MONSTER, etc. */
     public int svflags;
 
-    public float[] mins = { 0, 0, 0 };
+    public float[] mins = {(float) 0, (float) 0, (float) 0};
 
-    public float[] maxs = { 0, 0, 0 };
+    public float[] maxs = {(float) 0, (float) 0, (float) 0};
 
-    public float[] absmin = { 0, 0, 0 };
+    public float[] absmin = {(float) 0, (float) 0, (float) 0};
 
-    public float[] absmax = { 0, 0, 0 };
+    public float[] absmax = {(float) 0, (float) 0, (float) 0};
 
-    public float[] size = { 0, 0, 0 };
+    public float[] size = {(float) 0, (float) 0, (float) 0};
 
     public int solid;
 
@@ -129,15 +129,15 @@ public class edict_t {
     public float accel;
     public float decel;
 
-    public float[] movedir = { 0, 0, 0 };
+    public float[] movedir = {(float) 0, (float) 0, (float) 0};
 
-    public float[] pos1 = { 0, 0, 0 };
+    public float[] pos1 = {(float) 0, (float) 0, (float) 0};
 
-    public float[] pos2 = { 0, 0, 0 };
+    public float[] pos2 = {(float) 0, (float) 0, (float) 0};
 
-    public float[] velocity = { 0, 0, 0 };
+    public float[] velocity = {(float) 0, (float) 0, (float) 0};
 
-    public float[] avelocity = { 0, 0, 0 };
+    public float[] avelocity = {(float) 0, (float) 0, (float) 0};
 
     public int mass;
 
@@ -261,9 +261,9 @@ public class edict_t {
 
     public int waterlevel;
 
-    public float[] move_origin = { 0, 0, 0 };
+    public float[] move_origin = {(float) 0, (float) 0, (float) 0};
 
-    public float[] move_angles = { 0, 0, 0 };
+    public float[] move_angles = {(float) 0, (float) 0, (float) 0};
 
     /** move this to clientinfo? . */
     public int light_level;
@@ -384,7 +384,7 @@ public class edict_t {
                 s.angles = Lib.atov(value);
                 break;
             case "angle":
-                s.angles = new float[]{0, Lib.atof(value), 0};
+                s.angles = new float[]{(float) 0, Lib.atof(value), (float) 0};
                 break;
             case "item":
                 game_import_t.error("ent.set(\"item\") called.");

@@ -40,7 +40,7 @@ public class a extends GamePanel {
 	@Override
 	public void start() {
 		super.start();
-		enableEvents(8);
+		enableEvents(8L);
 		new Thread(this).start();
 	}
 
@@ -85,18 +85,18 @@ public class a extends GamePanel {
 			for (int colors = 0; colors < 64; colors++) {
 				for (i = 0, k = 0; i < SPRITE_COUNT; i++) {
 
-                    float cloth = 0.58f + ((colors >> 3) & 7) / 8f;
+                    float cloth = 0.58f + (float) ((colors >> 3) & 7) / 8f;
 
-					j = S.charAt(k++);
+					j = (int) S.charAt(k++);
                     int width = j >> 8;
                     int height = j & 0xFF;
 					fadedSprites[alpha][colors][i] = new BufferedImage(width, height, 2);
                     int flesh = 0xF4C9A7;
                     for (y = 0; y < height; y++) {
-						long value = S.charAt(k++);
+						long value = (long) S.charAt(k++);
 						if (width == 16) {
-							value <<= 16;
-							value |= S.charAt(k++);
+							value <<= 16L;
+                            value = value | (long) S.charAt(k++);
 						}
 						for (x = 0; x < width; x++) {
 							z = ((int) value) & 3;
@@ -110,17 +110,17 @@ public class a extends GamePanel {
 								} else if (i == SPRITE_MEAT) {
 									pixels[x] = z == 0 ? 0x000000 : z == 2 ? 0xEEECD3 : 0xA6674D;
 								} else if (i >= SPRITE_MAN_HEAD_1 && i < SPRITE_WINDOW) {
-									pixels[x] = z == 0 ? 0x000000 : z == 2 ? flesh : Color.HSBtoRGB(0.16f + (colors & 7) / 8f, 0.64f, 1);
+									pixels[x] = z == 0 ? 0x000000 : z == 2 ? flesh : Color.HSBtoRGB(0.16f + (float) (colors & 7) / 8f, 0.64f, 1.0F);
 								} else if (i <= SPRITE_MAN_LEGS_3 || i >= SPRITE_WINDOW) {
-									pixels[x] = z == 0 ? 0x000000 : Color.HSBtoRGB(cloth, 0.73f, z == 1 ? 0.5f : 1);
+									pixels[x] = z == 0 ? 0x000000 : Color.HSBtoRGB(cloth, 0.73f, z == 1 ? 0.5f : 1.0F);
 								} else if (i <= SPRITE_WOMAN_LEGS_3) {
-									pixels[x] = z == 0 ? 0x000000 : z == 1 ? Color.HSBtoRGB(cloth, 0.73f, 1) : flesh;
+									pixels[x] = z == 0 ? 0x000000 : z == 1 ? Color.HSBtoRGB(cloth, 0.73f, 1.0F) : flesh;
 								} else {
-									pixels[x] = z == 0 ? 0x000000 : z == 1 ? Color.HSBtoRGB(cloth, 0.73f, 1) : flesh;
+									pixels[x] = z == 0 ? 0x000000 : z == 1 ? Color.HSBtoRGB(cloth, 0.73f, 1.0F) : flesh;
 								}
 								pixels[x] = (alpha << 26) | (0x3FFFFFF & pixels[x]);
 							}
-							value >>= 2;
+							value >>= 2L;
 						}
 						fadedSprites[alpha][colors][i].setRGB(0, y, width, 1, pixels, 0, width);
 					}
@@ -137,20 +137,20 @@ public class a extends GamePanel {
         final int COLOR_SIDEWALK_1 = 0xB0BDC5;
         for (x = 0; x < 256; x++) {
 			for (y = 0; y < 128; y++) {
-                float s = (float) Math.sin(.049f * x);
+                float s = (float) Math.sin((double) (.049f * (float) x));
                 z = y < 64 ? ((x & 63) == 0 ? COLOR_SIDEWALK_2 : COLOR_SIDEWALK_1) : y < 70 ? ((x & 63) == 0 ? COLOR_CURB_2 : COLOR_CURB_1) : y < 74 ? COLOR_CURB_2 : COLOR_ROAD;
-                float f = 1;
+                float f = 1.0F;
                 if (x >= 8 && x < 56 && y >= 76 && y < 105) {
 					z = fadedSprites[63][0][SPRITE_DRAIN].getRGB((x - 8) & 15, (y - 9) & 15);
 				} else {
-					f -= (random.nextFloat() - s * s) / 16 + (127 - y) / 512f;
+					f -= (random.nextFloat() - s * s) / 16.0F + (float) (127 - y) / 512f;
 				}
 				i = z >> 16;
 				j = (z >> 8) & 0xFF;
 				k = z & 0xFF;
-				i *= f;
-				j *= f;
-				k *= f;
+                i = (int) ((float) i * f);
+                j = (int) ((float) j * f);
+                k = (int) ((float) k * f);
 				floorPixels[y][x] = (i << 16) | (j << 8) | k;
 			}
 		}
@@ -161,9 +161,9 @@ public class a extends GamePanel {
         final int Z0 = 256;
         for (y = 0; y < 64; y++) {
 			for (x = 0; x < 256; x++) {
-                float K = FLOOR_Y / (float) (FLOOR_Y - y);
-				floorMapping[y][x][0] = (int) (128 + K * (x - 128));
-				floorMapping[y][x][1] = (int) (Z0 - K * Z0);
+                float K = (float) FLOOR_Y / (float) (FLOOR_Y - y);
+				floorMapping[y][x][0] = (int) (128.0F + K * (float) (x - 128));
+				floorMapping[y][x][1] = (int) ((float) Z0 - K * (float) Z0);
 			}
 		}
 
@@ -246,14 +246,14 @@ public class a extends GamePanel {
         final float STANDING_ANGLE_SPEED = 0.05f;
         final float ANGLE_SPEED = 0.03f;
         final float GRAVITY = -0.15f;
-        final float FLYING_SPEED_X = 1;
-        final float FLYING_SPEED = 4;
-        final float ENEMY_WALK_SPEED = 1;
+        final float FLYING_SPEED_X = 1.0F;
+        final float FLYING_SPEED = 4.0F;
+        final float ENEMY_WALK_SPEED = 1.0F;
         final int FLAT_FLOOR_Y = -59;
         while (true) {
 
 			do {
-				nextFrameStartTime += 16666667;
+				nextFrameStartTime += 16666667L;
 
 				
 
@@ -308,12 +308,12 @@ public class a extends GamePanel {
 
 
                             player = new float[64];
-                            player[OBJ_Y] = FLOOR_Y;
-                            player[OBJ_Z] = 64;
-                            player[OBJ_REVERSED] = 1;
-                            player[OBJ_FADE] = 63;
-                            player[OBJ_HITS] = 3;
-                            player[OBJ_POWER] = 100;
+                            player[OBJ_Y] = (float) FLOOR_Y;
+                            player[OBJ_Z] = 64.0F;
+                            player[OBJ_REVERSED] = 1.0F;
+                            player[OBJ_FADE] = 63.0F;
+                            player[OBJ_HITS] = 3.0F;
+                            player[OBJ_POWER] = 100.0F;
                             queue.clear();
                             queue.add(player);
 
@@ -341,7 +341,7 @@ public class a extends GamePanel {
 
                             for (i = 0; i < 96; i++) {
                                 for (j = 0; j < 256; j++) {
-                                    pixels[(i << 8) | j] = Color.HSBtoRGB(.06f + 0.17f * level, .92f, i / 95f);
+                                    pixels[(i << 8) | j] = Color.HSBtoRGB(.06f + 0.17f * (float) level, .92f, (float) i / 95f);
                                 }
                             }
                             skyImage = new BufferedImage(256, 96, 1);
@@ -362,18 +362,18 @@ public class a extends GamePanel {
 
                         float[] enemy = new float[64];
 						queue.add(enemy);
-						enemy[OBJ_Z] = random.nextInt(123);
-						enemy[OBJ_X] = (144 - 0.5f * enemy[OBJ_Z]);
-						enemy[OBJ_X] = cameraX + (random.nextBoolean() ? -enemy[OBJ_X] : enemy[OBJ_X]);
-						enemy[OBJ_Y] = FLOOR_Y;
-						enemy[OBJ_TYPE] = TYPE_ENEMY;
-						enemy[OBJ_POWER] = 100;
-						enemy[OBJ_FADE] = 63;
-						enemy[OBJ_GENDER] = random.nextInt(2);
-						enemy[OBJ_COLOR] = 8 + random.nextInt(56);
-						enemy[OBJ_HITS] = 3;
-						enemy[OBJ_PUNCH_DELAY] = random.nextInt(63);
-						enemy[OBJ_BOSS] = createBoss ? 1 : 0;
+						enemy[OBJ_Z] = (float) random.nextInt(123);
+						enemy[OBJ_X] = (144.0F - 0.5f * enemy[OBJ_Z]);
+						enemy[OBJ_X] = (float) cameraX + (random.nextBoolean() ? -enemy[OBJ_X] : enemy[OBJ_X]);
+						enemy[OBJ_Y] = (float) FLOOR_Y;
+						enemy[OBJ_TYPE] = (float) TYPE_ENEMY;
+						enemy[OBJ_POWER] = 100.0F;
+						enemy[OBJ_FADE] = 63.0F;
+						enemy[OBJ_GENDER] = (float) random.nextInt(2);
+						enemy[OBJ_COLOR] = (float) (8 + random.nextInt(56));
+						enemy[OBJ_HITS] = 3.0F;
+						enemy[OBJ_PUNCH_DELAY] = (float) random.nextInt(63);
+						enemy[OBJ_BOSS] = (float) (createBoss ? 1 : 0);
 						createBoss = false;
 						enemiesAlive++;
 						enemiesRemaining--;
@@ -399,30 +399,30 @@ public class a extends GamePanel {
 				}
 
 				
-				if (player[OBJ_STATE] < STATE_STUNNED) {
-					if (player[OBJ_PUNCHING] == 0) {
+				if (player[OBJ_STATE] < (float) STATE_STUNNED) {
+					if (player[OBJ_PUNCHING] == (float) 0) {
 						if (attackReleased && a[VK_ATTACK]) {
 							attackReleased = false;
-							player[OBJ_LEGS_INDEX] = SPRITE_MAN_LEGS_1;
-							player[OBJ_PUNCHING] = 12;
+							player[OBJ_LEGS_INDEX] = (float) SPRITE_MAN_LEGS_1;
+							player[OBJ_PUNCHING] = 12.0F;
 						}
                         boolean walking = false;
                         if (a[VK_LEFT]) {
 							player[OBJ_X]--;
-							player[OBJ_REVERSED] = 0;
+							player[OBJ_REVERSED] = (float) 0;
 							walking = true;
 						} else if (a[VK_RIGHT]) {
 							player[OBJ_X]++;
-							player[OBJ_REVERSED] = 1;
+							player[OBJ_REVERSED] = 1.0F;
 							walking = true;
 						}
 						if (a[VK_UP]) {
-							if (player[OBJ_Z] > 0) {
+							if (player[OBJ_Z] > (float) 0) {
 								player[OBJ_Z]--;
 								walking = true;
 							}
 						} else if (a[VK_DOWN]) {
-							if (player[OBJ_Z] < 122) {
+							if (player[OBJ_Z] < 122.0F) {
 								player[OBJ_Z]++;
 								walking = true;
 							}
@@ -430,19 +430,19 @@ public class a extends GamePanel {
 
 						
 						while (true) {
-                            float MAX_X = 128 - 0.5f * player[OBJ_Z];
-                            float X = player[OBJ_X] - cameraX;
-							if (cameraX <= minCameraX && 8 - X >= MAX_X) {
+                            float MAX_X = 128.0F - 0.5f * player[OBJ_Z];
+                            float X = player[OBJ_X] - (float) cameraX;
+							if (cameraX <= minCameraX && 8.0F - X >= MAX_X) {
 								player[OBJ_X]++;
-							} else if (cameraX >= minCameraX + 256 && 8 + X > MAX_X) {
+							} else if (cameraX >= minCameraX + 256 && 8.0F + X > MAX_X) {
 								player[OBJ_X]--;
 							} else {
 								break;
 							}
 						}
 						if (walking && (counter & 7) == 7) {
-							if (++player[OBJ_LEGS_INDEX] == 4) {
-								player[OBJ_LEGS_INDEX] = 0;
+							if (++player[OBJ_LEGS_INDEX] == 4.0F) {
+								player[OBJ_LEGS_INDEX] = (float) 0;
 							}
 						}
 					} else {
@@ -451,12 +451,12 @@ public class a extends GamePanel {
 				}
 
 				
-				if (player[OBJ_X] < cameraX) {
-					if (player[OBJ_X] >= minCameraX) {
+				if (player[OBJ_X] < (float) cameraX) {
+					if (player[OBJ_X] >= (float) minCameraX) {
 						cameraX--;
 					}
-				} else if (player[OBJ_X] > cameraX) {
-					if (player[OBJ_X] <= minCameraX + 256) {
+				} else if (player[OBJ_X] > (float) cameraX) {
+					if (player[OBJ_X] <= (float) (minCameraX + 256)) {
 						cameraX++;
 					}
 				}
@@ -465,9 +465,9 @@ public class a extends GamePanel {
 				for (i = queue.size() - 1; i >= 0; i--) {
                     float[] object = queue.get(i);
 
-					if (object[OBJ_TYPE] == TYPE_PLAYER || object[OBJ_TYPE] == TYPE_ENEMY) {
+					if (object[OBJ_TYPE] == (float) TYPE_PLAYER || object[OBJ_TYPE] == (float) TYPE_ENEMY) {
 
-						if (object[OBJ_STATE] == STATE_STANDING) {
+						if (object[OBJ_STATE] == (float) STATE_STANDING) {
 
 							
 
@@ -478,16 +478,16 @@ public class a extends GamePanel {
 								object[OBJ_ANGLE] += STANDING_ANGLE_SPEED;
 								object[OBJ_Y] -= STANDING_Y_SPEED;
 							} else {
-								object[OBJ_ANGLE] = 0;
-								object[OBJ_STATE] = STATE_PAUSED;
-								object[OBJ_Y] = FLOOR_Y;
+								object[OBJ_ANGLE] = (float) 0;
+								object[OBJ_STATE] = (float) STATE_PAUSED;
+								object[OBJ_Y] = (float) FLOOR_Y;
 							}
-						} else if (object[OBJ_STATE] == STATE_GROUNDED) {
+						} else if (object[OBJ_STATE] == (float) STATE_GROUNDED) {
 
 							
 
-							if (object[OBJ_POWER] == 0) {
-								if (--object[OBJ_FADE] < 0) {
+							if (object[OBJ_POWER] == (float) 0) {
+								if (--object[OBJ_FADE] < (float) 0) {
 
 									queue.remove(i);
 									if (Arrays.equals(object, player)) {
@@ -498,22 +498,22 @@ public class a extends GamePanel {
 										
 										enemiesAlive--;
 
-										if (object[OBJ_BOSS] == 1) {
+										if (object[OBJ_BOSS] == 1.0F) {
 											
 											enemiesRemaining = 0;
 											for (j = 0; j < queue.size(); j++) {
                                                 float[] enemy = queue.get(j);
-												if (enemy[OBJ_TYPE] == TYPE_ENEMY) {
-													enemy[OBJ_POWER] = 0;
-													enemy[OBJ_STATE] = STATE_FLYING;
+												if (enemy[OBJ_TYPE] == (float) TYPE_ENEMY) {
+													enemy[OBJ_POWER] = (float) 0;
+													enemy[OBJ_STATE] = (float) STATE_FLYING;
 													enemy[OBJ_VY] = FLYING_SPEED;
-													enemy[OBJ_PUNCHING] = 0;
-													if (player[OBJ_REVERSED] == 0) {
-														enemy[OBJ_REVERSED] = 1;
+													enemy[OBJ_PUNCHING] = (float) 0;
+													if (player[OBJ_REVERSED] == (float) 0) {
+														enemy[OBJ_REVERSED] = 1.0F;
 														enemy[OBJ_VX] = -FLYING_SPEED_X;
 														enemy[OBJ_VA] = -ANGLE_SPEED;
 													} else {
-														enemy[OBJ_REVERSED] = 0;
+														enemy[OBJ_REVERSED] = (float) 0;
 														enemy[OBJ_VX] = FLYING_SPEED_X;
 														enemy[OBJ_VA] = ANGLE_SPEED;
 													}
@@ -521,28 +521,28 @@ public class a extends GamePanel {
 											}
 										}
 
-										if (random.nextInt(player[OBJ_POWER] < 25 ? 2 : 10) == 0) {
+										if (random.nextInt(player[OBJ_POWER] < 25.0F ? 2 : 10) == 0) {
 
                                             float[] meat = new float[64];
 											queue.add(meat);
-											meat[OBJ_COUNTER] = 512;
-											meat[OBJ_FADE] = 63;
-											meat[OBJ_TYPE] = TYPE_MEAT;
-											meat[OBJ_X] = object[OBJ_X] + (object[OBJ_ANGLE] > 0 ? 16 : -16);
-											meat[OBJ_Y] = FLOOR_Y;
-											meat[OBJ_Z] = object[OBJ_Z] - 5;
-											if (meat[OBJ_Z] < 0) {
-												meat[OBJ_Z] = 0;
+											meat[OBJ_COUNTER] = 512.0F;
+											meat[OBJ_FADE] = 63.0F;
+											meat[OBJ_TYPE] = (float) TYPE_MEAT;
+											meat[OBJ_X] = object[OBJ_X] + (float) (object[OBJ_ANGLE] > (float) 0 ? 16 : -16);
+											meat[OBJ_Y] = (float) FLOOR_Y;
+											meat[OBJ_Z] = object[OBJ_Z] - 5.0F;
+											if (meat[OBJ_Z] < (float) 0) {
+												meat[OBJ_Z] = (float) 0;
 											}
 										}
 									}
 
 									continue;
 								}
-							} else if (--object[OBJ_COUNTER] == 0) {
-								object[OBJ_STATE] = STATE_STANDING;
+							} else if (--object[OBJ_COUNTER] == (float) 0) {
+								object[OBJ_STATE] = (float) STATE_STANDING;
 							}
-						} else if (object[OBJ_STATE] == STATE_FLYING) {
+						} else if (object[OBJ_STATE] == (float) STATE_FLYING) {
 
 							
 
@@ -550,91 +550,91 @@ public class a extends GamePanel {
 							object[OBJ_Y] += object[OBJ_VY];
 							object[OBJ_X] += object[OBJ_VX];
 							object[OBJ_ANGLE] += object[OBJ_VA];
-							if (object[OBJ_VY] < 0 && object[OBJ_Y] < FLAT_FLOOR_Y) {
-								object[OBJ_Y] = FLAT_FLOOR_Y;
-								object[OBJ_STATE] = STATE_GROUNDED;
-								object[OBJ_COUNTER] = 32;
+							if (object[OBJ_VY] < (float) 0 && object[OBJ_Y] < (float) FLAT_FLOOR_Y) {
+								object[OBJ_Y] = (float) FLAT_FLOOR_Y;
+								object[OBJ_STATE] = (float) STATE_GROUNDED;
+								object[OBJ_COUNTER] = 32.0F;
 							}
 
 							
 							while (true) {
-                                float X = object[OBJ_X] - cameraX;
-                                float MAX_X = 128 - 0.5f * object[OBJ_Z];
-								if (X + 32 > MAX_X) {
+                                float X = object[OBJ_X] - (float) cameraX;
+                                float MAX_X = 128.0F - 0.5f * object[OBJ_Z];
+								if (X + 32.0F > MAX_X) {
 									object[OBJ_X]--;
-								} else if (32 - X >= MAX_X) {
+								} else if (32.0F - X >= MAX_X) {
 									object[OBJ_X]++;
 								} else {
 									break;
 								}
 							}
-						} else if (object[OBJ_STATE] == STATE_STUNNED) {
-							if (--object[OBJ_COUNTER] == 0) {
-								object[OBJ_STATE] = STATE_PAUSED;
-								object[OBJ_PUNCHING] = 0;
+						} else if (object[OBJ_STATE] == (float) STATE_STUNNED) {
+							if (--object[OBJ_COUNTER] == (float) 0) {
+								object[OBJ_STATE] = (float) STATE_PAUSED;
+								object[OBJ_PUNCHING] = (float) 0;
 							}
 						}
 					}
 
-					if (object[OBJ_TYPE] == TYPE_ENEMY) {
+					if (object[OBJ_TYPE] == (float) TYPE_ENEMY) {
 
-						if (player[OBJ_STATE] < STATE_STUNNED && object[OBJ_STATE] < STATE_STUNNED) {
+						if (player[OBJ_STATE] < (float) STATE_STUNNED && object[OBJ_STATE] < (float) STATE_STUNNED) {
 
 							
 							j = (int) (object[OBJ_Z] - player[OBJ_Z]);
 							j = j < 0 ? -j : j;
-                            boolean leftOverlap = object[OBJ_X] < player[OBJ_X] && object[OBJ_X] > player[OBJ_X] - 24;
-                            boolean rightOverlap = object[OBJ_X] > player[OBJ_X] && object[OBJ_X] < player[OBJ_X] + 24;
+                            boolean leftOverlap = object[OBJ_X] < player[OBJ_X] && object[OBJ_X] > player[OBJ_X] - 24.0F;
+                            boolean rightOverlap = object[OBJ_X] > player[OBJ_X] && object[OBJ_X] < player[OBJ_X] + 24.0F;
 							if (j < 16) {
-								if (((leftOverlap && player[OBJ_REVERSED] == 0) || (rightOverlap && player[OBJ_REVERSED] == 1)) && player[OBJ_PUNCHING] == 10) {
+								if (((leftOverlap && player[OBJ_REVERSED] == (float) 0) || (rightOverlap && player[OBJ_REVERSED] == 1.0F)) && player[OBJ_PUNCHING] == 10.0F) {
 									
-									object[OBJ_STATE] = STATE_STUNNED;
-									object[OBJ_COUNTER] = 8;
+									object[OBJ_STATE] = (float) STATE_STUNNED;
+									object[OBJ_COUNTER] = 8.0F;
 									enemyPowerCounter = 128;
-									object[OBJ_POWER] -= object[OBJ_BOSS] == 1 ? 5 : hitPoints;
-									if (object[OBJ_POWER] <= 0 || --object[OBJ_HITS] <= 0) {
-										if (object[OBJ_POWER] < 0) {
-											object[OBJ_POWER] = 0;
+                                    object[OBJ_POWER] = object[OBJ_POWER] - (float) object[OBJ_BOSS] == 1.0F ? 5 : hitPoints;
+									if (object[OBJ_POWER] <= (float) 0 || --object[OBJ_HITS] <= (float) 0) {
+										if (object[OBJ_POWER] < (float) 0) {
+											object[OBJ_POWER] = (float) 0;
 										}
-										object[OBJ_HITS] = 3;
-										object[OBJ_STATE] = STATE_FLYING;
+										object[OBJ_HITS] = 3.0F;
+										object[OBJ_STATE] = (float) STATE_FLYING;
 										object[OBJ_VY] = FLYING_SPEED;
-										object[OBJ_PUNCHING] = 0;
-										if (player[OBJ_REVERSED] == 0) {
-											object[OBJ_REVERSED] = 1;
+										object[OBJ_PUNCHING] = (float) 0;
+										if (player[OBJ_REVERSED] == (float) 0) {
+											object[OBJ_REVERSED] = 1.0F;
 											object[OBJ_VX] = -FLYING_SPEED_X;
 											object[OBJ_VA] = -ANGLE_SPEED;
 										} else {
-											object[OBJ_REVERSED] = 0;
+											object[OBJ_REVERSED] = (float) 0;
 											object[OBJ_VX] = FLYING_SPEED_X;
 											object[OBJ_VA] = ANGLE_SPEED;
 										}
 									}
 									enemyPower = (int) object[OBJ_POWER];
-								} else if ((leftOverlap || rightOverlap) && object[OBJ_PUNCHING] == 0) {
-									if (--object[OBJ_PUNCH_DELAY] <= 0) {
+								} else if ((leftOverlap || rightOverlap) && object[OBJ_PUNCHING] == (float) 0) {
+									if (--object[OBJ_PUNCH_DELAY] <= (float) 0) {
 										
-										object[OBJ_LEGS_INDEX] = SPRITE_MAN_LEGS_1;
-										object[OBJ_PUNCHING] = 12;
-										object[OBJ_PUNCH_DELAY] = random.nextInt(63);
-										player[OBJ_STATE] = STATE_STUNNED;
-										player[OBJ_COUNTER] = 8;
-										player[OBJ_POWER] -= 5;
+										object[OBJ_LEGS_INDEX] = (float) SPRITE_MAN_LEGS_1;
+										object[OBJ_PUNCHING] = 12.0F;
+										object[OBJ_PUNCH_DELAY] = (float) random.nextInt(63);
+										player[OBJ_STATE] = (float) STATE_STUNNED;
+										player[OBJ_COUNTER] = 8.0F;
+										player[OBJ_POWER] -= 5.0F;
 
-										if (player[OBJ_POWER] <= 0 || --player[OBJ_HITS] <= 0) {
-											if (player[OBJ_POWER] < 0) {
-												player[OBJ_POWER] = 0;
+										if (player[OBJ_POWER] <= (float) 0 || --player[OBJ_HITS] <= (float) 0) {
+											if (player[OBJ_POWER] < (float) 0) {
+												player[OBJ_POWER] = (float) 0;
 											}
-											player[OBJ_HITS] = 3;
-											player[OBJ_STATE] = STATE_FLYING;
+											player[OBJ_HITS] = 3.0F;
+											player[OBJ_STATE] = (float) STATE_FLYING;
 											player[OBJ_VY] = FLYING_SPEED;
-											player[OBJ_PUNCHING] = 0;
-											if (object[OBJ_REVERSED] == 0) {
-												player[OBJ_REVERSED] = 1;
+											player[OBJ_PUNCHING] = (float) 0;
+											if (object[OBJ_REVERSED] == (float) 0) {
+												player[OBJ_REVERSED] = 1.0F;
 												player[OBJ_VX] = -FLYING_SPEED_X;
 												player[OBJ_VA] = -ANGLE_SPEED;
 											} else {
-												player[OBJ_REVERSED] = 0;
+												player[OBJ_REVERSED] = (float) 0;
 												player[OBJ_VX] = FLYING_SPEED_X;
 												player[OBJ_VA] = ANGLE_SPEED;
 											}
@@ -644,44 +644,44 @@ public class a extends GamePanel {
 							}
 						}
 
-						if (object[OBJ_STATE] < STATE_STUNNED) {
-							if (object[OBJ_PUNCHING] > 0) {
+						if (object[OBJ_STATE] < (float) STATE_STUNNED) {
+							if (object[OBJ_PUNCHING] > (float) 0) {
 								object[OBJ_PUNCHING]--;
 							} else {
-								object[OBJ_REVERSED] = player[OBJ_X] > object[OBJ_X] ? 1 : 0;
-								if (--object[OBJ_COUNTER] < 0) {
-									object[OBJ_STATE] = random.nextInt(10) > 2 ? STATE_WALKING : STATE_PAUSED;
-									object[OBJ_COUNTER] = (1 + random.nextInt(6)) << (object[OBJ_STATE] == STATE_PAUSED ? 4 : 6);
-									if (object[OBJ_STATE] == STATE_WALKING) {
-										float z2 = random.nextInt(123);
-                                        float x2 = cameraX + (1 - 2 * random.nextFloat()) * (120 - 0.5f * z2);
-										if (player[OBJ_STATE] < STATE_STUNNED && random.nextInt(10) > 2) {
+								object[OBJ_REVERSED] = (float) (player[OBJ_X] > object[OBJ_X] ? 1 : 0);
+								if (--object[OBJ_COUNTER] < (float) 0) {
+									object[OBJ_STATE] = (float) (random.nextInt(10) > 2 ? STATE_WALKING : STATE_PAUSED);
+									object[OBJ_COUNTER] = (float) ((1 + random.nextInt(6)) << (object[OBJ_STATE] == (float) STATE_PAUSED ? 4 : 6));
+									if (object[OBJ_STATE] == (float) STATE_WALKING) {
+										float z2 = (float) random.nextInt(123);
+                                        float x2 = (float) cameraX + (1.0F - 2.0F * random.nextFloat()) * (120.0F - 0.5f * z2);
+										if (player[OBJ_STATE] < (float) STATE_STUNNED && random.nextInt(10) > 2) {
 											z2 = player[OBJ_Z];
-											x2 = player[OBJ_X] + ((object[OBJ_X] < player[OBJ_X]) ? -16 : 16);
+											x2 = player[OBJ_X] + (float) ((object[OBJ_X] < player[OBJ_X]) ? -16 : 16);
 										}
 										object[OBJ_VX] = x2 - object[OBJ_X];
 										object[OBJ_VZ] = z2 - object[OBJ_Z];
-                                        float mag = ENEMY_WALK_SPEED / (float) Math.hypot(object[OBJ_VX], object[OBJ_VZ]);
-										object[OBJ_COUNTER] = (int) (1 / mag);
+                                        float mag = ENEMY_WALK_SPEED / (float) Math.hypot((double) object[OBJ_VX], (double) object[OBJ_VZ]);
+										object[OBJ_COUNTER] = (float) (int) (1.0F / mag);
 										object[OBJ_VX] *= mag;
 										object[OBJ_VZ] *= mag;
 									}
-								} else if (object[OBJ_STATE] == STATE_WALKING) {
+								} else if (object[OBJ_STATE] == (float) STATE_WALKING) {
 									object[OBJ_X] += object[OBJ_VX];
 									object[OBJ_Z] += object[OBJ_VZ];
 									if ((counter & 7) == 7) {
-										if (++object[OBJ_LEGS_INDEX] == 4) {
-											object[OBJ_LEGS_INDEX] = 0;
+										if (++object[OBJ_LEGS_INDEX] == 4.0F) {
+											object[OBJ_LEGS_INDEX] = (float) 0;
 										}
 									}
 								}
 							}
 						}
-					} else if (object[OBJ_TYPE] == TYPE_MEAT) {
+					} else if (object[OBJ_TYPE] == (float) TYPE_MEAT) {
 
-						if (object[OBJ_COUNTER] > 0) {
+						if (object[OBJ_COUNTER] > (float) 0) {
 							object[OBJ_COUNTER]--;
-						} else if (object[OBJ_FADE] > 0) {
+						} else if (object[OBJ_FADE] > (float) 0) {
 							object[OBJ_FADE]--;
 						} else {
 							queue.remove(i);
@@ -690,11 +690,11 @@ public class a extends GamePanel {
 
                         float dx = player[OBJ_X] - object[OBJ_X];
                         float dy = player[OBJ_Z] - object[OBJ_Z];
-						if (dx * dx + dy * dy < 256) {
+						if (dx * dx + dy * dy < 256.0F) {
 							queue.remove(i);
-							player[OBJ_POWER] += 50;
-							if (player[OBJ_POWER] > 100) {
-								player[OBJ_POWER] = 100;
+							player[OBJ_POWER] += 50.0F;
+							if (player[OBJ_POWER] > 100.0F) {
+								player[OBJ_POWER] = 100.0F;
 							}
 						}
 					}
@@ -733,26 +733,26 @@ public class a extends GamePanel {
 				for (i = 0; i < queue.size(); i++) {
                     float[] object = queue.get(i);
 					if (j == (int) object[OBJ_Z]) {
-                        float K = Z0 / (Z0 - object[OBJ_Z]);
-						g.translate(K * (object[OBJ_X] - cameraX) + 128, 128 - K * object[OBJ_Y]);
-						if (object[OBJ_ANGLE] != 0) {
-							g.rotate(object[OBJ_ANGLE]);
+                        float K = (float) Z0 / ((float) Z0 - object[OBJ_Z]);
+						g.translate((double) (K * (object[OBJ_X] - (float) cameraX) + 128.0F), (double) (128 - K * object[OBJ_Y]));
+						if (object[OBJ_ANGLE] != (float) 0) {
+							g.rotate((double) object[OBJ_ANGLE]);
 						}
-						g.scale(object[OBJ_REVERSED] == 1 ? -K : K, K);
+						g.scale((double) (object[OBJ_REVERSED] == 1.0F ? -K : K), (double) K);
                         BufferedImage[] sprites = fadedSprites[(int) object[OBJ_FADE]][(int) object[OBJ_COLOR]];
 
-                        if (object[OBJ_BOSS] == 1) {
-							g.scale(2, 2);
+                        if (object[OBJ_BOSS] == 1.0F) {
+							g.scale(2.0, 2.0);
 						}
 
-						if (object[OBJ_TYPE] == TYPE_MEAT) {
+						if (object[OBJ_TYPE] == (float) TYPE_MEAT) {
 							g.drawImage(sprites[SPRITE_MEAT], -8, -5, null);
-						} else if (object[OBJ_GENDER] == GENDER_FEMALE) {
-							g.drawImage(sprites[3 + (object[OBJ_LEGS_INDEX] > SPRITE_MAN_LEGS_3 ? SPRITE_MAN_LEGS_2 : (int) object[OBJ_LEGS_INDEX])], -8, -13, null);
-							if (object[OBJ_STATE] == STATE_STUNNED) {
+						} else if (object[OBJ_GENDER] == (float) GENDER_FEMALE) {
+							g.drawImage(sprites[3 + (object[OBJ_LEGS_INDEX] > (float) SPRITE_MAN_LEGS_3 ? SPRITE_MAN_LEGS_2 : (int) object[OBJ_LEGS_INDEX])], -8, -13, null);
+							if (object[OBJ_STATE] == (float) STATE_STUNNED) {
 								g.drawImage(sprites[SPRITE_WOMAN_BODY_1], -6, -21, null);
 								g.drawImage(sprites[SPRITE_WOMAN_HEAD_2], -6, -29, null);
-							} else if (object[OBJ_PUNCHING] == 0) {
+							} else if (object[OBJ_PUNCHING] == (float) 0) {
 								g.drawImage(sprites[SPRITE_WOMAN_BODY_1], -8, -21, null);
 								g.drawImage(sprites[SPRITE_WOMAN_HEAD_1], -8, -29, null);
 							} else {
@@ -761,11 +761,11 @@ public class a extends GamePanel {
 								g.drawImage(sprites[SPRITE_WOMAN_HEAD_1], -9, -29, null);
 							}
 						} else {
-							g.drawImage(sprites[object[OBJ_LEGS_INDEX] > SPRITE_MAN_LEGS_3 ? SPRITE_MAN_LEGS_2 : (int) object[OBJ_LEGS_INDEX]], -8, -13, null);
-							if (object[OBJ_STATE] == STATE_STUNNED) {
+							g.drawImage(sprites[object[OBJ_LEGS_INDEX] > (float) SPRITE_MAN_LEGS_3 ? SPRITE_MAN_LEGS_2 : (int) object[OBJ_LEGS_INDEX]], -8, -13, null);
+							if (object[OBJ_STATE] == (float) STATE_STUNNED) {
 								g.drawImage(sprites[SPRITE_MAN_BODY_1], -6, -21, null);
 								g.drawImage(sprites[SPRITE_MAN_HEAD_2], -4, -29, null);
-							} else if (object[OBJ_PUNCHING] == 0) {
+							} else if (object[OBJ_PUNCHING] == (float) 0) {
 								g.drawImage(sprites[SPRITE_MAN_BODY_1], -8, -21, null);
 								g.drawImage(sprites[SPRITE_MAN_HEAD_1], -6, -29, null);
 							} else {
@@ -816,7 +816,7 @@ public class a extends GamePanel {
 			}
 
 			
-			while (nextFrameStartTime - System.nanoTime() > 0) {
+			while (nextFrameStartTime - System.nanoTime() > 0L) {
 				Thread.yield();
 			}
 		}

@@ -98,7 +98,7 @@ public class SymbolNode {
         char c = (char) r.read();
         SymbolNode n = findChildWithChar(c);
 		if (n == null) {
-			r.unread(c);
+			r.unread((int) c);
 			return this;
 		}
 		return n.deepestRead(r);
@@ -121,7 +121,7 @@ public class SymbolNode {
 	 */
 	SymbolNode findChildWithChar(char c) {
 		for (SymbolNode n : children) {
-			if (n.myChar == c) {
+			if ((int) n.myChar == (int) c) {
 				return n;
 			}
 		}
@@ -168,7 +168,7 @@ public class SymbolNode {
 		if (valid) {
 			return this;
 		}
-		r.unread(myChar);
+		r.unread((int) myChar);
 		return parent.unreadToValid(r);
 	}
 }

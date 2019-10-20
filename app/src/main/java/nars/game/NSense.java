@@ -209,7 +209,7 @@ public interface NSense {
             }
         };///.nanIfZero();
 
-        return new FloatNormalized(delta, -1, +1);
+        return new FloatNormalized(delta, -1.0F, (float) +1);
     }
 
     default Signal sense(Term id, FloatSupplier v) {
@@ -250,7 +250,7 @@ public interface NSense {
     }
 
     default DigitizedScalar senseAngle(int divisions, Term root, FloatSupplier angleInRadians, IntFunction<Term> termizer) {
-        DigitizedScalar ang = senseNumber(divisions, DigitizedScalar.FuzzyNeedle, ()->(float) (0.5 + 0.5 * MathUtils.normalizeAngle(angleInRadians.asFloat(), 0) / (2 * Math.PI)), termizer
+        DigitizedScalar ang = senseNumber(divisions, DigitizedScalar.FuzzyNeedle, ()->(float) (0.5 + 0.5 * MathUtils.normalizeAngle((double) angleInRadians.asFloat(), (double) 0) / (2.0 * Math.PI)), termizer
                 //$.inst($.the(angle), ANGLE),
                 //$.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/,
                 //$.funcImageLast("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/,
@@ -326,7 +326,7 @@ public interface NSense {
     default BiPolarAction actionTriState(Term cc, IntPredicate i) {
 
         float deadZoneFreqRadius =
-                1 / 6f;
+                1.0F / 6f;
 
         return actionBipolar(cc, false, f -> {
 
@@ -370,7 +370,7 @@ public interface NSense {
         float decay = 0.9f;
         actionTriState(s, (i) -> {
             float a = amp[0];
-            float b = Util.clamp((a * decay) + dt * i, -max, max);
+            float b = Util.clamp((a * decay) + dt * (float) i, -max, max);
             amp[0] = b;
 
             act.accept(b);

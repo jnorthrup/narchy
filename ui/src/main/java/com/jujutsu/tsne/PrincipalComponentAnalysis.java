@@ -25,8 +25,6 @@ import org.ejml.dense.row.NormOps_DDRM;
 import org.ejml.dense.row.factory.DecompositionFactory_DDRM;
 import org.ejml.interfaces.decomposition.SingularValueDecomposition;
 
-import java.util.stream.IntStream;
-
 import static org.ejml.dense.row.CommonOps_DDRM.*;
 import static org.ejml.dense.row.SingularOps_DDRM.descendingOrder;
 
@@ -131,7 +129,7 @@ public class PrincipalComponentAnalysis {
                 mean[j] += A.get(i,j);
 
         for(int j = 0; j < mean.length; j++ )
-            mean[j] /= rows;
+            mean[j] = mean[j] / (double) rows;
 
         
         for(int i = 0; i < rows; i++ )
@@ -272,7 +270,7 @@ public class PrincipalComponentAnalysis {
 		for (int i = 0; i < matrix.length; i++) {
             double[] ti = trafoed[i] = sampleToEigenSpace(matrix[i]);
 			for (int j = 0; j < ti.length; j++)
-				ti[j] *= -1;
+				ti[j] *= -1.0;
 		}
 		return trafoed;
     }

@@ -103,7 +103,7 @@ public enum Intermpolate {;
         ConjList bb = ConjList.events(b);
         int n = aa.size();
         if (n !=bb.size())
-            return 1;//Float.POSITIVE_INFINITY;
+            return 1.0F;//Float.POSITIVE_INFINITY;
 
         long aar = aa.eventRange(), bbr = bb.eventRange(); //save these before changing sort
 
@@ -123,9 +123,9 @@ public enum Intermpolate {;
 //            return 1;//Float.POSITIVE_INFINITY;
 
         //same events, sum timing differences
-        long dtDiff = 0;
+        long dtDiff = 0L;
         long[] aaw = aa.when, bbw = bb.when;
-        float subDiff = 0;
+        float subDiff = (float) 0;
         for (int i = 0; i < n; i++) {
             dtDiff += Math.abs(aaw[i] - bbw[i]); //TODO fail early if dtErr becomes excessive that dtDiff=1
             subDiff += dtDiff(aa.get(i), bb.get(i), depth+1);
@@ -133,13 +133,13 @@ public enum Intermpolate {;
 
         float dtErr;
         long r = Math.max(aar, bbr);
-        if (r == 0) {
-            if (dtDiff > 0) return 1; //can this happen?
-            dtErr = 0;
+        if (r == 0L) {
+            if (dtDiff > 0L) return 1.0F; //can this happen?
+            dtErr = (float) 0;
         } else {
-            dtErr = (((float) dtDiff) / r) / n;
+            dtErr = (((float) dtDiff) / (float) r) / (float) n;
         }
-        return Util.or(dtErr, subDiff/n);
+        return Util.or(dtErr, subDiff/ (float) n);
     }
 
     private static Term intermpolateSeq(Compound a, Compound b, float aProp, NAL nar) {
@@ -148,7 +148,7 @@ public enum Intermpolate {;
             Compound c = a;
             a = b;
             b = c;
-            aProp = 1 - aProp;
+            aProp = 1.0F - aProp;
         }
 
         if (a.volume()!=b.volume())
@@ -236,15 +236,15 @@ public enum Intermpolate {;
         int range = Math.max(Math.abs(adt), Math.abs(bdt));
         int ab = Util.lerpInt(aProp, bdt, adt);
         int delta = Math.max(Math.abs(ab - adt), Math.abs(ab - bdt));
-        float ratio = ((float) delta) / range;
+        float ratio = ((float) delta) / (float) range;
 		//nar.intermpolationRangeLimit.floatValue()) {
 		//            //invalid
 		//            //discard temporal information//return DTERNAL;
-		return ratio < 1 ? ab : XTERNAL;
+		return ratio < 1.0F ? ab : XTERNAL;
     }
 
     public static Term intermpolate(/*@NotNull*/ Compound a, /*@NotNull*/ Compound b, float aProp, NAL nar) {
-        return intermpolate(a, b, aProp, 0, nar);
+        return intermpolate(a, b, aProp, (float) 0, nar);
     }
 
 
@@ -275,22 +275,22 @@ public enum Intermpolate {;
         }
 
         if (!(a instanceof Compound) || !(b instanceof Compound))
-            return 1;
+            return 1.0F;
 
         if (!a.equalsRoot(b))
-            return 1;
+            return 1.0F;
 
-        if (a.opID() == CONJ.id)
+        if (a.opID() == (int) CONJ.id)
             return dtDiffSeq((Compound)a, (Compound)b, depth);
 
         Subterms as = a.subterms(), bs = b.subterms();
-        float dDT = dtDiff(a.dt(), b.dt());
+        float dDT = dtDiff((long) a.dt(), (long) b.dt());
         if (as.equals(bs)) {
             return dDT;
         } else {
             float dSubterms = dtDiff(as, bs, depth);
             if (!Float.isFinite(dSubterms))
-                return 1;
+                return 1.0F;
 
             //return dDT + dSubterms;
             return Util.or(dDT, dSubterms);
@@ -301,22 +301,22 @@ public enum Intermpolate {;
     }
 
     public static float dtDiff(long adt, long bdt) {
-        if (adt == DTERNAL) adt = 0; if (bdt == DTERNAL) bdt = 0; //HACK
+        if (adt == (long) DTERNAL) adt = 0L; if (bdt == (long) DTERNAL) bdt = 0L; //HACK
 
         if (adt == bdt)
-            return 0;
+            return (float) 0;
 
-        if (adt == XTERNAL || bdt == XTERNAL) {
+        if (adt == (long) XTERNAL || bdt == (long) XTERNAL) {
             //dDT = 0.25f; //undercut the DTERNAL case
             return ScalarValue.EPSILONcoarse;
         } else {
-            float range = Math.max(1, Math.abs(adt) + Math.abs(bdt));
+            float range = (float) Math.max(1L, Math.abs(adt) + Math.abs(bdt));
 //            return Math.abs(adt - bdt) / (range);
 //            float mean = (adt+bdt)/2f;
             //float range = Math.max(Math.abs(adt), Math.abs(bdt));
 //            float range = Math.min(Math.abs(adt), Math.abs(bdt));
             //return Math.max( Math.abs(adt - mean), Math.abs(bdt - mean)) / (range);
-            return Math.abs(adt - bdt) / (range);
+            return (float) Math.abs(adt - bdt) / (range);
         }
     }
 
@@ -324,9 +324,9 @@ public enum Intermpolate {;
 
         int len = aa.subs();
         if (len != bb.subs())
-            return 1; //Float.POSITIVE_INFINITY;
+            return 1.0F; //Float.POSITIVE_INFINITY;
 
-        float dSubterms = 0;
+        float dSubterms = (float) 0;
         for (int i = 0; i < len; i++) {
             float di = dtDiff(aa.sub(i), bb.sub(i), depth + 1);
 //            if (!Float.isFinite(di)) {
@@ -335,7 +335,7 @@ public enum Intermpolate {;
             dSubterms += di;
         }
 
-        return dSubterms/len;
+        return dSubterms/ (float) len;
     }
 
 

@@ -46,7 +46,7 @@ public class AspectAlign extends UnitContainer {
     }
 
     private AspectAlign(Surface the, float aspect, Align a) {
-        this(the, aspect, a, 1);
+        this(the, aspect, a, 1.0F);
     }
 
     public AspectAlign(Surface the, float aspect, Align a, float scale) {
@@ -78,7 +78,7 @@ public class AspectAlign extends UnitContainer {
     }
 
     public static RectFloat innerBounds(RectFloat bounds, float aspect, Align align) {
-        return innerBounds(bounds, 1, 1, aspect, align);
+        return innerBounds(bounds, 1.0F, 1.0F, aspect, align);
     }
 
     public static RectFloat innerBounds(RectFloat bounds, float scaleX, float scaleY, float aspect, Align align) {

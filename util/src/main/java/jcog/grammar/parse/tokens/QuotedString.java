@@ -51,7 +51,7 @@ public class QuotedString extends Terminal {
 		letters[n + 1] = '"';
 
 		for (int i = 0; i < n; i++) {
-            int c = (int) (26.0 * Math.random()) + 'a';
+            int c = (int) (26.0 * Math.random()) + (int) 'a';
 			letters[i + 1] = (char) c;
 		}
 

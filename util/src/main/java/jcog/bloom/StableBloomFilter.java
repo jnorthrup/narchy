@@ -35,21 +35,21 @@ public class StableBloomFilter<E> extends MetalBloomFilter<E> implements Countin
     }
 
     protected int forget(float forget) {
-        return (int) Math.ceil(numberOfCells * forget);
+        return (int) Math.ceil((double) (numberOfCells * forget));
     }
 
     /**
      * if the element isnt contained, add it. return true if added, false if possibly present.
      */
     public boolean addIfMissing(E element) {
-        return addIfMissing(element, 1);
+        return addIfMissing(element, 1.0F);
     }
 
     public boolean addIfMissing(E element, float unlearnIfNew) {
         int[] hash = hash(element);
         boolean c = contains(hash);
         if (!c) {
-            if (unlearnIfNew > 0)
+            if (unlearnIfNew > (float) 0)
                 forget(unlearnIfNew, rng);
             add(hash);
             return true;
@@ -72,8 +72,8 @@ public class StableBloomFilter<E> extends MetalBloomFilter<E> implements Countin
 
 
     public void forget(float forgetFactor, Random rng) {
-        double nForget = Math.ceil(forget * forgetFactor);
-        for (int i = 0; i < nForget; i++) {
+        double nForget = Math.ceil((double) (forget * forgetFactor));
+        for (int i = 0; (double) i < nForget; i++) {
             decrement(rng.nextInt(numberOfCells));
         }
     }
@@ -81,8 +81,8 @@ public class StableBloomFilter<E> extends MetalBloomFilter<E> implements Countin
 
     private void decrement(int idx) {
         byte[] c = this.cells;
-        if (c[idx] > 0)
-            c[idx] -= 1;
+        if ((int) c[idx] > 0)
+            c[idx] = (byte) ((int) c[idx] - 1);
     }
 
 }

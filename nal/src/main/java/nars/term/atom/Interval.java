@@ -50,10 +50,10 @@ public final class Interval extends AbstractAtomic implements /*The, */Iterable<
         if (n !=value.length)
             throw new TermException(Interval.class + " requires same # of subterms as values");
         DynBytes b = new DynBytes(n * value.length*4);
-        b.writeByte(INTERVAL.id);
+        b.writeByte((int) INTERVAL.id);
         b.writeUnsignedByte(n);
         for (int i = 0; i < n; i++) {
-            b.writeByte(subterm[i]);
+            b.writeByte((int) subterm[i]);
             b.writeZigZagInt(value[i]);
         }
         return new Interval(subterm, value, b.compact());
@@ -90,7 +90,7 @@ public final class Interval extends AbstractAtomic implements /*The, */Iterable<
     }
 
     public Stream<ObjectIntPair<Term>> stream(Subterms s) {
-        return stream().map(p -> pair(s.sub(p.getOne()), p.getTwo()));
+        return stream().map(p -> pair(s.sub((int) p.getOne()), p.getTwo()));
     }
 
     @Override public Iterator<ByteIntPair> iterator() {
@@ -104,7 +104,7 @@ public final class Interval extends AbstractAtomic implements /*The, */Iterable<
     public boolean AND(Subterms s, ObjectIntPredicate<Term> each) {
         int n = size();
         for (int i = 0; i < n; i++) {
-            if (!each.accept(s.sub(key[i]), value[i])) {
+            if (!each.accept(s.sub((int) key[i]), value[i])) {
                 return false;
             }
         }
@@ -121,10 +121,10 @@ public final class Interval extends AbstractAtomic implements /*The, */Iterable<
     }
 
     public Term key(int i, Subterms subterms) {
-        return subterms.sub(this.key[i]);
+        return subterms.sub((int) this.key[i]);
     }
     public Term key(int i, Term[] subterms) {
-        return subterms[this.key[i]];
+        return subterms[(int) this.key[i]];
     }
 
     public int value(int i) {
@@ -139,6 +139,6 @@ public final class Interval extends AbstractAtomic implements /*The, */Iterable<
     }
 
     public int keyCount() {
-        return Util.max(key);
+        return (int) Util.max(key);
     }
 }

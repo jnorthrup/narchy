@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 /*
  * Copyright (c) 1999 Steven J. Metsker. All Rights Reserved.
@@ -121,7 +120,7 @@ public class Alternation extends CollectionParser {
 			which = subparsers;
 		}
 
-		double n = which.size();
+		double n = (double) which.size();
 		int i = (int) (n * Math.random());
 		Parser p = which.get(i);
 		return p.randomExpansion(maxDepth, depth++);

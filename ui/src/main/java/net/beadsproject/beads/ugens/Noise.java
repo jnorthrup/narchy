@@ -33,7 +33,7 @@ public class Noise extends UGen {
         } else {
             noiseTensor = WaveFactory.staticBufs.get("noise");
         }
-        index = (int) (Math.random() * noiseTensor.data.length);
+        index = (int) (Math.random() * (double) noiseTensor.data.length);
     }
 
     /* (non-Javadoc)

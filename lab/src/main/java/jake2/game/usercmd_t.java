@@ -34,8 +34,8 @@ public class usercmd_t implements Cloneable {
 	public byte lightlevel; 
 
 	public void clear() {
-		forwardmove= sidemove= upmove= msec= buttons= impulse= lightlevel= 0;
-		angles[0] = angles[1] = angles[2] = 0;
+		 forwardmove= sidemove= upmove=  msec = buttons= impulse= lightlevel=  0;
+		angles[0] = angles[1] = angles[2] = (short) 0;
 	}
 
 	public usercmd_t() {

@@ -444,7 +444,7 @@ public class Orders {
 
         if (delta) {
             byte change = (byte) data.get8();
-            coordinate += change;
+            coordinate = coordinate + (int) change;
 		} else {
             coordinate = data.getLittleEndian16();
 		}
@@ -1231,15 +1231,15 @@ public class Orders {
 
 
         for (int i = 0; i < length; ) {
-            switch (text[ptext + i] & 0x000000ff) {
+            switch ((int) text[ptext + i] & 0x000000ff) {
                 case (0xff):
                     if (i + 2 < length) {
-                        byte[] data = new byte[text[ptext + i + 2] & 0x000000ff];
+                        byte[] data = new byte[(int) text[ptext + i + 2] & 0x000000ff];
                         System.arraycopy(text, ptext, data, 0,
-                                text[ptext + i + 2] & 0x000000ff);
+                                (int) text[ptext + i + 2] & 0x000000ff);
                         DataBlob db = new DataBlob(
-                                text[ptext + i + 2] & 0x000000ff, data);
-                        cache.putText(text[ptext + i + 1] & 0x000000ff, db);
+                                (int) text[ptext + i + 2] & 0x000000ff, data);
+                        cache.putText((int) text[ptext + i + 1] & 0x000000ff, db);
                     } else {
                         throw new RdesktopException();
                     }
@@ -1249,14 +1249,14 @@ public class Orders {
                     break;
 
                 case (0xfe):
-                    entry = cache.getText(text[ptext + i + 1] & 0x000000ff);
+                    entry = cache.getText((int) text[ptext + i + 1] & 0x000000ff);
                     if (entry != null) {
-                        if ((entry.getData()[1] == 0)
+                        if (((int) entry.getData()[1] == 0)
                                 && ((text2.getFlags() & TEXT2_IMPLICIT_X) == 0)) {
                             if ((text2.getFlags() & 0x04) != 0) {
-                                y += text[ptext + i + 2] & 0x000000ff;
+                                y += (int) text[ptext + i + 2] & 0x000000ff;
                             } else {
-                                x += text[ptext + i + 2] & 0x000000ff;
+                                x += (int) text[ptext + i + 2] & 0x000000ff;
                             }
                         }
                     }
@@ -1272,21 +1272,21 @@ public class Orders {
 
                     byte[] data = entry.getData();
                     for (int j = 0; j < entry.getSize(); j++) {
-                        int character = data[j] & 0x000000ff;
+                        int character = (int) data[j] & 0x000000ff;
                         glyph = cache.getFont(text2.getFont(), character);
                         if ((text2.getFlags() & TEXT2_IMPLICIT_X) == 0) {
-                            offset = data[++j] & 0x000000ff;
+                            offset = (int) data[++j] & 0x000000ff;
                             if ((offset & 0x80) != 0) {
                                 if ((text2.getFlags() & TEXT2_VERTICAL) != 0) {
                                     int var = Orders
-                                            .twosComplement16((data[j + 1] & 0xff)
-                                                    | ((data[j + 2] & 0xff) << 8));
+                                            .twosComplement16(((int) data[j + 1] & 0xff)
+                                                    | (((int) data[j + 2] & 0xff) << 8));
                                     y += var;
                                     j += 2;
                                 } else {
                                     int var = Orders
-                                            .twosComplement16((data[j + 1] & 0xff)
-                                                    | ((data[j + 2] & 0xff) << 8));
+                                            .twosComplement16(((int) data[j + 1] & 0xff)
+                                                    | (((int) data[j + 2] & 0xff) << 8));
                                     x += var;
                                     j += 2;
                                 }
@@ -1299,7 +1299,7 @@ public class Orders {
                             }
                         }
                         if (glyph != null) {
-                            int xx = x + (short) glyph.getOffset(), yy = y + (short) glyph.getBaseLine();
+                            int xx = x + (int) (short) glyph.getOffset(), yy = y + (int) (short) glyph.getBaseLine();
 
                             
                             
@@ -1320,22 +1320,22 @@ public class Orders {
 
                 default:
                     glyph = cache.getFont(text2.getFont(),
-                            text[ptext + i] & 0x000000ff);
+                            (int) text[ptext + i] & 0x000000ff);
                     if ((text2.getFlags() & TEXT2_IMPLICIT_X) == 0) {
-                        offset = text[ptext + (++i)] & 0x000000ff;
+                        offset = (int) text[ptext + (++i)] & 0x000000ff;
                         if ((offset & 0x80) != 0) {
                             if ((text2.getFlags() & TEXT2_VERTICAL) != 0) {
 
 
                                 int var = Orders
-                                        .twosComplement16((text[ptext + i + 1] & 0x000000ff)
-                                                | ((text[ptext + i + 2] & 0x000000ff) << 8));
+                                        .twosComplement16(((int) text[ptext + i + 1] & 0x000000ff)
+                                                | (((int) text[ptext + i + 2] & 0x000000ff) << 8));
                                 y += var;
                                 i += 2;
                             } else {
                                 int var = Orders
-                                        .twosComplement16((text[ptext + i + 1] & 0x000000ff)
-                                                | ((text[ptext + i + 2] & 0x000000ff) << 8));
+                                        .twosComplement16(((int) text[ptext + i + 1] & 0x000000ff)
+                                                | (((int) text[ptext + i + 2] & 0x000000ff) << 8));
                                 x += var;
                                 i += 2;
                             }
@@ -1349,8 +1349,8 @@ public class Orders {
                     }
                     if (glyph != null) {
                         surface.drawGlyph(text2.getMixmode(), x
-                                        + (short) glyph.getOffset(), y
-                                        + (short) glyph.getBaseLine(), glyph.getWidth(),
+                                        + (int) (short) glyph.getOffset(), y
+                                        + (int) (short) glyph.getBaseLine(), glyph.getWidth(),
                                 glyph.getHeight(), glyph.getFontData(), text2
                                         .getBackgroundColor(), text2
                                         .getForegroundColor());

@@ -15,8 +15,8 @@ public class ByteDualHijackMemoize<X extends ByteKeyExternal,Y> extends ByteMult
     public ByteDualHijackMemoize(Function<X, Y> f, int capacity, int reprobes, boolean soft, int lengthThesh, float ratio) {
         super(f, capacity, soft, 2);
         this.lengthThesh = lengthThesh;
-        this.cap0 = (int) (ratio * capacity);
-        this.cap1 = (int) ((1f-ratio) * capacity);
+        this.cap0 = (int) (ratio * (float) capacity);
+        this.cap1 = (int) ((1f-ratio) * (float) capacity);
         this.reprobes = reprobes;
     }
 

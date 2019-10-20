@@ -11,7 +11,7 @@ public class CACell {
 	public CACell() {
 		x = 0;
 		y = 0;
-		state = 0;
+		state = (short) 0;
 	}
 
 	public CACell(int ix, int iy, short stt) {

@@ -91,7 +91,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
 
 	public Game(String id) {
-		this(id, GameTime.durs(1));
+		this(id, GameTime.durs(1.0F));
 	}
 
 	public Game(String id, GameTime time) {
@@ -123,7 +123,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 	}
 
 	public static FloatSupplier normalize(FloatSupplier rewardFunc, float min, float max) {
-		return new FloatClamped(new FloatNormalized(rewardFunc, min, max, false), 0, 1);
+		return new FloatClamped(new FloatNormalized(rewardFunc, min, max, false), (float) 0, 1.0F);
 	}
 
 	@Override
@@ -137,14 +137,14 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 	 */
 	public double dexterity() {
         int a = actions.size();
-        double result = a == 0 ? 0 : actions.sumBy(ActionSignal::dexterity);
-		return a > 0 ? result / a : 0;
+        double result = a == 0 ? (double) 0 : actions.sumBy(ActionSignal::dexterity);
+		return a > 0 ? result / (double) a : (double) 0;
 	}
 
 	public double coherency() {
         int a = actions.size();
-        double result = a == 0 ? 0 : actions.sumBy(ActionSignal::coherency);
-		return a > 0 ? result / a : 0;
+        double result = a == 0 ? (double) 0 : actions.sumBy(ActionSignal::coherency);
+		return a > 0 ? result / (double) a : (double) 0;
 	}
 
 	public final double happiness() {
@@ -240,7 +240,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
 		nowPercept.the(what);
 		nowLoop.the(what);
-		nowPercept.end = (int) (now - what.dur() / 2);
+		nowPercept.end = (long) (int) ((float) now - what.dur() / 2.0F);
 
 		init();
 
@@ -284,7 +284,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 	}
 
 	public Reward reward(FloatSupplier rewardfunc) {
-		return reward(rewardTerm("happy"), 1, rewardfunc);
+		return reward(rewardTerm("happy"), 1.0F, rewardfunc);
 	}
 
 	public SimpleReward reward(String reward, FloatSupplier rewardFunc) {
@@ -308,7 +308,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 	}
 
 	public Reward rewardNormalized(String reward, float min, float max, FloatSupplier rewardFunc) {
-		return rewardNormalized(reward, 1, min, max, rewardFunc);
+		return rewardNormalized(reward, 1.0F, min, max, rewardFunc);
 	}
 
 	public Reward rewardNormalized(String reward, float freq, float min, float max, FloatSupplier rewardFunc) {
@@ -359,7 +359,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 	}
 
 	public final float ditherConf(float c) {
-		return (float) Truth.confSafe(c, _confRes);
+		return (float) Truth.confSafe((double) c, _confRes);
 	}
 
 	public final void pri(float v) {
@@ -393,8 +393,8 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
             float durLoop = durLoop();
             long lastEnd = nowPercept.end;
-            long nextStart = Math.max(lastEnd + 1, (long) Math.floor(now - durLoop / 2));
-            long nextEnd = Math.max(nextStart, Math.round(Math.ceil(now + durLoop / 2 - 1)));
+            long nextStart = Math.max(lastEnd + 1L, (long) Math.floor((double) (now - durLoop / 2.0F)));
+            long nextEnd = Math.max(nextStart, Math.round(Math.ceil((double) (now + durLoop / 2.0F - 1.0F))));
 
 			nowPercept.range(nextStart, nextEnd).dur(what.dur());
 			nowLoop.range(nextStart, nextEnd).dur(durLoop);

@@ -18,7 +18,7 @@ public class TsneModel implements Graph2D.Graph2DUpdater<DataTable.Instance> {
 
     /** TODO autonormalize to visible range, or atleast an option for this */
     @Deprecated public final FloatRange spaceScale = new FloatRange(0.05f, 0.001f, 0.5f);
-    public final FloatRange nodeScale = new FloatRange(1f, 0, 10);
+    public final FloatRange nodeScale = new FloatRange(1f, (float) 0, 10.0F);
     public final FloatRange perplexity = s.perplexity;
     public final FloatRange momentum = s.momentum;
 
@@ -73,13 +73,13 @@ public class TsneModel implements Graph2D.Graph2DUpdater<DataTable.Instance> {
         }
 
 
-        double gcx = g.cx(), gcy = g.cy();
+        double gcx = (double) g.cx(), gcy = (double) g.cy();
 
         double[][] Y = s.next(iters);
         int j = 0;
 
         int n = X.length;
-        double magnify = spaceScale.floatValue() * g.radius(); ///Math.sqrt(n+1);// * g.radius();// / (float) Math.sqrt(n+1);
+        double magnify = (double) (spaceScale.floatValue() * g.radius()); ///Math.sqrt(n+1);// * g.radius();// / (float) Math.sqrt(n+1);
         float nodeScale = this.nodeScale.floatValue();
         for (NodeVis<DataTable.Instance> i : xx) {
             double[] Yj = Y[j];
@@ -95,7 +95,7 @@ public class TsneModel implements Graph2D.Graph2DUpdater<DataTable.Instance> {
 //                //Arrays.fill(s.gains[j], 0.0); //reset gains
 
 
-            float w = 10+nodeScale *
+            float w = 10.0F +nodeScale *
                     (((Number)xx.get(j).id.data.get(0)).floatValue() )*0.01f; //customized: first column as size TODO normalize
 
             i.posXYWH((float)(gcx+x), (float)(gcy+y), w, w);

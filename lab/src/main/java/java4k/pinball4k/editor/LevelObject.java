@@ -106,7 +106,7 @@ public abstract class LevelObject implements Comparator<LevelObject> {
 		value |= visible    ? (1 << 3) : 0;
 		value |= collidable ? (1 << 4) : 0;
 
-		value |= ((int) (bounce*64) << 12);
+		value |= ((int) (bounce* 64.0F) << 12);
 		value |= (score << 20);
 		value |= (behaviorId << 28);
 		return value;

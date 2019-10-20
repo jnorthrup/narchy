@@ -51,10 +51,10 @@ public class monsterinfo_t {
 	public float pausetime;
 	public float attack_finished;
 
-	public float[] saved_goal= { 0, 0, 0 };
+	public float[] saved_goal= {(float) 0, (float) 0, (float) 0};
 	public float search_time;
 	public float trail_time;
-	public float[] last_sighting= { 0, 0, 0 };
+	public float[] last_sighting= {(float) 0, (float) 0, (float) 0};
 	public int attack_state;
 	public int lefty;
 	public float idle_time;

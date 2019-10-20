@@ -83,11 +83,11 @@ public abstract class KeyCode_FileBased {
      * alphanumeric
      */
     private static int getCodeFromAlphaChar(char keyChar) {
-        if (('a' <= keyChar) && (keyChar <= 'z')) {
-            return KeyEvent.VK_A + keyChar - 'a';
+        if (((int) 'a' <= (int) keyChar) && ((int) keyChar <= (int) 'z')) {
+            return KeyEvent.VK_A + (int) keyChar - (int) 'a';
         }
-        if (('A' <= keyChar) && (keyChar <= 'Z')) {
-            return KeyEvent.VK_A + keyChar - 'A';
+        if (((int) 'A' <= (int) keyChar) && ((int) keyChar <= (int) 'Z')) {
+            return KeyEvent.VK_A + (int) keyChar - (int) 'A';
         }
 
         return -1;
@@ -122,17 +122,17 @@ public abstract class KeyCode_FileBased {
                 lineNum++;
                 line = in.readLine();
 
-                char fc = 0x0;
+                char fc = (char) 0x0;
                 if ((line != null) && (!line.isEmpty()))
                     fc = line.charAt(0);
 
                 
-                if ((line != null) && (!line.isEmpty()) && (fc != '#')
-                        && (fc != 'c')) {
+                if ((line != null) && (!line.isEmpty()) && ((int) fc != (int) '#')
+                        && ((int) fc != (int) 'c')) {
                     keyMap.add(new MapDef(line)); 
                     
 
-                } else if (fc == 'c') {
+                } else if ((int) fc == (int) 'c') {
                     StringTokenizer st = new StringTokenizer(line);
                     st.nextToken();
 
@@ -327,7 +327,7 @@ public abstract class KeyCode_FileBased {
      * @return Scancode of supplied key
      */
     private boolean hasScancode(char c) {
-        if (c == KeyEvent.CHAR_UNDEFINED)
+        if ((int) c == (int) KeyEvent.CHAR_UNDEFINED)
             return false;
 
         Iterator i = keyMap.iterator();

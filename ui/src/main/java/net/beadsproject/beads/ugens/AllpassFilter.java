@@ -207,9 +207,9 @@ public class AllpassFilter extends IIRFilter implements DataBeadReceiver {
             delay = maxDelay;
         } else delay = Math.max(del, 1);
         if (isDelayStatic) {
-            delayUGen.setValue(delay);
+            delayUGen.setValue((float) delay);
         } else {
-            delayUGen = new Static(context, delay);
+            delayUGen = new Static(context, (float) delay);
             isDelayStatic = true;
         }
         return this;
@@ -268,7 +268,7 @@ public class AllpassFilter extends IIRFilter implements DataBeadReceiver {
                 if (o instanceof UGen) {
                     setDelay((UGen) o);
                 } else {
-                    setDelay((int) paramBead.getFloat("delay", delay));
+                    setDelay((int) paramBead.getFloat("delay", (float) delay));
                 }
             }
 
@@ -343,7 +343,7 @@ public class AllpassFilter extends IIRFilter implements DataBeadReceiver {
     public IIRFilterAnalysis getFilterResponse(float freq) {
         float[] as = new float[delay + 1], bs = new float[delay + 1];
         bs[0] = as[delay] = -g;
-        as[0] = bs[delay] = 1;
+        as[0] = bs[delay] = 1.0F;
         return calculateFilterResponse(bs, as, freq, context.getSampleRate());
     }
 

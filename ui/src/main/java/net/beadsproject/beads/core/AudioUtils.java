@@ -33,7 +33,7 @@ public final class AudioUtils {
      */
     public static void shortToFloat(float[] out, short[] in) {
         for (int i = 0; i < in.length; i++) {
-            out[i] = (float) (in[i] / 32768.);
+            out[i] = (float) ((double) in[i] / 32768.);
         }
     }
 
@@ -45,7 +45,7 @@ public final class AudioUtils {
      */
     public static void floatToShort(short[] out, float[] in) {
         for (int i = 0; i < in.length; i++) {
-            out[i] = (short) (32767. * in[i]);
+            out[i] = (short) (32767. * (double) in[i]);
         }
     }
 
@@ -75,16 +75,16 @@ public final class AudioUtils {
         int ib = outstart;
         if (bigEndian) {
             for (int i = 0; i < bufsz; ++i) {
-                short y = (short) (32767. * Math.min(Math.max(in[i + instart], -1.0f),
+                short y = (short) (32767. * (double) Math.min(Math.max(in[i + instart], -1.0f),
                         1.0f));
-                out[ib++] = (byte) ((y >> 8) & 0xFF);
-                out[ib++] = (byte) (y & 0xFF);
+                out[ib++] = (byte) (((int) y >> 8) & 0xFF);
+                out[ib++] = (byte) ((int) y & 0xFF);
             }
         } else {
             for (int i = 0; i < bufsz; ++i) {
-                short y = (short) (32767. * in[i + instart]);
-                out[ib++] = (byte) (y & 0xFF);
-                out[ib++] = (byte) ((y >> 8) & 0xFF);
+                short y = (short) (32767. * (double) in[i + instart]);
+                out[ib++] = (byte) ((int) y & 0xFF);
+                out[ib++] = (byte) (((int) y >> 8) & 0xFF);
             }
         }
     }
@@ -140,7 +140,7 @@ public final class AudioUtils {
             int ib = startIndexInByteArray;
             int min = Math.min(out.length, startIndexInFloatArray + numFloats);
             for (int i = startIndexInFloatArray; i < min; ++i) {
-                float sample = ((in[ib] << 8) | (in[ib + 1] & 0xFF)) / 32768.0F;
+                float sample = (float) (((int) in[ib] << 8) | ((int) in[ib + 1] & 0xFF)) / 32768.0F;
 
                 
                 
@@ -152,7 +152,7 @@ public final class AudioUtils {
             int ib = startIndexInByteArray;
             int min = Math.min(out.length, startIndexInFloatArray + numFloats);
             for (int i = startIndexInFloatArray; i < min; ++i) {
-                float sample = ((in[ib] & 0xFF) | (in[ib + 1] << 8)) / 32768.0F;
+                float sample = (float) (((int) in[ib] & 0xFF) | ((int) in[ib + 1] << 8)) / 32768.0F;
                 ib += 2;
                 out[i] = sample;
             }
@@ -277,7 +277,7 @@ public final class AudioUtils {
     public static void stretchBuffer(float[][] source, float[][] dest) {
         int numChannels = Math.min(source.length, dest.length);
 
-        double segStep = (source[0].length - 1.0) / (dest[0].length - 1.0);
+        double segStep = ((double) source[0].length - 1.0) / ((double) dest[0].length - 1.0);
 
         for (int ch = 0; ch < numChannels; ch++) {
             float[] src = source[ch];
@@ -303,9 +303,9 @@ public final class AudioUtils {
 
 
             int segment = -1;
-            double segstart = 0, segend = 0, seggrad = 0; 
+            double segstart = (double) 0, segend = (double) 0, seggrad = (double) 0;
 
-            double fractionalSegment = 0;
+            double fractionalSegment = (double) 0;
 
             for (int i = 1; i < dst.length - 1; i++) {
                 
@@ -314,13 +314,13 @@ public final class AudioUtils {
                 if (currentSegment != segment) {
                     
                     segment = currentSegment;
-                    segstart = src[segment];
-                    segend = src[segment + 1];
+                    segstart = (double) src[segment];
+                    segend = (double) src[segment + 1];
                     seggrad = segend - segstart;
                 }
 
                 
-                dst[i] = (float) (segstart + seggrad * (fractionalSegment - currentSegment));
+                dst[i] = (float) (segstart + seggrad * (fractionalSegment - (double) currentSegment));
             }
         }
     }
@@ -352,10 +352,10 @@ public final class AudioUtils {
      * @return the result
      */
     public static double fastPow01(double a, double b) {
-        double realA = Math.max(0, Math.min(1, a));
+        double realA = Math.max((double) 0, Math.min(1.0, a));
         int x = (int) (Double.doubleToLongBits(realA) >> 32);
-        int y = (int) (b * (x - 1072632447) + 1072632447);
-        return Math.max(0, Math.min(1, Double.longBitsToDouble(((long) y) << 32)));
+        int y = (int) (b * (double) (x - 1072632447) + 1072632447.0);
+        return Math.max((double) 0, Math.min(1.0, Double.longBitsToDouble(((long) y) << 32)));
     }
 
     /**

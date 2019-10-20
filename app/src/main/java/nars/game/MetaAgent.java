@@ -118,11 +118,11 @@ public abstract class MetaAgent extends Game {
 	}
 
 	void priAction(PriAmp a) {
-		floatAction($.inh(a.id, pri), 2, a.amp).resolution(PRI_ACTION_RESOLUTION);
+		floatAction($.inh(a.id, pri), 2.0F, a.amp).resolution(PRI_ACTION_RESOLUTION);
 	}
 
 	void priAction(Term id, PriSource a) {
-		floatAction(id, 2, a.pri).resolution(PRI_ACTION_RESOLUTION);
+		floatAction(id, 2.0F, a.pri).resolution(PRI_ACTION_RESOLUTION);
 	}
 
 //    @Override
@@ -147,14 +147,14 @@ public abstract class MetaAgent extends Game {
 //    }
 
 	protected GoalActionConcept floatAction(Term t, FloatRange r) {
-		return floatAction(t, 1, r);
+		return floatAction(t, 1.0F, r);
 	}
 
 	protected GoalActionConcept floatAction(Term t, float exp, FloatRange r) {
 		return floatAction(t, r.min, r.max, exp, r::set);
 	}
 	protected GoalActionConcept floatAction(Term t, float exp, UnitPri r) {
-		return floatAction(t, 0, 1, exp, r::pri);
+		return floatAction(t, (float) 0, 1.0F, exp, r::pri);
 	}
 
 	protected GoalActionConcept floatAction(Term t, float min, float max, float exp, FloatConsumer r) {
@@ -163,7 +163,7 @@ public abstract class MetaAgent extends Game {
 		return actionUnipolar(t, true, (v) -> v, (x) -> {
 			//float y = f.valueOf(x);
 			if (x == x)
-				r.accept(Util.lerp((float) Math.pow(x, exp), min, max));
+				r.accept(Util.lerp((float) Math.pow((double) x, (double) exp), min, max));
 			return x;
 		});
 	}
@@ -178,7 +178,7 @@ public abstract class MetaAgent extends Game {
 	public static class SelfMetaAgent extends MetaAgent {
 
 		public SelfMetaAgent(NAR nar) {
-			this(nar, 2 /* nyquist sampling rate - to ensure activity is accurately sampled in the feedback stats */);
+			this(nar, 2.0F /* nyquist sampling rate - to ensure activity is accurately sampled in the feedback stats */);
 		}
 
 		public SelfMetaAgent(NAR nar, float durs) {
@@ -199,9 +199,9 @@ public abstract class MetaAgent extends Game {
                 GoalActionConcept a = actionUnipolar($.inh(SELF, $.the(mg.name())), (x) -> {
 					nar.emotion.want(mg,
 						x >= 0.5f ?
-							(float) Util.lerp(Math.pow((x - 0.5f) * 2, 1 /* 2 */), 0, +1) //positive (0.5..1)
+							(float) Util.lerp(Math.pow((double) ((x - 0.5f) * 2.0F), 1.0 /* 2 */), (double) 0, (double) +1) //positive (0.5..1)
 							:
-							Util.lerp((x) * 2, -0.02f, 0) //negative (0..0.5): weaker
+							Util.lerp((x) * 2.0F, -0.02f, (float) 0) //negative (0..0.5): weaker
 					);
 				});
 //                a.resolution(0.1f);
@@ -217,7 +217,7 @@ public abstract class MetaAgent extends Game {
 				float y;
 				if (x1 >= 0.75f) {
 					x1 = 0.01f;
-					y = 1;
+					y = 1.0F;
 				} else if (x1 >= 0.5f) {
 					x1 = 0.05f;
 					y = 0.66f;
@@ -226,7 +226,7 @@ public abstract class MetaAgent extends Game {
 					y = 0.33f;
 				} else {
 					x1 = 0.20f;
-					y = 0;
+					y = (float) 0;
 				}
 				nar.freqResolution.set(x1);
 				return y;
@@ -286,21 +286,21 @@ public abstract class MetaAgent extends Game {
 //                Math.max(nar.goalPriDefault.amp() /* current value */ * priFactorMin, ScalarValue.EPSILON),
 //                nar.goalPriDefault.amp() /* current value */ * priFactorMax)::setProportionally);
 
-			float durMeasured = 0;
+			float durMeasured = (float) 0;
 
 			reward($.inh(SELF, $.p(happy, now)), () -> {
 				return happiness(nowPercept.start, nowPercept.end, durMeasured, nar);
 			});
 
 			/** past happiness ~= gradient momentum / echo effect */
-			float emotionalMomentumDurs = 4;
+			float emotionalMomentumDurs = 4.0F;
 			reward($.inh(SELF, $.p(happy, past)), () -> {
-				return happiness(Math.round(nowPercept.start - dur() * emotionalMomentumDurs), nowPercept.start, durMeasured, nar);
+				return happiness((long) Math.round((float) nowPercept.start - dur() * emotionalMomentumDurs), nowPercept.start, durMeasured, nar);
 			});
 
 			/** optimism */
 			reward($.inh(SELF, $.p(happy, future)), () -> {
-				return happiness(nowPercept.end, Math.round(nowPercept.end + dur() * emotionalMomentumDurs), durMeasured, nar);
+				return happiness(nowPercept.end, (long) Math.round((float) nowPercept.end + dur() * emotionalMomentumDurs), durMeasured, nar);
 			});
 
 //        ThreadCPUTimeTracker.getCPUTime()
@@ -315,7 +315,7 @@ public abstract class MetaAgent extends Game {
 				.filter(Part::isOn)
 				.mapToDouble(g -> g.happiness(start, end, dur))
 				.average()
-				.orElseGet(() -> 0);
+				.orElseGet(() -> (double) 0);
 		}
 	}
 
@@ -333,10 +333,10 @@ public abstract class MetaAgent extends Game {
 		/**
 		 * in case it forgets to unpause
 		 */
-		private static final long autoResumePeriod = 256;
+		private static final long autoResumePeriod = 256L;
 
 		public GameMetaAgent(Game g, boolean allowPause) {
-			super($.inh(g.what().id, $$("meta")), g.time.chain(2 /* nyquist */), g.nar);
+			super($.inh(g.what().id, $$("meta")), g.time.chain(2.0F /* nyquist */), g.nar);
 
             What w = g.what();
 
@@ -384,13 +384,13 @@ public abstract class MetaAgent extends Game {
 
 
 			actionUnipolar($.inh(gid, duration), (x) -> {
-				float ditherDT = nar.dtDither();
+				float ditherDT = (float) nar.dtDither();
                 float nextDur =
 					//(float) Math.pow(initialDur, Util.sqr((x + 0.5f)*2));
 					//ditherDT + initialDur * (float) Math.pow(2, ((x - 0.5f)*2));
-					(float) (ditherDT + Util.lerp(Math.pow(x, 4), 0, initialDur * 16));
+					(float) ((double) ditherDT + Util.lerp(Math.pow((double) x, 4.0), (double) 0, (double) (initialDur * 16.0F)));
 				//System.out.println(x + " dur=" + nextDur);
-				((TaskLinkWhat) w).dur.set(Math.max(1, nextDur));
+				((TaskLinkWhat) w).dur.set(Math.max(1.0F, nextDur));
 			});
 
 			if (w.inBuffer instanceof PriBuffer.BagTaskBuffer)
@@ -398,11 +398,11 @@ public abstract class MetaAgent extends Game {
 
 
 			reward($.inh(gid, happy), () -> {
-				return g.isOn() ? (float) g.happiness(nowPercept.start, nowPercept.end, 0) : Float.NaN;
+				return g.isOn() ? (float) g.happiness(nowPercept.start, nowPercept.end, (float) 0) : Float.NaN;
 			});
 
 
-			rewardNormalized($.inh(gid, dex), 1, 0, ScalarValue.EPSILON,
+			rewardNormalized($.inh(gid, dex), 1.0F, (float) 0, ScalarValue.EPSILON,
 				() -> {
 ////            float p = a.proficiency();
 ////            float hp = Util.or(h, p);
@@ -458,7 +458,7 @@ public abstract class MetaAgent extends Game {
                             NAR n = nar();
 
                             int a = autoResumeID;
-							autoResume = n.runAt(Math.round(n.time() + autoResumePeriod * n.dur()), () -> {
+							autoResume = n.runAt((long) Math.round((float) n.time() + (float) autoResumePeriod * n.dur()), () -> {
 								if (autoResumeID == a)
 									tryResume();
 								//else this one has been cancelled

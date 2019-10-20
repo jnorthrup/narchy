@@ -119,7 +119,7 @@ public class BiPolarAction extends AbstractSensor {
 
         if (y == y) {
 
-            y = Util.clamp(y, -1, +1);
+            y = Util.clamp(y, -1.0F, (float) +1);
             //y = (y + 1)/2; //0...1 range
 
             //            yp = 0.5f + y / 2f;
@@ -142,8 +142,8 @@ public class BiPolarAction extends AbstractSensor {
 
             //balanced around 0.5
 
-            float yn = 0.5f - y / 2;
-            float yp = 0.5f + y / 2;
+            float yn = 0.5f - y / 2.0F;
+            float yp = 0.5f + y / 2.0F;
             //System.out.println(p + "," + n + "\t" + y + "\t" + yp + "," + yn);
 
 //            if ((p == null && n == null) /* curiosity */ || (p!=null && n!=null) /* both active */) {
@@ -193,7 +193,7 @@ public class BiPolarAction extends AbstractSensor {
     /** offers a few parameters */
     public static class DefaultPolarization implements Polarization {
 
-        final float[] lastX = { 0};
+        final float[] lastX = {(float) 0};
 
 
 
@@ -225,8 +225,8 @@ public class BiPolarAction extends AbstractSensor {
 //            else pg = fp.valueOf(pq);
 //            if (nq!=nq) ng = latch ? fn.floatValue() : 0;
 //            else ng = fn.valueOf(nq);
-            float pg = pq == pq ? pq : 0;
-            float ng = nq == nq ? nq : 0;
+            float pg = pq == pq ? pq : (float) 0;
+            float ng = nq == nq ? nq : (float) 0;
 
 
 
@@ -236,12 +236,12 @@ public class BiPolarAction extends AbstractSensor {
 
             if (pq==pq && nq==nq) {
                 //x = ThreadLocalRandom.current().nextBoolean() ? pg : -ng;
-                x = pg - ng;
+                x = (double) (pg - ng);
             } else {
                 if (pq == pq)
-                    x = pg;
+                    x = (double) pg;
                 else
-                    x = -ng;
+                    x = (double) -ng;
             }
 
             //System.out.println(pg + "|" + ng + "=" + x);
@@ -263,7 +263,7 @@ public class BiPolarAction extends AbstractSensor {
                         //Util.
                             //or
                             //and(
-                             (eMax > MIN_NORMAL) ? eMin / eMax : 0
+                             (eMax > (double) MIN_NORMAL) ? eMin / eMax : (double) 0
                         //, Math.abs(pe - ne))
                 );
 
@@ -274,8 +274,8 @@ public class BiPolarAction extends AbstractSensor {
 
             }
 
-            if (Double.isFinite(x)) x = Util.clamp(motorization((float)x), -1, +1);
-            else x = Float.NaN;
+            if (Double.isFinite(x)) x = (double) Util.clamp(motorization((float) x), -1.0F, (float) +1);
+            else x = (double) Float.NaN;
 
             return (lastX[0] = (float)x);
         }
@@ -292,7 +292,7 @@ public class BiPolarAction extends AbstractSensor {
          * */
         public static double c(Truth t) {
             //return t != null ? t.evi() : 0;
-            return t != null ? t.conf() : 0;
+            return (double) (t != null ? t.conf() : (float) 0);
         }
 
         /** "Q" desire/value function. produces the scalar summary of the goal truth desire that will be
@@ -301,7 +301,7 @@ public class BiPolarAction extends AbstractSensor {
 
             float q = t != null ? ((freqOrExp ? t.freq() : t.expectation()) ) : Float.NaN;
             if (q==q)
-                q = (q-0.5f)*2;
+                q = (q-0.5f)* 2.0F;
             return q;
             //return t != null ? ((freqOrExp ? t.freq() : t.expectation()) - 0.5f)*2 : Float.NaN;
             //return t != null ? ((freqOrExp ? (t.freq()>=0.5f ? t.freq() : 0) : t.expectation()) ) : Float.NaN;

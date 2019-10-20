@@ -36,8 +36,6 @@ import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.common.Transform;
 import spacegraph.space2d.phys.pooling.IWorldPool;
 
-import java.util.stream.IntStream;
-
 /**
  * Functions used for computing contact points, distance queries, and TOI queries. Collision methods
  * are non-static for pooling speed, retrieve a collision object from the {@link SingletonPool}.
@@ -676,7 +674,7 @@ public class Collision {
         float radius = edgeA.skinRadius + circleB.skinRadius;
 
         
-        cf.indexB = 0;
+        cf.indexB = (byte) 0;
         cf.typeB = (byte) ContactID.Type.VERTEX.ordinal();
 
         
@@ -701,7 +699,7 @@ public class Collision {
                 }
             }
 
-            cf.indexA = 0;
+            cf.indexA = (byte) 0;
             cf.typeA = (byte) ContactID.Type.VERTEX.ordinal();
             manifold.pointCount = 1;
             manifold.type = Manifold.ManifoldType.CIRCLES;
@@ -736,7 +734,7 @@ public class Collision {
                 }
             }
 
-            cf.indexA = 1;
+            cf.indexA = (byte) 1;
             cf.typeA = (byte) ContactID.Type.VERTEX.ordinal();
             manifold.pointCount = 1;
             manifold.type = Manifold.ManifoldType.CIRCLES;
@@ -768,7 +766,7 @@ public class Collision {
         }
         n.normalize();
 
-        cf.indexA = 0;
+        cf.indexA = (byte) 0;
         cf.typeA = (byte) ContactID.Type.FACE.ordinal();
         manifold.pointCount = 1;
         manifold.type = Manifold.ManifoldType.FACE_A;
@@ -1089,13 +1087,13 @@ public class Collision {
                 int i2 = i1 + 1 < m_polygonB.count ? i1 + 1 : 0;
 
                 ie0.v.set(m_polygonB.vertices[i1]);
-                ie0.id.indexA = 0;
+                ie0.id.indexA = (byte) 0;
                 ie0.id.indexB = (byte) i1;
                 ie0.id.typeA = (byte) ContactID.Type.FACE.ordinal();
                 ie0.id.typeB = (byte) ContactID.Type.VERTEX.ordinal();
 
                 ie1.v.set(m_polygonB.vertices[i2]);
-                ie1.id.indexA = 0;
+                ie1.id.indexA = (byte) 0;
                 ie1.id.indexB = (byte) i2;
                 ie1.id.typeA = (byte) ContactID.Type.FACE.ordinal();
                 ie1.id.typeB = (byte) ContactID.Type.VERTEX.ordinal();
@@ -1117,13 +1115,13 @@ public class Collision {
                 manifold.type = Manifold.ManifoldType.FACE_B;
 
                 ie0.v.set(m_v1);
-                ie0.id.indexA = 0;
+                ie0.id.indexA = (byte) 0;
                 ie0.id.indexB = (byte) primaryAxis.index;
                 ie0.id.typeA = (byte) ContactID.Type.VERTEX.ordinal();
                 ie0.id.typeB = (byte) ContactID.Type.FACE.ordinal();
 
                 ie1.v.set(m_v2);
-                ie1.id.indexA = 0;
+                ie1.id.indexA = (byte) 0;
                 ie1.id.indexB = (byte) primaryAxis.index;
                 ie1.id.typeA = (byte) ContactID.Type.VERTEX.ordinal();
                 ie1.id.typeB = (byte) ContactID.Type.FACE.ordinal();

@@ -22,7 +22,7 @@ public abstract class CA {
 //    protected Graphics offGraphics;
 //    protected Dimension offDimension;
 
-    protected final Random random = new XoRoShiRo128PlusRandom(1);
+    protected final Random random = new XoRoShiRo128PlusRandom(1L);
     protected boolean uninitialized;
 
 
@@ -37,7 +37,7 @@ public abstract class CA {
 
 //        CASpace = new int[sizeX][sizeY];
 //        CASpaceOld = new int[sizeX][sizeY];
-        step = 0;
+        step = 0L;
 
         uninitialized = true;
     }

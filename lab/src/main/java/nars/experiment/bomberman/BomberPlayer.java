@@ -3,7 +3,6 @@ package nars.experiment.bomberman;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.stream.IntStream;
 
 /**
  * File:         BomberPlayer.java
@@ -66,11 +65,11 @@ public class BomberPlayer extends Thread {
     private boolean clear;
 
     /** byte enumerations */
-    private static final byte BUP = 0x01;
-    private static final byte BDOWN = 0x02;
-    private static final byte BLEFT = 0x04;
-    private static final byte BRIGHT = 0x08;
-    private static final byte BBOMB = 0x10;
+    private static final byte BUP = (byte) 0x01;
+    private static final byte BDOWN = (byte) 0x02;
+    private static final byte BLEFT = (byte) 0x04;
+    private static final byte BRIGHT = (byte) 0x08;
+    private static final byte BBOMB = (byte) 0x10;
     /** number enumerations */
     private static final int UP = 0;
     private static final int DOWN = 1;
@@ -207,40 +206,40 @@ public class BomberPlayer extends Thread {
                 evt.getKeyCode() == keys[LEFT] ||
                 evt.getKeyCode() == keys[RIGHT]) {
             /** if down key pressed */
-            byte newKey = 0x00;
+            byte newKey = (byte) 0x00;
             if (evt.getKeyCode() == keys[DOWN]) {
                 newKey = BDOWN;
                 /** if only the up key is pressed */
-                if ((currentDirKeyDown & BUP) > 0 ||
-                        ((currentDirKeyDown & BLEFT) == 0 &&
-                                (currentDirKeyDown & BRIGHT) == 0))
+                if (((int) currentDirKeyDown & (int) BUP) > 0 ||
+                        (((int) currentDirKeyDown & (int) BLEFT) == 0 &&
+                                ((int) currentDirKeyDown & (int) BRIGHT) == 0))
                     currentDirKeyDown = BDOWN;
             }
             /** if up key is pressed */
             else if (evt.getKeyCode() == keys[UP]) {
                 newKey = BUP;
                 /** if only the down key is pressed */
-                if ((currentDirKeyDown & BDOWN) > 0 ||
-                        ((currentDirKeyDown & BLEFT) == 0 &&
-                                (currentDirKeyDown & BRIGHT) == 0))
+                if (((int) currentDirKeyDown & (int) BDOWN) > 0 ||
+                        (((int) currentDirKeyDown & (int) BLEFT) == 0 &&
+                                ((int) currentDirKeyDown & (int) BRIGHT) == 0))
                     currentDirKeyDown = BUP;
             }
             /** if left key is pressed */
             else if (evt.getKeyCode() == keys[LEFT]) {
                 newKey = BLEFT;
                 /** if only the right key is pressed */
-                if ((currentDirKeyDown & BRIGHT) > 0 ||
-                        ((currentDirKeyDown & BUP) == 0 &&
-                                (currentDirKeyDown & BDOWN) == 0))
+                if (((int) currentDirKeyDown & (int) BRIGHT) > 0 ||
+                        (((int) currentDirKeyDown & (int) BUP) == 0 &&
+                                ((int) currentDirKeyDown & (int) BDOWN) == 0))
                     currentDirKeyDown = BLEFT;
             }
             /** if right key is pressed */
             else if (evt.getKeyCode() == keys[RIGHT]) {
                 newKey = BRIGHT;
                 /** if only the left is pressed */
-                if ((currentDirKeyDown & BLEFT) > 0 ||
-                        ((currentDirKeyDown & BUP) == 0 &&
-                                (currentDirKeyDown & BDOWN) == 0))
+                if (((int) currentDirKeyDown & (int) BLEFT) > 0 ||
+                        (((int) currentDirKeyDown & (int) BUP) == 0 &&
+                                ((int) currentDirKeyDown & (int) BDOWN) == 0))
                     currentDirKeyDown = BRIGHT;
             }
             /** if new key isn't in the key queue */
@@ -248,7 +247,7 @@ public class BomberPlayer extends Thread {
                 /** then push it on top */
                 keyQueue.push(newKey);
                 /** reset keys pressed buffer */
-                dirKeysDown |= newKey;
+                dirKeysDown = (byte) ((int) dirKeysDown | (int) newKey);
                 keyPressed = true;
                 /** if thread is sleeping, then wake it up */
                 interrupt();
@@ -281,47 +280,47 @@ public class BomberPlayer extends Thread {
                 /** if down key is released */
                 if (evt.getKeyCode() == keys[DOWN]) {
                     /** remove key from the all keys down buffer */
-                    dirKeysDown ^= BDOWN;
+                    dirKeysDown = (byte) ((int) dirKeysDown ^ (int) BDOWN);
                     /** reset current key down */
-                    currentDirKeyDown ^= BDOWN;
+                    currentDirKeyDown = (byte) ((int) currentDirKeyDown ^ (int) BDOWN);
                     /** remove it from the key queue */
                     keyQueue.removeItems(BDOWN);
                 }
                 /** if up key is released */
                 else if (evt.getKeyCode() == keys[UP]) {
                     /** remove key from the all keys down buffer */
-                    dirKeysDown ^= BUP;
+                    dirKeysDown = (byte) ((int) dirKeysDown ^ (int) BUP);
                     /** reset current key down */
-                    currentDirKeyDown ^= BUP;
+                    currentDirKeyDown = (byte) ((int) currentDirKeyDown ^ (int) BUP);
                     /** remove it from the key queue */
                     keyQueue.removeItems(BUP);
                 }
                 /** if left key is released */
                 else if (evt.getKeyCode() == keys[LEFT]) {
                     /** remove key from the all keys down buffer */
-                    dirKeysDown ^= BLEFT;
+                    dirKeysDown = (byte) ((int) dirKeysDown ^ (int) BLEFT);
                     /** reset current key down */
-                    currentDirKeyDown ^= BLEFT;
+                    currentDirKeyDown = (byte) ((int) currentDirKeyDown ^ (int) BLEFT);
                     /** remove it from the key queue */
                     keyQueue.removeItems(BLEFT);
                 }
                 /** if right key is released */
                 else if (evt.getKeyCode() == keys[RIGHT]) {
                     /** remove key from the all keys down buffer */
-                    dirKeysDown ^= BRIGHT;
+                    dirKeysDown = (byte) ((int) dirKeysDown ^ (int) BRIGHT);
                     /** reset current key down */
-                    currentDirKeyDown ^= BRIGHT;
+                    currentDirKeyDown = (byte) ((int) currentDirKeyDown ^ (int) BRIGHT);
                     /** remove it from the key queue */
                     keyQueue.removeItems(BRIGHT);
                 }
                 /** if no key is currently down */
-                if (currentDirKeyDown == 0) {
+                if ((int) currentDirKeyDown == 0) {
                     /** see if last key pressed is still pressed or not */
                     boolean keyFound = false;
                     /** search for last key pressed */
                     while (!keyFound && keyQueue.size() > 0) {
                         /** if key is found then exit the loop */
-                        if ((keyQueue.getLastItem() & dirKeysDown) > 0) {
+                        if (((int) keyQueue.getLastItem() & (int) dirKeysDown) > 0) {
                             currentDirKeyDown = keyQueue.getLastItem();
                             keyFound = true;
                         }
@@ -334,8 +333,8 @@ public class BomberPlayer extends Thread {
                         /** remove all keys from queue if not already removed */
                         keyQueue.removeAll();
                         /** reset key buffers */
-                        currentDirKeyDown = 0x00;
-                        dirKeysDown = 0x00;
+                        currentDirKeyDown = (byte) 0x00;
+                        dirKeysDown = (byte) 0x00;
                         keyPressed = false;
                         interrupt();
                     }
@@ -447,10 +446,10 @@ public class BomberPlayer extends Thread {
                 moving = true;
                 /** assume can't move */
                 /** make sure a key is down */
-                if (dirKeysDown > 0) {
+                if ((int) dirKeysDown > 0) {
                     /** if left key is down */
                     boolean canMove = false;
-                    if ((currentDirKeyDown & BLEFT) > 0) {
+                    if (((int) currentDirKeyDown & (int) BLEFT) > 0) {
                         state = LEFT;
                         /** if west slot is empty then it can move */
                         canMove = (x % size != 0 || (y % size == 0 &&
@@ -523,7 +522,7 @@ public class BomberPlayer extends Thread {
                         }
                     }
                     /** if the right key is down */
-                    else if ((currentDirKeyDown & BRIGHT) > 0) {
+                    else if (((int) currentDirKeyDown & (int) BRIGHT) > 0) {
                         state = RIGHT;
                         canMove = false;
                         /** if east slot is empty */
@@ -597,7 +596,7 @@ public class BomberPlayer extends Thread {
                         }
                     }
                     /** if up key is down */
-                    else if ((currentDirKeyDown & BUP) > 0) {
+                    else if (((int) currentDirKeyDown & (int) BUP) > 0) {
                         state = UP;
                         canMove = false;
                         /** if north slot is empty */
@@ -668,7 +667,7 @@ public class BomberPlayer extends Thread {
                         }
                     }
                     /** if the down is is down */
-                    else if ((currentDirKeyDown & BDOWN) > 0) {
+                    else if (((int) currentDirKeyDown & (int) BDOWN) > 0) {
                         state = DOWN;
                         canMove = false;
                         /** if the south block is empty */
@@ -795,7 +794,7 @@ public class BomberPlayer extends Thread {
             if (isDead) break;
             /** delay 65 milliseconds */
             try {
-                sleep(65);
+                sleep(65L);
             } catch (Exception e) {
             }
         }

@@ -31,7 +31,6 @@ import jcog.grammar.evolve.tree.operator.MatchOneOrMore;
 import jcog.grammar.evolve.utils.Utils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Create a population, 3 individuals for each positive example.

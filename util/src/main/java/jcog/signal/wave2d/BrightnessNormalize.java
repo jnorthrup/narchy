@@ -17,7 +17,7 @@ public class BrightnessNormalize implements Bitmap2D {
     int H;
 
     /** for noise */
-    private final SplitMix64Random rng = new SplitMix64Random(1);
+    private final SplitMix64Random rng = new SplitMix64Random(1L);
 
     public BrightnessNormalize(Bitmap2D src) {
         this.src = src;
@@ -48,7 +48,7 @@ public class BrightnessNormalize implements Bitmap2D {
 
         int i = 0;
 
-        double brightSum = 0;
+        double brightSum = (double) 0;
         float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY;
         for (int y = 0; y < H; y++) {
             for (int x = 0; x < W; x++) {
@@ -61,7 +61,7 @@ public class BrightnessNormalize implements Bitmap2D {
                 if (bri == bri) {
                     if (bri < min) min = bri;
                     if (bri > max) max = bri;
-                    brightSum += bri;
+                    brightSum = brightSum + (double) bri;
                 } else {
                     bri = Float.NaN;
                 }
@@ -69,7 +69,7 @@ public class BrightnessNormalize implements Bitmap2D {
                 s[i++] = bri;
             }
         }
-        float mean = (float) (brightSum / (W * H));
+        float mean = (float) (brightSum / (double) (W * H));
         float range = max-min;
         if (range < ScalarValue.EPSILON)
             return; //no change, just pass-thru

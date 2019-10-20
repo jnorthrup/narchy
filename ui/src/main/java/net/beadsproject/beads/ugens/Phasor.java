@@ -25,7 +25,7 @@ public class Phasor extends UGen {
      */
     private Phasor(AudioContext con) {
         super(con, 0, 1);
-        one_over_sr = 1d / con.getSampleRate();
+        one_over_sr = 1d / (double) con.getSampleRate();
     }
 
     /**
@@ -56,14 +56,14 @@ public class Phasor extends UGen {
 
         if (frequencyUGen == null) {
             for (int i = 0; i < bufferSize; i++) {
-                phase = (((phase + one_over_sr * frequency) % 1) + 1) % 1;
+                phase = (((phase + one_over_sr * (double) frequency) % 1.0) + 1.0) % 1.0;
                 bo[i] = (float) phase;
             }
         } else {
             frequencyUGen.update();
             for (int i = 0; i < bufferSize; i++) {
                 frequency = frequencyUGen.getValue(0, i);
-                phase = (((phase + one_over_sr * frequency) % 1) + 1) % 1;
+                phase = (((phase + one_over_sr * (double) frequency) % 1.0) + 1.0) % 1.0;
                 bo[i] = (float) phase;
             }
         }
@@ -132,7 +132,7 @@ public class Phasor extends UGen {
      * @return This Phasor instance.
      */
     public Phasor setPhase(float phase) {
-        this.phase = phase;
+        this.phase = (double) phase;
         return this;
     }
 

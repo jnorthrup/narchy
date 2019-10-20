@@ -4,7 +4,6 @@ package nars.ca;
 
 
 import java.util.StringTokenizer;
-import java.util.stream.IntStream;
 
 public class RuleMarg {
 	public static final int TYPE_MS = 1; 
@@ -39,11 +38,11 @@ public class RuleMarg {
         StringTokenizer st = new StringTokenizer(sStr, ",", true);
 		while (st.hasMoreTokens()) {
             String sTok = st.nextToken();
-            if (sTok.length() > 0 && sTok.charAt(0) == 'M')
+            if (sTok.length() > 0 && (int) sTok.charAt(0) == (int) 'M')
 															
 			{
 				iTyp = TYPE_MS; 
-			} else if (sTok.length() > 0 && sTok.charAt(0) == 'D') 
+			} else if (sTok.length() > 0 && (int) sTok.charAt(0) == (int) 'D')
 			{
                 StringTokenizer std = new StringTokenizer(sTok.substring(1), ";", false);
                 int iNum = 0;
@@ -161,10 +160,10 @@ public class RuleMarg {
                 int r2 = j + 1;
                 if (r2 >= sizY)
 					r2 = (isWrap) ? 0 : sizY;
-				mgCellsOld[0] = mgCells[0] = tmpState[c1][r1] = crrState[c1][r1]; 
-				mgCellsOld[1] = mgCells[1] = tmpState[c2][r1] = crrState[c2][r1]; 
-				mgCellsOld[2] = mgCells[2] = tmpState[c1][r2] = crrState[c1][r2]; 
-				mgCellsOld[3] = mgCells[3] = tmpState[c2][r2] = crrState[c2][r2];
+				mgCellsOld[0] =(short)( mgCells[0] =  tmpState[c1][r1] = crrState[c1][r1] );
+				mgCellsOld[1] =(short)( mgCells[1] =  tmpState[c2][r1] = crrState[c2][r1] );
+				mgCellsOld[2] =(short)( mgCells[2] =  tmpState[c1][r2] = crrState[c1][r2] );
+				mgCellsOld[3] =(short)( mgCells[3] =  tmpState[c2][r2] = crrState[c2][r2] );
 
 				int sum = 0;
 				for (int v : new int[]{0, 1, 2, 3}) {

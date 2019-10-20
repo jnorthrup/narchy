@@ -22,7 +22,7 @@ import java.util.Arrays;
  */
 public class CombFilter extends IIRFilter {
 
-    private float a = 1;
+    private float a = 1.0F;
     private float g = .2f;
     private float h = .2f;
     private int maxDelay = 1;
@@ -102,7 +102,7 @@ public class CombFilter extends IIRFilter {
      * Use this to reset the filter if it explodes.
      */
     public void reset() {
-        Arrays.fill(yn, 0);
+        Arrays.fill(yn, (float) 0);
     }
 
     /**
@@ -136,9 +136,9 @@ public class CombFilter extends IIRFilter {
         } else this.delay = Math.min(delay, maxDelay);
 
         if (isDelayStatic) {
-            delayUGen.setValue(delay);
+            delayUGen.setValue((float) delay);
         } else {
-            delayUGen = new Static(context, delay);
+            delayUGen = new Static(context, (float) delay);
             isDelayStatic = true;
             checkStaticStatus();
         }
@@ -426,7 +426,7 @@ public class CombFilter extends IIRFilter {
                 if (o instanceof UGen) {
                     setDelay((UGen) o);
                 } else {
-                    setDelay((int) paramBead.getFloat("delay", delay));
+                    setDelay((int) paramBead.getFloat("delay", (float) delay));
                 }
             }
         }
@@ -495,7 +495,7 @@ public class CombFilter extends IIRFilter {
         float[] bs = new float[delay + 1], as = new float[delay + 1];
         bs[0] = a;
         bs[delay] = g;
-        as[0] = 1;
+        as[0] = 1.0F;
         as[delay] = h;
         return calculateFilterResponse(bs, as, freq, context.getSampleRate());
     }

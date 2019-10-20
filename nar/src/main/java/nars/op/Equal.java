@@ -144,10 +144,10 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements Ide
                 Subterms xa = Functor.args((Compound) x, 2);
                 Term xa0 = xa.sub(0), xa1 = xa.sub(1);
                 if (yOp == INT && xa0 instanceof Variable && xa1 instanceof IdempotInt)
-                    return e.is(xa0, $.the(((double) ((IdempotInt) y).i) / ((IdempotInt) xa1).i)) ? True : Null; //"equal(mul(#x,a),b)"
+                    return e.is(xa0, $.the(((double) ((IdempotInt) y).i) / (double) ((IdempotInt) xa1).i)) ? True : Null; //"equal(mul(#x,a),b)"
 
                 if (yOp == INT && xa1 instanceof Variable && xa0 instanceof IdempotInt)
-                    return e.is(xa1, $.the(((double) ((IdempotInt) y).i) / ((IdempotInt) xa0).i)) ? True : Null; //"equal(mul(a,#x),b)"
+                    return e.is(xa1, $.the(((double) ((IdempotInt) y).i) / (double) ((IdempotInt) xa0).i)) ? True : Null; //"equal(mul(a,#x),b)"
 
                 //TODO (#x,mul(#x,#y)) |- is(#y, 1)
                 //TODO (#x,mul(#x,#x)) |- is(#x, 1)

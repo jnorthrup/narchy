@@ -8,8 +8,6 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static jcog.Texts.n4;
@@ -141,14 +139,14 @@ public class FPGrow {
     private static void combinations(ArrayList<FPNode> path, List<List<FPNode>> combinations) {
         int length = path.size();
         if (length == 0) return;
-        double c = Math.pow(2, length);
-        for (int i = 1; i < c; i++) {
+        double c = Math.pow(2.0, (double) length);
+        for (int i = 1; (double) i < c; i++) {
 
             String bitmap = Integer.toBinaryString(i);
             int bound = bitmap.length();
             List<FPNode> combine = new ArrayList<>();
             for (int j = 0; j < bound; j++) {
-                if (bitmap.charAt(j) == '1') {
+                if ((int) bitmap.charAt(j) == (int) '1') {
                     FPNode fpNode = path.get(length - bitmap.length() + j);
                     combine.add(fpNode);
                 }
@@ -275,7 +273,7 @@ public class FPGrow {
      * @param minLength
      */
     private void print(int minLength) {
-        float count = freq.size();
+        float count = (float) freq.size();
         stream().forEach(entry -> {
             List<String> rule = entry.getKey();
             if (rule.size() < minLength)

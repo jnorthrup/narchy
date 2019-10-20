@@ -5,7 +5,6 @@ import jcog.data.array.IntComparator;
 import jcog.util.ArrayUtil;
 
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 /**
  * Bare Metal Fixed-Size BitSets
@@ -157,10 +156,10 @@ public abstract class MetalBitSet {
 
             long[] prev = data;
 
-            if (bits == 0)
+            if (bits == 0L)
                 data = ArrayUtil.EMPTY_LONG_ARRAY;
             else
-                data = new long[Math.max(1, (int) Math.ceil(((double) bits) / Long.SIZE))];
+                data = new long[Math.max(1, (int) Math.ceil(((double) bits) / (double) Long.SIZE))];
 
             if (prev!=null) {
                 System.arraycopy(prev, 0, data, 0, Math.min(data.length, prev.length));
@@ -169,7 +168,7 @@ public abstract class MetalBitSet {
 
 
         public void clear() {
-            Arrays.fill(data, 0);
+            Arrays.fill(data, 0L);
         }
 
         @Override
@@ -192,7 +191,7 @@ public abstract class MetalBitSet {
         @Override
         public boolean isEmpty() {
             for (long l : data) {
-                if (l != 0) {
+                if (l != 0L) {
                     return false;
                 }
             }
@@ -219,12 +218,12 @@ public abstract class MetalBitSet {
             int i = index >>> 6;
             int j = (int) (1L << index);
             long[] d = this.data;
-            boolean prev = (d[i] & j) != 0;
+            boolean prev = (d[i] & (long) j) != 0L;
             if (prev != next) {
                 if (next) {
-                    d[i] |= j;
+                    d[i] = d[i] | (long) j;
                 } else {
-                    d[i] &= ~j;
+                    d[i] = d[i] & (long) ~j;
                 }
             }
             return prev;
@@ -238,14 +237,14 @@ public abstract class MetalBitSet {
          */
         @Override
         public boolean get(int i) {
-            return (data[i >>> 6] & (1L << i)) != 0;
+            return (data[i >>> 6] & (1L << i)) != 0L;
         }
 
         /**
          * Number of bits
          */
         public long bitSize() {
-            return (long) data.length * Long.SIZE;
+            return (long) data.length * (long) Long.SIZE;
         }
 
         public long[] getData() {
@@ -379,7 +378,7 @@ public abstract class MetalBitSet {
         if (size <= 32) {
             return new IntBitSet();
         } else {
-            return new LongArrayBitSet(size);
+            return new LongArrayBitSet((long) size);
         }
     }
 

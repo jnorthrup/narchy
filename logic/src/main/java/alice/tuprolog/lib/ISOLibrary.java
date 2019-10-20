@@ -21,7 +21,6 @@ import alice.tuprolog.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 /**
  * This class represents a tuProlog library providing most of the built-ins
@@ -110,7 +109,7 @@ public class ISOLibrary extends PrologLib {
             if (arg0.isAtomic()) {
                 String st = ((Struct) arg0).name();
                 if (st.length() <= 1)
-                    return unify(arg1, new NumberTerm.Int(st.charAt(0)));
+                    return unify(arg1, new NumberTerm.Int((int) st.charAt(0)));
                 else
                     throw PrologError.type_error(prolog, 1,
                             "character", arg0);
@@ -237,7 +236,7 @@ public class ISOLibrary extends PrologLib {
         if (val0 instanceof NumberTerm.Double
                 || val0 instanceof NumberTerm.Float)
             return new NumberTerm.Double(
-                    ((NumberTerm) val0).doubleValue() > 0 ? 1.0 : -1.0);
+                    ((NumberTerm) val0).doubleValue() > (double) 0 ? 1.0 : -1.0);
         return null;
     }
 
@@ -249,7 +248,7 @@ public class ISOLibrary extends PrologLib {
 
         }
         if (val0 instanceof NumberTerm)
-            return new NumberTerm.Double((long) Math.rint(((NumberTerm) val0)
+            return new NumberTerm.Double((double) (long) Math.rint(((NumberTerm) val0)
                     .doubleValue()));
         return null;
     }
@@ -356,7 +355,7 @@ public class ISOLibrary extends PrologLib {
         if (val0 instanceof NumberTerm && val1 instanceof NumberTerm) {
             int x = ((NumberTerm) val0).intValue();
             int y = ((NumberTerm) val1).intValue();
-            int f = new java.lang.Double(Math.floor((double) x / y))
+            int f = new java.lang.Double(Math.floor((double) x / (double) y))
                     .intValue();
             return new NumberTerm.Int(x - (f * y));
         }

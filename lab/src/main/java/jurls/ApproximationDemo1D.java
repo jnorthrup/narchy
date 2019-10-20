@@ -86,7 +86,7 @@ public class ApproximationDemo1D extends javax.swing.JFrame {
         int bound = components;
         for (int i = 0; i < bound; i++) {
             if (ys.length == count) ys = Arrays.copyOf(ys, count * 2);
-            double v = 2f * (Math.random() - 0.5);
+            double v = 2 * (Math.random() - 0.5);
             ys[count++] = v;
         }
         ys = Arrays.copyOfRange(ys, 0, count);
@@ -134,11 +134,11 @@ public class ApproximationDemo1D extends javax.swing.JFrame {
         functionRenderer1.setLayout(functionRenderer1Layout);
         functionRenderer1Layout.setHorizontalGroup(
             functionRenderer1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 583, Short.MAX_VALUE)
+            .addGap(0, 583, (int) Short.MAX_VALUE)
         );
         functionRenderer1Layout.setVerticalGroup(
             functionRenderer1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 349, Short.MAX_VALUE)
+            .addGap(0, 349, (int) Short.MAX_VALUE)
         );
 
         jPanel1.add(functionRenderer1, java.awt.BorderLayout.CENTER);

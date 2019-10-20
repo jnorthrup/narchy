@@ -19,7 +19,7 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
         @Override public float merge(float e, float i) {  return e - i; }
     },
     avg {
-        @Override public float merge(float e, float i) {  return (e + i)/2; }
+        @Override public float merge(float e, float i) {  return (e + i)/ 2.0F; }
     },
     and {
         @Override public float merge(float e, float i) {  return e * i; }
@@ -73,7 +73,7 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
     public final float merge(Prioritizable existing, float incoming, PriReturn mode) {
 
         if (incoming!=incoming && ignoreDeletedIncoming())
-            return 0;
+            return (float) 0;
 
         float[] _pBefore = new float[1];
         float pAfter = existing.pri((x, y) -> {
@@ -83,7 +83,7 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
                 if (!undelete())
                     return Float.NaN;
 
-                x1 = 0; //undelete
+                x1 = (float) 0; //undelete
             }
 
             _pBefore[0] = x1;
@@ -113,13 +113,13 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
     /** merges for non-NaN 0..1.0 range */
     public final float mergeUnitize(float existing, float incoming) {
         if (existing != existing)
-            existing = 0;
+            existing = (float) 0;
         float next = merge(existing, incoming);
         if (next == next) {
-            if (next > 1) next = 1;
-            else if (next < 0) next = 0;
+            if (next > 1.0F) next = 1.0F;
+            else if (next < (float) 0) next = (float) 0;
         } else
-            next = 0;
+            next = (float) 0;
         return next;
     }
 

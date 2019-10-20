@@ -33,7 +33,7 @@ import java.util.function.Function;
  * @author Kamnev Georgiy (nt.gocha@gmail.com)
  */
 public abstract class WeightedCaster<X,Y> implements Function<X, Y>, PrioritizedDouble {
-    protected double weight = 1;
+    protected double weight = 1.0;
 
     public WeightedCaster() {
     }

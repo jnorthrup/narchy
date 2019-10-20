@@ -32,7 +32,7 @@ public class cplane_t
 	public byte type;
 	/** This represents signx + (signy<<1) + (signz << 1). */
 	public byte signbits; 
-	public final byte[] pad = { 0, 0 };
+	public final byte[] pad = {(byte) 0, (byte) 0};
 	
 	public void set(cplane_t c) {
 		Math3D.set(normal, c.normal);
@@ -47,11 +47,11 @@ public class cplane_t
 
 	public void clear() {
 		Math3D.VectorClear(normal);
-		dist = 0;
-		type = 0;
-		signbits = 0;
+		dist = (float) 0;
+		type = (byte) 0;
+		signbits = (byte) 0;
         byte[] pad = this.pad;
-		pad[0] = 0;
-		pad[1] = 0;
+		pad[0] = (byte) 0;
+		pad[1] = (byte) 0;
 	}
 }

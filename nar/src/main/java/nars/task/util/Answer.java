@@ -52,7 +52,7 @@ public final class Answer implements Timed, Predicate<Task> {
     /**
      * truthpolation duration in result evidence projection
      */
-    public float dur = 0;
+    public float dur = (float) 0;
 
 
     public Answer clear(int ttl) {
@@ -87,7 +87,7 @@ public final class Answer implements Timed, Predicate<Task> {
 
 
     private static float beliefStrength(TaskRegion t, long qStart, long qEnd) {
-        return (float)(c2wSafe((double) t.confMean()) * t.range() / (1.0 + t.minTimeTo(qStart, qEnd)));
+        return (float)(c2wSafe((double) t.confMean()) * (double) t.range() / (1.0 + (double) t.minTimeTo(qStart, qEnd)));
     }
 
 //    /** @param confPerTime rate at which confidence compensates for temporal distance (proportional to dur) */
@@ -100,9 +100,9 @@ public final class Answer implements Timed, Predicate<Task> {
     public static FloatRank<TaskRegion> regionNearness(long qStart, long qEnd) {
         //TODO special impl for confPerTime==0
         return qStart == qEnd ?
-            (x,min) -> -x.minTimeTo(qStart)
+            (x,min) -> (float) -x.minTimeTo(qStart)
             :
-            (x,min) -> -x.minTimeTo(qStart,qEnd);
+            (x,min) -> (float) -x.minTimeTo(qStart, qEnd);
 //            (x,min) -> -(float)(((double)x.minTimeTo(qStart)) + x.confMax() * confPerTime) :
             //return (x,min) -> (float)(x.confMax() / (1.0 + x.maxTimeTo(qStart,qEnd)/dur));
         //return (x,min) -> (float)((1+x.confMin()) / (1.0 + x.maxTimeTo(qStart,qEnd)/dur));
@@ -118,7 +118,7 @@ public final class Answer implements Timed, Predicate<Task> {
                 filter, capacity, nar)
                 .time(start, end)
                 .term(template)
-                .clear((int) Math.ceil((beliefOrQuestion ? NAL.ANSWER_TRYING : 1) * capacity));
+                .clear((int) Math.ceil((double) ((beliefOrQuestion ? NAL.ANSWER_TRYING : 1.0F) * (float) capacity)));
     }
 
 
@@ -176,7 +176,7 @@ public final class Answer implements Timed, Predicate<Task> {
 //            }
             //dtDiff = dtDiff > 0 ? (float) Math.log(1+dtDiff) : 0; //HACK
 
-            float d = 1 / (1 + dtDiff);
+            float d = 1.0F / (1.0F + dtDiff);
             return str * d;
         };
     }
@@ -192,7 +192,7 @@ public final class Answer implements Timed, Predicate<Task> {
                         (t, m) -> {
                             float pri = t.pri(); // * t.originality();
                             if (pri == pri && pri > m)
-                                return (float) (pri / (1 + t.maxTimeTo(start, end)));
+                                return (float) (pri / (float) (1L + t.maxTimeTo(start, end)));
                                 //return (float) (pri / (1 + Math.log(1+t.minTimeTo(start, end))));
                             return Float.NaN;
                         };

@@ -24,7 +24,7 @@ public abstract class LongFloatTrapezoidalIntegrator implements LongToDoubleFunc
         double aa = applyAsDouble(a);
         return a == b ?
             aa :
-            (((b - a) + 1) * (aa + applyAsDouble(b))) / 2;
+            ((double) ((b - a) + 1L) * (aa + applyAsDouble(b))) / 2.0;
     }
 
     public double integrate3(long a, long b, long c) {
@@ -35,7 +35,7 @@ public abstract class LongFloatTrapezoidalIntegrator implements LongToDoubleFunc
 
         double aa = applyAsDouble(a), bb = applyAsDouble(b), cc = applyAsDouble(c);
         double ab = (aa+bb), bc = (bb + cc);
-        return ((((b-a)+1) * ab) + (((c-b)+1) * bc))/2;
+        return (((double) ((b - a) + 1L) * ab) + ((double) ((c - b) + 1L) * bc))/ 2.0;
     }
     public double integrate4(long a, long b, long c, long d) {
         if (a == b)
@@ -46,7 +46,7 @@ public abstract class LongFloatTrapezoidalIntegrator implements LongToDoubleFunc
             return integrate3(a, b, c);
         double aa = applyAsDouble(a), bb = applyAsDouble(b), cc = applyAsDouble(c), dd = applyAsDouble(d);
         double ab = (aa+bb), bc = (bb + cc), cd = (cc+dd);
-        return ((((b-a)+1) * ab) + (((c-b)+1) * bc) + (((d-c)+1) * cd))/2;
+        return (((double) ((b - a) + 1L) * ab) + ((double) ((c - b) + 1L) * bc) + ((double) ((d - c) + 1L) * cd))/ 2.0;
     }
 
     public double integrateN(long... x) {
@@ -89,9 +89,9 @@ public abstract class LongFloatTrapezoidalIntegrator implements LongToDoubleFunc
 
                 //accumulate sum
                 if (sum != sum)
-                    sum = 0; //initialize first summation
+                    sum = (double) 0; //initialize first summation
                 long dt = xNext - xPrev;
-                sum += (yNext + yPrev) / 2.0 * (dt + 1);
+                sum += (yNext + yPrev) / 2.0 * (double) (dt + 1L);
             }
         }
 

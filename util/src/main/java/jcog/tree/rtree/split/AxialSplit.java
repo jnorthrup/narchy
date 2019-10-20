@@ -63,10 +63,10 @@ public class AxialSplit<X> implements Split<X> {
 
         int splitDimension = axis;
 
-        short size = (short) (leaf.size+1);
+        short size = (short) ((int) leaf.size +1);
         X[] ld = leaf.data;
-        X[] obj = Arrays.copyOf(ld, size); //? X[] obj = (X[]) Array.newInstance(leaf.data.getClass(), size);
-        obj[size-1] = x;
+        X[] obj = Arrays.copyOf(ld, (int) size); //? X[] obj = (X[]) Array.newInstance(leaf.data.getClass(), size);
+        obj[(int) size -1] = x;
 
 //        double[] strength = new double[size];
 //        for (int i = 0; i < size; i++) {
@@ -75,16 +75,16 @@ public class AxialSplit<X> implements Split<X> {
 //            strength[i] = -c;
 //        }
 
-        if (size > 1) {
-            QuickSort.sort(obj, 0, size, (IntToDoubleFunction) i ->
+        if ((int) size > 1) {
+            QuickSort.sort(obj, 0, (int) size, (IntToDoubleFunction) i ->
                 model.bounds(obj[i]).center(splitDimension)
             );
         }
 
-        int splitN = size/2 + (((size & 1)!=0) ? 1 : 0);
+        int splitN = (int) size /2 + ((((int) size & 1)!=0) ? 1 : 0);
         //TODO if size is odd, maybe l1Node should have the 1 extra element rather than l2Node as this will:
         RLeaf<X> l1Node = model.transfer(obj, 0, splitN);
-        RLeaf<X> l2Node = model.transfer(obj, splitN, size);
+        RLeaf<X> l2Node = model.transfer(obj, splitN, (int) size);
 
         //assert (l1Node.size()+l2Node.size() == size);
 

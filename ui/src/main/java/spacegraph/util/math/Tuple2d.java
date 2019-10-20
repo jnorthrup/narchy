@@ -94,8 +94,8 @@ public abstract class Tuple2d implements java.io.Serializable, Cloneable {
      */
     Tuple2d(v2 t1)
     {
-	this.x = t1.x;
-	this.y = t1.y;
+	this.x = (double) t1.x;
+	this.y = (double) t1.y;
     }
 
     /**
@@ -149,8 +149,8 @@ public abstract class Tuple2d implements java.io.Serializable, Cloneable {
      */
     public final void set(v2 t1)
     {
-	this.x = t1.x;
-	this.y = t1.y;
+	this.x = (double) t1.x;
+	this.y = (double) t1.y;
     }
 
    /**
@@ -348,11 +348,11 @@ public abstract class Tuple2d implements java.io.Serializable, Cloneable {
 
         double diff = x - t1.x;
         if(Double.isNaN(diff)) return false;
-       if((diff<0?-diff:diff) > epsilon) return false;
+       if((diff< (double) 0 ?-diff:diff) > epsilon) return false;
 
        diff = y - t1.y;
        if(Double.isNaN(diff)) return false;
-        return (diff < 0 ? -diff : diff) <= epsilon;
+        return (diff < (double) 0 ? -diff : diff) <= epsilon;
 
     }
 
@@ -493,8 +493,8 @@ public abstract class Tuple2d implements java.io.Serializable, Cloneable {
     */
   public final void interpolate(Tuple2d t1, Tuple2d t2, double alpha)
   {
-       this.x = (1-alpha)*t1.x + alpha*t2.x;
-       this.y = (1-alpha)*t1.y + alpha*t2.y;
+       this.x = (1.0 -alpha)*t1.x + alpha*t2.x;
+       this.y = (1.0 -alpha)*t1.y + alpha*t2.y;
   }
 
 
@@ -506,8 +506,8 @@ public abstract class Tuple2d implements java.io.Serializable, Cloneable {
     */   
   public final void interpolate(Tuple2d t1, double alpha) 
   { 
-       this.x = (1-alpha)*this.x + alpha*t1.x;
-       this.y = (1-alpha)*this.y + alpha*t1.y;
+       this.x = (1.0 -alpha)*this.x + alpha*t1.x;
+       this.y = (1.0 -alpha)*this.y + alpha*t1.y;
 
   } 
 

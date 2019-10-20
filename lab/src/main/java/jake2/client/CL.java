@@ -43,7 +43,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.stream.IntStream;
 
 /**
  * CL
@@ -256,7 +255,7 @@ public final class CL {
         public void execute() {
             
 
-            if (Cvar.VariableValue("maxclients") > 1
+            if (Cvar.VariableValue("maxclients") > 1.0F
                     || Globals.server_state == 0) {
                 Cvar.SetValue("paused", 0);
                 return;
@@ -305,7 +304,7 @@ public final class CL {
             Globals.cls.state = Defines.ca_connecting;
             
             Globals.cls.servername = server;
-            Globals.cls.connect_time = -99999;
+            Globals.cls.connect_time = -99999.0F;
             
         }
     };
@@ -418,9 +417,9 @@ public final class CL {
             if (Globals.cls.servername != null) {
                 if (Globals.cls.state >= Defines.ca_connected) {
                     Disconnect();
-                    Globals.cls.connect_time = Globals.cls.realtime - 1500;
+                    Globals.cls.connect_time = (float) (Globals.cls.realtime - 1500);
                 } else
-                    Globals.cls.connect_time = -99999; 
+                    Globals.cls.connect_time = -99999.0F;
 
                 Globals.cls.state = Defines.ca_connecting;
                 Com.Printf("reconnecting...\n");
@@ -607,7 +606,7 @@ public final class CL {
 
         if (!NET.StringToAdr(Globals.cls.servername, adr)) {
             Com.Printf("Bad server address\n");
-            Globals.cls.connect_time = 0;
+            Globals.cls.connect_time = (float) 0;
             return;
         }
         if (adr.port == 0)
@@ -643,7 +642,7 @@ public final class CL {
         if (Globals.cls.state != Defines.ca_connecting)
             return;
 
-        if (Globals.cls.realtime - Globals.cls.connect_time < 3000)
+        if ((float) Globals.cls.realtime - Globals.cls.connect_time < 3000.0F)
             return;
 
         netadr_t adr = new netadr_t();
@@ -656,7 +655,7 @@ public final class CL {
             adr.port = Defines.PORT_SERVER;
 
         
-        Globals.cls.connect_time = Globals.cls.realtime;
+        Globals.cls.connect_time = (float) Globals.cls.realtime;
 
         Com.Printf("Connecting to " + Globals.cls.servername + "...\n");
 
@@ -700,8 +699,8 @@ public final class CL {
             if (time > 0)
                 Com.Printf("%i frames, %3.1f seconds: %3.1f fps\n",
                         new Vargs(3).add(Globals.cl.timedemo_frames).add(
-                                time / 1000.0).add(
-                                Globals.cl.timedemo_frames * 1000.0 / time));
+                                (double) time / 1000.0).add(
+                                (double) Globals.cl.timedemo_frames * 1000.0 / (double) time));
         }
 
         Math3D.VectorClear(Globals.cl.refdef.blend);
@@ -710,7 +709,7 @@ public final class CL {
 
         Menu.ForceMenuOff();
 
-        Globals.cls.connect_time = 0;
+        Globals.cls.connect_time = (float) 0;
 
         SCR.StopCinematic();
 
@@ -838,7 +837,7 @@ public final class CL {
 
             boolean b = true;
             for (int i : new int[]{0, 1, 2, 3}) {
-                if (Globals.net_message.data[i] != -1) {
+                if ((int) Globals.net_message.data[i] != -1) {
                     b = false;
                     break;
                 }
@@ -877,7 +876,7 @@ public final class CL {
         
         
         if (Globals.cls.state >= Defines.ca_connected
-                && Globals.cls.realtime - Globals.cls.netchan.last_received > Globals.cl_timeout.value * 1000) {
+                && (float) (Globals.cls.realtime - Globals.cls.netchan.last_received) > Globals.cl_timeout.value * 1000.0F) {
             if (++Globals.cl.timeoutcount > 5) 
             {
                 Com.Printf("\nServer connection timed out.\n");
@@ -916,12 +915,12 @@ public final class CL {
     public static void RequestNextDownload() {
 
         if (Globals.cls.state == Defines.ca_connected) {
-            if (SV_MAIN.allow_download.value == 0 && CL.precache_check < ENV_CNT)
+            if (SV_MAIN.allow_download.value == (float) 0 && CL.precache_check < ENV_CNT)
                 CL.precache_check = ENV_CNT;
             boolean finished = false;
             if (CL.precache_check == Defines.CS_MODELS) {
                 CL.precache_check = Defines.CS_MODELS + 2;
-                if (SV_MAIN.allow_download_maps.value != 0)
+                if (SV_MAIN.allow_download_maps.value != (float) 0)
                     if (!CL_parse
                             .CheckOrDownloadFile(Globals.cl.configstrings[Defines.CS_MODELS + 1])) {
                         finished = true;
@@ -930,13 +929,13 @@ public final class CL {
             if (!finished) {
                 if (CL.precache_check >= Defines.CS_MODELS
                         && CL.precache_check < Defines.CS_MODELS + Defines.MAX_MODELS) {
-                    if (SV_MAIN.allow_download_models.value != 0) {
+                    if (SV_MAIN.allow_download_models.value != (float) 0) {
                         while (CL.precache_check < Defines.CS_MODELS
                                 + Defines.MAX_MODELS
                                 && Globals.cl.configstrings[CL.precache_check].length() > 0) {
-                            if (Globals.cl.configstrings[CL.precache_check].charAt(0) == '*'
-                                    || Globals.cl.configstrings[CL.precache_check]
-                                    .charAt(0) == '#') {
+                            if ((int) Globals.cl.configstrings[CL.precache_check].charAt(0) == (int) '*'
+                                    || (int) Globals.cl.configstrings[CL.precache_check]
+                                    .charAt(0) == (int) '#') {
                                 CL.precache_check++;
                                 continue;
                             }
@@ -1022,13 +1021,13 @@ public final class CL {
                     String fn = null;
                     if (CL.precache_check >= Defines.CS_SOUNDS
                             && CL.precache_check < Defines.CS_SOUNDS + Defines.MAX_SOUNDS) {
-                        if (SV_MAIN.allow_download_sounds.value != 0) {
+                        if (SV_MAIN.allow_download_sounds.value != (float) 0) {
                             if (CL.precache_check == Defines.CS_SOUNDS)
                                 CL.precache_check++;
                             while (CL.precache_check < Defines.CS_SOUNDS
                                     + Defines.MAX_SOUNDS
                                     && Globals.cl.configstrings[CL.precache_check].length() > 0) {
-                                if (Globals.cl.configstrings[CL.precache_check].charAt(0) == '*') {
+                                if ((int) Globals.cl.configstrings[CL.precache_check].charAt(0) == (int) '*') {
                                     CL.precache_check++;
                                     continue;
                                 }
@@ -1067,7 +1066,7 @@ public final class CL {
                             if (CL.precache_check >= Defines.CS_PLAYERSKINS
                                     && CL.precache_check < Defines.CS_PLAYERSKINS
                                     + Defines.MAX_CLIENTS * CL.PLAYER_MULT) {
-                                if (SV_MAIN.allow_download_players.value != 0) {
+                                if (SV_MAIN.allow_download_players.value != (float) 0) {
                                     while (CL.precache_check < Defines.CS_PLAYERSKINS
                                             + Defines.MAX_CLIENTS * CL.PLAYER_MULT) {
 
@@ -1083,17 +1082,17 @@ public final class CL {
                                             continue;
                                         }
 
-                                        int pos = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].indexOf('\\');
+                                        int pos = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].indexOf((int) '\\');
 
                                         if (pos != -1)
                                             pos++;
                                         else
                                             pos = 0;
 
-                                        int pos2 = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].indexOf('\\', pos);
+                                        int pos2 = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].indexOf((int) '\\', pos);
 
                                         if (pos2 == -1)
-                                            pos2 = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].indexOf('/', pos);
+                                            pos2 = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].indexOf((int) '/', pos);
 
 
                                         String model = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i]
@@ -1196,8 +1195,8 @@ public final class CL {
                                 }
                                 if (!finished) {
                                     if (CL.precache_check > ENV_CNT && CL.precache_check < TEXTURE_CNT) {
-                                        if (SV_MAIN.allow_download.value != 0
-                                                && SV_MAIN.allow_download_maps.value != 0) {
+                                        if (SV_MAIN.allow_download.value != (float) 0
+                                                && SV_MAIN.allow_download_maps.value != (float) 0) {
                                             while (CL.precache_check < TEXTURE_CNT) {
                                                 int n = CL.precache_check++ - ENV_CNT - 1;
 
@@ -1225,8 +1224,8 @@ public final class CL {
                                         if (CL.precache_check == TEXTURE_CNT + 1) {
 
 
-                                            if (SV_MAIN.allow_download.value != 0
-                                                    && SV_MAIN.allow_download_maps.value != 0) {
+                                            if (SV_MAIN.allow_download.value != (float) 0
+                                                    && SV_MAIN.allow_download_maps.value != (float) 0) {
                                                 while (CL.precache_tex < CM.numtexinfo) {
 
 
@@ -1426,8 +1425,8 @@ public final class CL {
             return;
         }
         try {
-            f.seek(0);
-            f.setLength(0);
+            f.seek(0L);
+            f.setLength(0L);
         } catch (IOException e1) {
         }
         try {
@@ -1501,7 +1500,7 @@ public final class CL {
      */
     public static void Frame(int msec) {
         
-        if (Globals.dedicated.value != 0)
+        if (Globals.dedicated.value != (float) 0)
             return;
 
         extratime += msec;
@@ -1510,7 +1509,7 @@ public final class CL {
             if (Globals.cls.state == Defines.ca_connected && extratime < 100) {
                 return; 
             }
-            if (extratime < 1000 / Globals.cl_maxfps.value) {
+            if ((float) extratime < 1000.0F / Globals.cl_maxfps.value) {
                 return; 
             }
         }
@@ -1519,14 +1518,14 @@ public final class CL {
         IN.Frame();
 
         
-        Globals.cls.frametime = extratime / 1000.0f;
+        Globals.cls.frametime = (float) extratime / 1000.0f;
         Globals.cl.time += extratime;
         Globals.cls.realtime = Globals.curtime;
 
         extratime = 0;
 
-        if (Globals.cls.frametime > (1.0f / 5))
-            Globals.cls.frametime = (1.0f / 5);
+        if (Globals.cls.frametime > (1.0f / 5.0F))
+            Globals.cls.frametime = (1.0f / 5.0F);
 
         
         if (msec > 5000)
@@ -1567,7 +1566,7 @@ public final class CL {
         if (Globals.cls.state != Defines.ca_active
                 || Globals.cls.key_dest != Defines.key_game) {
             try {
-                Thread.sleep(20);
+                Thread.sleep(20L);
             } catch (InterruptedException e) {
             }
         }

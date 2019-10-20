@@ -17,17 +17,17 @@ public class CachedUnitCompound extends SemiCachedUnitCompound {
     private final short volume;
 
     public CachedUnitCompound(/*@NotNull*/ Op op, /*@NotNull*/ Term sub) {
-        super(sub, Compound.hash1(op.id, sub));
+        super(sub, Compound.hash1((int) op.id, sub));
         assert(op!=NEG && op!=CONJ);
 
         this.op = op.id;
         this.cstruct = sub.structure() | op.bit;
-        this.volume = (short) (sub.volume() + 1); assert(volume < Short.MAX_VALUE);
+        this.volume = (short) (sub.volume() + 1); assert((int) volume < (int) Short.MAX_VALUE);
     }
 
     @Override
     public final int volume() {
-        return volume;
+        return (int) volume;
     }
 
     @Override
@@ -36,12 +36,12 @@ public class CachedUnitCompound extends SemiCachedUnitCompound {
     }
 
     public final int opID() {
-        return op;
+        return (int) op;
     }
 
     @Override
     public final Op op() {
-        return Op.the(op);
+        return Op.the((int) op);
     }
 
     @Override

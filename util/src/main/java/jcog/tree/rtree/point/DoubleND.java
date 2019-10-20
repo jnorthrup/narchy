@@ -48,7 +48,7 @@ public class DoubleND implements HyperPoint, Serializable {
     @Override
     public double distance(HyperPoint h) {
         DoubleND p = (DoubleND) h;
-        double sumSq = 0;
+        double sumSq = (double) 0;
         for (int i = 0; i < coord.length; i++) {
             double x = coord[i];
             double y = p.coord[i];

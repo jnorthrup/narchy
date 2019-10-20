@@ -52,8 +52,8 @@ public class TimeStamp {
      */
     private TimeStamp(AudioContext context, long timeInSamples) {
         this.context = context;
-        timeStep = timeInSamples / context.getBufferSize();
-        index = (int) (timeInSamples % context.getBufferSize());
+        timeStep = timeInSamples / (long) context.getBufferSize();
+        index = (int) (timeInSamples % (long) context.getBufferSize());
     }
 
     /**
@@ -65,7 +65,7 @@ public class TimeStamp {
         /**
          * The time ms.
          */
-        double timeMs = context.samplesToMs(getTimeSamples());
+        double timeMs = context.samplesToMs((double) getTimeSamples());
         return timeMs;
     }
 
@@ -75,7 +75,7 @@ public class TimeStamp {
      * @return the time in samples.
      */
     private long getTimeSamples() {
-        timeSamples = timeStep * context.getBufferSize() + index;
+        timeSamples = timeStep * (long) context.getBufferSize() + (long) index;
         return timeSamples;
     }
 

@@ -108,7 +108,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
                     updated.set(true);
                 }
 
-            }).durs(1);
+            }).durs(1.0F);
 
             (this.onClear = new RunThese()).add(nar.eventClear.on(() -> {
                 synchronized (this) {
@@ -214,7 +214,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         Complexity {
             @Override
             public void color(ConceptWidget cw, NAR nar) {
-                float c = Util.unitize(cw.id.term().volume() / 32f);
+                float c = Util.unitize((float) cw.id.term().volume() / 32f);
                 Draw.colorUnipolarHue(cw.shapeColor, c, 0.1f, 0.9f);
             }
         };
@@ -243,7 +243,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         public final FloatRange lineAlphaMin = new FloatRange(0.1f, 0f, 1f);
         public final FloatRange lineAlphaMax = new FloatRange(0.8f, 0f, 1f);
         public final MutableEnum<ColorNode> colorNode = new MutableEnum(Hash);
-        public final FloatRange edgeBrightness = new FloatRange(1 / 16f, 0f, 2f);
+        public final FloatRange edgeBrightness = new FloatRange(1.0F / 16f, 0f, 2f);
 
         public ConceptVis2(int maxEdges) {
             super();
@@ -298,7 +298,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
                 Map<Concept, ConceptWidget.ConceptEdge> eee = src.edges.write();
                 ConceptWidget tgt = e.tgt();
                 eee.computeIfAbsent(tgt.id, (t) ->
-                    new ConceptWidget.ConceptEdge(src, tgt, 0)
+                    new ConceptWidget.ConceptEdge(src, tgt, (float) 0)
                 ).merge(e);
             });
             float termlinkOpac = termlinkOpacity.floatValue();
@@ -320,16 +320,16 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
                     float edgeSum = (e.termlinkPri + e.tasklinkPri);
 
-                    if (edgeSum >= 0) {
+                    if (edgeSum >= (float) 0) {
 
                         float p = e.priElseZero();
                         if (p != p)
                             return true;
 
-                        e.width = minLineWidth + 0.5f * sqr(1 + p * MaxEdgeWidth);
+                        e.width = minLineWidth + 0.5f * sqr(1.0F + p * MaxEdgeWidth);
 
                         float taskish, termish;
-                        if (edgeSum > 0) {
+                        if (edgeSum > (float) 0) {
                             taskish = e.tasklinkPri / edgeSum * termlinkOpac;
                             termish = e.termlinkPri / edgeSum * tasklinkOpac;
                         } else {
@@ -348,8 +348,8 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
                                 (totalRad * separation) + totalRad;
                     } else {
-                        e.a = -1;
-                        e.attraction = 0;
+                        e.a = -1.0F;
+                        e.attraction = (float) 0;
                     }
 
                     return false;
@@ -363,14 +363,14 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         @Override
         public void accept(ConceptWidget src, PriReference<? extends Termed> link) {
             float pri = link.priElseNeg1();
-            if (pri < 0)
+            if (pri < (float) 0)
                 return;
             accept(src, link.get().term(), pri, TERMLINK);
         }
 
         public void accept(ConceptWidget src, TaskLink link) {
             float pri = link.priElseNeg1();
-            if (pri < 0)
+            if (pri < (float) 0)
                 return;
             accept(src, link.to(), pri, TASKLINK);
         }
@@ -405,8 +405,8 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             float p = cw.pri;
 
 
-            float volume = 1f / (1f + cw.id.term().complexity());
-            float ep = 1 + p;
+            float volume = 1f / (1f + (float) cw.id.term().complexity());
+            float ep = 1.0F + p;
             float minSize = this.minSize.floatValue();
             float nodeScale = minSize + (ep * ep) * maxSizeMult.floatValue()
                     ;
@@ -422,7 +422,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             } else {
                 float l = nodeScale * Util.PHIf;
                 float w = nodeScale;
-                float h = 1; 
+                float h = 1.0F;
                 cw.scale(l, w, h);
             }
 

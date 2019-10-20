@@ -77,7 +77,7 @@ public abstract class EventIntroduction extends Introduction {
                                     replacement.put(what, what2);
                             }
                             return true;
-                        }, 0, false, true /* xternal disabled */))
+                        }, 0L, false, true /* xternal disabled */))
                             return x; //fail
                         if (!replacement.isEmpty()) {
                             Term xx = x.replace(replacement);

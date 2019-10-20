@@ -36,8 +36,8 @@ public class ConjClustering extends TaskAction {
 
     public final BagClustering<Task> data;
 
-    public final FloatRange termVolumeMaxPct = new FloatRange(1f, 0, 1f);
-    public final FloatRange forgetRate = new FloatRange(1f, 0, 1);
+    public final FloatRange termVolumeMaxPct = new FloatRange(1f, (float) 0, 1f);
+    public final FloatRange forgetRate = new FloatRange(1f, (float) 0, 1.0F);
 
     private int inputTermVolMax;
     private int stampLenMax;
@@ -71,7 +71,7 @@ public class ConjClustering extends TaskAction {
 
     /** default that configures with belief/goal -> question/quest output mode */
     public ConjClustering(NAR nar, byte punc, int centroids, int capacity, Predicate<Task> filter) {
-        this(nar, punc, punc == BELIEF ? QUESTION : QUEST, centroids, capacity, filter);
+        this(nar, punc, (int) punc == (int) BELIEF ? QUESTION : QUEST, centroids, capacity, filter);
     }
 
     public ConjClustering(NAR nar, byte puncIn, byte puncOut, int centroids, int capacity, Predicate<Task> filter) {
@@ -101,27 +101,27 @@ public class ConjClustering extends TaskAction {
             public void coord(Task t, double[] c) {
                 Truth tt = t.truth();
                 long s = t.start(), e = t.end();
-                c[0] = (s + e) / 2; //mid
+                c[0] = (double) ((s + e) / 2L); //mid
 
-                c[1] = tt.polarity();
-                c[2] = tt.conf();
+                c[1] = (double) tt.polarity();
+                c[2] = (double) tt.conf();
 
-                c[3] = (e - s); //range
+                c[3] = (double) (e - s); //range
             }
 
             @Override
             public double distanceSq(double[] a, double[] b) {
 
-                double range = 1 + Math.max(a[3], b[3]);
-                return (1 + Math.abs(a[0] - b[0]) / range) //dMid  (div by range to normalize against scale)
+                double range = 1.0 + Math.max(a[3], b[3]);
+                return (1.0 + Math.abs(a[0] - b[0]) / range) //dMid  (div by range to normalize against scale)
                         *
-                        (1 + Math.abs(a[3] - b[3]) / range) //dRange
+                        (1.0 + Math.abs(a[3] - b[3]) / range) //dRange
                         *
-                        (1 + (
+                        (1.0 + (
                                 Math.abs(a[2] - b[2]) //dConf
                                         +
                                         Math.abs(a[1] - b[1]) //dPolarity
-                        ) / 2)
+                        ) / 2.0)
                         ;
 
 //                return (1 + (Math.abs(a[0] - b[0]) / Math.min(a[4], b[4])) + (Math.abs(a[4] - b[4]) / dur))
@@ -153,10 +153,10 @@ public class ConjClustering extends TaskAction {
 
 
     protected static float pri(Task t) {
-        return    (1 + 0.5f * t.priElseZero())
-                * (1 + 0.5f * t.conf())
-                * (1 + 0.5f * t.polarity())
-                * (1 + 0.5f * t.originality())
+        return    (1.0F + 0.5f * t.priElseZero())
+                * (1.0F + 0.5f * t.conf())
+                * (1.0F + 0.5f * t.polarity())
+                * (1.0F + 0.5f * t.originality())
 
 //                 * (1/(1f+t.volume()))
                 //* TruthIntegration.evi(t);
@@ -253,7 +253,7 @@ public class ConjClustering extends TaskAction {
                 //called by only one thread at a time:
                 NAR nar = d.nar;
                 //TODO adjust update rate according to value
-                if (d.time - lastLearn >= minDurationsPerLearning * d.dur) {
+                if ((float) (d.time - lastLearn) >= minDurationsPerLearning * d.dur) {
                     _update(d.time);
 
                     data.learn(forgetRate(), learningIterations);
@@ -283,7 +283,7 @@ public class ConjClustering extends TaskAction {
         //Integer.MAX_VALUE;
         this.confMin = nar.confMin.floatValue();
         this.volMax = Math.max(3,Math.round(
-                (nar.termVolMax.intValue() * termVolumeMaxPct.floatValue())
+                ((float) nar.termVolMax.intValue() * termVolumeMaxPct.floatValue())
                 //-2 /* for the super-CONJ itself and another term of at least volume 1 */
         ));
         this.inputTermVolMax = Math.max(1, volMax - 2);
@@ -298,9 +298,9 @@ public class ConjClustering extends TaskAction {
         //prefilter
         Task t = d._task;
         if (t.isEternal())
-            return 0;
+            return (float) 0;
 
-        return 1;
+        return 1.0F;
         //return pri(d._task);
 
 //
@@ -360,7 +360,7 @@ public class ConjClustering extends TaskAction {
 
             ListIterator<Task> i = ArrayUtil.cycle(in);
             int volEstimate = 1;
-            double conf = 1;
+            double conf = 1.0;
             boolean reset = true;
             boolean active = true;
             int count = 0;
@@ -389,7 +389,7 @@ public class ConjClustering extends TaskAction {
                     reset = false;
                     active = false;
 
-                    conf = 1f;
+                    conf = 1;
                     start = Long.MAX_VALUE;
                     volEstimate = 1;
 
@@ -401,7 +401,7 @@ public class ConjClustering extends TaskAction {
 
                 Truth tx = t.truth();
                 float tc = tx.conf();
-                float nextConf = confCompose(conf, tc);
+                float nextConf = confCompose(conf, (double) tc);
                 if (nextConf < confMin)
                     continue; //try next
 
@@ -429,7 +429,7 @@ public class ConjClustering extends TaskAction {
                         if (start > tStart) start = tStart;
 
 
-                        conf = nextConf;
+                        conf = (double) nextConf;
 
                         //float tf = tx.freq();
 
@@ -438,7 +438,7 @@ public class ConjClustering extends TaskAction {
 
                         if (trying.size() > 1) {
 
-                            if (in.isEmpty() || (conf <= confMinThresh) || (volEstimate  >= volMax) || (trying.size() >= NAL.STAMP_CAPACITY)) {
+                            if (in.isEmpty() || (conf <= (double) confMinThresh) || (volEstimate  >= volMax) || (trying.size() >= NAL.STAMP_CAPACITY)) {
                                 Task[] x = trying.toArray(Task.EmptyArray);
                                 trying.clear();
 
@@ -486,7 +486,7 @@ public class ConjClustering extends TaskAction {
         private Task conjoin(Task[] x, long start) {
 
             DynTaskify d = new DynTaskify(DynamicConjTruth.ConjIntersection, x[0].isBelief() /* else goal */,
-                false, null, 0, null, nar
+                false, null, (float) 0, null, nar
             );
             MetalBitSet cp = d.componentPolarity;
             for (int i = 0, xLength = x.length; i < xLength; i++) {

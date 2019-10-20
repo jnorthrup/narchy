@@ -96,9 +96,9 @@ public class MJCell extends Applet {
         boolean isApplet = true;
         try {
 			sBaseURL = getCodeBase().toString();
-			if (sBaseURL.length() > 0 && sBaseURL.charAt(sBaseURL.length() - 1) == '.')
+			if (sBaseURL.length() > 0 && (int) sBaseURL.charAt(sBaseURL.length() - 1) == (int) '.')
 				sBaseURL = sBaseURL.substring(0, sBaseURL.length() - 1);
-			if (!(sBaseURL.length() > 0 && sBaseURL.charAt(sBaseURL.length() - 1) == '/'))
+			if (!(sBaseURL.length() > 0 && (int) sBaseURL.charAt(sBaseURL.length() - 1) == (int) '/'))
 				sBaseURL += "/";
 			
 		} catch (Exception e) {

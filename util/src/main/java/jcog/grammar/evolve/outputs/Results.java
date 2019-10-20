@@ -75,7 +75,7 @@ public class Results {
     private int numberTrainingMatches;
     private int numberTrainingUnmatches;  
     
-    private long characterEvaluations = 0;
+    private long characterEvaluations = 0L;
     private transient Configuration configuration;
     
     

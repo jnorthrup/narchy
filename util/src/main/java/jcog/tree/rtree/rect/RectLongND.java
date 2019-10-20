@@ -7,7 +7,6 @@ import jcog.tree.rtree.point.LongND;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 
 
 /**
@@ -99,9 +98,9 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
         float sigma = 1f;
         int dim = dim();
         for (int i = 0; i < dim; i++) {
-            sigma *= rangeIfFinite(i, 1 /* an infinite dimension can not be compared, so just ignore it */);
+            sigma = (float) ((double) sigma * rangeIfFinite(i, 1.0 /* an infinite dimension can not be compared, so just ignore it */));
         }
-        return sigma;
+        return (double) sigma;
     }
 
     @Override
@@ -128,13 +127,13 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
         long min = this.min.coord[dim];
         long max = this.max.coord[dim];
         if ((min == Long.MIN_VALUE) && (max == Long.MAX_VALUE))
-            return 0;
+            return (double) 0;
         if (min == Long.MIN_VALUE)
-            return max;
+            return (double) max;
         if (max == Long.MAX_VALUE)
-            return min;
+            return (double) min;
 
-        return (max + min) / 2.0f;
+        return (double) ((max + min) / 2.0f);
     }
 
     public LongND center() {
@@ -142,7 +141,7 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
         long[] c = new long[10];
         int count = 0;
         for (int i = 0; i < dim; i++) {
-            long l = (min.coord(i) + max.coord(i)) / 2;
+            long l = (min.coord(i) + max.coord(i)) / 2L;
             if (c.length == count) c = Arrays.copyOf(c, count * 2);
             c[count++] = l;
         }
@@ -158,22 +157,22 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
 
     @Override
     public double coord(int dimension, boolean maxOrMin) {
-        return maxOrMin ? max.coord[dimension] : min.coord[dimension];
+        return (double) (maxOrMin ? max.coord[dimension] : min.coord[dimension]);
     }
 
     public double distance(HyperRegion X, int dim, boolean maxOrMin, boolean XmaxOrMin) {
-        return max.coord[dim] - min.coord[dim];
+        return (double) (max.coord[dim] - min.coord[dim]);
     }
 
     @Override
     public double range(int dim) {
-        float min = this.min.coord[dim];
-        float max = this.max.coord[dim];
+        float min = (float) this.min.coord[dim];
+        float max = (float) this.max.coord[dim];
         if (min == max)
-            return 0;
-        if ((min == Long.MIN_VALUE) || (max == Long.MAX_VALUE))
-            return Long.MAX_VALUE;
-        return (max - min);
+            return (double) 0;
+        if ((min == (float) Long.MIN_VALUE) || (max == (float) Long.MAX_VALUE))
+            return (double) Long.MAX_VALUE;
+        return (double) (max - min);
     }
 
     @Override

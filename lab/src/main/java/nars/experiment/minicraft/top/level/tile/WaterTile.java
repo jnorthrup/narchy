@@ -18,7 +18,7 @@ public class WaterTile extends Tile {
 
     @Override
     public void render(Screen screen, Level level, int x, int y) {
-        wRandom.setSeed((tickCount + (x / 2 - y) * 4311) / 10 * 54687121l + x * 3271612l + y * 3412987161l);
+        wRandom.setSeed((long) ((tickCount + (x / 2 - y) * 4311) / 10) * 54687121l + (long) x * 3271612l + (long) y * 3412987161l);
         int col = Color.get(005, 005, 115, 115);
         int transitionColor1 = Color.get(3, 005, level.dirtColor - 111, level.dirtColor);
         int transitionColor2 = Color.get(3, 005, level.sandColor - 110, level.sandColor);

@@ -28,11 +28,11 @@ public class TarUtils {
 	 * Determines the tar file size of the given folder/file path
 	 */
 	public static long calculateTarSize(File path) {
-		return tarSize(path) + TarConstants.EOF_BLOCK;
+		return tarSize(path) + (long) TarConstants.EOF_BLOCK;
 	}
 
 	private static long tarSize(File dir) {
-		long size = 0;
+		long size = 0L;
 
 		if (dir.isFile()) {
 			return entrySize(dir.length());
@@ -49,7 +49,7 @@ public class TarUtils {
 				}
 			} else {
 				
-				return TarConstants.HEADER_BLOCK;
+				return (long) TarConstants.HEADER_BLOCK;
 			}
 		}
 
@@ -57,14 +57,14 @@ public class TarUtils {
 	}
 
 	private static long entrySize(long fileSize) {
-		long size = 0;
-		size += TarConstants.HEADER_BLOCK; 
+		long size = 0L;
+        size = size + (long) TarConstants.HEADER_BLOCK;
 		size += fileSize;
 
-        long extra = size % TarConstants.DATA_BLOCK;
+        long extra = size % (long) TarConstants.DATA_BLOCK;
 
-		if (extra > 0) {
-			size += (TarConstants.DATA_BLOCK - extra); 
+		if (extra > 0L) {
+			size += ((long) TarConstants.DATA_BLOCK - extra);
 		}
 
 		return size;
@@ -73,7 +73,7 @@ public class TarUtils {
 	public static String trim(String s, char c) {
         StringBuilder tmp = new StringBuilder(s);
 		for (int i = 0; i < tmp.length(); i++) {
-			if (tmp.charAt(i) != c) {
+			if ((int) tmp.charAt(i) != (int) c) {
 				break;
 			} else {
 				tmp.deleteCharAt(i);
@@ -81,7 +81,7 @@ public class TarUtils {
 		}
 
 		for (int i = tmp.length() - 1; i >= 0; i--) {
-			if (tmp.charAt(i) != c) {
+			if ((int) tmp.charAt(i) != (int) c) {
 				break;
 			} else {
 				tmp.deleteCharAt(i);

@@ -36,7 +36,7 @@ public final class DatasetContainer {
     private List<Range> training = new ArrayList<>();
     private List<Range> validation = new ArrayList<>();
     private boolean dataSetStriped = false;
-    private double datasetStripeMarginSize = Integer.MAX_VALUE;
+    private double datasetStripeMarginSize = (double) Integer.MAX_VALUE;
     private int normalProposedDatasetInterval = 0;
     private transient DataSet trainingDataset;
     private transient DataSet validationDataset;
@@ -113,8 +113,8 @@ public final class DatasetContainer {
         this.training.clear();
         this.validation.clear();
 
-        Random random = new Random(randomSeed);
-        int overallNumberMatchesInTraining = (int) Math.ceil(this.dataset.getNumberMatches() / 2.0);
+        Random random = new Random((long) randomSeed);
+        int overallNumberMatchesInTraining = (int) Math.ceil((double) this.dataset.getNumberMatches() / 2.0);
         overallNumberMatchesInTraining = (overallNumberMatchesInTraining == 0) ? 1 : overallNumberMatchesInTraining;
         int matchesInTrainingCountdown = overallNumberMatchesInTraining;
 
@@ -147,7 +147,7 @@ public final class DatasetContainer {
 
         int negatives = exampleNegativeIndexes.size();
         for (int i = 0; i < negatives; i++)
-            (i < Math.ceil(negatives / 2.0) ? training: validation).add(new Range(exampleNegativeIndexes.get(i), exampleNegativeIndexes.get(i)));
+            ((double) i < Math.ceil((double) negatives / 2.0) ? training: validation).add(new Range(exampleNegativeIndexes.get(i), exampleNegativeIndexes.get(i)));
 
     }
 

@@ -119,8 +119,8 @@ public class KIFParser {
         st.wordChars(97, 122); 
         st.ordinaryChars(123, 255); 
         
-        st.quoteChar('"');
-        st.commentChar(';');
+        st.quoteChar((int) '"');
+        st.commentChar((int) ';');
         st.eolIsSignificant(true);
     }
 
@@ -315,7 +315,7 @@ public class KIFParser {
                         (st.sval != null && (Character.isDigit(st.sval.charAt(0))))) {
                     if (lastVal != 40) 
                         expression.append(' ');
-                    if (st.nval == 0)
+                    if (st.nval == (double) 0)
                         expression.append(st.sval);
                     else
                         expression.append(st.nval);
@@ -336,7 +336,7 @@ public class KIFParser {
                         throw new ParseException(errStr, f.startLine);
                     }
                     
-                    if ((mode == NORMAL_PARSE_MODE) && (st.sval.charAt(0) != '?') && (st.sval.charAt(0) != '@')) { 
+                    if ((mode == NORMAL_PARSE_MODE) && ((int) st.sval.charAt(0) != (int) '?') && ((int) st.sval.charAt(0) != (int) '@')) {
                         terms.add(st.sval); 
 
                         if (!termFrequency.containsKey(st.sval)) {
@@ -436,7 +436,7 @@ public class KIFParser {
         int len = 0;
         char[] cArray = str.toCharArray();
         for (char value : cArray) {
-            if (value == c)
+            if ((int) value == (int) c)
                 len++;
         }
         return len;

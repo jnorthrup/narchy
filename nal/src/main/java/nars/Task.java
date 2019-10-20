@@ -92,10 +92,10 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     static boolean equal(Task a, Task b) {
 
         byte p = a.punc();
-        if (p != b.punc())
+        if ((int) p != (int) b.punc())
             return false;
 
-        if (p == BELIEF || p == GOAL) {
+        if ((int) p == (int) BELIEF || (int) p == (int) GOAL) {
             if (!a.truth().equals(b.truth())) return false;
         }
 
@@ -140,7 +140,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     static float merge(Task e, Task i, PriMerge merge, @Nullable PriReturn returning, boolean updateCreationTime) {
 
         if (e == i)
-            return 0;
+            return (float) 0;
 
         float y = merge.merge(e, i.pri(), returning);
 
@@ -172,7 +172,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     static int hash(Term term, Truth truth, byte punc, long start, long end, long[] stamp) {
         int h = Util.hashCombine(
                 term.hashCode(),
-                punc
+                (int) punc
         );
 
         //if (stamp.length > 1) {
@@ -237,7 +237,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         if (t instanceof IdempotentBool || t instanceof Variable)
             return fail(t, "bool or variable", safe);
 
-        if (punc != COMMAND) {
+        if ((int) punc != (int) COMMAND) {
 
 
 //            if (!t.isNormalized()) {
@@ -261,7 +261,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         if (!t.hasAny(Op.ATOM.bit | Op.INT.bit))
             return fail(t, "target has no substance", safe);
 
-        if (punc == Op.BELIEF || punc == Op.GOAL) {
+        if ((int) punc == (int) Op.BELIEF || (int) punc == (int) Op.GOAL) {
             if (t.hasVarQuery())
                 return fail(t, "belief or goal with query variable", safe);
             if (t.hasXternal())
@@ -269,7 +269,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         }
 
 
-        if ((punc == Op.GOAL || punc == Op.QUEST) && t.hasAny(IMPL))
+        if (((int) punc == (int) Op.GOAL || (int) punc == (int) Op.QUEST) && t.hasAny(IMPL))
             return fail(t, "Goal/Quest task target may not be Implication", safe);
 
         return !(t instanceof Compound) || validTaskCompound((Compound) t, safe);
@@ -335,7 +335,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
     @Deprecated
     static @Nullable <T extends Task> T tryTask(Term t, byte punc, Truth tr, boolean safe, BiFunction<Term, Truth, T> withResult) {
-        if (punc == BELIEF || punc == GOAL) {
+        if ((int) punc == (int) BELIEF || (int) punc == (int) GOAL) {
             if (tr == null)
                 throw new TaskException("non-null truth required for belief or goal", t);
             if (tr.evi() < NAL.truth.EVI_MIN)
@@ -350,7 +350,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     }
 
     static @Nullable Term taskValid(Term t, byte punc, Truth tr, boolean safe) {
-        if (punc == BELIEF || punc == GOAL) {
+        if ((int) punc == (int) BELIEF || (int) punc == (int) GOAL) {
             if (tr == null)
                 throw new TaskException("non-null truth required for belief or goal", t);
             if (tr.evi() < NAL.truth.EVI_MIN)
@@ -402,12 +402,12 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             int cs = counts.size();
             if (cs == 1) {
                 ShortBytePair ee = counts.keyValuesView().getOnly();
-                if (ee.getTwo() < 0) {
+                if ((int) ee.getTwo() < 0) {
                     Term vv = Intrin.term(ee.getOne());
                     return (Compound) t.replace(vv, vv.neg());
                 }
             } else if (cs > 1) {
-                counts.values().removeIf(c -> c >= 0); //keep only entries where more neg than positive. these will be flipped
+                counts.values().removeIf(c -> (int) c >= 0); //keep only entries where more neg than positive. these will be flipped
                 cs = counts.size();
                 if (cs > 0) {
                     return (Compound) t.transform(new InvertVariableTransform(counts));
@@ -516,15 +516,15 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     static byte i(byte p) {
         switch (p) {
             case BELIEF:
-                return 0;
+                return (byte) 0;
             case QUESTION:
-                return 1;
+                return (byte) 1;
             case GOAL:
-                return 2;
+                return (byte) 2;
             case QUEST:
-                return 3;
+                return (byte) 3;
             default:
-                return -1;
+                return (byte) -1;
         }
     }
 
@@ -543,7 +543,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             case 3:
                 return QUEST;
             default:
-                return -1;
+                return (byte) -1;
         }
     }
 
@@ -553,39 +553,39 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     static void fund(Task y, Task[] x, boolean priCopyOrMove) {
         int volSum = Util.sum(TermedDelegate::volume, x);
         double volFactor =
-                min(1, ((double)volSum) / y.volume() );
+                min(1.0, ((double)volSum) / (double) y.volume());
 
         double confFactor;
         boolean xHasTruth = x[0].isBeliefOrGoal();
         if (y.isBeliefOrGoal() && xHasTruth) {
             double yConf = y.truth().confDouble();
             //double xConfMax = Util.max(Task::conf, x);
-            double xConfMean = Util.mean(Task::conf, x);
-            confFactor = min(1, (yConf / xConfMean));
+            double xConfMean = (double) Util.mean(Task::conf, x);
+            confFactor = min(1.0, (yConf / xConfMean));
         } else {
             if (xHasTruth) {
                 //question formation
-                double xConfAvg = Util.mean(Task::conf, x);
-                confFactor = Math.pow(1 - xConfAvg, 2);
+                double xConfAvg = (double) Util.mean(Task::conf, x);
+                confFactor = Math.pow(1.0 - xConfAvg, 2.0);
                 //confFactor = Math.pow(1 - xConfAvg, x.length);
             } else {
-                confFactor = 1;
+                confFactor = 1.0;
             }
         }
 
         double rangeFactor;
         if (y.isEternal())
-            rangeFactor = 1;
+            rangeFactor = 1.0;
         else {
-            long xRangeMax = Util.max((Task t) -> t.rangeIfNotEternalElse(1), x);
+            long xRangeMax = Util.max((Task t) -> t.rangeIfNotEternalElse(1L), x);
             long yRange = y.range();
-            rangeFactor = min(1, ((double) yRange) / xRangeMax);
+            rangeFactor = min(1.0, ((double) yRange) / (double) xRangeMax);
         }
 
         //int Xn = x.length;
         //double priSum = Util.sumDouble(Task::priElseZero, x);
         //double priAvg = priSum / Xn;
-        double priMean = Util.sum(Task::priElseZero, x)/x.length;
+        double priMean = (double) (Util.sum(Task::priElseZero, x) / (float) x.length);
         float p = (float)(priMean * volFactor * confFactor * rangeFactor);
 
         float yp = Prioritizable.fund(p, priCopyOrMove, x);
@@ -700,23 +700,23 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     }
 
     default boolean isQuestion() {
-        return (punc() == QUESTION);
+        return ((int) punc() == (int) QUESTION);
     }
 
     default boolean isBelief() {
-        return (punc() == BELIEF);
+        return ((int) punc() == (int) BELIEF);
     }
 
     default boolean isGoal() {
-        return (punc() == GOAL);
+        return ((int) punc() == (int) GOAL);
     }
 
     default boolean isQuest() {
-        return (punc() == QUEST);
+        return ((int) punc() == (int) QUEST);
     }
 
     default boolean isCommand() {
-        return (punc() == COMMAND);
+        return ((int) punc() == (int) COMMAND);
     }
 
     default @Nullable Appendable toString(boolean showStamp) {
@@ -725,12 +725,12 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
     default boolean isQuestionOrQuest() {
         byte c = punc();
-        return c == Op.QUESTION || c == Op.QUEST;
+        return (int) c == (int) Op.QUESTION || (int) c == (int) Op.QUEST;
     }
 
     default boolean isBeliefOrGoal() {
         byte c = punc();
-        return c == Op.BELIEF || c == Op.GOAL;
+        return (int) c == (int) Op.BELIEF || (int) c == (int) Op.GOAL;
     }
 
     /**
@@ -771,7 +771,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
     @Deprecated
     default StringBuilder appendTo(StringBuilder buffer, boolean showStamp) {
-        boolean notCommand = punc() != Op.COMMAND;
+        boolean notCommand = (int) punc() != (int) Op.COMMAND;
         return appendTo(buffer, true, showStamp && notCommand,
                 notCommand,
                 showStamp
@@ -873,8 +873,8 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
     default double eviAvg(long qStart, long qEnd, float dur, boolean eternalize) {
         assert(qStart!=ETERNAL);
-        long range = 1 + (qEnd - qStart);
-        return TruthIntegration.eviAbsolute(this, qStart, qEnd, dur, eternalize) / range;
+        long range = 1L + (qEnd - qStart);
+        return TruthIntegration.eviAbsolute(this, qStart, qEnd, dur, eternalize) / (double) range;
     }
 
 
@@ -954,7 +954,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         }
 
         boolean invert(Variable d) {
-            return counts.get(((NormalizedVariable) d).i) < 0;
+            return (int) counts.get(((NormalizedVariable) d).i) < 0;
         }
     }
 }

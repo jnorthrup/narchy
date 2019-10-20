@@ -17,7 +17,7 @@ public class SquareViolinString extends VariableDeltaString{
         int capacity = buffer.capacity();
         int half = capacity / 2;
         for (int i = 0; i < half; i++) {
-            buffer.enqueue(getInitialVolume() * -1);
+            buffer.enqueue(getInitialVolume() * -1.0);
         }
         int otherHalf = capacity - half;
         for (int i = 0; i < otherHalf; i++) {
@@ -30,7 +30,7 @@ public class SquareViolinString extends VariableDeltaString{
     public void tic() {
         double first = buffer.dequeue();
         double second = buffer.peek();
-        double last = (first + second) * (deltaVolume / 2);
+        double last = (first + second) * (deltaVolume / 2.0);
         last = checkMax(last);
         buffer.enqueue(last);
         oneTic();

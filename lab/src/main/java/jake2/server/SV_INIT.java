@@ -35,7 +35,6 @@ import jake2.util.Math3D;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
-import java.util.stream.Stream;
 
 public class SV_INIT {
 
@@ -115,10 +114,10 @@ public class SV_INIT {
      */
     public static void SV_CheckForSavegame() {
 
-        if (SV_MAIN.sv_noreload.value != 0)
+        if (SV_MAIN.sv_noreload.value != (float) 0)
             return;
 
-        if (Cvar.VariableValue("deathmatch") != 0)
+        if (Cvar.VariableValue("deathmatch") != (float) 0)
             return;
 
         String name = FS.Gamedir() + "/save/current/" + sv.name + ".sav";
@@ -193,12 +192,12 @@ public class SV_INIT {
         
         sv.configstrings[Defines.CS_NAME] = server;
 
-        if (Cvar.VariableValue("deathmatch") != 0) {
+        if (Cvar.VariableValue("deathmatch") != (float) 0) {
             sv.configstrings[Defines.CS_AIRACCEL] = String.valueOf(SV_MAIN.sv_airaccelerate.value);
             PMove.pm_airaccelerate = SV_MAIN.sv_airaccelerate.value;
         } else {
             sv.configstrings[Defines.CS_AIRACCEL] = "0";
-            PMove.pm_airaccelerate = 0;
+            PMove.pm_airaccelerate = (float) 0;
         }
 
         SZ.Init(sv.multicast, sv.multicast_buf, sv.multicast_buf.length);
@@ -207,7 +206,7 @@ public class SV_INIT {
 
 
         int i;
-        for (i = 0; i < SV_MAIN.maxclients.value; i++) {
+        for (i = 0; (float) i < SV_MAIN.maxclients.value; i++) {
             
             if (svs.clients[i].state > Defines.cs_connected)
                 svs.clients[i].state = Defines.cs_connected;
@@ -296,8 +295,8 @@ public class SV_INIT {
 
         svs.initialized = true;
 
-        if (Cvar.VariableValue("coop") != 0
-                && Cvar.VariableValue("deathmatch") != 0) {
+        if (Cvar.VariableValue("coop") != (float) 0
+                && Cvar.VariableValue("deathmatch") != (float) 0) {
             Com.Printf("Deathmatch and Coop both setAt, disabling Coop\n");
             Cvar.FullSet("coop", "0", Defines.CVAR_SERVERINFO
                     | Defines.CVAR_LATCH);
@@ -305,22 +304,22 @@ public class SV_INIT {
 
         
         
-        if (Globals.dedicated.value != 0) {
-            if (0 == Cvar.VariableValue("coop"))
+        if (Globals.dedicated.value != (float) 0) {
+            if ((float) 0 == Cvar.VariableValue("coop"))
                 Cvar.FullSet("deathmatch", "1", Defines.CVAR_SERVERINFO
                         | Defines.CVAR_LATCH);
         }
 
         
-        if (Cvar.VariableValue("deathmatch") != 0) {
-            if (SV_MAIN.maxclients.value <= 1)
+        if (Cvar.VariableValue("deathmatch") != (float) 0) {
+            if (SV_MAIN.maxclients.value <= 1.0F)
                 Cvar.FullSet("maxclients", "8", Defines.CVAR_SERVERINFO
                         | Defines.CVAR_LATCH);
-            else if (SV_MAIN.maxclients.value > Defines.MAX_CLIENTS)
+            else if (SV_MAIN.maxclients.value > (float) Defines.MAX_CLIENTS)
                 Cvar.FullSet("maxclients", "" + Defines.MAX_CLIENTS,
                         Defines.CVAR_SERVERINFO | Defines.CVAR_LATCH);
-        } else if (Cvar.VariableValue("coop") != 0) {
-            if (SV_MAIN.maxclients.value <= 1 || SV_MAIN.maxclients.value > 4)
+        } else if (Cvar.VariableValue("coop") != (float) 0) {
+            if (SV_MAIN.maxclients.value <= 1.0F || SV_MAIN.maxclients.value > 4.0F)
                 Cvar.FullSet("maxclients", "4", Defines.CVAR_SERVERINFO
                         | Defines.CVAR_LATCH);
 
@@ -330,7 +329,7 @@ public class SV_INIT {
                     | Defines.CVAR_LATCH);
         }
 
-        svs.spawncount = Lib.rand();        
+        svs.spawncount = (int) Lib.rand();
         svs.clients = new client_t[(int) SV_MAIN.maxclients.value];
         for (int n = 0; n < svs.clients.length; n++) {
             svs.clients[n] = new client_t();
@@ -344,7 +343,7 @@ public class SV_INIT {
             svs.client_entities[n] = new entity_state_t(null);
 
         
-        NET.Config((SV_MAIN.maxclients.value > 1));
+        NET.Config((SV_MAIN.maxclients.value > 1.0F));
 
         
         svs.last_heartbeat = -99999;
@@ -354,7 +353,7 @@ public class SV_INIT {
         
         SV_GAME.SV_InitGameProgs();
 
-        for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+        for (int i = 0; (float) i < SV_MAIN.maxclients.value; i++) {
             edict_t ent = GameBase.g_edicts[i + 1];
             svs.clients[i].edict = ent;
             svs.clients[i].lastcmd = new usercmd_t();
@@ -390,7 +389,7 @@ public class SV_INIT {
         String level = levelstring;
 
 
-        int c = level.indexOf('+');
+        int c = level.indexOf((int) '+');
         if (c != -1) {
             Cvar.Set("nextserver", "gamemap \"" + level.substring(c + 1) + '"');
             level = level.substring(0, c);
@@ -410,17 +409,17 @@ public class SV_INIT {
             }
             if (b)
         	{
-                int pos = levelstring.indexOf('+');
+                int pos = levelstring.indexOf((int) '+');
         		firstmap = levelstring.substring(pos + 1);
         	}
         }
 
         
-        if (Cvar.VariableValue("coop") != 0 && "victory.pcx".equals(level))
+        if (Cvar.VariableValue("coop") != (float) 0 && "victory.pcx".equals(level))
             Cvar.Set("nextserver", "gamemap \"*" + firstmap + '"');
 
 
-        int pos = level.indexOf('$');
+        int pos = level.indexOf((int) '$');
         String spawnpoint;
         if (pos != -1) {
             spawnpoint = level.substring(pos + 1);
@@ -430,7 +429,7 @@ public class SV_INIT {
             spawnpoint = "";
 
         
-        if (level.charAt(0) == '*')
+        if ((int) level.charAt(0) == (int) '*')
             level = level.substring(1);
 
         int l = level.length();

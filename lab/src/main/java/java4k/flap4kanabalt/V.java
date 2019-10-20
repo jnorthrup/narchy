@@ -48,7 +48,7 @@ public class V extends Applet implements Runnable {
 
 	static {
 		for (int i = 0; i < ALPHABET.length; i++) {
-			toInt[ALPHABET[i]] = i;
+			toInt[(int) ALPHABET[i]] = i;
 		}
 	}
 
@@ -64,18 +64,18 @@ public class V extends Applet implements Runnable {
         int mask = 0xFF;
         int index = 0;
 		for (int i = 0; i < s.length(); i += 4) {
-            int c0 = toInt[s.charAt(i)];
-            int c1 = toInt[s.charAt(i + 1)];
+            int c0 = toInt[(int) s.charAt(i)];
+            int c1 = toInt[(int) s.charAt(i + 1)];
 			buffer[index++] = (byte) (((c0 << 2) | (c1 >> 4)) & mask);
 			if (index >= buffer.length) {
 				return buffer;
 			}
-            int c2 = toInt[s.charAt(i + 2)];
+            int c2 = toInt[(int) s.charAt(i + 2)];
 			buffer[index++] = (byte) (((c1 << 4) | (c2 >> 2)) & mask);
 			if (index >= buffer.length) {
 				return buffer;
 			}
-            int c3 = toInt[s.charAt(i + 3)];
+            int c3 = toInt[(int) s.charAt(i + 3)];
 			buffer[index++] = (byte) (((c2 << 6) | c3) & mask);
 		}
 		return buffer;
@@ -117,10 +117,10 @@ public class V extends Applet implements Runnable {
 		level[0] = level[1] = 400;
 
 
-        float curDif = 0;
-        float curVecY = 0;
-        float playerX = 60;
-        float playerY = 240;
+        float curDif = (float) 0;
+        float curVecY = (float) 0;
+        float playerX = 60.0F;
+        float playerY = 240.0F;
         Color brightColor = new Color(230, 230, 230);
         Color darkColor = new Color(53, 53, 61);
         Color windowColor = new Color(176, 176, 191);
@@ -150,22 +150,22 @@ public class V extends Applet implements Runnable {
 
 				if (this.down) {
 					if (!bStart) {
-						playerX = 60;
-						playerY = 240;
+						playerX = 60.0F;
+						playerY = 240.0F;
 
 						this.down = false;
 						bCurDown = false;
 
 						x = 400;
 						curVecY = -1f;
-						curDif = 0;
+						curDif = (float) 0;
 						score = 0;
 						level = new int[2048];
 						for (i = 0; i < level.length; i += 4) {
 							level[i] = x;
-							level[i + 1] = (int) (Math.random() * 300) + 30;
-							level[i + 2] = (int) (Math.random() * 50) + 70;
-							level[i + 3] = (int) (Math.random() * 5) + 78;
+							level[i + 1] = (int) (Math.random() * 300.0) + 30;
+							level[i + 2] = (int) (Math.random() * 50.0) + 70;
+							level[i + 3] = (int) (Math.random() * 5.0) + 78;
 
 							x += 165 + level[i + 2];
 						}
@@ -177,9 +177,9 @@ public class V extends Applet implements Runnable {
 						bStart = false;
 						this.down = false;
 
-						playerX = 60;
-						playerY = 240;
-						curDif = 0;
+						playerX = 60.0F;
+						playerY = 240.0F;
+						curDif = (float) 0;
 						if (maxScore < score) {
 							maxScore = score;
 						}
@@ -199,40 +199,40 @@ public class V extends Applet implements Runnable {
 					}
 				}
 
-				if ((!bStart) && (curDif >= 0)) {
-					curDif -= 10;
+				if ((!bStart) && (curDif >= (float) 0)) {
+					curDif -= 10.0F;
 				}
 				if (bStart) {
 					playerY += curVecY;
 					curVecY += 0.051f;
 					if (bWin) {
-						if (playerY + curFrame + 6 >= 460) {
-							curVecY = 0;
-							playerY = 460 - 6 - curFrame;
+						if (playerY + (float) curFrame + 6.0F >= 460.0F) {
+							curVecY = (float) 0;
+							playerY = (float) (460 - 6 - curFrame);
 						}
 					}
-					if (playerY >= 460) {
+					if (playerY >= 460.0F) {
 						bWin = true;
 					}
-					if (playerY - 6 < 0) {
-						playerY = 6;
-						if (curVecY < 0) {
-							curVecY = 0;
+					if (playerY - 6.0F < (float) 0) {
+						playerY = 6.0F;
+						if (curVecY < (float) 0) {
+							curVecY = (float) 0;
 						}
 					}
 
 					for (i = 0; i < level.length; i += 4) {
-						if (curDif + playerX + 6 < level[i] - level[i + 2] / 2) {
+						if (curDif + playerX + 6.0F < (float) (level[i] - level[i + 2] / 2)) {
 							break;
 						}
-						if (curDif > level[i] + level[i + 2] / 2) {
+						if (curDif > (float) (level[i] + level[i + 2] / 2)) {
 							continue;
 						}
-						if ((curDif + playerX - CHANGE_DIF < level[i]) && (curDif + playerX >= level[i]) && (!bWin)) {
+						if ((curDif + playerX - CHANGE_DIF < (float) level[i]) && (curDif + playerX >= (float) level[i]) && (!bWin)) {
 							score += 1;
 						}
-						if ((curDif + playerX + 6 > level[i] - level[i + 2] / 2) && (curDif + playerX - 6 < level[i] + level[i + 2] / 2)) {
-							if ((playerY - curFrame - 6 < level[i + 1]) || (playerY - curFrame + 6 > level[i + 1] + level[i + 3])) {
+						if ((curDif + playerX + 6.0F > (float) (level[i] - level[i + 2] / 2)) && (curDif + playerX - 6.0F < (float) (level[i] + level[i + 2] / 2))) {
+							if ((playerY - (float) curFrame - 6.0F < (float) level[i + 1]) || (playerY - (float) curFrame + 6.0F > (float) (level[i + 1] + level[i + 3]))) {
 								bWin = true;
 								this.down = false;
 							}
@@ -284,26 +284,26 @@ public class V extends Applet implements Runnable {
 			g.fillRect(0, 460, 320, 20);
 
 			for (i = 0; i < level.length; i += 4) {
-				if (curDif + 320 < level[i] - level[i + 2] / 2) {
+				if (curDif + 320.0F < (float) (level[i] - level[i + 2] / 2)) {
 					break;
 				}
-				if (curDif > level[i] + level[i + 2] / 2) {
+				if (curDif > (float) (level[i] + level[i + 2] / 2)) {
 					continue;
 				}
 				g.setColor(darkColor);
-				g.fillRect((int) (level[i] - curDif - level[i + 2] / 2), 0, level[i + 2], level[i + 1]);
-				g.fillRect((int) (level[i] - curDif - level[i + 2] / 2), level[i + 1] + level[i + 3], level[i + 2], 460 - level[i + 1] - level[i + 3]);
+				g.fillRect((int) ((float) level[i] - curDif - (float) (level[i + 2] / 2)), 0, level[i + 2], level[i + 1]);
+				g.fillRect((int) ((float) level[i] - curDif - (float) (level[i + 2] / 2)), level[i + 1] + level[i + 3], level[i + 2], 460 - level[i + 1] - level[i + 3]);
 
 				g.setColor(windowColor);
 				for (x = level[i] - level[i + 2] / 2; x < level[i] + level[i + 2] / 2 - 14; x += 16) {
 					for (j = 0; j < level[i + 1] - 16; j += 16) {
-						g.fillRect((int) (x - curDif) + 4, j + 4, 8, 8);
+						g.fillRect((int) ((float) x - curDif) + 4, j + 4, 8, 8);
 					}
 				}
 
 				for (x = level[i] - level[i + 2] / 2; x < level[i] + level[i + 2] / 2 - 14; x += 16) {
 					for (j = level[i + 1] + level[i + 3]; j < 440; j += 16) {
-						g.fillRect((int) (x - curDif) + 4, j + 4, 8, 8);
+						g.fillRect((int) ((float) x - curDif) + 4, j + 4, 8, 8);
 					}
 				}
 			}
@@ -311,30 +311,30 @@ public class V extends Applet implements Runnable {
 			g.setColor(windowColor);
 			for (i = 0; i < 500; i += 10) {
 				for (j = 0; j < 20; j += 10) {
-					g.fillRect((int) (-curDif + 100) % 10 + i, 465 + j, 5, 5);
+					g.fillRect((int) (-curDif + 100.0F) % 10 + i, 465 + j, 5, 5);
 				}
 			}
 
 			g.setColor(brightColor);
 			if (curFrame == 0) {
-				g.fillRect((int) (playerX - 14), (int) (playerY - 12), 4, 8);
-				g.fillRect((int) (playerX - 10), (int) (playerY - 8), 4, 8);
-				g.fillRect((int) (playerX - 6), (int) (playerY - 4), 12, 12);
-				g.fillRect((int) (playerX + 6), (int) (playerY - 8), 4, 8);
-				g.fillRect((int) (playerX + 10), (int) (playerY - 12), 4, 8);
+				g.fillRect((int) (playerX - 14.0F), (int) (playerY - 12.0F), 4, 8);
+				g.fillRect((int) (playerX - 10.0F), (int) (playerY - 8.0F), 4, 8);
+				g.fillRect((int) (playerX - 6.0F), (int) (playerY - 4.0F), 12, 12);
+				g.fillRect((int) (playerX + 6.0F), (int) (playerY - 8.0F), 4, 8);
+				g.fillRect((int) (playerX + 10.0F), (int) (playerY - 12.0F), 4, 8);
 			}
 
 			if ((curFrame == 1) || (curFrame == 3)) {
-				g.fillRect((int) (playerX - 14), (int) (playerY - 5), 28, 6);
-				g.fillRect((int) (playerX - 6), (int) (playerY + 1), 12, 6);
+				g.fillRect((int) (playerX - 14.0F), (int) (playerY - 5.0F), 28, 6);
+				g.fillRect((int) (playerX - 6.0F), (int) (playerY + 1.0F), 12, 6);
 			}
 
 			if (curFrame == 2) {
-				g.fillRect((int) (playerX - 14), (int) (playerY + 6), 4, 8);
-				g.fillRect((int) (playerX - 10), (int) (playerY + 2), 4, 8);
-				g.fillRect((int) (playerX - 6), (int) (playerY - 6), 12, 12);
-				g.fillRect((int) (playerX + 6), (int) (playerY + 2), 4, 8);
-				g.fillRect((int) (playerX + 10), (int) (playerY + 6), 4, 8);
+				g.fillRect((int) (playerX - 14.0F), (int) (playerY + 6.0F), 4, 8);
+				g.fillRect((int) (playerX - 10.0F), (int) (playerY + 2.0F), 4, 8);
+				g.fillRect((int) (playerX - 6.0F), (int) (playerY - 6.0F), 12, 12);
+				g.fillRect((int) (playerX + 6.0F), (int) (playerY + 2.0F), 4, 8);
+				g.fillRect((int) (playerX + 10.0F), (int) (playerY + 6.0F), 4, 8);
 			}
 
 			g.setFont(g.getFont().deriveFont(16f).deriveFont(1));
@@ -367,7 +367,7 @@ public class V extends Applet implements Runnable {
 			appletGraphics.drawImage(screen, 0, 0, null);
 
 			try {
-				Thread.sleep(4);
+				Thread.sleep(4L);
 			} catch (Exception e) {
 				/** nicht schön aber selten */
 			}

@@ -49,20 +49,20 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
     public WaveBitmap(int w, int h, BitmapEvaluator buffer) {
         this.w = w;
         this.h = h;
-        this.yMin = -1;
-        this.yMax = +1;
+        this.yMin = -1.0F;
+        this.yMax = (float) +1;
         this.buffer = buffer;
-        this.start = 0;
-        this.end = 1;
+        this.start = 0L;
+        this.end = 1L;
         update();
     }
 
     public WaveBitmap(Tensor wave, float sampleRate, int pixWidth, int pixHeight) {
         this(pixWidth, pixHeight, (s,e)->{
-            double ss = s * sampleRate, ee = e * sampleRate;
+            double ss = s * (double) sampleRate, ee = e * (double) sampleRate;
             double sum = Util.interpSum(wave::getAt, wave.volume(),
                     ss, ee, false);
-            return (float) (sum / (1+(ee - ss)));
+            return (float) (sum / (1.0 +(ee - ss)));
         });
     }
 
@@ -76,7 +76,7 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
         synchronized (this) {
             long end = (tEnd);
             long start = (tStart);
-            if (update || !Util.equals(start, this.start) || !Util.equals(end, this.end)) {
+            if (update || !Util.equals((float) start, (float) this.start) || !Util.equals((float) end, (float) this.end)) {
                 this.start = start;
                 this.end = end;
                 update = true;
@@ -120,7 +120,7 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
     private void position(BitmapMatrixView bmp) {
         if (bmp!=null) {
             float h = height.get();
-            bmp.pos(bounds.scale(1, h).move(0, h/2 /* center vertical align */));
+            bmp.pos(bounds.scale(1.0F, h).move((float) 0, h/ 2.0F /* center vertical align */));
         }
     }
 
@@ -174,7 +174,7 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
 //        this.end = buffer._bufEnd;
 //        System.out.println(start + ".." + end);
 
-        double start = this.start, end = this.end;
+        double start = (double) this.start, end = (double) this.end;
 
 
 //        int sn = buffer.capacity();
@@ -182,14 +182,14 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
         //System.out.println(first + " "+ last);
 
         double range = end - start;
-        float W = w;
+        float W = (float) w;
 
 //        float[] rgba = new float[4];
 //        float alpha = this.alpha.get();
         for (int x = 0; x < w; x++) {
 
-            double sStart = start + range * (x/ W);
-            double sEnd = start + range * ((x+1)/ W);
+            double sStart = start + range * (double) ((float) x / W);
+            double sEnd = start + range * (double) ((float) (x + 1) / W);
 
             float amp = buffer.amplitude(sStart,sEnd);
 
@@ -198,7 +198,7 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
 //            Draw.hsb(rgba, intensity, 0.9f, 0.1f*intensity + 0.9f, alpha);
             float ic = intensity * 0.9f + 0.1f;
             Color c = //new Color(unitizeSafe(rgba[0]), unitizeSafe(rgba[1]), unitizeSafe(rgba[2]), unitizeSafe(rgba[3]));
-                    new Color(ic, 1-ic, 0);
+                    new Color(ic, 1.0F -ic, (float) 0);
             gfx.setColor(c);
 
 
@@ -208,7 +208,7 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
 
             float ampNormalized = (amp) / absRange;
 
-            int ah = Math.round(ampNormalized * h);
+            int ah = Math.round(ampNormalized * (float) h);
             gfx.drawLine(x, h / 2 - ah / 2, x, h / 2 + ah / 2);
         }
     }

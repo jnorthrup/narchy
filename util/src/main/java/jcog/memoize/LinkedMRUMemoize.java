@@ -32,15 +32,15 @@ public class LinkedMRUMemoize<X, Y> extends MRUMap<X, Y> implements Memoize<X, Y
      *      rather using Map.computeIfAbsent which would cause ConcurrentModificationException
      */
     public static class LinkedMRUMemoizeRecurseable<X, Y> extends LinkedMRUMemoize<X, Y> {
-        public long hit = 0;
-        long miss = 0;
+        public long hit = 0L;
+        long miss = 0L;
 
         public LinkedMRUMemoizeRecurseable(Function<X, Y> f, int capacity) {
             super(f, capacity);
         }
 
         public float hitRate() {
-            return ((float) hit) / (hit + miss);
+            return ((float) hit) / (float) (hit + miss);
         }
 
         @Override
@@ -53,7 +53,7 @@ public class LinkedMRUMemoize<X, Y> extends MRUMap<X, Y> implements Memoize<X, Y
 
 
 
-            hit = miss = 0;
+            hit = miss = 0L;
 
             super.clear();
         }

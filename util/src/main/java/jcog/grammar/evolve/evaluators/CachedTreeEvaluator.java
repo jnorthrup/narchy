@@ -37,8 +37,8 @@ public class CachedTreeEvaluator extends DefaultTreeEvaluator implements CachedE
             
             new ConcurrentHashMap<>();
 
-    private long hit = 0;
-    private long miss = 0;
+    private long hit = 0L;
+    private long miss = 0L;
 
     @Override
     public List<Bounds[]> evaluate(Node root, Context context) throws TreeEvaluationException {
@@ -75,7 +75,7 @@ public class CachedTreeEvaluator extends DefaultTreeEvaluator implements CachedE
 
     @Override
     public double getRatio(){
-        return (double)this.hit/(this.hit+this.miss);
+        return (double)this.hit/ (double) (this.hit + this.miss);
     }
     
     @Override
@@ -84,12 +84,12 @@ public class CachedTreeEvaluator extends DefaultTreeEvaluator implements CachedE
             long cacheSize = cache.values().stream().mapToLong(list -> {
                 long sum = 0L;
                 for (Bounds[] exampleResult : list) {
-                    long length = exampleResult.length;
+                    long length = (long) exampleResult.length;
                     sum += length;
                 }
                 return sum;
             }).sum();
-            cacheSize*=(Integer.SIZE/4);
+            cacheSize = cacheSize * (long) (Integer.SIZE / 4);
             return cacheSize;
         }
     }

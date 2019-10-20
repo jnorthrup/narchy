@@ -25,14 +25,14 @@ import java.util.function.Supplier;
         return (x, y, gl) -> {
             float v = ww[x][y];
             Draw.colorBipolar(gl, v);
-            return 0;
+            return (float) 0;
         };
     }
     private static ViewFunction2D arrayRenderer(double[][] ww) {
         return (x, y, gl) -> {
             float v = (float) ww[x][y];
             Draw.colorBipolar(gl, v);
-            return 0;
+            return (float) 0;
         };
     }
 
@@ -40,7 +40,7 @@ import java.util.function.Supplier;
         return (x, y, gl) -> {
             float v = w[y];
             Draw.colorBipolar(gl, v);
-            return 0;
+            return (float) 0;
         };
     }
 
@@ -48,7 +48,7 @@ import java.util.function.Supplier;
         return (x, y, gl) -> {
             float v = (float) w[y];
             Draw.colorBipolar(gl, v);
-            return 0;
+            return (float) 0;
         };
     }
 
@@ -95,11 +95,11 @@ import java.util.function.Supplier;
 
     private static final ViewFunction1D bipolar1 = (x, gl) -> {
         Draw.colorBipolar(gl, x);
-        return 0;
+        return (float) 0;
     };
     private static final ViewFunction1D unipolar1 = (x, gl) -> {
         Draw.colorGrays(gl, x);
-        return 0;
+        return (float) 0;
     };
 
     public MatrixView(float[] d, boolean bipolar) {
@@ -107,28 +107,28 @@ import java.util.function.Supplier;
     }
 
     public MatrixView(float[] d, int stride, ViewFunction1D view) {
-        this(stride, (int) Math.ceil(((float) d.length) / stride), (x, y, gl) -> {
+        this(stride, (int) Math.ceil((double) (((float) d.length) / (float) stride)), (x, y, gl) -> {
             int i = y * stride + x;
             return i < d.length ? view.update(d[i], gl) : Float.NaN;
         });
     }
 
     public MatrixView(IntToFloatFunction d, int len, int stride, ViewFunction1D view) {
-        this(stride, (int) Math.ceil(((float) len) / stride), (x, y, gl) -> {
+        this(stride, (int) Math.ceil((double) (((float) len) / (float) stride)), (x, y, gl) -> {
             int i = y * stride + x;
             return i < len ? view.update(d.valueOf(i), gl) : Float.NaN;
         });
     }
 
     public MatrixView(double[] d, int stride, ViewFunction1D view) {
-        this(stride, (int) Math.ceil(((float) d.length) / stride), (x, y, gl) -> {
+        this(stride, (int) Math.ceil((double) (((float) d.length) / (float) stride)), (x, y, gl) -> {
             int i = y * stride + x;
             return i < d.length ? view.update((float) d[i], gl) : Float.NaN;
         });
     }
 
     public <P extends FloatSupplier> MatrixView(P[] d, int stride, ViewFunction1D view) {
-        this(stride, (int) Math.ceil(((float) d.length) / stride), (x, y, gl) -> {
+        this(stride, (int) Math.ceil((double) (((float) d.length) / (float) stride)), (x, y, gl) -> {
             int i = y * stride + x;
             return i < d.length ? view.update(d[i].asFloat(), gl) : Float.NaN;
         });
@@ -141,14 +141,14 @@ import java.util.function.Supplier;
 
     public static MatrixView get(ArrayTensor t, int stride, ViewFunction1D view) {
         float[] d = t.data;
-        return new MatrixView(stride, (int) Math.ceil(((float) t.volume()) / stride), (x, y, gl) -> {
+        return new MatrixView(stride, (int) Math.ceil((double) (((float) t.volume()) / (float) stride)), (x, y, gl) -> {
             float v = d[x * stride + y];
             return view.update(v, gl);
         });
     }
 
     public MatrixView(Supplier<double[]> e, int length, int stride, ViewFunction1D view) {
-        this(stride, (int) Math.ceil(((float) length) / stride), (x, y, gl) -> {
+        this(stride, (int) Math.ceil((double) (((float) length) / (float) stride)), (x, y, gl) -> {
             double[] d = e.get();
             if (d != null) {
 
@@ -163,10 +163,10 @@ import java.util.function.Supplier;
     @Override
     protected void paintWidget(RectFloat bounds, GL2 gl) {
 
-        float h = this.h;
-        float w = this.w;
+        float h = (float) this.h;
+        float w = (float) this.w;
 
-        if ((w == 0) || (h == 0))
+        if ((w == (float) 0) || (h == (float) 0))
             return;
 
 
@@ -176,16 +176,16 @@ import java.util.function.Supplier;
 
         float tx = x();
         float ty = y();
-        for (int y = 0; y < h; y++) {
+        for (int y = 0; (float) y < h; y++) {
 
-            float yy = ty + 1f - (y + 1) * dh;
+            float yy = ty + 1f - (float) (y + 1) * dh;
 
-            for (int x = 0; x < w; x++) {
+            for (int x = 0; (float) x < w; x++) {
 
 
                 float dz = view.update(x, y, gl);
                 if (dz == dz) {
-                    Draw.rect(gl, tx + x * dw, yy, dw, dh, dz);
+                    Draw.rect(gl, tx + (float) x * dw, yy, dw, dh, dz);
                 }
                 /*} catch (Exception e) {
                     logger.error(" {}",e);

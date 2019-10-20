@@ -85,7 +85,7 @@ public class BomberBomb extends Thread {
             frame = (frame + 1) % 2;
             /** sleep for 130 ms */
             try {
-                sleep(130);
+                sleep(130L);
             } catch (Exception e) {
             }
             if (!alive) break;

@@ -29,7 +29,7 @@ public final class PreciseTruth extends DiscreteTruth {
     }
 
     public static @Nullable PreciseTruth byEvi(double freq, double evi) {
-        return byEvi((float)freq, (float)evi);
+        return byEvi((float)freq, (double) (float) evi);
     }
 
     public static @Nullable PreciseTruth byEvi(float freq, double evi) {
@@ -42,9 +42,9 @@ public final class PreciseTruth extends DiscreteTruth {
         if (evi < NAL.truth.EVI_MIN)
             return null;
 
-        if (conf >= NAL.truth.CONF_MAX || evi>= NAL.truth.EVI_MAX) {
+        if (conf >= (double) NAL.truth.CONF_MAX || evi>= NAL.truth.EVI_MAX) {
             //upper limit on truth
-            conf = NAL.truth.CONF_MAX;
+            conf = (double) NAL.truth.CONF_MAX;
             evi = NAL.truth.EVI_MAX;
         }
 
@@ -55,7 +55,7 @@ public final class PreciseTruth extends DiscreteTruth {
     }
 
     private PreciseTruth(float freq, double conf, double evi) {
-        super(freq, conf);
+        super((double) freq, conf);
         this.e = evi;
         this.f = freq;
     }

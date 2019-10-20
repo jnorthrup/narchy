@@ -38,7 +38,7 @@ public abstract class TypedConstraint {
 	
 	
 	
-	private static final Body3D s_fixed = new Body3D(0, new Transform(), null);
+	private static final Body3D s_fixed = new Body3D((float) 0, new Transform(), null);
 	
 	@Deprecated protected static /*synchronized*/ Body3D getFixed() {
 

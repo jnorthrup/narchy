@@ -15,7 +15,6 @@ import java.io.FileInputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Vector;
-import java.util.stream.Stream;
 
 /**
  * This class is used to play sound files.
@@ -337,7 +336,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
      */
     public void playSound() {
         /** set volumn */
-        setGain(volumn);
+        setGain((double) volumn);
         /** set pan */
         setPan();
         /** reset flags to false */
@@ -350,7 +349,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
             /** iterate */
             while (!midiEOM && thread != null && !bump) {
                 try {
-                    Thread.sleep(99);
+                    Thread.sleep(99L);
                 } catch (Exception e) {
                     break;
                 }
@@ -367,13 +366,13 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
             /** play the clip */
             clip.start();
             try {
-                Thread.sleep(99);
+                Thread.sleep(99L);
             } catch (Exception e) {
             }
             /** iterate */
             while ((paused || clip.isActive()) && thread != null && !bump) {
                 try {
-                    Thread.sleep(99);
+                    Thread.sleep(99L);
                 } catch (Exception e) {
                     break;
                 }
@@ -486,7 +485,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
                 FloatControl panControl =
                         (FloatControl) clip.getControl(FloatControl.Type.PAN);
                 /** set the pan value */
-                panControl.setValue(value / 100.0f);
+                panControl.setValue((float) value / 100.0f);
             } catch (Exception ex) {
             }
         }
@@ -540,7 +539,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
      */
     public void mute() {
         volumn = 0;
-        setGain(volumn);
+        setGain((double) volumn);
         /** pause the sound for a mili second */
         bump = true;
     }
@@ -550,7 +549,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
      */
     public void unmute() {
         volumn = 100;
-        setGain(volumn);
+        setGain((double) volumn);
         /** pause the sound for a mili second */
         bump = true;
     }

@@ -23,7 +23,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.BitSet;
-import java.util.stream.IntStream;
 
 /**
  * Implements static methods to load and write graphs.
@@ -191,11 +190,11 @@ public enum GraphIO { ;
         int bound = g.size();
         long edges = 0L;
         for (int i1 = 0; i1 < bound; i1++) {
-            long size = g.neighborsOut(i1).size();
+            long size = (long) g.neighborsOut(i1).size();
             edges += size;
         }
 
-        out.println(g.size() + " " + edges / 2);
+        out.println(g.size() + " " + edges / 2L);
 
         for (int i = 0; i < g.size(); ++i) {
             g.neighborsOut(i).forEach(o -> out.print((o + 1) + " "));

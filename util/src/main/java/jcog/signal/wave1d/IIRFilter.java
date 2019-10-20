@@ -1,7 +1,5 @@
 package jcog.signal.wave1d;
 
-import java.util.stream.IntStream;
-
 /**
  * https://github.com/JorenSix/TarsosDSP/blob/master/src/core/be/tarsos/dsp/filters/IIRFilter.java
  * An Infinite Impulse Response, or IIR, filter is a filter that uses a set of
@@ -50,7 +48,7 @@ public abstract class IIRFilter {
 	 */
 	public IIRFilter(float freq, float sampleRate) {
 		this.sampleRate = sampleRate;
-		this.frequency = Math.max(1, freq);
+		this.frequency = Math.max(1.0F, freq);
 		update();
 		in = new float[a.length];
 		out = new float[b.length];
@@ -103,13 +101,13 @@ public abstract class IIRFilter {
             int bound1 = a.length;
 			double y = 0.0;
 			for (int j1 = 0; j1 < bound1; j1++) {
-				double v1 = a[j1] * in[j1];
+				double v1 = (double) (a[j1] * in[j1]);
 				y += v1;
 			}
 			int bound = b.length;
 			double sum = 0.0;
 			for (int j = 0; j < bound; j++) {
-				double v = b[j] * out[j];
+				double v = (double) (b[j] * out[j]);
 				sum += v;
 			}
 			y += sum;
@@ -135,8 +133,8 @@ public abstract class IIRFilter {
 		protected void update()
 		{
             float fracFreq = getFrequency()/getSampleRate();
-            double x = Math.exp(-2 * Math.PI * fracFreq);
-			a = new float[] {(float) ((1+x)/2), (float) (-(1+x)/2)};
+            double x = Math.exp(-2.0 * Math.PI * (double) fracFreq);
+			a = new float[] {(float) ((1.0 +x)/ 2.0), (float) (-(1.0 +x)/ 2.0)};
 			b = new float[] {(float) x};
 		}
 
@@ -155,8 +153,8 @@ public abstract class IIRFilter {
 		@Override
 		protected void update() {
             float fracFreq = getFrequency() / getSampleRate();
-            float x = (float) Math.exp(-2 * Math.PI * fracFreq);
-			a = new float[] { 1 - x };
+            float x = (float) Math.exp(-2.0 * Math.PI * (double) fracFreq);
+			a = new float[] {1.0F - x };
 			b = new float[] { x };
 		}
 
@@ -175,9 +173,9 @@ public abstract class IIRFilter {
 		@Override
 		protected void update() {
             float freqFrac = getFrequency() / getSampleRate();
-            float x = (float) Math.exp(-14.445 * freqFrac);
-			a = new float[] { (float) Math.pow(1 - x, 4) };
-			b = new float[] { 4 * x, -6 * x * x, 4 * x * x * x, -x * x * x * x };
+            float x = (float) Math.exp(-14.445 * (double) freqFrac);
+			a = new float[] { (float) Math.pow((double) (1 - x), 4.0) };
+			b = new float[] {4.0F * x, -6.0F * x * x, 4.0F * x * x * x, -x * x * x * x };
 		}
 
 
@@ -236,11 +234,11 @@ public abstract class IIRFilter {
 
 		protected void update()
 		{
-            float R = 1 - 3 * bw;
+            float R = 1.0F - 3.0F * bw;
             float fracFreq = getFrequency() / getSampleRate();
-            float T = 2 * (float) Math.cos(2 * Math.PI * fracFreq);
-            float K = (1 - R * T + R * R) / (2 - T);
-			a = new float[] { 1 - K, (K - R) * T, R * R - K };
+            float T = 2.0F * (float) Math.cos(2.0 * Math.PI * (double) fracFreq);
+            float K = (1.0F - R * T + R * R) / (2.0F - T);
+			a = new float[] {1.0F - K, (K - R) * T, R * R - K };
 			b = new float[] { R * T, -R * R };
 		}
 	}

@@ -19,7 +19,6 @@ import java.nio.file.Path;
 import java.util.Set;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
 import static nars.Op.*;
@@ -285,7 +284,7 @@ public class DefaultTermizer implements Termizer {
         else if (o instanceof Boolean) {
             return (Boolean) o ? TRUE_TERM : FALSE_TERM;
         } else if (o instanceof Number) {
-            if (o instanceof Byte || o instanceof Short || o instanceof Integer || (o instanceof Long && Math.abs((Long) o) < Integer.MAX_VALUE - 1)) {
+            if (o instanceof Byte || o instanceof Short || o instanceof Integer || (o instanceof Long && Math.abs((Long) o) < (long) (Integer.MAX_VALUE - 1))) {
                 return IdempotInt.the(((Number) o).intValue());
             } else if (o instanceof Float || o instanceof Double) {
                 return $.the(((Number) o).doubleValue());

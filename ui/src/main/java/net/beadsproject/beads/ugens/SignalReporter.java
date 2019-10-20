@@ -14,8 +14,8 @@ import net.beadsproject.beads.core.UGen;
  * @beads.category lowlevel
  */
 public class SignalReporter extends UGen {
-    private long interval = 44100;
-    private long index = 44100;
+    private long interval = 44100L;
+    private long index = 44100L;
     private long count;
     private long total;
     private float flInt;
@@ -45,10 +45,10 @@ public class SignalReporter extends UGen {
      * @param reportInterval The report interval in milliseconds.
      */
     private void setInterval(float reportInterval) {
-        if (reportInterval <= 0)
-            reportInterval = 1000;
+        if (reportInterval <= (float) 0)
+            reportInterval = 1000.0F;
         flInt = reportInterval;
-        interval = (long) context.msToSamples(reportInterval);
+        interval = (long) context.msToSamples((double) reportInterval);
     }
 
     /**
@@ -67,8 +67,8 @@ public class SignalReporter extends UGen {
             count++;
             index -= interval;
         }
-        total += bufferSize;
-        index += bufferSize;
+        total = total + (long) bufferSize;
+        index = index + (long) bufferSize;
     }
 
     /**
@@ -89,6 +89,6 @@ public class SignalReporter extends UGen {
      * Resets the current report # to 0.
      */
     public void resetCount() {
-        count = 0;
+        count = 0L;
     }
 }

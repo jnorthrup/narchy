@@ -162,39 +162,39 @@ public final class EmulatorVT100 extends TerminalEmulator {
                 smul  begin underline mode
                 tbc   clear all tab stops(P)
          */
-                if (b == 0) {
+                if ((int) b == 0) {
                     continue;
                 }
 
-                if (b == 0x1b) {
+                if ((int) b == 0x1b) {
                     b = getChar();
 
                     
 
-                    if (b == 'M') { 
+                    if ((int) b == (int) 'M') {
                         scroll_reverse();
                         continue;
                     }
 
-                    if (b == 'D') { 
+                    if ((int) b == (int) 'D') {
                         scroll_forward();
                         continue;
                     }
 
-                    if (b == '7') {
+                    if ((int) b == (int) '7') {
                         save_cursor();
                         continue;
                     }
 
-                    if (b == '(') {
+                    if ((int) b == (int) '(') {
                         b = getChar();
-                        if (b == 'B') {
+                        if ((int) b == (int) 'B') {
                             b = getChar();
-                            if (b == 0x1b) {
+                            if ((int) b == 0x1b) {
                                 b = getChar();
-                                if (b == ')') {
+                                if ((int) b == (int) ')') {
                                     b = getChar();
-                                    if (b == '0') { 
+                                    if ((int) b == (int) '0') {
                                         ena_acs();
                                         continue;
                                     } else {
@@ -211,7 +211,7 @@ public final class EmulatorVT100 extends TerminalEmulator {
                         }
                     }
 
-                    if (b == '>') {
+                    if ((int) b == (int) '>') {
                         b = getChar(); 
                         b = getChar(); 
                         b = getChar(); 
@@ -242,9 +242,9 @@ public final class EmulatorVT100 extends TerminalEmulator {
                         continue;
                     }
 
-                    if (b != '[') {
+                    if ((int) b != (int) '[') {
                         System.out.print("@11: " + (char) b + '['
-                                + Integer.toHexString(b & 0xff) + ']');
+                                + Integer.toHexString((int) b & 0xff) + ']');
                         pushChar(b);
                         continue;
                     }
@@ -258,7 +258,7 @@ public final class EmulatorVT100 extends TerminalEmulator {
                     while (true) {
                         b = getChar();
                         
-                        if (b == ';') {
+                        if ((int) b == (int) ';') {
                             if (digit > 0) {
                                 intargi++;
                                 intarg[intargi] = 0;
@@ -267,8 +267,8 @@ public final class EmulatorVT100 extends TerminalEmulator {
                             continue;
                         }
 
-                        if ('0' <= b && b <= '9') {
-                            intarg[intargi] = intarg[intargi] * 10 + (b - '0');
+                        if ((int) '0' <= (int) b && (int) b <= (int) '9') {
+                            intarg[intargi] = intarg[intargi] * 10 + ((int) b - (int) '0');
                             digit++;
                             continue;
                         }
@@ -281,7 +281,7 @@ public final class EmulatorVT100 extends TerminalEmulator {
 
                     
 
-                    if (b == 'm') {
+                    if ((int) b == (int) 'm') {
             /*
             b=getChar();
             if(b=='$'){
@@ -296,7 +296,7 @@ public final class EmulatorVT100 extends TerminalEmulator {
 
                         if (digit == 0 && intargi == 0) {
                             b = getChar();
-                            if (b == 0x0f) { 
+                            if ((int) b == 0x0f) {
                                 exit_attribute_mode();
                             } else {
                                 exit_underline_mode();
@@ -363,13 +363,13 @@ public final class EmulatorVT100 extends TerminalEmulator {
                         continue;
                     }
 
-                    if (b == 'r') { 
+                    if ((int) b == (int) 'r') {
                         change_scroll_region(intarg[0], intarg[1]);
                         
                         continue;
                     }
 
-                    if (b == 'H') { 
+                    if ((int) b == (int) 'H') {
             /*
             b=getChar();
             if(b!='$'){      
@@ -391,17 +391,17 @@ public final class EmulatorVT100 extends TerminalEmulator {
                         continue;
                     }
 
-                    if (b == 'B') { 
+                    if ((int) b == (int) 'B') {
                         parm_down_cursor(intarg[0]);
                         continue;
                     }
 
-                    if (b == 'D') { 
+                    if ((int) b == (int) 'D') {
                         parm_left_cursor(intarg[0]);
                         continue;
                     }
 
-                    if (b == 'C') { 
+                    if ((int) b == (int) 'C') {
                         if (digit == 0 && intargi == 0) {
                             intarg[0] = 1;
                         }
@@ -409,7 +409,7 @@ public final class EmulatorVT100 extends TerminalEmulator {
                         continue;
                     }
 
-                    if (b == 'K') { 
+                    if ((int) b == (int) 'K') {
           /*
           	  b=getChar(); 
           	  if(b=='$'){
@@ -430,14 +430,14 @@ public final class EmulatorVT100 extends TerminalEmulator {
                         continue;
                     }
 
-                    if (b == 'J') {
+                    if ((int) b == (int) 'J') {
                         
                         
                         clr_eos();
                         continue;
                     }
 
-                    if (b == 'A') { 
+                    if ((int) b == (int) 'A') {
                         if (digit == 0 && intargi == 0) {
                             intarg[0] = 1;
                         }
@@ -445,26 +445,26 @@ public final class EmulatorVT100 extends TerminalEmulator {
                         continue;
                     }
 
-                    if (b == '?') {
+                    if ((int) b == (int) '?') {
                         b = getChar();
                         switch (b) {
                             case '1':
                                 b = getChar();
-                                if (b == 'l' || b == 'h') {
+                                if ((int) b == (int) 'l' || (int) b == (int) 'h') {
                                     b = getChar();
-                                    if (b == 0x1b) {
+                                    if ((int) b == 0x1b) {
                                         b = getChar();
-                                        if (b == '>' ||
-                                                b == '=') {
+                                        if ((int) b == (int) '>' ||
+                                                (int) b == (int) '=') {
 
                                             continue;
                                         }
                                     }
-                                } else if (b == 'h') {
+                                } else if ((int) b == (int) 'h') {
                                     b = getChar();
-                                    if (b == 0x1b) {
+                                    if ((int) b == 0x1b) {
                                         b = getChar();
-                                        if (b == '=') {
+                                        if ((int) b == (int) '=') {
                                             continue;
                                         }
                                     }
@@ -483,61 +483,61 @@ public final class EmulatorVT100 extends TerminalEmulator {
                                         continue;
                                 }
                                 pushChar(b);
-                                b = '7';
+                                b = (byte) '7';
                                 break;
                             default:
                                 break;
                         }
                     }
 
-                    if (b == 'h') { 
+                    if ((int) b == (int) 'h') {
                         continue;
                     }
 
-                    System.out.println("unknown " + Integer.toHexString(b & 0xff) + ' '
+                    System.out.println("unknown " + Integer.toHexString((int) b & 0xff) + ' '
                             + (char) b + ", " + intarg[0] + ", " + intarg[1] + ", "
                             + intarg[2] + ",intargi=" + intargi);
                     continue;
                 }
 
-                if (b == 0x07) { 
+                if ((int) b == 0x07) {
                     bell();
                     continue;
                 }
 
-                if (b == 0x09) { 
+                if ((int) b == 0x09) {
                     tab();
                     continue;
                 }
 
-                if (b == 0x0f) { 
+                if ((int) b == 0x0f) {
                     exit_alt_charset_mode();
                     continue;
                 }
 
-                if (b == 0x0e) { 
+                if ((int) b == 0x0e) {
                     enter_alt_charset_mode();
                     continue;
                 }
 
-                if (b == 0x0d) {
+                if ((int) b == 0x0d) {
                     carriage_return();
                     continue;
                 }
 
-                if (b == 0x08) {
+                if ((int) b == 0x08) {
                     cursor_left();
                     continue;
                 }
 
-                if (b == 0x0a) { 
+                if ((int) b == 0x0a) {
                     
                     cursor_down();
                     
                     continue;
                 }
 
-                if (b != 0x0a) { 
+                if ((int) b != 0x0a) {
                     pushChar(b);
                     draw_text();
                 }

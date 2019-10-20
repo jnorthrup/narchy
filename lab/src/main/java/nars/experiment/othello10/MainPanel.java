@@ -452,7 +452,7 @@ public class MainPanel extends JPanel implements MouseListener {
      */
     private static void sleep() {
         try {
-            Thread.sleep(SLEEP_TIME);
+            Thread.sleep((long) SLEEP_TIME);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -15,7 +15,7 @@ public class AnimFloatAngle extends AnimFloat {
     public void set(float value) {
         float angleToRad = (float)Math.PI/180f;
         float base = super.floatValue() * angleToRad;
-        value = (float) MathUtils.normalizeAngle(value * angleToRad - base, 0 /* places it nearest to current value */) + base;
+        value = (float) MathUtils.normalizeAngle((double) (value * angleToRad - base), (double) 0 /* places it nearest to current value */) + base;
         super.set(value/angleToRad);
     }
 }

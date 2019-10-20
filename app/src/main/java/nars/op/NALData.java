@@ -10,7 +10,6 @@ import nars.Op;
 import nars.Task;
 import nars.task.NALTask;
 import nars.term.Term;
-import nars.term.Variable;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.truth.Truth;
@@ -21,7 +20,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -130,12 +128,12 @@ public class NALData {
         long now = n.time();
         return terms(a, pointGenerator).map(point -> {
 
-            byte p = punc != 0 ?
+            byte p = (int) punc != 0 ?
                     punc
                     :
                     (point.hasAny(VAR_QUERY) ? QUESTION : BELIEF);
 
-            @Nullable Truth truth = p == QUESTION || p == QUEST ? null :
+            @Nullable Truth truth = (int) p == (int) QUESTION || (int) p == (int) QUEST ? null :
                     $.t(1f, n.confDefault(p));
             return NALTask.the(point.normalize(), p, truth, now, ETERNAL, ETERNAL, n.evidence()).pri(n);
         });

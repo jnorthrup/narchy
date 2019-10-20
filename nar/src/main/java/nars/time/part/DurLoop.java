@@ -30,7 +30,7 @@ public abstract class DurLoop extends NARPart {
     /**
      * ideal duration multiple to be called, since time after implementation's procedure finished last
      */
-    public final FloatRange durations = new FloatRange(1, 0.25f, 16f);
+    public final FloatRange durations = new FloatRange(1.0F, 0.25f, 16f);
 
     private final WhenDur at = new WhenDur();
 
@@ -57,14 +57,14 @@ public abstract class DurLoop extends NARPart {
      * creates a duration-cached float range that is automatically destroyed when its parent context is
      */
     public static FloatRange cache(FloatSupplier o, float min, float max, DurLoop parent, @Deprecated NAR nar) {
-        Pair<FloatRange, Off> p = cache(o, min, max, 1, nar);
+        Pair<FloatRange, Off> p = cache(o, min, max, 1.0F, nar);
         parent.on(p.getTwo());
         return p.getOne();
     }
 
     public static Pair<FloatRange, Off> cache(FloatSupplier o, float min, float max, float durPeriod, NAR n) {
         assert (min < max);
-        FloatRange r = new FloatRange((min + max) / 2, min, max);
+        FloatRange r = new FloatRange((min + max) / 2.0F, min, max);
         //r.set(Float.NaN);
         DurLoop d = n.onDur(() -> {
             float x = o.asFloat();
@@ -96,7 +96,7 @@ public abstract class DurLoop extends NARPart {
 
 
     public long durCycles() {
-        return Math.max(1, Math.round((double) (durations.floatValue()) * this.nar.dur()));
+        return Math.max(1L, Math.round((double) (durations.floatValue()) * (double) this.nar.dur()));
     }
 
     /**
@@ -191,7 +191,7 @@ public abstract class DurLoop extends NARPart {
 
             long idealNext = lastStarted + durCycles;
             long lag = now - idealNext;
-            if (lag > 0) {
+            if (lag > 0L) {
                 /** LAG - compute a correctional shift period, so that it attempts to maintain a steady rhythm and re-synch even if a frame is lagged*/
 
                 nar.emotion.durLoopLag.add(lag);

@@ -34,7 +34,6 @@ import spacegraph.util.math.Matrix3f;
 import spacegraph.util.math.Quat4f;
 
 import java.util.Arrays;
-import java.util.stream.Stream;
 
 /*
 GJK-EPA collision solver by Nathanael Presson
@@ -156,7 +155,7 @@ public class GjkEpaSolver {
 		
 		
 		static /*unsigned*/ int Hash(v3 v) {
-			int h = (int)(v.x * 15461) ^ (int)(v.y * 83003) ^ (int)(v.z * 15473);
+			int h = (int)(v.x * 15461.0F) ^ (int)(v.y * 83003.0F) ^ (int)(v.z * 15473.0F);
 			return (h * 169639) & GJK_hashmask;
 		}
 
@@ -203,11 +202,11 @@ public class GjkEpaSolver {
 			e.n = table[h];
 			table[h] = e;
 			Support(ray, simplex[++order]);
-			return (ray.dot(simplex[order].w) > 0);
+			return (ray.dot(simplex[order].w) > (float) 0);
 		}
 
 		boolean SolveSimplex2(v3 ao, v3 ab) {
-			if (ab.dot(ao) >= 0) {
+			if (ab.dot(ao) >= (float) 0) {
 				v3 cabo = new v3();
 				cabo.cross(ab, ao);
 				if (cabo.lengthSquared() > GJK_sqinsimplex_eps) {
@@ -255,7 +254,7 @@ public class GjkEpaSolver {
 			else {
 				float d = cabc.dot(ao);
 				if (Math.abs(d) > GJK_insimplex_eps) {
-					if (d > 0) {
+					if (d > (float) 0) {
 						ray.set(cabc);
 					}
 					else {
@@ -571,8 +570,8 @@ public class GjkEpaSolver {
 			f.v[1] = b;
 			f.v[2] = c;
 			f.mark = 0;
-			f.n.scale(1f / (lenSq > 0f ? (float)Math.sqrt(lenSq) : cstInf), nrm);
-			f.d = Math.max(0, -f.n.dot(a.w));
+			f.n.scale(1f / (lenSq > 0f ? (float)Math.sqrt((double) lenSq) : cstInf), nrm);
+			f.d = Math.max((float) 0, -f.n.dot(a.w));
 			return valid;
 		}
 		
@@ -628,7 +627,7 @@ public class GjkEpaSolver {
 			int ne = 0;
 			if (f.mark != markid) {
 				int e1 = mod3[e + 1];
-				if ((f.n.dot(w.w) + f.d) > 0) {
+				if ((f.n.dot(w.w) + f.d) > (float) 0) {
 					Face nf = NewFace(f.v[e1], f.v[e], w);
 					Link(nf, 0, f, e);
 					if (cf[0] != null) {
@@ -761,7 +760,7 @@ break;
             if (bestface != null) {
 				v3 b = GetCoordinates(bestface);
                 normal.set(bestface.n);
-                depth = Math.max(0, bestface.d);
+                depth = Math.max((float) 0, bestface.d);
                 for (int i = 0; i < 2; ++i) {
 					float s = i != 0 ? -1f : 1f;
                     for (int j = 0; j < 3; ++j) {
@@ -807,7 +806,7 @@ break;
 		results.witness0.set(0f, 0f, 0f);
 		results.witness1.set(0f, 0f, 0f);
 		results.normal.set(0f, 0f, 0f);
-		results.depth = 0;
+		results.depth = (float) 0;
 		results.status = ResultsStatus.Separated;
 		results.epa_iterations = 0;
 		results.gjk_iterations = 0;
@@ -824,7 +823,7 @@ break;
 				EPA epa = new EPA(gjk);
 				float pd = epa.EvaluatePD();
 				results.epa_iterations = epa.iterations + 1;
-				if (pd > 0) {
+				if (pd > (float) 0) {
 					results.status = ResultsStatus.Penetrating;
 					results.normal.set(epa.normal);
 					results.depth = pd;

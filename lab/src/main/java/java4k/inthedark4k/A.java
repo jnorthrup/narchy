@@ -153,8 +153,8 @@ public class A extends GamePanel {
         int[] colors = new int[LIGHT_DISTANCE * 16];
         for (i = 0; i < c.length; i += 3) {
 			for (j = LIGHT_DISTANCE - 1; j >= 0; j--) {
-                float coef = 1 - 1 / ((j / (float) (LIGHT_DISTANCE - 1) + 1) * (j / (float) (LIGHT_DISTANCE - 1) + 1));
-				colors[k++] = ((int) (c[i] * coef) << 16) + ((int) (c[i + 1] * coef) << 8) + (int) (c[i + 2] * coef);
+                float coef = 1.0F - 1.0F / (((float) j / (float) (LIGHT_DISTANCE - 1) + 1.0F) * ((float) j / (float) (LIGHT_DISTANCE - 1) + 1.0F));
+				colors[k++] = ((int) ((float) c[i] * coef) << 16) + ((int) ((float) c[i + 1] * coef) << 8) + (int) ((float) c[i + 2] * coef);
 			}
 		}
 
@@ -185,9 +185,9 @@ public class A extends GamePanel {
         for (l = 0; l < c.length;) {
 
 			
-			int x = c[l];
-			int y = c[l + 1];
-			int z = c[l + 2];
+			int x = (int) c[l];
+			int y = (int) c[l + 1];
+			int z = (int) c[l + 2];
 			l += 3;
 
 			
@@ -241,9 +241,9 @@ public class A extends GamePanel {
 		 * Game loop *
 		 *************/
 
-        long nextLightVariation = 0;
-        long nextBullet = 0;
-        long lastFrame = 0;
+        long nextLightVariation = 0L;
+        long nextBullet = 0L;
+        long lastFrame = 0L;
         int nbCoins = 0;
         int lightStrength = 0;
         int gameState = 0;
@@ -405,15 +405,15 @@ public class A extends GamePanel {
 				l = 1;
 				k = 0;
 				while (l < level) {
-					k += (c[k] * c[k + 1] + 5);
+					k += ((int) c[k] * (int) c[k + 1] + 5);
 					l++;
 				}
 
-				mazeWidth = c[k];
-				mazeHeight = c[k + 1];
+				mazeWidth = (int) c[k];
+				mazeHeight = (int) c[k + 1];
 
-				playerX = c[k + 2];
-				playerZ = c[k + 3];
+				playerX = (int) c[k + 2];
+				playerZ = (int) c[k + 3];
 
 				
 				entities = new ArrayList<>();
@@ -442,7 +442,7 @@ public class A extends GamePanel {
                         byte cell = maze[i][j] = (byte) c[k + 4];
 
 						
-						if (cell > 0 && (i != playerX / CELL_SIZE || j != playerZ / CELL_SIZE)) {
+						if ((int) cell > 0 && (i != playerX / CELL_SIZE || j != playerZ / CELL_SIZE)) {
 							nbCoins++;
 							addEntity(
 									entities,
@@ -465,7 +465,7 @@ public class A extends GamePanel {
 
 					}
 				}
-				nbEnemiesToPop = c[k+4];
+				nbEnemiesToPop = (int) c[k + 4];
 
 				
 				map_size_x = mazeWidth * CELL_SIZE;
@@ -476,10 +476,10 @@ public class A extends GamePanel {
 
                         byte cell = maze[i / CELL_SIZE][j / CELL_SIZE];
 
-                        boolean murNord = (cell & 1) == 0;
-                        boolean murSud = (cell & 2) == 0;
-                        boolean murEst = (cell & 4) == 0;
-                        boolean murOuest = (cell & 8) == 0;
+                        boolean murNord = ((int) cell & 1) == 0;
+                        boolean murSud = ((int) cell & 2) == 0;
+                        boolean murEst = ((int) cell & 4) == 0;
+                        boolean murOuest = ((int) cell & 8) == 0;
 
                         int x1 = murOuest ? MIN_WALL_SIZE : 0;
                         int x2 = murEst ? CELL_SIZE - MIN_WALL_SIZE : CELL_SIZE;
@@ -488,20 +488,20 @@ public class A extends GamePanel {
 						
 						for (int y = WORLD_SIZE_Y - 1; y >= 0; y--) {
 							
-							byte block = ((BLOCK_SOLID << BLOCK_TYPE_SHIFT) + 10);
+							byte block = (byte) ((BLOCK_SOLID << BLOCK_TYPE_SHIFT) + 10);
 							
-							if (cell > 0) {
+							if ((int) cell > 0) {
 								
-								block = ((BLOCK_DECOR << BLOCK_TYPE_SHIFT) + 12);
+								block = (byte) ((BLOCK_DECOR << BLOCK_TYPE_SHIFT) + 12);
 								if (y <= 5) {
 									
-									block = y < 4 ? (BLOCK_DECOR << BLOCK_TYPE_SHIFT) + 10 : models[MODEL_GROUND][0][i % 8][0][j % 8];
+									block = y < 4 ? (byte) ((BLOCK_DECOR << BLOCK_TYPE_SHIFT) + 10) : models[MODEL_GROUND][0][i % 8][0][j % 8];
 								} else {
 
                                     int x = i - (i / CELL_SIZE) * CELL_SIZE;
                                     int z = j - (j / CELL_SIZE) * CELL_SIZE;
 									if (x >= x1 && x < x2 && z >= z1 && z < z2) {
-										block = 0;
+										block = (byte) 0;
 										if ((murNord && z == z1) || (murSud && z == z2 - 1))
 											block = models[MODEL_WALL][0][i % 12][y % 12][0];
 										if ((murOuest && x == x1) || (murEst && x == x2 - 1))
@@ -518,17 +518,17 @@ public class A extends GamePanel {
 			}
 
 
-            float timeElapsed = (int)(now - lastFrame) / 1000000000f;
+            float timeElapsed = (float) (int) (now - lastFrame) / 1000000000f;
 			if (timeElapsed > 0.1f) {
 				timeElapsed = 0.1f;
 			}
 			
 			if (DEBUG) {
-				
-				acc += now - lastFrame;
+
+                acc = (int) ((long) acc + now - lastFrame);
 				tick++;
-				if (acc >= 1000000000L) {
-					acc -= 1000000000L;
+				if ((long) acc >= 1000000000L) {
+                    acc = (int) ((long) acc - 1000000000L);
 					fps = tick;
 					tick = 0;
 				}
@@ -537,7 +537,7 @@ public class A extends GamePanel {
 			lastFrame = now;
 
 
-            float friction = 0.85f * (1 - timeElapsed);
+            float friction = 0.85f * (1.0F - timeElapsed);
 
 			
 			for (int e = entities.size() - 1; e >= 0; e--) {
@@ -572,8 +572,8 @@ public class A extends GamePanel {
 				for (i = x; i < x + sx; i++) {
 					for (j = y; j < y + sy; j++) {
 						for (k = z; k < z + sz; k++) {
-							if ((box[i][j][k] >> BLOCK_TYPE_SHIFT) > BLOCK_TRANSPARENT) {
-								box[i][j][k] = 0;
+							if (((int) box[i][j][k] >> BLOCK_TYPE_SHIFT) > BLOCK_TRANSPARENT) {
+								box[i][j][k] = (byte) 0;
 							}
 						}
 					}
@@ -622,7 +622,7 @@ public class A extends GamePanel {
 				if (entityType == ENTITY_ENENY_TYPE) {
 					dx = playerX - x;
 					dz = playerZ - z;
-                    int sqrt = (ENEMY_SPEED<<8) / ((int) Math.sqrt(dx * dx + dz * dz) + 1);
+                    int sqrt = (ENEMY_SPEED<<8) / ((int) Math.sqrt((double) (dx * dx + dz * dz)) + 1);
 					dx = (dx * sqrt)>>8;
 					dz = (dz * sqrt)>>8;
 				}
@@ -634,13 +634,13 @@ public class A extends GamePanel {
 
 				
 				if (entityType != ENTITY_BULLET_TYPE) {
-					
-					dx *= friction;
-					dy *= friction;
-					dz *= friction;
 
-					
-					dy -= GRAVITY * timeElapsed;
+                    dx = (int) ((float) dx * friction);
+                    dy = (int) ((float) dy * friction);
+                    dz = (int) ((float) dz * friction);
+
+
+                    dy = (int) ((float) dy - (float) GRAVITY * timeElapsed);
 				}
 
 				
@@ -663,7 +663,7 @@ public class A extends GamePanel {
 						}
 					}
 					
-					entity[ANGLE] += (int)(entity[ANIMATION_SPEED]*timeElapsed);
+					entity[ANGLE] += (int)((float) entity[ANIMATION_SPEED] *timeElapsed);
 					if (j != (entity[ANGLE] >> 8)) {
 						entity[ANGLE] = ((j + 4) & 7) << 8;
 					}
@@ -672,10 +672,10 @@ public class A extends GamePanel {
 					}
 				}
 
-				
-				entity[FORCEX] *= friction;
-				entity[FORCEY] *= friction;
-				entity[FORCEZ] *= friction;
+
+                entity[FORCEX] = (int) ((float) entity[FORCEX] * friction);
+                entity[FORCEY] = (int) ((float) entity[FORCEY] * friction);
+                entity[FORCEZ] = (int) ((float) entity[FORCEZ] * friction);
 
 				
 				dx += entity[FORCEX];
@@ -687,10 +687,10 @@ public class A extends GamePanel {
 				entity[DIRY] = dy;
 				entity[DIRZ] = dz;
 
-				
-				dx *= timeElapsed;
-				dy *= timeElapsed;
-				dz *= timeElapsed;
+
+                dx = (int) ((float) dx * timeElapsed);
+                dy = (int) ((float) dy * timeElapsed);
+                dz = (int) ((float) dz * timeElapsed);
 
 
                 int decal = 0;
@@ -729,7 +729,7 @@ public class A extends GamePanel {
                         int j2 = y + j - 1;
 						for (i = x + sx - 1; i >= x && !collide; i--) {
 							for (k = z + sz - 1; k >= z && !collide; k--) {
-                                int blockType = box[i][j2][k] >> BLOCK_TYPE_SHIFT;
+                                int blockType = (int) box[i][j2][k] >> BLOCK_TYPE_SHIFT;
 								if (blockType > BLOCK_EPHEMERAL && blockType != BLOCK_ENTITY) {
 									entity[TOUCH_GROUND] = 1;
 									cx = i;
@@ -747,7 +747,7 @@ public class A extends GamePanel {
                         int j2 = y + j + sy;
 						for (i = x + sx - 1; i >= x && !collide; i--) {
 							for (k = z + sz - 1; k >= z && !collide; k--) {
-								if (j2 >= WORLD_SIZE_Y - 1 || (box[i][j2][k] >> BLOCK_TYPE_SHIFT) > BLOCK_EPHEMERAL) {
+								if (j2 >= WORLD_SIZE_Y - 1 || ((int) box[i][j2][k] >> BLOCK_TYPE_SHIFT) > BLOCK_EPHEMERAL) {
 									cx = i;
 									cy = j2;
 									cz = k;
@@ -813,7 +813,7 @@ public class A extends GamePanel {
 							for (j = y + sy * 2 - 1; j >= y; j--) {
 								if (j < WORLD_SIZE_Y) {
 									for (k = z + sz - 1; k >= z; k--) {
-										blockType = box[i2][j][k] >> BLOCK_TYPE_SHIFT;
+										blockType = (int) box[i2][j][k] >> BLOCK_TYPE_SHIFT;
 										if (blockType > BLOCK_EPHEMERAL) {
 											if (blockType == BLOCK_DECOR) {
 												if (j >= y + sy) {
@@ -904,7 +904,7 @@ public class A extends GamePanel {
 							for (j = y + sy * 2 - 1; j >= y; j--) {
 								if (j < WORLD_SIZE_Y) {
 									for (i = x + sx - 1; i >= x; i--) {
-										blockType = box[i][j][k2] >> BLOCK_TYPE_SHIFT;
+										blockType = (int) box[i][j][k2] >> BLOCK_TYPE_SHIFT;
 										if (blockType > BLOCK_EPHEMERAL) {
 											if (blockType == BLOCK_DECOR) {
 												if (j >= y + sy) {
@@ -981,7 +981,7 @@ public class A extends GamePanel {
 													for (j = 0; j < sy1; j++) {
 														for (k = 0; k < sz1; k++) {
                                                             byte block = model1[i][j][k];
-															if (block > 0) {
+															if ((int) block > 0) {
 																addEntity(
 																		entities,
 																		
@@ -991,7 +991,7 @@ public class A extends GamePanel {
 																		
 																		entity[DIRX] >> 8, entity[DIRY] >> 8, entity[DIRZ] >> 8,
 																		
-																		(block & BLOCK_VALUE_BITMASK) + (BLOCK_EPHEMERAL << BLOCK_TYPE_SHIFT), 0,
+																		((int) block & BLOCK_VALUE_BITMASK) + (BLOCK_EPHEMERAL << BLOCK_TYPE_SHIFT), 0,
 																		
 																		1,
 																		
@@ -1044,7 +1044,7 @@ public class A extends GamePanel {
                                                     int z1 = cz + k - 1;
 													if (z1 > 0) {
                                                         byte block = box[x1][y1][z1];
-														if (block > 0 && (block >> BLOCK_TYPE_SHIFT <= BLOCK_DECOR)) {
+														if ((int) block > 0 && ((int) block >> BLOCK_TYPE_SHIFT <= BLOCK_DECOR)) {
                                                             int d = (i * i) + (j * j) + (k * k);
 															if (d < EXPLOSION_RADIUS * EXPLOSION_RADIUS - 1) {
 																if (d > 90*EXPLOSION_RADIUS * EXPLOSION_RADIUS / 100) {
@@ -1057,7 +1057,7 @@ public class A extends GamePanel {
 																			
 																			EXPLOSION_RADIUS_FORCE * i, EXPLOSION_RADIUS_FORCE * j, EXPLOSION_RADIUS_FORCE * k,
 																			
-																			(BLOCK_EPHEMERAL << BLOCK_TYPE_SHIFT) + (block & BLOCK_VALUE_BITMASK), 0,
+																			(BLOCK_EPHEMERAL << BLOCK_TYPE_SHIFT) + ((int) block & BLOCK_VALUE_BITMASK), 0,
 																			
 																			1,
 																			
@@ -1065,7 +1065,7 @@ public class A extends GamePanel {
 																			
 																			0);
 																}
-																box[x1][y1][z1] = 0;
+																box[x1][y1][z1] = (byte) 0;
 															}
 														}
 													}
@@ -1091,7 +1091,7 @@ public class A extends GamePanel {
 						for (i = 0; i < sx; i++) {
 							for (j = 0; j < sy; j++) {
 								for (k = 0; k < sz; k++) {
-									if (box[x + i][y + j][z + k] == 0) {
+									if ((int) box[x + i][y + j][z + k] == 0) {
 										box[x + i][y + j][z + k] = model[i][j][k];
 									}
 								}
@@ -1102,10 +1102,10 @@ public class A extends GamePanel {
 						if (entity[TOUCH_GROUND] == 1 && ((entity[DIRX] * entity[DIRX] + entity[DIRY] * entity[DIRY] + entity[DIRZ] * entity[DIRZ] < MIN_MOVING_DISTANCE))) {
 							entity[LIFE] = 0;
 						}
-						if (box[x][y][z] >> BLOCK_TYPE_SHIFT == 0) {
+						if ((int) box[x][y][z] >> BLOCK_TYPE_SHIFT == 0) {
                             byte block = (byte) entity[MODEL];
 							if (entity[LIFE] == 0)
-								block = (byte) ((BLOCK_DECOR << BLOCK_TYPE_SHIFT) + block & BLOCK_VALUE_BITMASK);
+								block = (byte) ((BLOCK_DECOR << BLOCK_TYPE_SHIFT) + (int) block & BLOCK_VALUE_BITMASK);
 
 							box[x][y][z] = block;
 						}
@@ -1145,7 +1145,7 @@ public class A extends GamePanel {
 								0, 0, 0,
 								
 								10);
-						nextBullet = now + 320000000;
+						nextBullet = now + 320000000L;
 					}
 
 				}
@@ -1216,9 +1216,9 @@ public class A extends GamePanel {
 					j = 1;
 					k = 10;
 				}
-                int x = (int) (Math.random() * mazeWidth);
-                int z = (int) (Math.random() * mazeHeight);
-				if ((x != playerX / CELL_SIZE || z != playerZ / CELL_SIZE) && maze[x][z] != 0) {
+                int x = (int) (Math.random() * (double) mazeWidth);
+                int z = (int) (Math.random() * (double) mazeHeight);
+				if ((x != playerX / CELL_SIZE || z != playerZ / CELL_SIZE) && (int) maze[x][z] != 0) {
 					addEntity(
 							entities,
 							
@@ -1265,9 +1265,9 @@ public class A extends GamePanel {
 					for (; z < frustumZ + FRUSTUM_SIZE && y > 0; z++, y--) {
                         byte block = box[x + frustumX - FRUSTUM_SIZE][y][z];
 						
-						if (block > 0) {
+						if ((int) block > 0) {
 							
-							blocksList.add((((z << 6) - y) << 12) + (i << 4) + (block & BLOCK_VALUE_BITMASK));
+							blocksList.add((((z << 6) - y) << 12) + (i << 4) + ((int) block & BLOCK_VALUE_BITMASK));
 							break;
 						}
 					}
@@ -1302,7 +1302,7 @@ public class A extends GamePanel {
 					if (len < (lightStrength*lightStrength) << 14) {
 
 						
-						len = ((int) Math.sqrt(len) >> 7) + 1;
+						len = ((int) Math.sqrt((double) len) >> 7) + 1;
 						dx /= len;
 						dy /= len;
 						dz /= len;
@@ -1322,14 +1322,14 @@ public class A extends GamePanel {
 							if (y3 < WORLD_SIZE_Y - 1) {
                                 int x3 = x1 >> 7;
                                 int z3 = z1 >> 7;
-								if (box[x3][y3][z3] != 0) {
+								if ((int) box[x3][y3][z3] != 0) {
 									z = LIGHT_DISTANCE - 1;
 								}
 								
-								if (box[x3 - 1][y3][z3] != 0) pcf += PCF_SHADOW;
-								if (box[x3 + 1][y3][z3] != 0) pcf += PCF_SHADOW;
-								if (box[x3][y3][z3 - 1] != 0) pcf += PCF_SHADOW;
-								if (box[x3][y3][z3 + 1] != 0) pcf += PCF_SHADOW;
+								if ((int) box[x3 - 1][y3][z3] != 0) pcf += PCF_SHADOW;
+								if ((int) box[x3 + 1][y3][z3] != 0) pcf += PCF_SHADOW;
+								if ((int) box[x3][y3][z3 - 1] != 0) pcf += PCF_SHADOW;
+								if ((int) box[x3][y3][z3 + 1] != 0) pcf += PCF_SHADOW;
 							}
 
 							x1 += dx;
@@ -1343,11 +1343,11 @@ public class A extends GamePanel {
 	
 						
 						y2++;
-						if (box[x2][y2][z2] == 0) {
-							if (box[x2 - 1][y2][z2] != 0) z += PCF_SHADOW;
-							if (box[x2][y2][z2 - 1] != 0) z += PCF_SHADOW;
-							if (box[x2][y2][z2 + 1] != 0) z += PCF_SHADOW;
-							if (box[x2 + 1][y2][z2] != 0) z += PCF_SHADOW;
+						if ((int) box[x2][y2][z2] == 0) {
+							if ((int) box[x2 - 1][y2][z2] != 0) z += PCF_SHADOW;
+							if ((int) box[x2][y2][z2 - 1] != 0) z += PCF_SHADOW;
+							if ((int) box[x2][y2][z2 + 1] != 0) z += PCF_SHADOW;
+							if ((int) box[x2 + 1][y2][z2] != 0) z += PCF_SHADOW;
 						}
 						
 						

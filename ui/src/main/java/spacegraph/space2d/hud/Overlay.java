@@ -12,7 +12,7 @@ public abstract class Overlay extends PaintSurface {
 
     protected final Zoomed.Camera cam;
 
-    protected float thick = 3;
+    protected float thick = 3.0F;
     protected final Color4f color = new Color4f(1f, 1f, 1f, 0.5f);
 
     public Overlay(Zoomed.Camera cam) {

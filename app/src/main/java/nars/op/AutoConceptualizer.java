@@ -72,7 +72,7 @@ public class AutoConceptualizer extends VectorSensor {
             x[i] = f;
         }
 
-        float err = ae.put(x, learningRate, noiseLevel, 0, true);
+        float err = ae.put(x, learningRate, noiseLevel, (float) 0, true);
 
         int outputs = ae.outputs();
         float[] b = new float[outputs];
@@ -82,11 +82,11 @@ public class AutoConceptualizer extends VectorSensor {
         What w = g.what();
 
         float dur = w.dur();
-        long start = Math.round(now - dur / 2), end = Math.round(now + dur / 2);
+        long start = (long) Math.round((float) now - dur / 2.0F), end = (long) Math.round((float) now + dur / 2.0F);
         int[] order = new int[inputs];
         Truth truth = $.t(1f, 0.9f);
         for (int i = 0; i < outputs; i++) {
-            b[i] = 1;
+            b[i] = 1.0F;
 
             float[] a = ae.decode(b, true);
 
@@ -95,7 +95,7 @@ public class AutoConceptualizer extends VectorSensor {
             if (feature != null)
                 w.accept(onFeature(feature, truth, start, end, n.evidence()));
 
-            b[i] = 0; 
+            b[i] = (float) 0;
         }
     }
 

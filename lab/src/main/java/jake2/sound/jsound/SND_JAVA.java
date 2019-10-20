@@ -105,7 +105,7 @@ public class SND_JAVA extends Globals {
 
 
 		
-		format = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 22050, 16, 1, 2, 22050, false);
+		format = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 22050.0F, 16, 1, 2, 22050.0F, false);
         DataLine.Info dinfo = new DataLine.Info(SourceDataLine.class, format);
 		
 		try {

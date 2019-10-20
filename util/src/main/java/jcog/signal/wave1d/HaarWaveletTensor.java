@@ -23,7 +23,7 @@ public class HaarWaveletTensor extends ArrayTensor {
         if(tmp==null || tmp.length!= v) {
             tmp = new float[v];
         } else {
-            Arrays.fill(tmp, 0);
+            Arrays.fill(tmp, (float) 0);
         }
 
         src.writeTo(tmp);

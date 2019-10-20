@@ -49,7 +49,7 @@ public class Glide extends UGen {
      * @param currentValue the initial value.
      */
     private Glide(AudioContext context, float currentValue) {
-        this(context, currentValue, 100);
+        this(context, currentValue, 100.0F);
     }
 
     /**
@@ -95,7 +95,7 @@ public class Glide extends UGen {
      * @param msTime glide time in milliseconds.
      */
     private void setGlideTime(float msTime) {
-        glideTime = (int) context.msToSamples(msTime);
+        glideTime = (int) context.msToSamples((double) msTime);
     }
 
     /**
@@ -104,7 +104,7 @@ public class Glide extends UGen {
      * @return the glide time in milliseconds.
      */
     public float getGlideTime() {
-        return (float) context.samplesToMs(glideTime);
+        return (float) context.samplesToMs((double) glideTime);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class Glide extends UGen {
             nothingChanged = true;
             for (int i = 0; i < bufferSize; i++) {
                 if (gliding) {
-                    if (glideTime <= 0f) {
+                    if ((float) glideTime <= 0f) {
                         gliding = false;
                         bufOut[0][i] = previousValue = currentValue = targetValue;
                         nothingChanged = false;
@@ -121,7 +121,7 @@ public class Glide extends UGen {
                         gliding = false;
                         bufOut[0][i] = previousValue = targetValue;
                     } else {
-                        float offset = ((float) countSinceGlide / glideTime);
+                        float offset = ((float) countSinceGlide / (float) glideTime);
                         bufOut[0][i] = currentValue = offset * targetValue + (1f - offset) * previousValue;
                         nothingChanged = false;
                     }

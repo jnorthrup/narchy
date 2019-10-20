@@ -62,7 +62,7 @@ public class Grid2DRelative implements World {
             
             
 
-            g2.setPaint(new Color(0, 0, 1.0f, 0.85f));
+            g2.setPaint(new Color((float) 0, (float) 0, 1.0f, 0.85f));
             g2.fillRect((int)Math.round(positionX), (int)Math.round(positionY), 1, 1);
         }
         @Override
@@ -87,7 +87,7 @@ public class Grid2DRelative implements World {
         this.height = height;
         this.ENERGY_COST_FACTOR = 0.01;
         this.MATCH_REWARD_FACTOR = 1.0;
-        this.REWARD_MAGNITUDE = 1;
+        this.REWARD_MAGNITUDE = 1.0;
         this.JUMP_FRACTION = 0.002;
         this.POSITION_VELOCITY = 0.1;
         this.noise = noise;
@@ -102,8 +102,8 @@ public class Grid2DRelative implements World {
     }
 
     protected void randomFocus() {
-        this.nextFocusPositionX = (int) (Math.random() * width);
-        this.nextFocusPositionY = (int) (Math.random() * height);
+        this.nextFocusPositionX = (int) (Math.random() * (double) width);
+        this.nextFocusPositionY = (int) (Math.random() * (double) height);
     }
 
     @Override
@@ -165,11 +165,11 @@ public class Grid2DRelative implements World {
         if ((action[1] > 0.5) && !(action[0] > 0.5)) {
             positionX+=POSITION_VELOCITY * action[1];
         }
-        if (positionX < 0) {
-            positionX = 0;
+        if (positionX < (double) 0) {
+            positionX = (double) 0;
         }
-        if (positionX >= width) {
-            positionX = width - 1;
+        if (positionX >= (double) width) {
+            positionX = (double) (width - 1);
         }
         if ((action[2] > 0.5) && !(action[3] > 0.5)) {
             positionY-=POSITION_VELOCITY * action[2];
@@ -177,11 +177,11 @@ public class Grid2DRelative implements World {
         if ((action[3] > 0.5) && !(action[2] > 0.5)) {
             positionY+=POSITION_VELOCITY * action[3];
         }
-        if (positionY < 0) {
-            positionY = 0;
+        if (positionY < (double) 0) {
+            positionY = (double) 0;
         }
-        if (positionY >= height) {
-            positionY = height - 1;
+        if (positionY >= (double) height) {
+            positionY = (double) (height - 1);
         }
 
         double dx = (positionX - focusPositionX);
@@ -193,14 +193,14 @@ public class Grid2DRelative implements World {
             for (int y = 0; y < height; y++) {
                 final double exp = 1.0;
 
-                double fdx = x - focusPositionX;
-                double fdy = y - focusPositionY;
+                double fdx = (double) x - focusPositionX;
+                double fdy = (double) y - focusPositionY;
                 double fdist = Math.sqrt(fdx * fdx + fdy * fdy);
 
                 int i = x + y * width;
                 double v = Math.pow(1.0 / (1.0 + fdist/2.0), exp) + (Math.random() * noise);
                 if (v < 0.0) {
-                    v = 0;
+                    v = (double) 0;
                 }
 
                 
@@ -222,7 +222,7 @@ public class Grid2DRelative implements World {
         double dist = Math.sqrt(dx * dx + dy * dy);
 
         double match = 1.0 / (1.0 + dist);
-        double energyCost = 0;
+        double energyCost = (double) 0;
         double reward = REWARD_MAGNITUDE * ((MATCH_REWARD_FACTOR * match) - (energyCost * ENERGY_COST_FACTOR)) - 0.5;
         return reward;
     }

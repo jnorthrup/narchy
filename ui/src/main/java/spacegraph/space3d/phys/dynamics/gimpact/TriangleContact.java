@@ -83,9 +83,9 @@ class TriangleContact {
 
 		float penetratinDepthMinusEpsilon = penetration_depth - SIMD_EPSILON;
 
-		for (short _k = 0; _k < pointsPending; _k++) {
+		for (short _k = (short) 0; (int) _k < pointsPending; _k++) {
 
-			float _dist = -ClipPolygon.distance_point_plane(plane, points.get(_k)) + margin;
+			float _dist = -ClipPolygon.distance_point_plane(plane, points.get((int) _k)) + margin;
 
 			if (_dist >= 0.0f) {
 				int target;
@@ -105,7 +105,7 @@ class TriangleContact {
 
 		for (int _k = 0; _k < this.point_count; _k++) {
             
-            this.points[_k].set(points.get(point_indices[_k]));
+            this.points[_k].set(points.get((int) point_indices[_k]));
 		}
 		
 		

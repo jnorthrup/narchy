@@ -54,14 +54,14 @@ public enum NALTruth implements TruthFunction {
     @AllowOverlap @SinglePremise StructuralReduction() {
         @Override
         public Truth apply(Truth T, Truth Bignored, float minConf, NAL n) {
-            float c = confCompose(T, NALTruth.confDefault(n));
+            float c = confCompose(T, (double) NALTruth.confDefault(n));
             return c >= minConf ? $.tt(T.freq(), c) : null;
         }
     },
     @AllowOverlap @SinglePremise StructuralReductionWeak() {
         @Override
         public Truth apply(Truth T, Truth Bignored, float minConf, NAL n) {
-            float c = confCompose(T, NALTruth.confDefault(n));
+            float c = confCompose(T, (double) NALTruth.confDefault(n));
             return c >= minConf ? weak($.tt(T.freq(), c),minConf) : null;
         }
     },

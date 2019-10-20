@@ -40,7 +40,7 @@ public class DefaultExecutionListener implements ExecutionListener,ExecutionList
 
 
     private static double getRatio(long cacheHit, long cacheMiss) {
-        return cacheHit + cacheMiss == 0 ? 0 : cacheHit / ((double) cacheHit + cacheMiss);
+        return cacheHit + cacheMiss == 0L ? (double) 0 : (double) cacheHit / ((double) cacheHit + (double) cacheMiss);
     }
 
     @Override

@@ -48,7 +48,7 @@ public class Encoder implements Constants {
         }
         if (read > 0) {
             for (int i = read; i < kBytesPerDuration; i++) {
-                buff[i] = 0;
+                buff[i] = (byte) 0;
             }
             output.write(Encoder.encodeDuration(buff));
         }
@@ -102,16 +102,16 @@ public class Encoder implements Constants {
         double[] signal = new double[kSamplesPerDuration];
         for (int j = 0; j < kBytesPerDuration; j++) {
             for (int k = 0; k < kBitsPerByte; k++) {
-                if (((input[j] >> k) & 0x1) == 0) {
+                if ((((int) input[j] >> k) & 0x1) == 0) {
                     //no need to go through encoding a zero
                     continue;
                 }
 
                 //add a sinusoid of getFrequency(j), amplitude kAmplitude and duration kDuration
-                double innerMultiplier = getFrequency((j * kBitsPerByte) + k)
-                        * (1 / kSamplingFrequency) * 2 * Math.PI;
+                double innerMultiplier = (double) getFrequency((j * kBitsPerByte) + k)
+                        * (double) (1.0F / kSamplingFrequency) * 2.0 * Math.PI;
                 for (int l = 0; l < signal.length; l++) {
-                    signal[l] += (kAmplitude * Math.cos(innerMultiplier * l));
+                    signal[l] += ((double) kAmplitude * Math.cos(innerMultiplier * (double) l));
                 }
             }
         }
@@ -124,13 +124,13 @@ public class Encoder implements Constants {
      */
     private static byte[] getSOSSequence() {
         //add a sinusoid of the hail frequency, amplitude kAmplitude and duration kDuration
-        double innerMultiplier = Constants.kSOSFrequency * (1 / kSamplingFrequency) * 2 * Math.PI;
+        double innerMultiplier = (double) Constants.kSOSFrequency * (double) (1.0F / kSamplingFrequency) * 2.0 * Math.PI;
         /*kAmplitude **/
         double[] signal = new double[10];
         int count = 0;
         int bound = kSamplesPerDuration;
         for (int l = 0; l < bound; l++) {
-            double cos = Math.cos(innerMultiplier * l);
+            double cos = Math.cos(innerMultiplier * (double) l);
             if (signal.length == count) signal = Arrays.copyOf(signal, count * 2);
             signal[count++] = cos;
         }
@@ -143,13 +143,13 @@ public class Encoder implements Constants {
      */
     private static byte[] getHailSequence() {
         //add a sinusoid of the hail frequency, amplitude kAmplitude and duration kDuration
-        double innerMultiplier = Constants.kHailFrequency * (1 / kSamplingFrequency) * 2 * Math.PI;
+        double innerMultiplier = (double) Constants.kHailFrequency * (double) (1.0F / kSamplingFrequency) * 2.0 * Math.PI;
         /*kAmplitude **/
         double[] signal = new double[10];
         int count = 0;
         int bound = kSamplesPerDuration;
         for (int l = 0; l < bound; l++) {
-            double cos = Math.cos(innerMultiplier * l);
+            double cos = Math.cos(innerMultiplier * (double) l);
             if (signal.length == count) signal = Arrays.copyOf(signal, count * 2);
             signal[count++] = cos;
         }
@@ -193,15 +193,15 @@ public class Encoder implements Constants {
      */
     private static double[] smoothWindow(double[] input, double magicScalingNumber) {
         double[] smoothWindow = new double[input.length];
-        double minVal = 0;
-        double maxVal = 0;
-        int peaks = (int) (input.length * 0.1);
-        double steppingValue = 1 / (double) peaks;
+        double minVal = (double) 0;
+        double maxVal = (double) 0;
+        int peaks = (int) ((double) input.length * 0.1);
+        double steppingValue = 1.0 / (double) peaks;
         for (int i = 0; i < smoothWindow.length; i++) {
             if (i < peaks) {
-                smoothWindow[i] = input[i] * (steppingValue * i) /* / magicScalingNumber*/;
+                smoothWindow[i] = input[i] * (steppingValue * (double) i) /* / magicScalingNumber*/;
             } else if (i > input.length - peaks) {
-                smoothWindow[i] = input[i] * (steppingValue * (input.length - i - 1)) /* / magicScalingNumber */;
+                smoothWindow[i] = input[i] * (steppingValue * (double) (input.length - i - 1)) /* / magicScalingNumber */;
             } else {
                 //don't touch the middle values
                 smoothWindow[i] = input[i] /* / magicScalingNumber */;
@@ -227,12 +227,12 @@ public class Encoder implements Constants {
     private static double[] blackmanSmoothWindow(double[] input) {
         double magicScalingNumber = 3.5;
         double[] smoothWindow = new double[input.length];
-        double steppingValue = 2 * Math.PI / (input.length - 1);
-        double maxVal = 0;
-        double minVal = 0;
+        double steppingValue = 2.0 * Math.PI / (double) (input.length - 1);
+        double maxVal = (double) 0;
+        double minVal = (double) 0;
         for (int i = 0; i < smoothWindow.length; i++) {
-            smoothWindow[i] = (input[i] * (0.42 - 0.5 * Math.cos(steppingValue * i) +
-                    0.08 * Math.cos(steppingValue * i))) * 3.5;
+            smoothWindow[i] = (input[i] * (0.42 - 0.5 * Math.cos(steppingValue * (double) i) +
+                    0.08 * Math.cos(steppingValue * (double) i))) * 3.5;
             if (smoothWindow[i] < minVal) {
                 minVal = smoothWindow[i];
             }
@@ -251,7 +251,7 @@ public class Encoder implements Constants {
     public static byte[] getByteArrayFromDoubleArray(double[] sequence) {
         byte[] result = new byte[sequence.length];
         for (int i = 0; i < result.length; i++) {
-            result[i] = (byte) ((sequence[i] * kFloatToByteShift) - 1);
+            result[i] = (byte) ((sequence[i] * (double) kFloatToByteShift) - 1.0);
         }
         return result;
     }

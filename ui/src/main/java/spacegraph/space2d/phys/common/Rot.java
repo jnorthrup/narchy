@@ -32,8 +32,8 @@ import jcog.math.v2;
  */
 public class Rot  {
 
-    public float s = 0;
-    public float c = 1;
+    public float s = (float) 0;
+    public float c = 1.0F;
 
     public Rot() {
     }
@@ -56,8 +56,8 @@ public class Rot  {
     }
 
     public Rot set(float angle) {
-        s = (float) Math.sin(angle);
-        c = (float) Math.cos(angle);
+        s = (float) Math.sin((double) angle);
+        c = (float) Math.cos((double) angle);
         return this;
     }
 
@@ -68,12 +68,12 @@ public class Rot  {
     }
 
     void setIdentity() {
-        s = 0;
-        c = 1;
+        s = (float) 0;
+        c = 1.0F;
     }
 
     @Deprecated /* slow */ public float angle() {
-        return (float) Math.atan2(s, c);
+        return (float) Math.atan2((double) s, (double) c);
     }
 
     public void getXAxis(v2 xAxis) {

@@ -25,7 +25,7 @@ package jake2.client;
 
 public class dlight_t
 {
-	public final float[] origin = { 0, 0, 0 };
-	public final float[] color = { 0, 0, 0 };
+	public final float[] origin = {(float) 0, (float) 0, (float) 0};
+	public final float[] color = {(float) 0, (float) 0, (float) 0};
 	public float intensity;
 }

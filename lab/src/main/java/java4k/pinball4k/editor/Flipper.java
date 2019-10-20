@@ -5,7 +5,7 @@ import java.lang.reflect.Field;
 
 public class Flipper extends LevelObject {
 	
-	public static final float ANGLE_SCALE = 127 / (2 * (float) Math.PI);
+	public static final float ANGLE_SCALE = 127.0F / (2.0F * (float) Math.PI);
 	
 	double angle;
 	public int length;
@@ -29,25 +29,25 @@ public class Flipper extends LevelObject {
 		leftFlipper = (p1.x < p2.x);
         int dx = p2.x - p1.x;
         int dy = p2.y - p1.y;
-		angle = (float) Math.atan2(dy, dx);
+		angle = (double) (float) Math.atan2((double) dy, (double) dx);
 		
 		if (leftFlipper) {
 			maxAngle = toPacked(angle);
-			minAngle = toPacked(angle - Math.PI / 3);
+			minAngle = toPacked(angle - Math.PI / 3.0);
 		} else {
 			minAngle = toPacked(angle);
-			maxAngle = toPacked(angle + Math.PI / 3);
+			maxAngle = toPacked(angle + Math.PI / 3.0);
 		}
 		handles.add(handle);
 		outerInstance = this;
 	}
 	
 	public static double toAngle(int packedAngle) {
-		return packedAngle / ANGLE_SCALE;
+		return (double) (packedAngle / ANGLE_SCALE);
 	}
 	
 	public static int toPacked(double angle) {
-		return (int) (angle * ANGLE_SCALE);
+		return (int) (angle * (double) ANGLE_SCALE);
 	}
 	
 	/**

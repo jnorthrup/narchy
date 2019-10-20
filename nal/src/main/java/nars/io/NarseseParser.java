@@ -150,7 +150,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                                 optional(TRUTH_VALUE_MARK),
 
-                                swap() && truth.set(PreciseTruth.byConf((float) pop(), (float) pop()))
+                                swap() && truth.set(PreciseTruth.byConf((float) pop(), (double) (float) pop()))
                         ),
 
                         seq(TRUTH_VALUE_MARK, truth.set(pop()))
@@ -182,7 +182,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         optional(digit()),
                         optional('.', oneOrMore(digit()))
                 ),
-                push(Texts.f(matchOrDefault("NaN"), 0, 1.0f))
+                push(Texts.f(matchOrDefault("NaN"), (float) 0, 1.0f))
         );
     }
 

@@ -9,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.ref.Reference;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 /** a container for time-stamped expiring cache of data that can be stored in Concept meta maps */
@@ -56,7 +55,7 @@ public class Snapshot<X> {
 		if ((now >= e || current == null) && busy.compareAndSet(false, true)) {
 			try {
                 X nextX = updater.apply(current);
-				this.expires = ttl >= 0 ? now + ttl : Tense.TIMELESS /* forever */;
+				this.expires = ttl >= 0 ? now + (long) ttl : Tense.TIMELESS /* forever */;
 				this.value = wrap(nextX);
 				return nextX;
 			} finally {

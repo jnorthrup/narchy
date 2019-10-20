@@ -37,7 +37,7 @@ public abstract class AbstractTaskLink implements TaskLink {
 	/**
 	 * cached; NaN means invalidated
 	 */
-	private volatile float pri = 0;
+	private volatile float pri = (float) 0;
 
 	protected AbstractTaskLink(Term source, Term target, int hash) {
 		this.from = source;
@@ -139,7 +139,7 @@ public abstract class AbstractTaskLink implements TaskLink {
 	public float pri() {
         float p = this.pri;
 		//update cached value
-		return p != p ? (this.pri = priSum() / 4) : p;
+		return p != p ? (this.pri = priSum() / 4.0F) : p;
 	}
 
 	protected void invalidate() {
@@ -156,12 +156,12 @@ public abstract class AbstractTaskLink implements TaskLink {
 
 	@Override
 	public void delete(byte punc) {
-		priSet(punc, 0);
+		priSet(punc, (float) 0);
 	}
 
 	@Override
 	public boolean delete() {
-		fill(0);
+		fill((float) 0);
 		return true;
 	}
 
@@ -199,14 +199,14 @@ public abstract class AbstractTaskLink implements TaskLink {
 		switch (returning) {
 			case Overflow:
 			case Delta:
-				o = 0;
-				for (byte i = 0; i < 4; i++)
-					o += mergeDirect(i, incoming.priIndex(i), m, returning);
-				o/=4;
+				o = (float) 0;
+				for (byte i = (byte) 0; (int) i < 4; i++)
+					o += mergeDirect((int) i, incoming.priIndex(i), m, returning);
+				o/= 4.0F;
 				break;
 			case Void:
-				for (byte i = 0; i < 4; i++)
-					mergeDirect(i, incoming.priIndex(i), m, null);
+				for (byte i = (byte) 0; (int) i < 4; i++)
+					mergeDirect((int) i, incoming.priIndex(i), m, null);
 				o = Float.NaN;
 				break;
             default:
@@ -223,7 +223,7 @@ public abstract class AbstractTaskLink implements TaskLink {
 //    }
 
 	public float mergeComponent(byte punc, float pri, PriMerge merge, @Nullable PriReturn returning) {
-		return merge(Task.i(punc), pri, merge, returning);
+		return merge((int) Task.i(punc), pri, merge, returning);
 	}
 
 	/** does not invalidate */
@@ -236,10 +236,10 @@ public abstract class AbstractTaskLink implements TaskLink {
 
         float y = mergeDirect(ith, pri, merge::mergeUnitize, returning);
 
-		if (returning != PriReturn.Delta || y != 0) //delta==0 on individual component = unchanged
+		if (returning != PriReturn.Delta || y != (float) 0) //delta==0 on individual component = unchanged
 			invalidate();
 
-		return y/4;
+		return y/ 4.0F;
 	}
 
 
@@ -261,12 +261,12 @@ public abstract class AbstractTaskLink implements TaskLink {
 	@Override
 	public float priMult(float X) {
 		assertFinite(X);
-		if (!Util.equals(X, 1)) {
+		if (!Util.equals(X, 1.0F)) {
 
 
             boolean acc = false;
 			for (int i = 0; i < 4; i++) {
-                boolean aBoolean = apply(i, X, mult, Changed) != 0;
+                boolean aBoolean = apply(i, X, mult, Changed) != (float) 0;
 				acc = acc || aBoolean;
 			}
             boolean changed = acc;

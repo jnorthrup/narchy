@@ -27,12 +27,12 @@ public class TsneTest {
         DataTable data = //new ARFF(new File("/tmp/x.arff"));
                 new DataTable();
         data.addColumns(DoubleColumn.create("a"), DoubleColumn.create("b"), DoubleColumn.create("c"));
-        float n = 20;
-        for (int j = 0; j < n; j++) {
-            for (int i = 0; i < n; i++) {
+        float n = 20.0F;
+        for (int j = 0; (float) j < n; j++) {
+            for (int i = 0; (float) i < n; i++) {
                 data.add(
                         //Math.cos((i ^ (i-5))/n), Math.sin(i/10f), -0.5f + Math.random()
-                        (i^j)/n, Math.sqrt(i/n), Math.sin(j/(n/4f))
+                        (float) (i ^ j) /n, Math.sqrt((double) (i / n)), Math.sin((double) (j / (n / 4f)))
                 );
             }
         }
@@ -45,7 +45,7 @@ public class TsneTest {
                             @Override
                             protected void paintNode(GL2 gl, Surface surface, DataTable.Instance id) {
                                 float score = ((Double) (id.data.get(0))).floatValue();
-                                Draw.colorGrays(gl, 0.5f + 0.5f * Util.unitize((score - 1400) / 200));
+                                Draw.colorGrays(gl, 0.5f + 0.5f * Util.unitize((score - 1400.0F) / 200.0F));
                                 Draw.rect(surface.bounds, gl);
                             }
                         }).
@@ -67,10 +67,10 @@ public class TsneTest {
         double[][] x = new double[N][DIM];
         int j = 0;
         for (int i = 0; i < N / 2; i++) {
-            x[j++] = new double[]{0, 0, 1 + Math.random() / 2f, 1 + Math.random() / 2f};
+            x[j++] = new double[]{(double) 0, (double) 0, 1.0 + Math.random() / 2, 1.0 + Math.random() / 2};
         }
         for (int i = 0; i < N / 2; i++) {
-            x[j++] = new double[]{1, 0, -1 + Math.random() / 2f, -1 + Math.random() / 2f};
+            x[j++] = new double[]{1.0, (double) 0, -1.0 + Math.random() / 2, -1.0 + Math.random() / 2};
         }
 
 
@@ -97,13 +97,13 @@ public class TsneTest {
 
 
                 float h;
-                float w = h = 1f / vv.length;
+                float w = h = 1f / (float) vv.length;
                 float scale = 0.1f;
                 for (int i = 0, yLength = vv.length; i < yLength; i++) {
                     double[] v = vv[i];
 
                     float x = (float) (v[0]);
-                    float y = (float) (((v.length > 1) ? v[1] : 0));
+                    float y = (float) (((v.length > 1) ? v[1] : (double) 0));
 
                     x *= scale;
                     y *= scale;

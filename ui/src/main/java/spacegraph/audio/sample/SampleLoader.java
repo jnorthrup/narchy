@@ -89,29 +89,29 @@ public enum SampleLoader
             case 8:
                 if (signed) {
                     for (int i = 0; i < s; i++)
-                        buf[i] = bb.get() / (float) 0x80;
+                        buf[i] = (float) bb.get() / (float) 0x80;
                 } else {
                     for (int i = 0; i < s; i++)
-                        buf[i] = ((bb.get() & 0xFF) - 0x80) / (float) 0x80;
+                        buf[i] = (float) (((int) bb.get() & 0xFF) - 0x80) / (float) 0x80;
                 }
                 break;
             case 16:
                 if (signed) {
                     for (int i = 0; i < s; i++)
-                        buf[i] = bb.getShort() / (float) 0x8000;
+                        buf[i] = (float) bb.getShort() / (float) 0x8000;
                 } else {
                     for (int i = 0; i < s; i++)
-                        buf[i] = ((bb.getShort() & 0xFFFF) - 0x8000) / (float) 0x8000;
+                        buf[i] = (float) (((int) bb.getShort() & 0xFFFF) - 0x8000) / (float) 0x8000;
                 }
                 break;
             case 32:
                 if (signed) {
                     for (int i = 0; i < s; i++)
-                        buf[i] = bb.getInt() / (float) 0x80000000;
+                        buf[i] = (float) bb.getInt() / (float) 0x80000000;
                 } else {
                     
                     for (int i = 0; i < s; i++)
-                        buf[i] = ((bb.getInt() & 0xFFFFFFFFL) - 0x80000000L) / (float) 0x80000000;
+                        buf[i] = (float) (((long) bb.getInt() & 0xFFFFFFFFL) - 0x80000000L) / (float) 0x80000000;
                 }
                 break;
         }
@@ -124,9 +124,9 @@ public enum SampleLoader
     public static SoundSample digitize(FloatToFloatFunction f, int sampleRate, int duration) {
 
         int samples = duration * sampleRate;
-        SoundSample ss = new SoundSample(new float[samples], sampleRate);
+        SoundSample ss = new SoundSample(new float[samples], (float) sampleRate);
         float[] b = ss.buf;
-        float t = 0, dt = 1.0f / sampleRate;
+        float t = (float) 0, dt = 1.0f / (float) sampleRate;
         for (int i = 0; i < samples; i++) {
             b[i] = f.valueOf(t);
             t+=dt;

@@ -49,12 +49,12 @@ public enum PremiseRuleCompiler {
 
         Map<String,RuleCause> tags = new HashMap();
 
-        short i = 0;
+        short i = (short) 0;
         for (PremiseRule r : rr) {
 
             How added = paths.put(
                 r.conditions(i),
-                roots[i++] = actionTransform.apply(r.action(n, tags))
+                roots[(int) i++] = actionTransform.apply(r.action(n, tags))
             );
 
             assert (added == null);
@@ -179,7 +179,7 @@ public enum PremiseRuleCompiler {
             x.removeIf(zz -> {
                 if (zz instanceof Forkable) {
                     for (short cc : ((Forkable) zz).can)
-                        r.add(cc);
+                        r.add((int) cc);
                     return true;
                 }
                 return false;
@@ -301,7 +301,7 @@ public enum PremiseRuleCompiler {
 
         float costIfBranch() {
             int s = size();
-            return s > 1 ? s * p.cost() : Float.NEGATIVE_INFINITY;
+            return s > 1 ? (float) s * p.cost() : Float.NEGATIVE_INFINITY;
         }
     }
 

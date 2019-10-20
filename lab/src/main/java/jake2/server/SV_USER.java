@@ -324,21 +324,21 @@ public class SV_USER {
         
 
         if (name.contains("..")
-                || SV_MAIN.allow_download.value == 0 
-                || name.charAt(0) == '.' 
+                || SV_MAIN.allow_download.value == (float) 0
+                || (int) name.charAt(0) == (int) '.'
                                          
-                || name.charAt(0) == '/' 
-                || (name.startsWith("players/") && 0 == SV_MAIN.allow_download_players.value) 
+                || (int) name.charAt(0) == (int) '/'
+                || (name.startsWith("players/") && (float) 0 == SV_MAIN.allow_download_players.value)
                                                                                               
-                || (name.startsWith("models/") && 0 == SV_MAIN.allow_download_models.value) 
+                || (name.startsWith("models/") && (float) 0 == SV_MAIN.allow_download_models.value)
                                                                                             
-                || (name.startsWith("sound/") && 0 == SV_MAIN.allow_download_sounds.value)
+                || (name.startsWith("sound/") && (float) 0 == SV_MAIN.allow_download_sounds.value)
                 
-                || (name.startsWith("maps/") && 0 == SV_MAIN.allow_download_maps.value) 
+                || (name.startsWith("maps/") && (float) 0 == SV_MAIN.allow_download_maps.value)
                                                                                         
                                                                                         
                                                                                         
-                || name.indexOf('/') == -1) { 
+                || name.indexOf((int) '/') == -1) {
                                               
             MSG.WriteByte(SV_MAIN.sv_client.netchan.message,
                     Defines.svc_download);
@@ -414,8 +414,8 @@ public class SV_USER {
 
 
         if (SV_INIT.sv.state == Defines.ss_game
-                || (SV_INIT.sv.state == Defines.ss_pic && 
-                        0 == Cvar.VariableValue("coop")))
+                || (SV_INIT.sv.state == Defines.ss_pic &&
+                (float) 0 == Cvar.VariableValue("coop")))
             return; 
 
         SV_INIT.svs.spawncount++;
@@ -483,9 +483,9 @@ public class SV_USER {
      */
 
     public static void SV_ClientThink(client_t cl, usercmd_t cmd) {
-        cl.commandMsec -= cmd.msec & 0xFF;
+        cl.commandMsec -= (int) cmd.msec & 0xFF;
 
-        if (cl.commandMsec < 0 && SV_MAIN.sv_enforcetime.value != 0) {
+        if (cl.commandMsec < 0 && SV_MAIN.sv_enforcetime.value != (float) 0) {
             Com.DPrintf("commandMsec underflow from " + cl.name + '\n');
             return;
         }
@@ -573,7 +573,7 @@ public class SV_USER {
 
                 
 
-                calculatedChecksum = Com.BlockSequenceCRCByte(
+                calculatedChecksum = (int) Com.BlockSequenceCRCByte(
                         Globals.net_message.data, checksumIndex + 1,
                         Globals.net_message.readcount - checksumIndex - 1,
                         cl.netchan.incoming_sequence);
@@ -585,7 +585,7 @@ public class SV_USER {
                     return;
                 }
 
-                if (0 == SV_MAIN.sv_paused.value) {
+                if ((float) 0 == SV_MAIN.sv_paused.value) {
                     int net_drop = cl.netchan.dropped;
                     if (net_drop < 20) {
 

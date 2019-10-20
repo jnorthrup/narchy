@@ -647,8 +647,8 @@ public class M_Tank {
         public String getID(){ return "tank_sight"; }
         @Override
         public boolean interact(edict_t self, edict_t other) {
-            game_import_t.sound(self, Defines.CHAN_VOICE, sound_sight, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_VOICE, sound_sight, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
@@ -658,8 +658,8 @@ public class M_Tank {
         public String getID(){ return "tank_footstep"; }
         @Override
         public boolean think(edict_t self) {
-            game_import_t.sound(self, Defines.CHAN_BODY, sound_step, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_BODY, sound_step, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
@@ -669,8 +669,8 @@ public class M_Tank {
         public String getID(){ return "tank_thud"; }
         @Override
         public boolean think(edict_t self) {
-            game_import_t.sound(self, Defines.CHAN_BODY, sound_thud, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_BODY, sound_thud, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
@@ -680,8 +680,8 @@ public class M_Tank {
         public String getID(){ return "tank_windup"; }
         @Override
         public boolean think(edict_t self) {
-            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_windup, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_windup, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
@@ -691,8 +691,8 @@ public class M_Tank {
         public String getID(){ return "tank_idle"; }
         @Override
         public boolean think(edict_t self) {
-            game_import_t.sound(self, Defines.CHAN_VOICE, sound_idle, 1,
-                    Defines.ATTN_IDLE, 0);
+            game_import_t.sound(self, Defines.CHAN_VOICE, sound_idle, 1.0F,
+                    (float) Defines.ATTN_IDLE, (float) 0);
             return true;
         }
     };
@@ -702,36 +702,36 @@ public class M_Tank {
     
 
     static final mframe_t[] tank_frames_stand = {
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null) };
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null) };
 
     static final mmove_t tank_move_stand = new mmove_t(FRAME_stand01, FRAME_stand30,
             tank_frames_stand, null);
@@ -785,41 +785,41 @@ public class M_Tank {
     };
 
     static final mframe_t[] tank_frames_start_walk = {
-            new mframe_t(GameAI.ai_walk, 0, null),
-            new mframe_t(GameAI.ai_walk, 6, null),
-            new mframe_t(GameAI.ai_walk, 6, null),
-            new mframe_t(GameAI.ai_walk, 11, tank_footstep) };
+            new mframe_t(GameAI.ai_walk, (float) 0, null),
+            new mframe_t(GameAI.ai_walk, 6.0F, null),
+            new mframe_t(GameAI.ai_walk, 6.0F, null),
+            new mframe_t(GameAI.ai_walk, 11.0F, tank_footstep) };
 
     static mmove_t tank_move_start_walk = new mmove_t(FRAME_walk01,
             FRAME_walk04, tank_frames_start_walk, tank_walk);
 
     static final mframe_t[] tank_frames_walk = {
-            new mframe_t(GameAI.ai_walk, 4, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 3, null),
-            new mframe_t(GameAI.ai_walk, 2, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 4, null),
-            new mframe_t(GameAI.ai_walk, 4, tank_footstep),
-            new mframe_t(GameAI.ai_walk, 3, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 4, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 7, null),
-            new mframe_t(GameAI.ai_walk, 7, null),
-            new mframe_t(GameAI.ai_walk, 6, null),
-            new mframe_t(GameAI.ai_walk, 6, tank_footstep) };
+            new mframe_t(GameAI.ai_walk, 4.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 3.0F, null),
+            new mframe_t(GameAI.ai_walk, 2.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 4.0F, null),
+            new mframe_t(GameAI.ai_walk, 4.0F, tank_footstep),
+            new mframe_t(GameAI.ai_walk, 3.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 4.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 7.0F, null),
+            new mframe_t(GameAI.ai_walk, 7.0F, null),
+            new mframe_t(GameAI.ai_walk, 6.0F, null),
+            new mframe_t(GameAI.ai_walk, 6.0F, tank_footstep) };
 
     static final mmove_t tank_move_walk = new mmove_t(FRAME_walk05, FRAME_walk20,
             tank_frames_walk, null);
 
     static final mframe_t[] tank_frames_stop_walk = {
-            new mframe_t(GameAI.ai_walk, 3, null),
-            new mframe_t(GameAI.ai_walk, 3, null),
-            new mframe_t(GameAI.ai_walk, 2, null),
-            new mframe_t(GameAI.ai_walk, 2, null),
-            new mframe_t(GameAI.ai_walk, 4, tank_footstep) };
+            new mframe_t(GameAI.ai_walk, 3.0F, null),
+            new mframe_t(GameAI.ai_walk, 3.0F, null),
+            new mframe_t(GameAI.ai_walk, 2.0F, null),
+            new mframe_t(GameAI.ai_walk, 2.0F, null),
+            new mframe_t(GameAI.ai_walk, 4.0F, tank_footstep) };
 
     static mmove_t tank_move_stop_walk = new mmove_t(FRAME_walk21,
             FRAME_walk25, tank_frames_stop_walk, tank_stand);
@@ -829,41 +829,41 @@ public class M_Tank {
     
 
     static final mframe_t[] tank_frames_start_run = {
-            new mframe_t(GameAI.ai_run, 0, null),
-            new mframe_t(GameAI.ai_run, 6, null),
-            new mframe_t(GameAI.ai_run, 6, null),
-            new mframe_t(GameAI.ai_run, 11, tank_footstep) };
+            new mframe_t(GameAI.ai_run, (float) 0, null),
+            new mframe_t(GameAI.ai_run, 6.0F, null),
+            new mframe_t(GameAI.ai_run, 6.0F, null),
+            new mframe_t(GameAI.ai_run, 11.0F, tank_footstep) };
 
     static final mmove_t tank_move_start_run = new mmove_t(FRAME_walk01,
             FRAME_walk04, tank_frames_start_run, tank_run);
 
     static final mframe_t[] tank_frames_run = {
-            new mframe_t(GameAI.ai_run, 4, null),
-            new mframe_t(GameAI.ai_run, 5, null),
-            new mframe_t(GameAI.ai_run, 3, null),
-            new mframe_t(GameAI.ai_run, 2, null),
-            new mframe_t(GameAI.ai_run, 5, null),
-            new mframe_t(GameAI.ai_run, 5, null),
-            new mframe_t(GameAI.ai_run, 4, null),
-            new mframe_t(GameAI.ai_run, 4, tank_footstep),
-            new mframe_t(GameAI.ai_run, 3, null),
-            new mframe_t(GameAI.ai_run, 5, null),
-            new mframe_t(GameAI.ai_run, 4, null),
-            new mframe_t(GameAI.ai_run, 5, null),
-            new mframe_t(GameAI.ai_run, 7, null),
-            new mframe_t(GameAI.ai_run, 7, null),
-            new mframe_t(GameAI.ai_run, 6, null),
-            new mframe_t(GameAI.ai_run, 6, tank_footstep) };
+            new mframe_t(GameAI.ai_run, 4.0F, null),
+            new mframe_t(GameAI.ai_run, 5.0F, null),
+            new mframe_t(GameAI.ai_run, 3.0F, null),
+            new mframe_t(GameAI.ai_run, 2.0F, null),
+            new mframe_t(GameAI.ai_run, 5.0F, null),
+            new mframe_t(GameAI.ai_run, 5.0F, null),
+            new mframe_t(GameAI.ai_run, 4.0F, null),
+            new mframe_t(GameAI.ai_run, 4.0F, tank_footstep),
+            new mframe_t(GameAI.ai_run, 3.0F, null),
+            new mframe_t(GameAI.ai_run, 5.0F, null),
+            new mframe_t(GameAI.ai_run, 4.0F, null),
+            new mframe_t(GameAI.ai_run, 5.0F, null),
+            new mframe_t(GameAI.ai_run, 7.0F, null),
+            new mframe_t(GameAI.ai_run, 7.0F, null),
+            new mframe_t(GameAI.ai_run, 6.0F, null),
+            new mframe_t(GameAI.ai_run, 6.0F, tank_footstep) };
 
     static final mmove_t tank_move_run = new mmove_t(FRAME_walk05, FRAME_walk20,
             tank_frames_run, null);
 
     static final mframe_t[] tank_frames_stop_run = {
-            new mframe_t(GameAI.ai_run, 3, null),
-            new mframe_t(GameAI.ai_run, 3, null),
-            new mframe_t(GameAI.ai_run, 2, null),
-            new mframe_t(GameAI.ai_run, 2, null),
-            new mframe_t(GameAI.ai_run, 4, tank_footstep) };
+            new mframe_t(GameAI.ai_run, 3.0F, null),
+            new mframe_t(GameAI.ai_run, 3.0F, null),
+            new mframe_t(GameAI.ai_run, 2.0F, null),
+            new mframe_t(GameAI.ai_run, 2.0F, null),
+            new mframe_t(GameAI.ai_run, 4.0F, tank_footstep) };
 
     static mmove_t tank_move_stop_run = new mmove_t(FRAME_walk21, FRAME_walk25,
             tank_frames_stop_run, tank_walk);
@@ -873,41 +873,41 @@ public class M_Tank {
     
 
     static final mframe_t[] tank_frames_pain1 = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t tank_move_pain1 = new mmove_t(FRAME_pain101, FRAME_pain104,
             tank_frames_pain1, tank_run);
 
     static final mframe_t[] tank_frames_pain2 = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t tank_move_pain2 = new mmove_t(FRAME_pain201, FRAME_pain205,
             tank_frames_pain2, tank_run);
 
     static final mframe_t[] tank_frames_pain3 = {
-            new mframe_t(GameAI.ai_move, -7, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 2, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 3, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 2, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, tank_footstep) };
+            new mframe_t(GameAI.ai_move, -7.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, 2.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, 3.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, 2.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, tank_footstep) };
 
     static final mmove_t tank_move_pain3 = new mmove_t(FRAME_pain301, FRAME_pain316,
             tank_frames_pain3, tank_run);
@@ -927,11 +927,11 @@ public class M_Tank {
                 return;
 
             if (damage <= 30)
-                if (Lib.random() > 0.2)
+                if ((double) Lib.random() > 0.2)
                     return;
 
             
-            if (GameBase.skill.value >= 2) {
+            if (GameBase.skill.value >= 2.0F) {
                 if ((self.s.frame >= FRAME_attak301)
                         && (self.s.frame <= FRAME_attak330))
                     return;
@@ -940,11 +940,11 @@ public class M_Tank {
                     return;
             }
 
-            self.pain_debounce_time = GameBase.level.time + 3;
-            game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain, 1,
-                    Defines.ATTN_NORM, 0);
+            self.pain_debounce_time = GameBase.level.time + 3.0F;
+            game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
 
-            if (GameBase.skill.value == 3)
+            if (GameBase.skill.value == 3.0F)
                 return; 
 
             if (damage <= 30)
@@ -979,18 +979,18 @@ public class M_Tank {
                     break;
             }
 
-            float[] right = {0, 0, 0};
-            float[] forward = {0, 0, 0};
+            float[] right = {(float) 0, (float) 0, (float) 0};
+            float[] forward = {(float) 0, (float) 0, (float) 0};
             Math3D.AngleVectors(self.s.angles, forward, right, null);
-            float[] start = {0, 0, 0};
+            float[] start = {(float) 0, (float) 0, (float) 0};
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[flash_number], forward, right,
                     start);
 
-            float[] end = {0, 0, 0};
+            float[] end = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorCopy(self.enemy.s.origin, end);
-            end[2] += self.enemy.viewheight;
-            float[] dir = {0, 0, 0};
+            end[2] = end[2] + (float) self.enemy.viewheight;
+            float[] dir = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorSubtract(end, start, dir);
 
             Monster.monster_fire_blaster(self, start, dir, 30, 800,
@@ -1005,8 +1005,8 @@ public class M_Tank {
         public String getID(){ return "TankStrike"; }
         @Override
         public boolean think(edict_t self) {
-            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_strike, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_strike, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
 
             return true;
         }
@@ -1031,18 +1031,18 @@ public class M_Tank {
                     break;
             }
 
-            float[] right = {0, 0, 0};
-            float[] forward = {0, 0, 0};
+            float[] right = {(float) 0, (float) 0, (float) 0};
+            float[] forward = {(float) 0, (float) 0, (float) 0};
             Math3D.AngleVectors(self.s.angles, forward, right, null);
-            float[] start = {0, 0, 0};
+            float[] start = {(float) 0, (float) 0, (float) 0};
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[flash_number], forward, right,
                     start);
 
-            float[] vec = {0, 0, 0};
+            float[] vec = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorCopy(self.enemy.s.origin, vec);
-            vec[2] += self.enemy.viewheight;
-            float[] dir = {0, 0, 0};
+            vec[2] = vec[2] + (float) self.enemy.viewheight;
+            float[] dir = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorSubtract(vec, start, dir);
             Math3D.VectorNormalize(dir);
 
@@ -1059,33 +1059,33 @@ public class M_Tank {
         @Override
         public boolean think(edict_t self) {
 
-            float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
+            float[] forward = {(float) 0, (float) 0, (float) 0}, right = {(float) 0, (float) 0, (float) 0};
 
             int flash_number = Defines.MZ2_TANK_MACHINEGUN_1
                     + (self.s.frame - FRAME_attak406);
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
-            float[] start = {0, 0, 0};
+            float[] start = {(float) 0, (float) 0, (float) 0};
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[flash_number], forward, right,
                     start);
 
-            float[] dir = {0, 0, 0};
+            float[] dir = {(float) 0, (float) 0, (float) 0};
             if (self.enemy != null) {
-                float[] vec = {0, 0, 0};
+                float[] vec = {(float) 0, (float) 0, (float) 0};
                 Math3D.VectorCopy(self.enemy.s.origin, vec);
-                vec[2] += self.enemy.viewheight;
+                vec[2] = vec[2] + (float) self.enemy.viewheight;
                 Math3D.VectorSubtract(vec, start, vec);
                 Math3D.vectoangles(vec, vec);
                 dir[0] = vec[0];
             } else {
-                dir[0] = 0;
+                dir[0] = (float) 0;
             }
             if (self.s.frame <= FRAME_attak415)
-                dir[1] = self.s.angles[1] - 8 * (self.s.frame - FRAME_attak411);
+                dir[1] = self.s.angles[1] - (float) (8 * (self.s.frame - FRAME_attak411));
             else
-                dir[1] = self.s.angles[1] + 8 * (self.s.frame - FRAME_attak419);
-            dir[2] = 0;
+                dir[1] = self.s.angles[1] + (float) (8 * (self.s.frame - FRAME_attak419));
+            dir[2] = (float) 0;
 
             Math3D.AngleVectors(dir, forward, null, null);
 
@@ -1102,10 +1102,10 @@ public class M_Tank {
         public String getID(){ return "tank_reattack_blaster"; }
         @Override
         public boolean think(edict_t self) {
-            if (GameBase.skill.value >= 2)
+            if (GameBase.skill.value >= 2.0F)
                 if (GameUtil.visible(self, self.enemy))
                     if (self.enemy.health > 0)
-                        if (Lib.random() <= 0.6) {
+                        if ((double) Lib.random() <= 0.6) {
                             self.monsterinfo.currentmove = tank_move_reattack_blast;
                             return true;
                         }
@@ -1115,47 +1115,47 @@ public class M_Tank {
     };
 
     static final mframe_t[] tank_frames_attack_blast = {
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, -1, null),
-            new mframe_t(GameAI.ai_charge, -2, null),
-            new mframe_t(GameAI.ai_charge, -1, null),
-            new mframe_t(GameAI.ai_charge, -1, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, TankBlaster),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, -1.0F, null),
+            new mframe_t(GameAI.ai_charge, -2.0F, null),
+            new mframe_t(GameAI.ai_charge, -1.0F, null),
+            new mframe_t(GameAI.ai_charge, -1.0F, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, TankBlaster),
             
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, TankBlaster),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, TankBlaster) 
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, TankBlaster),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, TankBlaster)
     };
 
     static final mmove_t tank_move_attack_blast = new mmove_t(FRAME_attak101,
             FRAME_attak116, tank_frames_attack_blast, tank_reattack_blaster);
 
     static final mframe_t[] tank_frames_reattack_blast = {
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, TankBlaster),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, TankBlaster) 
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, TankBlaster),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, TankBlaster)
     };
 
     static final mmove_t tank_move_reattack_blast = new mmove_t(FRAME_attak111,
             FRAME_attak116, tank_frames_reattack_blast, tank_reattack_blaster);
 
     static final mframe_t[] tank_frames_attack_post_blast = {
-            new mframe_t(GameAI.ai_move, 0, null), 
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 2, null),
-            new mframe_t(GameAI.ai_move, 3, null),
-            new mframe_t(GameAI.ai_move, 2, null),
-            new mframe_t(GameAI.ai_move, -2, tank_footstep) 
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, 2.0F, null),
+            new mframe_t(GameAI.ai_move, 3.0F, null),
+            new mframe_t(GameAI.ai_move, 2.0F, null),
+            new mframe_t(GameAI.ai_move, -2.0F, tank_footstep)
     };
 
     static final mmove_t tank_move_attack_post_blast = new mmove_t(FRAME_attak117,
@@ -1188,10 +1188,10 @@ public class M_Tank {
         @Override
         public boolean think(edict_t self) {
             
-            if (GameBase.skill.value >= 2)
+            if (GameBase.skill.value >= 2.0F)
                 if (self.enemy.health > 0)
                     if (GameUtil.visible(self, self.enemy))
-                        if (Lib.random() <= 0.4) {
+                        if ((double) Lib.random() <= 0.4) {
                             self.monsterinfo.currentmove = tank_move_attack_fire_rocket;
                             return true;
                         }
@@ -1201,155 +1201,155 @@ public class M_Tank {
     };
 
     static final mframe_t[] tank_frames_attack_strike = {
-            new mframe_t(GameAI.ai_move, 3, null),
-            new mframe_t(GameAI.ai_move, 2, null),
-            new mframe_t(GameAI.ai_move, 2, null),
-            new mframe_t(GameAI.ai_move, 1, null),
-            new mframe_t(GameAI.ai_move, 6, null),
-            new mframe_t(GameAI.ai_move, 7, null),
-            new mframe_t(GameAI.ai_move, 9, tank_footstep),
-            new mframe_t(GameAI.ai_move, 2, null),
-            new mframe_t(GameAI.ai_move, 1, null),
-            new mframe_t(GameAI.ai_move, 2, null),
-            new mframe_t(GameAI.ai_move, 2, tank_footstep),
-            new mframe_t(GameAI.ai_move, 2, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, -2, null),
-            new mframe_t(GameAI.ai_move, -2, null),
-            new mframe_t(GameAI.ai_move, 0, tank_windup),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, TankStrike),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, -1, null),
-            new mframe_t(GameAI.ai_move, -1, null),
-            new mframe_t(GameAI.ai_move, -1, null),
-            new mframe_t(GameAI.ai_move, -1, null),
-            new mframe_t(GameAI.ai_move, -1, null),
-            new mframe_t(GameAI.ai_move, -3, null),
-            new mframe_t(GameAI.ai_move, -10, null),
-            new mframe_t(GameAI.ai_move, -10, null),
-            new mframe_t(GameAI.ai_move, -2, null),
-            new mframe_t(GameAI.ai_move, -3, null),
-            new mframe_t(GameAI.ai_move, -2, tank_footstep) };
+            new mframe_t(GameAI.ai_move, 3.0F, null),
+            new mframe_t(GameAI.ai_move, 2.0F, null),
+            new mframe_t(GameAI.ai_move, 2.0F, null),
+            new mframe_t(GameAI.ai_move, 1.0F, null),
+            new mframe_t(GameAI.ai_move, 6.0F, null),
+            new mframe_t(GameAI.ai_move, 7.0F, null),
+            new mframe_t(GameAI.ai_move, 9.0F, tank_footstep),
+            new mframe_t(GameAI.ai_move, 2.0F, null),
+            new mframe_t(GameAI.ai_move, 1.0F, null),
+            new mframe_t(GameAI.ai_move, 2.0F, null),
+            new mframe_t(GameAI.ai_move, 2.0F, tank_footstep),
+            new mframe_t(GameAI.ai_move, 2.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, -2.0F, null),
+            new mframe_t(GameAI.ai_move, -2.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, tank_windup),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, TankStrike),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, -1.0F, null),
+            new mframe_t(GameAI.ai_move, -1.0F, null),
+            new mframe_t(GameAI.ai_move, -1.0F, null),
+            new mframe_t(GameAI.ai_move, -1.0F, null),
+            new mframe_t(GameAI.ai_move, -1.0F, null),
+            new mframe_t(GameAI.ai_move, -3.0F, null),
+            new mframe_t(GameAI.ai_move, -10.0F, null),
+            new mframe_t(GameAI.ai_move, -10.0F, null),
+            new mframe_t(GameAI.ai_move, -2.0F, null),
+            new mframe_t(GameAI.ai_move, -3.0F, null),
+            new mframe_t(GameAI.ai_move, -2.0F, tank_footstep) };
 
     static final mmove_t tank_move_attack_strike = new mmove_t(FRAME_attak201,
             FRAME_attak238, tank_frames_attack_strike, tank_poststrike);
 
     static final mframe_t[] tank_frames_attack_pre_rocket = {
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
             
 
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 2, null),
-            new mframe_t(GameAI.ai_charge, 7, null),
-            new mframe_t(GameAI.ai_charge, 7, null),
-            new mframe_t(GameAI.ai_charge, 7, tank_footstep),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 2.0F, null),
+            new mframe_t(GameAI.ai_charge, 7.0F, null),
+            new mframe_t(GameAI.ai_charge, 7.0F, null),
+            new mframe_t(GameAI.ai_charge, 7.0F, tank_footstep),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
             
 
-            new mframe_t(GameAI.ai_charge, -3, null) };
+            new mframe_t(GameAI.ai_charge, -3.0F, null) };
 
     static final mmove_t tank_move_attack_pre_rocket = new mmove_t(FRAME_attak301,
             FRAME_attak321, tank_frames_attack_pre_rocket, tank_doattack_rocket);
 
     static final mframe_t[] tank_frames_attack_fire_rocket = {
-            new mframe_t(GameAI.ai_charge, -3, null), 
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, TankRocket), 
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, TankRocket),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, -1, TankRocket) 
+            new mframe_t(GameAI.ai_charge, -3.0F, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, TankRocket),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, TankRocket),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, -1.0F, TankRocket)
     };
 
     static final mmove_t tank_move_attack_fire_rocket = new mmove_t(FRAME_attak322,
             FRAME_attak330, tank_frames_attack_fire_rocket, tank_refire_rocket);
 
     static final mframe_t[] tank_frames_attack_post_rocket = {
-            new mframe_t(GameAI.ai_charge, 0, null), 
-            new mframe_t(GameAI.ai_charge, -1, null),
-            new mframe_t(GameAI.ai_charge, -1, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 2, null),
-            new mframe_t(GameAI.ai_charge, 3, null),
-            new mframe_t(GameAI.ai_charge, 4, null),
-            new mframe_t(GameAI.ai_charge, 2, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, -1.0F, null),
+            new mframe_t(GameAI.ai_charge, -1.0F, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, 2.0F, null),
+            new mframe_t(GameAI.ai_charge, 3.0F, null),
+            new mframe_t(GameAI.ai_charge, 4.0F, null),
+            new mframe_t(GameAI.ai_charge, 2.0F, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
             
 
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, -9, null),
-            new mframe_t(GameAI.ai_charge, -8, null),
-            new mframe_t(GameAI.ai_charge, -7, null),
-            new mframe_t(GameAI.ai_charge, -1, null),
-            new mframe_t(GameAI.ai_charge, -1, tank_footstep),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, -9.0F, null),
+            new mframe_t(GameAI.ai_charge, -8.0F, null),
+            new mframe_t(GameAI.ai_charge, -7.0F, null),
+            new mframe_t(GameAI.ai_charge, -1.0F, null),
+            new mframe_t(GameAI.ai_charge, -1.0F, tank_footstep),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
             
 
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null) };
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null) };
 
     static final mmove_t tank_move_attack_post_rocket = new mmove_t(FRAME_attak331,
             FRAME_attak353, tank_frames_attack_post_rocket, tank_run);
 
     static final mframe_t[] tank_frames_attack_chain = {
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(null, 0, TankMachineGun),
-            new mframe_t(null, 0, TankMachineGun),
-            new mframe_t(null, 0, TankMachineGun),
-            new mframe_t(null, 0, TankMachineGun),
-            new mframe_t(null, 0, TankMachineGun),
-            new mframe_t(null, 0, TankMachineGun),
-            new mframe_t(null, 0, TankMachineGun),
-            new mframe_t(null, 0, TankMachineGun),
-            new mframe_t(null, 0, TankMachineGun),
-            new mframe_t(null, 0, TankMachineGun),
-            new mframe_t(null, 0, TankMachineGun),
-            new mframe_t(null, 0, TankMachineGun),
-            new mframe_t(null, 0, TankMachineGun),
-            new mframe_t(null, 0, TankMachineGun),
-            new mframe_t(null, 0, TankMachineGun),
-            new mframe_t(null, 0, TankMachineGun),
-            new mframe_t(null, 0, TankMachineGun),
-            new mframe_t(null, 0, TankMachineGun),
-            new mframe_t(null, 0, TankMachineGun),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null) };
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(null, (float) 0, TankMachineGun),
+            new mframe_t(null, (float) 0, TankMachineGun),
+            new mframe_t(null, (float) 0, TankMachineGun),
+            new mframe_t(null, (float) 0, TankMachineGun),
+            new mframe_t(null, (float) 0, TankMachineGun),
+            new mframe_t(null, (float) 0, TankMachineGun),
+            new mframe_t(null, (float) 0, TankMachineGun),
+            new mframe_t(null, (float) 0, TankMachineGun),
+            new mframe_t(null, (float) 0, TankMachineGun),
+            new mframe_t(null, (float) 0, TankMachineGun),
+            new mframe_t(null, (float) 0, TankMachineGun),
+            new mframe_t(null, (float) 0, TankMachineGun),
+            new mframe_t(null, (float) 0, TankMachineGun),
+            new mframe_t(null, (float) 0, TankMachineGun),
+            new mframe_t(null, (float) 0, TankMachineGun),
+            new mframe_t(null, (float) 0, TankMachineGun),
+            new mframe_t(null, (float) 0, TankMachineGun),
+            new mframe_t(null, (float) 0, TankMachineGun),
+            new mframe_t(null, (float) 0, TankMachineGun),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null) };
 
     static final mmove_t tank_move_attack_chain = new mmove_t(FRAME_attak401,
             FRAME_attak429, tank_frames_attack_chain, tank_run);
@@ -1366,26 +1366,26 @@ public class M_Tank {
                 return true;
             }
 
-            float[] vec = {0, 0, 0};
+            float[] vec = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, vec);
             float range = Math3D.VectorLength(vec);
 
             float r = Lib.random();
 
-            if (range <= 125) {
-                if (r < 0.4)
+            if (range <= 125.0F) {
+                if ((double) r < 0.4)
                     self.monsterinfo.currentmove = tank_move_attack_chain;
                 else
                     self.monsterinfo.currentmove = tank_move_attack_blast;
-            } else if (range <= 250) {
-                if (r < 0.5)
+            } else if (range <= 250.0F) {
+                if ((double) r < 0.5)
                     self.monsterinfo.currentmove = tank_move_attack_chain;
                 else
                     self.monsterinfo.currentmove = tank_move_attack_blast;
             } else {
-                if (r < 0.33)
+                if ((double) r < 0.33)
                     self.monsterinfo.currentmove = tank_move_attack_chain;
-                else if (r < 0.66) {
+                else if ((double) r < 0.66) {
                     self.monsterinfo.currentmove = tank_move_attack_pre_rocket;
                     self.pain_debounce_time = GameBase.level.time + 5.0f; 
                                                                           
@@ -1407,49 +1407,49 @@ public class M_Tank {
         public String getID(){ return "tank_dead"; }
         @Override
         public boolean think(edict_t self) {
-            Math3D.VectorSet(self.mins, -16, -16, -16);
-            Math3D.VectorSet(self.maxs, 16, 16, -0);
+            Math3D.VectorSet(self.mins, -16.0F, -16.0F, -16.0F);
+            Math3D.VectorSet(self.maxs, 16.0F, 16.0F, -0.0F);
             self.movetype = Defines.MOVETYPE_TOSS;
             self.svflags |= Defines.SVF_DEADMONSTER;
-            self.nextthink = 0;
+            self.nextthink = (float) 0;
             game_import_t.linkentity(self);
             return true;
         }
     };
 
     static final mframe_t[] tank_frames_death1 = {
-            new mframe_t(GameAI.ai_move, -7, null),
-            new mframe_t(GameAI.ai_move, -2, null),
-            new mframe_t(GameAI.ai_move, -2, null),
-            new mframe_t(GameAI.ai_move, 1, null),
-            new mframe_t(GameAI.ai_move, 3, null),
-            new mframe_t(GameAI.ai_move, 6, null),
-            new mframe_t(GameAI.ai_move, 1, null),
-            new mframe_t(GameAI.ai_move, 1, null),
-            new mframe_t(GameAI.ai_move, 2, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, -2, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, -3, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, -4, null),
-            new mframe_t(GameAI.ai_move, -6, null),
-            new mframe_t(GameAI.ai_move, -4, null),
-            new mframe_t(GameAI.ai_move, -5, null),
-            new mframe_t(GameAI.ai_move, -7, null),
-            new mframe_t(GameAI.ai_move, -15, tank_thud),
-            new mframe_t(GameAI.ai_move, -5, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, -7.0F, null),
+            new mframe_t(GameAI.ai_move, -2.0F, null),
+            new mframe_t(GameAI.ai_move, -2.0F, null),
+            new mframe_t(GameAI.ai_move, 1.0F, null),
+            new mframe_t(GameAI.ai_move, 3.0F, null),
+            new mframe_t(GameAI.ai_move, 6.0F, null),
+            new mframe_t(GameAI.ai_move, 1.0F, null),
+            new mframe_t(GameAI.ai_move, 1.0F, null),
+            new mframe_t(GameAI.ai_move, 2.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, -2.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, -3.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, -4.0F, null),
+            new mframe_t(GameAI.ai_move, -6.0F, null),
+            new mframe_t(GameAI.ai_move, -4.0F, null),
+            new mframe_t(GameAI.ai_move, -5.0F, null),
+            new mframe_t(GameAI.ai_move, -7.0F, null),
+            new mframe_t(GameAI.ai_move, -15.0F, tank_thud),
+            new mframe_t(GameAI.ai_move, -5.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t tank_move_death = new mmove_t(FRAME_death101,
             FRAME_death132, tank_frames_death1, tank_dead);
@@ -1465,8 +1465,8 @@ public class M_Tank {
             if (self.health <= self.gib_health) {
                 game_import_t
                         .sound(self, Defines.CHAN_VOICE, game_import_t
-                                .soundindex("misc/udeath.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                                .soundindex("misc/udeath.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
                 int n;
                 for (n = 0; n < 1 /* 4 */; n++)
                     GameMisc.ThrowGib(self,
@@ -1488,8 +1488,8 @@ public class M_Tank {
                 return;
 
             
-            game_import_t.sound(self, Defines.CHAN_VOICE, sound_die, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_VOICE, sound_die, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             self.deadflag = Defines.DEAD_DEAD;
             self.takedamage = Defines.DAMAGE_YES;
 
@@ -1515,15 +1515,15 @@ public class M_Tank {
         public String getID(){ return "SP_monster_tank"; }
         @Override
         public boolean think(edict_t self) {
-            if (GameBase.deathmatch.value != 0) {
+            if (GameBase.deathmatch.value != (float) 0) {
                 GameUtil.G_FreeEdict(self);
                 return true;
             }
 
             self.s.modelindex = game_import_t
                     .modelindex("models/monsters/tank/tris.md2");
-            Math3D.VectorSet(self.mins, -32, -32, -16);
-            Math3D.VectorSet(self.maxs, 32, 32, 72);
+            Math3D.VectorSet(self.mins, -32.0F, -32.0F, -16.0F);
+            Math3D.VectorSet(self.maxs, 32.0F, 32.0F, 72.0F);
             self.movetype = Defines.MOVETYPE_STEP;
             self.solid = Defines.SOLID_BBOX;
 

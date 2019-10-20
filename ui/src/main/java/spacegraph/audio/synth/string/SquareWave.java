@@ -17,8 +17,8 @@ public class SquareWave extends KarplusStrongString {
         setInitialVolume(0.2);
         pluckDelta = .9998;
         releaseDelta = .9;
-        filterIn = 0;
-        filterOut = 0;
+        filterIn = (double) 0;
+        filterOut = (double) 0;
     }
 
     public void pluck() {
@@ -27,7 +27,7 @@ public class SquareWave extends KarplusStrongString {
         int capacity = buffer.capacity();
         int half = capacity / 2;
         for (int i = 0; i < half; i++) {
-            buffer.enqueue(getInitialVolume() * -1);
+            buffer.enqueue(getInitialVolume() * -1.0);
         }
         int otherHalf = capacity - half;
         for (int i = 0; i < otherHalf; i++) {

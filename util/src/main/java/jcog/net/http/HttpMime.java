@@ -125,7 +125,7 @@ class HttpMime {
     @HttpUtil.ThreadSafe
     public static String getMime(File file) {
         String path = file.getPath();
-        int i = path.lastIndexOf('.');
+        int i = path.lastIndexOf((int) '.');
         if (i < 0) {
             return "application/octet-stream";
         }

@@ -24,7 +24,6 @@ import nars.video.AutoclassifiedBitmap;
 
 import javax.swing.*;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static nars.$.$$;
 import static nars.experiment.mario.level.Level.*;
@@ -33,7 +32,7 @@ import static spacegraph.SpaceGraph.window;
 
 public class NARio extends GameX {
 
-	static final float fps = 24;
+	static final float fps = 24.0F;
 //    private final AbstractSensor cam;
 	static final int tileTypes = 3; //0..2
 	//    public final FloatRange MoveRight = new FloatRange(0.75f, 0f, 1f);
@@ -66,8 +65,8 @@ public class NARio extends GameX {
 
 		var cc = new PixelBag(new MonoBufImgBitmap2D(() -> game.image), 32, 24) {
 			{
-				panRate = 1;
-				zoomRate = 1;
+				panRate = 1.0F;
+				zoomRate = 1.0F;
 			}
 
 			@Override
@@ -149,7 +148,7 @@ public class NARio extends GameX {
                 float y = (M.y - yCam) / 240f;
 				cc.setXRelative(x);
 				cc.setYRelative(y);
-				cc.setMinZoom(1);
+				cc.setMinZoom(1.0F);
 			} else {
 				theMario = null;
 			}
@@ -161,9 +160,9 @@ public class NARio extends GameX {
 		//initBipolar();
 
 
-		DigitizedScalar vx = senseNumberDifferenceBi($.p(id, $.p("v", "x")), 8, () -> theMario != null ? theMario.x : 0)
+		DigitizedScalar vx = senseNumberDifferenceBi($.p(id, $.p("v", "x")), 8.0F, () -> theMario != null ? theMario.x : (float) 0)
 			.resolution(0.25f);
-		DigitizedScalar vy = senseNumberDifferenceBi($.p(id, $.p("v", "y")), 8, () -> theMario != null ? theMario.y : 0)
+		DigitizedScalar vy = senseNumberDifferenceBi($.p(id, $.p("v", "y")), 8.0F, () -> theMario != null ? theMario.y : (float) 0)
 			.resolution(0.25f);
 
 //        window(NARui.beliefCharts(this.nar, Stream.of(vx, vy).flatMap(x->x.sensors.stream()).collect(toList())), 400, 300);
@@ -174,12 +173,12 @@ public class NARio extends GameX {
 			float reward;
             float curX = theMario != null && theMario.deathTime <= 0 ? theMario.x : Float.NaN;
             int thresh = 1;
-			if ((curX == curX && lastX == lastX) && lastX < curX - thresh) {
+			if ((curX == curX && lastX == lastX) && lastX < curX - (float) thresh) {
 				reward = //unitize(Math.max(0, (curX - lastX)) / 16f * MoveRight.floatValue());
-					1;
+						1.0F;
 			} else {
 				reward =
-					0;
+						(float) 0;
 				//-1;
 				//Float.NaN;
 			}
@@ -189,19 +188,19 @@ public class NARio extends GameX {
 		});
 		//right.setDefault($.t(0, 0.75f));
 
-        Reward getCoins = rewardNormalized("money", 1f, 0, +1, () -> {
+        Reward getCoins = rewardNormalized("money", 1f, (float) 0, (float) +1, () -> {
             int coins = Mario.coins;
             int deltaCoin = coins - lastCoins;
 			if (deltaCoin <= 0)
-				return 0;
+				return (float) 0;
 
-            float reward = deltaCoin * EarnCoin.floatValue();
+            float reward = (float) deltaCoin * EarnCoin.floatValue();
 			lastCoins = coins;
 			return reward;
 		});
 		//getCoins.setDefault($.t(0, 0.75f));
 
-        Reward alive = rewardNormalized("alive", 1f, -1, +1, () -> {
+        Reward alive = rewardNormalized("alive", 1f, -1.0F, (float) +1, () -> {
 //            if (dead)
 //                return -1;
 //
@@ -209,7 +208,7 @@ public class NARio extends GameX {
 				return Float.NaN;
 			}
 
-			float t = theMario.deathTime > 0 ? -1 : /*Float.NaN*/ +1;
+			float t = (float) (theMario.deathTime > 0 ? -1 : /*Float.NaN*/ +1);
 //            if (t == -1) {
 //                System.out.println("Dead");
 //                theMario.deathTime = 0;
@@ -230,7 +229,7 @@ public class NARio extends GameX {
 	public static void main(String[] args) {
 
 
-		Companion.initFn(2 * fps, n -> {
+		Companion.initFn(2.0F * fps, n -> {
 
 
             NARio x = new NARio(n);
@@ -273,18 +272,18 @@ public class NARio extends GameX {
             Level ll = s.level;
 			if (ll != null) {
 				//System.out.println(s.mario.x + " " + s.mario.y);
-                byte block = ll.getBlock(Math.round((s.mario.x - 8) / 16f) + dx, Math.round((s.mario.y - 8) / 16f) + dy);
-                byte t = Level.TILE_BEHAVIORS[block & 0xff];
+                byte block = ll.getBlock(Math.round((s.mario.x - 8.0F) / 16f) + dx, Math.round((s.mario.y - 8.0F) / 16f) + dy);
+                byte t = Level.TILE_BEHAVIORS[(int) block & 0xff];
 				boolean breakable = false;
 				for (int i : new int[]{BIT_BREAKABLE, BIT_PICKUPABLE, BIT_BUMPABLE}) {
-					if (((t & i) != 0)) {
+					if ((((int) t & i) != 0)) {
 						breakable = true;
 						break;
 					}
 				}
 				if (breakable)
 					return 2;
-                boolean blocking = ((t & BIT_BLOCK_ALL) != 0);
+                boolean blocking = (((int) t & BIT_BLOCK_ALL) != 0);
 				if (blocking)
 					return 1;
 			}
@@ -426,13 +425,13 @@ public class NARio extends GameX {
 				Scene.key(Mario.KEY_RIGHT, false);
 				Scene.key(Mario.KEY_SPEED, x <= -boostThresh);
 
-				return x <= -boostThresh ? -1 : -boostThresh;
+				return x <= -boostThresh ? -1.0F : -boostThresh;
 			} else if (x >= +thresh) {
 				Scene.key(Mario.KEY_RIGHT, true);
 				Scene.key(Mario.KEY_LEFT, false);
 				Scene.key(Mario.KEY_SPEED, x >= +boostThresh);
 
-				return x >= +boostThresh ? +1 : +boostThresh;
+				return x >= +boostThresh ? (float) +1 : +boostThresh;
 			} else {
 				Scene.key(Mario.KEY_LEFT, false);
 				Scene.key(Mario.KEY_RIGHT, false);

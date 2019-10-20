@@ -134,7 +134,7 @@ public abstract class TerminalEmulator {
         int foo = len;
         while (len > 0) {
             byte tmp = buf[bufs++];
-            if (0x20 <= tmp && tmp <= 0x7f) {
+            if (0x20 <= (int) tmp && (int) tmp <= 0x7f) {
                 buflen--;
                 len--;
                 continue;
@@ -345,7 +345,7 @@ public abstract class TerminalEmulator {
         term.draw_cursor();
 
         int w;
-        if ((b & 0x80) != 0) {
+        if (((int) b & 0x80) != 0) {
             term.clear_area(x, y - char_height, x + char_width * 2, y);
             b2[0] = b;
             b2[1] = getChar();

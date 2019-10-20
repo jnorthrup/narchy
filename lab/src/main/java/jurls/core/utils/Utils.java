@@ -7,10 +7,6 @@ package jurls.core.utils;
 
 import jurls.core.approximation.ParameterizedFunction;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 /**
  *
  * @author thorsten
@@ -19,7 +15,7 @@ public class Utils {
 
     public static void join(double[] output, double[] state, int action) {
         System.arraycopy(state, 0, output, 0, state.length);
-        output[output.length - 1] = action;
+        output[output.length - 1] = (double) action;
     }
 
     public static String makeIndent(int n) {

@@ -3,7 +3,6 @@ package net.beadsproject.beads.data.audiofile;
 import net.beadsproject.beads.data.SampleAudioFormat;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Set;
 
 /**

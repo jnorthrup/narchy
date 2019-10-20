@@ -64,9 +64,9 @@ public class RuleUser {
         StringTokenizer st = new StringTokenizer(sStr, " ,", true);
 		while (st.hasMoreTokens()) {
             String sTok = st.nextToken().toUpperCase();
-            if (sTok.length() > 0 && sTok.charAt(0) == 'I')
+            if (sTok.length() > 0 && (int) sTok.charAt(0) == (int) 'I')
 				Increment = Integer.valueOf(sTok.substring(1));
-			else if (sTok.length() > 0 && sTok.charAt(0) == 'C')
+			else if (sTok.length() > 0 && (int) sTok.charAt(0) == (int) 'C')
 				iClo = Integer.valueOf(sTok.substring(1));
 		}
 
@@ -133,13 +133,13 @@ public class RuleUser {
                 switch (RuleIdx) {
 					case RIDX_RUG : 
 						
-						iCnt = crrState[lurd[0]][lurd[1]]
-								+ crrState[lurd[0]][j]
-								+ crrState[lurd[0]][lurd[3]]
-								+ crrState[i][lurd[1]] + crrState[i][lurd[3]]
-								+ crrState[lurd[2]][lurd[1]]
-								+ crrState[lurd[2]][j]
-								+ crrState[lurd[2]][lurd[3]];
+						iCnt = (int) crrState[lurd[0]][lurd[1]]
+								+ (int) crrState[lurd[0]][j]
+								+ (int) crrState[lurd[0]][lurd[3]]
+								+ (int) crrState[i][lurd[1]] + (int) crrState[i][lurd[3]]
+								+ (int) crrState[lurd[2]][lurd[1]]
+								+ (int) crrState[lurd[2]][j]
+								+ (int) crrState[lurd[2]][lurd[3]];
 						bNewVal = (short) (((iCnt / 8) + Increment) % iClo); 
 																				
 																				
@@ -147,69 +147,69 @@ public class RuleUser {
 
 					case RIDX_DIB : 
 						
-						iCnt = crrState[lurd[0]][lurd[1]]
-								+ crrState[lurd[0]][j]
-								+ crrState[lurd[0]][lurd[3]]
-								+ crrState[i][lurd[1]] + crrState[i][j]
-								+ crrState[i][lurd[3]]
-								+ crrState[lurd[2]][lurd[1]]
-								+ crrState[lurd[2]][j]
-								+ crrState[lurd[2]][lurd[3]];
+						iCnt = (int) crrState[lurd[0]][lurd[1]]
+								+ (int) crrState[lurd[0]][j]
+								+ (int) crrState[lurd[0]][lurd[3]]
+								+ (int) crrState[i][lurd[1]] + (int) crrState[i][j]
+								+ (int) crrState[i][lurd[3]]
+								+ (int) crrState[lurd[2]][lurd[1]]
+								+ (int) crrState[lurd[2]][j]
+								+ (int) crrState[lurd[2]][lurd[3]];
 						bNewVal = (short) (((iCnt / 9) + Increment) % iClo); 
 																				
 																				
 						break;
 
 					case RIDX_HOD :
-                        int sum8 = crrState[lurd[0]][lurd[1]]
-								+ crrState[lurd[0]][j]
-								+ crrState[lurd[0]][lurd[3]]
-								+ crrState[i][lurd[1]] + crrState[i][lurd[3]]
-								+ crrState[lurd[2]][lurd[1]]
-								+ crrState[lurd[2]][j]
-								+ crrState[lurd[2]][lurd[3]];
-						bNewVal = 0;
+                        int sum8 = (int) crrState[lurd[0]][lurd[1]]
+								+ (int) crrState[lurd[0]][j]
+								+ (int) crrState[lurd[0]][lurd[3]]
+								+ (int) crrState[i][lurd[1]] + (int) crrState[i][lurd[3]]
+								+ (int) crrState[lurd[2]][lurd[1]]
+								+ (int) crrState[lurd[2]][j]
+								+ (int) crrState[lurd[2]][lurd[3]];
+						bNewVal = (short) 0;
 
 						
-						if (bOldVal == 0) {
+						if ((int) bOldVal == 0) {
 							if (sum8 < Increment) {
-								bNewVal = 0;
+								bNewVal = (short) 0;
 							} else
 								bNewVal = (short) (sum8 < 100 ? 2 : 3);
-						} else if ((bOldVal > 0) && (bOldVal < (iClo - 1))) {
+						} else if (((int) bOldVal > 0) && ((int) bOldVal < (iClo - 1))) {
 							bNewVal = (short) (((sum8 >> 3) + Increment) & 255);
 						}
 
-						if (bNewVal > (iClo - 1)) {
+						if ((int) bNewVal > (iClo - 1)) {
 							bNewVal = (short) (iClo - 1);
 						}
 
-						if (bOldVal == (iClo - 1)) {
-							bNewVal = 0;
+						if ((int) bOldVal == (iClo - 1)) {
+							bNewVal = (short) 0;
 						}
 						break;
 
 					case RIDX_GRH :
 
-                        int prevState = (bOldVal >> 2) & 3;
+                        int prevState = ((int) bOldVal >> 2) & 3;
 
-                        bOldVal &= 3;
+                        bOldVal = (short) ((int) bOldVal & 3);
 
 
                         int d = 0;
                         int r = 0;
                         switch (bOldVal) {
 							case 0 :
-                                int i4Sum = (((crrState[lurd[0]][j] & 3) == 1)
+                                int i4Sum = ((((int) crrState[lurd[0]][j] & 3) == 1)
                                         ? 1
                                         : 0)
-                                        + (((crrState[i][lurd[1]] & 3) == 1)
+                                        + ((((int) crrState[i][lurd[1]] & 3) == 1)
                                         ? 1
                                         : 0)
-                                        + (((crrState[i][lurd[3]] & 3) == 1)
+                                        + ((((int) crrState[i][lurd[3]] & 3) == 1)
                                         ? 1
                                         : 0)
-                                        + (((crrState[lurd[2]][j] & 3) == 1)
+                                        + ((((int) crrState[lurd[2]][j] & 3) == 1)
                                         ? 1
                                         : 0);
 								r = 0;
@@ -224,7 +224,7 @@ public class RuleUser {
 								d = 0;
 								break;
 						}
-						bNewVal = (short) ((r + d - prevState + 3) % 3 + (bOldVal << 2)); 
+						bNewVal = (short) ((r + d - prevState + 3) % 3 + ((int) bOldVal << 2));
 																							
 																							
 																							
@@ -233,7 +233,7 @@ public class RuleUser {
 				} 
 
 				tmpState[i][j] = bNewVal;
-				if (bNewVal != bOldVal) {
+				if ((int) bNewVal != (int) bOldVal) {
 					modCnt++; 
 				}
 			}

@@ -35,7 +35,7 @@ public enum ConjSeq { ;
 
         list.trimToSize();
         list.sortThis();
-        list.shift(0);
+        list.shift(0L);
 
 
         TreeSet<Term> ordered = new TreeSet(list);
@@ -49,7 +49,7 @@ public enum ConjSeq { ;
         byte[] subterm = new byte[n];
         int[] value = new int[n];
         for (int i = 0; i < n; i++) {
-            subterm[i] = (byte) (m.interned(list.get(i))-1);
+            subterm[i] = (byte) ((int) m.interned(list.get(i)) -1);
             value[i] = Tense.occToDT(list.when(i));
         }
 
@@ -116,7 +116,7 @@ public enum ConjSeq { ;
                 && (!xx.hasAny(NEG)
                         ||
                         /** TODO weird disjunctive seq cases */
-                        xx.countEquals(xxx -> xxx instanceof Neg && xxx.unneg().opID() == CONJ.id, 0))
+                        xx.countEquals(xxx -> xxx instanceof Neg && xxx.unneg().opID() == (int) CONJ.id, 0))
                 ;
     }
 
@@ -199,7 +199,7 @@ public enum ConjSeq { ;
                     return False;
                 right = sequenceBalancedTree(B, events, center + 1, end);
                 long firstWhen = events.when(start);
-                dt = Tense.occToDT((events.when(center + 1) - firstWhen - left.eventRange()));
+                dt = Tense.occToDT((events.when(center + 1) - firstWhen - (long) left.eventRange()));
                 break;
             }
 

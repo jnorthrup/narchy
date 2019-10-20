@@ -21,7 +21,7 @@ public class Replayer {
             return dis.readLong();
         } catch (IOException e) {
             e.printStackTrace();
-            return 0;
+            return 0L;
         }
     }
 

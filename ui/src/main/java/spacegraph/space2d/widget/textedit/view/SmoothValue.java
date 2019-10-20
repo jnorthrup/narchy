@@ -13,7 +13,7 @@ public class SmoothValue {
     private Interpolator interpolator;
 
     public SmoothValue() {
-        this(0, NUM_OF_DIV, Interpolator.SMOOTH);
+        this((double) 0, NUM_OF_DIV, Interpolator.SMOOTH);
     }
 
     public SmoothValue(double initialValue) {

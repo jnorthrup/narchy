@@ -40,7 +40,7 @@ public class BoundedFloatFunctionCache<X> extends MRUMap<X, Float> implements Fl
     }
 
     public void forget(float pct) {
-        int toForget = (int) Math.ceil(size()*pct);
+        int toForget = (int) Math.ceil((double) (size() * pct));
         if (toForget > 0) {
             synchronized (f) {
 

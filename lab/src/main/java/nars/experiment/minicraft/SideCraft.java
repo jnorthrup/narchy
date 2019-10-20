@@ -26,7 +26,7 @@ public class SideCraft extends GameX {
     private final SideScrollMinicraft craft;
 
     public static void main(String[] args) {
-        Companion.initFn(30, nar1 -> {
+        Companion.initFn(30.0F, nar1 -> {
             try {
                 return new SideCraft(nar1);
             } catch (Narsese.NarseseException e) {
@@ -87,7 +87,7 @@ public class SideCraft extends GameX {
         float mSpeed = 45f;
         actionBipolar($("cra(mouse,X)"), (v) -> {
             int x = craft.screenMousePos.x;
-            int xx = Util.clamp(Math.round(x + v * mSpeed), 0, camBuffer.getWidth() - 1);
+            int xx = Util.clamp(Math.round((float) x + v * mSpeed), 0, camBuffer.getWidth() - 1);
 
             craft.screenMousePos.x = xx;
             return v;
@@ -95,7 +95,7 @@ public class SideCraft extends GameX {
         });
         actionBipolar($("cra(mouse,Y)"), (v) -> {
             int y = craft.screenMousePos.y;
-            int yy = Util.clamp(Math.round(y + v * mSpeed), 0, camBuffer.getHeight() - 1);
+            int yy = Util.clamp(Math.round((float) y + v * mSpeed), 0, camBuffer.getHeight() - 1);
             craft.screenMousePos.y = yy;
             return v;
         });
@@ -103,7 +103,7 @@ public class SideCraft extends GameX {
 
         reward(() -> {
 
-            float nextScore = 0;
+            float nextScore = (float) 0;
             for (int i = 0; i < gameFramesPerCycle; i++)
                 nextScore += craft.frame();
             float ds = nextScore - prevScore;

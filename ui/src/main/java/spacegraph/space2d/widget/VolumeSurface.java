@@ -68,7 +68,7 @@ public class VolumeSurface extends PaintSurface {
 		gl.glLoadIdentity();
 
 		gl.glViewport(0, 0, Math.round(r.pw), Math.round(r.ph));
-		gl.glOrtho(0, r.pw, 0, r.ph, -1.5, 1.5);
+		gl.glOrtho((double) 0, (double) r.pw, (double) 0, (double) r.ph, -1.5, 1.5);
 		gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
 
 		gl.glPopMatrix();
@@ -79,7 +79,7 @@ public class VolumeSurface extends PaintSurface {
 	public Surface finger(Finger fingerFrom2D) {
 
         float wheel = fingerFrom2D.rotationY(true);
-		if (wheel!=0) {
+		if (wheel!= (float) 0) {
 			space.camPos.addScaled(space.camFwd, wheel);
 		}
 
@@ -87,7 +87,7 @@ public class VolumeSurface extends PaintSurface {
 
             v2 p = fingerFrom2D.posRelative(this);
 
-            ClosestRay c = mouse.pickRay((p.x - 0.5f) * 2, (p.y - 0.5f) * 2);
+            ClosestRay c = mouse.pickRay((p.x - 0.5f) * 2.0F, (p.y - 0.5f) * 2.0F);
 
 			if (c.hasHit()) {
                 Body3D co = mouse.pickedBody;
@@ -97,10 +97,10 @@ public class VolumeSurface extends PaintSurface {
                         SurfacedCuboid ss = (SurfacedCuboid) s;
                         v3 local = ss.transform.untransform(mouse.hitPoint.clone());
 
-						if (local.x >= -1 && local.x <= +1 && local.y >= -1 && local.y <= +1) {
+						if (local.x >= -1.0F && local.x <= (float) +1 && local.y >= -1.0F && local.y <= (float) +1) {
 
                             SimpleBoxShape sss = (SimpleBoxShape) (ss.shape);
-                            float zFront = sss.z() / 2;
+                            float zFront = sss.z() / 2.0F;
                             float radiusTolerance = 0.25f * co.shape().getBoundingRadius();
 							if (Util.equals(local.z, zFront, radiusTolerance)) {
 								//System.out.println(local.x + " "  + local.y);

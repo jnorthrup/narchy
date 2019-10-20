@@ -419,7 +419,7 @@ public abstract class RdpPacket {
             int j = 0;
             int i = 0;
             while (i < len) {
-                this.setLittleEndian16((short) name[j++]);
+                this.setLittleEndian16((int) (short) name[j++]);
                 i += 2;
             }
         }

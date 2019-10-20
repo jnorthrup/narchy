@@ -60,7 +60,7 @@ public class RotationalLimitMotor {
 
 	public RotationalLimitMotor() {
     	accumulatedImpulse = 0.f;
-        targetVelocity = 0;
+        targetVelocity = (float) 0;
         maxMotorForce = 0.1f;
         maxLimitForce = 300.0f;
         loLimit = -BulletGlobals.SIMD_INFINITY;
@@ -70,7 +70,7 @@ public class RotationalLimitMotor {
         damping = 1.0f;
         limitSoftness = 0.5f;
         currentLimit = 0;
-        currentLimitError = 0;
+        currentLimitError = (float) 0;
         enableMotor = false;
 	}
 	
@@ -163,7 +163,7 @@ public class RotationalLimitMotor {
 		}
 
 
-        float unclippedMotorImpulse = (1 + bounce) * motor_relvel * jacDiagABInv;
+        float unclippedMotorImpulse = (1.0F + bounce) * motor_relvel * jacDiagABInv;
 
 		
 		float clippedMotorImpulse;

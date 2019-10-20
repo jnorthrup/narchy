@@ -70,9 +70,9 @@ public abstract class Time implements Serializable {
             case Present:
                 return now();
             case Past:
-                return round(now() - dur());
+                return (long) round((float) now() - dur());
             case Future:
-                return round(now() + dur());
+                return (long) round((float) now() + dur());
             default:
                 return ETERNAL;
         }

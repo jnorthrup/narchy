@@ -59,7 +59,7 @@ public class ConsoleRegexTurtle {
         simpleConfiguration.generations = 1000; 
         simpleConfiguration.numberThreads = 4; 
         simpleConfiguration.populationSize = 500; 
-        simpleConfiguration.termination = 20; 
+        simpleConfiguration.termination = 20.0;
         simpleConfiguration.populateOptionalFields = false;
         simpleConfiguration.isStriped = false;
 

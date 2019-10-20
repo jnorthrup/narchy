@@ -22,7 +22,7 @@ public class CurveWave extends WaveFactory {
      * @param curviness the curviness.
      */
     public CurveWave(float curviness) {
-        this.curviness = Math.min(1, Math.max(-1, curviness));
+        this.curviness = Math.min(1.0F, Math.max(-1.0F, curviness));
     }
 
     /* (non-Javadoc)
@@ -32,9 +32,9 @@ public class CurveWave extends WaveFactory {
     public ArrayTensor get(int bufferSize) {
         int size = bufferSize;
         ArrayTensor b = new ArrayTensor(size);
-        double exponent = Math.exp(-curviness);
+        double exponent = Math.exp((double) -curviness);
         for (int i = 0; i < bufferSize; i++) {
-            b.data[i] = (float) Math.pow(((float) i) / bufferSize, exponent);
+            b.data[i] = (float) Math.pow((double) (((float) i) / (float) bufferSize), exponent);
         }
         return b;
     }

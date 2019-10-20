@@ -62,7 +62,7 @@ public class RealDecisionTree extends DecisionTree<Integer, Float> {
         assert (table.cols.length > 1);
         maxDepth(maxDepth);
 
-        depthToPrecision = (i) -> (0.9f / (1 + (i - 1) / ((float) maxDepth)));
+        depthToPrecision = (i) -> (0.9f / (1.0F + (float) (i - 1) / ((float) maxDepth)));
 
         List<DiscretizedScalarFeature> list = new ArrayList<>();
         for (int x1 = 0; x1 < table.cols.length; x1++) {

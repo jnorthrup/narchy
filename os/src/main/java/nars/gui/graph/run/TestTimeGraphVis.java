@@ -25,8 +25,8 @@ public class TestTimeGraphVis extends SimpleGraph3D<TimeGraph.Event> {
     static MapNodeGraph dt() {
         TimeGraph A = new TimeGraph();
         A.know($.$$("((one &&+1 two) ==>+1 (three &&+1 four))"), ETERNAL);
-        A.know($.$$("one"), 1);
-        A.know($.$$("two"), 20);
+        A.know($.$$("one"), 1L);
+        A.know($.$$("two"), 20L);
         A.solve($.$$("\"(one &&+- two)\""), (x)->true);
         return A;
     }

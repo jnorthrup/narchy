@@ -83,7 +83,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
     @Override protected Term choose(Term[] x, Random rng) {
         IntToFloatFunction curve =
                 //n -> 1f / Util.cube(x[n].volume());
-                n -> 1f / Util.sqr(x[n].volume());
+                n -> 1f / (float) Util.sqr(x[n].volume());
                 //n -> 1f / x[n].volume()
                 //n -> (float) (1 / Math.sqrt(x[n].volume()))
 
@@ -136,12 +136,12 @@ public class DepIndepVarIntroduction extends VarIntroduction {
             Term t = null;
             int pathLength = p.size();
             for (int i = -1; i < pathLength - 1 /* dont include the selected target itself */; i++) {
-                t = (i == -1) ? input : t.sub(p.get(i));
+                t = (i == -1) ? input : t.sub((int) p.get(i));
                 Op o = t.op();
 
                 if (!depOrIndep && validIndepVarSuperterm(o)) {
-                    byte inside = (byte) (1 << p.get(i + 1));
-                    m.updateValue(t, inside, (previous) -> (byte) (previous | inside));
+                    byte inside = (byte) (1 << (int) p.get(i + 1));
+                    m.updateValue(t, inside, (previous) -> (byte) ((int) previous | (int) inside));
                 } else if (depOrIndep && validDepVarSuperterm(o)) {
                     m.addToValue(t, (byte) 1);
                 }
@@ -150,10 +150,10 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
 
         return (!depOrIndep) ?
-            ((m.anySatisfy(b -> b == 0b11)) ?
+            ((m.anySatisfy(b -> (int) b == 0b11)) ?
                     (input.hasVars()  ? UnnormalizedVarIndep : FirstNormalizedVarIndep) /*varIndep(order)*/ : null)
                         :
-            (m.anySatisfy(b -> b >= 2) ?
+            (m.anySatisfy(b -> (int) b >= 2) ?
                     (input.hasVars()  ? UnnormalizedVarDep : FirstNormalizedVarDep)  /* $.varDep(order) */ : null)
         ;
 

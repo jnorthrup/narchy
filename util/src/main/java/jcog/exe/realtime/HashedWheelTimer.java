@@ -141,7 +141,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         long now = System.nanoTime();
         long sleepTimeNanos = deadline - now;
 
-		if (sleepTimeNanos > 0) {
+		if (sleepTimeNanos > 0L) {
 			//System.out.println(Texts.timeStr(sleepTimeNanos) + " sleep");
 
 			try {
@@ -157,8 +157,8 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 		} else {
 
-			float lagThreshold = wheels; //in resolutions
-			if (sleepTimeNanos < -resolution * lagThreshold) {
+			float lagThreshold = (float) wheels; //in resolutions
+			if ((float) sleepTimeNanos < (float) -resolution * lagThreshold) {
 				//fell behind more than N resolutions, adjust
 				deadline = now;
 			}
@@ -251,7 +251,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 	public String toString() {
 		return String.format("HashedWheelTimer { Buffer Size: %d, Resolution: %s }",
 			wheels,
-			Texts.timeStr(resolution));
+			Texts.timeStr((double) resolution));
 	}
 
 	/**
@@ -335,7 +335,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 	 */
 	private <V> ScheduledFuture<V> scheduleOneShot(long delayNS, Callable<V> callable) {
 
-		if (delayNS <= resolution / 2) {
+		if (delayNS <= resolution / 2L) {
 			//immediate
             ImmediateFuture<V> f = new ImmediateFuture<V>(callable);
 			executor.execute(f);
@@ -346,9 +346,9 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 		}
 
 
-        long cycleLen = wheels * resolution;
-        int rounds = (int) (((double) delayNS) / cycleLen);
-        int firstFireOffset = Util.longToInt(delayNS - rounds * cycleLen);
+        long cycleLen = (long) wheels * resolution;
+        int rounds = (int) (((double) delayNS) / (double) cycleLen);
+        int firstFireOffset = Util.longToInt(delayNS - (long) rounds * cycleLen);
 
 		return schedule(new OneTimedFuture(Math.max(0, firstFireOffset), rounds, callable));
 	}
@@ -368,7 +368,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 	private FixedRateTimedFuture scheduleFixedRate(long recurringTimeout, long firstDelay, FixedRateTimedFuture r) {
 		assert (recurringTimeout >= resolution) : "Cannot schedule tasks for amount of time less than timer precision.";
 
-		if (firstDelay > 0) {
+		if (firstDelay > 0L) {
 			scheduleOneShot(firstDelay, () -> {
 				schedule(r);
 				return null;
@@ -413,7 +413,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 		if (this.loop != null) {
 
 			//HACK time grap between cursor==-1 and loop==null (final thread stop signal)
-			Util.sleepMS(10);
+			Util.sleepMS(10L);
 
 			if (this.loop != null)
 				throw new RuntimeException("loop exists");
@@ -503,7 +503,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 		@Override
 		public long getDelay(TimeUnit timeUnit) {
-			return 0;
+			return 0L;
 		}
 
 		@Override

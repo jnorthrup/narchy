@@ -46,7 +46,7 @@ public class MutableTruth implements Truth {
 	}
 
 	public MutableTruth conf(float c) {
-		evi = c2wSafe(c);
+		evi = (double) c2wSafe(c);
 		return this;
 	}
 	public MutableTruth conf(double c) {
@@ -66,7 +66,7 @@ public class MutableTruth implements Truth {
 	@Override
 	public final MutableTruth neg() {
         MutableTruth x = new MutableTruth();
-		x.freq = 1 - freq;
+		x.freq = 1.0F - freq;
 		x.evi = evi;
 		return x;
 	}

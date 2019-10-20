@@ -17,7 +17,7 @@ public class FNV1aHash {
 
         for (int i = 0; i < len; i++) {
             byte octet = data[i];
-            hash ^= octet;
+            hash = hash ^ (int) octet;
             hash *= PRIME;
         }
 

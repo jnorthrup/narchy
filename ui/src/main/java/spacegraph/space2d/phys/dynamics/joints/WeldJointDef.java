@@ -71,7 +71,7 @@ public class WeldJointDef extends JointDef {
         this();
         this.bodyA = a;
         this.bodyB = b;
-        this.referenceAngle = 0;
+        this.referenceAngle = (float) 0;
     }
 
 

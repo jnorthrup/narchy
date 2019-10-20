@@ -118,7 +118,7 @@ class MatrixTransform {
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < m2d; j++) {
                     double b = outdw[m2d * i + j];
-                    if (b!=0) {
+                    if (b!= (double) 0) {
                         for (int k = 0; k < m1d; k++) {
                             int mm1 = m1d * i + k;
                             int mm2 = m2d * k + j;
@@ -135,7 +135,7 @@ class MatrixTransform {
             double[] m1DW = mat1.dw,  m2DW = mat2.dw, outDW = out.dw;
             for (int i = 0; i < bound; i++) {
                 double dwi = outDW[i];
-                if (dwi != 0) {
+                if (dwi != (double) 0) {
                     m1DW[i] += dwi;
                     m2DW[i] += dwi;
                 }
@@ -146,7 +146,7 @@ class MatrixTransform {
             int bound = mat.w.length;
             double[] matdw = mat.dw, outW = out.w, outDW = out.dw;
             for (int i = 0; i < bound; i++)
-                matdw[i] += (1 - Util.sqr(outW[i])) * outDW[i];
+                matdw[i] += (1.0 - Util.sqr(outW[i])) * outDW[i];
         }
 
         public enum BackpropMethod {

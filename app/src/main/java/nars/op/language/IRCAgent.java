@@ -206,7 +206,7 @@ public class IRCAgent extends IRC {
         float durFPS = 1f;
         NAR n = new NARS.DefaultNAR(8, true)
                 .exe(new WorkerExec(4))
-                .time(new RealTime.MS(false).durFPS(durFPS)).get();
+                .time(new RealTime.MS(false).durFPS((double) durFPS)).get();
 
 
         n.termVolMax.set(24);

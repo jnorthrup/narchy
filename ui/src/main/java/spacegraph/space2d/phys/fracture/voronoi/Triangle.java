@@ -52,17 +52,17 @@ public class Triangle {
         v2 b = p[j];
         v2 c = p[k];
 
-        double Bx = (double) b.x - a.x;
-        double By = (double) b.y - a.y;
-        double Cx = (double) c.x - a.x;
-        double Cy = (double) c.y - a.y;
-        double D = 1.0 / (2 * (Bx * Cy - By * Cx));
+        double Bx = (double) b.x - (double) a.x;
+        double By = (double) b.y - (double) a.y;
+        double Cx = (double) c.x - (double) a.x;
+        double Cy = (double) c.y - (double) a.y;
+        double D = 1.0 / (2.0 * (Bx * Cy - By * Cx));
         double Bs = Bx * Bx + By * By;
         double Cs = Cx * Cx + Cy * Cy;
         double x = (Cy * Bs - By * Cs) * D;
-        dX = x + a.x;
+        dX = x + (double) a.x;
         double y = (Bx * Cs - Cx * Bs) * D;
-        dY = y + a.y;
+        dY = y + (double) a.y;
 
         
         
@@ -94,8 +94,8 @@ public class Triangle {
     }
 
     private double dis(v2 v) {
-        double x = dX - v.x;
-        double y = dY - v.y;
+        double x = dX - (double) v.x;
+        double y = dY - (double) v.y;
         return x * x + y * y;
     }
 }

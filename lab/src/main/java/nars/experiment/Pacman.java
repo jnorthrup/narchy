@@ -19,7 +19,7 @@ public class Pacman extends GameX {
 
     private final PacmanGame g;
 
-    static float fps = 20;
+    static float fps = 20.0F;
 
     public Pacman(NAR nar) {
         super($$("Pac"),
@@ -122,14 +122,14 @@ public class Pacman extends GameX {
 
             int nextScore = g.score;
 
-            float r = (nextScore - lastScore);
+            float r = (float) (nextScore - lastScore);
 //            if(r == 0)
 //                return Float.NaN;
 
 
             lastScore = nextScore;
-            if (r > 0) return +1;
-            else if (r < 0) return 0;
+            if (r > (float) 0) return (float) +1;
+            else if (r < (float) 0) return (float) 0;
             else
                 return 0.5f;
             //return (Util.tanhFast(r) + 1)/2f;
@@ -141,7 +141,7 @@ public class Pacman extends GameX {
 
 
     public static void main(String[] args) {
-        GameX.Companion.initFn(fps*2, (n) -> {
+        GameX.Companion.initFn(fps* 2.0F, (n) -> {
 
             Pacman a = new Pacman(n);
             n.add(a);

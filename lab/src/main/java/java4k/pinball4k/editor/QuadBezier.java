@@ -7,8 +7,8 @@ public class QuadBezier extends JPanel {
 	
 	@Override
     public void paintComponent(Graphics g) {
-		float[] xs = {100, 200, 200, 200, 300};
-		float[] ys = {100, 100, 200, 150, 200};
+		float[] xs = {100.0F, 200.0F, 200.0F, 200.0F, 300.0F};
+		float[] ys = {100.0F, 100.0F, 200.0F, 150.0F, 200.0F};
 		
 		for (int curveIdx = 0; curveIdx < (xs.length-1)/2; curveIdx++) {
             int idx = curveIdx * 2;
@@ -21,13 +21,13 @@ public class QuadBezier extends JPanel {
 
             float prevx = x0;
             float prevy = y0;
-			for (float t=0; t<=1; t+=0.01f) {
+			for (float t = (float) 0; t<= 1.0F; t+=0.01f) {
                 float t2 = t*t;
-                float tinv = 1-t;
+                float tinv = 1.0F -t;
                 float tinv2 = tinv*tinv;
 
-                float x = tinv2 * x0 + 2*t*tinv*x1 + t2*x2;
-                float y = tinv2 * y0 + 2*t*tinv*y1 + t2*y2;
+                float x = tinv2 * x0 + 2.0F *t*tinv*x1 + t2*x2;
+                float y = tinv2 * y0 + 2.0F *t*tinv*y1 + t2*y2;
 				g.drawLine((int) prevx, (int) prevy, (int) x, (int) y);
 				prevx = x;
 				prevy = y;

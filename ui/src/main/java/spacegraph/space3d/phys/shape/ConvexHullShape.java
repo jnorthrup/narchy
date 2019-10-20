@@ -95,7 +95,7 @@ public class ConvexHullShape extends PolyhedralConvexShape {
 			vec.set(1f, 0f, 0f);
 		}
 		else {
-            float rlen = 1f / (float) Math.sqrt(lenSqr);
+            float rlen = 1f / (float) Math.sqrt((double) lenSqr);
 			vec.scaled(rlen);
 		}
 

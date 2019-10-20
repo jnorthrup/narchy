@@ -39,7 +39,7 @@ public enum Roulette {
 
         if (weight_sum < ScalarValue.EPSILON) {
             //flat
-            return Util.bin(rng.asFloat() * weightCount, weightCount);//rng.nextInt(count)
+            return Util.bin(rng.asFloat() * (float) weightCount, weightCount);//rng.nextInt(count)
         } else {
 
             return selectRouletteUnidirectionally
@@ -104,15 +104,15 @@ public enum Roulette {
     }
 
     private static boolean valid(float w) {
-        return w==w && w > 0;
+        return w==w && w > (float) 0;
     }
 
     private static int selectRouletteUnidirectionally(int count, IntToFloatFunction weight, float weight_sum, FloatSupplier rng) {
         float distance = rng.asFloat() * weight_sum;
-        int i = Util.bin(rng.asFloat() * count, count);
+        int i = Util.bin(rng.asFloat() * (float) count, count);
 
         int safetyLimit = count;
-        while ((distance -= Math.max(0, weight.valueOf(i))) > Float.MIN_NORMAL && --safetyLimit > 0) {
+        while ((distance -= Math.max((float) 0, weight.valueOf(i))) > Float.MIN_NORMAL && --safetyLimit > 0) {
 
             if (++i == count) i = 0; //wrap-around
 
@@ -134,7 +134,7 @@ public enum Roulette {
         } else {
             dir = false;
             i = count - 1; //count down
-            x = 1 - x;
+            x = 1.0F - x;
         }
 
         float distance = x * weight_sum;

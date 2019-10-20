@@ -2,7 +2,6 @@ package jcog.grammar.parse;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /*
  * Copyright (c) 2000 Steven J. Metsker. All Rights Reserved.

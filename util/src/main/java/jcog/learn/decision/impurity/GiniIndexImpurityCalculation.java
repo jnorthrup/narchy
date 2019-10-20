@@ -25,7 +25,7 @@ public class GiniIndexImpurityCalculation implements ImpurityCalculator {
         if (s > 1) {
             return labels.stream().mapToDouble(l -> {
                 double p = ImpurityCalculator.empiricalProb(value, splitData.get(), l);
-                return 2.0 * p * (1 - p);
+                return 2.0 * p * (1.0 - p);
             }).sum();
         } else if (s == 1) {
             return 0.0; 

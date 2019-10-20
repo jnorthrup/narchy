@@ -29,7 +29,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 public class ap extends GamePanel {
 
@@ -96,12 +95,12 @@ public class ap extends GamePanel {
 
 
       float[][][] map = new float[MAP_LENGTH][4][3];
-    float vy = -1;
-    float py = 1;    
-    float px = 0;
-    float vx = 0;       
+    float vy = -1.0F;
+    float py = 1.0F;
+    float px = (float) 0;
+    float vx = (float) 0;
     for(k = i = 0; i < 20; i++) {
-      int c = S.charAt(i);
+      int c = (int) S.charAt(i);
       q = c & 0xFF;
       if ((c >> 8) == 0xFF) {
         
@@ -117,8 +116,8 @@ public class ap extends GamePanel {
         
         r = (c >> 8) - 128;
 
-          float centerX = -r * vy;
-          float centerY = r * vx;
+          float centerX = (float) -r * vy;
+          float centerY = (float) r * vx;
 
           float X = -centerX;
           float Y = -centerY;
@@ -126,19 +125,19 @@ public class ap extends GamePanel {
         centerX += px;
         centerY += py;
 
-          int steps = (int)(r * q * 0.02464f);
+          int steps = (int)((float) r * (float) q * 0.02464f);
         if (steps < 0) {
           steps = -steps;
         }
         for(j = 1; j < steps; j++) {
-            float cos = (float)Math.cos(j / (float)r);
-            float sin = (float)Math.sin(j / (float)r);
+            float cos = (float)Math.cos((double) (j / (float) r));
+            float sin = (float)Math.sin((double) (j / (float) r));
             float X2 = X * cos - Y * sin;
 
             vx = centerX + X2 - px;
             float Y2 = X * sin + Y * cos;
             vy = centerY + Y2 - py;
-            float mag = (float)Math.hypot(vx, vy);
+            float mag = (float)Math.hypot((double) vx, (double) vy);
           vx /= mag;
           vy /= mag;
 
@@ -155,8 +154,8 @@ public class ap extends GamePanel {
 
       final int MAP_Y = 1;
       for(i = 0; i < MAP_LENGTH; i++) {
-      map[i][MAP_O][MAP_Y] = 5 
-          * (((float)Math.cos(0.088871f * i - 0.6f)) - 1);
+      map[i][MAP_O][MAP_Y] = 5.0F
+          * (((float)Math.cos((double) (0.088871f * (float) i - 0.6f))) - 1.0F);
     }
 
 
@@ -169,7 +168,7 @@ public class ap extends GamePanel {
           float x = m0[MAP_O][MAP_X] - m1[MAP_O][MAP_X];
           float y = m0[MAP_O][MAP_Y] - m1[MAP_O][MAP_Y];
           float z = m0[MAP_O][MAP_Z] - m1[MAP_O][MAP_Z];
-          float mag = (float)Math.sqrt(x * x + y * y + z * z);
+          float mag = (float)Math.sqrt((double) (x * x + y * y + z * z));
       x /= mag;
       y /= mag;
       z /= mag;
@@ -189,10 +188,10 @@ public class ap extends GamePanel {
       for(i = 0; i < 17; i++) {
       if (i < 8) {
         sprites[i] = new BufferedImage(28, 30, BufferedImage.TYPE_INT_ARGB_PRE);
-        p = Color.getHSBColor(i / 8f, 1, 1).hashCode();
+        p = Color.getHSBColor((float) i / 8f, 1.0F, 1.0F).hashCode();
         for(j = 0; j < 30; j++) {
           for(k = 0; k < 14; k++) {
-            q = S.charAt(20 + j * 14 + k);
+            q = (int) S.charAt(20 + j * 14 + k);
               switch (q) {
                   case 'a':
                       q = 0;
@@ -218,7 +217,7 @@ public class ap extends GamePanel {
         sprites[i] = new BufferedImage(14, 12, BufferedImage.TYPE_INT_ARGB_PRE);
         for(j = 0; j < 12; j++) {
           for(k = 0; k < 7; k++) {
-            q = S.charAt((i < 11 ? 440 : (i * 84 - 400)) + j * 7 + k);
+            q = (int) S.charAt((i < 11 ? 440 : (i * 84 - 400)) + j * 7 + k);
               switch (q) {
                   case 'a':
                       q = 0;
@@ -243,7 +242,7 @@ public class ap extends GamePanel {
       }
     }
     
-    long nextFrameStartTime = 0;
+    long nextFrameStartTime = 0L;
       int startingLine = 0;
       int gameReset = 1;
     final int GAME_STATE_ENDING = 2;
@@ -333,7 +332,7 @@ public class ap extends GamePanel {
           int band1;
           int band0;
           do {
-        nextFrameStartTime += 10000000; 
+        nextFrameStartTime += 10000000L;
 
         
                 
@@ -352,23 +351,23 @@ public class ap extends GamePanel {
               for(j = 0; j < 4; j++) {
                 element = new float[32];
                 elements.add(element);
-                element[ELEMENT_X] = 0.75f - j * 0.5f;
-                element[ELEMENT_D] = (i + 1) * MAP_LENGTH >> 3;
-                element[ELEMENT_SPRITE] = SPRITE_ITEM_BOX;
+                element[ELEMENT_X] = 0.75f - (float) j * 0.5f;
+                element[ELEMENT_D] = (float) ((i + 1) * MAP_LENGTH >> 3);
+                element[ELEMENT_SPRITE] = (float) SPRITE_ITEM_BOX;
               }
             }
             
             players[i] = new float[32];
             elements.add(players[i]);
-            players[i][ELEMENT_X] = 0;
-            players[i][ELEMENT_D] = i << 1;
-            players[i][ELEMENT_SPRITE] = i;
-            players[i][ELEMENT_ITEM] = SPRITE_NONE;
+            players[i][ELEMENT_X] = (float) 0;
+            players[i][ELEMENT_D] = (float) (i << 1);
+            players[i][ELEMENT_SPRITE] = (float) i;
+            players[i][ELEMENT_ITEM] = (float) SPRITE_NONE;
             shells[i] = new ArrayList<>();
             
             
             roadColors[i] = new Color(
-                Color.getHSBColor(i / (float)ROAD_COLORS, 1, 1).hashCode() 
+                Color.getHSBColor((float) i / (float)ROAD_COLORS, 1.0F, 1.0F).hashCode()
                     & 0x80FFFFFF, true);
           } 
           nextFrameStartTime = System.nanoTime();
@@ -390,7 +389,7 @@ public class ap extends GamePanel {
         startingLine = (startingLine + 1) & 15;
         
         
-        lap = 1 + (int)(players[HUMAN][ELEMENT_D] / MAP_LENGTH);
+        lap = 1 + (int)(players[HUMAN][ELEMENT_D] / (float) MAP_LENGTH);
         r = rank;
         rank = 1;        
         for(i = 0; i < 8; i++) {
@@ -401,75 +400,75 @@ public class ap extends GamePanel {
               rank++;
             }
             
-            if (players[i][ELEMENT_VD] < (players[i][ELEMENT_MUSHROOMING] > 0 
-                  || players[i][ELEMENT_STARING] > 0 
-                      ? FAST_VD : players[i][ELEMENT_TINYING] > 0 
-                          ? MAX_ENEMY_VD / 2 : 
+            if (players[i][ELEMENT_VD] < (players[i][ELEMENT_MUSHROOMING] > (float) 0
+                  || players[i][ELEMENT_STARING] > (float) 0
+                      ? FAST_VD : players[i][ELEMENT_TINYING] > (float) 0
+                          ? MAX_ENEMY_VD / 2.0F :
                     r < 4 ? MAX_VD : MAX_ENEMY_VD)
-                && players[i][ELEMENT_BANANAING] == 0) {
+                && players[i][ELEMENT_BANANAING] == (float) 0) {
               players[i][ELEMENT_VD] += AD;
             } else {
               players[i][ELEMENT_VD] -= AD;
             }
-            if (players[i][ELEMENT_EXPLODING] > 0) {
-              players[i][ELEMENT_VD] = 0;
+            if (players[i][ELEMENT_EXPLODING] > (float) 0) {
+              players[i][ELEMENT_VD] = (float) 0;
             }
             players[i][ELEMENT_D] += players[i][ELEMENT_VD];
             players[i][ELEMENT_X] += players[i][ELEMENT_VX];
-            if (players[i][ELEMENT_TIMER] == 0) {
-              players[i][ELEMENT_TIMER] = 100 
-                  + (int)(400 * (float)Math.random());
+            if (players[i][ELEMENT_TIMER] == (float) 0) {
+              players[i][ELEMENT_TIMER] = (float) (100
+                      + (int) (400.0F * (float) Math.random()));
               players[i][ELEMENT_VX] 
-                  = (((float)Math.random() * 2 * ENEMY_EDGE_X - ENEMY_EDGE_X) 
+                  = (((float)Math.random() * 2.0F * ENEMY_EDGE_X - ENEMY_EDGE_X)
                       - players[i][ELEMENT_X]) / players[i][ELEMENT_TIMER];
             } else {
               players[i][ELEMENT_TIMER]--;
             }
           }        
           
-          if (players[i][ELEMENT_ITEM_RANDOMIZER] > 0) {
-            if (--players[i][ELEMENT_ITEM_RANDOMIZER] % 10 == 0) {
+          if (players[i][ELEMENT_ITEM_RANDOMIZER] > (float) 0) {
+            if (--players[i][ELEMENT_ITEM_RANDOMIZER] % 10.0F == (float) 0) {
               
               
               
-              players[i][ELEMENT_ITEM_COUNT] = 1;
-              players[i][ELEMENT_ITEM] = 
-                  i == HUMAN && r > 9 - (lap << 1)
-                      && players[i][ELEMENT_ITEM_RANDOMIZER] == 0 
-                          ? SPRITE_MUSHROOM 
-                              : 8 + (int)(9 * (float)Math.random());
-                boolean rareItem = players[i][ELEMENT_ITEM] == SPRITE_BLUE_SHELL
-                  || players[i][ELEMENT_ITEM] == SPRITE_THUNDERBOLT
-                  || players[i][ELEMENT_ITEM] == SPRITE_STAR;
-              if (players[i][ELEMENT_ITEM_RANDOMIZER] == 0
-                  && (players[i][ELEMENT_ITEM] == SPRITE_ITEM_BOX
+              players[i][ELEMENT_ITEM_COUNT] = 1.0F;
+              players[i][ELEMENT_ITEM] =
+                      (float) (i == HUMAN && r > 9 - (lap << 1)
+                              && players[i][ELEMENT_ITEM_RANDOMIZER] == (float) 0
+                              ? SPRITE_MUSHROOM
+                              : 8 + (int) (9.0F * (float) Math.random()));
+                boolean rareItem = players[i][ELEMENT_ITEM] == (float) SPRITE_BLUE_SHELL
+                  || players[i][ELEMENT_ITEM] == (float) SPRITE_THUNDERBOLT
+                  || players[i][ELEMENT_ITEM] == (float) SPRITE_STAR;
+              if (players[i][ELEMENT_ITEM_RANDOMIZER] == (float) 0
+                  && (players[i][ELEMENT_ITEM] == (float) SPRITE_ITEM_BOX
                       || (r == 1 && i == HUMAN 
                           && (rareItem 
-                              || players[i][ELEMENT_ITEM] == SPRITE_MUSHROOM))
-                      || (rareItem && (int)(7 * (float)Math.random()) != 3))) {
+                              || players[i][ELEMENT_ITEM] == (float) SPRITE_MUSHROOM))
+                      || (rareItem && (int)(7.0F * (float)Math.random()) != 3))) {
                 
                 
                 
-                players[i][ELEMENT_ITEM_RANDOMIZER] = 1;
+                players[i][ELEMENT_ITEM_RANDOMIZER] = 1.0F;
               }      
-              if (players[i][ELEMENT_ITEM] == SPRITE_MUSHROOM) {
-                j = (int)(7 * (float)Math.random());
-                players[i][ELEMENT_ITEM_COUNT] = j == 0 ? 10 : j == 1 ? 3 : 1;
-              } else if (players[i][ELEMENT_ITEM] == SPRITE_BANANA) {
+              if (players[i][ELEMENT_ITEM] == (float) SPRITE_MUSHROOM) {
+                j = (int)(7.0F * (float)Math.random());
+                players[i][ELEMENT_ITEM_COUNT] = (float) (j == 0 ? 10 : j == 1 ? 3 : 1);
+              } else if (players[i][ELEMENT_ITEM] == (float) SPRITE_BANANA) {
                 players[i][ELEMENT_ITEM_COUNT] 
-                    = 1 + 4 * (int)(2 * (float)Math.random());
-              } else if (players[i][ELEMENT_ITEM] < SPRITE_ITEM_BOX
-                  && players[i][ELEMENT_ITEM] != SPRITE_BLUE_SHELL) {
+                    = (float) (1 + 4 * (int) (2.0F * (float) Math.random()));
+              } else if (players[i][ELEMENT_ITEM] < (float) SPRITE_ITEM_BOX
+                  && players[i][ELEMENT_ITEM] != (float) SPRITE_BLUE_SHELL) {
                 players[i][ELEMENT_ITEM_COUNT] 
-                    = 1 + 2 * (int)(2 * (float)Math.random());
+                    = (float) (1 + 2 * (int) (2.0F * (float) Math.random()));
               }
             }
           }
                     
           if (((i == 0 && releasedC && a[KEY_C]) 
-              || (i > 0 && players[i][ELEMENT_ITEM_TRIGGER] == 1))
-              && players[i][ELEMENT_EXPLODING] == 0
-              && players[i][ELEMENT_FALLING] == 0) {          
+              || (i > 0 && players[i][ELEMENT_ITEM_TRIGGER] == 1.0F))
+              && players[i][ELEMENT_EXPLODING] == (float) 0
+              && players[i][ELEMENT_FALLING] == (float) 0) {
             
             if (i == 0) {
               releasedC = false;
@@ -477,48 +476,48 @@ public class ap extends GamePanel {
             if (shells[i].size() > 0) {
               
               element = shells[i].remove(0);
-              element[ELEMENT_ORBITING] = 0;
+              element[ELEMENT_ORBITING] = (float) 0;
               element[ELEMENT_D] = players[i][ELEMENT_D] + 0.6f;
-              element[ELEMENT_TIMER] = SHELL_TIME_OUT;
+              element[ELEMENT_TIMER] = (float) SHELL_TIME_OUT;
               if (element[ELEMENT_X] < -ENEMY_EDGE_X) {
                 element[ELEMENT_X] = -ENEMY_EDGE_X;
               }
               if (element[ELEMENT_X] > ENEMY_EDGE_X) {
                 element[ELEMENT_X] = ENEMY_EDGE_X;
               }
-            } else if (players[i][ELEMENT_ITEM_RANDOMIZER] > 0) {
-              players[i][ELEMENT_ITEM_RANDOMIZER] = 1;
+            } else if (players[i][ELEMENT_ITEM_RANDOMIZER] > (float) 0) {
+              players[i][ELEMENT_ITEM_RANDOMIZER] = 1.0F;
             } else {
               j = (int)players[i][ELEMENT_ITEM];
               if (j != SPRITE_NONE) {
 
                 if (j == SPRITE_MUSHROOM) {
                   
-                  players[i][ELEMENT_MUSHROOMING] = 200;                
+                  players[i][ELEMENT_MUSHROOMING] = 200.0F;
                 } else if (j == SPRITE_STAR) {
                   
-                  players[i][ELEMENT_STARING] = 800;              
+                  players[i][ELEMENT_STARING] = 800.0F;
                 } else if (j == SPRITE_THUNDERBOLT) {
                   
                   lightning = 50;
                   for(k = 0; k < PLAYERS; k++) {
-                    if (k != i && players[k][ELEMENT_STARING] == 0) {
-                      players[k][ELEMENT_TINYING] = 500;
+                    if (k != i && players[k][ELEMENT_STARING] == (float) 0) {
+                      players[k][ELEMENT_TINYING] = 500.0F;
                     }
                   }
                 } else if (j < SPRITE_MUSHROOM
-                    && players[i][ELEMENT_ITEM_COUNT] == 3) {
+                    && players[i][ELEMENT_ITEM_COUNT] == 3.0F) {
                   
-                  players[i][ELEMENT_ITEM_COUNT] = 1;
+                  players[i][ELEMENT_ITEM_COUNT] = 1.0F;
                   for(k = 0; k < 3; k++) {
                     element = new float[32];
                     elements.add(element);
                     element[ELEMENT_X] = players[i][ELEMENT_X];
                     element[ELEMENT_D] = players[i][ELEMENT_D] + 0.5f;
-                    element[ELEMENT_SPRITE] = j;
-                    element[ELEMENT_TIMER] = k * 2.09f;
-                    element[ELEMENT_PLAYER] = i;
-                    element[ELEMENT_ORBITING] = 1;
+                    element[ELEMENT_SPRITE] = (float) j;
+                    element[ELEMENT_TIMER] = (float) k * 2.09f;
+                    element[ELEMENT_PLAYER] = (float) i;
+                    element[ELEMENT_ORBITING] = 1.0F;
                     shells[i].add(element);
                   }
                 } else {              
@@ -527,45 +526,45 @@ public class ap extends GamePanel {
                   element[ELEMENT_X] = players[i][ELEMENT_X];
                   element[ELEMENT_D] = players[i][ELEMENT_D] +
                           (j < SPRITE_MUSHROOM ? 0.6f : -0.5f);
-                  element[ELEMENT_SPRITE] = j;
-                  element[ELEMENT_TIMER] = SHELL_TIME_OUT;
+                  element[ELEMENT_SPRITE] = (float) j;
+                  element[ELEMENT_TIMER] = (float) SHELL_TIME_OUT;
                 }
 
-                if (--players[i][ELEMENT_ITEM_COUNT] == 0) {
-                  players[i][ELEMENT_ITEM] = SPRITE_NONE;
+                if (--players[i][ELEMENT_ITEM_COUNT] == (float) 0) {
+                  players[i][ELEMENT_ITEM] = (float) SPRITE_NONE;
                 }
               }
             }
           }          
           
-          if (players[i][ELEMENT_MUSHROOMING] > 0) {
+          if (players[i][ELEMENT_MUSHROOMING] > (float) 0) {
             players[i][ELEMENT_MUSHROOMING]--;            
           }
-          if (players[i][ELEMENT_STARING] > 0) {
+          if (players[i][ELEMENT_STARING] > (float) 0) {
             players[i][ELEMENT_STARING]--;            
           }
-          if (players[i][ELEMENT_EXPLODING] > 0) {
+          if (players[i][ELEMENT_EXPLODING] > (float) 0) {
             players[i][ELEMENT_EXPLODING]--;            
           }
-          if (players[i][ELEMENT_TINYING] > 0) {
+          if (players[i][ELEMENT_TINYING] > (float) 0) {
             players[i][ELEMENT_TINYING]--;
           }
-          if (players[i][ELEMENT_FALLING] > 0) {
-            if (players[i][ELEMENT_FALLING]++ > 50) {
-              if (players[i][ELEMENT_X] > 2 * VX) {
+          if (players[i][ELEMENT_FALLING] > (float) 0) {
+            if (players[i][ELEMENT_FALLING]++ > 50.0F) {
+              if (players[i][ELEMENT_X] > 2.0F * VX) {
                 players[i][ELEMENT_X] -= VX;
-              } else if (players[i][ELEMENT_X] < -2 * VX) {
+              } else if (players[i][ELEMENT_X] < -2.0F * VX) {
                 players[i][ELEMENT_X] += VX;
               } else {
-                players[i][ELEMENT_FALLING] = 0;                
+                players[i][ELEMENT_FALLING] = (float) 0;
               }
             }            
           }
-          if (players[i][ELEMENT_BANANAING] > 0) {
+          if (players[i][ELEMENT_BANANAING] > (float) 0) {
             players[i][ELEMENT_BANANAING]--;            
             players[i][ELEMENT_X] 
                 += players[i][ELEMENT_VD] * 0.4f 
-                    * (float)Math.cos(0.125f * players[i][ELEMENT_BANANAING]);
+                    * (float)Math.cos((double) (0.125f * players[i][ELEMENT_BANANAING]));
             if (i != HUMAN) {
               if (players[i][ELEMENT_X] < -ENEMY_EDGE_X) {
                 players[i][ELEMENT_X] = -ENEMY_EDGE_X;
@@ -575,28 +574,28 @@ public class ap extends GamePanel {
               }
             }
           }
-          if (players[i][ELEMENT_ITEM_TRIGGER]-- == 0) {
+          if (players[i][ELEMENT_ITEM_TRIGGER]-- == (float) 0) {
             players[i][ELEMENT_ITEM_TRIGGER] 
-                = 99 + (int)(300 * (float)Math.random());
+                = (float) (99 + (int) (300.0F * (float) Math.random()));
           }          
         }
 
               float maxVd = MAX_VD;
-        if (players[HUMAN][ELEMENT_MUSHROOMING] > 0
-            || players[HUMAN][ELEMENT_STARING] > 0) {
+        if (players[HUMAN][ELEMENT_MUSHROOMING] > (float) 0
+            || players[HUMAN][ELEMENT_STARING] > (float) 0) {
           maxVd = FAST_VD;
         }
-        if (players[HUMAN][ELEMENT_EXPLODING] > 0) {
-          maxVd = 0;
-          players[HUMAN][ELEMENT_VD] = 0;
+        if (players[HUMAN][ELEMENT_EXPLODING] > (float) 0) {
+          maxVd = (float) 0;
+          players[HUMAN][ELEMENT_VD] = (float) 0;
         }
-        if (players[HUMAN][ELEMENT_TINYING] > 0) {
-          maxVd /= 2;
+        if (players[HUMAN][ELEMENT_TINYING] > (float) 0) {
+          maxVd /= 2.0F;
         }
         
         
-        if (players[HUMAN][ELEMENT_VD] > 0 
-            && players[HUMAN][ELEMENT_FALLING] == 0) {
+        if (players[HUMAN][ELEMENT_VD] > (float) 0
+            && players[HUMAN][ELEMENT_FALLING] == (float) 0) {
           if (a[KEY_LEFT]) {          
             players[HUMAN][ELEMENT_X] -= VX;
           } else if (a[KEY_RIGHT]) {
@@ -605,7 +604,7 @@ public class ap extends GamePanel {
         }
         
         
-        if (a[KEY_X] && players[HUMAN][ELEMENT_BANANAING] == 0) {
+        if (a[KEY_X] && players[HUMAN][ELEMENT_BANANAING] == (float) 0) {
           if (players[HUMAN][ELEMENT_VD] < maxVd) {
             players[HUMAN][ELEMENT_VD] += AD;
           }
@@ -613,11 +612,11 @@ public class ap extends GamePanel {
             players[HUMAN][ELEMENT_VD] -= AD;
           }
         } else {
-          if (players[HUMAN][ELEMENT_VD] > 0) {
+          if (players[HUMAN][ELEMENT_VD] > (float) 0) {
             players[HUMAN][ELEMENT_VD] -= AD;
           }
-          if (players[HUMAN][ELEMENT_VD] < 0) {
-            players[HUMAN][ELEMENT_VD] = 0;
+          if (players[HUMAN][ELEMENT_VD] < (float) 0) {
+            players[HUMAN][ELEMENT_VD] = (float) 0;
           }
         }
         
@@ -625,23 +624,23 @@ public class ap extends GamePanel {
         players[HUMAN][ELEMENT_D] += players[HUMAN][ELEMENT_VD];
         
         
-        if (players[HUMAN][ELEMENT_FALLING] == 0) {
+        if (players[HUMAN][ELEMENT_FALLING] == (float) 0) {
           band0 = ((int)players[HUMAN][ELEMENT_D]) % MAP_LENGTH;        
           band1 = (band0 + 1) % MAP_LENGTH;
           players[HUMAN][ELEMENT_X] 
               += ((map[band1][MAP_W][MAP_X] * map[band0][MAP_W][MAP_Z] 
                   - map[band0][MAP_W][MAP_X] * map[band1][MAP_W][MAP_Z]) 
                       * 0.25f * players[HUMAN][ELEMENT_VD] / MAX_VD)
-                  * ((players[HUMAN][ELEMENT_MUSHROOMING] > 0 
-                      || players[HUMAN][ELEMENT_STARING] > 0) ? 0.25f : 0.9f);
+                  * ((players[HUMAN][ELEMENT_MUSHROOMING] > (float) 0
+                      || players[HUMAN][ELEMENT_STARING] > (float) 0) ? 0.25f : 0.9f);
         }
         
         
         if ((players[HUMAN][ELEMENT_X] < -HUMAN_EDGE_X 
             || players[HUMAN][ELEMENT_X] > HUMAN_EDGE_X)
-              && players[HUMAN][ELEMENT_FALLING] == 0) {
-          players[HUMAN][ELEMENT_FALLING] = 1;
-          players[HUMAN][ELEMENT_VD] = 0;
+              && players[HUMAN][ELEMENT_FALLING] == (float) 0) {
+          players[HUMAN][ELEMENT_FALLING] = 1.0F;
+          players[HUMAN][ELEMENT_VD] = (float) 0;
           elements.removeAll(shells[HUMAN]);
           shells[HUMAN].clear();
         } 
@@ -657,51 +656,51 @@ public class ap extends GamePanel {
 
           
           for(i = 0; i < 8; i++) {
-            if (!Arrays.equals(element, players[i]) && players[i][ELEMENT_EXPLODING] == 0
-                && element[ELEMENT_EXPLODING] == 0) {
+            if (!Arrays.equals(element, players[i]) && players[i][ELEMENT_EXPLODING] == (float) 0
+                && element[ELEMENT_EXPLODING] == (float) 0) {
                 float dx = players[i][ELEMENT_X] - element[ELEMENT_X];
                 float dd = players[i][ELEMENT_D] - element[ELEMENT_D];
-              if (dx < 0) {
+              if (dx < (float) 0) {
                 dx = -dx;
               }
-              if (dd < 0) {
+              if (dd < (float) 0) {
                 dd = -dd;
               }
-              dd %= MAP_LENGTH;
+              dd = dd % (float) MAP_LENGTH;
               if (dx <= 0.2f && dd <= 0.4f) {                
-                if (element[ELEMENT_SPRITE] == SPRITE_ITEM_BOX) {
-                  if (players[i][ELEMENT_ITEM_RANDOMIZER] == 0
-                      && players[i][ELEMENT_ITEM] == SPRITE_NONE) {
-                    players[i][ELEMENT_ITEM_RANDOMIZER] = 300;
+                if (element[ELEMENT_SPRITE] == (float) SPRITE_ITEM_BOX) {
+                  if (players[i][ELEMENT_ITEM_RANDOMIZER] == (float) 0
+                      && players[i][ELEMENT_ITEM] == (float) SPRITE_NONE) {
+                    players[i][ELEMENT_ITEM_RANDOMIZER] = 300.0F;
                   }
-                } else if (element[ELEMENT_SPRITE] > SPRITE_PLAYER_7) {
+                } else if (element[ELEMENT_SPRITE] > (float) SPRITE_PLAYER_7) {
                   
-                  if (element[ELEMENT_SPRITE] == SPRITE_BANANA) {
-                    if (players[i][ELEMENT_STARING] == 0) {
-                      players[i][ELEMENT_BANANAING] = 100;
+                  if (element[ELEMENT_SPRITE] == (float) SPRITE_BANANA) {
+                    if (players[i][ELEMENT_STARING] == (float) 0) {
+                      players[i][ELEMENT_BANANAING] = 100.0F;
                     }
                     elements.remove(k);
-                  } else if (element[ELEMENT_ORBITING] == 0 
-                        || element[ELEMENT_PLAYER] != i) {
+                  } else if (element[ELEMENT_ORBITING] == (float) 0
+                        || element[ELEMENT_PLAYER] != (float) i) {
                     
-                    if (players[i][ELEMENT_STARING] == 0) {
-                      players[i][ELEMENT_EXPLODING] = 200;
+                    if (players[i][ELEMENT_STARING] == (float) 0) {
+                      players[i][ELEMENT_EXPLODING] = 200.0F;
                     }
-                    if (element[ELEMENT_ORBITING] == 1) {
+                    if (element[ELEMENT_ORBITING] == 1.0F) {
                       shells[(int)element[ELEMENT_PLAYER]].remove(element);
                     }
-                    if (element[ELEMENT_SPRITE] != SPRITE_BLUE_SHELL) {
+                    if (element[ELEMENT_SPRITE] != (float) SPRITE_BLUE_SHELL) {
                       elements.remove(k);
                     }
                   }       
-                } else if (element[ELEMENT_STARING] > 0
-                    || players[i][ELEMENT_TINYING] > 0) {
+                } else if (element[ELEMENT_STARING] > (float) 0
+                    || players[i][ELEMENT_TINYING] > (float) 0) {
                   
-                  if (players[i][ELEMENT_STARING] == 0) {
-                    players[i][ELEMENT_EXPLODING] = 200;
+                  if (players[i][ELEMENT_STARING] == (float) 0) {
+                    players[i][ELEMENT_EXPLODING] = 200.0F;
                   }
-                } else if (players[i][ELEMENT_STARING] == 0 
-                    && element[ELEMENT_TINYING] == 0
+                } else if (players[i][ELEMENT_STARING] == (float) 0
+                    && element[ELEMENT_TINYING] == (float) 0
                     && players[i][ELEMENT_D] < element[ELEMENT_D]) {
                   
                   players[i][ELEMENT_VD] *= 0.5f;
@@ -711,21 +710,21 @@ public class ap extends GamePanel {
           }
           
           
-          if (element[ELEMENT_SPRITE] > SPRITE_PLAYER_7 
-              && element[ELEMENT_SPRITE] < SPRITE_MUSHROOM) {
+          if (element[ELEMENT_SPRITE] > (float) SPRITE_PLAYER_7
+              && element[ELEMENT_SPRITE] < (float) SPRITE_MUSHROOM) {
             
-            if (element[ELEMENT_ORBITING] == 1) {
+            if (element[ELEMENT_ORBITING] == 1.0F) {
               
               element[ELEMENT_TIMER] += ORBIT_VANG;
               element[ELEMENT_X] 
                   = players[(int)element[ELEMENT_PLAYER]][ELEMENT_X]
                       + ORBIT_RADIUS_X 
-                          * (float)Math.cos(element[ELEMENT_TIMER]);
+                          * (float)Math.cos((double) element[ELEMENT_TIMER]);
               element[ELEMENT_D] 
                   = players[(int)element[ELEMENT_PLAYER]][ELEMENT_D]
                       + ORBIT_RADIUS_D 
-                          * (float)Math.sin(element[ELEMENT_TIMER]);
-            } else if (element[ELEMENT_TIMER] == 0) {
+                          * (float)Math.sin((double) element[ELEMENT_TIMER]);
+            } else if (element[ELEMENT_TIMER] == (float) 0) {
               
               elements.remove(k);
             } else {
@@ -734,13 +733,13 @@ public class ap extends GamePanel {
               
               element[ELEMENT_TIMER]--;
 
-              if (element[ELEMENT_SPRITE] == SPRITE_RED_SHELL) {
+              if (element[ELEMENT_SPRITE] == (float) SPRITE_RED_SHELL) {
 
                   j = 0;
-                  float best = 1024;
+                  float best = 1024.0F;
                   for(i = 0; i < PLAYERS; i++) {
                       float dd = players[i][ELEMENT_D] - element[ELEMENT_D];
-                  if (dd >= 0 && dd < best) {
+                  if (dd >= (float) 0 && dd < best) {
                     best = dd;
                     j = i;
                   }
@@ -750,7 +749,7 @@ public class ap extends GamePanel {
                 } else {
                   element[ELEMENT_X] -= VX;
                 }
-              } else if (element[ELEMENT_SPRITE] == SPRITE_BLUE_SHELL) { 
+              } else if (element[ELEMENT_SPRITE] == (float) SPRITE_BLUE_SHELL) {
                 
                 j = 0;
                 for(i = 0; i < PLAYERS; i++) {
@@ -782,7 +781,7 @@ public class ap extends GamePanel {
       g.setColor(((lightning >> 1) & 1) == 1 ? Color.WHITE : Color.BLACK);
       g.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-          float bandOffset = players[HUMAN][ELEMENT_D] % 1;
+          float bandOffset = players[HUMAN][ELEMENT_D] % 1.0F;
           band0 = ((int)players[HUMAN][ELEMENT_D]) % MAP_LENGTH;
       band1 = (band0 + 1) % MAP_LENGTH;
 
@@ -809,9 +808,9 @@ public class ap extends GamePanel {
           
           
           for(i = 0; i < 3; i++) {
-            ps[0][i] = SCALE * (m[MAP_O][i] - onb[MAP_O][i] 
-                + m[MAP_U][i] * ((p << 1) - 1)); 
-            ps[1][i] = 0;
+            ps[0][i] = (float) SCALE * (m[MAP_O][i] - onb[MAP_O][i]
+                + m[MAP_U][i] * (float) ((p << 1) - 1));
+            ps[1][i] = (float) 0;
           }
           
           
@@ -820,20 +819,20 @@ public class ap extends GamePanel {
               ps[1][j] += onb[j + 1][i] * ps[0][i]; 
             }
           }
+
+
+          ps[1][MAP_Y] = ps[1][MAP_Y] - (float) CAMERA_Y;
+          ps[1][MAP_Z] = ps[1][MAP_Z] - (float) CAMERA_Z;
           
           
-          ps[1][MAP_Y] -= CAMERA_Y;
-          ps[1][MAP_Z] -= CAMERA_Z;
-          
-          
-          if (ps[1][MAP_Z] > CAMERA_Z) {
+          if (ps[1][MAP_Z] > (float) CAMERA_Z) {
             polygonXs[0] = 0;
             polygonXs[1] = SCREEN_WIDTH;
             polygonYs[0] = 2 * SCREEN_HEIGHT;
             polygonYs[1] = 2 * SCREEN_HEIGHT;
             break;
           } else {
-              float K = 1.5f * CAMERA_Z / (CAMERA_Z - ps[1][MAP_Z]);
+              float K = 1.5f * (float) CAMERA_Z / ((float) CAMERA_Z - ps[1][MAP_Z]);
             polygonXs[p] = SCREEN_CENTER_X + (int)(K * ps[1][MAP_X]);
             polygonYs[p] = SCREEN_CENTER_Y - (int)(K * ps[1][MAP_Y]);
           }
@@ -865,7 +864,7 @@ public class ap extends GamePanel {
         
         element = elements.get(k);
         
-        bandOffset = element[ELEMENT_D] % 1;
+        bandOffset = element[ELEMENT_D] % 1.0F;
         band0 = ((int)element[ELEMENT_D]) % MAP_LENGTH;        
         band1 = (band0 + 1) % MAP_LENGTH;
 
@@ -874,7 +873,7 @@ public class ap extends GamePanel {
           for(j = 0; j < 3; j++) {
             onb2[i][j] = map[band0][i][j] 
                 + bandOffset * (map[band1][i][j] - map[band0][i][j]);
-            onb3[i][j] = 0;
+            onb3[i][j] = (float) 0;
           }
         }
         
@@ -882,7 +881,7 @@ public class ap extends GamePanel {
         for(i = 0; i < 3; i++) {
           onb2[MAP_O][i] += element[ELEMENT_X] * onb2[MAP_U][i]
               - onb[MAP_O][i];
-          onb2[MAP_O][i] *= SCALE;
+          onb2[MAP_O][i] = onb2[MAP_O][i] * (float) SCALE;
         }     
         
         
@@ -893,18 +892,18 @@ public class ap extends GamePanel {
             }
           }
         }
+
+
+        onb3[MAP_O][MAP_Z] = onb3[MAP_O][MAP_Z] - (float) CAMERA_Z;
+        onb3[MAP_O][MAP_Y] = onb3[MAP_O][MAP_Y] - (float) CAMERA_Y;
         
         
-        onb3[MAP_O][MAP_Z] -= CAMERA_Z;
-        onb3[MAP_O][MAP_Y] -= CAMERA_Y;        
-        
-        
-        element[ELEMENT_VISIBLE] = 0;
-          float K = 1.5f * CAMERA_Z / (CAMERA_Z - onb3[MAP_O][MAP_Z]);
-        if (K > 0) {
-          element[ELEMENT_PROJECTED_X] = SCREEN_CENTER_X 
+        element[ELEMENT_VISIBLE] = (float) 0;
+          float K = 1.5f * (float) CAMERA_Z / ((float) CAMERA_Z - onb3[MAP_O][MAP_Z]);
+        if (K > (float) 0) {
+          element[ELEMENT_PROJECTED_X] = (float) SCREEN_CENTER_X
               + K * onb3[MAP_O][MAP_X];
-          element[ELEMENT_PROJECTED_Y] = SCREEN_CENTER_Y 
+          element[ELEMENT_PROJECTED_Y] = (float) SCREEN_CENTER_Y
               - K * onb3[MAP_O][MAP_Y];
           
           element[ELEMENT_Z] = onb3[MAP_O][MAP_Z];
@@ -914,18 +913,18 @@ public class ap extends GamePanel {
 
 
             float mag = K;
-          K = 1.5f * CAMERA_Z / (CAMERA_Z - onb3[MAP_O][MAP_Z]);          
-          if (K > 0) {            
-            element[ELEMENT_PROJECTED_NX] = SCREEN_CENTER_X 
+          K = 1.5f * (float) CAMERA_Z / ((float) CAMERA_Z - onb3[MAP_O][MAP_Z]);
+          if (K > (float) 0) {
+            element[ELEMENT_PROJECTED_NX] = (float) SCREEN_CENTER_X
                 + K * onb3[MAP_O][MAP_X] - element[ELEMENT_PROJECTED_X];
-            element[ELEMENT_PROJECTED_NY] = SCREEN_CENTER_Y 
+            element[ELEMENT_PROJECTED_NY] = (float) SCREEN_CENTER_Y
                 - K * onb3[MAP_O][MAP_Y] - element[ELEMENT_PROJECTED_Y];
             mag /= (float)Math.hypot(
-                element[ELEMENT_PROJECTED_NX], element[ELEMENT_PROJECTED_NY]);
+                    (double) element[ELEMENT_PROJECTED_NX], (double) element[ELEMENT_PROJECTED_NY]);
                         
             element[ELEMENT_PROJECTED_NY] *= mag;
             element[ELEMENT_PROJECTED_NX] *= mag;            
-            element[ELEMENT_VISIBLE] = 1;
+            element[ELEMENT_VISIBLE] = 1.0F;
           }
         }
       }
@@ -948,27 +947,27 @@ public class ap extends GamePanel {
       flash = !flash;
       for(k = elements.size() - 1; k >= 0; k--) {
         element = elements.get(k);
-        if (element[ELEMENT_VISIBLE] == 1) {        
+        if (element[ELEMENT_VISIBLE] == 1.0F) {
           transform.setTransform(
-              -element[ELEMENT_PROJECTED_NY], element[ELEMENT_PROJECTED_NX], 
-              element[ELEMENT_PROJECTED_NX], -element[ELEMENT_PROJECTED_NY], 
-              element[ELEMENT_PROJECTED_X], element[ELEMENT_PROJECTED_Y]);
-          if (element[ELEMENT_EXPLODING] > 0) {
+                  (double) -element[ELEMENT_PROJECTED_NY], (double) element[ELEMENT_PROJECTED_NX],
+                  (double) element[ELEMENT_PROJECTED_NX], (double) -element[ELEMENT_PROJECTED_NY],
+                  (double) element[ELEMENT_PROJECTED_X], (double) element[ELEMENT_PROJECTED_Y]);
+          if (element[ELEMENT_EXPLODING] > (float) 0) {
             
-            transform.translate(0, (element[ELEMENT_EXPLODING] / 25 - 8) 
-                * element[ELEMENT_EXPLODING]);
-            transform.rotate(-0.063f * element[ELEMENT_EXPLODING]);            
-          } else if (element[ELEMENT_FALLING] > 0) {
+            transform.translate((double) 0, (double) ((element[ELEMENT_EXPLODING] / 25.0F - 8.0F)
+                    * element[ELEMENT_EXPLODING]));
+            transform.rotate((double) (-0.063f * element[ELEMENT_EXPLODING]));
+          } else if (element[ELEMENT_FALLING] > (float) 0) {
             
-            transform.translate(0, 
-                0.5f * element[ELEMENT_FALLING] * element[ELEMENT_FALLING]);
+            transform.translate((double) 0,
+                    (double) (0.5f * element[ELEMENT_FALLING] * element[ELEMENT_FALLING]));
           }
-          if (element[ELEMENT_TINYING] > 0) {
-            transform.scale(0.25f, 0.25f);
+          if (element[ELEMENT_TINYING] > (float) 0) {
+            transform.scale(0.25, 0.25);
           }
           g.setTransform(transform);
-          if (element[ELEMENT_SPRITE] < 8) {
-            g.drawImage(sprites[element[ELEMENT_STARING] == 0 
+          if (element[ELEMENT_SPRITE] < 8.0F) {
+            g.drawImage(sprites[element[ELEMENT_STARING] == (float) 0
                 ? (int)element[ELEMENT_SPRITE] : (startingLine >> 1)], 
                     -56, -120, 112, 120, null);            
           } else {            
@@ -1001,14 +1000,14 @@ public class ap extends GamePanel {
           g.fillRect(304, 16, 192, 64);
           g.setColor(Color.WHITE);
           g.drawRect(304, 16, 192, 64);
-          for(j = 3; j < players[HUMAN][ELEMENT_ITEM_COUNT]; j++) {
+          for(j = 3; (float) j < players[HUMAN][ELEMENT_ITEM_COUNT]; j++) {
             g.drawImage(sprites[i], 280 + 15 * j, 24, 56, 48, null);
           }                    
-          if (players[HUMAN][ELEMENT_ITEM_COUNT] > 1) {
+          if (players[HUMAN][ELEMENT_ITEM_COUNT] > 1.0F) {
             g.drawImage(sprites[i], 308, 24, 56, 48, null);                    
           }
           g.drawImage(sprites[i], 372, 24, 56, 48, null);
-          if (players[HUMAN][ELEMENT_ITEM_COUNT] > 2) {
+          if (players[HUMAN][ELEMENT_ITEM_COUNT] > 2.0F) {
             g.drawImage(sprites[i], 436, 24, 56, 48, null);
           }          
         }
@@ -1049,7 +1048,7 @@ public class ap extends GamePanel {
     frame.pack();      
     frame.setLocationRelativeTo(null);
     frame.setVisible(true);
-    Thread.sleep(250);
+    Thread.sleep(250L);
     applet.start();
     applet.requestFocus();
   }

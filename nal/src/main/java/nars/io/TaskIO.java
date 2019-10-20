@@ -18,7 +18,7 @@ public enum TaskIO {
 	;
 
 	static boolean hasTruth(byte punc) {
-        return punc == Op.BELIEF || punc == Op.GOAL;
+        return (int) punc == (int) Op.BELIEF || (int) punc == (int) Op.GOAL;
     }
 
     public static Task readTask(DataInput in) throws IOException {
@@ -31,7 +31,7 @@ public enum TaskIO {
         if (term == null)
             throw new IOException("un-normalizable task target");
 
-        if (punc != COMMAND) {
+        if ((int) punc != (int) COMMAND) {
             Truth truth = hasTruth(punc) ? readTruth(in) : null;
 
             long start = in.readLong();
@@ -50,7 +50,7 @@ public enum TaskIO {
     }
 
     private static long[] readEvidence(DataInput in) throws IOException {
-        int eviLength = in.readByte();
+        int eviLength = (int) in.readByte();
         long[] evi = new long[eviLength];
         for (int i = 0; i < eviLength; i++) {
             evi[i] = in.readLong();
@@ -77,13 +77,13 @@ public enum TaskIO {
 
 
         byte p = t.punc();
-		out.writeByte(p);
+		out.writeByte((int) p);
 
 
 		TermIO.the.write(t.term(), out);
 
 
-		if (p != COMMAND) {
+		if ((int) p != (int) COMMAND) {
 			if (hasTruth(p))
 				Truth.write(t.truth(), out);
 

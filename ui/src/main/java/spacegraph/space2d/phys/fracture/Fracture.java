@@ -89,12 +89,12 @@ public final class Fracture {
                     p = new Polygon(CIRCLEVERTICES);
                     float radius = cs.skinRadius;
 
-                    double u = Math.PI * 2 / CIRCLEVERTICES;
+                    double u = Math.PI * 2.0 / (double) CIRCLEVERTICES;
                     radius = (float) Math.sqrt(u / Math.sin(u)) * radius;
 
                     v2 center = cs.center;
                     for (int i = 0; i < CIRCLEVERTICES; ++i) {
-                        double j = u * i;
+                        double j = u * (double) i;
                         float sin = (float) Math.sin(j);
                         float cos = (float) Math.cos(j);
                         v2 v = new v2(sin, cos).scaled(radius).added(center);

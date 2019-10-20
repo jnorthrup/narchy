@@ -150,7 +150,7 @@ public class WebcamGestures extends Finger {
 
             // Configure the feature detector
             ConfigGeneralDetector confDetector = new ConfigGeneralDetector();
-            confDetector.threshold = 10;
+            confDetector.threshold = 10.0F;
             confDetector.maxFeatures = 300;
             confDetector.radius = 4;
 
@@ -164,7 +164,7 @@ public class WebcamGestures extends Finger {
                             false, tracker, new Homography2D_F64());
 
 
-            background = FactoryBackgroundModel.movingBasic(new ConfigBackgroundBasic(30, 0.005f), new PointTransformHomography_F32(), imageType);
+            background = FactoryBackgroundModel.movingBasic(new ConfigBackgroundBasic(30.0F, 0.005f), new PointTransformHomography_F32(), imageType);
 
             // Configuration for Gaussian model.  Note that the threshold changes depending on the number of image bands
             // 12 = gray scale and 40 = color
@@ -212,8 +212,8 @@ public class WebcamGestures extends Finger {
                 grey.reshape(W, H);
 
                 Homography2D_F32 homeToWorld = new Homography2D_F32();
-                homeToWorld.a13 = grey.width/2;
-                homeToWorld.a23 = grey.height/2;
+                homeToWorld.a13 = (float) (grey.width / 2);
+                homeToWorld.a23 = (float) (grey.height / 2);
 
                 // Create a background image twice the size of the input image.  Tell it that the home is in the center
                 background.initialize(W * 2, H * 2, homeToWorld);
@@ -252,7 +252,7 @@ public class WebcamGestures extends Finger {
 
         public MyPolarSubFinger(Finger f, Surface vx) {
             super(f);
-            theta = (float)(Math.random() * 3.14*2);
+            theta = (float)(Math.random() * 3.14* 2.0);
             this.vx = vx;
         }
 

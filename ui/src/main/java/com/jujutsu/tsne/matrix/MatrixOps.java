@@ -8,7 +8,6 @@ import org.ejml.data.DMatrixRBlock;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.IntStream;
 
 
 public enum MatrixOps { ;
@@ -391,7 +390,7 @@ public enum MatrixOps { ;
 		for (double v : vector) {
 			sum += v;
 		}
-		return sum/vector.length;
+		return sum/ (double) vector.length;
 	}
 
 	
@@ -479,7 +478,7 @@ public enum MatrixOps { ;
 		for (int i = 0; i < y.length; i++) {
 			double[] mi = x[i], ri = y[i];
 			for (int j = 0; j < y[0].length; j++)
-				ri[j] = 1 / mi[j];
+				ri[j] = 1.0 / mi[j];
 		}
 		return y;
 	}
@@ -493,7 +492,7 @@ public enum MatrixOps { ;
 		int count = 0;
 		for (double v : v1) {
 			if (vector.length == count) vector = Arrays.copyOf(vector, count * 2);
-			double v2 = 1 / v;
+			double v2 = 1.0 / v;
 			vector[count++] = v2;
 		}
 		vector = Arrays.copyOfRange(vector, 0, count);
@@ -639,7 +638,7 @@ public enum MatrixOps { ;
 		double[][] absolutes = new double[booleans.length][booleans[0].length];
 		for (int i = 0; i < booleans.length; i++) {
 			for (int j = 0; j < booleans[0].length; j++) {
-				absolutes[i][j] = booleans[i][j] ? 1 : 0;
+				absolutes[i][j] = (double) (booleans[i][j] ? 1 : 0);
 			}
 		}
 		return absolutes;
@@ -679,7 +678,7 @@ public enum MatrixOps { ;
 		double[][] signs = new double[matrix.length][matrix[0].length];
 		for (int i = 0; i < matrix.length; i++) {
 			for (int j = 0; j < matrix[0].length; j++) {
-				signs[i][j] = matrix[i][j] >= 0 ? 1 : -1;
+				signs[i][j] = (double) (matrix[i][j] >= (double) 0 ? 1 : -1);
 			}
 		}
 		return signs;
@@ -703,7 +702,7 @@ public enum MatrixOps { ;
                     for (double[] aMatrix : matrix) {
                         colsum += aMatrix[j];
                     }
-                    result[0][j] = colsum / matrix.length;
+                    result[0][j] = colsum / (double) matrix.length;
                 }
                 break;
             case 1:
@@ -713,7 +712,7 @@ public enum MatrixOps { ;
                     for (int j = 0; j < matrix[0].length; j++) {
                         rowsum += matrix[i][j];
                     }
-                    result[i][0] = rowsum / matrix[0].length;
+                    result[i][0] = rowsum / (double) matrix[0].length;
                 }
                 break;
             case 2:
@@ -723,7 +722,7 @@ public enum MatrixOps { ;
                         result[0][0] += aMatrix[j];
                     }
                 }
-                result[0][0] /= (matrix[0].length * matrix.length);
+                result[0][0] = result[0][0] / (double) (matrix[0].length * matrix.length);
                 break;
             default:
                 throw new IllegalArgumentException("Axes other than 0,1,2 is unsupported");
@@ -906,7 +905,7 @@ public enum MatrixOps { ;
 	 * @return a new matrix with the values of matrix squared
 	 */
 	public static double [][] square(double [][] matrix) {
-		return scalarPow(matrix,2);
+		return scalarPow(matrix, 2.0);
 	}
 
 	/** 
@@ -1235,7 +1234,7 @@ public enum MatrixOps { ;
 			return sum;
 		}).sum();
 
-        return Math.sqrt(total / (N-1));
+        return Math.sqrt(total / (double) (N - 1));
 	}
 	
 	private static double[] colStddev(double[][] v) {
@@ -1251,12 +1250,12 @@ public enum MatrixOps { ;
 		double[] var = new double[n];
 		int degrees = (m - 1);
 		for (int j = 0; j < n; j++) {
-            double s = 0;
+            double s = (double) 0;
 			for (double[] aV1 : v) s += aV1[j];
-			s /= m;
-            double c = 0;
+            s = s / (double) m;
+            double c = (double) 0;
             for (double[] aV : v) c += (aV[j] - s) * (aV[j] - s);
-			var[j] = c / degrees;
+			var[j] = c / (double) degrees;
 		}
 		return var;
 	}
@@ -1273,7 +1272,7 @@ public enum MatrixOps { ;
 			for (int j = 0; j < cols; j++)
 				mean[j] += aMatrix[j];
 		for (int j = 0; j < cols; j++)
-			mean[j] /= rows;
+            mean[j] = mean[j] / (double) rows;
 		return mean;
 	}
 
@@ -1309,9 +1308,9 @@ public enum MatrixOps { ;
 	}
 
 	public static double[][] plusLerp(double[][] a, double[][] b, double ab) {
-		if (ab == 0) return a;
-		else if (ab == 1) return b;
-		double ba = 1-ab;
+		if (ab == (double) 0) return a;
+		else if (ab == 1.0) return b;
+		double ba = 1.0 -ab;
 		double[][] c = new double[a.length][a[0].length];
 		for (int i = 0; i < a.length; i++) {
 			double[] ci = c[i];

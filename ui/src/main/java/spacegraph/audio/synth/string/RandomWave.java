@@ -16,15 +16,15 @@ public class RandomWave extends KarplusStrongString {
         setMaxVolume(0.2);
         pluckDelta = .9998;
         releaseDelta = .9;
-        filterIn = 0;
-        filterOut = 0;
+        filterIn = (double) 0;
+        filterOut = (double) 0;
     }
 
     public void pluck() {
         setDeltaVolume(pluckDelta);
         clear();
         for (int i = 0; i < buffer.capacity(); i++) {
-            buffer.enqueue((Math.random() - 0.5) * 2 * getMaxVolume());
+            buffer.enqueue((Math.random() - 0.5) * 2.0 * getMaxVolume());
         }
     }
 

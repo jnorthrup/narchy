@@ -2,8 +2,6 @@ package jcog.math;
 
 import jcog.WTF;
 
-import java.util.Arrays;
-
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
@@ -27,7 +25,7 @@ public interface LongInterval {
 			throw new WTF();
         long a = max(x1, x2);
         long b = min(y1, y2);
-		return a <= b ? b - a : -1;
+		return a <= b ? b - a : -1L;
 	}
 
 	/**
@@ -83,14 +81,14 @@ public interface LongInterval {
         long s = start();
 		if (s == ETERNAL)
 			throw new ArithmeticException("ETERNAL range calculated");
-		return 1 + (end() - s);
+		return 1L + (end() - s);
 	}
 
 	default long rangeIfNotEternalElse(long what) {
         long s = start();
 		if (s == ETERNAL)
 			return what;
-		return 1 + (end() - s);
+		return 1L + (end() - s);
 	}
 
 
@@ -107,7 +105,7 @@ public interface LongInterval {
         long e = end();
 
 
-        long mid = (s + e) / 2;
+        long mid = (s + e) / 2L;
 		if (s >= a && s <= b) {
 			return mid;
 		}
@@ -186,13 +184,13 @@ public interface LongInterval {
 
 	static long minTimeTo(long when, long s, long e) {
 		return (s <= when && e >= when) ?
-			0 /* internal */ :
+                0L /* internal */ :
 			Math.min(Math.abs(s - when), Math.abs(e - when)); /* external */
 	}
 
 
 	default long minTimeTo(LongInterval i) {
-		return i == this ? 0 : minTimeTo(i.start(), i.end());
+		return i == this ? 0L : minTimeTo(i.start(), i.end());
 	}
 
 	default long minTimeTo(long a) {
@@ -206,19 +204,19 @@ public interface LongInterval {
 	default long minTimeTo(long a, long b) {
 
 		if (a == ETERNAL)
-			return 0;
+			return 0L;
 		if (a == TIMELESS)
 			throw new WTF(); //return TIMELESS;
 
         long s = start(); //assert(s!=TIMELESS);
 
 		if (s == ETERNAL || s == a)
-			return 0;
+			return 0L;
 
         long e = end();
 
 		if (/*e != s && */intersectsRaw(a, b, s, e))
-			return 0;
+			return 0L;
 
         long sa = Math.abs(s - a);
 		if (a == b) {
@@ -233,9 +231,9 @@ public interface LongInterval {
 	}
 
 	default long maxTimeTo(long a, long b) {
-		if (a == ETERNAL) return 0;
+		if (a == ETERNAL) return 0L;
         long s = start();
-		if (s == ETERNAL) return 0;
+		if (s == ETERNAL) return 0L;
         long e = end();
         long ul = LongInterval.unionLength(s, e, a, b);
 
@@ -250,17 +248,17 @@ public interface LongInterval {
 
 	default long meanTimeTo(long s, long e) {
         long ds = meanTimeTo(s);
-		return s==e ? ds : (ds + meanTimeTo(e))/2;
+		return s==e ? ds : (ds + meanTimeTo(e))/ 2L;
 	}
 
 	default long meanTimeTo(long x) {
 		if (x == ETERNAL)
-			return 0;
+			return 0L;
         long start = start();
-		if (start == ETERNAL || start == x) return 0;
+		if (start == ETERNAL || start == x) return 0L;
         long end = end();
 		if (x <= end && x >= start)
-			return 0; //contained
+			return 0L; //contained
 
         long distToStart = Math.abs(start - x);
 		if (end == start) {
@@ -275,7 +273,7 @@ public interface LongInterval {
 	default long maxTimeTo(long x) {
 
         long start = start();
-		if (start == ETERNAL) return 0;
+		if (start == ETERNAL) return 0L;
         long end = end();
         long distToStart = Math.abs(start - x);
 		if (end == start) {

@@ -116,9 +116,9 @@ public class Wire {
     public float activity(boolean aOrB, long now, long window) {
         long l = aOrB ? aLastActive : bLastActive;
         if (l == Long.MIN_VALUE)
-            return 0;
+            return (float) 0;
         else {
-            return (float) (1.0/(1.0+(Math.abs(now - l))/((double)window)));
+            return (float) (1.0/(1.0+ (double) (Math.abs(now - l)) /((double)window)));
         }
     }
     /** combined activity level */

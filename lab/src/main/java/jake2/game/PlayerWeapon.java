@@ -28,8 +28,6 @@ import jake2.game.monsters.M_Player;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
-import java.util.stream.IntStream;
-
 public class PlayerWeapon {
 
     public static final EntThinkAdapter Weapon_Grenade = new EntThinkAdapter() {
@@ -52,14 +50,14 @@ public class PlayerWeapon {
                     if (0 != ent.client.pers.inventory[ent.client.ammo_index]) {
                         ent.client.ps.gunframe = 1;
                         ent.client.weaponstate = Defines.WEAPON_FIRING;
-                        ent.client.grenade_time = 0;
+                        ent.client.grenade_time = (float) 0;
                     } else {
                         if (GameBase.level.time >= ent.pain_debounce_time) {
                             game_import_t.sound(ent, Defines.CHAN_VOICE,
                                     game_import_t
                                             .soundindex("weapons/noammo.wav"),
-                                    1, Defines.ATTN_NORM, 0);
-                            ent.pain_debounce_time = GameBase.level.time + 1;
+                                    1.0F, (float) Defines.ATTN_NORM, (float) 0);
+                            ent.pain_debounce_time = GameBase.level.time + 1.0F;
                         }
                         NoAmmoWeaponChange(ent);
                     }
@@ -73,7 +71,7 @@ public class PlayerWeapon {
                         }
                     }
                     if (b)
-                        if ((Lib.rand() & 15) != 0) result = true;
+                        if (((int) Lib.rand() & 15) != 0) result = true;
                     if (!result) {
                         if (++ent.client.ps.gunframe > 48)
                             ent.client.ps.gunframe = 16;
@@ -84,11 +82,11 @@ public class PlayerWeapon {
                 if (ent.client.weaponstate == Defines.WEAPON_FIRING) {
                     if (ent.client.ps.gunframe == 5)
                         game_import_t.sound(ent, Defines.CHAN_WEAPON, game_import_t
-                                        .soundindex("weapons/hgrena1b.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                                        .soundindex("weapons/hgrena1b.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
 
                     if (ent.client.ps.gunframe == 11) {
-                        if (0 == ent.client.grenade_time) {
+                        if ((float) 0 == ent.client.grenade_time) {
                             ent.client.grenade_time = GameBase.level.time
                                     + Defines.GRENADE_TIMER + 0.2f;
                             ent.client.weapon_sound = game_import_t
@@ -121,7 +119,7 @@ public class PlayerWeapon {
                         else {
                             ent.client.ps.gunframe++;
                             if (ent.client.ps.gunframe == 16) {
-                                ent.client.grenade_time = 0;
+                                ent.client.grenade_time = (float) 0;
                                 ent.client.weaponstate = Defines.WEAPON_READY;
                             }
                         }
@@ -141,14 +139,14 @@ public class PlayerWeapon {
                     if (0 != ent.client.pers.inventory[ent.client.ammo_index]) {
                         ent.client.ps.gunframe = 1;
                         ent.client.weaponstate = Defines.WEAPON_FIRING;
-                        ent.client.grenade_time = 0;
+                        ent.client.grenade_time = (float) 0;
                     } else {
                         if (GameBase.level.time >= ent.pain_debounce_time) {
                             game_import_t.sound(ent, Defines.CHAN_VOICE,
                                     game_import_t
                                             .soundindex("weapons/noammo.wav"),
-                                    1, Defines.ATTN_NORM, 0);
-                            ent.pain_debounce_time = GameBase.level.time + 1;
+                                    1.0F, (float) Defines.ATTN_NORM, (float) 0);
+                            ent.pain_debounce_time = GameBase.level.time + 1.0F;
                         }
                         NoAmmoWeaponChange(ent);
                     }
@@ -162,7 +160,7 @@ public class PlayerWeapon {
                         }
                     }
                     if (b)
-                        if ((Lib.rand() & 15) != 0) result = true;
+                        if (((int) Lib.rand() & 15) != 0) result = true;
                     if (!result) {
                         if (++ent.client.ps.gunframe > 48)
                             ent.client.ps.gunframe = 16;
@@ -173,11 +171,11 @@ public class PlayerWeapon {
                 if (ent.client.weaponstate == Defines.WEAPON_FIRING) {
                     if (ent.client.ps.gunframe == 5)
                         game_import_t.sound(ent, Defines.CHAN_WEAPON, game_import_t
-                                        .soundindex("weapons/hgrena1b.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                                        .soundindex("weapons/hgrena1b.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
 
                     if (ent.client.ps.gunframe == 11) {
-                        if (0 == ent.client.grenade_time) {
+                        if ((float) 0 == ent.client.grenade_time) {
                             ent.client.grenade_time = GameBase.level.time
                                     + Defines.GRENADE_TIMER + 0.2f;
                             ent.client.weapon_sound = game_import_t
@@ -210,7 +208,7 @@ public class PlayerWeapon {
                         else {
                             ent.client.ps.gunframe++;
                             if (ent.client.ps.gunframe == 16) {
-                                ent.client.grenade_time = 0;
+                                ent.client.grenade_time = (float) 0;
                                 ent.client.weaponstate = Defines.WEAPON_READY;
                             }
                         }
@@ -241,27 +239,27 @@ public class PlayerWeapon {
         public boolean think(edict_t ent) {
             int damage = 120;
 
-            float radius = damage + 40;
+            float radius = (float) (damage + 40);
             if (is_quad)
                 damage *= 4;
 
-            float[] offset = {0, 0, 0};
-            Math3D.VectorSet(offset, 8, 8, ent.viewheight - 8);
-            float[] right = {0, 0, 0};
-            float[] forward = {0, 0, 0};
+            float[] offset = {(float) 0, (float) 0, (float) 0};
+            Math3D.VectorSet(offset, 8.0F, 8.0F, (float) (ent.viewheight - 8));
+            float[] right = {(float) 0, (float) 0, (float) 0};
+            float[] forward = {(float) 0, (float) 0, (float) 0};
             Math3D.AngleVectors(ent.client.v_angle, forward, right, null);
-            float[] start = {0, 0, 0};
+            float[] start = {(float) 0, (float) 0, (float) 0};
             P_ProjectSource(ent.client, ent.s.origin, offset, forward, right,
                     start);
 
-            Math3D.VectorScale(forward, -2, ent.client.kick_origin);
-            ent.client.kick_angles[0] = -1;
+            Math3D.VectorScale(forward, -2.0F, ent.client.kick_origin);
+            ent.client.kick_angles[0] = -1.0F;
 
             GameWeapon.fire_grenade(ent, start, forward, damage, 600, 2.5f, radius);
 
             game_import_t.WriteByte(Defines.svc_muzzleflash);
             game_import_t.WriteShort(ent.index);
-            game_import_t.WriteByte(Defines.MZ_GRENADE | is_silenced);
+            game_import_t.WriteByte(Defines.MZ_GRENADE | (int) is_silenced);
             game_import_t.multicast(ent.s.origin, Defines.MULTICAST_PVS);
 
             ent.client.ps.gunframe++;
@@ -306,26 +304,26 @@ public class PlayerWeapon {
         @Override
         public boolean think(edict_t ent) {
 
-            int damage = 100 + (int) (Lib.random() * 20.0);
+            int damage = 100 + (int) ((double) Lib.random() * 20.0);
             int radius_damage = 120;
             if (is_quad) {
                 damage *= 4;
                 radius_damage *= 4;
             }
 
-            float[] right = {0, 0, 0};
-            float[] forward = {0, 0, 0};
+            float[] right = {(float) 0, (float) 0, (float) 0};
+            float[] forward = {(float) 0, (float) 0, (float) 0};
             Math3D.AngleVectors(ent.client.v_angle, forward, right, null);
 
-            Math3D.VectorScale(forward, -2, ent.client.kick_origin);
-            ent.client.kick_angles[0] = -1;
+            Math3D.VectorScale(forward, -2.0F, ent.client.kick_origin);
+            ent.client.kick_angles[0] = -1.0F;
 
-            float[] offset = {0, 0, 0};
-            Math3D.VectorSet(offset, 8, 8, ent.viewheight - 8);
-            float[] start = {0, 0, 0};
+            float[] offset = {(float) 0, (float) 0, (float) 0};
+            Math3D.VectorSet(offset, 8.0F, 8.0F, (float) (ent.viewheight - 8));
+            float[] start = {(float) 0, (float) 0, (float) 0};
             P_ProjectSource(ent.client, ent.s.origin, offset, forward, right,
                     start);
-            float damage_radius = 120;
+            float damage_radius = 120.0F;
             GameWeapon.fire_rocket(ent, start, forward, damage, 650, damage_radius,
                     radius_damage);
 
@@ -333,7 +331,7 @@ public class PlayerWeapon {
             game_import_t.WriteByte(Defines.svc_muzzleflash);
 
             game_import_t.WriteShort(ent.index);
-            game_import_t.WriteByte(Defines.MZ_ROCKET | is_silenced);
+            game_import_t.WriteByte(Defines.MZ_ROCKET | (int) is_silenced);
             game_import_t.multicast(ent.s.origin, Defines.MULTICAST_PVS);
 
             ent.client.ps.gunframe++;
@@ -372,7 +370,7 @@ public class PlayerWeapon {
 
             int damage;
 
-            if (GameBase.deathmatch.value != 0)
+            if (GameBase.deathmatch.value != (float) 0)
                 damage = 15;
             else
                 damage = 10;
@@ -414,18 +412,18 @@ public class PlayerWeapon {
                 if (0 == ent.client.pers.inventory[ent.client.ammo_index]) {
                     if (GameBase.level.time >= ent.pain_debounce_time) {
                         game_import_t.sound(ent, Defines.CHAN_VOICE, game_import_t
-                                .soundindex("weapons/noammo.wav"), 1,
-                                Defines.ATTN_NORM, 0);
-                        ent.pain_debounce_time = GameBase.level.time + 1;
+                                .soundindex("weapons/noammo.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
+                        ent.pain_debounce_time = GameBase.level.time + 1.0F;
                     }
                     NoAmmoWeaponChange(ent);
                 } else {
-                    float rotation = (float) ((ent.client.ps.gunframe - 5) * 2
-                            * Math.PI / 6);
-                    float[] offset = {0, 0, 0};
-                    offset[0] = (float) (-4 * Math.sin(rotation));
+                    float rotation = (float) ((double) (ent.client.ps.gunframe - 5) * 2.0
+                            * Math.PI / 6.0);
+                    float[] offset = {(float) 0, (float) 0, (float) 0};
+                    offset[0] = (float) (-4.0 * Math.sin((double) rotation));
                     offset[1] = 0f;
-                    offset[2] = (float) (4 * Math.cos(rotation));
+                    offset[2] = (float) (4.0 * Math.cos((double) rotation));
 
                     int effect;
                     if ((ent.client.ps.gunframe == 6)
@@ -434,7 +432,7 @@ public class PlayerWeapon {
                     else
                         effect = 0;
                     int damage;
-                    if (GameBase.deathmatch.value != 0)
+                    if (GameBase.deathmatch.value != (float) 0)
                         damage = 15;
                     else
                         damage = 20;
@@ -443,7 +441,7 @@ public class PlayerWeapon {
                         ent.client.pers.inventory[ent.client.ammo_index]--;
 
                     ent.client.anim_priority = Defines.ANIM_ATTACK;
-                    if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
+                    if (((int) ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
                         ent.s.frame = M_Player.FRAME_crattak1 - 1;
                         ent.client.anim_end = M_Player.FRAME_crattak9;
                     } else {
@@ -460,8 +458,8 @@ public class PlayerWeapon {
 
             if (ent.client.ps.gunframe == 12) {
                 game_import_t.sound(ent, Defines.CHAN_AUTO, game_import_t
-                        .soundindex("weapons/hyprbd1a.wav"), 1,
-                        Defines.ATTN_NORM, 0);
+                        .soundindex("weapons/hyprbd1a.wav"), 1.0F,
+                        (float) Defines.ATTN_NORM, (float) 0);
                 ent.client.weapon_sound = 0;
             }
 
@@ -536,16 +534,16 @@ public class PlayerWeapon {
                 return true;
             }
 
-            float[] right = {0, 0, 0};
-            float[] forward = {0, 0, 0};
+            float[] right = {(float) 0, (float) 0, (float) 0};
+            float[] forward = {(float) 0, (float) 0, (float) 0};
             Math3D.AngleVectors(ent.client.v_angle, forward, right, null);
 
-            Math3D.VectorScale(forward, -2, ent.client.kick_origin);
-            ent.client.kick_angles[0] = -2;
+            Math3D.VectorScale(forward, -2.0F, ent.client.kick_origin);
+            ent.client.kick_angles[0] = -2.0F;
 
-            float[] offset = {0, 0, 0};
-            Math3D.VectorSet(offset, 0, 8, ent.viewheight - 8);
-            float[] start = {0, 0, 0};
+            float[] offset = {(float) 0, (float) 0, (float) 0};
+            Math3D.VectorSet(offset, (float) 0, 8.0F, (float) (ent.viewheight - 8));
+            float[] start = {(float) 0, (float) 0, (float) 0};
             P_ProjectSource(ent.client, ent.s.origin, offset, forward, right,
                     start);
 
@@ -556,7 +554,7 @@ public class PlayerWeapon {
                 kick *= 4;
             }
 
-            if (GameBase.deathmatch.value != 0)
+            if (GameBase.deathmatch.value != (float) 0)
                 GameWeapon.fire_shotgun(ent, start, forward, damage, kick, 500, 500,
                         Defines.DEFAULT_DEATHMATCH_SHOTGUN_COUNT,
                         Defines.MOD_SHOTGUN);
@@ -568,7 +566,7 @@ public class PlayerWeapon {
             game_import_t.WriteByte(Defines.svc_muzzleflash);
 
             game_import_t.WriteShort(ent.index);
-            game_import_t.WriteByte(Defines.MZ_SHOTGUN | is_silenced);
+            game_import_t.WriteByte(Defines.MZ_SHOTGUN | (int) is_silenced);
             game_import_t.multicast(ent.s.origin, Defines.MULTICAST_PVS);
 
             ent.client.ps.gunframe++;
@@ -602,16 +600,16 @@ public class PlayerWeapon {
         @Override
         public boolean think(edict_t ent) {
 
-            float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
+            float[] forward = {(float) 0, (float) 0, (float) 0}, right = {(float) 0, (float) 0, (float) 0};
 
             Math3D.AngleVectors(ent.client.v_angle, forward, right, null);
 
-            Math3D.VectorScale(forward, -2, ent.client.kick_origin);
-            ent.client.kick_angles[0] = -2;
+            Math3D.VectorScale(forward, -2.0F, ent.client.kick_origin);
+            ent.client.kick_angles[0] = -2.0F;
 
-            float[] offset = {0, 0, 0};
-            Math3D.VectorSet(offset, 0, 8, ent.viewheight - 8);
-            float[] start = {0, 0, 0};
+            float[] offset = {(float) 0, (float) 0, (float) 0};
+            Math3D.VectorSet(offset, (float) 0, 8.0F, (float) (ent.viewheight - 8));
+            float[] start = {(float) 0, (float) 0, (float) 0};
             P_ProjectSource(ent.client, ent.s.origin, offset, forward, right,
                     start);
 
@@ -622,16 +620,16 @@ public class PlayerWeapon {
                 kick *= 4;
             }
 
-            float[] v = {0, 0, 0};
+            float[] v = {(float) 0, (float) 0, (float) 0};
             v[Defines.PITCH] = ent.client.v_angle[Defines.PITCH];
-            v[Defines.YAW] = ent.client.v_angle[Defines.YAW] - 5;
+            v[Defines.YAW] = ent.client.v_angle[Defines.YAW] - 5.0F;
             v[Defines.ROLL] = ent.client.v_angle[Defines.ROLL];
             Math3D.AngleVectors(v, forward, null, null);
             GameWeapon.fire_shotgun(ent, start, forward, damage, kick,
                     Defines.DEFAULT_SHOTGUN_HSPREAD,
                     Defines.DEFAULT_SHOTGUN_VSPREAD,
                     Defines.DEFAULT_SSHOTGUN_COUNT / 2, Defines.MOD_SSHOTGUN);
-            v[Defines.YAW] = ent.client.v_angle[Defines.YAW] + 5;
+            v[Defines.YAW] = ent.client.v_angle[Defines.YAW] + 5.0F;
             Math3D.AngleVectors(v, forward, null, null);
             GameWeapon.fire_shotgun(ent, start, forward, damage, kick,
                     Defines.DEFAULT_SHOTGUN_HSPREAD,
@@ -642,7 +640,7 @@ public class PlayerWeapon {
             game_import_t.WriteByte(Defines.svc_muzzleflash);
 
             game_import_t.WriteShort(ent.index);
-            game_import_t.WriteByte(Defines.MZ_SSHOTGUN | is_silenced);
+            game_import_t.WriteByte(Defines.MZ_SSHOTGUN | (int) is_silenced);
             game_import_t.multicast(ent.s.origin, Defines.MULTICAST_PVS);
 
             ent.client.ps.gunframe++;
@@ -687,7 +685,7 @@ public class PlayerWeapon {
             int damage;
             int kick;
 
-            if (GameBase.deathmatch.value != 0) { 
+            if (GameBase.deathmatch.value != (float) 0) {
                 
                 damage = 100;
                 kick = 200;
@@ -701,16 +699,16 @@ public class PlayerWeapon {
                 kick *= 4;
             }
 
-            float[] right = {0, 0, 0};
-            float[] forward = {0, 0, 0};
+            float[] right = {(float) 0, (float) 0, (float) 0};
+            float[] forward = {(float) 0, (float) 0, (float) 0};
             Math3D.AngleVectors(ent.client.v_angle, forward, right, null);
 
-            Math3D.VectorScale(forward, -3, ent.client.kick_origin);
-            ent.client.kick_angles[0] = -3;
+            Math3D.VectorScale(forward, -3.0F, ent.client.kick_origin);
+            ent.client.kick_angles[0] = -3.0F;
 
-            float[] offset = {0, 0, 0};
-            Math3D.VectorSet(offset, 0, 7, ent.viewheight - 8);
-            float[] start = {0, 0, 0};
+            float[] offset = {(float) 0, (float) 0, (float) 0};
+            Math3D.VectorSet(offset, (float) 0, 7.0F, (float) (ent.viewheight - 8));
+            float[] start = {(float) 0, (float) 0, (float) 0};
             P_ProjectSource(ent.client, ent.s.origin, offset, forward, right,
                     start);
             GameWeapon.fire_rail(ent, start, forward, damage, kick);
@@ -719,7 +717,7 @@ public class PlayerWeapon {
             game_import_t.WriteByte(Defines.svc_muzzleflash);
 
             game_import_t.WriteShort(ent.index);
-            game_import_t.WriteByte(Defines.MZ_RAILGUN | is_silenced);
+            game_import_t.WriteByte(Defines.MZ_RAILGUN | (int) is_silenced);
             game_import_t.multicast(ent.s.origin, Defines.MULTICAST_PVS);
 
             ent.client.ps.gunframe++;
@@ -764,18 +762,18 @@ public class PlayerWeapon {
 
             int damage;
 
-            if (GameBase.deathmatch.value != 0)
+            if (GameBase.deathmatch.value != (float) 0)
                 damage = 200;
             else
                 damage = 500;
 
-            float[] start = {0, 0, 0};
+            float[] start = {(float) 0, (float) 0, (float) 0};
             if (ent.client.ps.gunframe == 9) {
                 
                 game_import_t.WriteByte(Defines.svc_muzzleflash);
 
                 game_import_t.WriteShort(ent.index);
-                game_import_t.WriteByte(Defines.MZ_BFG | is_silenced);
+                game_import_t.WriteByte(Defines.MZ_BFG | (int) is_silenced);
                 game_import_t.multicast(ent.s.origin, Defines.MULTICAST_PVS);
 
                 ent.client.ps.gunframe++;
@@ -794,22 +792,22 @@ public class PlayerWeapon {
             if (is_quad)
                 damage *= 4;
 
-            float[] right = {0, 0, 0};
-            float[] forward = {0, 0, 0};
+            float[] right = {(float) 0, (float) 0, (float) 0};
+            float[] forward = {(float) 0, (float) 0, (float) 0};
             Math3D.AngleVectors(ent.client.v_angle, forward, right, null);
 
-            Math3D.VectorScale(forward, -2, ent.client.kick_origin);
+            Math3D.VectorScale(forward, -2.0F, ent.client.kick_origin);
 
             
-            ent.client.v_dmg_pitch = -40;
-            ent.client.v_dmg_roll = Lib.crandom() * 8;
+            ent.client.v_dmg_pitch = -40.0F;
+            ent.client.v_dmg_roll = Lib.crandom() * 8.0F;
             ent.client.v_dmg_time = GameBase.level.time + Defines.DAMAGE_TIME;
 
-            float[] offset = {0, 0, 0};
-            Math3D.VectorSet(offset, 8, 8, ent.viewheight - 8);
+            float[] offset = {(float) 0, (float) 0, (float) 0};
+            Math3D.VectorSet(offset, 8.0F, 8.0F, (float) (ent.viewheight - 8));
             P_ProjectSource(ent.client, ent.s.origin, offset, forward, right,
                     start);
-            float damage_radius = 1000;
+            float damage_radius = 1000.0F;
             GameWeapon.fire_bfg(ent, start, forward, damage, 400, damage_radius);
 
             ent.client.ps.gunframe++;
@@ -858,7 +856,7 @@ public class PlayerWeapon {
             if (item == ent.client.pers.weapon)
                 return;
 
-            if (item.ammo != null && 0 == GameBase.g_select_empty.value
+            if (item.ammo != null && (float) 0 == GameBase.g_select_empty.value
                     && 0 == (item.flags & Defines.IT_AMMO)) {
 
                 gitem_t ammo_item = GameItems.FindItem(item.ammo);
@@ -943,9 +941,9 @@ public class PlayerWeapon {
                 ent.client.ps.gunframe = 6;
                 if (GameBase.level.time >= ent.pain_debounce_time) {
                     game_import_t.sound(ent, Defines.CHAN_VOICE, game_import_t
-                            .soundindex("weapons/noammo.wav"), 1,
-                            Defines.ATTN_NORM, 0);
-                    ent.pain_debounce_time = GameBase.level.time + 1;
+                            .soundindex("weapons/noammo.wav"), 1.0F,
+                            (float) Defines.ATTN_NORM, (float) 0);
+                    ent.pain_debounce_time = GameBase.level.time + 1.0F;
                 }
                 NoAmmoWeaponChange(ent);
                 return true;
@@ -963,26 +961,26 @@ public class PlayerWeapon {
                 ent.client.kick_angles[i] = Lib.crandom() * 0.7f;
             }
             ent.client.kick_origin[0] = Lib.crandom() * 0.35f;
-            ent.client.kick_angles[0] = ent.client.machinegun_shots * -1.5f;
+            ent.client.kick_angles[0] = (float) ent.client.machinegun_shots * -1.5f;
 
             
-            if (0 == GameBase.deathmatch.value) {
+            if ((float) 0 == GameBase.deathmatch.value) {
                 ent.client.machinegun_shots++;
                 if (ent.client.machinegun_shots > 9)
                     ent.client.machinegun_shots = 9;
             }
 
 
-            float[] angles = {0, 0, 0};
+            float[] angles = {(float) 0, (float) 0, (float) 0};
             Math3D
                     .VectorAdd(ent.client.v_angle, ent.client.kick_angles,
                             angles);
-            float[] right = {0, 0, 0};
-            float[] forward = {0, 0, 0};
+            float[] right = {(float) 0, (float) 0, (float) 0};
+            float[] forward = {(float) 0, (float) 0, (float) 0};
             Math3D.AngleVectors(angles, forward, right, null);
-            float[] offset = {0, 0, 0};
-            Math3D.VectorSet(offset, 0, 8, ent.viewheight - 8);
-            float[] start = {0, 0, 0};
+            float[] offset = {(float) 0, (float) 0, (float) 0};
+            Math3D.VectorSet(offset, (float) 0, 8.0F, (float) (ent.viewheight - 8));
+            float[] start = {(float) 0, (float) 0, (float) 0};
             P_ProjectSource(ent.client, ent.s.origin, offset, forward, right,
                     start);
             GameWeapon.fire_bullet(ent, start, forward, damage, kick,
@@ -992,7 +990,7 @@ public class PlayerWeapon {
             game_import_t.WriteByte(Defines.svc_muzzleflash);
 
             game_import_t.WriteShort(ent.index);
-            game_import_t.WriteByte(Defines.MZ_MACHINEGUN | is_silenced);
+            game_import_t.WriteByte(Defines.MZ_MACHINEGUN | (int) is_silenced);
             game_import_t.multicast(ent.s.origin, Defines.MULTICAST_PVS);
 
             PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
@@ -1001,13 +999,13 @@ public class PlayerWeapon {
                 ent.client.pers.inventory[ent.client.ammo_index]--;
 
             ent.client.anim_priority = Defines.ANIM_ATTACK;
-            if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
+            if (((int) ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
                 ent.s.frame = M_Player.FRAME_crattak1
-                        - (int) (Lib.random() + 0.25);
+                        - (int) ((double) Lib.random() + 0.25);
                 ent.client.anim_end = M_Player.FRAME_crattak9;
             } else {
                 ent.s.frame = M_Player.FRAME_attack1
-                        - (int) (Lib.random() + 0.25);
+                        - (int) ((double) Lib.random() + 0.25);
                 ent.client.anim_end = M_Player.FRAME_attack8;
             }
             return true;
@@ -1023,15 +1021,15 @@ public class PlayerWeapon {
 
             int damage;
 
-            if (GameBase.deathmatch.value != 0)
+            if (GameBase.deathmatch.value != (float) 0)
                 damage = 6;
             else
                 damage = 8;
 
             if (ent.client.ps.gunframe == 5)
                 game_import_t.sound(ent, Defines.CHAN_AUTO, game_import_t
-                        .soundindex("weapons/chngnu1a.wav"), 1,
-                        Defines.ATTN_IDLE, 0);
+                        .soundindex("weapons/chngnu1a.wav"), 1.0F,
+                        (float) Defines.ATTN_IDLE, (float) 0);
 
             if ((ent.client.ps.gunframe == 14)
                     && 0 == (ent.client.buttons & Defines.BUTTON_ATTACK)) {
@@ -1046,13 +1044,13 @@ public class PlayerWeapon {
             if (ent.client.ps.gunframe == 22) {
                 ent.client.weapon_sound = 0;
                 game_import_t.sound(ent, Defines.CHAN_AUTO, game_import_t
-                        .soundindex("weapons/chngnd1a.wav"), 1,
-                        Defines.ATTN_IDLE, 0);
+                        .soundindex("weapons/chngnd1a.wav"), 1.0F,
+                        (float) Defines.ATTN_IDLE, (float) 0);
             } else ent.client.weapon_sound = game_import_t
                     .soundindex("weapons/chngnl1a.wav");
 
             ent.client.anim_priority = Defines.ANIM_ATTACK;
-            if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
+            if (((int) ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
                 ent.s.frame = M_Player.FRAME_crattak1
                         - (ent.client.ps.gunframe & 1);
                 ent.client.anim_end = M_Player.FRAME_crattak9;
@@ -1078,9 +1076,9 @@ public class PlayerWeapon {
             if (0 == shots) {
                 if (GameBase.level.time >= ent.pain_debounce_time) {
                     game_import_t.sound(ent, Defines.CHAN_VOICE, game_import_t
-                            .soundindex("weapons/noammo.wav"), 1,
-                            Defines.ATTN_NORM, 0);
-                    ent.pain_debounce_time = GameBase.level.time + 1;
+                            .soundindex("weapons/noammo.wav"), 1.0F,
+                            (float) Defines.ATTN_NORM, (float) 0);
+                    ent.pain_debounce_time = GameBase.level.time + 1.0F;
                 }
                 NoAmmoWeaponChange(ent);
                 return true;
@@ -1098,17 +1096,17 @@ public class PlayerWeapon {
                 ent.client.kick_angles[i] = Lib.crandom() * 0.7f;
             }
 
-            float[] offset = {0, 0, 0};
-            float[] up = {0, 0, 0};
-            float[] right = {0, 0, 0};
-            float[] forward = {0, 0, 0};
-            float[] start = {0, 0, 0};
+            float[] offset = {(float) 0, (float) 0, (float) 0};
+            float[] up = {(float) 0, (float) 0, (float) 0};
+            float[] right = {(float) 0, (float) 0, (float) 0};
+            float[] forward = {(float) 0, (float) 0, (float) 0};
+            float[] start = {(float) 0, (float) 0, (float) 0};
             for (i = 0; i < shots; i++) {
                 
                 Math3D.AngleVectors(ent.client.v_angle, forward, right, up);
-                float r = 7 + Lib.crandom() * 4;
-                float u = Lib.crandom() * 4;
-                Math3D.VectorSet(offset, 0, r, u + ent.viewheight - 8);
+                float r = 7.0F + Lib.crandom() * 4.0F;
+                float u = Lib.crandom() * 4.0F;
+                Math3D.VectorSet(offset, (float) 0, r, u + (float) ent.viewheight - 8.0F);
                 P_ProjectSource(ent.client, ent.s.origin, offset, forward,
                         right, start);
 
@@ -1122,7 +1120,7 @@ public class PlayerWeapon {
 
             game_import_t.WriteShort(ent.index);
             game_import_t.WriteByte((Defines.MZ_CHAINGUN1 + shots - 1)
-                    | is_silenced);
+                    | (int) is_silenced);
             game_import_t.multicast(ent.s.origin, Defines.MULTICAST_PVS);
 
             PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
@@ -1146,7 +1144,7 @@ public class PlayerWeapon {
 
             int index = GameItems.ITEM_INDEX(ent.item);
     
-            if ((((int) (GameBase.dmflags.value) & Defines.DF_WEAPONS_STAY) != 0 || GameBase.coop.value != 0)
+            if ((((int) (GameBase.dmflags.value) & Defines.DF_WEAPONS_STAY) != 0 || GameBase.coop.value != (float) 0)
                     && 0 != other.client.pers.inventory[index])
                 if (0 == (ent.spawnflags & (Defines.DROPPED_ITEM | Defines.DROPPED_PLAYER_ITEM)))
                     return false;
@@ -1162,19 +1160,19 @@ public class PlayerWeapon {
                     GameItems.Add_Ammo(other, ammo, ammo.quantity);
     
                 if (0 == (ent.spawnflags & Defines.DROPPED_PLAYER_ITEM)) {
-                    if (GameBase.deathmatch.value != 0)
+                    if (GameBase.deathmatch.value != (float) 0)
                         if (((int) (GameBase.dmflags.value) & Defines.DF_WEAPONS_STAY) != 0)
                             ent.flags |= Defines.FL_RESPAWN;
                         else
-                            GameItems.SetRespawn(ent, 30);
-                    if (GameBase.coop.value != 0)
+                            GameItems.SetRespawn(ent, 30.0F);
+                    if (GameBase.coop.value != (float) 0)
                         ent.flags |= Defines.FL_RESPAWN;
                 }
             }
     
             if (other.client.pers.weapon != ent.item
                     && (other.client.pers.inventory[index] == 1)
-                    && (0 == GameBase.deathmatch.value || other.client.pers.weapon == GameItems
+                    && ((float) 0 == GameBase.deathmatch.value || other.client.pers.weapon == GameItems
                             .FindItem("blaster")))
                 other.client.newweapon = ent.item;
     
@@ -1184,15 +1182,15 @@ public class PlayerWeapon {
 
     public static void P_ProjectSource(gclient_t client, float[] point,
             float[] distance, float[] forward, float[] right, float[] result) {
-        float[] _distance = { 0, 0, 0 };
+        float[] _distance = {(float) 0, (float) 0, (float) 0};
 
         Math3D.VectorCopy(distance, _distance);
         switch (client.pers.hand) {
             case Defines.LEFT_HANDED:
-                _distance[1] *= -1;
+                _distance[1] *= -1.0F;
                 break;
             case Defines.CENTER_HANDED:
-                _distance[1] = 0;
+                _distance[1] = (float) 0;
                 break;
         }
         Math3D.G_ProjectSource(point, _distance, forward, right, result);
@@ -1207,11 +1205,11 @@ public class PlayerWeapon {
      */
     public static void ChangeWeapon(edict_t ent) {
 
-        if (ent.client.grenade_time != 0) {
+        if (ent.client.grenade_time != (float) 0) {
             ent.client.grenade_time = GameBase.level.time;
             ent.client.weapon_sound = 0;
             weapon_grenade_fire(ent, false);
-            ent.client.grenade_time = 0;
+            ent.client.grenade_time = (float) 0;
         }
 
         ent.client.pers.lastweapon = ent.client.pers.weapon;
@@ -1248,7 +1246,7 @@ public class PlayerWeapon {
                 .modelindex(ent.client.pers.weapon.view_model);
 
         ent.client.anim_priority = Defines.ANIM_PAIN;
-        if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
+        if (((int) ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
             ent.s.frame = M_Player.FRAME_crpain1;
             ent.client.anim_end = M_Player.FRAME_crpain4;
         } else {
@@ -1316,11 +1314,11 @@ public class PlayerWeapon {
         
         if (null != ent.client.pers.weapon
                 && null != ent.client.pers.weapon.weaponthink) {
-            is_quad = (ent.client.quad_framenum > GameBase.level.framenum);
+            is_quad = (ent.client.quad_framenum > (float) GameBase.level.framenum);
             if (ent.client.silencer_shots != 0)
                 is_silenced = (byte) Defines.MZ_SILENCED;
             else
-                is_silenced = 0;
+                is_silenced = (byte) 0;
             ent.client.pers.weapon.weaponthink.think(ent);
         }
     }
@@ -1348,7 +1346,7 @@ public class PlayerWeapon {
                 return;
             } else if ((FRAME_DEACTIVATE_LAST - ent.client.ps.gunframe) == 4) {
                 ent.client.anim_priority = Defines.ANIM_REVERSE;
-                if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
+                if (((int) ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
                     ent.s.frame = M_Player.FRAME_crpain4 + 1;
                     ent.client.anim_end = M_Player.FRAME_crpain1;
                 } else {
@@ -1381,7 +1379,7 @@ public class PlayerWeapon {
 
             if ((FRAME_DEACTIVATE_LAST - FRAME_DEACTIVATE_FIRST) < 4) {
                 ent.client.anim_priority = Defines.ANIM_REVERSE;
-                if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
+                if (((int) ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
                     ent.s.frame = M_Player.FRAME_crpain4 + 1;
                     ent.client.anim_end = M_Player.FRAME_crpain1;
                 } else {
@@ -1405,7 +1403,7 @@ public class PlayerWeapon {
 
 
                     ent.client.anim_priority = Defines.ANIM_ATTACK;
-                    if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
+                    if (((int) ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
                         ent.s.frame = M_Player.FRAME_crattak1 - 1;
                         ent.client.anim_end = M_Player.FRAME_crattak9;
                     } else {
@@ -1415,9 +1413,9 @@ public class PlayerWeapon {
                 } else {
                     if (GameBase.level.time >= ent.pain_debounce_time) {
                         game_import_t.sound(ent, Defines.CHAN_VOICE, game_import_t
-                                        .soundindex("weapons/noammo.wav"), 1,
-                                Defines.ATTN_NORM, 0);
-                        ent.pain_debounce_time = GameBase.level.time + 1;
+                                        .soundindex("weapons/noammo.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
+                        ent.pain_debounce_time = GameBase.level.time + 1.0F;
                     }
                     NoAmmoWeaponChange(ent);
                 }
@@ -1428,7 +1426,7 @@ public class PlayerWeapon {
                 }
 
                 if (pause_frames != null) for (n = 0; pause_frames[n] != 0; n++)
-                    if (ent.client.ps.gunframe == pause_frames[n]) if ((Lib.rand() & 15) != 0)
+                    if (ent.client.ps.gunframe == pause_frames[n]) if (((int) Lib.rand() & 15) != 0)
                         return;
 
                 ent.client.ps.gunframe++;
@@ -1438,10 +1436,10 @@ public class PlayerWeapon {
         if (ent.client.weaponstate == Defines.WEAPON_FIRING) {
             for (n = 0; fire_frames[n] != 0; n++)
                 if (ent.client.ps.gunframe == fire_frames[n]) {
-                    if (ent.client.quad_framenum > GameBase.level.framenum)
+                    if (ent.client.quad_framenum > (float) GameBase.level.framenum)
                         game_import_t.sound(ent, Defines.CHAN_ITEM, game_import_t
-                                        .soundindex("items/damage3.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                                        .soundindex("items/damage3.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
 
                     fire.think(ent);
                     break;
@@ -1466,21 +1464,21 @@ public class PlayerWeapon {
     public static void weapon_grenade_fire(edict_t ent, boolean held) {
         int damage = 125;
 
-        float radius = damage + 40;
+        float radius = (float) (damage + 40);
         if (is_quad)
             damage *= 4;
 
-        float[] offset = {0, 0, 0};
-        Math3D.VectorSet(offset, 8, 8, ent.viewheight - 8);
-        float[] right = {0, 0, 0};
-        float[] forward = {0, 0, 0};
+        float[] offset = {(float) 0, (float) 0, (float) 0};
+        Math3D.VectorSet(offset, 8.0F, 8.0F, (float) (ent.viewheight - 8));
+        float[] right = {(float) 0, (float) 0, (float) 0};
+        float[] forward = {(float) 0, (float) 0, (float) 0};
         Math3D.AngleVectors(ent.client.v_angle, forward, right, null);
-        float[] start = {0, 0, 0};
+        float[] start = {(float) 0, (float) 0, (float) 0};
         P_ProjectSource(ent.client, ent.s.origin, offset, forward, right, start);
 
         float timer = ent.client.grenade_time - GameBase.level.time;
-        int speed = (int) (Defines.GRENADE_MINSPEED + (Defines.GRENADE_TIMER - timer)
-                * ((Defines.GRENADE_MAXSPEED - Defines.GRENADE_MINSPEED) / Defines.GRENADE_TIMER));
+        int speed = (int) ((float) Defines.GRENADE_MINSPEED + (Defines.GRENADE_TIMER - timer)
+                * ((float) (Defines.GRENADE_MAXSPEED - Defines.GRENADE_MINSPEED) / Defines.GRENADE_TIMER));
         GameWeapon.fire_grenade2(ent, start, forward, damage, speed, timer, radius,
                 held);
 
@@ -1496,7 +1494,7 @@ public class PlayerWeapon {
         if (ent.health <= 0)
             return;
 
-        if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
+        if (((int) ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
             ent.client.anim_priority = Defines.ANIM_ATTACK;
             ent.s.frame = M_Player.FRAME_crattak1 - 1;
             ent.client.anim_end = M_Player.FRAME_crattak3;
@@ -1520,17 +1518,17 @@ public class PlayerWeapon {
 
         if (is_quad)
             damage *= 4;
-        float[] right = {0, 0, 0};
-        float[] forward = {0, 0, 0};
+        float[] right = {(float) 0, (float) 0, (float) 0};
+        float[] forward = {(float) 0, (float) 0, (float) 0};
         Math3D.AngleVectors(ent.client.v_angle, forward, right, null);
-        float[] offset = {0, 0, 0};
-        Math3D.VectorSet(offset, 24, 8, ent.viewheight - 8);
+        float[] offset = {(float) 0, (float) 0, (float) 0};
+        Math3D.VectorSet(offset, 24.0F, 8.0F, (float) (ent.viewheight - 8));
         Math3D.VectorAdd(offset, g_offset, offset);
-        float[] start = {0, 0, 0};
+        float[] start = {(float) 0, (float) 0, (float) 0};
         P_ProjectSource(ent.client, ent.s.origin, offset, forward, right, start);
 
-        Math3D.VectorScale(forward, -2, ent.client.kick_origin);
-        ent.client.kick_angles[0] = -1;
+        Math3D.VectorScale(forward, -2.0F, ent.client.kick_origin);
+        ent.client.kick_angles[0] = -1.0F;
 
         GameWeapon.fire_blaster(ent, start, forward, damage, 1000, effect, hyper);
 
@@ -1538,9 +1536,9 @@ public class PlayerWeapon {
         game_import_t.WriteByte(Defines.svc_muzzleflash);
         game_import_t.WriteShort(ent.index);
         if (hyper)
-            game_import_t.WriteByte(Defines.MZ_HYPERBLASTER | is_silenced);
+            game_import_t.WriteByte(Defines.MZ_HYPERBLASTER | (int) is_silenced);
         else
-            game_import_t.WriteByte(Defines.MZ_BLASTER | is_silenced);
+            game_import_t.WriteByte(Defines.MZ_BLASTER | (int) is_silenced);
         game_import_t.multicast(ent.s.origin, Defines.MULTICAST_PVS);
 
         PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
@@ -1565,7 +1563,7 @@ public class PlayerWeapon {
             return;
         }
     
-        if (GameBase.deathmatch.value != 0)
+        if (GameBase.deathmatch.value != (float) 0)
             return;
     
         if ((who.flags & Defines.FL_NOTARGET) != 0)
@@ -1575,16 +1573,16 @@ public class PlayerWeapon {
         if (who.mynoise == null) {
             noise = GameUtil.G_Spawn();
             noise.classname = "player_noise";
-            Math3D.VectorSet(noise.mins, -8, -8, -8);
-            Math3D.VectorSet(noise.maxs, 8, 8, 8);
+            Math3D.VectorSet(noise.mins, -8.0F, -8.0F, -8.0F);
+            Math3D.VectorSet(noise.maxs, 8.0F, 8.0F, 8.0F);
             noise.owner = who;
             noise.svflags = Defines.SVF_NOCLIENT;
             who.mynoise = noise;
     
             noise = GameUtil.G_Spawn();
             noise.classname = "player_noise";
-            Math3D.VectorSet(noise.mins, -8, -8, -8);
-            Math3D.VectorSet(noise.maxs, 8, 8, 8);
+            Math3D.VectorSet(noise.mins, -8.0F, -8.0F, -8.0F);
+            Math3D.VectorSet(noise.maxs, 8.0F, 8.0F, 8.0F);
             noise.owner = who;
             noise.svflags = Defines.SVF_NOCLIENT;
             who.mynoise2 = noise;

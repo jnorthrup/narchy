@@ -99,7 +99,7 @@ public class MNISTWorld extends MNIST implements World {
         
         double r;
         
-        if (i.label == -1) {
+        if ((int) i.label == -1) {
             if (a == -1) r = 1.0;
             else r = -1.0;
         }
@@ -111,7 +111,7 @@ public class MNISTWorld extends MNIST implements World {
                 
 
                 
-                r = 1.0 /(1+ Math.abs(a - i.label));
+                r = 1.0 / (double) (1 + Math.abs(a - (int) i.label));
                 
                 
                 

@@ -110,12 +110,12 @@ public class MatrixUtil {
 	 * order. This means a vector is first rotated about X then Y and then Z axis.
 	 */
 	public static void setEulerZYX(Matrix3f mat, float eulerX, float eulerY, float eulerZ) {
-        float ci = (float) Math.cos(eulerX);
-        float cj = (float) Math.cos(eulerY);
-        float ch = (float) Math.cos(eulerZ);
-        float si = (float) Math.sin(eulerX);
-        float sj = (float) Math.sin(eulerY);
-        float sh = (float) Math.sin(eulerZ);
+        float ci = (float) Math.cos((double) eulerX);
+        float cj = (float) Math.cos((double) eulerY);
+        float ch = (float) Math.cos((double) eulerZ);
+        float si = (float) Math.sin((double) eulerX);
+        float sj = (float) Math.sin((double) eulerY);
+        float sh = (float) Math.sin((double) eulerZ);
         float cc = ci * ch;
         float cs = ci * sh;
         float sc = si * ch;
@@ -211,7 +211,7 @@ public class MatrixUtil {
 		
 
 		if (trace > 0f) {
-            float s = (float) Math.sqrt(trace + 1f);
+            float s = (float) Math.sqrt((double) (trace + 1f));
 			dest.w = (s * 0.5f);
 			s = 0.5f / s;
 
@@ -224,7 +224,7 @@ public class MatrixUtil {
             int j = (i + 1) % 3;
             int k = (i + 2) % 3;
 
-            float s = (float) Math.sqrt(mat.get(i, i) - mat.get(j, j) - mat.get(k, k) + 1f);
+            float s = (float) Math.sqrt((double) (mat.get(i, i) - mat.get(j, j) - mat.get(k, k) + 1f));
 			dest.set(i, s * 0.5f);
 			s = 0.5f / s;
 
@@ -252,7 +252,7 @@ public class MatrixUtil {
 		
 
 		if (trace > 0f) {
-            float s = (float) Math.sqrt(trace + 1f);
+            float s = (float) Math.sqrt((double) (trace + 1f));
 			q.setW(s * 0.5f);
 			s = 0.5f / s;
 
@@ -265,7 +265,7 @@ public class MatrixUtil {
             int j = (i + 1) % 3;
             int k = (i + 2) % 3;
 
-            float s = (float) Math.sqrt(mat.get(i, i) - mat.get(j, j) - mat.get(k, k) + 1f);
+            float s = (float) Math.sqrt((double) (mat.get(i, i) - mat.get(j, j) - mat.get(k, k) + 1f));
 			setQuat(q, i, s * 0.5f);
 			s = 0.5f / s;
 
@@ -353,17 +353,17 @@ public class MatrixUtil {
 
 
             float mpq = mat.get(p, q);
-            float theta = (mat.get(q, q) - mat.get(p, p)) / (2 * mpq);
+            float theta = (mat.get(q, q) - mat.get(p, p)) / (2.0F * mpq);
             float theta2 = theta * theta;
 			float cos;
             if ((theta2 * theta2) < (10f / BulletGlobals.SIMD_EPSILON)) {
-				t = 1f / (theta >= 0f ? theta + (float) Math.sqrt(1f + theta2) : theta - (float) Math.sqrt(1f + theta2));
-				cos = 1f / (float) Math.sqrt(1f + t * t);
+				t = 1f / (theta >= 0f ? theta + (float) Math.sqrt((double) (1f + theta2)) : theta - (float) Math.sqrt((double) (1f + theta2)));
+				cos = 1f / (float) Math.sqrt((double) (1f + t * t));
 			}
 			else {
 				
-				t = 1 / (theta * (2 + 0.5f / theta2));
-				cos = 1 - 0.5f * t * t;
+				t = 1.0F / (theta * (2.0F + 0.5f / theta2));
+				cos = 1.0F - 0.5f * t * t;
 			}
             float sin = cos * t;
 

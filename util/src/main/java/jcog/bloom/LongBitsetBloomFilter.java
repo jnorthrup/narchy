@@ -21,7 +21,6 @@ import jcog.data.bit.MetalBitSet;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 
 
 /**
@@ -51,11 +50,11 @@ public class LongBitsetBloomFilter {
     private final long n;
 
     public LongBitsetBloomFilter(long maxNumEntries) {
-        this(maxNumEntries, DEFAULT_FPP);
+        this(maxNumEntries, (double) DEFAULT_FPP);
     }
 
     public LongBitsetBloomFilter(long maxNumEntries, double fpp) {
-        if (maxNumEntries <= 0)
+        if (maxNumEntries <= 0L)
             throw new AssertionError("maxNumEntries should be > 0");
         if (fpp <= 0.0 || fpp >= 1.0)
             throw new AssertionError("False positive percentage should be > 0.0 & < 1.0");
@@ -63,7 +62,7 @@ public class LongBitsetBloomFilter {
         this.fpp = fpp;
         n = maxNumEntries;
         m = optimalNumOfBits(maxNumEntries, fpp);
-        k = optimalNumOfHashFunctions(maxNumEntries, m);
+        k = optimalNumOfHashFunctions(maxNumEntries, (long) m);
         bitSet = MetalBitSet.bits(m);
     }
 
@@ -87,19 +86,19 @@ public class LongBitsetBloomFilter {
     }
 
     public static int optimalNumOfHashFunctions(long n, long m) {
-        return Math.max(1, (int) Math.round((double) m / n * Math.log(2)));
+        return Math.max(1, (int) Math.round((double) m / (double) n * Math.log(2.0)));
     }
 
     public static int optimalNumOfBits(long n, double p) {
-        if (p == 0) {
+        if (p == (double) 0) {
             p = Double.MIN_VALUE;
         }
-        return (int) (-n * Math.log(p) / (Math.log(2) * Math.log(2)));
+        return (int) ((double) -n * Math.log(p) / (Math.log(2.0) * Math.log(2.0)));
     }
 
     public long sizeInBytes() {
-        return bitSet instanceof MetalBitSet.LongArrayBitSet ? ((MetalBitSet.LongArrayBitSet)bitSet).bitSize() / 8 :
-                4; 
+        return bitSet instanceof MetalBitSet.LongArrayBitSet ? ((MetalBitSet.LongArrayBitSet)bitSet).bitSize() / 8L :
+                4L;
     }
 
     public boolean test(byte[] val) {

@@ -247,7 +247,7 @@ public class LevelPanel extends JComponent implements MouseListener
      */
     public static Point snapToGrid(Point p) {
     	if (snapToGrid) {
-        	return new Point((p.x + 2) / 4 * 4, Math.round(p.y / 6f) * 6);
+        	return new Point((p.x + 2) / 4 * 4, Math.round((float) p.y / 6f) * 6);
     	}
     	
     	return p;

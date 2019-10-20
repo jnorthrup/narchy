@@ -249,19 +249,19 @@ public final class HumanReadableByteCount implements Comparable<HumanReadableByt
     @Override
     public String toString() {
         String units = unit.toString().toLowerCase(Locale.ENGLISH);
-        if (size == 1) {
+        if (size == 1L) {
             units = units.substring(0, units.length() - 1);
         }
         return Long.toString(size) + ' ' + units;
     }
 
     enum ByteUnit {
-        BYTE(1, "bytes"),
+        BYTE(1L, "bytes"),
         KiB(1024L, "kibibytes"),
-        MiB((long) Math.pow(1024L, 2L), "mebibytes"),
-        GiB((long) Math.pow(1024L, 3L), "gibibytes"),
-        TiB((long) Math.pow(1024L, 4L), "tebibytes"),
-        PiB((long) Math.pow(1024L, 5L), "pebibytes");
+        MiB((long) Math.pow(1024.0, 2.0), "mebibytes"),
+        GiB((long) Math.pow(1024.0, 3.0), "gibibytes"),
+        TiB((long) Math.pow(1024.0, 4.0), "tebibytes"),
+        PiB((long) Math.pow(1024.0, 5.0), "pebibytes");
 
         private final long multiplier;
         private final String suffix;
@@ -272,7 +272,7 @@ public final class HumanReadableByteCount implements Comparable<HumanReadableByt
         }
 
         public long toBytes(long sizeValue) {
-            Preconditions.checkArgument(sizeValue >= 0, "Negative size value. Size must be positive: %s", sizeValue);
+            Preconditions.checkArgument(sizeValue >= 0L, "Negative size value. Size must be positive: %s", sizeValue);
             return sizeValue * multiplier;
         }
 

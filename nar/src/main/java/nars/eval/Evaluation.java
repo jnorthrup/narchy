@@ -14,7 +14,6 @@ import nars.term.buffer.Termerator;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -191,7 +190,7 @@ public class Evaluation extends Termerator {
 						} else if (b == Null) {
 							y = Null;
 							break main;
-						} else if (/*b == False &&*/ y.opID() == CONJ.id) {
+						} else if (/*b == False &&*/ y.opID() == (int) CONJ.id) {
                             y = x.equals(y) ? False : a.neg();
                             break main;
                         }

@@ -6,8 +6,6 @@ import nars.subterm.TermList;
 import nars.term.Compound;
 import nars.term.Term;
 
-import java.util.stream.IntStream;
-
 /** mutable, use with caution; hashCode is dynamically computed
  *
  * TODO partially functional
@@ -22,7 +20,7 @@ public class LighterCompound extends TermList implements AbstractLightCompound {
 
     @Override
     public final int opID() {
-        return op;
+        return (int) op;
     }
 
     public LighterCompound(Op op) {
@@ -73,7 +71,7 @@ public class LighterCompound extends TermList implements AbstractLightCompound {
 
     @Override
     public final Op op() {
-        return Op.the(op);
+        return Op.the((int) op);
     }
 
 

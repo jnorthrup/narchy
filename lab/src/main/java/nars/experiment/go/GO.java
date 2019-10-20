@@ -170,9 +170,9 @@ public class GO extends JPanel implements MouseListener {
             }
         } else {
             x -= 40;
-            x = (int) Math.round((double) x / 26);
+            x = (int) Math.round((double) x / 26.0);
             y -= 40;
-            y = (int) Math.round((double) y / 26);
+            y = (int) Math.round((double) y / 26.0);
 
             x++;
             y++;

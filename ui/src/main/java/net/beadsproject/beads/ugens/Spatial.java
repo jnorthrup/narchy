@@ -133,7 +133,7 @@ public class Spatial extends UGen {
                     
                     for (int speaker = 0; speaker < speakerPositions.length; speaker++) {
                         float distance = distance(speakerPositions[speaker], currentPos);
-                        float linearGain = Math.max(0, 1f - distance / sphereDiameter);
+                        float linearGain = Math.max((float) 0, 1f - distance / sphereDiameter);
                         /*
                          * TODO I've removed the math pow because it was really slowing things down.
                          * the fastPow01 method doesn't help much either. Surprising this should make such
@@ -202,7 +202,7 @@ public class Spatial extends UGen {
      * @param dimensions the dimensions
      */
     public Spatial(AudioContext context, int dimensions) {
-        this(context, dimensions, (float) Math.sqrt(dimensions));
+        this(context, dimensions, (float) Math.sqrt((double) dimensions));
     }
 
     /**
@@ -213,33 +213,33 @@ public class Spatial extends UGen {
      * @param sphereDiameter the sphere diameter.
      */
     private Spatial(AudioContext context, int dimensions, float sphereDiameter) {
-        super(context, (int) Math.pow(2, dimensions));
+        super(context, (int) Math.pow(2.0, (double) dimensions));
         this.dimensions = dimensions;
         switch (dimensions) {
             case 1:
                 setSpeakerPositions(new float[][]{
-                        {0},
-                        {1}
+                        {(float) 0},
+                        {1.0F}
                 });
                 break;
             case 2:
                 setSpeakerPositions(new float[][]{
-                        {0, 0},
-                        {0, 1},
-                        {1, 1},
-                        {1, 0}
+                        {(float) 0, (float) 0},
+                        {(float) 0, 1.0F},
+                        {1.0F, 1.0F},
+                        {1.0F, (float) 0}
                 });
                 break;
             case 3:
                 setSpeakerPositions(new float[][]{
-                        {0, 0, 0},
-                        {0, 1, 0},
-                        {1, 1, 0},
-                        {1, 0, 0},
-                        {0, 0, 1},
-                        {0, 1, 1},
-                        {1, 1, 1},
-                        {1, 0, 1}
+                        {(float) 0, (float) 0, (float) 0},
+                        {(float) 0, 1.0F, (float) 0},
+                        {1.0F, 1.0F, (float) 0},
+                        {1.0F, (float) 0, (float) 0},
+                        {(float) 0, (float) 0, 1.0F},
+                        {(float) 0, 1.0F, 1.0F},
+                        {1.0F, 1.0F, 1.0F},
+                        {1.0F, (float) 0, 1.0F}
                 });
                 break;
             default:
@@ -260,7 +260,7 @@ public class Spatial extends UGen {
      * @param locations  the locations.
      */
     public Spatial(AudioContext context, int dimensions, float[][] locations) {
-        this(context, dimensions, locations, (float) Math.sqrt(dimensions));
+        this(context, dimensions, locations, (float) Math.sqrt((double) dimensions));
     }
 
     /**
@@ -359,11 +359,11 @@ public class Spatial extends UGen {
      * @return the float
      */
     private static float distance(float[] a, float[] b) {
-        float distance = 0;
+        float distance = (float) 0;
         for (int i = 0; i < a.length; i++) {
             distance += (a[i] - b[i]) * (a[i] - b[i]);
         }
-        distance = (float) Math.sqrt(distance);
+        distance = (float) Math.sqrt((double) distance);
         return distance;
     }
 

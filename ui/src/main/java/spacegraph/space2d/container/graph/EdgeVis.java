@@ -60,7 +60,7 @@ public class EdgeVis<X> {
 
 
                 float scale = Math.min(from.w(), from.h());
-                float base = Util.lerpSafe(e.weight, scale / 2, scale);
+                float base = Util.lerpSafe(e.weight, scale / 2.0F, scale);
 
                 e.color(gl);
                 float fx = from.cx(), fy = from.cy();

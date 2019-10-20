@@ -36,9 +36,9 @@ public class NumberState extends TokenizerState {
 
         int divideByPowerOfTen = 0;
         BigDecimal v = BigDecimal.ZERO;
-		while ('0' <= c && c <= '9') {
+		while ((int) '0' <= c && c <= (int) '9') {
 			gotAdigit = true;
-			v = v.multiply(new BigDecimal(10)).add(new BigDecimal(c - '0'));
+			v = v.multiply(new BigDecimal(10)).add(new BigDecimal(c - (int) '0'));
 			c = r.read();
 			if (fraction) {
 				divideByPowerOfTen++;
@@ -70,7 +70,7 @@ public class NumberState extends TokenizerState {
 	 */
     private void parseLeft(PushbackReader r) throws IOException {
 
-		if (c == '-') {
+		if (c == (int) '-') {
 			c = r.read();
 			absorbedLeadingMinus = true;
 		}
@@ -82,7 +82,7 @@ public class NumberState extends TokenizerState {
 	 */
 	protected void parseRight(PushbackReader r) throws IOException {
 
-		if (c == '.') {
+		if (c == (int) '.') {
 			c = r.read();
 			absorbedDot = true;
 			value = value.add(absorbDigits(r, true));
@@ -107,14 +107,14 @@ public class NumberState extends TokenizerState {
 
 		if (!gotAdigit) {
 			if (absorbedLeadingMinus && absorbedDot) {
-				r.unread('.');
-				return t.symbolState().nextToken(r, '-', t);
+				r.unread((int) '.');
+				return t.symbolState().nextToken(r, (int) '-', t);
 			}
 			if (absorbedLeadingMinus) {
-				return t.symbolState().nextToken(r, '-', t);
+				return t.symbolState().nextToken(r, (int) '-', t);
 			}
 			if (absorbedDot) {
-				return t.symbolState().nextToken(r, '.', t);
+				return t.symbolState().nextToken(r, (int) '.', t);
 			}
 		}
 		if (absorbedLeadingMinus) {

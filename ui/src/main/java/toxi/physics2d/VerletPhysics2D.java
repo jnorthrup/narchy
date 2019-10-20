@@ -271,12 +271,12 @@ public class VerletPhysics2D {
         while (++ii < maxIterations) {
             //in seconds
             float minTimeStep = 0.01f;
-            if (dt / ii < minTimeStep)
+            if (dt / (float) ii < minTimeStep)
                 break;
             //else: further subdivide
         }
 
-        float subDT = dt / ii;
+        float subDT = dt / (float) ii;
 
         for (ParticleBehavior2D b : behaviors)
             b.configure(subDT);

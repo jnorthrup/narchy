@@ -114,7 +114,7 @@ public class SRN  {
     }
 
     protected static void clear(double[] array) {
-		Arrays.fill(array, 0);
+		Arrays.fill(array, (double) 0);
     }
 
     protected static void tanh(double[] array) {

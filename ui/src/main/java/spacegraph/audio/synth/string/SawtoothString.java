@@ -14,7 +14,7 @@ public class SawtoothString extends KarplusStrongString{
         clear();
         int capacity = buffer.capacity();
         for (int i = 0; i < capacity; i++) {
-            double sample = (-0.5 + (i / (capacity - 1)) * 2 * getMaxVolume());
+            double sample = (-0.5 + (double) (i / (capacity - 1)) * 2.0 * getMaxVolume());
             buffer.enqueue(sample);
         }
     }
@@ -22,7 +22,7 @@ public class SawtoothString extends KarplusStrongString{
     public void tic() {
         double first = buffer.dequeue();
         double second = buffer.peek();
-        double last = (first + second) * (deltaVolume / 2);
+        double last = (first + second) * (deltaVolume / 2.0);
         buffer.enqueue(last);
     }
 

@@ -33,7 +33,7 @@ public class a extends Applet implements Runnable {
 
   @Override
   public void start() {
-    enableEvents(8);
+    enableEvents(8L);
     new Thread(this).start();
   }
 
@@ -195,7 +195,7 @@ public class a extends Applet implements Runnable {
       for(y = 0; y < z; y++) {
         j = y + (i == SPRITE_RUN_3 ? 1 : i == SPRITE_JUMP_1 ? -1 : 0);
         for(x = 0; x < 8; x++) {
-          u = (((S.charAt(k + (y >> 1))
+          u = ((((int) S.charAt(k + (y >> 1))
               >> (x + (((y & 1) == 0) ? 0 : 8))) & 1) == 1)
               ? 0xFF000000
               
@@ -234,10 +234,10 @@ public class a extends Applet implements Runnable {
 
       long nextFrameStartTime = System.nanoTime();
       Graphics2D g2 = null;
-      float rockVy = 0;
-      float rockY = 0;
-      float playerVy = 0;
-      float playerY = 0;
+      float rockVy = (float) 0;
+      float rockY = (float) 0;
+      float playerVy = (float) 0;
+      float playerY = (float) 0;
       boolean levelAdvanceRequest = false;
       boolean rockBonusAwarded = false;
       boolean bonusLifeAwarded = false;
@@ -328,7 +328,7 @@ public class a extends Applet implements Runnable {
       while(true) {
 
       do {
-        nextFrameStartTime += 16666667;
+        nextFrameStartTime += 16666667L;
 
         
 
@@ -345,12 +345,12 @@ public class a extends Applet implements Runnable {
           switch (mode) {
               case MODE_VINES:
 
-                  if (playerY > 256) {
+                  if (playerY > 256.0F) {
 
                       lives--;
                       playerVine++;
                       playerVineOffset = 64;
-                      playerVy = 0;
+                      playerVy = (float) 0;
                   }
 
                   j = cameraX / 80;
@@ -422,10 +422,10 @@ public class a extends Applet implements Runnable {
                       }
                   }
 
-                  if (playerVy == 0) {
+                  if (playerVy == (float) 0) {
 
                       playerX = vinePoints[vineIndex + playerVineOffset] - 1;
-                      playerY = vinePoints[vineIndex + playerVineOffset + 1];
+                      playerY = (float) vinePoints[vineIndex + playerVineOffset + 1];
 
                       if (jumpReleased && a[VK_JUMP]) {
                           jumpReleased = false;
@@ -439,7 +439,7 @@ public class a extends Applet implements Runnable {
                           cameraX = CAMERAX0;
                           crocSpawnX = cameraX;
                           playerX = cameraX + 133;
-                          playerY = 85;
+                          playerY = 85.0F;
                           playerStabbing = 0;
                           playerOxygen = 16;
                           score += POINTS_ADVANCED_LEVEL;
@@ -455,7 +455,7 @@ public class a extends Applet implements Runnable {
                       playerSprite = SPRITE_CLING_1;
                       playerX -= 2;
                       playerVy += GRAVITY_3
-                              + (level == 1 ? 0.0025f : level > 1 ? 0.005f : 0);
+                              + (level == 1 ? 0.0025f : level > 1 ? 0.005f : (float) 0);
                       playerY += playerVy;
 
                       if (vineIndex >= 0) {
@@ -466,7 +466,7 @@ public class a extends Applet implements Runnable {
                                       && (int) playerY == y) {
 
                                   playerVineOffset = i << 1;
-                                  playerVy = 0;
+                                  playerVy = (float) 0;
                                   targetCameraX -= 80;
                                   if (firstMove) {
 
@@ -503,7 +503,7 @@ public class a extends Applet implements Runnable {
                           cameraX = CAMERAX0;
                           crocSpawnX = cameraX;
                           playerX = cameraX + 133;
-                          playerY = 85;
+                          playerY = 85.0F;
                           playerStabbing = 0;
                           playerOxygen = 16;
 
@@ -518,24 +518,24 @@ public class a extends Applet implements Runnable {
                           if ((counter & 1) == 1) {
                               playerX--;
                           }
-                          if (playerY > 85) {
+                          if (playerY > 85.0F) {
                               playerY--;
                           }
                       }
                   } else {
 
-                      if (playerY < 86) {
+                      if (playerY < 86.0F) {
                           playerOxygen = 16;
                       } else if ((counter & 63) == 63 && --playerOxygen == 0) {
                           playerDead = 1;
                       }
 
                       if (a[VK_UP]) {
-                          if (playerY > 85) {
+                          if (playerY > 85.0F) {
                               playerY--;
                           }
                       } else if (a[VK_DOWN]) {
-                          if (playerY < 155) {
+                          if (playerY < 155.0F) {
                               playerY++;
                           }
                       }
@@ -594,8 +594,8 @@ public class a extends Applet implements Runnable {
                                   mode = MODE_ROCKS;
                                   cameraX = CAMERAX0;
                                   playerX = cameraX + 133;
-                                  playerY = 115;
-                                  playerVy = 0;
+                                  playerY = 115.0F;
+                                  playerVy = (float) 0;
                                   rockX = cameraX + SCREEN_WIDTH;
                                   playerDucking = false;
                                   panning = false;
@@ -603,8 +603,8 @@ public class a extends Applet implements Runnable {
                               }
                           }
                           croc[CROC_ANGLE] += croc[CROC_ANGLE_INC];
-                          croc[CROC_Y] = (int) (croc[CROC_CENTER_Y]
-                                  + croc[CROC_RADIUS] * Math.sin(croc[CROC_ANGLE] / 256f));
+                          croc[CROC_Y] = (int) ((double) croc[CROC_CENTER_Y]
+                                  + (double) croc[CROC_RADIUS] * Math.sin((double) (croc[CROC_ANGLE] / 256f)));
                           if (croc[CROC_Y] < 85) {
                               croc[CROC_Y] = 85;
                           } else if (croc[CROC_Y] > 155) {
@@ -620,8 +620,8 @@ public class a extends Applet implements Runnable {
                               if (playerStabbing > 0
                                       && playerX >= croc[CROC_X] + 2
                                       && playerX <= croc[CROC_X] + 14
-                                      && playerY >= croc[CROC_Y] + 1
-                                      && playerY <= croc[CROC_Y] + 3) {
+                                      && playerY >= (float) (croc[CROC_Y] + 1)
+                                      && playerY <= (float) (croc[CROC_Y] + 3)) {
 
                                   j = playerX - croc[CROC_X];
                                   if (j < 5) {
@@ -638,8 +638,8 @@ public class a extends Applet implements Runnable {
                                   croc[CROC_DELAY] = 32;
                               } else if (playerX - 15 <= croc[CROC_X]
                                       && playerX + 15 >= croc[CROC_X]
-                                      && playerY - 2 <= croc[CROC_Y]
-                                      && playerY + 7 >= croc[CROC_Y]) {
+                                      && playerY - 2.0F <= (float) croc[CROC_Y]
+                                      && playerY + 7.0F >= (float) croc[CROC_Y]) {
 
                                   playerDead = 1;
                               }
@@ -660,8 +660,8 @@ public class a extends Applet implements Runnable {
                           remaining = 2 + level;
                           mode = MODE_CANNIBALS;
                           panning = true;
-                          rockY = 112;
-                          rockVy = 0;
+                          rockY = 112.0F;
+                          rockVy = (float) 0;
                           cannibalDirection = -1;
                           rockX = cameraX - 72;
                           score += POINTS_ADVANCED_LEVEL;
@@ -670,19 +670,19 @@ public class a extends Applet implements Runnable {
                       rockBonusAwarded = false;
                       if ((rockSprite = SPRITE_ROCK_1 + random.nextInt(2))
                               == SPRITE_ROCK_1) {
-                          rockY = ROCK_Y_LARGE;
+                          rockY = (float) ROCK_Y_LARGE;
                           rockMaxY = ROCK_MAX_Y_LARGE;
                       } else {
-                          rockY = ROCK_Y_SMALL;
+                          rockY = (float) ROCK_Y_SMALL;
                           rockMaxY = ROCK_MAX_Y_SMALL;
                       }
-                      rockVy = 0;
+                      rockVy = (float) 0;
                   }
 
                   rockVy += GRAVITY;
                   rockY += rockVy;
-                  if (rockY >= rockMaxY) {
-                      rockY = (rockMaxY << 1) - rockY;
+                  if (rockY >= (float) rockMaxY) {
+                      rockY = (float) (rockMaxY << 1) - rockY;
                       rockVy = -rockVy;
                   }
 
@@ -695,27 +695,27 @@ public class a extends Applet implements Runnable {
                           remaining += 2;
                           cameraX = CAMERAX0;
                           playerX = cameraX + 133;
-                          playerY = 115;
-                          playerVy = 0;
+                          playerY = 115.0F;
+                          playerVy = (float) 0;
                           rockX = cameraX + SCREEN_WIDTH;
                           playerDucking = false;
                           panning = false;
                       } else {
-                          playerY = (int) playerY;
-                          if (playerY < 123) {
+                          playerY = (float) (int) playerY;
+                          if (playerY < 123.0F) {
                               playerY++;
                           }
                       }
                   } else {
 
-                      if (playerVy == 0 && a[VK_DOWN]) {
-                          playerY = 121;
+                      if (playerVy == (float) 0 && a[VK_DOWN]) {
+                          playerY = 121.0F;
                           playerSprite = SPRITE_DUCK;
                           playerDucking = true;
                       } else {
                           if (playerDucking) {
                               playerDucking = false;
-                              playerY = 115;
+                              playerY = 115.0F;
                           }
 
                           if ((counter & 1) == 1) {
@@ -732,7 +732,7 @@ public class a extends Applet implements Runnable {
                               playerX = cameraX + 71;
                           }
 
-                          if (playerVy == 0) {
+                          if (playerVy == (float) 0) {
                               if (jumpReleased && a[VK_JUMP]) {
                                   jumpReleased = false;
                                   playerVy = JUMP_SPEED;
@@ -743,11 +743,11 @@ public class a extends Applet implements Runnable {
                           } else {
                               playerVy += GRAVITY;
                               playerY += playerVy;
-                              if (playerY >= 115) {
-                                  playerY = 115;
-                                  playerVy = 0;
+                              if (playerY >= 115.0F) {
+                                  playerY = 115.0F;
+                                  playerVy = (float) 0;
                               }
-                              playerSprite = (playerVy < 0) ? SPRITE_JUMP_2 : SPRITE_JUMP_1;
+                              playerSprite = (playerVy < (float) 0) ? SPRITE_JUMP_2 : SPRITE_JUMP_1;
                           }
                       }
 
@@ -760,11 +760,11 @@ public class a extends Applet implements Runnable {
                       if (rockX + 8 > playerX && playerX + 8 > rockX
                               && j + i > x && x + k > j) {
                           playerDead = 1;
-                          playerY += playerDucking ? 2 : 8;
+                          playerY = playerY + (float)(  playerDucking ? 2f : 8f) ;
                           playerSprite = SPRITE_CRUSHED;
                       } else if (!rockBonusAwarded && rockX > playerX) {
                           rockBonusAwarded = true;
-                          if (playerVy != 0) {
+                          if (playerVy != (float) 0) {
                               score += POINTS_ROCK_JUMP;
                           } else if (playerDucking) {
                               score += POINTS_ROCK_DUCK;
@@ -800,13 +800,13 @@ public class a extends Applet implements Runnable {
                       }
                       rockVy += GRAVITY;
                       rockY += rockVy;
-                      if (rockY >= 112) {
-                          rockY = 112;
-                          rockVy = CANNIBAL_JUMP_SPEED;
+                      if (rockY >= 112.0F) {
+                          rockY = 112.0F;
+                          rockVy = (float) CANNIBAL_JUMP_SPEED;
                           cannibalDirection = -cannibalDirection;
                       }
                   } else {
-                      rockY = 117;
+                      rockY = 117.0F;
                   }
 
                   if (playerDead > 0) {
@@ -816,19 +816,19 @@ public class a extends Applet implements Runnable {
                           lives--;
                           playerDead = 0;
                           playerX = cameraX + 143;
-                          playerY = 115;
-                          playerVy = 0;
+                          playerY = 115.0F;
+                          playerVy = (float) 0;
                           playerSprite = SPRITE_RUN_1;
                       } else {
-                          playerY = (int) playerY;
-                          if (playerY < 123) {
+                          playerY = (float) (int) playerY;
+                          if (playerY < 123.0F) {
                               playerY++;
                           }
                       }
                   } else if (panning) {
                       playerDucking = false;
-                      if (playerY > 115) {
-                          playerY = 115;
+                      if (playerY > 115.0F) {
+                          playerY = 115.0F;
                       }
                       if ((counter & 3) == 3 && playerSprite++ > SPRITE_RUN_3) {
                           playerSprite = SPRITE_RUN_1;
@@ -868,13 +868,13 @@ public class a extends Applet implements Runnable {
                           playerVy = JUMP_SPEED_2;
                       }
 
-                      if (playerVy == 0) {
+                      if (playerVy == (float) 0) {
 
                           if (rockX > cameraX + SCREEN_WIDTH) {
                               rockBonusAwarded = false;
                               panning = true;
-                              rockY = 112;
-                              rockVy = 0;
+                              rockY = 112.0F;
+                              rockVy = (float) 0;
                               cannibalDirection = -1;
                               rockX = cameraX - 72;
                               if (--remaining == 0) {
@@ -900,22 +900,22 @@ public class a extends Applet implements Runnable {
                       } else {
                           playerVy += GRAVITY_2;
                           playerY += playerVy;
-                          if (playerY >= 115) {
-                              playerY = 115;
-                              playerVy = 0;
+                          if (playerY >= 115.0F) {
+                              playerY = 115.0F;
+                              playerVy = (float) 0;
                           }
-                          playerSprite = ((playerVy < 0) ? SPRITE_JUMP_2 : SPRITE_JUMP_1)
+                          playerSprite = ((playerVy < (float) 0) ? SPRITE_JUMP_2 : SPRITE_JUMP_1)
                                   + (playerDirection == 1 ? SPRITE_COUNT : 0);
                       }
 
 
                       if (rockX + 8 > playerX && playerX + 8 > rockX
-                              && rockY + 20 > playerY && playerY + 20 > rockY) {
+                              && rockY + 20.0F > playerY && playerY + 20.0F > rockY) {
                           if (mode == MODE_WOMAN) {
                               mode = MODE_WON;
                           } else {
                               playerDead = 1;
-                              playerY += playerDucking ? 2 : 8;
+                              playerY = playerY + (float) (playerDucking ? 2f : 8f);
                               playerSprite = SPRITE_CRUSHED;
                           }
                       } else if (!rockBonusAwarded && rockX > playerX) {
@@ -935,7 +935,7 @@ public class a extends Applet implements Runnable {
           playerX = cameraX + 144;
           playerVine = 819;
           playerVineOffset = 64;          
-          playerVy = 0;
+          playerVy = (float) 0;
           if (levelAdvanceRequest) {
             levelAdvanceRequest = false;
             level++;
@@ -1110,7 +1110,7 @@ public class a extends Applet implements Runnable {
       }
 
       
-      while(nextFrameStartTime - System.nanoTime() > 0) {
+      while(nextFrameStartTime - System.nanoTime() > 0L) {
         Thread.yield();
       }
     }

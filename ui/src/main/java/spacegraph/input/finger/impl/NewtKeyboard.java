@@ -69,16 +69,16 @@ public class NewtKeyboard extends Finger implements KeyListener {
         if (!pressOrRelease) {
             switch (e.getKeyCode()) {
                 case VK_LEFT:
-                    focusTraverse(+180);
+                    focusTraverse((float) +180);
                     break;
                 case VK_RIGHT:
-                    focusTraverse(0);
+                    focusTraverse((float) 0);
                     break;
                 case VK_UP:
-                    focusTraverse(+90);
+                    focusTraverse((float) +90);
                     break;
                 case VK_DOWN:
-                    focusTraverse(-90);
+                    focusTraverse(-90.0F);
                     break;
             }
         }
@@ -99,9 +99,9 @@ public class NewtKeyboard extends Finger implements KeyListener {
         //TODO abstract to multi-level bfs/dfs graph search with early termination and heuristics etc
         TopN<Surface> next = new TopN<Surface>(new Surface[1], s -> {
             v2 c = s.bounds.center();
-            double dAngle = Math.abs(angleInRadians - Math.atan2(c.y - xc.y, c.x - xc.x));
-            if (dAngle < Math.PI / 4 /* +-45deg */){
-                float d = 1f / (1 + c.distanceSq(xc));
+            double dAngle = Math.abs((double) angleInRadians - Math.atan2((double) (c.y - xc.y), (double) (c.x - xc.x)));
+            if (dAngle < Math.PI / 4.0 /* +-45deg */){
+                float d = 1f / (1.0F + c.distanceSq(xc));
                 return d;
             } else {
                 return Float.NaN;

@@ -42,14 +42,14 @@ public class TopDownMinicraft extends Canvas implements Runnable {
         for (int r = 0; r < 6; r++) {
             for (int g = 0; g < 6; g++) {
                 for (int b = 0; b < 6; b++) {
-                    float rr = (r * 255f / 5f);
-                    float gg = (g * 255f / 5f);
-                    float bb = (b * 255f / 5f);
-                    float mid = (rr * 30 + gg * 59 + bb * 11) / 100;
+                    float rr = ((float) r * 255f / 5f);
+                    float gg = ((float) g * 255f / 5f);
+                    float bb = ((float) b * 255f / 5f);
+                    float mid = (rr * 30.0F + gg * 59.0F + bb * 11.0F) / 100.0F;
 
-                    int r1 = Math.round(((rr + mid * 1) / 2) * 230f / 255f + 10f);
-                    int g1 = Math.round(((gg + mid * 1) / 2) * 230f / 255f + 10f);
-                    int b1 = Math.round(((bb + mid * 1) / 2) * 230f / 255f + 10f);
+                    int r1 = Math.round(((rr + mid * 1.0F) / 2.0F) * 230f / 255f + 10f);
+                    int g1 = Math.round(((gg + mid * 1.0F) / 2.0F) * 230f / 255f + 10f);
+                    int b1 = Math.round(((bb + mid * 1.0F) / 2.0F) * 230f / 255f + 10f);
                     colors[pp++] = r1 << 16 | g1 << 8 | b1;
 
                 }
@@ -135,21 +135,21 @@ public class TopDownMinicraft extends Canvas implements Runnable {
     @Override
     public void run() {
         long lastTime = System.nanoTime();
-        double nsPerTick = 1000000000.0 / 60;
+        double nsPerTick = 1000000000.0 / 60.0;
         long lastTimer1 = System.currentTimeMillis();
 
 
         while (running) {
             long now = System.nanoTime();
-            unprocessed += (now - lastTime) / nsPerTick;
+            unprocessed += (double) (now - lastTime) / nsPerTick;
             lastTime = now;
             frame();
 
-            Util.sleepMS(2);
+            Util.sleepMS(2L);
 
             int fpsIntervalMS = 10000;
-            if (System.currentTimeMillis() - lastTimer1 > fpsIntervalMS) {
-                lastTimer1 += fpsIntervalMS;
+            if (System.currentTimeMillis() - lastTimer1 > (long) fpsIntervalMS) {
+                lastTimer1 = lastTimer1 + (long) fpsIntervalMS;
                 System.out.println(ticks + " ticks, " + frames + " fps");
                 frames = 0;
                 ticks = 0;
@@ -159,10 +159,10 @@ public class TopDownMinicraft extends Canvas implements Runnable {
 
     public void frame() {
         boolean shouldRender = true;
-        while (unprocessed >= 1) {
+        while (unprocessed >= 1.0) {
             ticks++;
             tick();
-            unprocessed -= 1;
+            unprocessed -= 1.0;
             shouldRender = true;
         }
 

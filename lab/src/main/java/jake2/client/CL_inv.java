@@ -45,7 +45,7 @@ public class CL_inv {
 	static void ParseInventory() {
 
         for (int i = 0; i < Defines.MAX_ITEMS; i++)
-			Globals.cl.inventory[i] = MSG.ReadShort(Globals.net_message);
+			Globals.cl.inventory[i] = (int) MSG.ReadShort(Globals.net_message);
 	}
 
 	/*
@@ -53,7 +53,7 @@ public class CL_inv {
 	 */
 	static void Inv_DrawString(int x, int y, String string) {
 		for (int i = 0; i < string.length(); i++) {
-			Globals.re.DrawChar(x, y, string.charAt(i));
+			Globals.re.DrawChar(x, y, (int) string.charAt(i));
 			x += 8;
 		}
 	}
@@ -61,7 +61,7 @@ public class CL_inv {
 	static String getHighBitString(String s) {
         byte[] b = Lib.stringToBytes(s);
 		for (int i = 0; i < b.length; i++) {
-            b[i] |= 128;
+            b[i] = (byte) ((int) b[i] | 128);
 		}
 		return Lib.bytesToString(b);
 	}
@@ -75,7 +75,7 @@ public class CL_inv {
 		int i;
         int[] index = new int[Defines.MAX_ITEMS];
 
-        int selected = Globals.cl.frame.playerstate.stats[Defines.STAT_SELECTED_ITEM];
+        int selected = (int) Globals.cl.frame.playerstate.stats[Defines.STAT_SELECTED_ITEM];
 
         int num = 0;
         int selected_num = 0;

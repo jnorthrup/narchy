@@ -71,8 +71,8 @@ public class WorldManifold {
                 v2 pointA = new v2();
                 v2 pointB = new v2();
 
-                normal.x = 1;
-                normal.y = 0;
+                normal.x = 1.0F;
+                normal.y = (float) 0;
                 v2 v = manifold.localPoint;
                 
                 

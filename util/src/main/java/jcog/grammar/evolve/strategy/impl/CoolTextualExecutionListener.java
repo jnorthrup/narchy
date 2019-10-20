@@ -94,12 +94,12 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
     }
 
     private synchronized void print() {
-        char esc = 27;
+        char esc = (char) 27;
         String clear = esc + "[2J";
         System.out.print(clear);
 
         int doneAll = 20 * overallDone / overallTotal;
-        double percAll = Math.round(1000 * overallDone / (double) overallTotal) / 10.0;
+        double percAll = (double) Math.round((double) (1000 * overallDone) / (double) overallTotal) / 10.0;
 
         System.out.println(header);
         if (isEvaluatorCached) {
@@ -136,12 +136,12 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
     public void logGeneration(RunStrategy strategy, int generation, Node best, double[] fitness, Collection<Ranking> population) {
         int jobId = strategy.getConfiguration().getJobId();
         int done = 20 * generation / strategy.getConfiguration().getEvolutionParameters().getGenerations();
-        double perc = Math.round(1000 * generation / (double) strategy.getConfiguration().getEvolutionParameters().getGenerations()) / 10f;
+        double perc = (double) (Math.round((double) (1000 * generation) / (double) strategy.getConfiguration().getEvolutionParameters().getGenerations()) / 10f);
 
         overallDone++;
 
-        long timeTakenPerGen = (System.currentTimeMillis() - startTime) / overallDone;
-        long elapsedMillis = (overallTotal - overallDone) * timeTakenPerGen;
+        long timeTakenPerGen = (System.currentTimeMillis() - startTime) / (long) overallDone;
+        long elapsedMillis = (long) (overallTotal - overallDone) * timeTakenPerGen;
 
         eta = String.format("%d h, %d m, %d s",
                 TimeUnit.MILLISECONDS.toHours(elapsedMillis),
@@ -171,7 +171,7 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
         }
         
         
-        results.addCharachterEvaluated(strategy.getContext().getCurrentDataSet().getNumberOfChars() * population.size());
+        results.addCharachterEvaluated((long) (strategy.getContext().getCurrentDataSet().getNumberOfChars() * population.size()));
     }
 
     @Override
@@ -265,7 +265,7 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
     private static String printArray(double[] fitness) {
         StringJoiner joiner = new StringJoiner(",", "[", "]");
         for (double v : fitness) {
-            String s = String.valueOf(Math.round(v * 100) / 100f);
+            String s = String.valueOf((float) Math.round(v * 100.0) / 100f);
             joiner.add(s);
         }
         String sb = joiner.toString();

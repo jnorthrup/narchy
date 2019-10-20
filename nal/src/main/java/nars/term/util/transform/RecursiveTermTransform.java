@@ -22,7 +22,7 @@ public interface RecursiveTermTransform extends TermTransform, nars.term.util.bu
         Term p = inhSubs.sub(1); /* pred */
         if (p instanceof InlineFunctor) {
             Term s = inhSubs.sub(0);
-            if (s instanceof Compound && s.opID() == PROD.id)
+            if (s instanceof Compound && s.opID() == (int) PROD.id)
                 return ((InlineFunctor) p).applyInline(((Compound)s).subtermsDirect());
         }
         return null;

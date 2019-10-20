@@ -38,7 +38,7 @@ public class OnePoleFilter extends IIRFilter implements DataBeadReceiver {
     public OnePoleFilter(AudioContext con, float freq) {
         super(con, 1, 1);
         samplingfreq = con.getSampleRate();
-        two_pi_over_sf = (float) (2 * Math.PI / samplingfreq);
+        two_pi_over_sf = (float) (2.0 * Math.PI / (double) samplingfreq);
 
         setFrequency(freq);
     }
@@ -52,13 +52,13 @@ public class OnePoleFilter extends IIRFilter implements DataBeadReceiver {
     public OnePoleFilter(AudioContext con, UGen freq) {
         super(con, 1, 1);
         samplingfreq = con.getSampleRate();
-        two_pi_over_sf = (float) (2 * Math.PI / samplingfreq);
+        two_pi_over_sf = (float) (2.0 * Math.PI / (double) samplingfreq);
 
         setFrequency(freq);
     }
 
     protected void calcVals() {
-        a1 = (b0 = (float) Math.sin(two_pi_over_sf * freq)) - 1;
+        a1 = (b0 = (float) Math.sin((double) (two_pi_over_sf * freq))) - 1.0F;
     }
 
     @Override
@@ -77,8 +77,8 @@ public class OnePoleFilter extends IIRFilter implements DataBeadReceiver {
             freqUGen.update();
 
             for (int currsamp = 0; currsamp < bufferSize; currsamp++) {
-                a1 = (b0 = (float) Math.sin(two_pi_over_sf
-                        * freqUGen.getValue(0, currsamp))) - 1;
+                a1 = (b0 = (float) Math.sin((double) (two_pi_over_sf
+                        * freqUGen.getValue(0, currsamp)))) - 1.0F;
                 bo[currsamp] = y1 = b0 * bi[currsamp] - a1 * y1;
             }
             freq = freqUGen.getValue(0, bufferSize - 1);
@@ -87,7 +87,7 @@ public class OnePoleFilter extends IIRFilter implements DataBeadReceiver {
 
         
         if (Float.isNaN(y1))
-            y1 = 0;
+            y1 = (float) 0;
     }
 
     /**
@@ -107,7 +107,7 @@ public class OnePoleFilter extends IIRFilter implements DataBeadReceiver {
      */
     public OnePoleFilter setFrequency(float freq) {
         this.freq = freq;
-        a1 = (b0 = (float) Math.sin(two_pi_over_sf * freq)) - 1;
+        a1 = (b0 = (float) Math.sin((double) (two_pi_over_sf * freq))) - 1.0F;
         isFreqStatic = true;
         return this;
     }
@@ -262,7 +262,7 @@ public class OnePoleFilter extends IIRFilter implements DataBeadReceiver {
     @Override
     public IIRFilterAnalysis getFilterResponse(float freq) {
         return calculateFilterResponse(new float[]{b0},
-                new float[]{1, a1}, freq, context.getSampleRate());
+                new float[]{1.0F, a1}, freq, context.getSampleRate());
     }
 
 }

@@ -86,7 +86,7 @@ public class LambdaStampedLock extends StampedLock {
     public void readOptimistic(final Runnable readProcedure) {
         final long stamp = tryOptimisticRead();
 
-        if (stamp != 0) {
+        if (stamp != 0L) {
             readProcedure.run();
             if (validate(stamp))
                 return;
@@ -100,7 +100,7 @@ public class LambdaStampedLock extends StampedLock {
         try {
             while (condition.getAsBoolean()) {
                 final long writeStamp = tryConvertToWriteLock(stamp);
-                if (writeStamp != 0) {
+                if (writeStamp != 0L) {
                     action.run();
                     stamp = writeStamp;
                     return true;

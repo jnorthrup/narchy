@@ -37,7 +37,6 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.IntPredicate;
 import java.util.function.Supplier;
-import java.util.stream.IntStream;
 
 import static java.lang.System.arraycopy;
 import static nars.NAL.STAMP_CAPACITY;
@@ -76,7 +75,7 @@ public abstract class TruthProjection extends TaskList {
 	 */
 	@Nullable double[] evi = null;
 	private int minComponents = 1;
-	private float dur = 0;
+	private float dur = (float) 0;
 
 	TruthProjection(long start, long end) {
 		super(0);
@@ -322,7 +321,7 @@ public abstract class TruthProjection extends TaskList {
 
 			conflict.x = 0;
 
-			double eviConflict = 0;
+			double eviConflict = (double) 0;
 			for (int j = ss - 1; j > i; j--) { //ascending, j will be weaker
                 @Nullable double je = evi[j];
 				if (!sane(je))
@@ -406,7 +405,7 @@ public abstract class TruthProjection extends TaskList {
 		if (rs!=us || re!=ue) {
             @Nullable double[] evi = this.evi;
 
-			double eviSum = 0, eviRoot = 0;
+			double eviSum = (double) 0, eviRoot = (double) 0;
 			for (int i = rootIndex; i < size; i++) {
                 Task ti = items[i];
                 long tis = ti.start();
@@ -416,18 +415,18 @@ public abstract class TruthProjection extends TaskList {
 				 	if (i>rootIndex) {
 						//eviOther += ei;
                         long tie = ti.end();
-						eviRoot += ei * ((1+LongInterval.intersectLength(tis, tie, rs,re)) / (tie-tis+1.0));
+						eviRoot += ei * ((double) (1L + LongInterval.intersectLength(tis, tie, rs, re)) / ((double) (tie - tis) +1.0));
 					} else
 						eviRoot += ei; //root itself
 				}
 			}
 
-			double ud = 1 + (ue - us);
-            double densityUnion = eviSum / (1 + ud);
-            double densityRoot = eviRoot / (1 + re - rs);
+			double ud = (double) (1L + (ue - us));
+            double densityUnion = eviSum / (1.0 + ud);
+            double densityRoot = eviRoot / (double) (1L + re - rs);
 			//System.out.println(Texts.n4(densityRoot) +"/"+ Texts.n4(densityUnion) + " : " + this);
 
-			if (densityUnion / densityRoot < NAL.truth.concentrate_density_threshold) {
+			if (densityUnion / densityRoot < (double) NAL.truth.concentrate_density_threshold) {
 				//collapse to root
 				if (time(rs, re))
 					update();
@@ -566,7 +565,7 @@ public abstract class TruthProjection extends TaskList {
 				sizeAfter++;
 			} else {
 				items[i] = null;
-				evi[i] = 0;
+				evi[i] = (double) 0;
 			}
 		}
 		if (sizeBefore == sizeAfter)
@@ -575,14 +574,14 @@ public abstract class TruthProjection extends TaskList {
 
         int sizeCurrent = sizeBefore;
 		for (int i = 0; i < sizeCurrent - 1; ) {
-			if (evi[i] == 0) {
+			if (evi[i] == (double) 0) {
                 int span = (--sizeCurrent) - i;
 				arraycopy(evi, i + 1, evi, i, span);
 				arraycopy(items, i + 1, items, i, span);
 			} else
 				i++;
 		}
-		Arrays.fill(evi, sizeAfter, sizeBefore, 0);
+		Arrays.fill(evi, sizeAfter, sizeBefore, (double) 0);
 		Arrays.fill(items, sizeAfter, sizeBefore, null);
 		return true;
 	}
@@ -731,7 +730,7 @@ public abstract class TruthProjection extends TaskList {
 	}
 
 	private static final class IEntry {
-		double eviSum = 0;
+		double eviSum = (double) 0;
 		final RoaringBitmap id = new RoaringBitmap();
 		final Term root;
 
@@ -828,8 +827,8 @@ public abstract class TruthProjection extends TaskList {
                     Term ab = Intermpolate.intermpolate(a, b, (float) (ea / eab), nar);
 					double diffA, diffB;
 					if (ab instanceof IdempotentBool ||
-						(diffA = dtDiff(ab, a)) >= 1 - Float.MIN_NORMAL ||
-						(diffB = dtDiff(ab, b)) >= 1 - Float.MIN_NORMAL) {
+						(diffA = (double) dtDiff(ab, a)) >= (double) (1 - Float.MIN_NORMAL) ||
+						(diffB = (double) dtDiff(ab, b)) >= (double) (1 - Float.MIN_NORMAL)) {
 
 						nullify(B); //unexpected error
 						if (--remain < minComponents) {
@@ -838,20 +837,20 @@ public abstract class TruthProjection extends TaskList {
 						}
 					} else {
 
-						if (diffB > 0) {
-                            double discB = 1-diffB; //1 / (1 + diffB * (eb / eab));
+						if (diffB > (double) 0) {
+                            double discB = 1.0 -diffB; //1 / (1 + diffB * (eb / eab));
 							evi[B] *= discB;
 						}
 
 
-						if (diffA > 0) {
-                            double discA = 1 - diffA; //1 / ((1 + diffA * (ea / eab)) * B); //estimate: shared between all
+						if (diffA > (double) 0) {
+                            double discA = 1.0 - diffA; //1 / ((1 + diffA * (ea / eab)) * B); //estimate: shared between all
 
 							if (remain-1 >= minComponents) {
 								//determine whether to keep B if B can be removed
 								double eviLoss = 0.0;
 								for (int x = 0; x < B; x++) {
-									double v = evi[x] * (1 - discA);
+									double v = evi[x] * (1.0 - discA);
 									eviLoss += v;
 								}
 								if (eviLoss > evi[B]) {
@@ -865,7 +864,7 @@ public abstract class TruthProjection extends TaskList {
 								}
 							}
 
-							ea = 0;
+							ea = (double) 0;
 							double sum = 0.0;
 							for (int x = 0; x < B; x++) {
 								double v = (evi[x] *= discA);
@@ -1013,7 +1012,7 @@ public abstract class TruthProjection extends TaskList {
 		items[index] = null;
         @Nullable double[] e = this.evi;
 		if (e != null)
-			e[index] = 0;
+			e[index] = (double) 0;
 	}
 
 	public final byte punc() {
@@ -1155,25 +1154,25 @@ public abstract class TruthProjection extends TaskList {
 	@Paper
 	public double coherency() {
         int s = size;
-		if (s == 0) return 0;
-		if (s == 1) return 1;
+		if (s == 0) return (double) 0;
+		if (s == 1) return 1.0;
 
-		double avg = 0;
+		double avg = (double) 0;
 		for (int i = 0, thisSize = this.size; i < thisSize; i++) {
 			if (valid(i))
-				avg += this.items[i].freq();
+				avg = avg + (double) this.items[i].freq();
 		}
-		avg /= s;
+		avg = avg / (double) s;
 
         double variance = 0.0;
 		for (int i = 0; i < s; i++) {
-			double p = items[i].freq();
+			double p = (double) items[i].freq();
             double d = p - avg;
 			variance += d * d;
 		}
-		variance /= s;
+		variance = variance / (double) s;
 
-		return 1 - variance;
+		return 1.0 - variance;
 	}
 
 	@Deprecated

@@ -27,13 +27,13 @@ public class RenderArrayFunction2D implements RenderFunction2D {
 
     @Override
     public double compute(double x, double y) {
-        int i = (int) Math.round(x / width * (zs.length - 1));
+        int i = (int) Math.round(x / width * (double) (zs.length - 1));
         if (i >= zs.length) {
-            return 0;
+            return (double) 0;
         }
-        int j = (int) Math.round(y / height * (zs[i].length - 1));
+        int j = (int) Math.round(y / height * (double) (zs[i].length - 1));
         if (j >= zs[i].length) {
-            return 0;
+            return (double) 0;
         }
         return zs[i][j];
     }

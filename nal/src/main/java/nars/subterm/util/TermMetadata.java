@@ -43,16 +43,16 @@ public abstract class TermMetadata implements Termlike {
 
     protected TermMetadata(SubtermMetadataCollector s) {
 
-        if (s.varPattern > Byte.MAX_VALUE || s.varQuery > Byte.MAX_VALUE || s.varDep > Byte.MAX_VALUE || s.varIndep > Byte.MAX_VALUE)
+        if ((int) s.varPattern > (int) Byte.MAX_VALUE || (int) s.varQuery > (int) Byte.MAX_VALUE || (int) s.varDep > (int) Byte.MAX_VALUE || (int) s.varIndep > (int) Byte.MAX_VALUE)
             throw new TermException("variable overflow");
 
         int varTot =
-                (this.varPattern = (byte) s.varPattern) +
-                (this.varQuery = (byte) s.varQuery) +
-                (this.varDep = (byte) s.varDep) +
-                (this.varIndep = (byte) s.varIndep);
+                (int) (this.varPattern = (byte) s.varPattern) +
+                        (int) (this.varQuery = (byte) s.varQuery) +
+                        (int) (this.varDep = (byte) s.varDep) +
+                        (int) (this.varIndep = (byte) s.varIndep);
 
-        this.complexity = (short) ((this.volume = s.vol) - varTot);
+        this.complexity = (short) ((int) (this.volume = s.vol) - varTot);
 
         this.hash = s.hash;
         this.structure = s.structure;
@@ -82,9 +82,9 @@ public abstract class TermMetadata implements Termlike {
                 NormalizedVariable nv = (NormalizedVariable) v;
                 byte varID = nv.id();
                 int nTypes = types.size();
-                if (varID <= nTypes) {
-                    return types.getByte(varID-1) == nv.anonType();
-                } else if (varID == 1 + nTypes) {
+                if ((int) varID <= nTypes) {
+                    return (int) types.getByte((int) varID - 1) == (int) nv.anonType();
+                } else if ((int) varID == 1 + nTypes) {
                     types.add(nv.anonType());
                     return true;
                 }
@@ -106,23 +106,23 @@ public abstract class TermMetadata implements Termlike {
         int minID = 0;
         int typeToMatch = -1;
         for (short x: subterms) {
-            boolean neg = x < 0;
+            boolean neg = (int) x < 0;
             if (neg) {
-                x = (short) -x;
+                x = (short) -(int) x;
             }
             int varID = Intrin.isVariable(x, -1);
             if (varID == -1) {
                 /*..*/
             } else if (varID == minID) {
                 //same order, ok
-                int type = Intrin.group(x);
+                int type = Intrin.group((int) x);
                 if (typeToMatch == -1)
                     typeToMatch = type;
                 else if (typeToMatch!=type)
                     return false; //same id different type, needs normalized
             } else if (varID == minID + 1) {
                 //increase the order, ok, set new type
-                typeToMatch = Intrin.group(x);
+                typeToMatch = Intrin.group((int) x);
                 minID++;
             } else if (varID > minID + 1) {
                 return false; //cant be sure
@@ -132,43 +132,43 @@ public abstract class TermMetadata implements Termlike {
     }
 
     public final int vars() {
-        return varDep + varIndep + varQuery + varPattern;
+        return (int) varDep + (int) varIndep + (int) varQuery + (int) varPattern;
     }
 
     public final int varQuery() {
-        return varQuery;
+        return (int) varQuery;
     }
 
     public final int varDep() {
-        return varDep;
+        return (int) varDep;
     }
 
     public final int varIndep() {
-        return varIndep;
+        return (int) varIndep;
     }
 
     public final int varPattern() {
-        return varPattern;
+        return (int) varPattern;
     }
 
     @Override
     public final boolean hasVarQuery() {
-        return varQuery > 0;
+        return (int) varQuery > 0;
     }
 
     @Override
     public final boolean hasVarIndep() {
-        return varIndep > 0;
+        return (int) varIndep > 0;
     }
 
     @Override
     public final boolean hasVarDep() {
-        return varDep > 0;
+        return (int) varDep > 0;
     }
 
     @Override
     public boolean hasVarPattern() {
-        return varPattern > 0;
+        return (int) varPattern > 0;
     }
 
     public final int structure() {
@@ -176,11 +176,11 @@ public abstract class TermMetadata implements Termlike {
     }
 
     public final int volume() {
-        return volume;
+        return (int) volume;
     }
 
     public final int complexity() {
-        return complexity;
+        return (int) complexity;
     }
 
     @Override

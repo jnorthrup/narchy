@@ -28,13 +28,13 @@ public class Decoder implements Constants {
      */
     public static int findKeySequence(byte[] signal, double[] signalStrengths, int granularity, int keyFrequency) {
         int maxCorrelationIndex = -1;
-        double maxCorrelation = -1;
+        double maxCorrelation = -1.0;
         double minSignal = 0.003;
         int i = 0;
         for (i = 0; i <= signal.length - kSamplesPerDuration; i += granularity) {
             //test the correlation
             byte[] partialSignal = ArrayUtils.subarray(signal, i, kSamplesPerDuration);
-            double corr = complexDetect(partialSignal, keyFrequency) /* * 4 */;
+            double corr = complexDetect(partialSignal, (double) keyFrequency) /* * 4 */;
             //	    System.out.println("Correlation at " + i + ":" + corr);
             if (corr > maxCorrelation) {
                 maxCorrelation = corr;
@@ -47,7 +47,7 @@ public class Decoder implements Constants {
 
         //System.out.println("Searched to index:" + i);
         double acceptedSignal = 0.01;
-        if (maxCorrelation < acceptedSignal && maxCorrelation > -1) {
+        if (maxCorrelation < acceptedSignal && maxCorrelation > -1.0) {
             //System.out.println("Best Correlation:" + maxCorrelation);
             maxCorrelationIndex = -1;
         }
@@ -88,14 +88,14 @@ public class Decoder implements Constants {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         for (int i = 0; i < signal[0].length; i++) {
             for (int k = 0; k < kBytesPerDuration; k++) {
-                byte value = 0;
+                byte value = (byte) 0;
                 for (int j = 0; j < kBitsPerByte; j++) {
                     if (signal[(k * kBitsPerByte) + j][i] > 0.4) { // detection threshold
-                        value |= (1 << j);
+                        value = (byte) ((int) value | (1 << j));
                     } else {
                     }
                 }
-                baos.write(value);
+                baos.write((int) value);
             }
         }
 
@@ -122,7 +122,7 @@ public class Decoder implements Constants {
             //for each bit represented, detect
             for (int j = 0; j < kBitsPerByte * kBytesPerDuration; j++) {
                 signal[j][i] =
-                        complexDetect(durationInput, Encoder.getFrequency(j));
+                        complexDetect(durationInput, (double) Encoder.getFrequency(j));
 		/*
 		if (j == 0) 
 		  System.out.println("\nsignal[" + j + "][" + i + "]=" + signal [j][i]);
@@ -137,12 +137,12 @@ public class Decoder implements Constants {
     public static void getKeySignalStrengths(byte[] signal, double[] signalStrengths) {
         byte[] partialSignal = ArrayUtils.subarray(signal, 0, kSamplesPerDuration);
         for (int j = 1; j < kBitsPerByte * kBytesPerDuration; j += 2) {
-            signalStrengths[j] = complexDetect(partialSignal, Encoder.getFrequency(j));
+            signalStrengths[j] = complexDetect(partialSignal, (double) Encoder.getFrequency(j));
         }
 
         byte[] partialSignal2 = ArrayUtils.subarray(signal, kSamplesPerDuration, kSamplesPerDuration);
         for (int j = 0; j < kBitsPerByte * kBytesPerDuration; j += 2) {
-            signalStrengths[j] = complexDetect(partialSignal2, Encoder.getFrequency(j));
+            signalStrengths[j] = complexDetect(partialSignal2, (double) Encoder.getFrequency(j));
             //System.out.println(signalStrengths[j]);
         }
     }
@@ -152,7 +152,7 @@ public class Decoder implements Constants {
      * @return true if appended CRC == calculated CRC, false otherwise
      */
     public static boolean crcCheckOk(byte[] input) {
-        return input[input.length - 1] == CRCGen.crc_8_ccitt(input, input.length - 1);
+        return (int) input[input.length - 1] == (int) CRCGen.crc_8_ccitt(input, input.length - 1);
     }
 
     public static byte[] removeCRC(byte[] input) {
@@ -259,19 +259,19 @@ public class Decoder implements Constants {
 
     // original implementaiton from ask-simple-java :
     private static double complexDetect(byte[] signal, double frequency) {
-        double realSum = 0;
-        double imaginarySum = 0;
-        double u = 2 * Math.PI * frequency / kSamplingFrequency;
+        double realSum = (double) 0;
+        double imaginarySum = (double) 0;
+        double u = 2.0 * Math.PI * frequency / (double) kSamplingFrequency;
         // y = e^(ju) = cos(u) + j * sin(u)
 
         for (int i = 0; i < signal.length; i++) {
             //System.out.println("signal[" +i +"]: " +signal[i] + "; convert: " + (signal[i])/(float)Constants.kFloatToByteShift);
-            realSum += (Math.cos(i * u) * (signal[i] / (float) Constants.kFloatToByteShift));
-            imaginarySum += (Math.sin(i * u) * (signal[i] / (float) Constants.kFloatToByteShift));
+            realSum += (Math.cos((double) i * u) * (double) ((float) signal[i] / (float) Constants.kFloatToByteShift));
+            imaginarySum += (Math.sin((double) i * u) * (double) ((float) signal[i] / (float) Constants.kFloatToByteShift));
         }
         //System.out.println("realSum=" + realSum + "; imSum=" + imaginarySum);
-        double realAve = realSum / signal.length;
-        double imaginaryAve = imaginarySum / signal.length;
+        double realAve = realSum / (double) signal.length;
+        double imaginaryAve = imaginarySum / (double) signal.length;
 //       	System.out.println("u:" + u + " realAve:" + realAve + " imaginaryAve:" + imaginaryAve 
 //       			   + " \r\nfrequency:" + frequency + " signal.length:" + signal.length
 //       			   + " realSum:" + realSum + " imaginarySum:" + imaginarySum 

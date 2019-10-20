@@ -112,7 +112,7 @@ public class ConstantVolumeJoint extends Joint {
             v2 nc = bodies[next].getWorldCenter();
             area += ic.x * nc.y - nc.x * ic.y;
         }
-        area /= 2;
+        area /= 2.0F;
         return area;
     }
 
@@ -124,7 +124,7 @@ public class ConstantVolumeJoint extends Joint {
             v2 pn = positions[bodies[next].island];
             area += pi.x * pn.y - pn.x * pi.y;
         }
-        area /= 2;
+        area /= 2.0F;
         return area;
     }
 
@@ -141,7 +141,7 @@ public class ConstantVolumeJoint extends Joint {
             if (distSq < Settings.EPSILONsqr) {
                 ni.setZero();
             } else {
-                float dist = (float) Math.sqrt(distSq);
+                float dist = (float) Math.sqrt((double) distSq);
 
                 ni.x = dy / dist;
                 ni.y = -dx / dist;
@@ -163,7 +163,7 @@ public class ConstantVolumeJoint extends Joint {
 
             float normSqrd = delta.lengthSquared();
             if (normSqrd > Settings.maxLinearCorrection * Settings.maxLinearCorrection) {
-                delta.scaled(Settings.maxLinearCorrection / (float) Math.sqrt(normSqrd));
+                delta.scaled(Settings.maxLinearCorrection / (float) Math.sqrt((double) normSqrd));
             }
             if (normSqrd > Settings.linearSlop * Settings.linearSlop) {
                 done = false;
@@ -264,6 +264,6 @@ public class ConstantVolumeJoint extends Joint {
      */
     @Override
     public float getReactionTorque(float inv_dt) {
-        return 0;
+        return (float) 0;
     }
 }

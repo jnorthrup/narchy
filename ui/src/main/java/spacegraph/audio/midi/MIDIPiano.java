@@ -154,14 +154,14 @@ public class MIDIPiano extends JPanel {
                 g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g.setFont(KEY_FONT);
                 g.drawChars(binds, c, 1, bounds.x + KEY_WIDTH / 2 - g.getFontMetrics().charWidth(binds[c]) / 2,
-                        bounds.y + (int) (KEY_HEIGHT * 0.6) + c * g.getFontMetrics().getHeight());
+                        bounds.y + (int) ((double) KEY_HEIGHT * 0.6) + c * g.getFontMetrics().getHeight());
             }
         }
     }
 
     private static void paintRoundRect(Graphics2D g, Rectangle rect, int size, Color color) {
         g.setColor(color);
-        g.setStroke(new BasicStroke(size));
+        g.setStroke(new BasicStroke((float) size));
         //g.drawRoundRect(rect.x, rect.y, rect.width, rect.height, 6, 6);
         g.drawRect(rect.x, rect.y, rect.width, rect.height);
     }

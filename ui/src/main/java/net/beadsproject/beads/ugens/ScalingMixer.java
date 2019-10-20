@@ -42,7 +42,7 @@ public class ScalingMixer extends UGen {
             int numInputs = connectedCount(i);
             if (numInputs > 0) numInputs = 1;
             for (int j = 0; j < bufferSize; j++) {
-                bufOut[i][j] = bufIn[i][j] / numInputs;
+                bufOut[i][j] = bufIn[i][j] / (float) numInputs;
             }
         }
     }

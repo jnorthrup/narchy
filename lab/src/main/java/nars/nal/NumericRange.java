@@ -107,8 +107,8 @@ public class NumericRange {
 	public int proportionDiscrete(double v, int steps) {
         double p = proportion(v);
 		
-		p = Math.min(Math.max(p, 0), 1.0);
-		return (int) (Math.round(p * (steps - 1)));
+		p = Math.min(Math.max(p, (double) 0), 1.0);
+		return (int) (Math.round(p * (double) (steps - 1)));
 	}
 
 	public void vectorize(double[] target, int index, int steps) {
@@ -117,7 +117,7 @@ public class NumericRange {
 
 	public void vectorize(double[] target, int index, double v, int steps) {
         int p = proportionDiscrete(v, steps);
-		target[index + p] = 1;
+		target[index + p] = 1.0;
 	}
 
 	public void vectorizeSmooth(double[] target, int index, double v, int steps) {
@@ -126,14 +126,14 @@ public class NumericRange {
 		if (Double.isNaN(v)) {
 			v = 0.5;
 		} else {
-			v = Math.min(1, v);
-			v = Math.max(0, v);
+			v = Math.min(1.0, v);
+			v = Math.max((double) 0, v);
 		}
-        double stepScale = 1.0 / (steps - 1);
+        double stepScale = 1.0 / (double) (steps - 1);
 		for (int p = 0; p < steps; p++) {
-            double pp = (p) * stepScale;
+            double pp = (double) (p) * stepScale;
             double d = 1.0 - Math.abs(pp - v) / stepScale;
-			d = Math.max(d, 0);
+			d = Math.max(d, (double) 0);
 			
 			
 			target[index + p] = d;

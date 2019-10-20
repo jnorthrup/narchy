@@ -1,7 +1,7 @@
 /*
  * cl_sustain_t.java
  * Copyright (C) 2004
- * 
+ *
  * $Id: cl_sustain_t.java,v 1.1 2004-07-07 19:58:52 hzi Exp $
  */
 /*
@@ -29,27 +29,26 @@ package jake2.client;
  * cl_sustain_t
  */
 public class cl_sustain_t {
-	abstract static class ThinkAdapter {
-		abstract void think(cl_sustain_t self);
-	}
-	
-	int id;
-	int type;
-	int endtime;
-	int nextthink;
-	int thinkinterval;
-	final float[] org = new float[3];
-	final float[] dir = new float[3];
-	int color;
-	int count;
-	int magnitude;
-	
-	ThinkAdapter think;
-	
-	void clear() { 
-		org[0] = org[1] = org[2] = 
-		dir[0] = dir[1] = dir[2] = 
-		id = type = endtime = nextthink = thinkinterval = color = count = magnitude = 0;
-		think = null;
-	}
+    final float[] org = new float[3];
+    final float[] dir = new float[3];
+    int id;
+    int type;
+    int endtime;
+    int nextthink;
+    int thinkinterval;
+    int color;
+    int count;
+    int magnitude;
+    ThinkAdapter think;
+
+    void clear() {
+        org[0] = org[1] = org[2] =
+                dir[0] = dir[1] = dir[2] =
+                        id = type = endtime = nextthink = thinkinterval = color = count = magnitude = 0;
+        think = null;
+    }
+
+    abstract static class ThinkAdapter {
+        abstract void think(cl_sustain_t self);
+    }
 }

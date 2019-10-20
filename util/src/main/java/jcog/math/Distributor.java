@@ -56,7 +56,7 @@ public final class Distributor {
             int capDivRank = capacity / rank;
             for (int time = 0; time < rank; time++) {
                 index = (capDivRank + index) % capacity;
-                while (order[index] >= 0) {
+                while ((int) order[index] >= 0) {
                     index = (index + 1) % capacity;
                 }
                 order[index] = (short)(rank - 1);
@@ -79,6 +79,6 @@ public final class Distributor {
      * @return the next index
      */
     public int next(long index) {
-        return ((int) ((index + 1) )) % capacity;
+        return ((int) ((index + 1L) )) % capacity;
     }
 }

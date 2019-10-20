@@ -3,7 +3,6 @@ package com.jujutsu.tsne.barneshut;
 import com.jujutsu.tsne.matrix.MatrixOps;
 
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 import static java.lang.Math.max;
 import static java.lang.Math.sqrt;
@@ -49,7 +48,7 @@ public class SPTree {
 			}
 			nD += D;
 		}
-		for(int d = 0; d < D; d++) mean_Y[d] /= N;
+		for(int d = 0; d < D; d++) mean_Y[d] = mean_Y[d] / (double) N;
 
 
 		double[] width = new double[10];
@@ -144,8 +143,8 @@ public class SPTree {
 
 		
 		cum_size++;
-		double mult1 = (double) (cum_size - 1) / cum_size;
-		double mult2 = 1.0 / cum_size;
+		double mult1 = (double) (cum_size - 1) / (double) cum_size;
+		double mult2 = 1.0 / (double) cum_size;
 		for(int d = 0; d < dimension; d++) {
 			center_of_mass[d] *= mult1;
 			center_of_mass[d] += mult2 * point[d];
@@ -298,7 +297,7 @@ public class SPTree {
 		if(is_leaf || max_width / sqrt(D) < theta) {
 			
 			D = 1.0 / (1.0 + D);
-			double mult = cum_size * D;
+			double mult = (double) cum_size * D;
 			sum_Q[0] += mult;
 			mult *= D;
 			for(int d = 0; d < dimension; d++) neg_f[d] += mult * buff[d];

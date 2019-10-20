@@ -124,9 +124,9 @@ public class Screen {
 
 
                 if (dist <= rr) {
-                    float br = 255 - dist * 255f / (rr);
+                    float br = 255.0F - (float) dist * 255f / (float) (rr);
                     int pi = xx + yy * w;
-                    if (pixels[pi] < br)
+                    if ((float) pixels[pi] < br)
                         pixels[pi] = Math.round(br);
                 }
             }

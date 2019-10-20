@@ -41,7 +41,7 @@ public class GameAI {
      * adjustments needed by the animations.
      */
     public static void ai_turn(edict_t self, float dist) {
-        if (dist != 0)
+        if (dist != (float) 0)
             M.M_walkmove(self, self.s.angles[Defines.YAW], dist);
 
         if (GameUtil.FindTarget(self))
@@ -57,7 +57,7 @@ public class GameAI {
     public static boolean FacingIdeal(edict_t self) {
 
         float delta = Math3D.anglemod(self.s.angles[Defines.YAW] - self.ideal_yaw);
-        return !(delta > 45 && delta < 315);
+        return !(delta > 45.0F && delta < 315.0F);
     }
 
     /**
@@ -96,9 +96,9 @@ public class GameAI {
 
         float ofs;
         if (self.monsterinfo.lefty != 0)
-            ofs = 90;
+            ofs = 90.0F;
         else
-            ofs = -90;
+            ofs = -90.0F;
 
         if (M.M_walkmove(self, self.ideal_yaw + ofs, distance))
             return;
@@ -138,7 +138,7 @@ public class GameAI {
                 return false;
 
             if ((self.monsterinfo.aiflags & Defines.AI_SOUND_TARGET) != 0) {
-                if ((GameBase.level.time - self.enemy.teleport_time) > 5.0) {
+                if ((double) (GameBase.level.time - self.enemy.teleport_time) > 5.0) {
                     if (self.goalentity == self.enemy)
                         if (self.movetarget != null)
                             self.goalentity = self.movetarget;
@@ -191,7 +191,7 @@ public class GameAI {
                     
                     
                     
-                    self.monsterinfo.pausetime = GameBase.level.time + 100000000;
+                    self.monsterinfo.pausetime = GameBase.level.time + 100000000.0F;
                     self.monsterinfo.stand.think(self);
                 }
                 return true;
@@ -203,14 +203,14 @@ public class GameAI {
         
         enemy_vis = GameUtil.visible(self, self.enemy);
         if (enemy_vis) {
-            self.monsterinfo.search_time = GameBase.level.time + 5;
+            self.monsterinfo.search_time = GameBase.level.time + 5.0F;
             Math3D.VectorCopy(self.enemy.s.origin,
                     self.monsterinfo.last_sighting);
         }
 
         enemy_infront = GameUtil.infront(self, self.enemy);
         enemy_range = GameUtil.range(self, self.enemy);
-        float[] temp = {0, 0, 0};
+        float[] temp = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, temp);
         enemy_yaw = Math3D.vectoyaw(temp);
 
@@ -244,13 +244,13 @@ public class GameAI {
     
         if ((self.monsterinfo.search != null)
                 && (GameBase.level.time > self.monsterinfo.idle_time)) {
-            if (self.monsterinfo.idle_time != 0) {
+            if (self.monsterinfo.idle_time != (float) 0) {
                 self.monsterinfo.search.think(self);
-                self.monsterinfo.idle_time = GameBase.level.time + 15
-                        + Lib.random() * 15;
+                self.monsterinfo.idle_time = GameBase.level.time + 15.0F
+                        + Lib.random() * 15.0F;
             } else {
                 self.monsterinfo.idle_time = GameBase.level.time + Lib.random()
-                        * 15;
+                        * 15.0F;
             }
         }
     }
@@ -309,13 +309,13 @@ public class GameAI {
             self.monsterinfo.stand.think(self);
         else
             self.monsterinfo.run.think(self);
-        float[] vec = {0, 0, 0};
+        float[] vec = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, vec);
         self.ideal_yaw = Math3D.vectoyaw(vec);
         
         
         if (0 == (self.monsterinfo.aiflags & Defines.AI_STAND_GROUND))
-            GameUtil.AttackFinished(self, 1);
+            GameUtil.AttackFinished(self, 1.0F);
     }
 
     
@@ -325,17 +325,17 @@ public class GameAI {
         @Override
         public boolean think(edict_t self) {
 
-            if (0 == (self.spawnflags & 2) && GameBase.level.time < 1) {
+            if (0 == (self.spawnflags & 2) && GameBase.level.time < 1.0F) {
                 M.M_droptofloor.think(self);
 
                 if (self.groundentity != null)
-                    if (!M.M_walkmove(self, 0, 0))
+                    if (!M.M_walkmove(self, (float) 0, (float) 0))
                         game_import_t.dprintf(self.classname + " in solid at "
                                 + Lib.vtos(self.s.origin) + '\n');
             }
 
-            if (0 == self.yaw_speed)
-                self.yaw_speed = 40;
+            if ((float) 0 == self.yaw_speed)
+                self.yaw_speed = 40.0F;
             self.viewheight = 25;
 
             Monster.monster_start_go(self);
@@ -364,12 +364,12 @@ public class GameAI {
         public String getID() { return "flymonster_start_go";}
         @Override
         public boolean think(edict_t self) {
-            if (!M.M_walkmove(self, 0, 0))
+            if (!M.M_walkmove(self, (float) 0, (float) 0))
                 game_import_t.dprintf(self.classname + " in solid at "
                         + Lib.vtos(self.s.origin) + '\n');
 
-            if (0 == self.yaw_speed)
-                self.yaw_speed = 20;
+            if ((float) 0 == self.yaw_speed)
+                self.yaw_speed = 20.0F;
             self.viewheight = 25;
 
             Monster.monster_start_go(self);
@@ -397,8 +397,8 @@ public class GameAI {
         public String getID() { return "swimmonster_start_go";}
         @Override
         public boolean think(edict_t self) {
-            if (0 == self.yaw_speed)
-                self.yaw_speed = 20;
+            if ((float) 0 == self.yaw_speed)
+                self.yaw_speed = 20.0F;
             self.viewheight = 10;
 
             Monster.monster_start_go(self);
@@ -432,7 +432,7 @@ public class GameAI {
         @Override
         public void ai(edict_t self, float dist) {
 
-            if (dist != 0)
+            if (dist != (float) 0)
                 M.M_walkmove(self, self.s.angles[Defines.YAW], dist);
 
             if (GameUtil.FindTarget(self))
@@ -473,11 +473,11 @@ public class GameAI {
 
             if ((self.monsterinfo.search != null)
                     && (GameBase.level.time > self.monsterinfo.idle_time)) {
-                if (self.monsterinfo.idle_time != 0) {
+                if (self.monsterinfo.idle_time != (float) 0) {
                     self.monsterinfo.search.think(self);
-                    self.monsterinfo.idle_time = GameBase.level.time + 15 + Globals.rnd.nextFloat() * 15;
+                    self.monsterinfo.idle_time = GameBase.level.time + 15.0F + Globals.rnd.nextFloat() * 15.0F;
                 } else {
-                    self.monsterinfo.idle_time = GameBase.level.time + Globals.rnd.nextFloat() * 15;
+                    self.monsterinfo.idle_time = GameBase.level.time + Globals.rnd.nextFloat() * 15.0F;
                 }
             }
         }
@@ -495,12 +495,12 @@ public class GameAI {
         @Override
         public void ai(edict_t self, float dist) {
 
-            if (dist != 0)
+            if (dist != (float) 0)
                 M.M_walkmove(self, self.s.angles[Defines.YAW], dist);
 
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0) {
                 if (self.enemy != null) {
-                    float[] v = {0, 0, 0};
+                    float[] v = {(float) 0, (float) 0, (float) 0};
                     Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, v);
                     self.ideal_yaw = Math3D.vectoyaw(v);
                     if (self.s.angles[Defines.YAW] != self.ideal_yaw
@@ -509,7 +509,7 @@ public class GameAI {
                         self.monsterinfo.run.think(self);
                     }
                     M.M_ChangeYaw(self);
-                    ai_checkattack(self, 0);
+                    ai_checkattack(self, (float) 0);
                 } else
                     GameUtil.FindTarget(self);
                 return;
@@ -525,11 +525,11 @@ public class GameAI {
 
             if (0 == (self.spawnflags & 1) && (self.monsterinfo.idle != null)
                     && (GameBase.level.time > self.monsterinfo.idle_time)) {
-                if (self.monsterinfo.idle_time != 0) {
+                if (self.monsterinfo.idle_time != (float) 0) {
                     self.monsterinfo.idle.think(self);
-                    self.monsterinfo.idle_time = GameBase.level.time + 15 + Globals.rnd.nextFloat() * 15;
+                    self.monsterinfo.idle_time = GameBase.level.time + 15.0F + Globals.rnd.nextFloat() * 15.0F;
                 } else {
-                    self.monsterinfo.idle_time = GameBase.level.time + Globals.rnd.nextFloat() * 15;
+                    self.monsterinfo.idle_time = GameBase.level.time + Globals.rnd.nextFloat() * 15.0F;
                 }
             }
         }
@@ -544,13 +544,13 @@ public class GameAI {
         public String getID() { return "ai_charge";}
         @Override
         public void ai(edict_t self, float dist) {
-            float[] v = { 0, 0, 0 };
+            float[] v = {(float) 0, (float) 0, (float) 0};
 
             Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, v);
             self.ideal_yaw = Math3D.vectoyaw(v);
             M.M_ChangeYaw(self);
 
-            if (dist != 0)
+            if (dist != (float) 0)
                 M.M_walkmove(self, self.s.angles[Defines.YAW], dist);
         }
     };
@@ -571,11 +571,11 @@ public class GameAI {
                 return;
             }
 
-            float[] v = {0, 0, 0};
+            float[] v = {(float) 0, (float) 0, (float) 0};
             if ((self.monsterinfo.aiflags & Defines.AI_SOUND_TARGET) != 0) {
                 Math3D.VectorSubtract(self.s.origin, self.enemy.s.origin, v);
                 
-                if (Math3D.VectorLength(v) < 64) {
+                if (Math3D.VectorLength(v) < 64.0F) {
                     
                     
                     self.monsterinfo.stand.think(self);
@@ -611,17 +611,17 @@ public class GameAI {
             }
 
             
-            if (GameBase.coop.value != 0) {
+            if (GameBase.coop.value != (float) 0) {
                 
                 if (GameUtil.FindTarget(self))
                     return;
             }
             
 
-            if ((self.monsterinfo.search_time != 0)
-                    && (GameBase.level.time > (self.monsterinfo.search_time + 20))) {
+            if ((self.monsterinfo.search_time != (float) 0)
+                    && (GameBase.level.time > (self.monsterinfo.search_time + 20.0F))) {
                 M.M_MoveToGoal(self, dist);
-                self.monsterinfo.search_time = 0;
+                self.monsterinfo.search_time = (float) 0;
                 
                 return;
             }
@@ -654,7 +654,7 @@ public class GameAI {
                 
 
                 
-                self.monsterinfo.search_time = GameBase.level.time + 5;
+                self.monsterinfo.search_time = GameBase.level.time + 5.0F;
 
                 edict_t marker;
                 if ((self.monsterinfo.aiflags & Defines.AI_PURSUE_TEMP) != 0) {
@@ -697,25 +697,25 @@ public class GameAI {
                 trace_t tr = game_import_t.trace(self.s.origin, self.mins, self.maxs,
                         self.monsterinfo.last_sighting, self,
                         Defines.MASK_PLAYERSOLID);
-                if (tr.fraction < 1) {
+                if (tr.fraction < 1.0F) {
                     Math3D.VectorSubtract(self.goalentity.s.origin, self.s.origin, v);
                     d1 = Math3D.VectorLength(v);
                     float center = tr.fraction;
-                    float d2 = d1 * ((center + 1) / 2);
+                    float d2 = d1 * ((center + 1.0F) / 2.0F);
                     self.s.angles[Defines.YAW] = self.ideal_yaw = Math3D.vectoyaw(v);
-                    float[] v_right = {0, 0, 0};
-                    float[] v_forward = {0, 0, 0};
+                    float[] v_right = {(float) 0, (float) 0, (float) 0};
+                    float[] v_forward = {(float) 0, (float) 0, (float) 0};
                     Math3D.AngleVectors(self.s.angles, v_forward, v_right, null);
 
-                    Math3D.VectorSet(v, d2, -16, 0);
-                    float[] left_target = {0, 0, 0};
+                    Math3D.VectorSet(v, d2, -16.0F, (float) 0);
+                    float[] left_target = {(float) 0, (float) 0, (float) 0};
                     Math3D.G_ProjectSource(self.s.origin, v, v_forward, v_right, left_target);
                     tr = game_import_t.trace(self.s.origin, self.mins, self.maxs,
                             left_target, self, Defines.MASK_PLAYERSOLID);
                     float left = tr.fraction;
 
-                    Math3D.VectorSet(v, d2, 16, 0);
-                    float[] right_target = {0, 0, 0};
+                    Math3D.VectorSet(v, d2, 16.0F, (float) 0);
+                    float[] right_target = {(float) 0, (float) 0, (float) 0};
                     Math3D.G_ProjectSource(self.s.origin, v, v_forward,
                             v_right, right_target);
                     tr = game_import_t.trace(self.s.origin, self.mins, self.maxs,
@@ -724,7 +724,7 @@ public class GameAI {
 
                     center = (d1 * center) / d2;
                     if (left >= center && left > right) {
-                        if (left < 1) {
+                        if (left < 1.0F) {
                             Math3D.VectorSet(v, d2 * left * 0.5f, -16f, 0f);
                             Math3D.G_ProjectSource(self.s.origin, v, v_forward,
                                     v_right, left_target);
@@ -739,7 +739,7 @@ public class GameAI {
                         
                         
                     } else if (right >= center && right > left) {
-                        if (right < 1) {
+                        if (right < 1.0F) {
                             Math3D.VectorSet(v, d2 * right * 0.5f, 16f, 0f);
                             Math3D.G_ProjectSource(self.s.origin, v, v_forward,
                                     v_right, right_target);

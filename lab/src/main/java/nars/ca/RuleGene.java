@@ -47,7 +47,7 @@ public class RuleGene {
 				for (int i = 0; i < sTok.length(); i++) {
                     char cChar = sTok.charAt(i);
                     if (Character.isDigit(cChar)) {
-                        int iCharVal = cChar - '0';
+                        int iCharVal = (int) cChar - (int) '0';
                         if ((iCharVal >= 0) && (iCharVal <= 8)) {
 							if (iNum == 1)
 								RulesS[iCharVal] = true;
@@ -132,43 +132,43 @@ public class RuleGene {
 				lurd[3] = (j < sizY - 1) ? j + 1 : (isWrap) ? 0 : sizY;
                 short bOldVal = crrState[i][j];
                 short bNewVal = bOldVal;
-                if (bOldVal > 1)
+                if ((int) bOldVal > 1)
 				{
-					bNewVal = bOldVal < iClo - 1 ? (short) (bOldVal + 1) : 0;
+					bNewVal = (int) bOldVal < iClo - 1 ? (short) ((int) bOldVal + 1) : (short) 0;
 				} else 
 				{
                     int iCnt = 0;
-                    if (crrState[lurd[0]][lurd[1]] == 1)
+                    if ((int) crrState[lurd[0]][lurd[1]] == 1)
 						++iCnt;
-					if (crrState[i][lurd[1]] == 1)
+					if ((int) crrState[i][lurd[1]] == 1)
 						++iCnt;
-					if (crrState[lurd[2]][lurd[1]] == 1)
+					if ((int) crrState[lurd[2]][lurd[1]] == 1)
 						++iCnt;
-					if (crrState[lurd[0]][j] == 1)
+					if ((int) crrState[lurd[0]][j] == 1)
 						++iCnt;
-					if (crrState[lurd[2]][j] == 1)
+					if ((int) crrState[lurd[2]][j] == 1)
 						++iCnt;
-					if (crrState[lurd[0]][lurd[3]] == 1)
+					if ((int) crrState[lurd[0]][lurd[3]] == 1)
 						++iCnt;
-					if (crrState[i][lurd[3]] == 1)
+					if ((int) crrState[i][lurd[3]] == 1)
 						++iCnt;
-					if (crrState[lurd[2]][lurd[3]] == 1)
+					if ((int) crrState[lurd[2]][lurd[3]] == 1)
 						++iCnt;
-					if (bOldVal != 0) {
+					if ((int) bOldVal != 0) {
 						if (RulesS[iCnt])
-							bNewVal = 1;
-						else if (bOldVal < iClo - 1)
-							bNewVal = (short) (bOldVal + 1);
+							bNewVal = (short) 1;
+						else if ((int) bOldVal < iClo - 1)
+							bNewVal = (short) ((int) bOldVal + 1);
 						else
-							bNewVal = 0;
+							bNewVal = (short) 0;
 					} else 
 					{
 						if (RulesB[iCnt])
-							bNewVal = 1;
+							bNewVal = (short) 1;
 					}
 				}
 				tmpState[i][j] = bNewVal;
-				if (bNewVal != bOldVal) {
+				if ((int) bNewVal != (int) bOldVal) {
 					modCnt++; 
 				}
 			} 

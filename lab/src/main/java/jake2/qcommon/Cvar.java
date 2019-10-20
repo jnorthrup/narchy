@@ -297,7 +297,7 @@ public class Cvar extends Globals {
     }
 
     public static void SetValue(String var_name, float value) {
-        if (value == (int) value) {
+        if (value == (float) (int) value) {
             Set(var_name, String.valueOf((int) value));
         } else {
             Set(var_name, String.valueOf(value));
@@ -310,7 +310,7 @@ public class Cvar extends Globals {
     public static float VariableValue(String var_name) {
         cvar_t var = FindVar(var_name);
         if (var == null)
-            return 0;
+            return (float) 0;
 
         return Lib.atof(var.string);
     }

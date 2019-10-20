@@ -168,7 +168,7 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
         );
         builtin.put(FloatRange.class, (FloatRange x, Object relation) -> new LiveFloatSlider(objLabel(x, relation), x.min, x.max, x, x::set));
 
-        builtin.put(PLink.class, (PLink x, Object relation) -> new LiveFloatSlider(objLabel(x, relation), 0, 1, x, x::pri));
+        builtin.put(PLink.class, (PLink x, Object relation) -> new LiveFloatSlider(objLabel(x, relation), (float) 0, 1.0F, x, x::pri));
 
         builtin.put(IntRange.class, (IntRange x, Object relation) -> !(x instanceof MutableEnum) ? new MyIntSlider(x, relationLabel(relation)) : null);
 

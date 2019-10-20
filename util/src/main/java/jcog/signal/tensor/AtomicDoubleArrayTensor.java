@@ -25,11 +25,11 @@ public class AtomicDoubleArrayTensor extends AbstractMutableTensor {
 
     @Override
     public void setAt(int linearCell, float newValue) {
-        data.set(linearCell, newValue);
+        data.set(linearCell, (double) newValue);
     }
 
     @Override
     public float addAt(float x, int linearCell) {
-        return (float) data.addAndGet(linearCell, x);
+        return (float) data.addAndGet(linearCell, (double) x);
     }
 }

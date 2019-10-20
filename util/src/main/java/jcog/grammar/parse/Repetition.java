@@ -142,7 +142,7 @@ public class Repetition extends Parser {
 			return v;
 		}
 
-        int n = (int) (EXPWIDTH * Math.random());
+        int n = (int) ((double) EXPWIDTH * Math.random());
 		for (int j = 0; j < n; j++) {
             List<String> w = subparser.randomExpansion(maxDepth, depth++);
 			v.addAll(w);

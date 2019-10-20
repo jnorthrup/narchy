@@ -14,10 +14,10 @@ import static java.lang.Math.round;
 public class ActionTiming implements TimeFocus {
 
     /** TODO mutable histogram model for temporal focus duration  */
-    public final FloatRange focusDurs = new FloatRange(1, 0, 32);
+    public final FloatRange focusDurs = new FloatRange(1.0F, (float) 0, 32.0F);
 
     /** TODO mutable histogram model for temporal focus position  */
-    public final FloatRange horizonDurs = new FloatRange(2, 0, 32);
+    public final FloatRange horizonDurs = new FloatRange(2.0F, (float) 0, 32.0F);
 
 //    /** tense focus (past <> future balance), 0=present, -1 = full past, +1 full future */
 //    public final FloatRange balance = new FloatRange(0f, -1, +1);
@@ -38,7 +38,7 @@ public class ActionTiming implements TimeFocus {
         float dur = what.dur();
 
 
-        float focusRadius = dur * focusDurs.floatValue() / 2;
+        float focusRadius = dur * focusDurs.floatValue() / 2.0F;
         float range = horizonDurs.floatValue() * dur;
 
         long now = what.time();
@@ -46,11 +46,11 @@ public class ActionTiming implements TimeFocus {
         Random rng = what.random();
 
         //gaussian
-        double then = (now + range * rng.nextGaussian());
+        double then = ((double) now + (double) range * rng.nextGaussian());
         //uniform
         //double then = (now + range * (-.5f + rng.nextFloat())); //uniform
 
-        return new long[] { round(then - focusRadius), round(then + focusRadius)};
+        return new long[] { round(then - (double) focusRadius), round(then + (double) focusRadius)};
     }
 
 }

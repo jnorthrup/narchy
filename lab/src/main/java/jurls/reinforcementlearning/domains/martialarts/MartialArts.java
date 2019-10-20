@@ -162,21 +162,21 @@ public class MartialArts implements RLEnvironment {
     @Override
     public double[] observe() {
         return new double[]{
-            world.opponentPlayer.x,
-            world.opponentPlayer.moveImageIndex,
-            world.opponentPlayer.moveIndex,
-            world.opponentPlayer.mirror ? 1 : 0,
-            world.rlPlayer.x,
-            world.rlPlayer.moveImageIndex,
-            world.rlPlayer.moveIndex,
-            world.rlPlayer.mirror ? 1 : 0
+                (double) world.opponentPlayer.x,
+                (double) world.opponentPlayer.moveImageIndex,
+                (double) world.opponentPlayer.moveIndex,
+                (double) (world.opponentPlayer.mirror ? 1 : 0),
+                (double) world.rlPlayer.x,
+                (double) world.rlPlayer.moveImageIndex,
+                (double) world.rlPlayer.moveIndex,
+                (double) (world.rlPlayer.mirror ? 1 : 0)
         };
     }
 
     @Override
     public double getReward() {
-        return reward(1, world.rlPlayer, world.opponentPlayer)
-                + reward(-1, world.opponentPlayer, world.rlPlayer);
+        return (double) (reward(1, world.rlPlayer, world.opponentPlayer)
+                + reward(-1, world.opponentPlayer, world.rlPlayer));
     }
 
     @Override
@@ -224,7 +224,7 @@ public class MartialArts implements RLEnvironment {
                         && world.opponentPlayer.mirror) {
                     takeAction(0, world.opponentPlayer);
                 } else {
-                    int m = (int) Math.round(Math.random() * 4 * (world.opponentPlayer.moves.length - 1)) + 1;
+                    int m = (int) Math.round(Math.random() * 4.0 * (double) (world.opponentPlayer.moves.length - 1)) + 1;
                     if (m < world.opponentPlayer.moves.length) {
                         takeAction(m, world.opponentPlayer);
                     }else if(Math.random() < 0.2){
@@ -251,7 +251,7 @@ public class MartialArts implements RLEnvironment {
             if (player.moveImageIndex == move.hitIndex) {
                 renderer.clearCollisionBuffer();
                 renderer.renderPlayer(opponent);
-                Point2D src = new Point2D.Double(move.hitX, move.hitY);
+                Point2D src = new Point2D.Double((double) move.hitX, (double) move.hitY);
                 Point2D dst = new Point2D.Double();
                 AffineTransform t = new AffineTransform(renderer.getTransform());
                 t.concatenate(renderer.computePlayerTransform(player));

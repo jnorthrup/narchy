@@ -43,7 +43,7 @@ public class Letter extends Terminal {
 	 */
 	@Override
 	public List<String> randomExpansion(int maxDepth, int depth) {
-        char c = (char) (ThreadLocalRandom.current().nextInt(26) + 'a');
+        char c = (char) (ThreadLocalRandom.current().nextInt(26) + (int) 'a');
 		List<String> v = new ArrayList<>(1);
 		v.add(new String(new char[] { c }));
 		return v;

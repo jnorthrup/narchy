@@ -6,9 +6,7 @@
 package jurls.core.approximation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -28,9 +26,9 @@ public class Generator {
                 List<Product> list = new ArrayList<>();
                 for (Scalar input : gc.getInputScalars()) {
                     Product f = new Product(
-                            gc.newParameter(1),
+                            gc.newParameter(1.0),
                             new Sum(
-                                    gc.newParameter(-1, 0),
+                                    gc.newParameter(-1.0, (double) 0),
                                     input
                             )
                     );
@@ -39,13 +37,13 @@ public class Generator {
                 }
                 DiffableFunctionSource s = new Sum(list.toArray(new DiffableFunctionSource[0]));
 
-                DiffableFunctionSource g = new Cosine(new Product(gc.newParameter(50), s));
+                DiffableFunctionSource g = new Cosine(new Product(gc.newParameter(50.0), s));
 
-                Scalar p = gc.newParameter(-5);
-                p.setUpperBound(0);
+                Scalar p = gc.newParameter(-5.0);
+                p.setUpperBound((double) 0);
                 xs.add(new Product(new Exp(new Product(p, s)), g));
             }
-            xs.add(gc.newParameter(0));
+            xs.add(gc.newParameter((double) 0));
 
             DiffableFunctionSource f = new Sum(
                     gc.newParameter(0.5),
@@ -73,24 +71,24 @@ public class Generator {
                 List<DiffableFunctionSource> ys = new ArrayList<>();
                 for (Scalar input : gc.getInputScalars()) {
                     Product product = new Product(
-                            gc.newParameter(0, 10),
+                            gc.newParameter((double) 0, 10.0),
                             new Sum(
-                                    gc.newParameter(-1, 0),
+                                    gc.newParameter(-1.0, (double) 0),
                                     input
                             )
                     );
                     ys.add(product);
                 }
 
-                ys.add(gc.newParameter(0));
+                ys.add(gc.newParameter((double) 0));
                 xs.add(
                         new Product(
-                                gc.newParameter(-1, 1),
+                                gc.newParameter(-1.0, 1.0),
                                 hiddenLayer.newInstance(gc, ys)
                         )
                 );
             }
-            xs.add(gc.newParameter(0));
+            xs.add(gc.newParameter((double) 0));
 
             DiffableFunctionSource f = new Sum(
                     gc.newParameter(0.5),
@@ -116,23 +114,23 @@ public class Generator {
                 List<DiffableFunctionSource> ys = new ArrayList<>();
                 for (Scalar input : gc.getInputScalars()) {
                     Product product = new Product(
-                            gc.newParameter(0, 1),
+                            gc.newParameter((double) 0, 1.0),
                             new Sum(
-                                    gc.newParameter(-1, 0),
+                                    gc.newParameter(-1.0, (double) 0),
                                     input
                             )
                     );
                     ys.add(product);
                 }
 
-                ys.add(gc.newParameter(-1,1));
+                ys.add(gc.newParameter(-1.0, 1.0));
 
                 xs.add(
                         new Product(
-                                gc.newParameter(-1,1),
+                                gc.newParameter(-1.0, 1.0),
                                 new Cosine(
                                         new Product(
-                                                gc.newParameter(Math.PI * (i + 1)),
+                                                gc.newParameter(Math.PI * (double) (i + 1)),
                                                 new Sum(ys.toArray(new DiffableFunctionSource[ys.size()]))
                                         )
                                 )
@@ -141,7 +139,7 @@ public class Generator {
 
             }
 
-            xs.add(gc.newParameter(0, 0));
+            xs.add(gc.newParameter((double) 0, (double) 0));
             DiffableFunctionSource f = new Sum(
                     gc.newParameter(0.5, 0.5),
                     new Product(

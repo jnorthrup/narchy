@@ -36,7 +36,7 @@ public class a extends Applet implements Runnable {
 
   @Override
   public void start() {
-    enableEvents(8);
+    enableEvents(8L);
     new Thread(this).start();
   }
 
@@ -55,7 +55,7 @@ public class a extends Applet implements Runnable {
 
       BufferedImage image = new BufferedImage(256, 256, 1);
       Graphics2D g = (Graphics2D)image.getGraphics();
-      Random random = new Random(37);
+      Random random = new Random(37L);
 
       Color[] backgroundColors = new Color[10];
     for(i = 0; i < 10; i++) {
@@ -75,13 +75,13 @@ public class a extends Applet implements Runnable {
       ArrayList<float[]> queue = new ArrayList<float[]>();
       queue.add(player);
       final int OBJ_SPRITE = 3;
-      player[OBJ_SPRITE] = 0;
+      player[OBJ_SPRITE] = (float) 0;
       final int OBJ_TIME = 0;
-      player[OBJ_TIME] = 16;
+      player[OBJ_TIME] = 16.0F;
       final int OBJ_HALF_WIDTH = 10;
-      player[OBJ_HALF_WIDTH] = 42;
+      player[OBJ_HALF_WIDTH] = 42.0F;
       final int OBJ_HEIGHT = 11;
-      player[OBJ_HEIGHT] = 54;
+      player[OBJ_HEIGHT] = 54.0F;
 
       ArrayList[] renderList = new ArrayList[8192];
       for(i = 0; i < 8192; i++) {
@@ -96,7 +96,7 @@ public class a extends Applet implements Runnable {
       int j;
       final int ROAD = 0;
       for(k = 0; k < 2; k++) {
-          float slope = 0;
+          float slope = (float) 0;
           float nextSlope = 0.3f;
 
           for(i = 1; i < SEGMENTS; i++) {
@@ -107,7 +107,7 @@ public class a extends Applet implements Runnable {
         j = random.nextInt(17);
         if (k == ROAD) {
             float ds = nextSlope - slope;
-          if (ds < 0) {
+          if (ds < (float) 0) {
             ds = -ds;
           }
           if (ds > 0.025f) {
@@ -119,8 +119,8 @@ public class a extends Applet implements Runnable {
           }
           if (j == 0) {
             if (ds <= 0.025f) {
-              if (nextSlope != 0) {
-                nextSlope = 0;
+              if (nextSlope != (float) 0) {
+                nextSlope = (float) 0;
               } else {
                 nextSlope = random.nextBoolean() ? 0.4f : -0.4f;
               }
@@ -140,15 +140,15 @@ public class a extends Applet implements Runnable {
                     slope = -nextSlope;
                     break;
                 case 2:
-                    slope = 0;
+                    slope = (float) 0;
                     nextSlope = 0.3f * random.nextFloat();
                     break;
             }
         }
 
         segment[2] = lastSegment[0] + lastSegment[1] + lastSegment[2];
-        segment[1] = 2 * lastSegment[0] + lastSegment[1];
-        segment[0] = (slope - segment[1]) / 2;
+        segment[1] = 2.0F * lastSegment[0] + lastSegment[1];
+        segment[0] = (slope - segment[1]) / 2.0F;
       }
     }
 
@@ -159,12 +159,12 @@ public class a extends Applet implements Runnable {
       final int TREE_SPRITE = 14;
       for(k = 0; k < 3; k++) {
       if (k == 2) {
-        random = new Random(22);
+        random = new Random(22L);
       }
       sprites[TREE_SPRITE + k] = new BufferedImage(128, 128, 2);
       g3 = (Graphics2D)sprites[TREE_SPRITE + k].getGraphics();
           AffineTransform transform = g3.getTransform();
-      transform.translate(64, 128);
+      transform.translate(64.0, 128.0);
           ArrayList<AffineTransform> transforms = new ArrayList<AffineTransform>();
           transforms.add(transform);
       while(transforms.size() > 0) {
@@ -201,14 +201,14 @@ public class a extends Applet implements Runnable {
           for(i = 0; i < 5; i++) {
               AffineTransform transform2 = (AffineTransform)transform.clone();
             transforms.add(transform2);
-            transform2.translate(0, -30);
-            transform2.scale(0.7f + 0.1f * random.nextFloat(),
-                0.7f + 0.1f * random.nextFloat());
+            transform2.translate((double) 0, -30.0);
+            transform2.scale((double) (0.7f + 0.1f * random.nextFloat()),
+                    (double) (0.7f + 0.1f * random.nextFloat()));
             mag = 0.5f + 0.5f * random.nextFloat();
             if (random.nextBoolean()) {
               mag = -mag;
             }
-            transform2.rotate(mag);
+            transform2.rotate((double) mag);
           }
         }
       }
@@ -228,7 +228,7 @@ public class a extends Applet implements Runnable {
         g4.fillOval((i << 1) + 64, (i << 1) + 128, 127 - k, 127 - k);
       }
       g4.translate(24, -40);
-      g4.scale(0.8f, 0.8f);
+      g4.scale(0.8, 0.8);
     }
     g4.setColor(Color.BLACK);
     g4.fillOval(92, 250, 25, 25);
@@ -241,8 +241,8 @@ public class a extends Applet implements Runnable {
     g3 = (Graphics2D)sprites[TELEPHONE_POLE_SPRITE].getGraphics();
       int y;
       for(i = 0; i < 16; i++) {
-          Color color = new Color(Color.HSBtoRGB(24f / 360, 0.69f,
-        (74 - (i << 1)) / 100f));
+          Color color = new Color(Color.HSBtoRGB(24f / 360.0F, 0.69f,
+                  (float) (74 - (i << 1)) / 100f));
       g3.setColor(color);
       y = 4 + (i >> 1);
       g3.drawLine(34 + i, 0, 34 + i, 255);
@@ -263,16 +263,16 @@ public class a extends Applet implements Runnable {
       BufferedImage[] roadImages = new BufferedImage[256];
     for(y = 0; y < 256; y++) {      
       for(x = 0; x < 256; x++) {
-          float angle = 8 * 6.28f * x / 243f;
-        mag = 0.5f + 0.5f * (float)Math.sin(angle);
-        i = 0x72 + (int)((0x93 - 0x72) * mag);
-        j = 0x68 + (int)((0x8A - 0x68) * mag);
-        k = 0x67 + (int)((0x83 - 0x67) * mag);
+          float angle = 8.0F * 6.28f * (float) x / 243f;
+        mag = 0.5f + 0.5f * (float)Math.sin((double) angle);
+        i = 0x72 + (int)((float) (0x93 - 0x72) * mag);
+        j = 0x68 + (int)((float) (0x8A - 0x68) * mag);
+        k = 0x67 + (int)((float) (0x83 - 0x67) * mag);
           float scale = y < 128 ? 0.95f : 1f;
         scale -= 0.05f * random.nextFloat();
-        i *= scale;
-        j *= scale;
-        k *= scale;
+          i = (int) ((float) i * scale);
+          j = (int) ((float) j * scale);
+          k = (int) ((float) k * scale);
         pixels[x] = (i << 16) | (j << 8) | k;
       }
       for(i = 0; i < 5; i++) {
@@ -290,10 +290,10 @@ public class a extends Applet implements Runnable {
       BufferedImage skyImage = new BufferedImage(512, 512, 1);
     g3 = (Graphics2D)skyImage.getGraphics();
     for(y = 0; y < 512; y++) {
-      mag = y / 512f;
-      i = 0x6B + (int)((0xB7 - 0x6B) * mag);
-      j = 0x92 + (int)((0xD4 - 0x92) * mag);
-      k = 0xD3 + (int)((0xF2 - 0xD3) * mag);
+      mag = (float) y / 512f;
+      i = 0x6B + (int)((float) (0xB7 - 0x6B) * mag);
+      j = 0x92 + (int)((float) (0xD4 - 0x92) * mag);
+      k = 0xD3 + (int)((float) (0xF2 - 0xD3) * mag);
       for(x = 0; x < 512; x++) {
         pixels[x] = (i << 16) | (j << 8) | k;
       }
@@ -302,7 +302,7 @@ public class a extends Applet implements Runnable {
     for(i = 0; i < 2048; i++) {
       x = random.nextInt(512);
       mag = random.nextFloat();
-      y = (int)(mag * mag * mag * mag * 512) - 16;
+      y = (int)(mag * mag * mag * mag * 512.0F) - 16;
       g3.setColor(new Color(0x0AFFFFFF, true));
       g3.fillOval(x, y, 100, 20);
     }
@@ -312,10 +312,10 @@ public class a extends Applet implements Runnable {
       int z;
       for(k = 0; k < 10; k++) {
 
-      mag = 0.628f * (k + 6);
-      x = (int)(256f * (0.5f + 0.5f * (float)Math.sin(mag)));
-      y = (int)(256f * (0.5f + 0.5f * (float)Math.sin(mag + 2.09f)));
-      z = (int)(256f * (0.5f + 0.5f * (float)Math.sin(mag + 4.19f)));
+      mag = 0.628f * (float) (k + 6);
+      x = (int)(256f * (0.5f + 0.5f * (float)Math.sin((double) mag)));
+      y = (int)(256f * (0.5f + 0.5f * (float)Math.sin((double) (mag + 2.09f))));
+      z = (int)(256f * (0.5f + 0.5f * (float)Math.sin((double) (mag + 4.19f))));
 
           int color1 = 0xFF000000 | (x << 16) | (y << 8) | z;
           int color2 = 0xFF000000 | ((x >> 1) << 16) | ((y >> 1) << 8) | (z >> 1);
@@ -323,7 +323,7 @@ public class a extends Applet implements Runnable {
           | (((y + 768) >> 2) << 8) | ((z + 768) >> 2);
 
       for(y = 0; y < 54; y++) {
-        i = (S.charAt(y << 1) << 16) | S.charAt((y << 1) + 1);
+        i = ((int) S.charAt(y << 1) << 16) | (int) S.charAt((y << 1) + 1);
         for(x = 0; x < 16; x++) {
           j = i & 3;
           pixels[(y << 5) | x] = pixels[(y << 5) | (31 - x)]
@@ -376,10 +376,10 @@ public class a extends Applet implements Runnable {
       boolean raceStarted = false;
       boolean startReleased = true;
       boolean wonBlink = false;
-      float nextCarTime = 32;
+      float nextCarTime = 32.0F;
       int timeIncrementor = 0;
       int time = 50;
-      final int VK_START = '\n';
+      final int VK_START = (int) '\n';
       final int VK_GAS = 0x44;
       final int VK_RIGHT = 0x27;
       final int VK_LEFT = 0x25;
@@ -405,7 +405,7 @@ public class a extends Applet implements Runnable {
       while(true) {
 
       do {
-        nextFrameStartTime += 16666667;
+        nextFrameStartTime += 16666667L;
 
         
 
@@ -419,32 +419,32 @@ public class a extends Applet implements Runnable {
           raceStarted = true;
           time = 50;
           timeIncrementor = 0;
-          nextCarTime = 32;
+          nextCarTime = 32.0F;
           wonBlink = false;
           queue.clear();
           player = new float[32];
           queue.add(player);
-          player[OBJ_SPRITE] = 0;
-          player[OBJ_TIME] = 16;
-          player[OBJ_HALF_WIDTH] = 42;
-          player[OBJ_HEIGHT] = 54;
+          player[OBJ_SPRITE] = (float) 0;
+          player[OBJ_TIME] = 16.0F;
+          player[OBJ_HALF_WIDTH] = 42.0F;
+          player[OBJ_HEIGHT] = 54.0F;
           random = new Random();
 
           
           for(i = 0; i < 6; i++) {
               float[] checkpoint = new float[32];
             queue.add(checkpoint);
-            checkpoint[OBJ_SPRITE] = CHECKPOINT_SPRITE;
-            checkpoint[OBJ_TIME] = 18 + 400 * i;
-            checkpoint[OBJ_HALF_WIDTH] = 352;
-            checkpoint[OBJ_HEIGHT] = 256;
-            checkpoint[OBJ_CHECKPOINT] = 1;
+            checkpoint[OBJ_SPRITE] = (float) CHECKPOINT_SPRITE;
+            checkpoint[OBJ_TIME] = (float) (18 + 400 * i);
+            checkpoint[OBJ_HALF_WIDTH] = 352.0F;
+            checkpoint[OBJ_HEIGHT] = 256.0F;
+            checkpoint[OBJ_CHECKPOINT] = 1.0F;
           }
         }
 
         
         if (raceStarted) {
-          if (player[OBJ_TIME] < 2018) {
+          if (player[OBJ_TIME] < 2018.0F) {
             if (++timeIncrementor == 60) {
               timeIncrementor = 0;
               time--;
@@ -458,7 +458,7 @@ public class a extends Applet implements Runnable {
         }
 
         
-        if (raceStarted && time > 0 && player[OBJ_TIME] < 2018
+        if (raceStarted && time > 0 && player[OBJ_TIME] < 2018.0F
             && a[VK_GAS] 
             && player[OBJ_DT] < (player[OBJ_X] > 1.25f
                 || player[OBJ_X] < -1.25f ? 0.05f : 0.15f)) {
@@ -469,7 +469,7 @@ public class a extends Applet implements Runnable {
           } else if (player[OBJ_DT] < -ACCELERATION) {
             player[OBJ_DT] += ACCELERATION;
           } else {
-            player[OBJ_DT] = 0;
+            player[OBJ_DT] = (float) 0;
           }
         }
 
@@ -485,27 +485,27 @@ public class a extends Applet implements Runnable {
 
                   float[] pole = new float[32];
                 queue.add(pole);
-                pole[OBJ_TIME] = player[OBJ_TIME] + 32;
-                pole[OBJ_SPRITE] = TELEPHONE_POLE_SPRITE;
-                pole[OBJ_HALF_WIDTH] = 42;
-                pole[OBJ_HEIGHT] = 256;
+                pole[OBJ_TIME] = player[OBJ_TIME] + 32.0F;
+                pole[OBJ_SPRITE] = (float) TELEPHONE_POLE_SPRITE;
+                pole[OBJ_HALF_WIDTH] = 42.0F;
+                pole[OBJ_HEIGHT] = 256.0F;
                 pole[OBJ_X] = 1.4f;
               }
             } else {
 
                 float[] tree = new float[32];
               queue.add(tree);
-              tree[OBJ_TIME] = player[OBJ_TIME] + 32;
-              tree[OBJ_SPRITE] = j == 4 ? SNOWMAN_SPRITE 
-                  : TREE_SPRITE + j - 1;
-              tree[OBJ_HALF_WIDTH] = 256;
-              tree[OBJ_HEIGHT] = 512;
+              tree[OBJ_TIME] = player[OBJ_TIME] + 32.0F;
+              tree[OBJ_SPRITE] = (float) (j == 4 ? SNOWMAN_SPRITE
+                      : TREE_SPRITE + j - 1);
+              tree[OBJ_HALF_WIDTH] = 256.0F;
+              tree[OBJ_HEIGHT] = 512.0F;
               tree[OBJ_X] = random.nextBoolean() ? -1.4f : 1.4f;
             }
           }
         }
 
-        player[OBJ_X] += 67 * player[OBJ_DT] * player[OBJ_DT]
+        player[OBJ_X] += 67.0F * player[OBJ_DT] * player[OBJ_DT]
             * segments[ROAD][(int)player[OBJ_TIME]][0];
         if (a[VK_LEFT]) {
           player[OBJ_X] -= player[OBJ_DT] * 0.167f;
@@ -515,7 +515,7 @@ public class a extends Applet implements Runnable {
 
         if (player[OBJ_TIME] > nextCarTime) {
 
-            int segment = (int)((player[OBJ_TIME] - 18) / 400);
+            int segment = (int)((player[OBJ_TIME] - 18.0F) / 400.0F);
 
           
           x = 1;
@@ -530,50 +530,50 @@ public class a extends Applet implements Runnable {
           }
           k = random.nextInt(4);
           for(y = 0; y < x; y++) {
-            mag = 0.6f * ((y + k) % 4) - 0.9f;
+            mag = 0.6f * (float) ((y + k) % 4) - 0.9f;
             for(i = 0; i < j; i++) {
                 float[] car = new float[32];
               queue.add(car);
-              car[OBJ_SPRITE] = 1 + random.nextInt(7);
+              car[OBJ_SPRITE] = (float) (1 + random.nextInt(7));
               car[OBJ_X] = mag;
-              car[OBJ_TIME] = 32 + player[OBJ_TIME] + i;
-              car[OBJ_CAR] = 1;
-              car[OBJ_HALF_WIDTH] = 42;
-              car[OBJ_HEIGHT] = 54;
+              car[OBJ_TIME] = 32.0F + player[OBJ_TIME] + (float) i;
+              car[OBJ_CAR] = 1.0F;
+              car[OBJ_HALF_WIDTH] = 42.0F;
+              car[OBJ_HEIGHT] = 54.0F;
               if (x == 1 && j == 1 
                   && random.nextInt(6 - segment) == 0) {
-                car[OBJ_SEEKER] = 1;
-                car[OBJ_SEEKER_SPEED] = 0.01f + segment * 0.001f;
+                car[OBJ_SEEKER] = 1.0F;
+                car[OBJ_SEEKER_SPEED] = 0.01f + (float) segment * 0.001f;
               }
             }
           }
 
-          nextCarTime = 16 + player[OBJ_TIME] + random.nextInt(16 - segment);
+          nextCarTime = 16.0F + player[OBJ_TIME] + (float) random.nextInt(16 - segment);
         }
 
         
         for(i = queue.size() - 1; i >= 0; i--) {
             float[] car = queue.get(i);
-          if (car[OBJ_CAR] == 1) {
+          if (car[OBJ_CAR] == 1.0F) {
             car[OBJ_TIME] += CAR_SPEED;
 
             
-            if (player[OBJ_DT] > 0
+            if (player[OBJ_DT] > (float) 0
                 && player[OBJ_TIME] < car[OBJ_TIME]
                 && player[OBJ_TIME] > car[OBJ_TIME] - 0.16f) {
                 float dx = car[OBJ_X] - player[OBJ_X];
-              if (dx < 0) {
+              if (dx < (float) 0) {
                 dx = -dx;
               }
               if (dx < 0.328125f) {
                 
                 player[OBJ_DT] = -player[OBJ_DT];
-                car[OBJ_SEEKER] = 0;
+                car[OBJ_SEEKER] = (float) 0;
               }
             }
 
             
-            if (car[OBJ_SEEKER] == 1
+            if (car[OBJ_SEEKER] == 1.0F
                 && player[OBJ_X] < 1.25f && player[OBJ_X] > -1.25f) {
               if (car[OBJ_X] < player[OBJ_X] - car[OBJ_SEEKER_SPEED]) {
                 car[OBJ_X] += car[OBJ_SEEKER_SPEED];
@@ -581,12 +581,12 @@ public class a extends Applet implements Runnable {
                 car[OBJ_X] -= car[OBJ_SEEKER_SPEED];
               }
             }
-          } else if (car[OBJ_CHECKPOINT] == 1) {
+          } else if (car[OBJ_CHECKPOINT] == 1.0F) {
             if (car[OBJ_TIME] <= player[OBJ_TIME]) {
               time = 50;
             }
           }
-          if (car[OBJ_TIME] < player[OBJ_TIME] - 8) {
+          if (car[OBJ_TIME] < player[OBJ_TIME] - 8.0F) {
             queue.remove(i);
           }
         }
@@ -597,28 +597,28 @@ public class a extends Applet implements Runnable {
 
 
           float playerTime = player[OBJ_TIME];
-          float playerX = playerTime - (int)playerTime;
+          float playerX = playerTime - (float) (int) playerTime;
           float[] road = segments[ROAD][(int)playerTime];
           float[] hill = segments[HILL][(int)playerTime];
           float playerY = (road[0] * playerX + road[1]) * playerX + road[2];
           float playerZ = (hill[0] * playerX + hill[1]) * playerX + hill[2] + 0.5f;
 
       
-      float vx = 1;
-          float vy = 2 * road[0] * playerX + road[1];
-      mag = (float)Math.sqrt(vx * vx + vy * vy);
+      float vx = 1.0F;
+          float vy = 2.0F * road[0] * playerX + road[1];
+      mag = (float)Math.sqrt((double) (vx * vx + vy * vy));
       vx /= mag;
       vy /= mag;
       
       
-      i = (int)(playerZ * 16) - 128;
+      i = (int)(playerZ * 16.0F) - 128;
       if (i > 0) {
         i = 0;
       }
       if (i < -255) {
         i = -255;
       }
-      g.drawImage(skyImage, (int)(vy * 256) - 128, i, null);
+      g.drawImage(skyImage, (int)(vy * 256.0F) - 128, i, null);
 
 
           int height = 256;
@@ -626,18 +626,18 @@ public class a extends Applet implements Runnable {
         road = segments[ROAD][(int)playerTime + i];
         hill = segments[HILL][(int)playerTime + i];
         for(j = 0; j < 256; j++) {
-            float tx = I256 * j;
+            float tx = I256 * (float) j;
 
 
             float py = (road[0] * tx + road[1]) * tx + road[2] - playerY;
             float pz = (hill[0] * tx + hill[1]) * tx + hill[2] - playerZ;
-            float px = tx - playerX + i;
+            float px = tx - playerX + (float) i;
 
 
             float qx = vy * px - vx * py - player[OBJ_X];
             float qy = vx * px - vy * py;
 
-            float K = 256 / (1 + qy);
+            float K = 256.0F / (1.0F + qy);
             int Y = 128 - (int)(K * pz);
 
           
@@ -651,11 +651,11 @@ public class a extends Applet implements Runnable {
             if (k > 8) {
               k = 8;
             }
-            g.setColor((tx - (int)tx) < 0.5f ? 
+            g.setColor((tx - (float) (int) tx) < 0.5f ?
                 backgroundColors[k] : backgroundColors[k + 1]);
             g.fillRect(0, Y, 256, 1);
 
-            g.drawImage(roadImages[(int)((tx - (int)tx) * 256)],
+            g.drawImage(roadImages[(int)((tx - (float) (int) tx) * 256.0F)],
                     X1, Y, X2 - X1 + 1, 1, null);
           }
 
@@ -664,8 +664,8 @@ public class a extends Applet implements Runnable {
           roadInfo[ROAD_HEIGHT] = pz;
           roadInfo[ROAD_K] = K;
           roadInfo[ROAD_OFFSET] = qx;
-          roadInfo[ROAD_CLIP] = height;
-          roadInfo[ROAD_Y] = Y;
+          roadInfo[ROAD_CLIP] = (float) height;
+          roadInfo[ROAD_Y] = (float) Y;
         }
       }
 
@@ -676,7 +676,7 @@ public class a extends Applet implements Runnable {
         }
         for(i = queue.size() - 1; i >= 0; i--) {
             float[] object = queue.get(i);
-            int index = (int)(256 * (object[OBJ_TIME] - (int)playerTime));
+            int index = (int)(256.0F * (object[OBJ_TIME] - (float) (int) playerTime));
           if (index >= 0 && index < 8192) {
               float[] roadInfo = roadInfos[index];
             renderList[index].add(object);
@@ -686,10 +686,10 @@ public class a extends Applet implements Runnable {
               int X2 = 128 + (int)(K * (roadInfo[ROAD_OFFSET] + object[OBJ_X] + W));
               int Y1 = 128 - (int)(K * (roadInfo[ROAD_HEIGHT]
                 + object[OBJ_HEIGHT] * I256));
-            object[OBJ_SPRITE_X] = X1;
-            object[OBJ_SPRITE_Y] = Y1;
-            object[OBJ_SPRITE_WIDTH] = X2 - X1 + 1;
-            object[OBJ_SPRITE_HEIGHT] = (int)roadInfo[ROAD_Y] - Y1 + 1;
+            object[OBJ_SPRITE_X] = (float) X1;
+            object[OBJ_SPRITE_Y] = (float) Y1;
+            object[OBJ_SPRITE_WIDTH] = (float) (X2 - X1 + 1);
+            object[OBJ_SPRITE_HEIGHT] = (float) ((int) roadInfo[ROAD_Y] - Y1 + 1);
           }
         }
 
@@ -720,7 +720,7 @@ public class a extends Applet implements Runnable {
         }
 
         
-        y = (int)(0.1f * (player[OBJ_TIME] - 18));
+        y = (int)(0.1f * (player[OBJ_TIME] - 18.0F));
         g.setColor(Color.RED);
         g.drawLine(28, 4, 228, 4);
         g.setColor(wonBlink ? Color.YELLOW : Color.GREEN);
@@ -745,7 +745,7 @@ public class a extends Applet implements Runnable {
       }
 
       
-      while(nextFrameStartTime - System.nanoTime() > 0) {
+      while(nextFrameStartTime - System.nanoTime() > 0L) {
         Thread.yield();
       }
     }
@@ -768,7 +768,7 @@ public class a extends Applet implements Runnable {
                 k = VK_LEFT;
                 break;
         }
-        final int VK_START = '\n';
+        final int VK_START = (int) '\n';
         final int VK_GAS = 0x44;
         a[(k == VK_LEFT || k == VK_RIGHT || k == VK_START) ? k : VK_GAS]
           = keyEvent.getID() != 402;

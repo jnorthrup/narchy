@@ -74,7 +74,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
     @Override
     public X compute(Term key, BiFunction<? super Term, ? super X, ? extends X> f) {
         short aid = Intrin.id(key);
-        return aid != 0 ?
+        return (int) aid != 0 ?
             id.updateValueWith(aid, () -> f.apply(key, null), (p, k) -> f.apply(k, p), key) :
             other.compute(key, f);
 
@@ -83,7 +83,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
     public X computeIfAbsent(Term key,
                              Function<? super Term, ? extends X> mappingFunction) {
         short aid = Intrin.id(key);
-        return aid != 0 ?
+        return (int) aid != 0 ?
                 id.getIfAbsentPutWith(aid, mappingFunction::apply, key) :
                 other.computeIfAbsent(key, mappingFunction);
     }
@@ -92,7 +92,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
     @Override
     public final X get(Object key) {
         short aid = Intrin.id((Term) key);
-        return aid != 0 ?
+        return (int) aid != 0 ?
                 id.get(aid) :
                 other.get(key);
     }
@@ -100,7 +100,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
     @Override
     public final X put(Term key, X value) {
         short aid = Intrin.id(key);
-        return aid != 0 ?
+        return (int) aid != 0 ?
                 id.put(aid, value) :
                 other.put(key, value);
     }
@@ -108,7 +108,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
     @Override
     public X remove(Object key) {
         short aid = Intrin.id((Term) key);
-        return aid != 0 ?
+        return (int) aid != 0 ?
                 id.remove(aid) :
                 other.remove(key);
     }

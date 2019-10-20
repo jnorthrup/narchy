@@ -19,8 +19,8 @@ class StandardTimer extends Timer {
     public long currentTimeMillis() {
         long time = System.currentTimeMillis();
         long delta = time - base;
-		if (delta < 0) {
-			delta += Long.MAX_VALUE + 1;
+		if (delta < 0L) {
+			delta += Long.MAX_VALUE + 1L;
 		}
 		return delta;
 	}

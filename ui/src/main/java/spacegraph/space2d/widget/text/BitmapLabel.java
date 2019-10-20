@@ -69,7 +69,7 @@ public class BitmapLabel extends AbstractLabel {
         RectFloat b = bounds;
         int r = view.rows; if (r > 0) {
             int c = view.cols; if (c > 0) {
-                b = AspectAlign.innerBounds(b, (r * characterAspectRatio) / c);
+                b = AspectAlign.innerBounds(b, ((float) r * characterAspectRatio) / (float) c);
             }
         }
         textBounds = b;
@@ -130,7 +130,7 @@ public class BitmapLabel extends AbstractLabel {
             Color4f fg = BitmapLabel.this.fgColor, bg = BitmapLabel.this.bgColor;
             for (int i = 0; i < n; i++) {
                 char c = s.charAt(i);
-                if (c == '\n') {
+                if ((int) c == (int) '\n') {
                     row++;
                     col = 0;
                 } else {

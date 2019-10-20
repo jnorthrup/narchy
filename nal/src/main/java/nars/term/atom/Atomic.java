@@ -17,7 +17,6 @@ import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
 
 import static nars.Op.EmptySubterms;
 import static nars.term.atom.IdempotentBool.Null;
@@ -185,7 +184,7 @@ public abstract class Atomic implements Term {
                 break;
         }
         if (!finished) {
-            result = AtomChar.chars[c];
+            result = AtomChar.chars[(int) c];
         }
 
         return result;
@@ -323,7 +322,7 @@ public abstract class Atomic implements Term {
 
     @Override
     public float voluplexity() {
-        return 1;
+        return 1.0F;
     }
 
     @Override
@@ -367,7 +366,7 @@ public abstract class Atomic implements Term {
         if (Character.isDigit(t0))
             return true;
 
-        if ((t0 == '\"') && (t.charAt(len - 1) == '\"'))
+        if (((int) t0 == (int) '\"') && ((int) t.charAt(len - 1) == (int) '\"'))
             return false;
 
         for (int i = 0; i < len; i++) {
@@ -391,7 +390,7 @@ public abstract class Atomic implements Term {
 
     /** returns non-zero, positive value if this term has an INTrinsic representation */
 	public short intrin() {
-        return 0;
+        return (short) 0;
     }
 
 

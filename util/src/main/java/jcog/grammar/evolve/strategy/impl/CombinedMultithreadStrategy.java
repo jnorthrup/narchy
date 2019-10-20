@@ -102,7 +102,7 @@ public class CombinedMultithreadStrategy extends AbstractExecutionStrategy {
             }
             
             jobConf.setJobId(i);
-            jobConf.setInitialSeed(initialSeed + i);
+            jobConf.setInitialSeed(initialSeed + (long) i);
             job.setup(jobConf, listenerFactory.getNewListener());
             completionService.submit(job);
         }

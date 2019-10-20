@@ -20,8 +20,8 @@ public class SquareVolumeWave extends KarplusStrongString {
         setMaxVolume(0.3);
         //setInitialVolume(0.2);
         setInitialVolume(0.1);
-        filterIn = 0;
-        filterOut = 0;
+        filterIn = (double) 0;
+        filterOut = (double) 0;
         state = 3;
 
         attackDelta = Math.pow(1.1, 440.0 / frequency);
@@ -37,7 +37,7 @@ public class SquareVolumeWave extends KarplusStrongString {
         int capacity = buffer.capacity();
         int half = capacity / 2;
         for (int i = 0; i < half; i++) {
-            buffer.enqueue(getInitialVolume() * -1);
+            buffer.enqueue(getInitialVolume() * -1.0);
         }
         int otherHalf = capacity - half;
         for (int i = 0; i < otherHalf; i++) {

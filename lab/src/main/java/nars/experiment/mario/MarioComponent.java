@@ -28,7 +28,7 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
                 :
                 LevelGenerator.TYPE_OVERGROUND;
 
-        startLevel((int) (Math.random() * 50000), 1,
+        startLevel((long) (int) (Math.random() * 50000.0), 1,
                 levelType
         );
     }
@@ -119,7 +119,7 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
         Graphics g = getGraphics();
         Graphics og = image.getGraphics();
 
-        double time = System.nanoTime() / 1000000000.0;
+        double time = (double) System.nanoTime() / 1000000000.0;
         long tm = System.currentTimeMillis();
 
         addKeyListener(this);
@@ -141,14 +141,14 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 
 
             @SuppressWarnings("unused")
-            int x = (int) (Math.sin(now) * 16 + 160);
+            int x = (int) (Math.sin(now) * 16.0 + 160.0);
             @SuppressWarnings("unused")
-            int y = (int) (Math.cos(now) * 16 + 120);
+            int y = (int) (Math.cos(now) * 16.0 + 120.0);
 
             og.setColor(Color.BLACK);
             og.fillRect(0, 0, 320, 240);
 
-            float alpha = 0;
+            float alpha = (float) 0;
             scene.render(og, alpha);
 
 //            if (lTick / 4 % 2 == 0 && (scene instanceof TitleScene)) {
@@ -165,8 +165,8 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
             }
 
             if (delay > 0)
-                tm += delay;
-            Util.sleepMS(Math.max(0, tm - System.currentTimeMillis()));
+                tm = tm + (long) delay;
+            Util.sleepMS(Math.max(0L, tm - System.currentTimeMillis()));
 
         }
 
@@ -176,7 +176,7 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
     private static void drawString(Graphics g, String text, int x, int y, int c) {
         char[] ch = text.toCharArray();
         for (int i = 0; i < ch.length; i++) {
-            g.drawImage(Art.font[ch[i] - 32][c], x + i * 8, y, null);
+            g.drawImage(Art.font[(int) ch[i] - 32][c], x + i * 8, y, null);
         }
     }
 

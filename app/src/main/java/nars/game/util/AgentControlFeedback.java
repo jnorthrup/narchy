@@ -21,14 +21,14 @@ public class AgentControlFeedback {
             final TaskSummarizer ts = new TaskSummarizer(n);
             static final int snapshotEvery = 8;
             int dur = 0;
-            float rewardSum = 0;
+            float rewardSum = (float) 0;
 
             @Override
             public void run() {
-                rewardSum += a.happiness();
+                rewardSum = (float) ((double) rewardSum + a.happiness());
                 if (dur++ % snapshotEvery == 0) {
-                    update(ts.snapshot(), rewardSum/snapshotEvery);
-                    rewardSum = 0;
+                    update(ts.snapshot(), rewardSum/ (float) snapshotEvery);
+                    rewardSum = (float) 0;
                 }
             }
 

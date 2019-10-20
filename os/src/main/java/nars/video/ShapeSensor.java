@@ -85,15 +85,15 @@ public class ShapeSensor extends NARPart {
         for (int i = 0; i < n; i++) {
             PointIndex_I32 a = poly.get((i + 2) % n);
             PointIndex_I32 b = poly.get((i + 1) % n);
-            double dx1 = a.x - b.x;
-            double dy1 = a.y - b.y;
+            double dx1 = (double) (a.x - b.x);
+            double dy1 = (double) (a.y - b.y);
             PointIndex_I32 c = poly.get(i);
-            double dx2 = c.x - b.x;
-            double dy2 = c.y - b.y;
+            double dx2 = (double) (c.x - b.x);
+            double dy2 = (double) (c.y - b.y);
             double zcrossproduct = dx1 * dy2 - dy1 * dx2;
             if (i == 0)
-                sign = zcrossproduct > 0;
-            else if (sign != (zcrossproduct > 0))
+                sign = zcrossproduct > (double) 0;
+            else if (sign != (zcrossproduct > (double) 0))
                 return false;
         }
         return true;
@@ -159,7 +159,7 @@ public class ShapeSensor extends NARPart {
         GrayU8 filteredShown = filtered.clone();
         byte[] data = filteredShown.data;
         for (int i = 0, dataLength = data.length; i < dataLength; i++) {
-            data[i] *= 255;
+            data[i] = (byte) ((int) data[i] * 255);
         }
         filteredRGB = filteredTex.set(filteredShown, filteredRGB);
 
@@ -232,8 +232,8 @@ public class ShapeSensor extends NARPart {
             this.gy = gy;
             this.w = w;
             this.h = h;
-            this.sx = (gx - 1f) / w;
-            this.sy = (gy - 1f) / h;
+            this.sx = ((float) gx - 1f) / (float) w;
+            this.sy = ((float) gy - 1f) / (float) h;
         }
 
         public void clear() {
@@ -241,8 +241,8 @@ public class ShapeSensor extends NARPart {
         }
 
         public Term point(int px, int py) {
-            int x = Math.round(px * sx);
-            int y = Math.round(py * sy);
+            int x = Math.round((float) px * sx);
+            int y = Math.round((float) py * sy);
             return $.p($.the(x), $.the(y));
         }
 
@@ -314,7 +314,7 @@ public class ShapeSensor extends NARPart {
             if (grid != null) {
                 int[] i = {0};
                 for (Term pSet : grid.image) {
-                    float scale = Math.max(w(), h()) / Math.max(grid.gx, grid.gy);
+                    float scale = Math.max(w(), h()) / (float) Math.max(grid.gx, grid.gy);
 
                     float dx = x();
                     float dy = y();
@@ -327,7 +327,7 @@ public class ShapeSensor extends NARPart {
                     for (Term xy : pSet.subterms()) {
                         int x = ((IdempotInt) xy.sub(0)).i;
                         int y = grid.gy - ((IdempotInt) xy.sub(1)).i;
-                        gl.glVertex2f(dx + x * scale, dy + y * scale);
+                        gl.glVertex2f(dx + (float) x * scale, dy + (float) y * scale);
                     }
                     gl.glEnd();
                     i[0]++;

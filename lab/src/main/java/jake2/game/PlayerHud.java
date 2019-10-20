@@ -39,26 +39,26 @@ public class PlayerHud {
      */
 
     public static void MoveClientToIntermission(edict_t ent) {
-        if (GameBase.deathmatch.value != 0 || GameBase.coop.value != 0)
+        if (GameBase.deathmatch.value != (float) 0 || GameBase.coop.value != (float) 0)
             ent.client.showscores = true;
         Math3D.VectorCopy(GameBase.level.intermission_origin, ent.s.origin);
-        ent.client.ps.pmove.origin[0] = (short) (GameBase.level.intermission_origin[0] * 8);
-        ent.client.ps.pmove.origin[1] = (short) (GameBase.level.intermission_origin[1] * 8);
-        ent.client.ps.pmove.origin[2] = (short) (GameBase.level.intermission_origin[2] * 8);
+        ent.client.ps.pmove.origin[0] = (short) (GameBase.level.intermission_origin[0] * 8.0F);
+        ent.client.ps.pmove.origin[1] = (short) (GameBase.level.intermission_origin[1] * 8.0F);
+        ent.client.ps.pmove.origin[2] = (short) (GameBase.level.intermission_origin[2] * 8.0F);
         Math3D.VectorCopy(GameBase.level.intermission_angle,
                 ent.client.ps.viewangles);
         ent.client.ps.pmove.pm_type = Defines.PM_FREEZE;
         ent.client.ps.gunindex = 0;
-        ent.client.ps.blend[3] = 0;
+        ent.client.ps.blend[3] = (float) 0;
         ent.client.ps.rdflags &= ~Defines.RDF_UNDERWATER;
 
         
-        ent.client.quad_framenum = 0;
-        ent.client.invincible_framenum = 0;
-        ent.client.breather_framenum = 0;
-        ent.client.enviro_framenum = 0;
+        ent.client.quad_framenum = (float) 0;
+        ent.client.invincible_framenum = (float) 0;
+        ent.client.breather_framenum = (float) 0;
+        ent.client.enviro_framenum = (float) 0;
         ent.client.grenade_blew_up = false;
-        ent.client.grenade_time = 0;
+        ent.client.grenade_time = (float) 0;
 
         ent.viewheight = 0;
         ent.s.modelindex = 0;
@@ -71,7 +71,7 @@ public class PlayerHud {
 
         
 
-        if (GameBase.deathmatch.value != 0 || GameBase.coop.value != 0) {
+        if (GameBase.deathmatch.value != (float) 0 || GameBase.coop.value != (float) 0) {
             DeathmatchScoreboardMessage(ent, null);
             game_import_t.unicast(ent, true);
         }
@@ -80,7 +80,7 @@ public class PlayerHud {
 
     public static void BeginIntermission(edict_t targ) {
 
-        if (GameBase.level.intermissiontime != 0)
+        if (GameBase.level.intermissiontime != (float) 0)
             return; 
 
         GameBase.game.autosaved = false;
@@ -88,7 +88,7 @@ public class PlayerHud {
 
         edict_t client;
         int i;
-        for (i = 0; i < GameBase.maxclients.value; i++) {
+        for (i = 0; (float) i < GameBase.maxclients.value; i++) {
             client = GameBase.g_edicts[1 + i];
             if (!client.inuse)
                 continue;
@@ -99,9 +99,9 @@ public class PlayerHud {
         GameBase.level.intermissiontime = GameBase.level.time;
         GameBase.level.changemap = targ.map;
 
-        if (GameBase.level.changemap.indexOf('*') > -1) {
-            if (GameBase.coop.value != 0) {
-                for (i = 0; i < GameBase.maxclients.value; i++) {
+        if (GameBase.level.changemap.indexOf((int) '*') > -1) {
+            if (GameBase.coop.value != (float) 0) {
+                for (i = 0; (float) i < GameBase.maxclients.value; i++) {
                     client = GameBase.g_edicts[1 + i];
                     if (!client.inuse)
                         continue;
@@ -115,7 +115,7 @@ public class PlayerHud {
                 }
             }
         } else {
-            if (0 == GameBase.deathmatch.value) {
+            if ((float) 0 == GameBase.deathmatch.value) {
                 GameBase.level.exitintermission = true; 
                                                         
                 return;
@@ -135,7 +135,7 @@ public class PlayerHud {
                 ent = GameBase.G_FindEdict(null, GameBase.findByClass,
                         "info_player_deathmatch");
         } else { 
-            i = Lib.rand() & 3;
+            i = (int) Lib.rand() & 3;
             EdictIterator es = null;
 
             while (i-- > 0) {
@@ -152,7 +152,7 @@ public class PlayerHud {
         Math3D.VectorCopy(ent.s.angles, GameBase.level.intermission_angle);
 
         
-        for (i = 0; i < GameBase.maxclients.value; i++) {
+        for (i = 0; (float) i < GameBase.maxclients.value; i++) {
             client = GameBase.g_edicts[1 + i];
             if (!client.inuse)
                 continue;
@@ -268,7 +268,7 @@ public class PlayerHud {
         ent.client.showinventory = false;
         ent.client.showhelp = false;
 
-        if (0 == GameBase.deathmatch.value && 0 == GameBase.coop.value)
+        if ((float) 0 == GameBase.deathmatch.value && (float) 0 == GameBase.coop.value)
             return;
 
         if (ent.client.showscores) {
@@ -303,8 +303,8 @@ public class PlayerHud {
                                         * !ent.client.pers.inventory[ent.client.ammo_index]
                                         */
         ) {
-            S[Defines.STAT_AMMO_ICON] = 0;
-            S[Defines.STAT_AMMO] = 0;
+            S[Defines.STAT_AMMO_ICON] = (short) 0;
+            S[Defines.STAT_AMMO] = (short) 0;
         } else {
             item = GameItemList.itemlist[C.ammo_index];
             S[Defines.STAT_AMMO_ICON] = (short) game_import_t
@@ -321,8 +321,8 @@ public class PlayerHud {
                 ent.flags &= ~Defines.FL_POWER_ARMOR;
                 game_import_t
                         .sound(ent, Defines.CHAN_ITEM, game_import_t
-                                .soundindex("misc/power2.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                                .soundindex("misc/power2.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
                 power_armor_type = 0;
             }
         }
@@ -346,40 +346,40 @@ public class PlayerHud {
                     .imageindex(item.icon);
             S[Defines.STAT_ARMOR] = (short) C.pers.inventory[index];
         } else {
-            S[Defines.STAT_ARMOR_ICON] = 0;
-            S[Defines.STAT_ARMOR] = 0;
+            S[Defines.STAT_ARMOR_ICON] = (short) 0;
+            S[Defines.STAT_ARMOR] = (short) 0;
         }
 
         
         
         
         if (GameBase.level.time > C.pickup_msg_time) {
-            S[Defines.STAT_PICKUP_ICON] = 0;
-            S[Defines.STAT_PICKUP_STRING] = 0;
+            S[Defines.STAT_PICKUP_ICON] = (short) 0;
+            S[Defines.STAT_PICKUP_STRING] = (short) 0;
         }
 
         
         
         
-        if (C.quad_framenum > GameBase.level.framenum) {
+        if (C.quad_framenum > (float) GameBase.level.framenum) {
             S[Defines.STAT_TIMER_ICON] = (short) game_import_t
                     .imageindex("p_quad");
-            S[Defines.STAT_TIMER] = (short) ((C.quad_framenum - GameBase.level.framenum) / 10);
-        } else if (C.invincible_framenum > GameBase.level.framenum) {
+            S[Defines.STAT_TIMER] = (short) ((C.quad_framenum - (float) GameBase.level.framenum) / 10.0F);
+        } else if (C.invincible_framenum > (float) GameBase.level.framenum) {
             S[Defines.STAT_TIMER_ICON] = (short) game_import_t
                     .imageindex("p_invulnerability");
-            S[Defines.STAT_TIMER] = (short) ((C.invincible_framenum - GameBase.level.framenum) / 10);
-        } else if (C.enviro_framenum > GameBase.level.framenum) {
+            S[Defines.STAT_TIMER] = (short) ((C.invincible_framenum - (float) GameBase.level.framenum) / 10.0F);
+        } else if (C.enviro_framenum > (float) GameBase.level.framenum) {
             S[Defines.STAT_TIMER_ICON] = (short) game_import_t
                     .imageindex("p_envirosuit");
-            S[Defines.STAT_TIMER] = (short) ((C.enviro_framenum - GameBase.level.framenum) / 10);
-        } else if (C.breather_framenum > GameBase.level.framenum) {
+            S[Defines.STAT_TIMER] = (short) ((C.enviro_framenum - (float) GameBase.level.framenum) / 10.0F);
+        } else if (C.breather_framenum > (float) GameBase.level.framenum) {
             S[Defines.STAT_TIMER_ICON] = (short) game_import_t
                     .imageindex("p_rebreather");
-            S[Defines.STAT_TIMER] = (short) ((C.breather_framenum - GameBase.level.framenum) / 10);
+            S[Defines.STAT_TIMER] = (short) ((C.breather_framenum - (float) GameBase.level.framenum) / 10.0F);
         } else {
-            S[Defines.STAT_TIMER_ICON] = 0;
-            S[Defines.STAT_TIMER] = 0;
+            S[Defines.STAT_TIMER_ICON] = (short) 0;
+            S[Defines.STAT_TIMER] = (short) 0;
         }
 
         
@@ -387,7 +387,7 @@ public class PlayerHud {
         
         
         if (C.pers.selected_item <= 0)
-            S[Defines.STAT_SELECTED_ICON] = 0;
+            S[Defines.STAT_SELECTED_ICON] = (short) 0;
         else
             S[Defines.STAT_SELECTED_ICON] = (short) game_import_t
                     .imageindex(GameItemList.itemlist[C.pers.selected_item].icon);
@@ -397,20 +397,20 @@ public class PlayerHud {
         
         
         
-        S[Defines.STAT_LAYOUTS] = 0;
+        S[Defines.STAT_LAYOUTS] = (short) 0;
 
-        if (GameBase.deathmatch.value != 0) {
+        if (GameBase.deathmatch.value != (float) 0) {
             if (C.pers.health <= 0
-                    || GameBase.level.intermissiontime != 0
+                    || GameBase.level.intermissiontime != (float) 0
                     || C.showscores)
-                S[Defines.STAT_LAYOUTS] |= 1;
+                S[Defines.STAT_LAYOUTS] = (short) ((int) S[Defines.STAT_LAYOUTS] | 1);
             if (C.showinventory && C.pers.health > 0)
-                S[Defines.STAT_LAYOUTS] |= 2;
+                S[Defines.STAT_LAYOUTS] = (short) ((int) S[Defines.STAT_LAYOUTS] | 2);
         } else {
             if (C.showscores || C.showhelp)
-                S[Defines.STAT_LAYOUTS] |= 1;
+                S[Defines.STAT_LAYOUTS] = (short) ((int) S[Defines.STAT_LAYOUTS] | 1);
             if (C.showinventory && C.pers.health > 0)
-                S[Defines.STAT_LAYOUTS] |= 2;
+                S[Defines.STAT_LAYOUTS] = (short) ((int) S[Defines.STAT_LAYOUTS] | 2);
         }
 
         
@@ -425,14 +425,14 @@ public class PlayerHud {
                 && (GameBase.level.framenum & 8) != 0)
             S[Defines.STAT_HELPICON] = (short) game_import_t
                     .imageindex("i_help");
-        else if ((C.pers.hand == Defines.CENTER_HANDED || C.ps.fov > 91)
+        else if ((C.pers.hand == Defines.CENTER_HANDED || C.ps.fov > 91.0F)
                 && C.pers.weapon != null)
             S[Defines.STAT_HELPICON] = (short) game_import_t
                     .imageindex(C.pers.weapon.icon);
         else
-            S[Defines.STAT_HELPICON] = 0;
+            S[Defines.STAT_HELPICON] = (short) 0;
 
-        S[Defines.STAT_SPECTATOR] = 0;
+        S[Defines.STAT_SPECTATOR] = (short) 0;
     }
 
     /*
@@ -442,7 +442,7 @@ public class PlayerHud {
      */
     public static void G_CheckChaseStats(edict_t ent) {
 
-        for (int i = 1; i <= GameBase.maxclients.value; i++) {
+        for (int i = 1; (float) i <= GameBase.maxclients.value; i++) {
             gclient_t cl = GameBase.g_edicts[i].client;
             if (!GameBase.g_edicts[i].inuse || cl.chase_target != ent)
                 continue;
@@ -465,15 +465,15 @@ public class PlayerHud {
         if (null == cl.chase_target)
             G_SetStats(ent);
 
-        cl.ps.stats[Defines.STAT_SPECTATOR] = 1;
+        cl.ps.stats[Defines.STAT_SPECTATOR] = (short) 1;
 
         
-        cl.ps.stats[Defines.STAT_LAYOUTS] = 0;
-        if (cl.pers.health <= 0 || GameBase.level.intermissiontime != 0
+        cl.ps.stats[Defines.STAT_LAYOUTS] = (short) 0;
+        if (cl.pers.health <= 0 || GameBase.level.intermissiontime != (float) 0
                 || cl.showscores)
-            cl.ps.stats[Defines.STAT_LAYOUTS] |= 1;
+            cl.ps.stats[Defines.STAT_LAYOUTS] = (short) ((int) cl.ps.stats[Defines.STAT_LAYOUTS] | 1);
         if (cl.showinventory && cl.pers.health > 0)
-            cl.ps.stats[Defines.STAT_LAYOUTS] |= 2;
+            cl.ps.stats[Defines.STAT_LAYOUTS] = (short) ((int) cl.ps.stats[Defines.STAT_LAYOUTS] | 2);
 
         if (cl.chase_target != null && cl.chase_target.inuse)
             
@@ -481,7 +481,7 @@ public class PlayerHud {
             cl.ps.stats[Defines.STAT_CHASE] = (short) (Defines.CS_PLAYERSKINS
                     + cl.chase_target.index - 1);
         else
-            cl.ps.stats[Defines.STAT_CHASE] = 0;
+            cl.ps.stats[Defines.STAT_CHASE] = (short) 0;
     }
 
     /** 
@@ -491,11 +491,11 @@ public class PlayerHud {
         StringBuilder sb = new StringBuilder(256);
         String sk;
     
-        if (GameBase.skill.value == 0)
+        if (GameBase.skill.value == (float) 0)
             sk = "easy";
-        else if (GameBase.skill.value == 1)
+        else if (GameBase.skill.value == 1.0F)
             sk = "medium";
-        else if (GameBase.skill.value == 2)
+        else if (GameBase.skill.value == 2.0F)
             sk = "hard";
         else
             sk = "hard+";

@@ -42,13 +42,13 @@ public class PremiseRunnable {
                 this.punc = d.punc;
                 this.single = d.single;
             } else {
-                this.truth.set(null); this.punc = 0; this.single = false;
+                this.truth.set(null); this.punc = (byte) 0; this.single = false;
             }
             return this.pri = p;
         } else {
             this.action = null;
-            this.pri = 0;
-            return 0;
+            this.pri = (float) 0;
+            return (float) 0;
         }
     }
 

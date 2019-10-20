@@ -87,7 +87,7 @@ public class MutableInteger extends NumberX implements Comparable, IntSupplier, 
 
     @Override
     public void add(float x) {
-        set(value + x);
+        set((float) value + x);
     }
 
     public final void set(float value) {
@@ -138,7 +138,7 @@ public class MutableInteger extends NumberX implements Comparable, IntSupplier, 
      */
     @Override
     public final long longValue() {
-        return value;
+        return (long) value;
     }
 
     /**
@@ -149,7 +149,7 @@ public class MutableInteger extends NumberX implements Comparable, IntSupplier, 
      */
     @Override
     public final float floatValue() {
-        return value;
+        return (float) value;
     }
 
     /**
@@ -160,7 +160,7 @@ public class MutableInteger extends NumberX implements Comparable, IntSupplier, 
      */
     @Override
     public final double doubleValue() {
-        return value;
+        return (double) value;
     }
 
     @Override

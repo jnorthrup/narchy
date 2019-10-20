@@ -77,7 +77,7 @@ public class ExeCharts {
 		}
 		public void update() {
             float p = w.pri();
-            color.hsl( lerpSafe(1-p, 0.1f, 0.8f), 0.75f,
+            color.hsl( lerpSafe(1.0F -p, 0.1f, 0.8f), 0.75f,
                 lerpSafe(p, 0.1f, 0.5f), 1f);
 
 //            float v = w.value();
@@ -286,7 +286,7 @@ public class ExeCharts {
                 time = ((RealTime) nar.time);
                 add(
                         new IntSlider("Dur(ms)", durMS)
-                                .on(durMS->nar.time.dur(Math.max((int)Math.round(durMS), 1))),
+                                .on(durMS->nar.time.dur((float) Math.max((int) Math.round(durMS), 1))),
                         new FloatSlider(loop.throttle, "Throttle")
                 );
             } else {
@@ -304,7 +304,7 @@ public class ExeCharts {
 
                 NAR n = ((NARLoop) loop).nar;
                 if (n.time instanceof RealTime) {
-                    double actualMS = ((RealTime) n.time).durSeconds() * 1000.0;
+                    double actualMS = (double) ((RealTime) n.time).durSeconds() * 1000.0;
                     if (!Util.equals(durMS.doubleValue(), actualMS, 0.1)) {
                         durMS.set(actualMS); //external change singificant
                     }

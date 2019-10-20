@@ -48,7 +48,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     /**
      * update time since last cycle (S)
      */
-    public float dtS = 0;
+    public float dtS = (float) 0;
     public float renderFPS = UI.FPS_default;
     private long lastRenderNS = System.nanoTime();
     private volatile int nx = -1;
@@ -222,7 +222,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
         /* ns -> ms */
         //render((int) Math.min(Integer.MAX_VALUE, Math.round(renderDtNS / 1_000_000.0)));
-        render((float) (renderDtNS / 1.0E9));
+        render((float) ((double) renderDtNS / 1.0E9));
 
         //gl.glFlush();  //<- not helpful
         //gl.glFinish(); //<- not helpful
@@ -369,20 +369,20 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     }
 
     public float getScreenW() {
-        return window.getScreen().getWidth();
+        return (float) window.getScreen().getWidth();
     }
 
     public float getScreenH() {
-        return window.getScreen().getHeight();
+        return (float) window.getScreen().getHeight();
     }
 
     /** min dimension */
     public float getWidthHeightMin() {
-        return Math.min(getWidth(),getHeight());
+        return (float) Math.min(getWidth(), getHeight());
     }
     /** max dimension */
     public float getWidthHeightMax() {
-        return Math.min(getWidth(),getHeight());
+        return (float) Math.min(getWidth(), getHeight());
     }
 
     /* from: Jake2's */

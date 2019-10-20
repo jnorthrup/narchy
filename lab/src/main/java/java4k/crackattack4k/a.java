@@ -200,36 +200,36 @@ public class a extends GamePanel {
 
 		
 		for (k = 0; k < 3; k++) {
-			float saturation = k == 2 ? 0 : 1;
-            float brightness = k == 1 ? 0.5f : 1;
+			float saturation = (float) (k == 2 ? 0 : 1);
+            float brightness = k == 1 ? 0.5f : 1.0F;
 			for (i = 0; i < 5; i++) {
 				sprites[10 * k + i] = new BufferedImage(16, 16, 2);
 				sprites[10 * k + i + 5] = new BufferedImage(16, 16, 2);
 				sprites[SPRITE_FACE_1 + i] = new BufferedImage(16, 16, 2);
 				for (y = 0; y < 16; y++) {
 
-                    float hue = (i < 4 ? i : -1) / 6f;
+                    float hue = (float) (i < 4 ? i : -1) / 6f;
 
 					
 					for (x = 0; x < 8; x++) {
-						pixels[x] = pixels[15 - x] = ((S.charAt((i << 3) + (y >> 1)) >> (((y & 1) << 3) + x)) & 1) * Color.HSBtoRGB(hue, saturation, brightness);
+						pixels[x] = pixels[15 - x] = (((int) S.charAt((i << 3) + (y >> 1)) >> (((y & 1) << 3) + x)) & 1) * Color.HSBtoRGB(hue, saturation, brightness);
 					}
 					sprites[10 * k + i].setRGB(0, y, 16, 1, pixels, 0, 16);
 
 					
 					for (x = 0; x < 8; x++) {
-						j = (S.charAt(72 + (i << 4) + y) >> (x << 1)) & 3;
-						pixels[x] = pixels[15 - x] = j == 3 ? 0xFFD0D0D0 : j == 1 ? i == 0 ? 0xFFC0C000 : i == 4 ? 0xFF0038F8 : 0xFFF81800 : Color.HSBtoRGB(hue, 1, j == 0 ? 0.4f : 1);
+						j = ((int) S.charAt(72 + (i << 4) + y) >> (x << 1)) & 3;
+						pixels[x] = pixels[15 - x] = j == 3 ? 0xFFD0D0D0 : j == 1 ? i == 0 ? 0xFFC0C000 : i == 4 ? 0xFF0038F8 : 0xFFF81800 : Color.HSBtoRGB(hue, 1.0F, j == 0 ? 0.4f : 1.0F);
 					}
 					sprites[SPRITE_FACE_1 + i].setRGB(0, y, 16, 1, pixels, 0, 16);
 
 					
 					for (x = 0; x < 16; x++) {
-						j = (S.charAt((x < 8 ? 41 : 40) + (y << 1)) >> ((x & 7) << 1)) & 3;
+						j = ((int) S.charAt((x < 8 ? 41 : 40) + (y << 1)) >> ((x & 7) << 1)) & 3;
 						if (k == 2) {
 							j++;
 						}
-						pixels[x] = Color.HSBtoRGB(hue, saturation, brightness * (j == 0 ? 0 : j == 1 ? 0.4f : j == 2 ? 0.75f : 1));
+						pixels[x] = Color.HSBtoRGB(hue, saturation, brightness * (j == 0 ? (float) 0 : j == 1 ? 0.4f : j == 2 ? 0.75f : 1.0F));
 					}
 					sprites[10 * k + i + 5].setRGB(0, y, 16, 1, pixels, 0, 16);
 				}
@@ -243,7 +243,7 @@ public class a extends GamePanel {
 			sprites[SPRITE_UPSIDE_DOWN_DIGIT_0 + i] = new BufferedImage(j, 8, 2);
 			for (x = 0; x < j; x++) {
 				for (y = 0; y < 8; y++) {
-					k = (S.charAt(152 + x + (i << 3)) >> (y << 1)) & 3;
+					k = ((int) S.charAt(152 + x + (i << 3)) >> (y << 1)) & 3;
 					pixels[15 - y] = pixels[y] = k == 0 ? 0 : k == 1 ? 0xFF000000 : 0xFFFFFFFF;
 				}
 				sprites[SPRITE_DIGIT_0 + i].setRGB(x, 0, 1, 8, pixels, 0, 1);
@@ -258,12 +258,12 @@ public class a extends GamePanel {
 	public void paintComponent(Graphics g) {
 
 		
-		if (nextFrameStartTime - System.nanoTime() > 0) {
+		if (nextFrameStartTime - System.nanoTime() > 0L) {
 			return;
 		}
 
 		do {
-			nextFrameStartTime += 16666667;
+			nextFrameStartTime += 16666667L;
 
 			
 
@@ -284,7 +284,7 @@ public class a extends GamePanel {
 				countdown = 3;
 				countdownZ = Z0;
 				limitTileY = 18 + (level >> 1);
-				initialSpeed = 0.01f + 0.0021f * level;
+				initialSpeed = 0.01f + 0.0021f * (float) level;
 				overButton = OVER_NONE;
 
 				dangerColumns = new boolean[6];
@@ -322,7 +322,7 @@ public class a extends GamePanel {
 				
 				for (y = 0; y < 200; y++) {
 					for (x = 0; x < 104; x++) {
-						pixels[x] = Color.HSBtoRGB((0.0015f + 0.0005f * (level / 5)) * y - 0.15f + 0.7f * (level / 5), 1, 0.5f);
+						pixels[x] = Color.HSBtoRGB((0.0015f + 0.0005f * (float) (level / 5)) * (float) y - 0.15f + 0.7f * (float) (level / 5), 1.0F, 0.5f);
 					}
 					backgroundImage.setRGB(0, y, 104, 1, pixels, 0, 104);
 				}
@@ -421,7 +421,7 @@ public class a extends GamePanel {
 			}
 
 			if (dying > 0) {
-				cameraY = cameraY2 + (int) ((3 - 3f * dying / 128) * Math.sin(1.5f * dying));
+				cameraY = cameraY2 + (int) ((double) (3.0F - 3f * (float) dying / 128.0F) * Math.sin((double) (1.5f * (float) dying)));
 				if (++dying == 128) {
 					fadeIntensity = 255;
 					fadeState = FADE_IN;
@@ -734,8 +734,8 @@ public class a extends GamePanel {
 					if (cameraYTarget > cameraY) {
 						cameraY++;
 					} else {
-						timer += initialSpeed + cameraY * SPEED_UP_RATE;
-						if (timer >= 1) {
+						timer += initialSpeed + (float) cameraY * SPEED_UP_RATE;
+						if (timer >= 1.0F) {
 							timer--;
 							cameraY++;
 						}
@@ -874,8 +874,8 @@ public class a extends GamePanel {
 				if (countdownZ > Z0) {
 					
 					offscreenGraphics.translate(52, 100);
-                    float scale = Z0 / (float) (Z0 - countdownZ);
-					offscreenGraphics.scale(scale, scale);
+                    float scale = (float) Z0 / (float) (Z0 - countdownZ);
+					offscreenGraphics.scale((double) scale, (double) scale);
 					offscreenGraphics.drawImage(sprites[SPRITE_DIGIT_0 + countdown], -4, -4, null);
 					offscreenGraphics.setTransform(affineTransform);
 				}
@@ -899,11 +899,11 @@ public class a extends GamePanel {
                             int e = explodingTiles[y + j][x];
 							if (e < 0 && e >= -16) {
                                 int f = 24 + e;
-                                float scale = -.03125f * e;
+                                float scale = -.03125f * (float) e;
 								for (int h = 0; h < 4; h++) {
 									offscreenGraphics.translate(12 + (x << 4) - f * (h > 1 ? 1 : -1), 12 + (y << 4) - i - f * ((h & 1) == 1 ? 1 : -1));
-									offscreenGraphics.rotate(e);
-									offscreenGraphics.scale(scale, scale);
+									offscreenGraphics.rotate((double) e);
+									offscreenGraphics.scale((double) scale, (double) scale);
 									offscreenGraphics.drawImage(sprites[k + 25], -8, -8, 16, 16, null);
 									offscreenGraphics.setTransform(affineTransform);
 								}
@@ -915,11 +915,11 @@ public class a extends GamePanel {
                     int[] explosion = explosions.get(i);
                     int e = explosion[2];
                     int f = 24 + e;
-                    float scale = -.03125f * e;
+                    float scale = -.03125f * (float) e;
 					for (int h = 0; h < 4; h++) {
 						offscreenGraphics.translate(explosion[0] - f * (h > 1 ? 1 : -1), explosion[1] - i - f * ((h & 1) == 1 ? 1 : -1));
-						offscreenGraphics.rotate(e);
-						offscreenGraphics.scale(scale, scale);
+						offscreenGraphics.rotate((double) e);
+						offscreenGraphics.scale((double) scale, (double) scale);
 						offscreenGraphics.drawImage(sprites[25], -8, -8, 16, 16, null);
 						offscreenGraphics.setTransform(affineTransform);
 					}
@@ -940,12 +940,12 @@ public class a extends GamePanel {
                         int[] chain = chains.get(i);
 
 						for (j = 0; j < 6; j++) {
-                            float angle = 1.05f * j + 0.1f * chain[CHAIN_COUNT];
-							offscreenGraphics.translate(chain[CHAIN_X] + (chain[CHAIN_WIDTH] >> 1) + (int) (2 * (32 - chain[CHAIN_COUNT]) * Math.cos(angle)), chain[CHAIN_Y] + 8
-									+ (int) (2 * (32 - chain[CHAIN_COUNT]) * Math.sin(angle)));
-							offscreenGraphics.rotate(chain[CHAIN_COUNT]);
-                            float scale = 0.25f + chain[CHAIN_COUNT] / 128f;
-							offscreenGraphics.scale(scale, scale);
+                            float angle = 1.05f * (float) j + 0.1f * (float) chain[CHAIN_COUNT];
+							offscreenGraphics.translate(chain[CHAIN_X] + (chain[CHAIN_WIDTH] >> 1) + (int) (2.0 * (double) (32 - chain[CHAIN_COUNT]) * Math.cos((double) angle)), chain[CHAIN_Y] + 8
+									+ (int) (2.0 * (double) (32 - chain[CHAIN_COUNT]) * Math.sin((double) angle)));
+							offscreenGraphics.rotate((double) chain[CHAIN_COUNT]);
+                            float scale = 0.25f + (float) chain[CHAIN_COUNT] / 128f;
+							offscreenGraphics.scale((double) scale, (double) scale);
 							offscreenGraphics.drawImage(sprites[25], -8, -8, 16, 16, null);
 							offscreenGraphics.setTransform(affineTransform);
 						}

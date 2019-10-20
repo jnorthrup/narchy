@@ -109,7 +109,7 @@ import java.util.stream.Stream;
     public double score(/* scoring mode */) {
         double sum = 0.0;
         for (MyTestNAR x : this) {
-            double score = x.score;
+            double score = (double) x.score;
             sum += score;
         }
         return sum;

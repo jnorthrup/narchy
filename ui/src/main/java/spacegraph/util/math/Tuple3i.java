@@ -321,9 +321,9 @@ public abstract class Tuple3i implements java.io.Serializable, Cloneable {
      */
     public int hashCode() {
         long bits = 1L;
-	bits = 31L * bits + x;
-	bits = 31L * bits + y;
-	bits = 31L * bits + z;
+	bits = 31L * bits + (long) x;
+	bits = 31L * bits + (long) y;
+	bits = 31L * bits + (long) z;
 	return (int) (bits ^ (bits >> 32));
     }
 

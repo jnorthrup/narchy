@@ -25,7 +25,7 @@ public class WorkerExec extends ThreadedExec {
 	 * value of 1 means a worker will attempt all of the work.  this is safest option
 	 * lesser values load balance across workers at expense of avg throughput
 	 */
-	static final float workResponsibility = 1;
+	static final float workResponsibility = 1.0F;
 	//1f;
 	//1.5f;
 	//2f;
@@ -73,8 +73,8 @@ public class WorkerExec extends ThreadedExec {
 
 	private static final class WorkPlayLoop implements ThreadedExec.Worker {
 
-		long loopNS_recorded_max = 5_000_000; //initial guess at cycle per loop
-		long naptime = 2_000_000;
+		long loopNS_recorded_max = 5_000_000L; //initial guess at cycle per loop
+		long naptime = 2_000_000L;
 
 
 		final Random rng;
@@ -88,7 +88,7 @@ public class WorkerExec extends ThreadedExec {
 		WorkPlayLoop(final NAR nar) {
 			this.nar = nar;
 			in = ((ThreadedExec)nar.exe).in;
-			rng = new XoRoShiRo128PlusRandom((31L * System.identityHashCode(this)) + nanoTime());
+			rng = new XoRoShiRo128PlusRandom((31L * (long) System.identityHashCode(this)) + nanoTime());
 		}
 
 		/**
@@ -109,7 +109,7 @@ public class WorkerExec extends ThreadedExec {
 			//Histogram loopTime = new Histogram(30_000, loopNS_recorded_max, 3);
 			//loopTime.recordValue(loopNS_recorded_max);
             final FloatAveragedWindow loopTime = new FloatAveragedWindow(8, 0.5f, false).mode(FloatAveragedWindow.Mode.Mean);
-			loopTime.fill(loopNS_recorded_max);
+			loopTime.fill((float) loopNS_recorded_max);
 
             final NARLoop loop = nar.loop;
 
@@ -123,14 +123,14 @@ public class WorkerExec extends ThreadedExec {
 				work();
 
                 long cycleRemaining = cycleTimeNS - (System.nanoTime() - cycleStart);
-				if (cycleRemaining < 0)
+				if (cycleRemaining < 0L)
 					continue; //worked until next morning so start again
 
                 final boolean running = loop.isRunning();
-                final float throttle = running ? loop.throttle.floatValue() : 0;
-				if (throttle < 1) {
+                final float throttle = running ? loop.throttle.floatValue() : (float) 0;
+				if (throttle < 1.0F) {
 					cycleRemaining = sleep(throttle, cycleTimeNS, cycleStart, cycleRemaining);
-					if (cycleRemaining < 0 || !running)
+					if (cycleRemaining < 0L || !running)
 						continue; //slept all day
 				}
 
@@ -145,14 +145,14 @@ public class WorkerExec extends ThreadedExec {
 				final int maxWhatLoops;
                 final int minWhatLoops = 2;
 				final int loopsPlanned;
-				if (loopTime.mean() < 1) {
+				if (loopTime.mean() < 1.0) {
 					//TODO this means it has been measuring empty loops, add some safety limit
 					loopsPlanned = maxWhatLoops = minWhatLoops;
 				} else {
-					loopsPlanned = (int) (cycleRemaining / meanLoopTimeNS);
+					loopsPlanned = (int) ((double) cycleRemaining / meanLoopTimeNS);
 					//increase what slicing
-					final float whatGranularity = 1;
-					maxWhatLoops = minWhatLoops + Math.round(loopsPlanned / Math.max(1f, (N * whatGranularity) / concurrency)); //TODO tune
+					final float whatGranularity = 1.0F;
+					maxWhatLoops = minWhatLoops + Math.round((float) loopsPlanned / Math.max(1f, ((float) N * whatGranularity) / (float) concurrency)); //TODO tune
 				}
 
 				//StringBuilder y = new StringBuilder();
@@ -168,7 +168,7 @@ public class WorkerExec extends ThreadedExec {
                     final float p = w.priElseZero();
 //					if (p < ScalarValue.EPSILON) continue; //HACK
 
-                    final int loops = Math.min(loopsRemain, (int) Util.lerpSafe(p / ww.mass(), minWhatLoops, maxWhatLoops));
+                    final int loops = Math.min(loopsRemain, (int) Util.lerpSafe(p / ww.mass(), (float) minWhatLoops, (float) maxWhatLoops));
 					loopsRemain -= loops;
 
 					d.next(w, loops);
@@ -180,14 +180,14 @@ public class WorkerExec extends ThreadedExec {
 				//totalPlayTimeNS += playTimeNS;
                 final int loopsRun = loopsPlanned - loopsRemain;
 				if (loopsRun > 0)
-					loopTime.next/*recordValue*/(/*Math.min(loopNS_recorded_max,*/ (((float)playTimeNS)/ loopsRun));
+					loopTime.next/*recordValue*/(/*Math.min(loopNS_recorded_max,*/ (((float)playTimeNS)/ (float) loopsRun));
 
 			}
 		}
 
 		public long sleep(final float throttle, final long cycleTimeNS, final long cycleStart, long cycleRemaining) {
 			//sleep at most until next cycle
-            final long cycleSleepNS = Math.min(cycleRemaining, (int)(cycleTimeNS * (1.0-throttle)));
+            final long cycleSleepNS = Math.min(cycleRemaining, (long) (int) ((double) cycleTimeNS * (1.0 - (double) throttle)));
 			Util.sleepNSwhile(cycleSleepNS, naptime, ()->{
 				work();
 				return true;
@@ -214,7 +214,7 @@ public class WorkerExec extends ThreadedExec {
 
 					batchSize = //Util.lerp(throttle,
 						//available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
-						Util.clamp((int) Math.ceil(workResponsibility * available), 1, available);
+						Util.clamp((int) Math.ceil((double) (workResponsibility * (float) available)), 1, available);
 
 				} else if (--batchSize == 0)
 					break; //enough

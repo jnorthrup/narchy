@@ -76,8 +76,8 @@ class MIDI {
                 int cmd = s.getCommand();
                 switch (cmd) {
                     case ShortMessage.NOTE_OFF:
-                        if ((volume[s.getData1()] == volume[s.getData1()]) && (volume[s.getData1()] > 0))
-                            volume[s.getData1()] = 0;
+                        if ((volume[s.getData1()] == volume[s.getData1()]) && (volume[s.getData1()] > (float) 0))
+                            volume[s.getData1()] = (float) 0;
 
 
 
@@ -85,7 +85,7 @@ class MIDI {
                         
                         break;
                     case ShortMessage.NOTE_ON:
-                        volume[s.getData1()] = 0.6f + 0.4f * s.getData2() / 128f;
+                        volume[s.getData1()] = 0.6f + 0.4f * (float) s.getData2() / 128f;
 
 
 

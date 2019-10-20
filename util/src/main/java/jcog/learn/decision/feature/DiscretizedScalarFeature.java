@@ -25,7 +25,7 @@ public class DiscretizedScalarFeature {
     }
 
     public void learn(float x) {
-        discretizer.put(x);
+        discretizer.put((double) x);
     }
 
     public Stream<Predicate<Function<Integer,Float>>> classifiers(@Nullable String... labels) {

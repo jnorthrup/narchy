@@ -57,14 +57,14 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
     private float statReset(ObjectLongProcedure<String> eachStat) {
 
         long H;
-        eachStat.accept("H" /* hit */, H = hit.getAndSet(0));
+        eachStat.accept("H" /* hit */, H = hit.getAndSet(0L));
         long M;
-        eachStat.accept("M" /* miss */, M = miss.getAndSet(0));
+        eachStat.accept("M" /* miss */, M = miss.getAndSet(0L));
         long R;
-        eachStat.accept("R" /* reject */, R = reject.getAndSet(0));
+        eachStat.accept("R" /* reject */, R = reject.getAndSet(0L));
         long E;
-        eachStat.accept("E" /* evict */, E = evict.getAndSet(0));
-        return (H / ((float) (H + M + R /* + E */)));
+        eachStat.accept("E" /* evict */, E = evict.getAndSet(0L));
+        return ((float) H / ((float) (H + M + R /* + E */)));
     }
 
     /**
@@ -219,12 +219,12 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
 //            HijackMemoize.this.DEFAULT_VALUE = 0.5f / reprobes;
 //            HijackMemoize.this.CACHE_HIT_BOOST = boost;
 
-            float sc = (float) Math.sqrt(c);
+            float sc = (float) Math.sqrt((double) c);
             DEFAULT_VALUE =
                     //0.5f / reprobes;
                     1f / sc;
             CACHE_HIT_BOOST = 0.5f/sc;
-            CACHE_SURVIVE_COST = CACHE_HIT_BOOST / reprobes;
+            CACHE_SURVIVE_COST = CACHE_HIT_BOOST / (float) reprobes;
 
             assert(DEFAULT_VALUE > ScalarValue.EPSILON);
             assert(CACHE_HIT_BOOST > ScalarValue.EPSILON);
@@ -258,7 +258,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
 
         @Override
         public float depressurizePct(float percentToRemove) {
-            return 0;
+            return (float) 0;
         }
 
         @Override

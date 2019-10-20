@@ -14,8 +14,8 @@ public class Spacecraft extends VectorSprite {
         drawShape.addPoint(15, 10);
         drawShape.addPoint(-15, 10);
 
-        xposition = 450;
-        yposition = 300;
+        xposition = 450.0;
+        yposition = 300.0;
 
         ROTATION = 0.25;
         THRUST = 0.1;
@@ -50,8 +50,8 @@ public class Spacecraft extends VectorSprite {
     }
 
     public void accelerate() {
-        xspeed += Math.cos(angle - Math.PI / 2) * THRUST;
-        yspeed += Math.sin(angle - Math.PI / 2) * THRUST;
+        xspeed += Math.cos(angle - Math.PI / 2.0) * THRUST;
+        yspeed += Math.sin(angle - Math.PI / 2.0) * THRUST;
 
     }
 
@@ -69,11 +69,11 @@ public class Spacecraft extends VectorSprite {
     }
 
     public void reset() {
-        xposition = 450;
-        yposition = 300;
-        xspeed = 0;
-        yspeed = 0;
-        angle = 0;
+        xposition = 450.0;
+        yposition = 300.0;
+        xspeed = (double) 0;
+        yspeed = (double) 0;
+        angle = (double) 0;
         active = true;
         invincCounter = 0;
 
@@ -96,29 +96,29 @@ public class Spacecraft extends VectorSprite {
 
         if (weaponType == 1) {
             fireDelay = Math.max(0, 4 - 4 * upgrades[0][1]);
-            damage = 3 + 3 * upgrades[0][2];
+            damage = (double) (3 + 3 * upgrades[0][2]);
         }
 
         if (weaponType == 2) {
             fireDelay = 6 - upgrades[1][1];
-            damage = 2 + 2 * upgrades[1][2];
+            damage = (double) (2 + 2 * upgrades[1][2]);
         }
 
         if (weaponType == 3) {
             fireDelay = 31 - 5 * upgrades[2][1];
-            damage = 10 + 8 * upgrades[2][2];
+            damage = (double) (10 + 8 * upgrades[2][2]);
         }
 
-        upgradeCost[0][1] = 100 * (int) Math.pow(2, upgrades[0][1]);
-        upgradeCost[0][2] = 100 * (int) Math.pow(2, upgrades[0][2]);
+        upgradeCost[0][1] = 100 * (int) Math.pow(2.0, (double) upgrades[0][1]);
+        upgradeCost[0][2] = 100 * (int) Math.pow(2.0, (double) upgrades[0][2]);
         upgradeCost[0][0] = 1000;
 
-        upgradeCost[1][1] = 100 * (int) Math.pow(2, upgrades[1][1]);
-        upgradeCost[1][2] = 100 * (int) Math.pow(2, upgrades[1][2]);
+        upgradeCost[1][1] = 100 * (int) Math.pow(2.0, (double) upgrades[1][1]);
+        upgradeCost[1][2] = 100 * (int) Math.pow(2.0, (double) upgrades[1][2]);
         upgradeCost[1][0] = 1000;
 
-        upgradeCost[2][1] = 100 * (int) Math.pow(2, upgrades[2][1]);
-        upgradeCost[2][2] = 100 * (int) Math.pow(2, upgrades[2][2]);
+        upgradeCost[2][1] = 100 * (int) Math.pow(2.0, (double) upgrades[2][1]);
+        upgradeCost[2][2] = 100 * (int) Math.pow(2.0, (double) upgrades[2][2]);
         upgradeCost[2][0] = 1000;
     }
 

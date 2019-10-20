@@ -24,7 +24,7 @@ public class Dropout {
 
         this.hiddenLayers = new HiddenLayer[n_layers];
 
-        if (rng == null) rng = new Random(1234);
+        if (rng == null) rng = new Random(1234L);
         this.rng = rng;
 
         if (activation == null) activation = "ReLU";
@@ -127,7 +127,7 @@ public class Dropout {
 
             for (int l = 0; l < out; l++) {
                 for (int m = 0; m < in; m++) {
-                    hiddenLayers[i].W[l][m] *= 1 - p_dropout;
+                    hiddenLayers[i].W[l][m] *= 1.0 - p_dropout;
                 }
             }
         }
@@ -153,7 +153,7 @@ public class Dropout {
 
 
     private static void test_dropout() {
-        Random rng = new Random(123);
+        Random rng = new Random(123L);
 
         double learning_rate = 0.1;
         int n_epochs = 5000;
@@ -175,10 +175,10 @@ public class Dropout {
         };
 
         double[][] train_Y = {
-                {0, 1},
-                {1, 0},
-                {1, 0},
-                {0, 1},
+                {(double) 0, 1.0},
+                {1.0, (double) 0},
+                {1.0, (double) 0},
+                {(double) 0, 1.0},
         };
 
 

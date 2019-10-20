@@ -42,21 +42,21 @@ public class FloatND extends ArrayTensor implements HyperPoint, Serializable, Co
 
     @Override
     public double distance(HyperPoint h) {
-        if (this == h) return 0;
+        if (this == h) return (double) 0;
         FloatND p = (FloatND) h;
-        float sumSq = 0;
+        float sumSq = (float) 0;
         for (int i = 0; i < data.length; i++) {
             float x = data[i];
             float y = p.data[i];
             float xMinY = x - y;
             sumSq += xMinY * xMinY;
         }
-        return Math.sqrt(sumSq);
+        return Math.sqrt((double) sumSq);
     }
 
     @Override
     public double distance(HyperPoint p, int i) {
-        return this==p ? 0 : Math.abs(data[i] - ((FloatND) p).data[i]);
+        return (double) (this == p ? (float) 0 : Math.abs(data[i] - ((FloatND) p).data[i]));
     }
 
     @Override

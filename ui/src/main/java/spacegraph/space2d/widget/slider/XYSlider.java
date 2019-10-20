@@ -147,7 +147,7 @@ public class XYSlider extends PaintSurface  {
         float KT = Math.min(bw, bh) * knobThick;
         float kw = bounds.x + (px * bw);
         float kh = bounds.y + (py * bh);
-        float KTH = KT / 2;
+        float KTH = KT / 2.0F;
         Draw.rectAlphaCorners(bounds.x, kh - KTH, kw - KTH, kh + KTH, knobColor, lefAlphaCorners, gl
         );
         Draw.rectAlphaCorners(kw + KTH, kh - KTH, bounds.x + bw, kh + KTH, knobColor, rihAlphaCorners, gl

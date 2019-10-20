@@ -45,7 +45,7 @@ public class Taskify extends ProxyTerm {
     final Occurrify.OccurrenceSolver time;
 
     public Taskify(Termify termify, Occurrify.OccurrenceSolver time, RuleCause rule) {
-        super($.pFast(termify, $.the(rule.id)));
+        super($.pFast(termify, $.the((int) rule.id)));
         this.termify = termify;
         this.time = time;
         this.rule = rule;
@@ -78,7 +78,7 @@ public class Taskify extends ProxyTerm {
                 //convert orphaned indep vars to query/dep variables
                 byte punc = d.punc;
                 y = y.transform(
-                        (punc == QUESTION || punc == QUEST) ?
+                        ((int) punc == (int) QUESTION || (int) punc == (int) QUEST) ?
                                 VariableTransform.indepToQueryVar
                                 :
                                 VariableTransform.indepToDepVar
@@ -122,11 +122,11 @@ public class Taskify extends ProxyTerm {
 
         Term y = timing.getOne();
 
-        if (NAL.derive.DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL && (d.punc == BELIEF || d.punc == GOAL)) {
+        if (NAL.derive.DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL && ((int) d.punc == (int) BELIEF || (int) d.punc == (int) GOAL)) {
             if (DerivationFailure.failure(y, d.punc)) {
 
                 //as a last resort, try forming a question from the remains
-                byte qPunc = d.punc == BELIEF ? QUESTION : QUEST;
+                byte qPunc = (int) d.punc == (int) BELIEF ? QUESTION : QUEST;
                 d.punc = qPunc;
                 if (DerivationFailure.failure(y, d) == null) {
                     d.punc = qPunc;
@@ -176,7 +176,7 @@ public class Taskify extends ProxyTerm {
     private @Nullable Task task(Term x0, long start, long end, Derivation d) {
 
         byte punc = d.punc;
-        if (punc == 0)
+        if ((int) punc == 0)
             throw new RuntimeException("no punctuation assigned");
 
         Term z = postFilter(x0, d);
@@ -218,7 +218,7 @@ public class Taskify extends ProxyTerm {
 
 
         Truth tru;
-        if (punc == BELIEF || punc == GOAL) {
+        if ((int) punc == (int) BELIEF || (int) punc == (int) GOAL) {
 
             //dither truth
             tru = Truth.dither(d.truth, d.eviMin, neg, nar);
@@ -242,12 +242,12 @@ public class Taskify extends ProxyTerm {
 
             int dur =
                 d.unify.dtTolerance;
-            long belowDur = dur - (end - start);
-            if (belowDur >= 2) {
+            long belowDur = (long) dur - (end - start);
+            if (belowDur >= 2L) {
                 //expand to perceptual dur since this is used in unification
                 //TODO corresponding evidence dilution
-                start -= belowDur/2;
-                end += belowDur/2;
+                start -= belowDur/ 2L;
+                end += belowDur/ 2L;
             }
 
             if (dither > 1) {
@@ -289,7 +289,7 @@ public class Taskify extends ProxyTerm {
             spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
             return null;
         }
-        t.pri(Util.clamp(priority, ScalarValue.EPSILON, 1));
+        t.pri(Util.clamp(priority, ScalarValue.EPSILON, 1.0F));
 
         //these must be applied before possible merge on input to derivedTask bag
         t.why(rule.why(d));
@@ -312,13 +312,13 @@ public class Taskify extends ProxyTerm {
             if (parent.isDeleted())
                 return false;
 
-            if (parent.punc() == punc) {
+            if ((int) parent.punc() == (int) punc) {
                 if (parentTerm.equals(derived)) { //TODO test for dtDiff
                     if (parent.containsSafe(start, end)) {
 
-                        if ((punc == QUESTION || punc == QUEST) || (
+                        if (((int) punc == (int) QUESTION || (int) punc == (int) QUEST) || (
                                 Util.equals(parent.freq(), truth.freq(), n.freqResolution.floatValue()) &&
-                                        parent.conf() >= truth.conf() - n.confResolution.floatValue() / 2
+                                        parent.conf() >= truth.conf() - n.confResolution.floatValue() / 2.0F
                                 // / 2 /* + epsilon to avid creeping confidence increase */
                         )) {
 

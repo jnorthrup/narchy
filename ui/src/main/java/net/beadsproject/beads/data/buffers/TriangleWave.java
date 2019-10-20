@@ -22,7 +22,7 @@ public class TriangleWave extends WaveFactory {
         int size = bufferSize;
         ArrayTensor b = new ArrayTensor(size);
         for (int i = 0; i < bufferSize; i++) {
-            b.data[i] = i < bufferSize / 2f ? i / (bufferSize / 2f) * 2.0f - 1.0f : (1f - ((i - (bufferSize / 2f)) / (bufferSize / 2f))) * 2.0f - 1.0f;
+            b.data[i] = (float) i < (float) bufferSize / 2f ? (float) i / ((float) bufferSize / 2f) * 2.0f - 1.0f : (1f - (((float) i - ((float) bufferSize / 2f)) / ((float) bufferSize / 2f))) * 2.0f - 1.0f;
         }
         return b;
     }

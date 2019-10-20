@@ -70,9 +70,9 @@ public class TextEditModel extends Widget /* TODO Surface */ implements ScrollXY
 
         int w = Math.max(1, Math.min(buffer.width(), 80));
         int h = Math.max(1, Math.min(buffer.height(), 20));
-        s.viewMinMax(new v2(1, 1), new v2(w, h));
+        s.viewMinMax(new v2(1.0F, 1.0F), new v2((float) w, (float) h));
 
-        s.scroll(0, 0, w, h);
+        s.scroll((float) 0, (float) 0, (float) w, (float) h);
     }
 
     @Override

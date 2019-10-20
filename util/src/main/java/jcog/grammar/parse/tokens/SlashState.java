@@ -29,11 +29,11 @@ public class SlashState extends TokenizerState {
 	public Token nextToken(PushbackReader r, int theSlash, Tokenizer t) throws IOException {
 
         int c = r.read();
-		if (c == '*') {
-			return slashStarState.nextToken(r, '*', t);
+		if (c == (int) '*') {
+			return slashStarState.nextToken(r, (int) '*', t);
 		}
-		if (c == '/') {
-			return slashSlashState.nextToken(r, '/', t);
+		if (c == (int) '/') {
+			return slashSlashState.nextToken(r, (int) '/', t);
 		}
 		if (c >= 0) {
 			r.unread(c);

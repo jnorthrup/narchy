@@ -13,8 +13,8 @@ import static jcog.tree.rtree.Spatialization.EPSILONf;
 
 public class RectFloat implements HyperRegion, Comparable<RectFloat> {
 
-    public static final RectFloat Unit = XYXY(0, 0, 1, 1);
-    public static final RectFloat Zero = XYXY(0, 0, 0, 0);
+    public static final RectFloat Unit = XYXY((float) 0, (float) 0, 1.0F, 1.0F);
+    public static final RectFloat Zero = XYXY((float) 0, (float) 0, (float) 0, (float) 0);
 
     public final float x;
     public final float y;
@@ -27,7 +27,7 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     }
 
     private RectFloat(float left, float bottom, float w, float h) {
-        assert(w >= 0 && h >= 0);
+        assert(w >= (float) 0 && h >= (float) 0);
         this.x = left; this.y = bottom; this.w = w; this.h = h;
     }
 
@@ -55,7 +55,7 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
      */
     public static RectFloat XYWH(float cx, float cy, float w, float h) {
         w = Math.abs(w); h = Math.abs(h);
-        return X0Y0WH(cx - w / 2, cy - h / 2, w, h);
+        return X0Y0WH(cx - w / 2.0F, cy - h / 2.0F, w, h);
     }
 
     public static RectFloat XYWH(v2 center, float w, float h) {
@@ -81,14 +81,14 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
      * interpolates the coordinates, and the scale is proportional to the mean dimensions of each
      */
     public static RectFloat mid(RectFloat source, RectFloat target, float relScale) {
-        float cx = (source.cx() + target.cx()) / 2;
-        float cy = (source.cy() + target.cy()) / 2;
-        float wh = relScale * Math.max((source.w + target.w) / 2f, (source.h + target.h) / 2);
+        float cx = (source.cx() + target.cx()) / 2.0F;
+        float cy = (source.cy() + target.cy()) / 2.0F;
+        float wh = relScale * Math.max((source.w + target.w) / 2f, (source.h + target.h) / 2.0F);
         return target.orThisIfEqual(source.orThisIfEqual(RectFloat.XYWH(cx, cy, wh, wh)));
     }
 
     public static RectFloat WH(float w, float h) {
-        return X0Y0WH(0, 0, w, h);
+        return X0Y0WH((float) 0, (float) 0, w, h);
     }
 
     public static RectFloat XYXY(v2 ul, v2 br) {
@@ -150,10 +150,10 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     @Override
     public double center(int d) {
         if (d == 0) {
-            return cx();
+            return (double) cx();
         } else {
             assert (d == 1);
-            return cy();
+            return (double) cy();
         }
     }
 
@@ -162,9 +162,9 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     public double coord(int dimension, boolean maxOrMin) {
         switch (dimension) {
             case 0:
-                return maxOrMin ? (x + w) : x;
+                return (double) (maxOrMin ? (x + w) : x);
             case 1:
-                return maxOrMin ? (y + h) : h;
+                return (double) (maxOrMin ? (y + h) : h);
             default:
                 throw new UnsupportedOperationException();
         }
@@ -175,9 +175,9 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     public double range(int dim) {
         switch (dim) {
             case 0:
-                return w;
+                return (double) w;
             case 1:
-                return h;
+                return (double) h;
             default:
                 throw new IllegalArgumentException("Invalid dimension");
         }
@@ -210,7 +210,7 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
 
     @Override
     public double cost() {
-        return Math.abs(w * h);
+        return (double) Math.abs(w * h);
     }
 
     @Override
@@ -283,10 +283,10 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     }
 
     public final float cx() {
-        return x + w / 2;
+        return x + w / 2.0F;
     }
     public final float cy() {
-        return y + h / 2;
+        return y + h / 2.0F;
     }
 
     public RectFloat transform(float s, float ox, float oy) {
@@ -295,21 +295,21 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     }
 
     public RectFloat scale(float s) {
-        return !Util.equals(s, 1, EPSILON) ?
+        return !Util.equals((double) s, 1.0, EPSILON) ?
                 RectFloat.XYWH(cx(), cy(), w * s, h * s) : this;
     }
 
     public RectFloat scale(float sw, float sh) {
-        return !Util.equals(sw, 1, EPSILON) || !Util.equals(sh, 1, EPSILON) ?
+        return !Util.equals((double) sw, 1.0, EPSILON) || !Util.equals((double) sh, 1.0, EPSILON) ?
                 RectFloat.XYWH(cx(), cy(), w * sw, h * sh) : this;
     }
 
     public float radius() {
-        return ((float) Math.sqrt(radiusSquare()));
+        return ((float) Math.sqrt((double) radiusSquare()));
     }
 
     public float radiusSquare() {
-        float W = w / 2, H = h / 2;
+        float W = w / 2.0F, H = h / 2.0F;
         return (W * W + H * H);
     }
 
@@ -333,7 +333,7 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     }
 
     public v2 midPoint(RectFloat o) {
-        return new v2((cx()+o.cx())/2 , (cy()+o.cy())/2);
+        return new v2((cx()+o.cx())/ 2.0F, (cy()+o.cy())/ 2.0F);
     }
 
     public v2 center() {
@@ -352,7 +352,7 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     /** computes the average of both position and scale parameters */
     public RectFloat mean(RectFloat o) {
         if (this == o) return this;
-        return orThisIfEqual(X0Y0WH((x + o.x)/2, (y+o.y)/2, (w + o.w)/2, (h + o.h)/2));
+        return orThisIfEqual(X0Y0WH((x + o.x)/ 2.0F, (y+o.y)/ 2.0F, (w + o.w)/ 2.0F, (h + o.h)/ 2.0F));
     }
 
     /** clamp inside */
@@ -365,12 +365,12 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
 //                throw new WTF(this +  " is too large to fit inside " + outer);
 
             //if ((cx != cx) || (cy != cy)) randomize(bounds);
-            float x = cx(); if (!Float.isFinite(x)) x = 0;
-            float y = cy(); if (!Float.isFinite(y)) y = 0;
+            float x = cx(); if (!Float.isFinite(x)) x = (float) 0;
+            float y = cy(); if (!Float.isFinite(y)) y = (float) 0;
 
             return orThisIfEqual(XYWH(
-                    Util.clamp(x, outer.left() + w / 2, outer.right() - w / 2),
-                    Util.clamp(y, outer.bottom() + h / 2, outer.top() - h / 2),
+                    Util.clamp(x, outer.left() + w / 2.0F, outer.right() - w / 2.0F),
+                    Util.clamp(y, outer.bottom() + h / 2.0F, outer.top() - h / 2.0F),
                     w,h));
         }
 

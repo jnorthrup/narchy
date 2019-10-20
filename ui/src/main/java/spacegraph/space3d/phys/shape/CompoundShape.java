@@ -266,8 +266,8 @@ public class CompoundShape extends CollisionShape {
         int n = children.size();
 
         v3 center = new v3();
-		center.set(0, 0, 0);
-        float totalMass = 0;
+		center.set((float) 0, (float) 0, (float) 0);
+        float totalMass = (float) 0;
         for (int k = 0; k < n; k++) {
 			
 			center.scaleAdd(masses[k], children.get(k).transform, center);
@@ -310,9 +310,9 @@ public class CompoundShape extends CollisionShape {
 
 
             float o2 = o.lengthSquared();
-			j.setRow(0, o2, 0, 0);
-			j.setRow(1, 0, o2, 0);
-			j.setRow(2, 0, 0, o2);
+			j.setRow(0, o2, (float) 0, (float) 0);
+			j.setRow(1, (float) 0, o2, (float) 0);
+			j.setRow(2, (float) 0, (float) 0, o2);
 			j.m00 += o.x * -o.x;
 			j.m01 += o.y * -o.x;
 			j.m02 += o.z * -o.x;

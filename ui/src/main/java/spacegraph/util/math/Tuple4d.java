@@ -111,10 +111,10 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
      * @param t1 the Tuple4f containing the initialization x y z w data
      */
     protected Tuple4d(Tuple4f t1) {
-        this.x = t1.x;
-        this.y = t1.y;
-        this.z = t1.z;
-        this.w = t1.w;
+        this.x = (double) t1.x;
+        this.y = (double) t1.y;
+        this.z = (double) t1.z;
+        this.w = (double) t1.w;
     }
 
 
@@ -177,10 +177,10 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
      * @param t1 the tuple to be copied
      */
     public final void set(Tuple4f t1) {
-        this.x = t1.x;
-        this.y = t1.y;
-        this.z = t1.z;
-        this.w = t1.w;
+        this.x = (double) t1.x;
+        this.y = (double) t1.y;
+        this.z = (double) t1.z;
+        this.w = (double) t1.w;
     }
 
 
@@ -423,19 +423,19 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
 
         double diff = x - t1.x;
         if (Double.isNaN(diff)) return false;
-        if ((diff < 0 ? -diff : diff) > epsilon) return false;
+        if ((diff < (double) 0 ? -diff : diff) > epsilon) return false;
 
         diff = y - t1.y;
         if (Double.isNaN(diff)) return false;
-        if ((diff < 0 ? -diff : diff) > epsilon) return false;
+        if ((diff < (double) 0 ? -diff : diff) > epsilon) return false;
 
         diff = z - t1.z;
         if (Double.isNaN(diff)) return false;
-        if ((diff < 0 ? -diff : diff) > epsilon) return false;
+        if ((diff < (double) 0 ? -diff : diff) > epsilon) return false;
 
         diff = w - t1.w;
         if (Double.isNaN(diff)) return false;
-        return (diff < 0 ? -diff : diff) <= epsilon;
+        return (diff < (double) 0 ? -diff : diff) <= epsilon;
 
     }
 
@@ -463,7 +463,7 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
      * @deprecated Use clamp(double,double,Tuple4d) instead
      */
     public final void clamp(float min, float max, Tuple4d t) {
-        clamp((double) min, max, t);
+        clamp((double) min, (double) max, t);
     }
 
 
@@ -678,10 +678,10 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
      * @param alpha the alpha interpolation parameter
      */
     private void interpolate(Tuple4d t1, Tuple4d t2, double alpha) {
-        this.x = (1 - alpha) * t1.x + alpha * t2.x;
-        this.y = (1 - alpha) * t1.y + alpha * t2.y;
-        this.z = (1 - alpha) * t1.z + alpha * t2.z;
-        this.w = (1 - alpha) * t1.w + alpha * t2.w;
+        this.x = (1.0 - alpha) * t1.x + alpha * t2.x;
+        this.y = (1.0 - alpha) * t1.y + alpha * t2.y;
+        this.z = (1.0 - alpha) * t1.z + alpha * t2.z;
+        this.w = (1.0 - alpha) * t1.w + alpha * t2.w;
     }
 
 
@@ -693,7 +693,7 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
      * @param alpha the alpha interpolation parameter
      */
     public void interpolate(Tuple4d t1, double alpha) {
-        double s = 1 - alpha;
+        double s = 1.0 - alpha;
         this.x = s * this.x + alpha * t1.x;
         this.y = s * this.y + alpha * t1.y;
         this.z = s * this.z + alpha * t1.z;

@@ -75,7 +75,7 @@ public abstract class ThreadedExec extends MultiExec {
             //if (ci > 0)
             {
                 int idealThreads = Util.clamp(
-                    (int) Math.ceil((nar.loop.throttle.floatValue()) * concurrencyMax),
+                    (int) Math.ceil((double) ((nar.loop.throttle.floatValue()) * (float) concurrencyMax)),
                     1,
                     concurrencyMax);
 

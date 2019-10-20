@@ -150,25 +150,25 @@ public enum ArrayUtil {
      * The number of distinct byte values.
      */
 //    private static final int NUM_BYTE_VALUES = 1 << 8;
-    private static final byte[] BYTE_ZERO = {0};
-    private static final byte[] BYTE_ONE = {1};
-    private static final byte[] BYTE_TWO = {2};
-    private static final byte[] BYTE_THREE = {3};
-    private static final byte[] BYTE_ZERO_ZERO = {0, 0};
-    private static final byte[] BYTE_ZERO_ONE = {0, 1};
-    private static final byte[] BYTE_ONE_ZERO = {1, 0};
-    private static final byte[] BYTE_ONE_ONE = {1, 1};
-    private static final byte[] BYTE_ONE_TWO = {1, 2};
-    private static final byte[] BYTE_ONE_NEGONE = {1, -1};
-    private static final byte[] BYTE_ONE_NEGTWO = {1, -2};
-    private static final byte[] BYTE_TWO_ONE = {2, 1};
-    private static final byte[] BYTE_TWO_TWO = {2, 2};
-    private static final byte[] BYTE_TWO_NEGONE = {2, -1};
-    private static final byte[] BYTE_TWO_NEGTWO = {2, -2};
-    private static final byte[] BYTE_NEGONE_ONE = {-1, 1};
-    private static final byte[] BYTE_NEGONE_TWO = {-1, 2};
-    private static final byte[] BYTE_NEGONE_NEGONE = {-1, -1};
-    private static final byte[] BYTE_NEGONE_NEGTWO = {-1, -2};
+    private static final byte[] BYTE_ZERO = {(byte) 0};
+    private static final byte[] BYTE_ONE = {(byte) 1};
+    private static final byte[] BYTE_TWO = {(byte) 2};
+    private static final byte[] BYTE_THREE = {(byte) 3};
+    private static final byte[] BYTE_ZERO_ZERO = {(byte) 0, (byte) 0};
+    private static final byte[] BYTE_ZERO_ONE = {(byte) 0, (byte) 1};
+    private static final byte[] BYTE_ONE_ZERO = {(byte) 1, (byte) 0};
+    private static final byte[] BYTE_ONE_ONE = {(byte) 1, (byte) 1};
+    private static final byte[] BYTE_ONE_TWO = {(byte) 1, (byte) 2};
+    private static final byte[] BYTE_ONE_NEGONE = {(byte) 1, (byte) -1};
+    private static final byte[] BYTE_ONE_NEGTWO = {(byte) 1, (byte) -2};
+    private static final byte[] BYTE_TWO_ONE = {(byte) 2, (byte) 1};
+    private static final byte[] BYTE_TWO_TWO = {(byte) 2, (byte) 2};
+    private static final byte[] BYTE_TWO_NEGONE = {(byte) 2, (byte) -1};
+    private static final byte[] BYTE_TWO_NEGTWO = {(byte) 2, (byte) -2};
+    private static final byte[] BYTE_NEGONE_ONE = {(byte) -1, (byte) 1};
+    private static final byte[] BYTE_NEGONE_TWO = {(byte) -1, (byte) 2};
+    private static final byte[] BYTE_NEGONE_NEGONE = {(byte) -1, (byte) -1};
+    private static final byte[] BYTE_NEGONE_NEGTWO = {(byte) -1, (byte) -2};
 
     public static void sortNullsToEnd(Object[] x) {
         Arrays.sort(x, NullCompactingComparator);
@@ -2623,7 +2623,7 @@ public enum ArrayUtil {
     public static int indexOf(short[] array, short valueToFind, int startIndex) {
         if (array == null) return INDEX_NOT_FOUND;
         for (int i = startIndex; i < array.length; i++) {
-            if (valueToFind == array[i]) {
+            if ((int) valueToFind == (int) array[i]) {
                 return i;
             }
         }
@@ -2662,7 +2662,7 @@ public enum ArrayUtil {
         if (array == null) return INDEX_NOT_FOUND;
         if (startIndex < 0) return INDEX_NOT_FOUND;
         if (startIndex >= array.length) startIndex = array.length - 1;
-        return IntStream.iterate(startIndex, i -> i >= 0, i -> i - 1).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        return IntStream.iterate(startIndex, i -> i >= 0, i -> i - 1).filter(i -> (int) valueToFind == (int) array[i]).findFirst().orElse(INDEX_NOT_FOUND);
     }
 
     /**
@@ -2712,7 +2712,7 @@ public enum ArrayUtil {
         if (array == null) return INDEX_NOT_FOUND;
         if (startIndex < 0) startIndex = 0;
         for (int i = startIndex; i < array.length; i++) {
-            if (valueToFind == array[i]) {
+            if ((int) valueToFind == (int) array[i]) {
                 return i;
             }
         }
@@ -2753,7 +2753,7 @@ public enum ArrayUtil {
         if (array == null) return INDEX_NOT_FOUND;
         if (startIndex < 0) return INDEX_NOT_FOUND;
         if (startIndex >= array.length) startIndex = array.length - 1;
-        return IntStream.iterate(startIndex, i -> i >= 0, i -> i - 1).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        return IntStream.iterate(startIndex, i -> i >= 0, i -> i - 1).filter(i -> (int) valueToFind == (int) array[i]).findFirst().orElse(INDEX_NOT_FOUND);
     }
 
     /**
@@ -2803,7 +2803,7 @@ public enum ArrayUtil {
 //            if (startIndex < 0)
 //                startIndex = 0;
         for (int i = startIndex; i < endIndex; i++) {
-            if (valueToFind == array[i]) {
+            if ((int) valueToFind == (int) array[i]) {
                 return i;
             }
         }
@@ -2847,7 +2847,7 @@ public enum ArrayUtil {
         if (array == null) return INDEX_NOT_FOUND;
         if (startIndex < 0) return INDEX_NOT_FOUND;
         if (startIndex >= array.length) startIndex = array.length - 1;
-        return IntStream.iterate(startIndex, i -> i >= 0, i -> i - 1).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        return IntStream.iterate(startIndex, i -> i >= 0, i -> i - 1).filter(i -> (int) valueToFind == (int) array[i]).findFirst().orElse(INDEX_NOT_FOUND);
     }
 
     /**
@@ -6031,11 +6031,11 @@ public enum ArrayUtil {
             case 0:
                 return ArrayUtil.EMPTY_BYTE_ARRAY;
             case 1:
-                if (array[0] == element) return ArrayUtil.EMPTY_BYTE_ARRAY;
+                if ((int) array[0] == (int) element) return ArrayUtil.EMPTY_BYTE_ARRAY;
                 break;
             case 2:
-                if (array[0] == element) return new byte[]{array[1]};
-                if (array[1] == element) return new byte[]{array[0]};
+                if ((int) array[0] == (int) element) return new byte[]{array[1]};
+                if ((int) array[1] == (int) element) return new byte[]{array[0]};
                 break;
             default:
                 int index = indexOf(array, element);
@@ -6790,7 +6790,7 @@ public enum ArrayUtil {
 
         outer:
         for (int i = startingAt; i < endingAt - targetLen + 1; i++) {
-            for (int j = 0; j < targetLen; j++) if (array[i + j] != target[targetFrom + j]) continue outer;
+            for (int j = 0; j < targetLen; j++) if ((int) array[i + j] != (int) target[targetFrom + j]) continue outer;
             return i;
         }
         return -1;
@@ -6989,7 +6989,7 @@ public enum ArrayUtil {
         short[] s = new short[x.length];
         int i = 0;
         for (int xx : x) {
-            assert (xx <= Short.MAX_VALUE && xx >= Short.MIN_VALUE);
+            assert (xx <= (int) Short.MAX_VALUE && xx >= (int) Short.MIN_VALUE);
             s[i++] = (short) xx;
         }
         return s;

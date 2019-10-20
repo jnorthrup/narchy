@@ -42,13 +42,13 @@ public class player_state_t {
 	public final pmove_state_t pmove= new pmove_state_t(); 
 
 	
-	public final float[] viewangles= { 0, 0, 0 }; 
-	public final float[] viewoffset= { 0, 0, 0 }; 
-	public final float[] kick_angles= { 0, 0, 0 }; 
+	public final float[] viewangles= {(float) 0, (float) 0, (float) 0};
+	public final float[] viewoffset= {(float) 0, (float) 0, (float) 0};
+	public final float[] kick_angles= {(float) 0, (float) 0, (float) 0};
 
 	
-	public final float[] gunangles= { 0, 0, 0 };
-	public final float[] gunoffset= { 0, 0, 0 };
+	public final float[] gunangles= {(float) 0, (float) 0, (float) 0};
+	public final float[] gunoffset= {(float) 0, (float) 0, (float) 0};
 	public int gunindex;
 	public int gunframe;
 
@@ -176,7 +176,7 @@ public class player_state_t {
 		f.writeInt(rdflags);
 
 		for (int n = 0; n < Defines.MAX_STATS; n++)
-			f.writeShort(stats[n]);
+			f.writeShort((int) stats[n]);
 	}
 
 	/** Prints the player state. */

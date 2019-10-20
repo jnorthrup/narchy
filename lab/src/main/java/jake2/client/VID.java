@@ -47,7 +47,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import static jake2.Defines.*;
-import static jake2.Defines.K_UPARROW;
 
 /**
  * VID is a video driver.
@@ -406,7 +405,7 @@ public class VID extends Globals {
 	{
         Menu.menuslider_s slider = (Menu.menuslider_s) s;
 
-		Cvar.SetValue( "viewsize", slider.curvalue * 10 );
+		Cvar.SetValue( "viewsize", slider.curvalue * 10.0F);
 	}
 
 	static void BrightnessCallback( Object s )
@@ -443,7 +442,7 @@ public class VID extends Globals {
 
 		Cvar.SetValue( "vid_gamma", gamma );
 		Cvar.SetValue( "gl_modulate", modulate);
-		Cvar.SetValue( "gl_picmip", 3 - s_tq_slider.curvalue );
+		Cvar.SetValue( "gl_picmip", 3.0F - s_tq_slider.curvalue );
 		Cvar.SetValue( "vid_fullscreen", s_fs_box.curvalue );
 		Cvar.SetValue( "gl_swapinterval", s_vsync_box.curvalue);
 		
@@ -570,7 +569,7 @@ public class VID extends Globals {
 		if ( SCR.scr_viewsize == null )
 			SCR.scr_viewsize = Cvar.Get ("viewsize", "100", CVAR_ARCHIVE);
 
-		s_screensize_slider.curvalue = (int)(SCR.scr_viewsize.value/10);
+		s_screensize_slider.curvalue = (float) (int) (SCR.scr_viewsize.value / 10.0F);
 
 		for (int i = 0; i < drivers.length; i++) {
 			if (vid_ref.string.equals(drivers[i])) {
@@ -578,7 +577,7 @@ public class VID extends Globals {
 			}
 		}
 
-		s_opengl_menu.x = (int)(viddef.getWidth() * 0.50f);
+		s_opengl_menu.x = (int)((float) viddef.getWidth() * 0.50f);
 		s_opengl_menu.nitems = 0;
 		
 		s_ref_list.type = MTYPE_SPINCONTROL;
@@ -602,8 +601,8 @@ public class VID extends Globals {
 		s_screensize_slider.x		= 0;
 		s_screensize_slider.y		= 20;
 		s_screensize_slider.name	= "screen size";
-		s_screensize_slider.minvalue = 3;
-		s_screensize_slider.maxvalue = 12;
+		s_screensize_slider.minvalue = 3.0F;
+		s_screensize_slider.maxvalue = 12.0F;
 		s_screensize_slider.callback = new Menu.mcallback() {
 			@Override
             public void execute(Object self) {
@@ -620,9 +619,9 @@ public class VID extends Globals {
 				BrightnessCallback(self);
 			}
 		};
-		s_brightness_slider.minvalue = 5;
-		s_brightness_slider.maxvalue = 13;
-		s_brightness_slider.curvalue = ( 1.3f - vid_gamma.value + 0.5f ) * 10;
+		s_brightness_slider.minvalue = 5.0F;
+		s_brightness_slider.maxvalue = 13.0F;
+		s_brightness_slider.curvalue = ( 1.3f - vid_gamma.value + 0.5f ) * 10.0F;
 
 		s_fs_box.type = MTYPE_SPINCONTROL;
 		s_fs_box.x	= 0;
@@ -652,9 +651,9 @@ public class VID extends Globals {
 		s_tq_slider.x		= 0;
 		s_tq_slider.y		= 60;
 		s_tq_slider.name	= "texture quality";
-		s_tq_slider.minvalue = 0;
-		s_tq_slider.maxvalue = 3;
-		s_tq_slider.curvalue = 3 - gl_picmip.value;
+		s_tq_slider.minvalue = (float) 0;
+		s_tq_slider.maxvalue = 3.0F;
+		s_tq_slider.curvalue = 3.0F - gl_picmip.value;
 
 		s_paletted_texture_box.type = MTYPE_SPINCONTROL;
 		s_paletted_texture_box.x	= 0;

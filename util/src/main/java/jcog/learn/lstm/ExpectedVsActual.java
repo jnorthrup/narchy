@@ -43,8 +43,8 @@ import java.util.Arrays;
     }
 
     public void zero() {
-        Arrays.fill(actual, 0);
+        Arrays.fill(actual, (double) 0);
         if (expected!=null)
-            Arrays.fill(expected, 0);
+            Arrays.fill(expected, (double) 0);
     }
 }

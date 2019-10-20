@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static jcog.grammar.synthesize.util.GrammarUtils.*;
 
@@ -38,10 +37,10 @@ public class GrammarSynthesis {
         }
         Log.info("PROCESSING EXAMPLE:\n" + example);
         Node node = getNode(example, oracle);
-        Log.info("SINGLE REGEX TIME: " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds");
+        Log.info("SINGLE REGEX TIME: " + ((double) (System.currentTimeMillis() - time) / 1000.0) + " seconds");
         time = System.currentTimeMillis();
         Grammar grammar = new Grammar(node, MergesSynthesis.getMergesSingle(node, node, oracle));
-        Log.info("SINGLE MERGE TIME: " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds");
+        Log.info("SINGLE MERGE TIME: " + ((double) (System.currentTimeMillis() - time) / 1000.0) + " seconds");
         return grammar;
     }
 
@@ -49,7 +48,7 @@ public class GrammarSynthesis {
         long time = System.currentTimeMillis();
         Grammar grammar = new Grammar(new MultiAlternationNode(
                 new NodeData(null, Context.EMPTY), roots), MergesSynthesis.getMergesMultiple(roots, oracle));
-        Log.info("MULTIPLE MERGE TIME: " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds");
+        Log.info("MULTIPLE MERGE TIME: " + ((double) (System.currentTimeMillis() - time) / 1000.0) + " seconds");
         return grammar;
     }
 
@@ -68,7 +67,7 @@ public class GrammarSynthesis {
                         new NodeData(null, Context.EMPTY),
                         roots),
                 new NodeMerges());
-        Log.info("MULTIPLE MERGE TIME: " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds");
+        Log.info("MULTIPLE MERGE TIME: " + ((double) (System.currentTimeMillis() - time) / 1000.0) + " seconds");
         return grammar;
     }
 

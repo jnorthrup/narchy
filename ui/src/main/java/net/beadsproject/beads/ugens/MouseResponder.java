@@ -44,8 +44,8 @@ public class MouseResponder extends UGen {
         super(context, 2);
         width = Toolkit.getDefaultToolkit().getScreenSize().width;
         height = Toolkit.getDefaultToolkit().getScreenSize().height;
-        prevX = 0;
-        prevY = 0;
+        prevX = (float) 0;
+        prevY = (float) 0;
     }
 
     /**
@@ -66,13 +66,13 @@ public class MouseResponder extends UGen {
         /**
          * The current x value.
          */
-        float x = (float) point.x / width;
+        float x = (float) point.x / (float) width;
         /**
          * The current y value.
          */
-        float y = (float) point.y / height;
+        float y = (float) point.y / (float) height;
         for (int i = 0; i < bufferSize; i++) {
-            float f = (float) i / bufferSize;
+            float f = (float) i / (float) bufferSize;
             bufOut[0][i] = f * x + (1f - f) * prevX;
             bufOut[1][i] = f * y + (1f - f) * prevY;
         }

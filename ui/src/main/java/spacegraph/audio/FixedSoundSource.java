@@ -16,8 +16,8 @@ public class FixedSoundSource implements SoundSource
 
 	public FixedSoundSource(SoundSource soundSource)
 	{
-		x = soundSource.getX(1);
-		y = soundSource.getY(1);
+		x = soundSource.getX(1.0F);
+		y = soundSource.getY(1.0F);
 	}
 
     @Override

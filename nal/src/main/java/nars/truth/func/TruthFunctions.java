@@ -46,8 +46,8 @@ public enum TruthFunctions {
      * @return Truth value of the conclusion
      */
     public static Truth conversion(Truth t, float minConf) {
-        float c = (float) w2cSafe(t.freq() * t.confDouble());
-        return c >= minConf ? tt(1, c) : null;
+        float c = (float) w2cSafe((double) t.freq() * t.confDouble());
+        return c >= minConf ? tt(1.0F, c) : null;
     }
 
     /* ----- Single argument functions, called in StructuralRules ----- */
@@ -145,7 +145,7 @@ public enum TruthFunctions {
      */
     static Truth exemplification(Truth a, Truth b, float minConf) {
         float c = w2cSafe(a.freq() * b.freq() * confCompose(a, b));
-        return c >= minConf ? tt(1, c) : null;
+        return c >= minConf ? tt(1.0F, c) : null;
     }
 
 
@@ -159,12 +159,12 @@ public enum TruthFunctions {
 //        }
 
         float f0 = or(f1, f2);
-        double w = and(f0, confCompose(a,b));
+        double w = (double) and(f0, confCompose(a, b));
         double c = w2cSafe(w);
-        if (c < minConf)
+        if (c < (double) minConf)
             return null;
 
-        float f = (f0 < NAL.truth.TRUTH_EPSILON) ? 0 : (and(f1, f2) / f0);
+        float f = (f0 < NAL.truth.TRUTH_EPSILON) ? (float) 0 : (and(f1, f2) / f0);
         return $.tt(f,(float)c);
     }
 
@@ -258,7 +258,7 @@ public enum TruthFunctions {
     }
 
     private static float negIf(float f, boolean neg) {
-        return neg ? (1-f) : f;
+        return neg ? (1.0F -f) : f;
     }
 
     /**
@@ -288,7 +288,7 @@ public enum TruthFunctions {
      */
     static Truth anonymousAnalogy(Truth a, Truth b, float minConf) {
         double v0c = w2cSafe(a.confDouble());
-        return v0c < minConf ? null : TruthFunctions.analogy(b, a.freq(), v0c, minConf);
+        return v0c < (double) minConf ? null : TruthFunctions.analogy(b, a.freq(), v0c, minConf);
     }
 
 
@@ -319,7 +319,7 @@ public enum TruthFunctions {
         float f2 = b.freq();
         float f = and(f1, f2);
         float c12 = confCompose(a, b);
-        float c = and(c12, f2) * (strong ? 1 : w2cSafe(1));
+        float c = and(c12, f2) * (strong ? 1.0F : w2cSafe(1.0F));
         return c > minConf ? tt(f, c) : null;
     }
 
@@ -328,10 +328,10 @@ public enum TruthFunctions {
     }
 
     public static double c2w(double c) {
-        if (c < NAL.truth.TRUTH_EPSILON)
+        if (c < (double) NAL.truth.TRUTH_EPSILON)
             throw new Truth.TruthException("confidence underflow", c);
 
-        if (c > NAL.truth.CONF_MAX) {
+        if (c > (double) NAL.truth.CONF_MAX) {
             throw new Truth.TruthException("confidence overflow", c);
             //c = Param.TRUTH_CONF_MAX;
         }
@@ -358,17 +358,17 @@ public enum TruthFunctions {
      * @return The corresponding weight of evidence, a non-negative real number
      */
     public static float c2wSafe(float c, float horizon) {
-        return horizon * c / (1 - c);
+        return horizon * c / (1.0F - c);
     }
     public static double c2wSafe(double c, float horizon) {
-        return horizon * c / (1 - c);
+        return (double) horizon * c / (1.0 - c);
     }
 
     /**
      * http://www.wolframalpha.com/input/?i=x%2F(x%2B1)
      */
     public static double w2cSafe(double w, float horizon) {
-        return w / (w + horizon);
+        return w / (w + (double) horizon);
     }
     public static float w2cSafe(float w, float horizon) {
         return w / (w + horizon);
@@ -381,10 +381,10 @@ public enum TruthFunctions {
      * @return The corresponding confidence, in [0, 1)
      */
     public static float w2c(float w) {
-        if (w < NAL.truth.EVI_MIN)
-            throw new Truth.TruthException("insufficient evidence", w);
+        if ((double) w < NAL.truth.EVI_MIN)
+            throw new Truth.TruthException("insufficient evidence", (double) w);
         if (!Float.isFinite(w))
-            throw new Truth.TruthException("non-finite evidence", w);
+            throw new Truth.TruthException("non-finite evidence", (double) w);
         return w2cSafe(w);
     }
     public static double w2c(double w) {
@@ -409,11 +409,11 @@ public enum TruthFunctions {
 
 
     public static float originality(int evidenceLength) {
-        return evidenceLength <= 1 ? 1f : 1f / (1f + (evidenceLength - 1) / (NAL.STAMP_CAPACITY - 1f));
+        return evidenceLength <= 1 ? 1f : 1f / (1f + (float) (evidenceLength - 1) / ((float) NAL.STAMP_CAPACITY - 1f));
     }
 
     public static double expectation(float frequency, double confidence) {
-        return (confidence * (frequency - 0.5) + 0.5);
+        return (confidence * ((double) frequency - 0.5) + 0.5);
     }
 
     public static double eternalize(double evi) {

@@ -129,7 +129,7 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
 
         int popSize = Math.min(configuration.getEvolutionParameters().getPopulationSize()/2, newPopulation.size());
         
-        Collections.shuffle(newPopulation,new Random(0));
+        Collections.shuffle(newPopulation,new Random(0L));
         newPopulation = new LinkedList<>(newPopulation.subList(0, popSize));
         return newPopulation;
     }

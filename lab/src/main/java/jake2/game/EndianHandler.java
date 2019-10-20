@@ -67,9 +67,9 @@ public abstract class EndianHandler
 
 	public static short swapShort(short s)
 	{
-        int a = s & mask;
+        int a = (int) s & mask;
 		a <<= 8;
-        int b = (s >>> 8) & mask;
+        int b = ((int) s >>> 8) & mask;
 
 		return (short) (b | a);
 	}

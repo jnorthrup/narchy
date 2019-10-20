@@ -229,16 +229,16 @@ public class G extends Applet implements Runnable {
                             case TILE_WALL:
                                 gfx.drawImage(wallImage, x * TILE_SIZE, y * TILE_SIZE, null);
 
-                                if (y != 0 && currentLevel.charAt(((y - 1) * MAP_WIDTH) + x) != TILE_WALL)
+                                if (y != 0 && (int) currentLevel.charAt(((y - 1) * MAP_WIDTH) + x) != (int) TILE_WALL)
                                     gfx.drawLine(x * TILE_SIZE, y * TILE_SIZE, x * TILE_SIZE + TILE_SIZE, y * TILE_SIZE);
 
-                                if (y != MAP_HEIGHT - 1 && currentLevel.charAt(((y + 1) * MAP_WIDTH) + x) != TILE_WALL)
+                                if (y != MAP_HEIGHT - 1 && (int) currentLevel.charAt(((y + 1) * MAP_WIDTH) + x) != (int) TILE_WALL)
                                     gfx.drawLine(x * TILE_SIZE, y * TILE_SIZE + TILE_SIZE, x * TILE_SIZE + TILE_SIZE, y * TILE_SIZE + TILE_SIZE);
 
-                                if (x != 0 && currentLevel.charAt((y * MAP_WIDTH) + (x - 1)) == TILE_SPACE)
+                                if (x != 0 && (int) currentLevel.charAt((y * MAP_WIDTH) + (x - 1)) == (int) TILE_SPACE)
                                     gfx.drawLine(x * TILE_SIZE, y * TILE_SIZE, x * TILE_SIZE, y * TILE_SIZE + TILE_SIZE);
 
-                                if (x != MAP_WIDTH - 1 && currentLevel.charAt((y * MAP_WIDTH) + (x + 1)) == TILE_SPACE)
+                                if (x != MAP_WIDTH - 1 && (int) currentLevel.charAt((y * MAP_WIDTH) + (x + 1)) == (int) TILE_SPACE)
                                     gfx.drawLine(x * TILE_SIZE + TILE_SIZE, y * TILE_SIZE, x * TILE_SIZE + TILE_SIZE, y * TILE_SIZE + TILE_SIZE);
 
                                 break;
@@ -294,7 +294,7 @@ public class G extends Applet implements Runnable {
 			}
 
 			do {
-				nextFrameStartTime += 16666667;
+				nextFrameStartTime += 16666667L;
 
 				
 				if (player_bulletCounter < TIME_BETWEEN_BULLETS)
@@ -307,26 +307,26 @@ public class G extends Applet implements Runnable {
 				
 				if (levelLoaded == YES) {
 					if (PLAYER_MOVING_LEFT == YES && player_climbing == NO && player_falling == NO) {
-						if (currentLevel.charAt(((player_y / 32) * MAP_WIDTH) + (player_x / 32)) == TILE_SPACE || currentLevel.charAt(((player_y / 32) * MAP_WIDTH) + (player_x / 32)) == TILE_LADDER)
+						if ((int) currentLevel.charAt(((player_y / 32) * MAP_WIDTH) + (player_x / 32)) == (int) TILE_SPACE || (int) currentLevel.charAt(((player_y / 32) * MAP_WIDTH) + (player_x / 32)) == (int) TILE_LADDER)
 							player_x -= PLAYER_SPEED;
 						player_direction = DIRECTION_LEFT;
 					} else if (PLAYER_MOVING_RIGHT == 1 && player_climbing == NO && player_falling == NO) {
-						if (currentLevel.charAt(((player_y / 32) * MAP_WIDTH) + (player_x / 32 + 1)) == TILE_SPACE
-								|| currentLevel.charAt(((player_y / 32) * MAP_WIDTH) + (player_x / 32 + 1)) == TILE_LADDER)
+						if ((int) currentLevel.charAt(((player_y / 32) * MAP_WIDTH) + (player_x / 32 + 1)) == (int) TILE_SPACE
+								|| (int) currentLevel.charAt(((player_y / 32) * MAP_WIDTH) + (player_x / 32 + 1)) == (int) TILE_LADDER)
 							player_x += PLAYER_SPEED;
 						player_direction = DIRECTION_RIGHT;
 					}
 					if (PLAYER_MOVING_UP == YES) {
-						if ((currentLevel.charAt(((player_y / 32) * MAP_WIDTH) + (player_x / 32)) == TILE_LADDER || currentLevel.charAt(((player_y / 32) * MAP_WIDTH) + (player_x / 32 + 1)) == TILE_LADDER)
-								|| (player_climbing == YES && (currentLevel.charAt(((player_y / 32 + 1) * MAP_WIDTH) + (player_x / 32)) == TILE_LADDER || currentLevel
-										.charAt(((player_y / 32 + 1) * MAP_WIDTH) + (player_x / 32 + 1)) == TILE_LADDER))) {
+						if (((int) currentLevel.charAt(((player_y / 32) * MAP_WIDTH) + (player_x / 32)) == (int) TILE_LADDER || (int) currentLevel.charAt(((player_y / 32) * MAP_WIDTH) + (player_x / 32 + 1)) == (int) TILE_LADDER)
+								|| (player_climbing == YES && ((int) currentLevel.charAt(((player_y / 32 + 1) * MAP_WIDTH) + (player_x / 32)) == (int) TILE_LADDER || (int) currentLevel
+                                .charAt(((player_y / 32 + 1) * MAP_WIDTH) + (player_x / 32 + 1)) == (int) TILE_LADDER))) {
 							player_y -= PLAYER_SPEED;
 							player_climbing = YES;
 						} else
 							player_climbing = NO;
 					} else if (PLAYER_MOVING_DOWN == YES) {
-						if (currentLevel.charAt(((player_y / 32 + 1) * MAP_WIDTH) + (player_x / 32)) == TILE_LADDER
-								|| currentLevel.charAt(((player_y / 32 + 1) * MAP_WIDTH) + (player_x / 32 + 1)) == TILE_LADDER) {
+						if ((int) currentLevel.charAt(((player_y / 32 + 1) * MAP_WIDTH) + (player_x / 32)) == (int) TILE_LADDER
+								|| (int) currentLevel.charAt(((player_y / 32 + 1) * MAP_WIDTH) + (player_x / 32 + 1)) == (int) TILE_LADDER) {
 							player_y += PLAYER_SPEED;
 							player_climbing = YES;
 						} else
@@ -364,14 +364,14 @@ public class G extends Applet implements Runnable {
 
 				
 				for (i = activeParticles - 1; i > -1; i--) {
-					particle_x[i] += particle_xVelocity[i];
-					particle_y[i] += particle_yVelocity[i];
+                    particle_x[i] = (int) ((float) particle_x[i] + particle_xVelocity[i]);
+                    particle_y[i] = (int) ((float) particle_y[i] + particle_yVelocity[i]);
 					particle_life[i]--;
 
 					if (particle_life[i] < 1)
 						activeParticles--;
 
-					particle_yVelocity[i] += Float.valueOf(particle_life[i]) / 500;
+					particle_yVelocity[i] += Float.valueOf((float) particle_life[i]) / 500.0F;
 				}
 
 				
@@ -400,23 +400,23 @@ public class G extends Applet implements Runnable {
 					}
 					
 					if (enemy_health[i] > 0) {
-						if (currentLevel.charAt(((enemy_y[i] / 32 + 1) * MAP_WIDTH) + (enemy_x[i] / 32 + 1)) == TILE_SPACE
-								&& currentLevel.charAt(((enemy_y[i] / 32 + 1) * MAP_WIDTH) + (enemy_x[i] / 32)) == TILE_SPACE) {
+						if ((int) currentLevel.charAt(((enemy_y[i] / 32 + 1) * MAP_WIDTH) + (enemy_x[i] / 32 + 1)) == (int) TILE_SPACE
+								&& (int) currentLevel.charAt(((enemy_y[i] / 32 + 1) * MAP_WIDTH) + (enemy_x[i] / 32)) == (int) TILE_SPACE) {
 							enemy_y[i] += ENEMY_SPEED;
 							enemy_climbing[i] = NO;
-						} else if (player_y != enemy_y[i] && currentLevel.charAt(((enemy_y[i] / 32) * MAP_WIDTH) + (enemy_x[i] / 32)) == TILE_LADDER && random.nextInt(17) == 1) {
+						} else if (player_y != enemy_y[i] && (int) currentLevel.charAt(((enemy_y[i] / 32) * MAP_WIDTH) + (enemy_x[i] / 32)) == (int) TILE_LADDER && random.nextInt(17) == 1) {
 							enemy_climbing[i] = YES;
 						} else if (enemy_climbing[i] == YES) {
 							enemy_y[i] -= ENEMY_SPEED;
 						} else if (enemy_direction[i] == DIRECTION_RIGHT) {
-							if (currentLevel.charAt(((enemy_y[i] / 32) * MAP_WIDTH) + (enemy_x[i] / 32 + 1)) == TILE_SPACE
-									|| currentLevel.charAt(((enemy_y[i] / 32) * MAP_WIDTH) + (enemy_x[i] / 32 + 1)) == TILE_LADDER)
+							if ((int) currentLevel.charAt(((enemy_y[i] / 32) * MAP_WIDTH) + (enemy_x[i] / 32 + 1)) == (int) TILE_SPACE
+									|| (int) currentLevel.charAt(((enemy_y[i] / 32) * MAP_WIDTH) + (enemy_x[i] / 32 + 1)) == (int) TILE_LADDER)
 								enemy_x[i] += ENEMY_SPEED;
 							else
 								enemy_direction[i] = DIRECTION_LEFT;
 						} else {
-							if (currentLevel.charAt(((enemy_y[i] / 32) * MAP_WIDTH) + (enemy_x[i] / 32)) == TILE_SPACE
-									|| currentLevel.charAt(((enemy_y[i] / 32) * MAP_WIDTH) + (enemy_x[i] / 32)) == TILE_LADDER)
+							if ((int) currentLevel.charAt(((enemy_y[i] / 32) * MAP_WIDTH) + (enemy_x[i] / 32)) == (int) TILE_SPACE
+									|| (int) currentLevel.charAt(((enemy_y[i] / 32) * MAP_WIDTH) + (enemy_x[i] / 32)) == (int) TILE_LADDER)
 								enemy_x[i] -= ENEMY_SPEED;
 							else
 								enemy_direction[i] = DIRECTION_RIGHT;
@@ -433,13 +433,13 @@ public class G extends Applet implements Runnable {
 								if (activeParticles < MAX_NUMBER_OF_PARTICLES) {
 									particle_x[activeParticles] = player_x;
 									particle_y[activeParticles] = player_y;
-									particle_xVelocity[activeParticles] = random.nextInt(6) - 3;
-									particle_yVelocity[activeParticles] = random.nextInt(6) - 3;
+									particle_xVelocity[activeParticles] = (float) (random.nextInt(6) - 3);
+									particle_yVelocity[activeParticles] = (float) (random.nextInt(6) - 3);
 
-									if (particle_xVelocity[activeParticles] == 0)
-										particle_xVelocity[activeParticles] = 3;
-									if (particle_yVelocity[activeParticles] == 0)
-										particle_yVelocity[activeParticles] = -3;
+									if (particle_xVelocity[activeParticles] == (float) 0)
+										particle_xVelocity[activeParticles] = 3.0F;
+									if (particle_yVelocity[activeParticles] == (float) 0)
+										particle_yVelocity[activeParticles] = -3.0F;
 
 									particle_life[activeParticles] = 100;
 									activeParticles++;
@@ -474,13 +474,13 @@ public class G extends Applet implements Runnable {
 									if (activeParticles < MAX_NUMBER_OF_PARTICLES) {
 										particle_x[activeParticles] = bullet_x[x];
 										particle_y[activeParticles] = bullet_y[x];
-										particle_xVelocity[activeParticles] = random.nextInt(6) - 3;
-										particle_yVelocity[activeParticles] = random.nextInt(6) - 3;
+										particle_xVelocity[activeParticles] = (float) (random.nextInt(6) - 3);
+										particle_yVelocity[activeParticles] = (float) (random.nextInt(6) - 3);
 
-										if (particle_xVelocity[activeParticles] == 0)
-											particle_xVelocity[activeParticles] = 3;
-										if (particle_yVelocity[activeParticles] == 0)
-											particle_yVelocity[activeParticles] = -3;
+										if (particle_xVelocity[activeParticles] == (float) 0)
+											particle_xVelocity[activeParticles] = 3.0F;
+										if (particle_yVelocity[activeParticles] == (float) 0)
+											particle_yVelocity[activeParticles] = -3.0F;
 
 										particle_life[activeParticles] = 100;
 										activeParticles++;
@@ -494,8 +494,8 @@ public class G extends Applet implements Runnable {
 				
 				if (player_falling == YES)
 					player_y += 2;
-				if (currentLevel.charAt(((player_y / 32 + 1) * MAP_WIDTH) + (player_x / 32 + 1)) == TILE_SPACE
-						&& currentLevel.charAt(((player_y / 32 + 1) * MAP_WIDTH) + (player_x / 32)) == TILE_SPACE)
+				if ((int) currentLevel.charAt(((player_y / 32 + 1) * MAP_WIDTH) + (player_x / 32 + 1)) == (int) TILE_SPACE
+						&& (int) currentLevel.charAt(((player_y / 32 + 1) * MAP_WIDTH) + (player_x / 32)) == (int) TILE_SPACE)
 					player_falling = YES;
 				else
 					player_falling = NO;
@@ -585,7 +585,7 @@ public class G extends Applet implements Runnable {
 			appletGraphics.drawImage(screen, 0, 0, null);
 
 			
-			while (nextFrameStartTime - System.nanoTime() > 0) {
+			while (nextFrameStartTime - System.nanoTime() > 0L) {
 				Thread.yield();
 			}
 		}

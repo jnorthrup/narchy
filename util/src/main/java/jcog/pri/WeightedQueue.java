@@ -117,7 +117,7 @@ public class WeightedQueue<T> implements BlockingQueue<T>
     public void put(T t) throws InterruptedException
     {
         Preconditions.checkNotNull(t);
-        acquireWeight(t, 0, null);
+        acquireWeight(t, 0L, null);
         boolean put = false;
         try
         {

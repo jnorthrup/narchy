@@ -78,7 +78,7 @@ public class Huffman {
      * @param data The data Set
      */
     public Huffman(Stream<byte[]> data) {
-        this(data, config(9, 100000, Runtime.getRuntime().freeMemory() / 2 < 2000000000 ? Runtime.getRuntime().freeMemory() / 2 : 2000000000, false, 20));
+        this(data, config(9, 100000, Runtime.getRuntime().freeMemory() / 2L < 2000000000L ? Runtime.getRuntime().freeMemory() / 2L : 2000000000L, false, 20));
     }
 
     /**
@@ -98,7 +98,7 @@ public class Huffman {
      * @param data The data Set
      */
     public Huffman(Iterable<byte[]> data) {
-        this(data, config(9, 100000, Runtime.getRuntime().freeMemory() / 2 < 2000000000 ? Runtime.getRuntime().freeMemory() / 2 : 2000000000, false, 20));
+        this(data, config(9, 100000, Runtime.getRuntime().freeMemory() / 2L < 2000000000L ? Runtime.getRuntime().freeMemory() / 2L : 2000000000L, false, 20));
     }
 
     /**
@@ -132,7 +132,7 @@ public class Huffman {
         symbl2CodLstIdx = byteArrayToInt(in, 4);
         maxSymbolLength = byteArrayToInt(in, 8);
         altCodeIdx = byteArrayToInt(in, 12);
-        useAltOnly = in[16] == 1;
+        useAltOnly = (int) in[16] == 1;
         highestLevel = byteArrayToInt(in, 17);
         altCodeBytes = byteArrayToInt(in, 21);
         codeIdx2Symbols = new byte[byteArrayToInt(in, 25)][][];
@@ -144,7 +144,7 @@ public class Huffman {
             inIdx += 4;
             codeIdx2Symbols[i] = new byte[1 << i][];
             for (int w = 0; w < count; w++) {
-                byte[] symbol = new byte[in[inIdx++]];
+                byte[] symbol = new byte[(int) in[inIdx++]];
                 inIdx = bytesFromByteArray(in, symbol, inIdx);
                 int codeIdx = byteArrayToInt(in, inIdx);
                 inIdx += 4;
@@ -162,7 +162,7 @@ public class Huffman {
 
     private static int aryHash(byte[] ary) {
         if (ary.length == 0) return 1;
-        return longHash(hash(ary, 0, ary.length, -1640531527));
+        return longHash(hash(ary, 0, ary.length, -1640531527L));
     }
 
     /**
@@ -172,7 +172,7 @@ public class Huffman {
      * Est. HuffTree build speed=3MB/Sec (of dataSet) on quad core CPU, ,  Est. Final HuffData size=100KB-1MB
      */
     public static HuffConfig fastestCompDecompTime() {
-        return config(8, 10000, 2000000000, false, 20);
+        return config(8, 10000, 2000000000L, false, 20);
     }
 
     /**
@@ -183,7 +183,7 @@ public class Huffman {
      * Est. HuffTree build speed=2MB/Sec (of dataSet) on quad core CPU,  Est. Final HuffData size=10-20MB
      */
     public static HuffConfig smallestFileSize() {
-        return config(10, 1000000, 2000000000, false, 26);
+        return config(10, 1000000, 2000000000L, false, 26);
     }
 
     /**
@@ -209,11 +209,12 @@ public class Huffman {
     }
 
     private static byte[] addSymbolToCodes(byte[] codes, int codesIdx, byte[] aCode) {
-        int numCodeBts = aCode[0];
+        int numCodeBts = (int) aCode[0];
         int bitCount = 0;
         int codeByteIdx = 1;
         for (int q = 0; q < numCodeBts; q++) {
-            if (((aCode[codeByteIdx] >> bitCount++) & 1) == 1) codes[codesIdx / 8] |= 1 << (codesIdx & 7);
+            if ((((int) aCode[codeByteIdx] >> bitCount++) & 1) == 1)
+                codes[codesIdx / 8] = (byte) ((int) codes[codesIdx / 8] | 1 << (codesIdx & 7));
             codesIdx++;
             if (bitCount == 8) {
                 bitCount = 0;
@@ -228,7 +229,7 @@ public class Huffman {
         int hash = 1;
         int curMatchIdx = -1;
         for (int i = startIdx; i < endIdx; i++) {
-            hash = longHash(hash(data, startIdx, (i - startIdx) + 1, -1640531527));
+            hash = longHash(hash(data, startIdx, (i - startIdx) + 1, -1640531527L));
             int symbolIdx = hash & symbLastIdx;
             byte[] aKey;
             probe:
@@ -237,7 +238,7 @@ public class Huffman {
                 if (++symbolIdx == symKeySet.length) symbolIdx = 0;
                 if (aKey.length == (i - startIdx) + 1) {
                     for (int w = 0; w < aKey.length; w++)
-                        if (startIdx + w == endIdx || aKey[w] != data[startIdx + w]) continue probe;
+                        if (startIdx + w == endIdx || (int) aKey[w] != (int) data[startIdx + w]) continue probe;
                 } else {
                     continue;
                 }
@@ -269,7 +270,7 @@ public class Huffman {
     }
 
     private static byte[] createCode(byte numBits, int index) {
-        byte[] out = new byte[((numBits + 7) / 8) + 1];
+        byte[] out = new byte[(((int) numBits + 7) / 8) + 1];
         out[0] = numBits;
         int bits = 0;
         for (int i = 1; i < out.length; i++) {
@@ -280,7 +281,7 @@ public class Huffman {
     }
 
     private static int byteArrayToInt(byte[] b, int startIdx) {
-        return (b[startIdx] << 24) + ((b[startIdx + 1] & 0xFF) << 16) + ((b[startIdx + 2] & 0xFF) << 8) + (b[startIdx + 3] & 0xFF);
+        return ((int) b[startIdx] << 24) + (((int) b[startIdx + 1] & 0xFF) << 16) + (((int) b[startIdx + 2] & 0xFF) << 8) + ((int) b[startIdx + 3] & 0xFF);
     }
 
     private static int intToByteArray(int value, byte[] array, int startIdx) {
@@ -383,7 +384,7 @@ public class Huffman {
             h64 = seed + PRIME64_5;
         }
 
-        h64 += len;
+        h64 = h64 + (long) len;
 
         while (off <= end - 8) {
             long k1 = readLongLE(buf, off);
@@ -396,13 +397,13 @@ public class Huffman {
         }
 
         if (off <= end - 4) {
-            h64 ^= (readIntLE(buf, off) & 0xFFFFFFFFL) * PRIME64_1;
+            h64 ^= ((long) readIntLE(buf, off) & 0xFFFFFFFFL) * PRIME64_1;
             h64 = Long.rotateLeft(h64, 23) * PRIME64_2 + PRIME64_3;
             off += 4;
         }
 
         while (off < end) {
-            h64 ^= (buf[off] & 0xFF) * PRIME64_5;
+            h64 ^= (long) ((int) buf[off] & 0xFF) * PRIME64_5;
             h64 = Long.rotateLeft(h64, 11) * PRIME64_1;
             ++off;
         }
@@ -417,12 +418,12 @@ public class Huffman {
     }
 
     private static long readLongLE(byte[] buf, int i) {
-        return (buf[i] & 0xFFL) | ((buf[i + 1] & 0xFFL) << 8) | ((buf[i + 2] & 0xFFL) << 16) | ((buf[i + 3] & 0xFFL) << 24)
-                | ((buf[i + 4] & 0xFFL) << 32) | ((buf[i + 5] & 0xFFL) << 40) | ((buf[i + 6] & 0xFFL) << 48) | ((buf[i + 7] & 0xFFL) << 56);
+        return ((long) buf[i] & 0xFFL) | (((long) buf[i + 1] & 0xFFL) << 8) | (((long) buf[i + 2] & 0xFFL) << 16) | (((long) buf[i + 3] & 0xFFL) << 24)
+                | (((long) buf[i + 4] & 0xFFL) << 32) | (((long) buf[i + 5] & 0xFFL) << 40) | (((long) buf[i + 6] & 0xFFL) << 48) | (((long) buf[i + 7] & 0xFFL) << 56);
     }
 
     private static int readIntLE(byte[] buf, int i) {
-        return (buf[i] & 0xFF) | ((buf[i + 1] & 0xFF) << 8) | ((buf[i + 2] & 0xFF) << 16) | ((buf[i + 3] & 0xFF) << 24);
+        return ((int) buf[i] & 0xFF) | (((int) buf[i + 1] & 0xFF) << 8) | (((int) buf[i + 2] & 0xFF) << 16) | (((int) buf[i + 3] & 0xFF) << 24);
     }
 
     private static int longHash(long h) {
@@ -437,27 +438,28 @@ public class Huffman {
         if (codes.length == 0) return ArrayUtil.EMPTY_BYTE_ARRAY;
         byte[] data = new byte[codes.length * 20];
         int dataIdx = 0;
-        byte unCompSymb = 0;
+        byte unCompSymb = (byte) 0;
         int codeIdx = 3;
         int symbolIdx = 0;
-        int codesLen = (codes.length * 8) - (byte) (codes[0] & 0b111);
+        int codesLen = (codes.length * 8) - (int) (byte) ((int) codes[0] & 0b111);
         while (codeIdx < codesLen) {
             symbolIdx = 0;
             byte[] symbol = null;
             int bitLen = 0;
             //add codes to symbolIdx bit by bit until symbol is found, &7 == % 8, this loop takes up the majority of the total decompress time
             while (symbol == null && codeIdx < codesLen) {
-                symbolIdx |= ((byte) ((codes[codeIdx / 8]) >>> (codeIdx++ & 7)) & (byte) 1) << bitLen;
+                symbolIdx |= ((int) (byte) ((int) (codes[codeIdx / 8]) >>> (codeIdx++ & 7)) & (int) (byte) 1) << bitLen;
                 symbol = codeIdx2Symbols[++bitLen][symbolIdx];
             }
             if (symbol == null) break;
             int symbolLen = symbol.length;
             if (symbolLen == 0) {
-                if (((codes[codeIdx / 8] >> (codeIdx & 7)) & 1) == 1) {
-                    unCompSymb = 0;
+                if ((((int) codes[codeIdx / 8] >> (codeIdx & 7)) & 1) == 1) {
+                    unCompSymb = (byte) 0;
                     for (int i = 0; i < 8; i++) {
                         codeIdx++;
-                        if (((codes[codeIdx / 8] >> (codeIdx & 7)) & 1) == 1) unCompSymb |= 1 << i;
+                        if ((((int) codes[codeIdx / 8] >> (codeIdx & 7)) & 1) == 1)
+                            unCompSymb = (byte) ((int) unCompSymb | 1 << i);
                     }
                     //if(dataIdx+1 >=data.length) data = expand(data,1);
                     data[dataIdx++] = unCompSymb;
@@ -469,7 +471,7 @@ public class Huffman {
                     symbol = null;
                     //add codes to symbolIdx bit by bit until symbol is found
                     while (symbol == null && codeIdx < codesLen) {
-                        symbolIdx |= ((byte) ((codes[codeIdx / 8]) >>> (codeIdx++ & 7)) & (byte) 1) << bitLen;
+                        symbolIdx |= ((int) (byte) ((int) (codes[codeIdx / 8]) >>> (codeIdx++ & 7)) & (int) (byte) 1) << bitLen;
                         symbol = defCodeIdx2Symbols[++bitLen][symbolIdx];
                     }
                     if (symbol == null) {
@@ -510,22 +512,23 @@ public class Huffman {
             curMatchIdx = findSymblIdx(startIdx, endIdx, data, symbl2CodLstIdx, symbol2Code);
             if (curMatchIdx == -1) curMatchIdx = altCodeIdx;
             byte[] aCode = codeValues[curMatchIdx];
-            if (curMatchIdx != altCodeIdx && (aCode[0] + 7) / 8 > symbol2Code[curMatchIdx].length + altCodeBytes) {
+            if (curMatchIdx != altCodeIdx && ((int) aCode[0] + 7) / 8 > symbol2Code[curMatchIdx].length + altCodeBytes) {
                 aCode = codeValues[altCodeIdx];
                 curMatchIdx = altCodeIdx;
             }
-            if (((codesIdx + 7) / 8) + ((aCode[0] + 7) / 8) > codes.length) codes = expand(codes, (aCode[0] + 7) / 8);
+            if (((codesIdx + 7) / 8) + (((int) aCode[0] + 7) / 8) > codes.length) codes = expand(codes, ((int) aCode[0] + 7) / 8);
             codes = addSymbolToCodes(codes, codesIdx, aCode);
-            codesIdx += aCode[0];
+            codesIdx = codesIdx + (int) aCode[0];
             //if symbol not in main tree consult default tree, if not in default tree then just add uncompressed
             if (curMatchIdx == altCodeIdx) {
                 if (useAltOnly) {
                     if (((codesIdx + 16) / 8) > codes.length) codes = expand(codes, 2);
                     //set raw bit to true and add byte without compression
-                    codes[codesIdx / 8] |= 1 << (codesIdx & 7);
+                    codes[codesIdx / 8] = (byte) ((int) codes[codesIdx / 8] | 1 << (codesIdx & 7));
                     codesIdx++;
                     for (int q = 0; q < 8; q++) {
-                        if (((data[startIdx] >> q) & 1) == 1) codes[codesIdx / 8] |= 1 << (codesIdx & 7);
+                        if ((((int) data[startIdx] >> q) & 1) == 1)
+                            codes[codesIdx / 8] = (byte) ((int) codes[codesIdx / 8] | 1 << (codesIdx & 7));
                         codesIdx++;
                     }
                     startIdx++;
@@ -534,18 +537,19 @@ public class Huffman {
                     if (curMatchIdx != -1) {
                         codesIdx++;
                         aCode = defCodeValues[curMatchIdx];
-                        if (((codesIdx + 7) / 8) + ((aCode[0] + 7) / 8) > codes.length)
-                            codes = expand(codes, (aCode[0] + 7) / 8);
+                        if (((codesIdx + 7) / 8) + (((int) aCode[0] + 7) / 8) > codes.length)
+                            codes = expand(codes, ((int) aCode[0] + 7) / 8);
                         codes = addSymbolToCodes(codes, codesIdx, aCode);
-                        codesIdx += aCode[0];
+                        codesIdx = codesIdx + (int) aCode[0];
                         startIdx += defsymbol2Code[curMatchIdx].length;
                     } else {
                         if (((codesIdx + 16) / 8) > codes.length) codes = expand(codes, 2);
                         //set raw bit to true and add byte without compression
-                        codes[codesIdx / 8] |= 1 << (codesIdx & 7);
+                        codes[codesIdx / 8] = (byte) ((int) codes[codesIdx / 8] | 1 << (codesIdx & 7));
                         codesIdx++;
                         for (int q = 0; q < 8; q++) {
-                            if (((data[startIdx] >> q) & 1) == 1) codes[codesIdx / 8] |= 1 << (codesIdx & 7);
+                            if ((((int) data[startIdx] >> q) & 1) == 1)
+                                codes[codesIdx / 8] = (byte) ((int) codes[codesIdx / 8] | 1 << (codesIdx & 7));
                             codesIdx++;
                         }
                         startIdx++;
@@ -560,7 +564,7 @@ public class Huffman {
         int actualBytes = (codesIdx + 7) / 8;
         codes = Arrays.copyOf(codes, actualBytes);
         byte leftOverBits = (byte) ((actualBytes * 8) - codesIdx);
-        codes[0] |= leftOverBits;
+        codes[0] = (byte) ((int) codes[0] | (int) leftOverBits);
         return codes;
     }
 
@@ -594,7 +598,7 @@ public class Huffman {
         }
         freqToTree(1, true);
         buildHuffTree(false, true);
-        altCodeBytes = (codeValues[1][0] + 7) / 8;
+        altCodeBytes = ((int) codeValues[1][0] + 7) / 8;
         switchFields(true);
         buildAltTree(false);
     }
@@ -609,27 +613,27 @@ public class Huffman {
             for (Entry<ByteAry, Integer> byteAryIntegerEntry: freqList.asMap().entrySet()) {
                 ent = byteAryIntegerEntry;
                 if (ent.getValue() > 3) {
-                    trees.add(new TmpNode(ent.getValue() * ent.getKey().ary.length, ent.getKey().ary));
+                    trees.add(new TmpNode((long) (ent.getValue() * ent.getKey().ary.length), ent.getKey().ary));
                 } else {
                     removedBytes += ent.getValue() * ent.getKey().ary.length;
                 }
             }
             while (trees.size() > maxSymbols) trees.poll();
-            if (addAltNode) trees.add(new TmpNode(removedBytes, ArrayUtil.EMPTY_BYTE_ARRAY));
+            if (addAltNode) trees.add(new TmpNode((long) removedBytes, ArrayUtil.EMPTY_BYTE_ARRAY));
         } else {
             for (Entry<ByteAry, Integer> byteAryIntegerEntry: freqList.asMap().entrySet()) {
                 ent = byteAryIntegerEntry;
                 if (ent.getValue() > 3) {
                     int freq = (ent.getValue() / freqDivide) * ent.getKey().ary.length;
                     if (freq == 0) freq = 1;
-                    trees.add(new TmpNode(freq, ent.getKey().ary));
+                    trees.add(new TmpNode((long) freq, ent.getKey().ary));
                 } else {
                     removedBytes += ent.getValue() * ent.getKey().ary.length;
                 }
             }
             while (trees.size() > maxSymbols) trees.poll();
             if (addAltNode)
-                trees.add(new TmpNode(removedBytes / freqDivide == 0 ? 1 : removedBytes / freqDivide, ArrayUtil.EMPTY_BYTE_ARRAY));
+                trees.add(new TmpNode((long) (removedBytes / freqDivide == 0 ? 1 : removedBytes / freqDivide), ArrayUtil.EMPTY_BYTE_ARRAY));
         }
     }
 
@@ -637,7 +641,7 @@ public class Huffman {
         if (useDefault || trees.isEmpty()) {
             trees = new PriorityQueue<>();
             for (int i = 0; i < charsByFreq.length; i++) {
-                trees.add(new TmpNode((charsByFreq.length * 100) - (i * 90), charsByFreq[i].getBytes()));
+                trees.add(new TmpNode((long) ((charsByFreq.length * 100) - (i * 90)), charsByFreq[i].getBytes()));
             }
         }
         buildHuffTree(true, false);
@@ -682,8 +686,8 @@ public class Huffman {
         symbol2Code = new byte[(totalSymbols * 2 & (totalSymbols * 2 - 1)) == 0 ? totalSymbols * 2 : nextPO2(totalSymbols * 2)][];
         codeValues = new byte[symbol2Code.length][];
         symbl2CodLstIdx = symbol2Code.length - 1;
-        populateLUTNCodes(((HuffmanNode) objectTree).left, new byte[]{1, 0});
-        populateLUTNCodes(((HuffmanNode) objectTree).right, new byte[]{1, 1});
+        populateLUTNCodes(((HuffmanNode) objectTree).left, new byte[]{(byte) 1, (byte) 0});
+        populateLUTNCodes(((HuffmanNode) objectTree).right, new byte[]{(byte) 1, (byte) 1});
         if (!isAlt && isFinal || freqList == null) {
             int symbolIdx = (aryHash(ArrayUtil.EMPTY_BYTE_ARRAY) & symbl2CodLstIdx) - 1;
             if (symbolIdx + 1 == symbol2Code.length) symbolIdx = -1;
@@ -725,7 +729,7 @@ public class Huffman {
     private void populateLUTNCodes(HuffmanTree objectTree, byte[] curCode) {
         if (objectTree instanceof HuffmanNode) {
             byte[] leftCode;
-            if (++curCode[0] > (curCode.length - 1) * 8) {
+            if ((int) ++curCode[0] > (curCode.length - 1) * 8) {
                 leftCode = new byte[curCode.length + 1];
                 System.arraycopy(curCode, 0, leftCode, 0, curCode.length);
             } else {
@@ -734,9 +738,9 @@ public class Huffman {
             curCode = null;
             byte[] rightCode = Arrays.copyOf(leftCode, leftCode.length);
             int bitIdx;
-            if ((rightCode[0] & 7) == 0) bitIdx = 7;
-            else bitIdx = (rightCode[0] & 7) - 1;
-            rightCode[rightCode.length - 1] |= 1 << bitIdx;
+            if (((int) rightCode[0] & 7) == 0) bitIdx = 7;
+            else bitIdx = ((int) rightCode[0] & 7) - 1;
+            rightCode[rightCode.length - 1] = (byte) ((int) rightCode[rightCode.length - 1] | 1 << bitIdx);
             populateLUTNCodes(((HuffmanNode) objectTree).left, leftCode);
             populateLUTNCodes(((HuffmanNode) objectTree).right, rightCode);
         } else {
@@ -744,14 +748,14 @@ public class Huffman {
             int bitCount = 0;
             int codeByteIdx = 1;
             int codeV = 0;
-            for (int i = 0, len = curCode[0]; i < len; i++) {
-                if (((curCode[codeByteIdx] >> bitCount++) & 1) == 1) codeV |= 1 << i;
+            for (int i = 0, len = (int) curCode[0]; i < len; i++) {
+                if ((((int) curCode[codeByteIdx] >> bitCount++) & 1) == 1) codeV |= 1 << i;
                 if (bitCount == 8) {
                     bitCount = 0;
                     codeByteIdx++;
                 }
             }
-            codeIdx2Symbols[curCode[0]][codeV] = symbol;
+            codeIdx2Symbols[(int) curCode[0]][codeV] = symbol;
             int hashIdx = aryHash(symbol) & symbl2CodLstIdx;
             while (symbol2Code[hashIdx] != null) if (++hashIdx == symbol2Code.length) hashIdx = 0;
             symbol2Code[hashIdx] = symbol;
@@ -832,7 +836,7 @@ public class Huffman {
         intToByteArray(symbl2CodLstIdx, out, 4);
         intToByteArray(maxSymbolLength, out, 8);
         intToByteArray(altCodeIdx, out, 12);
-        out[16] = useAltOnly ? (byte) 1 : 0;
+        out[16] = useAltOnly ? (byte) 1 : (byte) 0;
         intToByteArray(highestLevel, out, 17);
         intToByteArray(altCodeBytes, out, 21);
         intToByteArray(codeIdx2Symbols.length, out, 25);
@@ -890,7 +894,7 @@ public class Huffman {
 
         @Override
         public int hashCode() {
-            return longHash(hash(ary, 0, ary.length, -1640531527));
+            return longHash(hash(ary, 0, ary.length, -1640531527L));
         }
 
         @Override
@@ -918,7 +922,7 @@ public class Huffman {
 
         @Override
         public int hashCode() {
-            return longHash(hash(key, 0, key.length, -1640531527));
+            return longHash(hash(key, 0, key.length, -1640531527L));
 //			int hash = 1;
 //			for(byte b : key) hash = (257 * hash + b);
 //			return hash;

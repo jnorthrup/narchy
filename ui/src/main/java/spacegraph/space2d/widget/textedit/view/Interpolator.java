@@ -13,7 +13,7 @@ public enum Interpolator {
   LINEAR {
     @Override
     protected double[] newCurve(int divOfNum) {
-        double gain = 1.0 / divOfNum;
+        double gain = 1.0 / (double) divOfNum;
         double[] result = new double[10];
         int count = 0;
         for (int i = 0; i < divOfNum; i++) {
@@ -29,11 +29,11 @@ public enum Interpolator {
     @Override
     protected double[] newCurve(int divOfNum) {
         double[] result = new double[divOfNum];
-        double gain = 1.0 / divOfNum;
+        double gain = 1.0 / (double) divOfNum;
         double g = Math.PI * gain;
       for (int i = 0; i < divOfNum; i++) {
-          double divGain = Math.cos(g * i) - Math.cos(g * (i + 1));
-        result[i] = (divGain / 2);
+          double divGain = Math.cos(g * (double) i) - Math.cos(g * (double) (i + 1));
+        result[i] = (divGain / 2.0);
       }
       return result;
     }
@@ -42,10 +42,10 @@ public enum Interpolator {
     @Override
     protected double[] newCurve(int divOfNum) {
         double[] result = new double[divOfNum];
-        double gain = 1.0 / divOfNum;
+        double gain = 1.0 / (double) divOfNum;
         double g = Math.PI * gain / 2.0;
       for (int i = 0; i < divOfNum; i++) {
-          double divGain = Math.sin(g * (i + 1)) - Math.sin(g * i);
+          double divGain = Math.sin(g * (double) (i + 1)) - Math.sin(g * (double) i);
         result[i] = (divGain);
       }
       return result;
@@ -55,11 +55,11 @@ public enum Interpolator {
     @Override
     protected double[] newCurve(int divOfNum) {
         double[] result = new double[divOfNum];
-        double gain = 1.0 / divOfNum;
+        double gain = 1.0 / (double) divOfNum;
         double g = Math.PI * gain / 2.0;
         double start = Math.PI * 1.5;
       for (int i = 0; i < divOfNum; i++) {
-          double divGain = Math.sin(start + (g * (i + 1))) - Math.sin(start + (g * i));
+          double divGain = Math.sin(start + (g * (double) (i + 1))) - Math.sin(start + (g * (double) i));
         result[i] = (divGain);
       }
       return result;
@@ -69,12 +69,12 @@ public enum Interpolator {
     @Override
     protected double[] newCurve(int divOfNum) {
         double[] result = new double[divOfNum];
-        double gain = 1.0 / divOfNum;
+        double gain = 1.0 / (double) divOfNum;
         double g = Math.PI * 1.5 * gain;
         double qg = Math.PI / 4.0;
-        double dd = Math.sin(qg) * 2;
+        double dd = Math.sin(qg) * 2.0;
       for (int i = 0; i < divOfNum; i++) {
-          double divGain = Math.sin(g * i + qg) - Math.sin(g * (i + 1) + qg);
+          double divGain = Math.sin(g * (double) i + qg) - Math.sin(g * (double) (i + 1) + qg);
         result[i] = (divGain / dd);
       }
       return result;
@@ -82,7 +82,7 @@ public enum Interpolator {
   };
 
   @Deprecated private final LoadingCache<Integer, double[]> cache =
-      CacheBuilder.newBuilder().maximumSize(1000).build(new CacheLoader<>() {
+      CacheBuilder.newBuilder().maximumSize(1000L).build(new CacheLoader<>() {
         @Override
         public double[] load(Integer divOfNum) {
           return newCurve(divOfNum);

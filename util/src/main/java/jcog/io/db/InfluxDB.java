@@ -50,7 +50,7 @@ public class InfluxDB {
     $ echo "cpu value=1"> /dev/udp/localhost/8089
          */
     public void send() {
-        String s = "cpu,host=server01,region=uswest load=" + (Math.random() * 100) + ' ' + System.currentTimeMillis();
+        String s = "cpu,host=server01,region=uswest load=" + (Math.random() * 100.0) + ' ' + System.currentTimeMillis();
 
         
         
@@ -80,7 +80,7 @@ public class InfluxDB {
 
     public float[] get(String measurement, String value, long from, long to) {
         char c = value.charAt(0);
-        if ((c !='*') && (c!='\"'))
+        if (((int) c != (int) '*') && ((int) c != (int) '\"'))
             value = '"' + value + '"';
 
         String query = "SELECT " + value + " FROM \"" + measurement + "\" WHERE \"time\" >= \"" + rfc(from) + "\" AND \"time\" <= \"" + rfc(to) + '"';
@@ -113,7 +113,7 @@ public class InfluxDB {
 
         System.out.println(Arrays.toString(
             new InfluxDB("nar1").get("cpu", "*",
-                System.currentTimeMillis() - 16 * 24 * 60 * 60 * 1000, System.currentTimeMillis()))
+                System.currentTimeMillis() - (long) (16 * 24 * 60 * 60 * 1000), System.currentTimeMillis()))
         );
     }
 }

@@ -36,13 +36,13 @@ public enum Image {
     public static Term image(boolean intOrExt, Term t, Term x) {
 
 
-        if (t instanceof Compound && t.opID() == INH.id) {
+        if (t instanceof Compound && t.opID() == (int) INH.id) {
 
             int prodSub = intOrExt ? 1 : 0;
 
             Term prod = t.sub(prodSub);
 
-            if (prod instanceof Compound && prod.opID() == PROD.id) {
+            if (prod instanceof Compound && prod.opID() == (int) PROD.id) {
 
                 Subterms ss = ((Compound)prod).subtermsDirect();
                 int n = ss.subs();
@@ -82,7 +82,7 @@ public enum Image {
         boolean neg = _x instanceof Neg;
         Term x = neg ? _x.unneg() : _x;
 
-        if (x instanceof Compound && x.hasAll(ImageBits) && x.opID() == INH.id) {
+        if (x instanceof Compound && x.hasAll(ImageBits) && x.opID() == (int) INH.id) {
             Term y = _imgNormalize((Compound) x);
             if (x != y)
                 return y.negIf(neg);
@@ -107,7 +107,7 @@ public enum Image {
                 !x.isNormalized()
                         ||
                         (x instanceof Compound &&
-                            x.opID() == INH.id &&
+                            x.opID() == (int) INH.id &&
                                 x.hasAll(ImageBits) &&
                                 normalize(x, false, false) == null);
     }
@@ -128,11 +128,11 @@ public enum Image {
         Term s = xx.sub(0), p = xx.sub(1);
 
         Subterms ss = null;
-        boolean isInt = s instanceof Compound && s.opID() == PROD.id &&
+        boolean isInt = s instanceof Compound && s.opID() == (int) PROD.id &&
             (ss = s.subterms()).containsInstance(Op.ImgInt) && !ss.containsInstance(Op.ImgExt);
 
         Subterms pp = null;
-        boolean isExt = p instanceof Compound && p.opID() == PROD.id &&
+        boolean isExt = p instanceof Compound && p.opID() == (int) PROD.id &&
             (pp = p.subterms()).containsInstance(Op.ImgExt) && !pp.containsInstance(Op.ImgInt);
 
         if (isInt == isExt)

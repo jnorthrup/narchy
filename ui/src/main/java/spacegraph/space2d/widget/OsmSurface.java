@@ -37,8 +37,8 @@ public class OsmSurface extends PaintSurface {
 
 
     private static final Consumer<GL2> loading = (gl) -> {
-        gl.glColor3f(1, 0, 0);
-        Draw.rectFrame(0, 0, 1, 1, 0.1f, gl);
+        gl.glColor3f(1.0F, (float) 0, (float) 0);
+        Draw.rectFrame((float) 0, (float) 0, 1.0F, 1.0F, 0.1f, gl);
     };
     public final AtomicBoolean debugIndexBounds = new AtomicBoolean(false);
 
@@ -86,8 +86,8 @@ public class OsmSurface extends PaintSurface {
         gl.glPushMatrix();
 
         gl.glTranslatef(
-                translate.x + bounds.x + bounds.w / 2,
-                translate.y + bounds.y + bounds.h / 2, 0); //center in view
+                translate.x + bounds.x + bounds.w / 2.0F,
+                translate.y + bounds.y + bounds.h / 2.0F, (float) 0); //center in view
 
 
         projection.transform(gl, bounds);
@@ -113,7 +113,7 @@ public class OsmSurface extends PaintSurface {
     }
 
     private void renderTouchedIndexBounds(GL2 gl) {
-        index.index.root().intersectingNodes(HyperRectFloat.cube(touch, 0), n -> {
+        index.index.root().intersectingNodes(HyperRectFloat.cube(touch, (float) 0), n -> {
             renderBounds(gl, n.bounds());
             return true;
         }, index.index.model);
@@ -121,7 +121,7 @@ public class OsmSurface extends PaintSurface {
 
     private void renderIndexBounds(GL2 gl) {
 
-        gl.glLineWidth(2);
+        gl.glLineWidth(2.0F);
 
         index.index.root().streamNodesRecursively().forEach(n -> renderBounds(gl, n.bounds()));
     }
@@ -140,14 +140,14 @@ public class OsmSurface extends PaintSurface {
         float x2 = r.max.coord(0), y2 = r.max.coord(1);
 
         float[] ff = new float[3];
-        projection.project(x1, y1, 0, ff, 0);
+        projection.project(x1, y1, (float) 0, ff, 0);
         x1 = ff[0];
         y1 = ff[1];
-        projection.project(x2, y2, 0, ff, 0);
+        projection.project(x2, y2, (float) 0, ff, 0);
         x2 = ff[0];
         y2 = ff[1];
 
-        gl.glLineWidth(4);
+        gl.glLineWidth(4.0F);
         Draw.colorHash(gl, r.hashCode(), 0.75f);
         //Draw.rect(
         Draw.rectStroke(
@@ -232,7 +232,7 @@ public class OsmSurface extends PaintSurface {
 
 
         float wheel;
-        if ((wheel = finger.rotationY(true)) != 0) {
+        if ((wheel = finger.rotationY(true)) != (float) 0) {
             projection.zoom(wheel);
         }
 
@@ -246,7 +246,7 @@ public class OsmSurface extends PaintSurface {
             v2 pos = finger.posGlobal();
             float wx = (pos.x - cx());
             float wy = (pos.y - cy());
-            float wz = 0;
+            float wz = (float) 0;
 
             //TODO unproject screen to world
 

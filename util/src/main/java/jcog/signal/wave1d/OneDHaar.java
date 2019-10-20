@@ -28,8 +28,8 @@ import static java.lang.System.out;
 public enum OneDHaar {
     ;
 
-    private static final double FSNORM = Math.sqrt(2);
-    private static final double FDNORM = 1/FSNORM;
+    private static final double FSNORM = Math.sqrt(2.0);
+    private static final double FDNORM = 1.0 /FSNORM;
 
     private static final double ISNORM = FDNORM;
     private static final double IDNORM = FSNORM;
@@ -62,14 +62,14 @@ public enum OneDHaar {
         if (!Util.isPowerOf2(sample.length)) {
             return;
         }
-        int num_sweeps = (int) (Math.log(sample.length) / Util.log2);
+        int num_sweeps = (int) (Math.log((double) sample.length) / Util.log2);
         inPlaceFastHaarWaveletTransform(sample, num_sweeps);
     }
     
     public static void inPlaceFastHaarWaveletTransform(float[] sample) {
 
 
-        int num_sweeps = (int) (Math.log(sample.length) / Util.log2);
+        int num_sweeps = (int) (Math.log((double) sample.length) / Util.log2);
         inPlaceFastHaarWaveletTransform(sample, num_sweeps);
     }
 
@@ -82,7 +82,7 @@ public enum OneDHaar {
             throw new RuntimeException(sample.length + " is not power of 2");
         }
         int NUM_SAMPLE_VALS = sample.length;
-        int n = (int) (Math.log(NUM_SAMPLE_VALS) / Math.log(2));
+        int n = (int) (Math.log((double) NUM_SAMPLE_VALS) / Math.log(2.0));
         if (num_iters < 1 || num_iters > n) {
             throw new RuntimeException(sample.length + " invalid number sweeps");
         }
@@ -94,9 +94,9 @@ public enum OneDHaar {
                 int KGAPSIZE = GAP_SIZE * K;
                 float sampleAtKGAPSIZE = sample[KGAPSIZE];
                 float sampleAtKGAPSIZEPlusI = sample[KGAPSIZE + I];
-                float a = (sampleAtKGAPSIZE + sampleAtKGAPSIZEPlusI) / 2;
+                float a = (sampleAtKGAPSIZE + sampleAtKGAPSIZEPlusI) / 2.0F;
                 sample[KGAPSIZE] = a;
-                float c = (sampleAtKGAPSIZE - sampleAtKGAPSIZEPlusI) / 2;
+                float c = (sampleAtKGAPSIZE - sampleAtKGAPSIZEPlusI) / 2.0F;
                 sample[KGAPSIZE + I] = c;
             }
             I = GAP_SIZE;
@@ -112,7 +112,7 @@ public enum OneDHaar {
             return;
         }
         int NUM_SAMPLE_VALS = sample.length;
-        int n = (int) (Math.log(NUM_SAMPLE_VALS) / Math.log(2));
+        int n = (int) (Math.log((double) NUM_SAMPLE_VALS) / Math.log(2.0));
         if (num_iters < 1 || num_iters > n) {
             return;
         }
@@ -124,9 +124,9 @@ public enum OneDHaar {
                 int KGAPSIZE = GAP_SIZE * K;
                 double sampleAtKGAPSIZE = sample[KGAPSIZE];
                 double sampleAtKGAPSIZEPlusI = sample[KGAPSIZE + I];
-                double a = (sampleAtKGAPSIZE + sampleAtKGAPSIZEPlusI) / 2;
+                double a = (sampleAtKGAPSIZE + sampleAtKGAPSIZEPlusI) / 2.0;
                 sample[KGAPSIZE] = a;
-                double c = (sampleAtKGAPSIZE - sampleAtKGAPSIZEPlusI) / 2;
+                double c = (sampleAtKGAPSIZE - sampleAtKGAPSIZEPlusI) / 2.0;
                 sample[KGAPSIZE + I] = c;
             }
             I = GAP_SIZE;
@@ -139,17 +139,17 @@ public enum OneDHaar {
         if (sample.length % 2 != 0 || sample.length == 0) {
             return;
         }
-        int I = (int) (Math.pow(2.0, sweep_number - 1));
-        int GAP_SIZE = (int) (Math.pow(2.0, sweep_number));
+        int I = (int) (Math.pow(2.0, (double) (sweep_number - 1)));
+        int GAP_SIZE = (int) (Math.pow(2.0, (double) sweep_number));
         int NUM_SAMPLE_VALS = sample.length;
-        int n = (int) (Math.log(NUM_SAMPLE_VALS) / Math.log(2));
+        int n = (int) (Math.log((double) NUM_SAMPLE_VALS) / Math.log(2.0));
         if (sweep_number < 1 || sweep_number > n) {
             return;
         }
-        NUM_SAMPLE_VALS /= (int) (Math.pow(2.0, sweep_number));
+        NUM_SAMPLE_VALS /= (int) (Math.pow(2.0, (double) sweep_number));
         for (int K = 0; K < NUM_SAMPLE_VALS; K++) {
-            double a = (sample[GAP_SIZE * K] + sample[GAP_SIZE * K + I]) / 2;
-            double c = (sample[GAP_SIZE * K] - sample[GAP_SIZE * K + I]) / 2;
+            double a = (sample[GAP_SIZE * K] + sample[GAP_SIZE * K + I]) / 2.0;
+            double c = (sample[GAP_SIZE * K] - sample[GAP_SIZE * K + I]) / 2.0;
             sample[GAP_SIZE * K] = a;
             sample[GAP_SIZE * K + I] = c;
         }
@@ -201,7 +201,7 @@ public enum OneDHaar {
             return;
         }
 
-        int NUM_SWEEPS = (int) (Math.log(n) / Math.log(2.0));
+        int NUM_SWEEPS = (int) (Math.log((double) n) / Math.log(2.0));
         double acoeff, ccoeff;
         if (NUM_SWEEPS == 1) {
             acoeff = (signal[0] + signal[1]) / 2.0;
@@ -213,14 +213,14 @@ public enum OneDHaar {
         for (int SWEEP_NUM = 1; SWEEP_NUM < NUM_SWEEPS; SWEEP_NUM++) {
 
 
-            int size = (int) Math.pow(2.0, (NUM_SWEEPS - SWEEP_NUM));
+            int size = (int) Math.pow(2.0, (double) (NUM_SWEEPS - SWEEP_NUM));
             double[] acoeffs = new double[size];
             double[] ccoeffs = new double[size];
             int ai = 0;
             int ci = 0;
 
 
-            int end = ((int) Math.pow(2.0, (NUM_SWEEPS - SWEEP_NUM + 1))) - 1;
+            int end = ((int) Math.pow(2.0, (double) (NUM_SWEEPS - SWEEP_NUM + 1))) - 1;
             for (int i = 0; i <= end; i += 2) {
                 acoeffs[ai++] = (signal[i] + signal[i + 1]) / 2.0;
                 ccoeffs[ci++] = (signal[i] - signal[i + 1]) / 2.0;
@@ -273,7 +273,7 @@ public enum OneDHaar {
             return;
         }
 
-        int NUM_SWEEPS = (int) (Math.log(n) / Math.log(2.0));
+        int NUM_SWEEPS = (int) (Math.log((double) n) / Math.log(2.0));
         double acoeff, ccoeff;
         if (NUM_SWEEPS == 1) {
             acoeff = FSNORM * (sample[0] + sample[1])/2.0;
@@ -285,14 +285,14 @@ public enum OneDHaar {
         for (int SWEEP_NUM = 1; SWEEP_NUM < NUM_SWEEPS; SWEEP_NUM++) {
 
 
-            int size = (int) Math.pow(2.0, (NUM_SWEEPS - SWEEP_NUM));
+            int size = (int) Math.pow(2.0, (double) (NUM_SWEEPS - SWEEP_NUM));
             double[] acoeffs = new double[size];
             double[] ccoeffs = new double[size];
             int ai = 0;
             int ci = 0;
 
 
-            int end = ((int) Math.pow(2.0, (NUM_SWEEPS - SWEEP_NUM + 1))) - 1;
+            int end = ((int) Math.pow(2.0, (double) (NUM_SWEEPS - SWEEP_NUM + 1))) - 1;
             for (int i = 0; i <= end; i += 2) {
                 acoeffs[ai++] = FSNORM * (sample[i] + sample[i + 1])/2.0;
                 ccoeffs[ci++] = FDNORM * (sample[i] - sample[i + 1]);
@@ -343,7 +343,7 @@ public enum OneDHaar {
         
         if ( !Util.isPowerOf2(n) ) return;
 
-        int NUM_SWEEPS = (int) (Math.log(n) / Math.log(2.0));
+        int NUM_SWEEPS = (int) (Math.log((double) n) / Math.log(2.0));
         if ( num_iters > NUM_SWEEPS ) return;
         if ( NUM_SWEEPS == 1 ) {
             double acoeff = (signal[0] + signal[1]) / 2.0;
@@ -355,14 +355,14 @@ public enum OneDHaar {
         for (int SWEEP_NUM = 1; SWEEP_NUM <= num_iters; SWEEP_NUM++) {
 
 
-            int size = (int) Math.pow(2.0, (NUM_SWEEPS - SWEEP_NUM));
+            int size = (int) Math.pow(2.0, (double) (NUM_SWEEPS - SWEEP_NUM));
             double[] acoeffs = new double[size];
             double[] ccoeffs = new double[size];
             int ai = 0;
             int ci = 0;
 
 
-            int end = ((int) Math.pow(2.0, (NUM_SWEEPS - SWEEP_NUM + 1))) - 1;
+            int end = ((int) Math.pow(2.0, (double) (NUM_SWEEPS - SWEEP_NUM + 1))) - 1;
             for (int i = 0; i <= end; i += 2) {
                 acoeffs[ai++] = (signal[i] + signal[i + 1]) / 2.0;
                 ccoeffs[ci++] = (signal[i] - signal[i + 1]) / 2.0;
@@ -390,7 +390,7 @@ public enum OneDHaar {
         
         if ( !Util.isPowerOf2(n) ) return;
 
-        int NUM_SWEEPS = (int) (Math.log(n) / Math.log(2.0));
+        int NUM_SWEEPS = (int) (Math.log((double) n) / Math.log(2.0));
         if ( num_iters > NUM_SWEEPS ) return;
         if ( NUM_SWEEPS == 1 ) {
             double acoeff = FSNORM * (sample[0] + sample[1]) / 2.0;
@@ -402,14 +402,14 @@ public enum OneDHaar {
         for (int SWEEP_NUM = 1; SWEEP_NUM <= num_iters; SWEEP_NUM++) {
 
 
-            int size = (int) Math.pow(2.0, (NUM_SWEEPS - SWEEP_NUM));
+            int size = (int) Math.pow(2.0, (double) (NUM_SWEEPS - SWEEP_NUM));
             double[] acoeffs = new double[size];
             double[] ccoeffs = new double[size];
             int ai = 0;
             int ci = 0;
 
 
-            int end = ((int) Math.pow(2.0, (NUM_SWEEPS - SWEEP_NUM + 1))) - 1;
+            int end = ((int) Math.pow(2.0, (double) (NUM_SWEEPS - SWEEP_NUM + 1))) - 1;
             for (int i = 0; i <= end; i += 2) {
                 acoeffs[ai++] = FSNORM * (sample[i] + sample[i + 1])/2.0;
                 ccoeffs[ci++] = FDNORM * (sample[i] - sample[i + 1]);
@@ -435,9 +435,9 @@ public enum OneDHaar {
         if (n < 2 || !Util.isPowerOf2(n)) {
             return;
         }
-        n = (int) (Math.log(n) / Math.log(2.0));
+        n = (int) (Math.log((double) n) / Math.log(2.0));
         for (int L = 1; L <= n; L++) {
-            int GAP = (int) (Math.pow(2.0, L - 1));
+            int GAP = (int) (Math.pow(2.0, (double) (L - 1)));
 
             double[] restored_vals = new double[2 * GAP];
             for (int i = 0; i < GAP; i++) {
@@ -470,13 +470,13 @@ public enum OneDHaar {
         if (n < 2 || !Util.isPowerOf2(n)) {
             return;
         }
-        n = (int) (Math.log(n) / Math.log(2.0));
+        n = (int) (Math.log((double) n) / Math.log(2.0));
         if (numIters > n) {
             return;
         }
         
         for (int L = 1; L <= numIters; L++) {
-            int GAP = (int) (Math.pow(2.0, L - 1));
+            int GAP = (int) (Math.pow(2.0, (double) (L - 1)));
 
             double[] restoredVals = new double[2 * GAP];
             for (int i = 0; i < GAP; i++) {
@@ -502,7 +502,7 @@ public enum OneDHaar {
         double[] thresholdedSignal = new double[10];
         int count = 0;
         for (int t = 0; t < n; t++) {
-            double v = Math.abs(signal[t]) > thresh ? signal[t] : 0;
+            double v = Math.abs(signal[t]) > thresh ? signal[t] : (double) 0;
             if (thresholdedSignal.length == count) thresholdedSignal = Arrays.copyOf(thresholdedSignal, count * 2);
             thresholdedSignal[count++] = v;
         }
@@ -517,7 +517,7 @@ public enum OneDHaar {
         if (n < 2 || !Util.isPowerOf2(n)) {
             return;
         }
-        n = (int) (Math.log(n) / Math.log(2.0));
+        n = (int) (Math.log((double) n) / Math.log(2.0));
         if (numIters > n) {
             return;
         }
@@ -542,18 +542,18 @@ public enum OneDHaar {
         if (n < 2 || !Util.isPowerOf2(n)) {
             return;
         }
-        n = (int) (Math.log(n) / Math.log(2.0));
+        n = (int) (Math.log((double) n) / Math.log(2.0));
         for (int L = 1; L <= n; L++) {
-            int GAP = (int) (Math.pow(2.0, L - 1));
+            int GAP = (int) (Math.pow(2.0, (double) (L - 1)));
             double[] restored_vals = new double[2 * GAP];
             for (int i = 0; i < GAP; i++) {
                 double d = IDNORM * sample[GAP + i];
                 double s = ISNORM * sample[i];
 
 
-                double a0 = s + d / 2;
+                double a0 = s + d / 2.0;
                 restored_vals[2 * i] = a0;
-                double a1 = s - d / 2;
+                double a1 = s - d / 2.0;
                 restored_vals[2 * i + 1] = a1;
             }
             
@@ -576,11 +576,11 @@ public enum OneDHaar {
         if (n < 2 || !Util.isPowerOf2(n)) {
             return;
         }
-        n = (int) (Math.log(n) / Math.log(2.0));
+        n = (int) (Math.log((double) n) / Math.log(2.0));
         if (num_iters > n) {
             return;
         }
-        int GAP = (int)(Math.pow(2.0, n-num_iters));
+        int GAP = (int)(Math.pow(2.0, (double) (n - num_iters)));
         for (int L = 1; L <= num_iters; L++) {
             double[] restored_vals = new double[2 * GAP];
             for (int i = 0; i < GAP; i++) {
@@ -588,9 +588,9 @@ public enum OneDHaar {
                 double s = ISNORM * sample[i];
 
 
-                double a0 = s + d / 2;
+                double a0 = s + d / 2.0;
                 restored_vals[2 * i] = a0;
-                double a1 = s - d / 2;
+                double a1 = s - d / 2.0;
                 restored_vals[2 * i + 1] = a1;
             }
             
@@ -610,8 +610,8 @@ public enum OneDHaar {
 
     public static void inPlaceFastInverseHaarWaveletTransform(double[] sample) {
         int n = sample.length;
-        n = (int) (Math.log(n) / Math.log(2.0));
-        int GAP_SIZE = (int) (Math.pow(2.0, n - 1));
+        n = (int) (Math.log((double) n) / Math.log(2.0));
+        int GAP_SIZE = (int) (Math.pow(2.0, (double) (n - 1)));
         int JUMP = 2 * GAP_SIZE;
         int NUM_FREQS = 1;
         for (int SWEEP_NUM = n; SWEEP_NUM >= 1; SWEEP_NUM--) {
@@ -634,7 +634,7 @@ public enum OneDHaar {
         if (n < 2 || !Util.isPowerOf2(n)) {
             return;
         }
-        n = (int) (Math.log(n) / Math.log(2.0));
+        n = (int) (Math.log((double) n) / Math.log(2.0));
         if (num_iters < 1 || num_iters > n) {
             return;
         }
@@ -642,9 +642,9 @@ public enum OneDHaar {
 
         int lower_bound = n - num_iters + 1;
         for (int ITER_NUM = lower_bound; ITER_NUM <= n; ITER_NUM++) {
-            int GAP_SIZE = (int) (Math.pow(2.0, n - ITER_NUM));
+            int GAP_SIZE = (int) (Math.pow(2.0, (double) (n - ITER_NUM)));
             int JUMP = 2 * GAP_SIZE;
-            int NUM_FREQS = (int) (Math.pow(2.0, ITER_NUM - 1));
+            int NUM_FREQS = (int) (Math.pow(2.0, (double) (ITER_NUM - 1)));
             for (int K = 0; K < NUM_FREQS; K++) {
                 double aPlus = sample[JUMP * K] + sample[JUMP * K + GAP_SIZE];
                 double aMinus = sample[JUMP * K] - sample[JUMP * K + GAP_SIZE];
@@ -659,13 +659,13 @@ public enum OneDHaar {
         if (n < 2 || !Util.isPowerOf2(n)) {
             return;
         }
-        n = (int) (Math.log(n) / Math.log(2.0));
+        n = (int) (Math.log((double) n) / Math.log(2.0));
         if (iter_number < 1 || iter_number > n) {
             return;
         }
-        int GAP_SIZE = (int) (Math.pow(2.0, n - iter_number));
+        int GAP_SIZE = (int) (Math.pow(2.0, (double) (n - iter_number)));
         int JUMP = 2 * GAP_SIZE;
-        int NUM_FREQS = (int) (Math.pow(2.0, iter_number - 1));
+        int NUM_FREQS = (int) (Math.pow(2.0, (double) (iter_number - 1)));
         for (int K = 0; K < NUM_FREQS; K++) {
             double aPlus = sample[JUMP * K] + sample[JUMP * K + GAP_SIZE];
             double aMinus = sample[JUMP * K] - sample[JUMP * K + GAP_SIZE];
@@ -682,13 +682,13 @@ public enum OneDHaar {
         if (n < 2 || !Util.isPowerOf2(n)) {
             return;
         }
-        n = (int) (Math.log(n) / Math.log(2.0));
+        n = (int) (Math.log((double) n) / Math.log(2.0));
         if (num_iters < 1 || num_iters > n) {
             return;
         }
-        int GAP_SIZE = (int) (Math.pow(2.0, num_iters - 1));
+        int GAP_SIZE = (int) (Math.pow(2.0, (double) (num_iters - 1)));
         int JUMP = 2 * GAP_SIZE;
-        int NUM_FREQS = (int) (Math.pow(2.0, n - num_iters));
+        int NUM_FREQS = (int) (Math.pow(2.0, (double) (n - num_iters)));
         for (int ITER_NUM = 1; ITER_NUM <= num_iters; ITER_NUM++) {
             for (int K = 0; K < NUM_FREQS; K++) {
                 double aPlus = haar_transformed_sample[JUMP * K] + haar_transformed_sample[JUMP * K + GAP_SIZE];
@@ -710,13 +710,13 @@ public enum OneDHaar {
         if (n < 2 || !Util.isPowerOf2(n)) {
             return;
         }
-        n = (int) (Math.log(n) / Math.log(2.0));
+        n = (int) (Math.log((double) n) / Math.log(2.0));
         if (num_iters < 1 || num_iters > n) {
             return;
         }
-        int GAP_SIZE = (int) (Math.pow(2.0, num_iters - 1));
+        int GAP_SIZE = (int) (Math.pow(2.0, (double) (num_iters - 1)));
         int JUMP = 2 * GAP_SIZE;
-        int NUM_FREQS = (int) (Math.pow(2.0, n - num_iters));
+        int NUM_FREQS = (int) (Math.pow(2.0, (double) (n - num_iters)));
         out.print("Reconstruction Sweep 0: ");
         displaySample(haar_transformed_sample);
         for (int ITER_NUM = 1; ITER_NUM <= num_iters; ITER_NUM++) {
@@ -742,11 +742,11 @@ public enum OneDHaar {
         if ((n < 2) || !Util.isPowerOf2(n)) {
             return;
         }
-        n = (int) (Math.log(n) / Math.log(2));
+        n = (int) (Math.log((double) n) / Math.log(2.0));
         out.println(ordered_sample[0]);
         int start = 1;
         for (int sweep_num = 1; sweep_num <= n; sweep_num++) {
-            int NUM_FREQS = (int) (Math.pow(2.0, sweep_num - 1));
+            int NUM_FREQS = (int) (Math.pow(2.0, (double) (sweep_num - 1)));
             for (int i = start; i < (start + NUM_FREQS); i++) {
                 out.print(ordered_sample[i] + "\t");
             }
@@ -842,8 +842,8 @@ public enum OneDHaar {
         char[] binary = binstr.toCharArray();
 
         double s_k = sample[0];
-        int I = (int) Math.pow(2.0, n - 2);
-        int J = (int) Math.pow(2.0, n - 1);
+        int I = (int) Math.pow(2.0, (double) (n - 2));
+        int J = (int) Math.pow(2.0, (double) (n - 1));
 
         for (int L = 1; L <= n; L++) {
             switch (binary[L]) {
@@ -865,12 +865,12 @@ public enum OneDHaar {
     
     
     public static double[][] computeForwardHaarTransformMatrix(int n) {
-        int size = (int) Math.pow(2, n);
+        int size = (int) Math.pow(2.0, (double) n);
         double[] base_vector = new double[size];
         double[][] fhw = new double[size][size];
         for(int col_num = 0; col_num < size; col_num++) {
             for(int i = 0; i < size; i++) {
-                base_vector[i] = i == col_num ? 1 : 0;
+                base_vector[i] = (double) (i == col_num ? 1 : 0);
             }
             orderedFastHaarWaveletTransform(base_vector);
             for(int row_num = 0; row_num < size; row_num++) {
@@ -883,12 +883,12 @@ public enum OneDHaar {
     
     
     public static double[][] computeInverseHaarTransformMatrix(int n) {
-        int size = (int) Math.pow(2, n);
+        int size = (int) Math.pow(2.0, (double) n);
         double[] base_vector = new double[size];
         double[][] ihw = new double[size][size];
         for(int col_num = 0; col_num < size; col_num++) {
             for(int i = 0; i < size; i++) {
-                base_vector[i] = i == col_num ? 1 : 0;
+                base_vector[i] = (double) (i == col_num ? 1 : 0);
             }
             orderedFastInverseHaarWaveletTransform(base_vector);
             for(int row_num = 0; row_num < size; row_num++) {
@@ -909,7 +909,7 @@ public enum OneDHaar {
         if ( num_rows != v.length ) return null;
         double[] inversed_v = new double[num_cols];
         for(int row = 0; row < num_rows; row++) {
-            double dot_product = 0;
+            double dot_product = (double) 0;
             for(int col = 0; col < num_cols; col++) {
                 dot_product += htm[row][col]*v[col];
             }

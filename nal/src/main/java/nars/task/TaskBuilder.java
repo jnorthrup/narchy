@@ -59,11 +59,11 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
 
 	public TaskBuilder(Term term, byte punct, @Nullable Truth truth) throws TaskException {
 		this(term, punct, truth,
-			/* budget: */ 0, Float.NaN);
+			/* budget: */ (float) 0, Float.NaN);
 	}
 
 	public TaskBuilder(Term term, byte punctuation /* TODO byte */, @Nullable Truth truth, float p, float q) throws TaskException {
-		super(0);
+		super((float) 0);
 		pri(p);
 
 		this.punc = punctuation;
@@ -75,7 +75,7 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
 			if (nt instanceof Compound) {
 				tt = nt;
 
-				if (punctuation == Op.BELIEF || punctuation == Op.GOAL)
+				if ((int) punctuation == (int) Op.BELIEF || (int) punctuation == (int) Op.GOAL)
 					truth = truth.neg();
 			} else {
 				throw new TaskException("Top-level negation", this);
@@ -101,7 +101,7 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
         Term t = term;
 
         byte punc = punc();
-		if (punc == 0)
+		if ((int) punc == 0)
 			throw new TaskException("Unspecified punctuation", this);
 
         Term cntt = t.normalize();//.the();
@@ -121,7 +121,7 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
 			case GOAL:
 				if (truth == null) {
 
-					setTruth(t(1, n.confDefault(punc)));
+					setTruth(t(1.0F, n.confDefault(punc)));
 				} else {
 
                     float confLimit = 1f - NAL.truth.TRUTH_EPSILON;
@@ -156,7 +156,7 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
 
 
         float pp = priElseNeg1();
-		if (pp < 0) {
+		if (pp < (float) 0) {
 			pri(n.priDefault(punc));
 		}
 
@@ -184,11 +184,11 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
 	}
 
 	public boolean isBeliefOrGoal() {
-		return punc == Op.BELIEF || punc == Op.GOAL;
+		return (int) punc == (int) Op.BELIEF || (int) punc == (int) Op.GOAL;
 	}
 
 	public boolean isCommand() {
-		return punc == Op.COMMAND;
+		return (int) punc == (int) Op.COMMAND;
 	}
 
 	public final @Nullable Truth truth() {
@@ -318,7 +318,7 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
 
 
 	public final TaskBuilder time(Timed timed, int dt) {
-		return time(timed.time() + dt);
+		return time(timed.time() + (long) dt);
 	}
 
 

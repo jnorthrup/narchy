@@ -43,7 +43,7 @@ public class WaveLoader {
 	 * Loads a sound from a wav file. 
 	 */
 	public static sfxcache_t LoadSound(sfx_t s) {
-		if (s.name.charAt(0) == '*')
+		if ((int) s.name.charAt(0) == (int) '*')
 			return null;
 
 
@@ -59,7 +59,7 @@ public class WaveLoader {
 			name = s.name;
 
 		String namebuffer;
-		if (name.charAt(0) == '#')
+		if ((int) name.charAt(0) == (int) '#')
 			namebuffer = name.substring(1);
 		else
 			namebuffer = "sound/" + name;
@@ -83,11 +83,11 @@ public class WaveLoader {
 
 		float stepscale;
 		if (DONT_DO_A_RESAMPLING_FOR_JOAL_AND_LWJGL)
-			stepscale = 1; 
+			stepscale = 1.0F;
 		else
-			stepscale = (float)info.rate / S.getDefaultSampleRate();
+			stepscale = (float)info.rate / (float) S.getDefaultSampleRate();
 
-        int len = (int) (info.samples / stepscale);
+        int len = (int) ((float) info.samples / stepscale);
         len *= info.width * info.channels;
 
 		
@@ -134,14 +134,14 @@ public class WaveLoader {
         
         float stepscale;
         if (DONT_DO_A_RESAMPLING_FOR_JOAL_AND_LWJGL)
-        	stepscale = 1;
+        	stepscale = 1.0F;
         else
-        	stepscale = (float)inrate / S.getDefaultSampleRate();
-        int outcount = (int) (sc.length / stepscale);
+        	stepscale = (float)inrate / (float) S.getDefaultSampleRate();
+        int outcount = (int) ((float) sc.length / stepscale);
         sc.length = outcount;
         
         if (sc.loopstart != -1)
-            sc.loopstart /= stepscale;
+            sc.loopstart = (int) ((float) sc.loopstart / stepscale);
 
         
         if (!DONT_DO_A_RESAMPLING_FOR_JOAL_AND_LWJGL)
@@ -150,7 +150,7 @@ public class WaveLoader {
         sc.width = inwidth;
         sc.stereo = 0;
         int samplefrac = 0;
-        int fracstep = (int) (stepscale * 256);
+        int fracstep = (int) (stepscale * 256.0F);
         
         for (int i = 0; i < outcount; i++) {
             int srcsample = samplefrac >> 8;
@@ -158,10 +158,10 @@ public class WaveLoader {
 
             int sample;
             if (inwidth == 2) {
-                sample = (data[offset + srcsample * 2] & 0xff)
-                        + (data[offset + srcsample * 2 + 1] << 8);
+                sample = ((int) data[offset + srcsample * 2] & 0xff)
+                        + ((int) data[offset + srcsample * 2 + 1] << 8);
             } else {
-                sample = ((data[offset + srcsample] & 0xff) - 128) << 8;
+                sample = (((int) data[offset + srcsample] & 0xff) - 128) << 8;
             }
 
             if (sc.width == 2) {
@@ -188,21 +188,21 @@ public class WaveLoader {
 
 
 	static short GetLittleShort() {
-        int val = data_b[data_p] & 0xFF;
+        int val = (int) data_b[data_p] & 0xFF;
 		data_p++;
-		val |= ((data_b[data_p] & 0xFF) << 8);
+		val |= (((int) data_b[data_p] & 0xFF) << 8);
 		data_p++;
 		return (short)val;
 	}
 
 	static int GetLittleLong() {
-        int val = data_b[data_p] & 0xFF;
+        int val = (int) data_b[data_p] & 0xFF;
 		data_p++;
-		val |= ((data_b[data_p] & 0xFF) << 8);
+		val |= (((int) data_b[data_p] & 0xFF) << 8);
 		data_p++;
-		val |= ((data_b[data_p] & 0xFF) << 16);
+		val |= (((int) data_b[data_p] & 0xFF) << 16);
 		data_p++;
-		val |= ((data_b[data_p] & 0xFF) << 24);
+		val |= (((int) data_b[data_p] & 0xFF) << 24);
 		data_p++;
 		return val;
 	}
@@ -273,16 +273,16 @@ public class WaveLoader {
 			return info;
 		}
 		data_p += 8;
-        int format = GetLittleShort();
+        int format = (int) GetLittleShort();
 		if (format != 1) {
 			Com.Printf("Microsoft PCM format only\n");
 			return info;
 		}
 
-		info.channels = GetLittleShort();
+		info.channels = (int) GetLittleShort();
 		info.rate = GetLittleLong();
 		data_p += 4 + 2;
-		info.width = GetLittleShort() / 8;
+		info.width = (int) GetLittleShort() / 8;
 
 		
 		FindChunk("cue ");

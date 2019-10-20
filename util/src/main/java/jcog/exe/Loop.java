@@ -49,7 +49,7 @@ public abstract class Loop extends FixedRateTimedFuture {
      * create and auto-start
      */
     public Loop(float fps) {
-        this(fps >= 0 ? fpsToMS(fps) : -1);
+        this(fps >= (float) 0 ? fpsToMS(fps) : -1);
     }
 
     public Loop(int periodMS) {
@@ -94,7 +94,7 @@ public abstract class Loop extends FixedRateTimedFuture {
     }
 
     static int fpsToMS(float fps) {
-        return Math.max(1, Math.round(1000 / fps));
+        return Math.max(1, Math.round(1000.0F / fps));
     }
 
 
@@ -113,7 +113,7 @@ public abstract class Loop extends FixedRateTimedFuture {
 
                 //logger.info("continue {}fps (each {}ms)", n2(1000f/nextPeriodMS), nextPeriodMS);
 
-                super.setPeriodMS(nextPeriodMS);
+                super.setPeriodMS((long) nextPeriodMS);
 
             }
             return true;
@@ -122,14 +122,14 @@ public abstract class Loop extends FixedRateTimedFuture {
     }
 
     private void _start(int nextPeriodMS) {
-        logger.debug("start {} {} fps", this, n2(1000f/nextPeriodMS));
+        logger.debug("start {} {} fps", this, n2(1000f/ (float) nextPeriodMS));
 
         //synchronized (periodMS) {
             starting();
         //}
 
         HashedWheelTimer t = Exe.timer();
-        setPeriodNS(NANOSECONDS.convert(nextPeriodMS, TimeUnit.MILLISECONDS));
+        setPeriodNS(NANOSECONDS.convert((long) nextPeriodMS, TimeUnit.MILLISECONDS));
         reset(t.wheels, t.resolution);
         t.reschedule(this);
     }
@@ -216,15 +216,15 @@ public abstract class Loop extends FixedRateTimedFuture {
     public float getFPS() {
         int pms = periodMS();
         if (pms > 0 /* isRunning() */) {
-            return 1000f / pms;
+            return 1000f / (float) pms;
         } else {
-            return pms == 0 ? Float.POSITIVE_INFINITY : 0;
+            return pms == 0 ? Float.POSITIVE_INFINITY : (float) 0;
         }
     }
 
     public long periodNS() {
         int m = periodMS();
-        return m >= 0  ? m * 1_000_000L : -1;
+        return m >= 0  ? (long) m * 1_000_000L : -1L;
     }
 
     public int periodMS() {
@@ -233,6 +233,6 @@ public abstract class Loop extends FixedRateTimedFuture {
 
     /** period in seconds */
     public double periodS() {
-        return periodMS.getOpaque()*0.001;
+        return (double) periodMS.getOpaque() *0.001;
     }
 }

@@ -61,7 +61,7 @@ public class FlaggingAccuracyPrecisionLengthObjective implements Objective {
             evaluate = evaluator.evaluate(individual, context);
             StringBuilder builder = new StringBuilder();
             individual.describe(builder);
-            fitnessLenght = builder.length();
+            fitnessLenght = (double) builder.length();
         } catch (TreeEvaluationException ex) {
             Logger.getLogger(FlaggingAccuracyPrecisionLengthObjective.class.getName()).log(Level.SEVERE, null, ex);
             Arrays.fill(fitness, Double.POSITIVE_INFINITY);
@@ -83,16 +83,16 @@ public class FlaggingAccuracyPrecisionLengthObjective implements Objective {
 
             BasicStats stats = new BasicStats();
 
-            stats.tp = isTruePositive(result, example.match) ? 1 : 0;
-            stats.fp = isFalsePositive(result, example.unmatch) ? 1 : 0;
-            stats.fn = isFalseNegative(result, example.match) ? 1 : 0;
-            stats.tn = isTrueNegative(result, example.unmatch) ? 1 : 0;
+            stats.tp = (long) (isTruePositive(result, example.match) ? 1 : 0);
+            stats.fp = (long) (isFalsePositive(result, example.unmatch) ? 1 : 0);
+            stats.fn = (long) (isFalseNegative(result, example.match) ? 1 : 0);
+            stats.tn = (long) (isTrueNegative(result, example.unmatch) ? 1 : 0);
             
             statsOverall.add(stats);
         }
 
-        fitness[0] = 1 - statsOverall.accuracy();
-        fitness[1] = 1 - statsOverall.precision();
+        fitness[0] = 1.0 - statsOverall.accuracy();
+        fitness[1] = 1.0 - statsOverall.precision();
         fitness[2] = fitnessLenght;
 
         return fitness;

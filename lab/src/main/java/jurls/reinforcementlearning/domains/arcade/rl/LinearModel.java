@@ -52,8 +52,8 @@ public class LinearModel implements Serializable, Cloneable {
 
         
         weights = new double[numFeatures];
-        bias = 0;
-        prediction = 0;
+        bias = (double) 0;
+        prediction = (double) 0;
     }
 
     /** Sets the learning rate for this model.
@@ -91,7 +91,7 @@ public class LinearModel implements Serializable, Cloneable {
      * @return
      */
     public double predict(double[] features) {
-        prediction = 0;
+        prediction = (double) 0;
 
         
         for (int i = 0; i < features.length; i++) {

@@ -14,7 +14,7 @@ public class SelectiveBlur {
             ImageTracer.ImageData imgd2 = new ImageTracer.ImageData(imgd.width,imgd.height,new byte[imgd.width*imgd.height*4]);
 
 
-            int radius = (int)Math.floor(rad); if(radius<1){ return imgd; } if(radius>5){ radius = 5; }
+            int radius = (int)Math.floor((double) rad); if(radius<1){ return imgd; } if(radius>5){ radius = 5; }
             int delta = (int)Math.abs(del); if(delta>1024){ delta = 1024; }
             double[] thisgk = gks[radius-1];
 
@@ -31,16 +31,16 @@ public class SelectiveBlur {
             for(j=0; j < imgd.height; j++ ){
 				for( i=0; i < imgd.width; i++ ){
 
-					racc = 0; gacc = 0; bacc = 0; aacc = 0; wacc = 0;
+					racc = (double) 0; gacc = (double) 0; bacc = (double) 0; aacc = (double) 0; wacc = (double) 0;
 					
 					for( k = -radius; k < (radius+1); k++){
 						
 						if( ((i+k) > 0) && ((i+k) < imgd.width) ){
 							idx = ((j*imgd.width)+i+k)*4;
-							racc += imgd.data[idx  ] * thisgk[k+radius];
-							gacc += imgd.data[idx+1] * thisgk[k+radius];
-							bacc += imgd.data[idx+2] * thisgk[k+radius];
-							aacc += imgd.data[idx+3] * thisgk[k+radius];
+							racc += (double) imgd.data[idx] * thisgk[k+radius];
+							gacc += (double) imgd.data[idx + 1] * thisgk[k+radius];
+							bacc += (double) imgd.data[idx + 2] * thisgk[k+radius];
+							aacc += (double) imgd.data[idx + 3] * thisgk[k+radius];
 							wacc += thisgk[k+radius];
 						}
 					}
@@ -61,16 +61,16 @@ public class SelectiveBlur {
 			for( j=0; j < imgd.height; j++ ){
 				for( i=0; i < imgd.width; i++ ){
 
-					racc = 0; gacc = 0; bacc = 0; aacc = 0; wacc = 0;
+					racc = (double) 0; gacc = (double) 0; bacc = (double) 0; aacc = (double) 0; wacc = (double) 0;
 					
 					for( k = -radius; k < (radius+1); k++){
 						
 						if( ((j+k) > 0) && ((j+k) < imgd.height) ){
 							idx = (((j+k)*imgd.width)+i)*4;
-							racc += himgd[idx  ] * thisgk[k+radius];
-							gacc += himgd[idx+1] * thisgk[k+radius];
-							bacc += himgd[idx+2] * thisgk[k+radius];
-							aacc += himgd[idx+3] * thisgk[k+radius];
+							racc += (double) himgd[idx] * thisgk[k+radius];
+							gacc += (double) himgd[idx + 1] * thisgk[k+radius];
+							bacc += (double) himgd[idx + 2] * thisgk[k+radius];
+							aacc += (double) himgd[idx + 3] * thisgk[k+radius];
 							wacc += thisgk[k+radius];
 						}
 					}
@@ -90,8 +90,8 @@ public class SelectiveBlur {
 
 					idx = ((j*imgd.width)+i)*4;
 
-                    int d = Math.abs(imgd2.data[idx] - imgd.data[idx]) + Math.abs(imgd2.data[idx + 1] - imgd.data[idx + 1]) +
-                            Math.abs(imgd2.data[idx + 2] - imgd.data[idx + 2]) + Math.abs(imgd2.data[idx + 3] - imgd.data[idx + 3]);
+                    int d = Math.abs((int) imgd2.data[idx] - (int) imgd.data[idx]) + Math.abs((int) imgd2.data[idx + 1] - (int) imgd.data[idx + 1]) +
+                            Math.abs((int) imgd2.data[idx + 2] - (int) imgd.data[idx + 2]) + Math.abs((int) imgd2.data[idx + 3] - (int) imgd.data[idx + 3]);
 
                     if(d>delta){
 						imgd2.data[idx  ] = imgd.data[idx  ];

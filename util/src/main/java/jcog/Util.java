@@ -57,12 +57,10 @@ import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.*;
 import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.lang.Math.pow;
 import static java.lang.Thread.onSpinWait;
-import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -78,7 +76,7 @@ public enum Util {
 	public static final Iterable emptyIterable = () -> emptyIterator;
 	public static final double PHI = 1.6180339887498948482;
 	public static final float PHIf = (float) PHI;
-	public static final double PHI_min_1 = PHI - 1;
+	public static final double PHI_min_1 = PHI - 1.0;
 	public static final float PHI_min_1f = (float) PHI_min_1;
 	public static final int PRIME3 = 524287;
 	public static final int PRIME2 = 92821;
@@ -101,10 +99,10 @@ public enum Util {
 	public static final ObjectMapper cborMapper =
 		new ObjectMapper(new CBORFactory())
 			.enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES);
-	public static final double log2 = Math.log(2);
+	public static final double log2 = Math.log(2.0);
 	private static final int BIG_ENOUGH_INT = 16 * 1024;
-	private static final double BIG_ENOUGH_FLOOR = BIG_ENOUGH_INT;
-	public static float sqrtMIN_NORMAL = (float) Math.sqrt(Float.MIN_NORMAL);
+	private static final double BIG_ENOUGH_FLOOR = (double) BIG_ENOUGH_INT;
+	public static float sqrtMIN_NORMAL = (float) Math.sqrt((double) Float.MIN_NORMAL);
 
 	static {
 		try {
@@ -125,7 +123,7 @@ public enum Util {
 	 * http:
 	 */
 	public static double expFast(double val) {
-		long tmp = (long) (1512775 * val + (1072693248 - 60801));
+		long tmp = (long) (1512775.0 * val + (double) (1072693248 - 60801));
 		return Double.longBitsToDouble(tmp << 32);
 	}
 
@@ -154,9 +152,9 @@ public enum Util {
 			case 0:
 				return 1;
 			case 1:
-				return x[from];
+				return (int) x[from];
 			case 2:
-				return Shorts.fromBytes(x[from], x[from + 1]);
+				return (int) Shorts.fromBytes(x[from], x[from + 1]);
 			case 3:
 				return Ints.fromBytes(x[from], x[from + 1], x[from + 2], (byte) 0);
 			case 4:
@@ -177,7 +175,7 @@ public enum Util {
 		int result = 1;
 
 		for (int i = 0; i < len; ++i) {
-			result = 31 * result + bytes[i];
+			result = 31 * result + (int) bytes[i];
 		}
 
 		return result;
@@ -228,7 +226,7 @@ public enum Util {
 	public static int hashFNV(byte[] bytes, int from, int to) {
 		int h = 0x811c9dc5;
 		for (int i = from; i < to; i++)
-			h = (h * 16777619) ^ bytes[i];
+			h = (h * 16777619) ^ (int) bytes[i];
 		return h;
 	}
 
@@ -283,11 +281,11 @@ public enum Util {
 		int strLen = line.length();
 		StringBuilder sb = new StringBuilder(strLen);
 
-		if (strLen > 0 && line.charAt(0) == '*') {
+		if (strLen > 0 && (int) line.charAt(0) == (int) '*') {
 			line = line.substring(1);
 			strLen--;
 		}
-		if (strLen > 0 && line.charAt(strLen - 1) == '*') {
+		if (strLen > 0 && (int) line.charAt(strLen - 1) == (int) '*') {
 			line = line.substring(0, strLen - 1);
 			strLen--;
 		}
@@ -365,17 +363,17 @@ public enum Util {
 	}
 
 	public static long hashPJW(String str) {
-		long BitsInUnsignedInt = (4 * 8);
-		long ThreeQuarters = (BitsInUnsignedInt * 3) / 4;
-		long OneEighth = BitsInUnsignedInt / 8;
+		long BitsInUnsignedInt = (long) (4 * 8);
+		long ThreeQuarters = (BitsInUnsignedInt * 3L) / 4L;
+		long OneEighth = BitsInUnsignedInt / 8L;
 		long HighBits = (0xFFFFFFFFL) << (BitsInUnsignedInt - OneEighth);
-		long hash = 0;
-		long test = 0;
+		long hash = 0L;
+		long test = 0L;
 
 		for (int i = 0; i < str.length(); i++) {
-			hash = (hash << OneEighth) + str.charAt(i);
+			hash = (hash << OneEighth) + (long) str.charAt(i);
 
-			if ((test = hash & HighBits) != 0) {
+			if ((test = hash & HighBits) != 0L) {
 				hash = ((hash ^ (test >> ThreeQuarters)) & (~HighBits));
 			}
 		}
@@ -384,14 +382,14 @@ public enum Util {
 	}
 
 	public static long hashELF(String str) {
-		long hash = 0;
-		long x = 0;
+		long hash = 0L;
+		long x = 0L;
 
 		int l = str.length();
 		for (int i = 0; i < l; i++) {
-			hash = (hash << 4) + str.charAt(i);
+			hash = (hash << 4) + (long) str.charAt(i);
 
-			if ((x = hash & 0xF0000000L) != 0) {
+			if ((x = hash & 0xF0000000L) != 0L) {
 				hash ^= (x >> 24);
 			}
 			hash &= ~x;
@@ -547,8 +545,8 @@ public enum Util {
 	 */
 	public static int longToBytes(long l, byte[] target, int offset) {
 		for (int i = offset + 7; i >= offset; i--) {
-			target[i] = (byte) (l & 0xFF);
-			l >>= 8;
+			target[i] = (byte) (l & 0xFFL);
+			l >>= 8L;
 		}
 		return offset + 8;
 	}
@@ -586,7 +584,7 @@ public enum Util {
 	 * http:
 	 */
 	public static int floorInt(float x) {
-		return (int) (x + BIG_ENOUGH_FLOOR) - BIG_ENOUGH_INT;
+		return (int) ((double) x + BIG_ENOUGH_FLOOR) - BIG_ENOUGH_INT;
 	}
 
 	/**
@@ -620,12 +618,12 @@ public enum Util {
 
 	public static long lerpLong(float x, long min, long max) {
 		if (min == max) return min;
-		return Math.round(min + (max - min) * unitize((double) x));
+		return Math.round((double) min + (double) (max - min) * unitize((double) x));
 	}
 
 	public static int lerpInt(float x, int min, int max) {
 		if (min == max) return min;
-		return Math.round(min + (max - min) * unitize(x));
+		return Math.round((float) min + (float) (max - min) * unitize(x));
 	}
 
 
@@ -634,20 +632,20 @@ public enum Util {
 	}
 
 	public static float mean(float a, float b) {
-		return (a + b) / 2;
+		return (a + b) / 2.0F;
 	}
 
 	public static long mean(long a, long b) {
-		return (a + b) / 2;
+		return (a + b) / 2L;
 	}
 
 	public static float mean(float a, float b, float c) {
-		return (a + b + c) / 3;
+		return (a + b + c) / 3.0F;
 	}
 
 
 	public static double mean(double a, double b) {
-		return (a + b) / 2;
+		return (a + b) / 2.0;
 	}
 
 	public static double mean(double... d) {
@@ -656,7 +654,7 @@ public enum Util {
 			result += v;
 		}
 
-		return result / d.length;
+		return result / (double) d.length;
 	}
 
 	/**
@@ -689,11 +687,11 @@ public enum Util {
 	}
 
 	public static float unitizeSafe(float x) {
-		return Util.clampSafe(x, 0, 1f);
+		return Util.clampSafe(x, (float) 0, 1f);
 	}
 
 	public static double unitizeSafe(double x) {
-		return Util.clampSafe(x, 0, 1f);
+		return Util.clampSafe(x, (double) 0, 1);
 	}
 
 
@@ -742,7 +740,7 @@ public enum Util {
 
 	public static float roundSafe(float value, float epsilon) {
 		if (epsilon <= Float.MIN_NORMAL) return value;
-		else return Math.round(value / epsilon) * epsilon;
+		else return (float) Math.round(value / epsilon) * epsilon;
 	}
 
 	public static double round(double value, double epsilon) {
@@ -753,7 +751,7 @@ public enum Util {
 
 	public static double roundSafe(double value, double epsilon) {
 		if (epsilon <= Double.MIN_NORMAL) return value;
-		return Math.round(value / epsilon) * epsilon;
+		return (double) Math.round(value / epsilon) * epsilon;
 	}
 
 	/**
@@ -766,30 +764,30 @@ public enum Util {
 	}
 
 	public static long round(long x, int dither) {
-		return dither * Math.round(((double) x) / dither);
+		return (long) dither * Math.round(((double) x) / (double) dither);
 	}
 
 
 	public static int toInt(float f, int discretness) {
-		return Math.round(f * discretness);
+		return Math.round(f * (float) discretness);
 	}
 
 	public static long toInt(double f, int discretness) {
-		return Math.round(f * discretness);
+		return Math.round(f * (double) discretness);
 	}
 
 	public static float toFloat(int i, int discretness) {
-		return ((float) i) / discretness;
+		return ((float) i) / (float) discretness;
 	}
 
 
 	public static boolean equals(float a, float b) {
-		return equals(a, b, Float.MIN_NORMAL * 2);
+		return equals(a, b, Float.MIN_NORMAL * 2.0F);
 	}
 
 	public static boolean equals(long a, long b, int tolerance) {
 		assert(tolerance > 0);
-		return Math.abs(a - b) < tolerance;
+		return Math.abs(a - b) < (long) tolerance;
 	}
 
 	/**
@@ -805,7 +803,7 @@ public enum Util {
 	}
 
 	public static boolean equals(double a, double b) {
-		return equals(a, b, Double.MIN_NORMAL * 2);
+		return equals(a, b, Double.MIN_NORMAL * 2.0);
 	}
 
 	/**
@@ -880,7 +878,7 @@ public enum Util {
 	public static int bin(float x, int bins) {
 //        assertFinite(x);
 		//assert(bins > 0);
-		return Util.clampSafe((int) (x * bins), 0, bins - 1);
+		return Util.clampSafe((int) (x * (float) bins), 0, bins - 1);
 		//return (int) Math.floor(x * bins);
 		//return (int) (x  * bins);
 
@@ -904,7 +902,7 @@ public enum Util {
 	 * finds the mean value of a given bin
 	 */
 	public static float unbinCenter(int b, int bins) {
-		return ((float) b) / bins;
+		return ((float) b) / (float) bins;
 	}
 
 //    public static <D> D runProbability(Random rng, float[] probs, D[] choices) {
@@ -963,9 +961,9 @@ public enum Util {
 
 	public static byte base36(int index) {
 		if (index < 10)
-			return (byte) ('0' + index);
+			return (byte) ((int) '0' + index);
 		else if (index < (10 + 26))
-			return (byte) ((index - 10) + 'a');
+			return (byte) ((index - 10) + (int) 'a');
 		else
 			throw new RuntimeException("out of bounds");
 	}
@@ -974,11 +972,11 @@ public enum Util {
 	 * clamps output to 0..+1.  y=0.5 at x=0
 	 */
 	public static float sigmoid(float v) {
-		return (float) (1 / (1 + Math.exp(-v)));
+		return (float) (1.0 / (1.0 + Math.exp((double) -v)));
 	}
 
 	public static double sigmoid(double v) {
-		return (1 / (1 + Math.exp(-v)));
+		return (1.0 / (1.0 + Math.exp(-v)));
 	}
 
 	public static float sigmoidDiff(float a, float b) {
@@ -1083,13 +1081,13 @@ public enum Util {
 		return normalize(x, minmax[0], minmax[1]);
 	}
 	public static float[] normalizeCartesian(float[] x) {
-		double magSq = 0;
+		double magSq = (double) 0;
 		for (int i = 0; i < x.length; i++) {
 			float xi = x[i];
-			magSq += xi * xi;
+			magSq = magSq + (double) xi * xi;
 		}
 
-		if (magSq < Math.sqrt(Float.MIN_NORMAL))
+		if (magSq < Math.sqrt((double) Float.MIN_NORMAL))
 			return x; //~zero vector, leave unchanged
 
 		float mag = (float) Math.sqrt(magSq);
@@ -1153,11 +1151,11 @@ public enum Util {
 
 	public static double normalize(double x, double min, double max) {
 		if (x != x)
-			return Float.NaN;
+			return (double) Float.NaN;
 		assertFinite(min);
 		assertFinite(max);
 		if (max - min <= Double.MIN_NORMAL)
-			return 0.5f;
+			return 0.5;
 		else {
 			assert (max >= min);
 			return (x - min) / (max - min);
@@ -1184,14 +1182,14 @@ public enum Util {
 			average += p;
 		}
 		int n = population.length;
-		average /= n;
+		average = average / (float) n;
 
 		float variance = 0.0f;
 		for (float p : population) {
 			float d = p - average;
 			variance += d * d;
 		}
-		return variance / n;
+		return variance / (float) n;
 	}
 
 	public static double[] avgvar(double[] population) {
@@ -1200,14 +1198,14 @@ public enum Util {
 			average += v;
 		}
 		int n = population.length;
-		average /= n;
+		average = average / (double) n;
 
 		double variance = 0.0;
 		for (double p : population) {
 			double d = p - average;
 			variance += d * d;
 		}
-		variance /= n;
+		variance = variance / (double) n;
 
 		return new double[]{average, variance};
 	}
@@ -1229,7 +1227,7 @@ public enum Util {
 			sum += v;
 		}
 		double variance = sum;
-		variance /= n;
+		variance = variance / (double) n;
 
 		return new double[]{avg, variance};
 	}
@@ -1255,7 +1253,7 @@ public enum Util {
 		double[] f = new double[10];
 		int count = 0;
 		for (int i = 0; i < l; i++) {
-			double v = d[i];
+			double v = (double) d[i];
 			if (f.length == count) f = Arrays.copyOf(f, count * 2);
 			f[count++] = v;
 		}
@@ -1289,7 +1287,7 @@ public enum Util {
 	}
 
 	public static float[] minmaxsum(float[] x) {
-		float sum = 0;
+		float sum = (float) 0;
 		float min = Float.POSITIVE_INFINITY;
 		float max = Float.NEGATIVE_INFINITY;
 		for (float y : x) {
@@ -1317,7 +1315,7 @@ public enum Util {
 			procedure.run();
 		} else {
 			long dtNS = timeNS(procedure);
-			logger.info("{} {}", procName, Texts.timeStr(dtNS));
+			logger.info("{} {}", procName, Texts.timeStr((double) dtNS));
 		}
 	}
 
@@ -1389,7 +1387,7 @@ public enum Util {
 
 	@SafeVarargs
     public static <X> float sum(FloatFunction<X> value, X... xx) {
-		float y = 0;
+		float y = (float) 0;
 		for (X x : xx)
 			y += value.floatValueOf(x);
 		return y;
@@ -1399,7 +1397,7 @@ public enum Util {
     public static <X> double sumDouble(FloatFunction<X> value, X... xx) {
 		double y = 0.0;
 		for (X x : xx) {
-			double floatValueOf = value.floatValueOf(x);
+			double floatValueOf = (double) value.floatValueOf(x);
 			y += floatValueOf;
 		}
 		return y;
@@ -1423,20 +1421,20 @@ public enum Util {
 	}
 
 	public static <X> float sum(FloatFunction<X> value, Iterable<X> xx) {
-		float y = 0;
+		float y = (float) 0;
 		for (X x : xx)
 			y += value.floatValueOf(x);
 		return y;
 	}
 
 	public static <X> float avg(FloatFunction<X> value, Iterable<X> xx) {
-		float y = 0;
+		float y = (float) 0;
 		int count = 0;
 		for (X x : xx) {
 			y += value.floatValueOf(x);
 			count++;
 		}
-		return y / count;
+		return y / (float) count;
 	}
 
 	@SafeVarargs
@@ -1542,10 +1540,10 @@ public enum Util {
 
 	@SafeVarargs
     public static <X> float mean(FloatFunction<X> value, X... xx) {
-		float y = 0;
+		float y = (float) 0;
 		for (X x : xx)
 			y += value.floatValueOf(x);
-		return y / xx.length;
+		return y / (float) xx.length;
 	}
 
 	@SafeVarargs
@@ -1590,7 +1588,7 @@ public enum Util {
 
 	public static double max(double... x) {
 		boolean seen = false;
-		double best = 0;
+		double best = (double) 0;
 		for (double f : x) {
 			if (f >= Double.NEGATIVE_INFINITY) {
 				if (!seen || Double.compare(f, best) > 0) {
@@ -1606,7 +1604,7 @@ public enum Util {
 	public static byte max(byte... x) {
 		byte y = Byte.MIN_VALUE;
 		for (byte f : x) {
-			if (f > y)
+			if ((int) f > (int) y)
 				y = f;
 		}
 		return y;
@@ -1623,7 +1621,7 @@ public enum Util {
 
 	public static double min(double... x) {
 		boolean seen = false;
-		double best = 0;
+		double best = (double) 0;
 		for (double f : x) {
 			if (f <= Double.POSITIVE_INFINITY) {
 				if (!seen || Double.compare(f, best) < 0) {
@@ -1666,14 +1664,14 @@ public enum Util {
 	}
 
 	public static float sum(float... x) {
-		float y = 0;
+		float y = (float) 0;
 		for (float f : x)
 			y += f;
 		return y;
 	}
 
 	public static float sumAbs(float... x) {
-		float y = 0;
+		float y = (float) 0;
 		for (float f : x) {
 			y += Math.abs(f);
 		}
@@ -1761,17 +1759,17 @@ public enum Util {
 	}
 
 	public static float sum(int count, IntToFloatFunction values) {
-		float weightSum = 0;
+		float weightSum = (float) 0;
 		for (int i = 0; i < count; i++) {
 			float w = values.valueOf(i);
-			assert (w == w && w >= 0);
+			assert (w == w && w >= (float) 0);
 			weightSum += w;
 		}
 		return weightSum;
 	}
 
 	public static float sumIfPositive(int count, IntToFloatFunction values) {
-		float weightSum = 0;
+		float weightSum = (float) 0;
 		for (int i = 0; i < count; i++) {
 			float w = values.valueOf(i);
 			//assert (w == w);
@@ -1821,7 +1819,7 @@ public enum Util {
 		if (b.length != l)
 			return false;
 		for (int i = 0; i < l; i++) {
-			if (a[i] != b[i]) {
+			if ((int) a[i] != (int) b[i]) {
 				return false;
 			}
 		}
@@ -1829,7 +1827,7 @@ public enum Util {
 	}
 
 	public static int short2Int(short high, short low) {
-		return high << 16 | low;
+		return (int) high << 16 | (int) low;
 	}
 
 	public static short short2Int(int x, boolean high) {
@@ -1902,7 +1900,7 @@ public enum Util {
 	}
 
 	public static double sqr(long x) {
-		return x * x;
+		return (double) (x * x);
 	}
 
 	public static int sqr(int x) {
@@ -1918,7 +1916,7 @@ public enum Util {
 	}
 
 	public static float sqrt(float v) {
-		return (float) Math.sqrt(v);
+		return (float) Math.sqrt((double) v);
 	}
 
 	public static float cube(float x) {
@@ -2029,7 +2027,7 @@ public enum Util {
 //    }
 
 	public static void sleepMS(long periodMS) {
-		sleepNS(periodMS * 1_000_000);
+		sleepNS(periodMS * 1_000_000L);
 	}
 
 
@@ -2039,7 +2037,7 @@ public enum Util {
 
 	public static void sleepNS(long remainingNanos) {
 
-		sleepNS(remainingNanos, 50 * 1000 /* 50uSec is the default linux kernel resolution result */);
+		sleepNS(remainingNanos, (long) (50 * 1000) /* 50uSec is the default linux kernel resolution result */);
 	}
 
 	/**
@@ -2048,11 +2046,11 @@ public enum Util {
 	 */
 	public static void sleepNS(long nanos, long thresholdNS) {
 		//try {
-		if (nanos <= 0) return;
+		if (nanos <= 0L) return;
 
 		long now = System.nanoTime();
 		long end = now + nanos;
-		while (nanos > 0) {
+		while (nanos > 0L) {
 
 			if (nanos >= thresholdNS) {
 				LockSupport.parkNanos(nanos);
@@ -2140,8 +2138,8 @@ public enum Util {
 		if (n < 1) {
 			return false;
 		} else {
-			double p_of_2 = (Math.log(n) / log2);
-			return Math.abs(p_of_2 - Math.round((int) p_of_2)) == 0;
+			double p_of_2 = (Math.log((double) n) / log2);
+			return Math.abs(p_of_2 - (double) Math.round((float) (int) p_of_2)) == (double) 0;
 		}
 	}
 
@@ -2151,8 +2149,8 @@ public enum Util {
 	 */
 	public static float lerp2d(float x, float z, float nw, float ne, float se, float sw) {
 
-		x -= (int) x;
-		z -= (int) z;
+		x = x - (float) (int) x;
+		z = z - (float) (int) z;
 
 
 		if (x > z)
@@ -2183,7 +2181,7 @@ public enum Util {
 				case 0:
 					return Texts.n2(s) + 's';
 				case 3:
-					return Texts.n2(s * 1000) + "ms";
+					return Texts.n2(s * 1000.0) + "ms";
 				case 6:
 					return Texts.n2(s * 1.0E6) + "us";
 				default:
@@ -2351,7 +2349,7 @@ public enum Util {
 	 * http:
 	 */
 	public static float sigmoidBipolar(float x, float sharpen) {
-		return (float) ((1.0 / (1 + Math.exp(-sharpen * x)) - 0.5) * 2);
+		return (float) ((1.0 / (1.0 + Math.exp((double) (-sharpen * x))) - 0.5) * 2.0);
 	}
 
 
@@ -2429,7 +2427,7 @@ public enum Util {
 
 
 	public static float softmax(float x, float temp) {
-		float f = (float) Math.exp(x / temp);
+		float f = (float) Math.exp((double) (x / temp));
 		if (!Float.isFinite(f))
 			throw new RuntimeException("softmax(" + f + ',' + temp + ") is non-finite");
 		return f;
@@ -2477,7 +2475,7 @@ public enum Util {
 		long max = runtime.maxMemory();
 		long usedMemory = total - free;
 		long availableMemory = max - usedMemory;
-		float ratio = 1f - ((float) availableMemory) / max;
+		float ratio = 1f - ((float) availableMemory) / (float) max;
 
 		return ratio;
 	}
@@ -2516,9 +2514,9 @@ public enum Util {
 	 * http:
 	 */
 	public static float tanhFast(float x) {
-		if (x <= -3) return -1f;
+		if (x <= -3.0F) return -1f;
 		if (x >= 3f) return +1f;
-		return x * (27 + x * x) / (27 + 9 * x * x);
+		return x * (27.0F + x * x) / (27.0F + 9.0F * x * x);
 	}
 
 	public static Object toString(Object x) {
@@ -2533,7 +2531,7 @@ public enum Util {
 		if (l != 0)
 			return l;
 		for (int i = 0; i < al; i++) {
-			int d = a[i] - b[i];
+			int d = (int) a[i] - (int) b[i];
 			if (d != 0) {
 				return d;
 			}
@@ -2575,8 +2573,8 @@ public enum Util {
 	}
 
 	public static byte branchOr(byte key, ByteByteHashMap count, byte branch) {
-		byte branchBit = (byte) (1 << branch);
-		return count.updateValue(key, branchBit, (x) -> (byte) (x | branchBit));
+		byte branchBit = (byte) (1 << (int) branch);
+		return count.updateValue(key, branchBit, (x) -> (byte) ((int) x | (int) branchBit));
 	}
 
 	public static <X> X first(X[] x) {
@@ -2619,7 +2617,7 @@ public enum Util {
 			tx = -1f;
 		}
 		float x0 = (x + tx);
-		return (float) (a * Math.sqrt(1f - x0 * x0 * 4) + b);
+		return (float) ((double) a * Math.sqrt((double) (1f - x0 * x0 * 4.0F)) + (double) b);
 	}
 
 //    /* domain: [0..1], range: [0..1] */
@@ -2731,11 +2729,11 @@ public enum Util {
 	 * @return The arithmetic average the inputs
 	 */
 	public static float aveAri(float... arr) {
-		float sum = 0;
+		float sum = (float) 0;
 		for (float f : arr) {
 			sum += f;
 		}
-		return sum / arr.length;
+		return sum / (float) arr.length;
 	}
 
 	/**
@@ -2752,16 +2750,16 @@ public enum Util {
 	 * @return The geometric average the inputs
 	 */
 	public static float aveGeo(float... arr) {
-		float product = 1;
+		float product = 1.0F;
 		for (float f : arr) {
-			if (f == 0) return 0;
+			if (f == (float) 0) return (float) 0;
 			product *= f;
 		}
-		return (float) pow(product, 1.00 / arr.length);
+		return (float) pow((double) product, 1.00 / (double) arr.length);
 	}
 
 	public static float aveGeo(float a, float b) {
-		return (float) Math.sqrt(a * b);
+		return (float) Math.sqrt((double) (a * b));
 	}
 
 	public static void assertUnitized(float... f) {
@@ -2771,13 +2769,13 @@ public enum Util {
 	}
 
 	public static float assertUnitized(float x) {
-		if (!Float.isFinite(x) || x < 0 || x > 1)
+		if (!Float.isFinite(x) || x < (float) 0 || x > 1.0F)
 			throw new UnsupportedOperationException("non-unitized value: " + x);
 		return x;
 	}
 
 	public static double assertUnitized(double x) {
-		if (!Double.isFinite(x) || x < 0 || x > 1)
+		if (!Double.isFinite(x) || x < (double) 0 || x > 1.0)
 			throw new UnsupportedOperationException("non-unitized value: " + x);
 		return x;
 	}
@@ -2810,7 +2808,7 @@ public enum Util {
 		int[] t = new int[10];
 		int count = 0;
 		for (int i = 0; i < n; i++) {
-			int i1 = array[i];
+			int i1 = (int) array[i];
 			if (t.length == count) t = Arrays.copyOf(t, count * 2);
 			t[count++] = i1;
 		}
@@ -2853,8 +2851,8 @@ public enum Util {
 		List<WeightedObservedPoint> obs = new FasterList(points);
 		int yMin = Integer.MAX_VALUE, yMax = Integer.MIN_VALUE;
 		for (int i = 0; i < pairs.length; ) {
-			int y;
-			obs.add(new WeightedObservedPoint(1f, pairs[i++], y = pairs[i++]));
+			int y = (int)pairs[i++];
+			obs.add(new WeightedObservedPoint(1, (double) pairs[i++], y));
 			if (y < yMin) yMin = y;
 			if (y > yMax) yMax = y;
 		}
@@ -2873,7 +2871,7 @@ public enum Util {
 		assert (yMin < yMax);
 		return (X) -> {
 			int n = coefficients.length;
-			float x = toInt.applyAsInt(X);
+			float x = (float) toInt.applyAsInt(X);
 			float y = coefficients[n - 1];
 			for (int j = n - 2; j >= 0; j--) {
 				y = x * y + coefficients[j];
@@ -2885,7 +2883,7 @@ public enum Util {
 	public static int sqrtInt(int x) {
 		if (x < 0)
 			throw new NumberException("sqrt of negative value", x);
-		return (int) Math.round(Math.sqrt(x));
+		return (int) Math.round(Math.sqrt((double) x));
 	}
 
 
@@ -2938,7 +2936,7 @@ public enum Util {
 
 	public static float intProperty(String name, int defaultValue) {
 		String p = System.getProperty(name);
-		return p != null ? Integer.parseInt(p) : defaultValue;
+		return (float) (p != null ? Integer.parseInt(p) : defaultValue);
 	}
 
 	public static double interpSum(float[] data, double sStart, double sEnd) {
@@ -2949,10 +2947,10 @@ public enum Util {
 		int iStart = (int) Math.ceil(sStart);
 		int iEnd = (int) Math.floor(sEnd);
 		if (iEnd < 0 || iStart >= capacity)
-			return 0;
+			return (double) 0;
 
 		if (iEnd == iStart)
-			return data.valueOf(iStart);
+			return (double) data.valueOf(iStart);
 
 		int i = iStart - 1;
 
@@ -2965,22 +2963,22 @@ public enum Util {
 			i = 0; //wrap?
 		}
 
-		double sum = 0;
-		sum += iStart > 0 ? (iStart - sStart) * data.valueOf(i++) : 0;
+		double sum = (double) 0;
+		sum += iStart > 0 ? ((double) iStart - sStart) * (double) data.valueOf(i++) : (double) 0;
 
 		for (int k = iStart; k < iEnd; k++) {
 			if (i == capacity) i = 0;
-			sum += data.valueOf(i++);
+			sum = sum + (double) data.valueOf(i++);
 		}
 
 		if (i == capacity) i = 0;
-		sum += (sEnd - iEnd) * data.valueOf(i);
+		sum += (sEnd - (double) iEnd) * (double) data.valueOf(i);
 		return sum;
 	}
 
 
 	public static int longToInt(long x) {
-		if (x > Integer.MAX_VALUE - 1 || x < Integer.MIN_VALUE + 1)
+		if (x > (long) (Integer.MAX_VALUE - 1) || x < (long) (Integer.MIN_VALUE + 1))
 			throw new NumberException("long exceeds int capacity", x);
 		return (int) x;
 	}
@@ -2989,12 +2987,12 @@ public enum Util {
 	 * faster than cartesian distance
 	 */
 	public static void normalizeHamming(float[] v, float target) {
-		float current = 0;
+		float current = (float) 0;
 		for (int i = 0; i < v.length; i++) {
 			current += Math.abs(v[i]);
 		}
 		if (current < ScalarValue.EPSILON) {
-			Arrays.fill(v, target / v.length);
+			Arrays.fill(v, target / (float) v.length);
 		} else {
 			float scale = target / current;
 			for (int i = 0; i < v.length; i++) {
@@ -3008,11 +3006,11 @@ public enum Util {
 	}
 
 	public static long readToWrite(long l, StampedLock lock, boolean strong) {
-		if (l != 0) {
+		if (l != 0L) {
 			long ll = lock.tryConvertToWriteLock(l);
-			if (ll != 0) return ll;
+			if (ll != 0L) return ll;
 
-			if (!strong) return 0;
+			if (!strong) return 0L;
 
 			lock.unlockRead(l);
 		}
@@ -3021,9 +3019,9 @@ public enum Util {
 	}
 
 	public static long writeToRead(long l, StampedLock lock) {
-		if (l != 0) {
+		if (l != 0L) {
 			long ll = lock.tryConvertToReadLock(l);
-			if (ll != 0) return ll;
+			if (ll != 0L) return ll;
 
 			lock.unlockWrite(l);
 		}

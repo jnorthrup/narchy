@@ -38,7 +38,7 @@ public class a extends GamePanel {
 
   @Override
   public void start() {
-    enableEvents(8);
+    enableEvents(8L);
     new Thread(this).start();
   }
 
@@ -55,11 +55,11 @@ public class a extends GamePanel {
       BufferedImage candleLight = new BufferedImage(112, 112, 2);
     for(i = 0; i < 112; i++) {
       for(j = 0; j < 112; j++) {
-          float X = 55.5f - j;
-          float Y = 55.5f - i;
+          float X = 55.5f - (float) j;
+          float Y = 55.5f - (float) i;
           float R2 = X * X + Y * Y;
-          float F = R2 / 1600;
-        candleLight.setRGB(i, j, (R2 < 1600 ? (int)(255 * F * F) : 255) << 24);
+          float F = R2 / 1600.0F;
+        candleLight.setRGB(i, j, (R2 < 1600.0F ? (int)(255.0F * F * F) : 255) << 24);
       }
     }
 
@@ -83,7 +83,7 @@ public class a extends GamePanel {
       sprites[i + SPRITE_FLIPPED] = new BufferedImage(16, 16, 2);
       for(y = 0; y < 16; y++) {
         for(x = 0; x < 16; x++) {
-          j = (S.charAt((x < 8 ? 1 : 0) + (y << 1) + (i << 5))
+          j = ((int) S.charAt((x < 8 ? 1 : 0) + (y << 1) + (i << 5))
               >> ((x & 7) << 1)) & 3;
           pixels2[15 - x] = pixels[x] = j == 0 ? 0 : 0xFF000000
               | (i < SPRITE_ROCK ? (j == 1 ? 0x994E00 : j == 2
@@ -114,7 +114,7 @@ public class a extends GamePanel {
     for(i = 0; i < 5; i++) {
       for(j = 0; j < 55; j++) {
         for(k = 0; k < 16; k++) {
-          map[j][(i << 4) + k] = ((S.charAt(MAP_OFFSET + j + 55 * i) >> k) & 1)
+          map[j][(i << 4) + k] = (((int) S.charAt(MAP_OFFSET + j + 55 * i) >> k) & 1)
               == 1 ? MAP_WALL : MAP_EMPTY;
         }
       }
@@ -241,7 +241,7 @@ public class a extends GamePanel {
       int q;
       int p;
       do {
-        nextFrameStartTime += 16666667;
+        nextFrameStartTime += 16666667L;
 
         
 
@@ -308,9 +308,9 @@ public class a extends GamePanel {
         }
 
         if (attacking > 0) {
-            float angle = 1.57f * playerDirection;
-          r = 8 + playerX + (int)(16 * Math.cos(angle));
-          s = 8 + playerY + (int)(16 * Math.sin(angle));
+            float angle = 1.57f * (float) playerDirection;
+          r = 8 + playerX + (int)(16.0 * Math.cos((double) angle));
+          s = 8 + playerY + (int)(16.0 * Math.sin((double) angle));
           if (map[s >> 4][r >> 4] == MAP_CRACKED_WALL) {
             map[s >> 4][r >> 4] = MAP_EMPTY;
               int[] enemy = new int[32];
@@ -658,7 +658,7 @@ public class a extends GamePanel {
           
           i = playerX - cameraX + 8;
           j = playerY - cameraY + 72;
-            float angle = 1.57f * (playerDirection - 1);
+            float angle = 1.57f * (float) (playerDirection - 1);
             switch (playerDirection) {
                 case DIRECTION_UP:
                     i -= 2;
@@ -674,7 +674,7 @@ public class a extends GamePanel {
                     break;
             }
           g.translate(i, j);
-          g.rotate(angle);
+          g.rotate((double) angle);
           g.drawImage(sprites[SPRITE_SWORD], -8,
               attacking <= 4 ? (attacking << 1) - 4 : 4, null);
           g.setTransform(affineTransform);
@@ -706,7 +706,7 @@ public class a extends GamePanel {
             g.drawLine(0, -j, 0, j);
             g.drawLine(-j, 0, j, 0);
           } else {
-            g.rotate(1.57f * enemy[ENEMY_DIRECTION]);
+            g.rotate((double) (1.57f * (float) enemy[ENEMY_DIRECTION]));
             g.drawImage(sprites[enemy[ENEMY_SPRITE]], -8, -8, null);
           }
           g.setTransform(affineTransform);
@@ -759,7 +759,7 @@ public class a extends GamePanel {
       }
 
       
-      while(nextFrameStartTime - System.nanoTime() > 0) {
+      while(nextFrameStartTime - System.nanoTime() > 0L) {
         Thread.yield();
       }
     }
@@ -797,7 +797,7 @@ public class a extends GamePanel {
     frame.pack();
     frame.setLocationRelativeTo(null);
     frame.setVisible(true);
-    Thread.sleep(250);
+    Thread.sleep(250L);
     applet.start();
   }
 }

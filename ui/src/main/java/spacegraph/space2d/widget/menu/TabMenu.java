@@ -20,8 +20,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static java.util.stream.Collectors.toList;
-
 public class TabMenu extends Menu {
 
     private final Splitting wrap;
@@ -49,7 +47,7 @@ public class TabMenu extends Menu {
         }
         tabs.set(list);
 
-        wrap = new Splitting(tabs, 0, content.view());
+        wrap = new Splitting(tabs, (float) 0, content.view());
 
         set(wrap);
     }
@@ -120,7 +118,7 @@ public class TabMenu extends Menu {
 
         //return Splitting.row(bb, 0.75f, new AspectAlign(cc, AspectAlign.Align.RightTop,1, 0.75f));
 
-        AspectAlign ccc = new AspectAlign(cc, 1, AspectAlign.Align.TopRight, 0.25f, 0.25f);
+        AspectAlign ccc = new AspectAlign(cc, 1.0F, AspectAlign.Align.TopRight, 0.25f, 0.25f);
         return new MetaHover(bb, ()->ccc);
         //return new Stacking(cc, ccc);
 

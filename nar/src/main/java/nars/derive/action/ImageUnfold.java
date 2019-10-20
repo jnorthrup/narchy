@@ -33,8 +33,8 @@ public class ImageUnfold extends NativeHow {
 
 		Term t0 = t.sub(0), t1 = t.sub(1);
 		boolean
-			t0p = t0 instanceof Compound && t0.opID() == PROD.id,
-			t1p = t1 instanceof Compound && t1.opID() == PROD.id;
+			t0p = t0 instanceof Compound && t0.opID() == (int) PROD.id,
+			t1p = t1 instanceof Compound && t1.opID() == (int) PROD.id;
 
 		if (t0p)
 			unfold(why, d, t, t0, t1, true);

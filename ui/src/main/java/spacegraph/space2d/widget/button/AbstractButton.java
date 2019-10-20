@@ -10,7 +10,6 @@ import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.ImageTexture;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.IntStream;
 
 import static java.awt.event.KeyEvent.VK_ENTER;
 import static java.awt.event.KeyEvent.VK_SPACE;
@@ -24,7 +23,7 @@ public abstract class AbstractButton extends Widget {
     static final int CLICK_BUTTON = 0;
 
     final Clicking click = new Clicking(CLICK_BUTTON,this, (f) -> {
-        dz = 0;
+        dz = (float) 0;
         onClick(f);
     }, () -> dz = 0.5f, () -> dz = 0f, () -> dz = 0f);
 
@@ -112,8 +111,8 @@ public abstract class AbstractButton extends Widget {
     /** when clicked by key press */
     private void onClick(KeyEvent key) {
         if (enabled()) {
-            int keyCode = key.getKeyCode();
-            if (keyCode == KeyEvent.VK_SPACE || keyCode == KeyEvent.VK_ENTER)
+            int keyCode = (int) key.getKeyCode();
+            if (keyCode == (int) KeyEvent.VK_SPACE || keyCode == (int) KeyEvent.VK_ENTER)
                 onClick();
         }
     }
@@ -123,7 +122,7 @@ public abstract class AbstractButton extends Widget {
         if (!super.key(e, pressedOrReleased)) {
             if (pressedOrReleased) {
                 short c = e.getKeyCode();
-                if (c == VK_ENTER || c == VK_SPACE) {
+                if ((int) c == VK_ENTER || (int) c == VK_SPACE) {
                     onClick(e);
                     return true;
                 }

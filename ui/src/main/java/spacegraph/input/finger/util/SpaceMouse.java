@@ -67,11 +67,11 @@ public abstract class SpaceMouse extends MouseAdapter {
         target.zero();
         target.addScaled(in, space.zNear);
         target.addScaled(right,
-            (float) (x*(space.right-space.left))/2
+            (float) ((double) x *(space.right-space.left))/ 2.0F
             //(float) (x * hLength)
         );
         target.addScaled(up,
-            (float) (y*(space.top-space.bottom))/2
+            (float) ((double) y *(space.top-space.bottom))/ 2.0F
             //(float) (y * vLength)
         );
 

@@ -19,9 +19,7 @@ import nars.term.util.conj.Conj;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
 
-import static java.util.stream.Collectors.toList;
 import static nars.Op.INT;
 import static nars.Op.PROD;
 

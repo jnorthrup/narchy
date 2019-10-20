@@ -18,7 +18,7 @@ public class DenseIntUndirectedGraph implements ShortUndirectedGraph {
     public final int[][] data;
 
     public DenseIntUndirectedGraph(short dim) {
-        this.data = new int[dim][dim]; 
+        this.data = new int[(int) dim][(int) dim];
         clear();
     }
 
@@ -35,23 +35,23 @@ public class DenseIntUndirectedGraph implements ShortUndirectedGraph {
 
     @Override
     public void setEdge(short x, short y, int value) {
-        data[x][y] = value;
-        data[y][x] = value;
+        data[(int) x][(int) y] = value;
+        data[(int) y][(int) x] = value;
     }
 
     private void addToEdge(short x, short y, int d) {
-        int e = data[x][y];
+        int e = data[(int) x][(int) y];
         if (e!=CLEAR_VALUE) {
-            data[x][y] += d;
-            data[y][x] += d;
+            data[(int) x][(int) y] += d;
+            data[(int) y][(int) x] += d;
         }
     }
 
     @Override
     public void edgesOf(short vertex, ShortIntProcedure eachKeyValue) {
-        int[] a = data[vertex];
-        for (short i = 0; i < a.length; i++) {
-            int aa = a[i];
+        int[] a = data[(int) vertex];
+        for (short i = (short) 0; (int) i < a.length; i++) {
+            int aa = a[(int) i];
             if (aa != CLEAR_VALUE) {
                 eachKeyValue.value(i, aa);
             }
@@ -60,9 +60,9 @@ public class DenseIntUndirectedGraph implements ShortUndirectedGraph {
 
     @Override
     public void edgesOf(short vertex, ShortProcedure eachKey) {
-        int[] a = data[vertex];
-        for (short i = 0; i < a.length; i++) {
-            int aa = a[i];
+        int[] a = data[(int) vertex];
+        for (short i = (short) 0; (int) i < a.length; i++) {
+            int aa = a[(int) i];
             if (aa != CLEAR_VALUE) {
                 eachKey.value(i);
             }
@@ -73,9 +73,9 @@ public class DenseIntUndirectedGraph implements ShortUndirectedGraph {
     @Override
     public void removeEdgeIf(IntPredicate filter) {
         int l = data.length;
-        for (short i = 0; i < l; i++) {
-            if (filter.accept(i)) {
-                for (short j = 0; j < l; j++) {
+        for (short i = (short) 0; (int) i < l; i++) {
+            if (filter.accept((int) i)) {
+                for (short j = (short) 0; (int) j < l; j++) {
                     setEdge(i, j, CLEAR_VALUE);
                 }
             }
@@ -84,7 +84,7 @@ public class DenseIntUndirectedGraph implements ShortUndirectedGraph {
 
     @Override
     public void addToEdges(short x, int d) {
-        for (short i = 0; i < data.length; i++) {
+        for (short i = (short) 0; (int) i < data.length; i++) {
             addToEdge(x, i, d);
         }
     }
@@ -92,9 +92,9 @@ public class DenseIntUndirectedGraph implements ShortUndirectedGraph {
 
     @Override
     public void removeVertex(short v) {
-        Arrays.fill(data[v], CLEAR_VALUE);
+        Arrays.fill(data[(int) v], CLEAR_VALUE);
         for (int[] ee : data) {
-            ee[v] = CLEAR_VALUE;
+            ee[(int) v] = CLEAR_VALUE;
         }
     }
 

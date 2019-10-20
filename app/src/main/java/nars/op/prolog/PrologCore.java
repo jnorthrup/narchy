@@ -188,7 +188,7 @@ public class PrologCore extends Prolog implements Consumer<Task> {
 
         logger.info("solve {}", questionTerm);
 
-        long timeoutMS = 50;
+        long timeoutMS = 50L;
         solveWhile(questionTerm, (answer) -> {
 
 
@@ -321,7 +321,7 @@ public class PrologCore extends Prolog implements Consumer<Task> {
 
 
     private static String unwrapAtom(String n) {
-        if (n.charAt(0) == '_')
+        if ((int) n.charAt(0) == (int) '_')
             n = n.substring(1);
         return n;
     }

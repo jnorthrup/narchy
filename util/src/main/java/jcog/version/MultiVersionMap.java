@@ -1,7 +1,5 @@
 package jcog.version;
 
-import java.util.Objects;
-
 public class MultiVersionMap<X,Y> extends VersionMap<X,Y> {
     final int maxValuesPerItem;
 

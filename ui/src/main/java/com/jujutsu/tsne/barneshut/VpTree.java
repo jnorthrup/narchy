@@ -61,7 +61,7 @@ public class VpTree<StorageType> {
 		if (upper - lower > 1) {
 
 
-            int i = (int) (ThreadLocalRandom.current().nextDouble() * (upper - lower - 1)) + lower;
+            int i = (int) (ThreadLocalRandom.current().nextDouble() * (double) (upper - lower - 1)) + lower;
 			swap(_items, lower, i);
 
 

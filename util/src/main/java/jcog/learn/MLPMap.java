@@ -90,13 +90,13 @@ public class MLPMap {
             float[] in = this.in, W = this.W, out = this.out;
             System.arraycopy(x, 0, in, 0, x.length);
             if (bias)
-                in[in.length - 1] = 1; //bias
+                in[in.length - 1] = 1.0F; //bias
             int offs = 0;
             int il = in.length;
             for (int i = 0; i < out.length; i++) {
-                double o = 0;
+                double o = (double) 0;
                 for (int j = 0; j < il; j++)
-                    o += W[offs + j] * in[j];
+                    o = o + (double) W[offs + j] * in[j];
                 if (activation!=null)
                     o = activation.valueOf(o);
                 out[i] = (float) o;
@@ -110,14 +110,14 @@ public class MLPMap {
 
             float[] W = this.W, dW = this.dW, in = this.in, delta = this.delta, out = this.out;
 
-            Arrays.fill(delta, 0);
+            Arrays.fill(delta, (float) 0);
             int inLength = in.length;
 
             int offs = 0;
             for (int o = 0; o < out.length; o++) {
                 float gradient = incomingError[o];
                 if (activation!=null)
-                    gradient *= activation.derivative(out[o]);
+                    gradient = (float) ((double) gradient * activation.derivative((double) out[o]));
 
                 float outputDelta = gradient * learningRate;
 
@@ -197,15 +197,15 @@ public class MLPMap {
 
     /** https://datascience.stackexchange.com/questions/5863/where-does-the-sum-of-squared-errors-function-in-neural-networks-come-from */
     public double errorSquared() {
-        double err = 0;
+        double err = (double) 0;
         for (float e : errorOut)
-            err += e*e;
+            err = err + (double) e * e;
         return err;
     }
     public double errorAbs() {
-        double err = 0;
+        double err = (double) 0;
         for (float e : errorOut)
-            err += Math.abs(e);
+            err = err + (double) Math.abs(e);
         return err;
     }
 }

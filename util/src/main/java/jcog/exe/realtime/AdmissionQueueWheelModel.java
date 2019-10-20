@@ -4,8 +4,6 @@ import jcog.TODO;
 import jcog.data.list.MetalConcurrentQueue;
 
 import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Queue;
 
 import static jcog.exe.realtime.TimedFuture.*;

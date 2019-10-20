@@ -28,8 +28,8 @@ public class Grid2DBinaryPositioning implements World {
         this.w = x;
         this.h = y;
         this.size = x * y;
-        double VISUALIZE_PERIOD = Math.pow(10, 4);
-        this.MATCH_REWARD_FACTOR = size*1.0;
+        double VISUALIZE_PERIOD = Math.pow(10.0, 4.0);
+        this.MATCH_REWARD_FACTOR = (double) size *1.0;
         this.REWARD_MAGNITUDE = 5.0;
         this.JUMP_FRACTION = 0.01;
 
@@ -62,26 +62,26 @@ public class Grid2DBinaryPositioning implements World {
 
 
         if (Math.random() < JUMP_FRACTION) {
-            focusPositionW = w * Math.random();
-            focusPositionH = h * Math.random();
+            focusPositionW = (double) w * Math.random();
+            focusPositionH = (double) h * Math.random();
         }
         
         
     
                   
-        double match = 0;
+        double match = (double) 0;
 
 
         int ax = i(action[0]) + 2 * i(action[1]) + 4 * i(action[2]) + 8 * i(action[3]);
         int ay = i(action[4]) + 2 * i(action[5]) + 4 * i(action[6]) + 8 * i(action[7]);
 
-        double adx = Math.abs(ax - focusPositionW);
-        double ady = Math.abs(ay - focusPositionH);
+        double adx = Math.abs((double) ax - focusPositionW);
+        double ady = Math.abs((double) ay - focusPositionH);
         match += 1.0/(1.0+Math.sqrt(adx*adx + ady*ady));
 
         double reward = REWARD_MAGNITUDE * ((MATCH_REWARD_FACTOR * match));
         
-        if (reward!=0)
+        if (reward!= (double) 0)
             System.out.println(match + " " + " -> " + reward);
         
         
@@ -89,11 +89,11 @@ public class Grid2DBinaryPositioning implements World {
         final double exp = 2.0;
         for (int x = 0; x < w; x++) {
             for (int y = 0; y < h; y++) {
-                double dx = Math.abs(x - focusPositionW);
-                double dy = Math.abs(y - focusPositionH);
+                double dx = Math.abs((double) x - focusPositionW);
+                double dy = Math.abs((double) y - focusPositionH);
                 double distScale = 1.0/(1.0+Math.sqrt(dx*dx + dy*dy));
                 double v = Math.pow(distScale, exp);
-                if (v < 0.1) v = 0;
+                if (v < 0.1) v = (double) 0;
                 set(sensor, x, y, v);
             }
         }

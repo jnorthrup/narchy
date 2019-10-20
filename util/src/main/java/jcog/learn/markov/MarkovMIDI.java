@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
 
@@ -87,8 +86,8 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
             MidiMessage msg = wrpmsg.getMessage();
 
             long dt = mLengthSampler.nextLoop();
-            ticks += dt;
-            MidiEvent event = new MidiEvent(msg, ticks);
+            ticks = (int) ((long) ticks + dt);
+            MidiEvent event = new MidiEvent(msg, (long) ticks);
 
             if (t.add(event) == false) {
             }
@@ -126,9 +125,9 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
 
 
             for (int i = 0; i < mymsg.length && i < theirmsg.length; i++) {
-                if (mymsg[i] > theirmsg[i]) {
+                if ((int) mymsg[i] > (int) theirmsg[i]) {
                     return 1;
-                } else if (theirmsg[i] > mymsg[i]) return -1;
+                } else if ((int) theirmsg[i] > (int) mymsg[i]) return -1;
             }
 
             return Integer.compare(mymsg.length, theirmsg.length);
@@ -143,7 +142,7 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
                 if (mine.length != theirs.length) return false;
 
                 for (int i = 0; i < mine.length; i++) {
-                    if (mine[i] != theirs[i]) {
+                    if ((int) mine[i] != (int) theirs[i]) {
                         return false;
                     }
                 }

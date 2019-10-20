@@ -19,13 +19,13 @@ public class G extends Applet implements Runnable
     public void run()
     {
         try {
-        enableEvents( -1 );
+        enableEvents(-1L);
 
             BufferedImage screen = new BufferedImage(224, 256, BufferedImage.TYPE_INT_RGB);
             Graphics2D g2 = (Graphics2D)screen.getGraphics();
 
             Graphics2D appletG = (Graphics2D)getGraphics();
-        appletG.scale( 2, 2 );
+        appletG.scale(2.0, 2.0);
 
         String[] s_levelData =
         {
@@ -351,7 +351,7 @@ public class G extends Applet implements Runnable
                     "\01\01\01\01\01\01\01\01\01\01\01\01";
             for(int idx = 0; idx < 43 * 54; idx++ )
             {
-                int delta = graphicData.charAt(idx) - 1;
+                int delta = (int) graphicData.charAt(idx) - 1;
                 c = (c + delta) % 6;
                 data.setRGB( idx % 54, idx / 54, colorTable[c] );
             }
@@ -405,11 +405,11 @@ public class G extends Applet implements Runnable
             int idx = 0;
         for(int i = 1; i < N_IMG; i++ )
         {
-            int x = siData.charAt(idx++);
-            int y = siData.charAt(idx++);
-            int w = siData.charAt(idx++);
-            int h = siData.charAt(idx++);
-            int b = siData.charAt(idx++) - 6;
+            int x = (int) siData.charAt(idx++);
+            int y = (int) siData.charAt(idx++);
+            int w = (int) siData.charAt(idx++);
+            int h = (int) siData.charAt(idx++);
+            int b = (int) siData.charAt(idx++) - 6;
             
 
             siox[i] = -w / 2;
@@ -489,7 +489,7 @@ public class G extends Applet implements Runnable
 
             g2.setColor( new Color(1f, 1f, 1f) );
 
-            if( mode == MODE_GAMEOVER && m_keysDown['1'] )
+            if( mode == MODE_GAMEOVER && m_keysDown[(int) '1'] )
             {
                 mode = MODE_NEWGAME;
             }
@@ -522,18 +522,18 @@ public class G extends Applet implements Runnable
                 sceneryTH = 26;
             }
 
-            if( (m_keysDown[KeyEvent.VK_LEFT] || m_keysDown['A']) && shipx > 20 )
+            if( (m_keysDown[KeyEvent.VK_LEFT] || m_keysDown[(int) 'A']) && shipx > 20 )
                 shipx--;
-            if( (m_keysDown[KeyEvent.VK_RIGHT] || m_keysDown['D']) && shipx < 108 )
+            if( (m_keysDown[KeyEvent.VK_RIGHT] || m_keysDown[(int) 'D']) && shipx < 108 )
                 shipx++;
-            if( (m_keysDown[KeyEvent.VK_UP] || m_keysDown['W']) && shipy > VIEW_TOP + 16 )
+            if( (m_keysDown[KeyEvent.VK_UP] || m_keysDown[(int) 'W']) && shipy > VIEW_TOP + 16 )
                 shipy--;
-            if( (m_keysDown[KeyEvent.VK_DOWN] || m_keysDown['S']) && shipy < VIEW_BOT )
+            if( (m_keysDown[KeyEvent.VK_DOWN] || m_keysDown[(int) 'S']) && shipy < VIEW_BOT )
                 shipy++;
 
             if( st[0] == SHIP )
             {
-                boolean newShot = m_keysDown[KeyEvent.VK_SHIFT] || m_keysDown[' '];
+                boolean newShot = m_keysDown[KeyEvent.VK_SHIFT] || m_keysDown[(int) ' '];
                 if( !shot && newShot )
                 {
                     addSprite( st, sx, sy, sd, SHOT, x + shipx + 9, shipy );
@@ -541,7 +541,7 @@ public class G extends Applet implements Runnable
                 shot = newShot;
 
                 boolean newBomb = m_keysDown[KeyEvent.VK_CONTROL] ||
-                                  m_keysDown['\\'] || m_keysDown['/'];
+                                  m_keysDown[(int) '\\'] || m_keysDown[(int) '/'];
                 if( !bomb && newBomb )
                 {
 /*                  int bombCount = 0;
@@ -574,7 +574,7 @@ public class G extends Applet implements Runnable
                     int YB = VIEW_BOT - sceneryBH * 8;
                     int YT = VIEW_BOT - sceneryTH * 8;
 
-                    int spriteB = (bch >> 3);
+                    int spriteB = ((int) bch >> 3);
                     if( spriteB != 0 )
                     {
                         if( (c & 1) == 0 )
@@ -583,19 +583,19 @@ public class G extends Applet implements Runnable
                             sceneryBH = spriteB + 1;
                     }
 
-                    int spriteT = (tch >> 3);
+                    int spriteT = ((int) tch >> 3);
                     if( spriteT != 0 )
                     {
                             sceneryTH = spriteT + 1;
                     }
 
-                    int sceneryB = (bch & 7) - 1 + G_FLAT;
+                    int sceneryB = ((int) bch & 7) - 1 + G_FLAT;
                     if( sceneryB == G_UP || sceneryB == G_PEAK )
                         addSprite( st, sx, sy, sd, sceneryB, X + 4, YB - 4 );
                     else
                         addSprite( st, sx, sy, sd, sceneryB, X + 4, YB + 4 );
 
-                    int sceneryT = (tch & 7) - 1 + GT_FLAT;
+                    int sceneryT = ((int) tch & 7) - 1 + GT_FLAT;
                     if( sceneryT == GT_DOWN )
                         addSprite( st, sx, sy, sd, GT_DOWN, X + 4, YT + 12 );
                     else
@@ -626,7 +626,7 @@ public class G extends Applet implements Runnable
     
                 if( level == 2 && x % 15 == 0 )
                 {
-                    addSprite( st, sx, sy, sd, METEOR, x + 224, (int)(VIEW_TOP + Math.random() * 135) );
+                    addSprite( st, sx, sy, sd, METEOR, x + 224, (int)((double) VIEW_TOP + Math.random() * 135.0) );
 
                 }
 
@@ -727,7 +727,7 @@ public class G extends Applet implements Runnable
                             score += 150;
                         }
                         if( tj == MYSTERY )
-                            score += (int)(Math.random() * 3 + 1) * 100;
+                            score += (int)(Math.random() * 3.0 + 1.0) * 100;
 
                         if( oldScore < 10000 && score >= 10000 )
                             ships++;
@@ -742,7 +742,7 @@ public class G extends Applet implements Runnable
                     }
 
                     if( t == ROCKET && (level == 0 || level == 3) &&
-                        sx[i] - x < 120 && Math.random() < 0.02f )
+                        sx[i] - x < 120 && Math.random() < 0.02)
                     {
                         st[i] = t = ROCKET_FLYING;
                     }
@@ -804,9 +804,9 @@ public class G extends Applet implements Runnable
 
                     if( t == SAUCER )
                     {
-                        float ang = 3.1415926f * ++sd[i] / 35;
-                        sy[i] = (int)(126 - 34 * Math.sin(ang));
-                        sx[i] = (int)(x + 224 - sd[i] + 5 * Math.sin(ang * 2));
+                        float ang = 3.1415926f * (float) ++sd[i] / 35.0F;
+                        sy[i] = (int)(126.0 - 34.0 * Math.sin((double) ang));
+                        sx[i] = (int)((double) (x + 224 - sd[i]) + 5.0 * Math.sin((double) (ang * 2.0F)));
                     }
 
                     if( t == SHIP )
@@ -861,15 +861,15 @@ public class G extends Applet implements Runnable
 
             long now = System.nanoTime();
             long elapsed = now - start;
-            if( elapsed < -FRAME_PERIOD )
+            if( elapsed < (long) -FRAME_PERIOD)
                 start = now;
             else
             {
 
                 try {
-                    Thread.sleep( Math.max(0, (FRAME_PERIOD - elapsed) / 1000000) );
+                    Thread.sleep( Math.max(0L, ((long) FRAME_PERIOD - elapsed) / 1000000L) );
                 } catch( Exception e ) {}
-                start += FRAME_PERIOD;
+                start = start + (long) FRAME_PERIOD;
             }
 /*
             start += FRAME_PERIOD;

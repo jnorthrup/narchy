@@ -30,7 +30,7 @@ import net.beadsproject.beads.data.DataBeadReceiver;
  */
 public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
 
-    private float freq = 100;
+    private float freq = 100.0F;
     private float res = .5f;
 	private final float _2pi_over_sr;
 	private float cosw;
@@ -68,7 +68,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
      */
     private LPRezFilter(AudioContext con, int channels) {
         super(con, channels, channels);
-        _2pi_over_sr = (float) (2 * Math.PI / con.getSampleRate());
+        _2pi_over_sr = (float) (2.0 * Math.PI / (double) con.getSampleRate());
         this.channels = getOuts();
         y1m = new float[this.channels];
         y2m = new float[this.channels];
@@ -180,9 +180,9 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
     }
 
     private void calcVals() {
-        a1 = -2 * res * cosw;
+        a1 = -2.0F * res * cosw;
         a2 = res * res;
-        b0 = 1 + a1 + a2;
+        b0 = 1.0F + a1 + a2;
     }
 
     @Override
@@ -209,22 +209,22 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
                 freqUGen.update();
                 resUGen.update();
 
-                cosw = (float) (Math.cos(_2pi_over_sr
-                        * (freq = freqUGen.getValue(0, 0))));
+                cosw = (float) (Math.cos((double) (_2pi_over_sr
+                        * (freq = freqUGen.getValue(0, 0)))));
                 if ((res = resUGen.getValue(0, 0)) > .999999f) {
                     res = .999999f;
-                } else if (res < 0) {
-                    res = 0;
+                } else if (res < (float) 0) {
+                    res = (float) 0;
                 }
                 calcVals();
                 bo[0] = bi[0] * b0 - a1 * y1 - a2 * y2;
 
-                cosw = (float) (Math.cos(_2pi_over_sr
-                        * (freq = freqUGen.getValue(0, 1))));
+                cosw = (float) (Math.cos((double) (_2pi_over_sr
+                        * (freq = freqUGen.getValue(0, 1)))));
                 if ((res = resUGen.getValue(0, 1)) > .999999f) {
                     res = .999999f;
-                } else if (res < 0) {
-                    res = 0;
+                } else if (res < (float) 0) {
+                    res = (float) 0;
                 }
                 calcVals();
                 bo[1] = bi[1] * b0 - a1 * bo[0] - a2 * y1;
@@ -232,12 +232,12 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
                 
                 for (int currsamp = 2; currsamp < bufferSize; currsamp++) {
 
-                    cosw = (float) (Math.cos(_2pi_over_sr
-                            * (freq = freqUGen.getValue(0, currsamp))));
+                    cosw = (float) (Math.cos((double) (_2pi_over_sr
+                            * (freq = freqUGen.getValue(0, currsamp)))));
                     if ((res = resUGen.getValue(0, currsamp)) > .999999f) {
                         res = .999999f;
-                    } else if (res < 0) {
-                        res = 0;
+                    } else if (res < (float) 0) {
+                        res = (float) 0;
                     }
                     calcVals();
 
@@ -282,12 +282,12 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
                 resUGen.update();
 
                 
-                cosw = (float) (Math.cos(_2pi_over_sr
-                        * (freq = freqUGen.getValue(0, 0))));
+                cosw = (float) (Math.cos((double) (_2pi_over_sr
+                        * (freq = freqUGen.getValue(0, 0)))));
                 if ((res = resUGen.getValue(0, 0)) > .999999f) {
                     res = .999999f;
-                } else if (res < 0) {
-                    res = 0;
+                } else if (res < (float) 0) {
+                    res = (float) 0;
                 }
                 calcVals();
                 for (int i = 0; i < channels; i++) {
@@ -295,12 +295,12 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
                 }
 
                 
-                cosw = (float) (Math.cos(_2pi_over_sr
-                        * (freq = freqUGen.getValue(0, 1))));
+                cosw = (float) (Math.cos((double) (_2pi_over_sr
+                        * (freq = freqUGen.getValue(0, 1)))));
                 if ((res = resUGen.getValue(0, 1)) > .999999f) {
                     res = .999999f;
-                } else if (res < 0) {
-                    res = 0;
+                } else if (res < (float) 0) {
+                    res = (float) 0;
                 }
                 calcVals();
                 for (int i = 0; i < channels; i++) {
@@ -311,12 +311,12 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
                 
                 for (int currsamp = 2; currsamp < bufferSize; currsamp++) {
 
-                    cosw = (float) (Math.cos(_2pi_over_sr
-                            * (freq = freqUGen.getValue(0, currsamp))));
+                    cosw = (float) (Math.cos((double) (_2pi_over_sr
+                            * (freq = freqUGen.getValue(0, currsamp)))));
                     if ((res = resUGen.getValue(0, currsamp)) > .999999f) {
                         res = .999999f;
-                    } else if (res < 0) {
-                        res = 0;
+                    } else if (res < (float) 0) {
+                        res = (float) 0;
                     }
                     calcVals();
 
@@ -342,11 +342,11 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
      * Resets the filter in case it "explodes".
      */
     private void reset() {
-        y1 = 0;
-        y2 = 0;
+        y1 = (float) 0;
+        y2 = (float) 0;
         for (int i = 0; i < channels; i++) {
-            y1m[i] = 0;
-            y2m[i] = 0;
+            y1m[i] = (float) 0;
+            y2m[i] = (float) 0;
         }
     }
 
@@ -374,7 +374,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
             freqUGen = new Static(context, freq);
             isFreqStatic = true;
         }
-        cosw = (float) (Math.cos(_2pi_over_sr * this.freq));
+        cosw = (float) (Math.cos((double) (_2pi_over_sr * this.freq)));
         calcVals();
         return this;
     }
@@ -433,8 +433,8 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
     private LPRezFilter setRes(float r) {
         if (r > .999999f) {
             res = .999999f;
-        } else if (r < 0) {
-            res = 0;
+        } else if (r < (float) 0) {
+            res = (float) 0;
         } else {
             res = r;
         }
@@ -569,7 +569,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
 
     @Override
     public IIRFilterAnalysis getFilterResponse(float freq) {
-        return calculateFilterResponse(new float[]{b0}, new float[]{1, a1,
+        return calculateFilterResponse(new float[]{b0}, new float[]{1.0F, a1,
                 a2}, freq, context.getSampleRate());
     }
 

@@ -62,19 +62,19 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
     private Reverb(AudioContext context, int outChannels) {
         super(context, 1, outChannels);
 
-        sampsPerMS = (float) context.msToSamples(1);
+        sampsPerMS = (float) context.msToSamples(1.0);
 
         
-        src = new OnePoleFilter(context, 4000);
+        src = new OnePoleFilter(context, 4000.0F);
 
 
-        TapIn earlyTapIn = new TapIn(context, 125);
-        earlyTapOut = new TapOut(context, earlyTapIn, 10);
-        eAPF1 = new AllpassFilter(context, (int) (12.812 * sampsPerMS), 113,
+        TapIn earlyTapIn = new TapIn(context, 125.0F);
+        earlyTapOut = new TapOut(context, earlyTapIn, 10.0F);
+        eAPF1 = new AllpassFilter(context, (int) (12.812 * (double) sampsPerMS), 113,
                 .3f);
-        eAPF2 = new AllpassFilter(context, (int) (12.812 * sampsPerMS * 3),
+        eAPF2 = new AllpassFilter(context, (int) (12.812 * (double) sampsPerMS * 3.0),
                 337, .4f);
-        eAPF3 = new AllpassFilter(context, (int) (12.812 * sampsPerMS * 9.4),
+        eAPF3 = new AllpassFilter(context, (int) (12.812 * (double) sampsPerMS * 9.4),
                 1051, .5f);
         Gain earlyGainEcho = new Gain(context, 1, -.3f);
         
@@ -86,21 +86,21 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
         lAPF2 = new AllpassFilter(context, (int) (140f * sampsPerMS), 23, .7f);
         lAPF3 = new AllpassFilter(context, (int) (140f * sampsPerMS), 29, .65f);
         lAPF4 = new AllpassFilter(context, (int) (140f * sampsPerMS), 37, .6f);
-        lpf = new OnePoleFilter(context, 1000);
-        TapIn lateTapIn = new TapIn(context, 1000);
-        TapOut lateTapOut1 = new TapOut(context, lateTapIn, 10);
+        lpf = new OnePoleFilter(context, 1000.0F);
+        TapIn lateTapIn = new TapIn(context, 1000.0F);
+        TapOut lateTapOut1 = new TapOut(context, lateTapIn, 10.0F);
         TapOut lateTapOut2 = new TapOut(context, lateTapIn, 31.17f);
         Gain lateGainEcho = new Gain(context, 1, -.25f);
         
 
         
-        earlyGain = new Gain(context, 1, 1);
-        lateGain = new Gain(context, 1, 1);
-        Gain collectedGain = new Gain(context, 1, 1);
+        earlyGain = new Gain(context, 1, 1.0F);
+        lateGain = new Gain(context, 1, 1.0F);
+        Gain collectedGain = new Gain(context, 1, 1.0F);
 
         
-        delayModulator = new RandomPWM(context, RandomPWM.RAMPED_NOISE, 4000,
-                15000, 1);
+        delayModulator = new RandomPWM(context, RandomPWM.RAMPED_NOISE, 4000.0F,
+                15000.0F, 1.0F);
 
         drawFromChainInput(src);
         earlyTapIn.in(src);
@@ -127,17 +127,17 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
         apfOuts = new AllpassFilter[outChannels];
         outDelayScale = new float[outChannels];
         for (int i = 0; i < outChannels; i++) {
-            float g = .3f + ((float) i / (i + 1)) * .1f + (float) Math.sin(i)
+            float g = .3f + ((float) i / (float) (i + 1)) * .1f + (float) Math.sin((double) i)
                     * .05f;
-            outDelayScale[i] = (3f * i + 5) / (5f * i + 5);
+            outDelayScale[i] = (3f * (float) i + 5.0F) / (5f * (float) i + 5.0F);
             apfOuts[i] = new AllpassFilter(context, (int) (60f * sampsPerMS),
                     20, g);
             apfOuts[i].in(collectedGain);
             addToChainOutput(i, apfOuts[i]);
         }
 
-        setSize(.5f).setDamping(.7f).setEarlyReflectionsLevel(1)
-                .setLateReverbLevel(1);
+        setSize(.5f).setDamping(.7f).setEarlyReflectionsLevel(1.0F)
+                .setLateReverbLevel(1.0F);
     }
 
     @Override
@@ -167,9 +167,9 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
      * @return This reverb instance.
      */
     private Reverb setSize(float size) {
-        if (size > 1)
-            size = 1;
-        else if (size < 0.01)
+        if (size > 1.0F)
+            size = 1.0F;
+        else if ((double) size < 0.01)
             size = .01f;
         this.size = size;
         lateDelay1 = 86.0f * size * sampsPerMS;
@@ -180,8 +180,8 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
 
         float d = 12.812f * sampsPerMS * size;
         eAPF1.setDelay((int) d);
-        eAPF2.setDelay((int) (d * 3 - 2));
-        eAPF3.setDelay((int) (d * 9.3 + 1));
+        eAPF2.setDelay((int) (d * 3.0F - 2.0F));
+        eAPF3.setDelay((int) ((double) d * 9.3 + 1.0));
 
         d = 60f * sampsPerMS * size;
         for (int i = 0; i < this.outs; i++) {
@@ -207,16 +207,16 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
      * @return This reverb instance.
      */
     private Reverb setDamping(float damping) {
-        if (damping < 0)
-            damping = 0;
-        else if (damping > 1)
-            damping = 1;
+        if (damping < (float) 0)
+            damping = (float) 0;
+        else if (damping > 1.0F)
+            damping = 1.0F;
         this.damping = damping;
 
-        float f = 1f - (float) Math.sqrt(damping);
+        float f = 1f - (float) Math.sqrt((double) damping);
 
-        src.setFrequency(f * 10000 + 250);
-        lpf.setFrequency(f * 8000 + 200);
+        src.setFrequency(f * 10000.0F + 250.0F);
+        lpf.setFrequency(f * 8000.0F + 200.0F);
 
         return this;
     }

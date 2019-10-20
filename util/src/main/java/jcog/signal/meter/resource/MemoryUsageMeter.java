@@ -19,7 +19,7 @@ public class MemoryUsageMeter extends DoubleMeter {
 
     @Override
     public String toString() {
-        return Texts.n2(getMemoryUsed()/1024.0) + "kb use";
+        return Texts.n2((double) getMemoryUsed() /1024.0) + "kb use";
     }
 
     public static long getMemoryUsed() {

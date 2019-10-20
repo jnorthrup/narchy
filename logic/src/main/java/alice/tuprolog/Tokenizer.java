@@ -108,40 +108,40 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
         resetSyntax();
 
         
-        wordChars('a', 'z');
-        wordChars('A', 'Z');
-        wordChars('_', '_');
-        wordChars('0', '9'); 
+        wordChars((int) 'a', (int) 'z');
+        wordChars((int) 'A', (int) 'Z');
+        wordChars((int) '_', (int) '_');
+        wordChars((int) '0', (int) '9');
         
 
-        ordinaryChar('!');
+        ordinaryChar((int) '!');
 
         
-        ordinaryChar('\\');
-        ordinaryChar('$');
-        ordinaryChar('&');
-        ordinaryChar('^');
-        ordinaryChar('@');
-        ordinaryChar('#');
-        ordinaryChar(',');
-        ordinaryChar('.');
-        ordinaryChar(':');
-        ordinaryChar(';');
-        ordinaryChar('=');
-        ordinaryChar('<');
-        ordinaryChar('>');
-        ordinaryChar('+');
-        ordinaryChar('-');
-        ordinaryChar('*');
-        ordinaryChar('/');
-        ordinaryChar('~');
+        ordinaryChar((int) '\\');
+        ordinaryChar((int) '$');
+        ordinaryChar((int) '&');
+        ordinaryChar((int) '^');
+        ordinaryChar((int) '@');
+        ordinaryChar((int) '#');
+        ordinaryChar((int) ',');
+        ordinaryChar((int) '.');
+        ordinaryChar((int) ':');
+        ordinaryChar((int) ';');
+        ordinaryChar((int) '=');
+        ordinaryChar((int) '<');
+        ordinaryChar((int) '>');
+        ordinaryChar((int) '+');
+        ordinaryChar((int) '-');
+        ordinaryChar((int) '*');
+        ordinaryChar((int) '/');
+        ordinaryChar((int) '~');
 
         
-        ordinaryChar('\''); 
-        ordinaryChar('\"'); 
+        ordinaryChar((int) '\'');
+        ordinaryChar((int) '\"');
 
         
-        ordinaryChar('%');
+        ordinaryChar((int) '%');
         
         
     }
@@ -188,13 +188,13 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
             }
 
 
-            if (typea == '%') {
+            if (typea == (int) '%') {
                 do {
                     /*Castagna 06/2011*/
 
                     typea = other.tokenConsume();
                     /**/
-                } while (typea != '\r' && typea != '\n' && typea != TT_EOF);
+                } while (typea != (int) '\r' && typea != (int) '\n' && typea != TT_EOF);
                 /*Castagna 06/2011*/
 
                 other.tokenPushBack();
@@ -203,21 +203,21 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
             }
 
 
-            if (typea == '/') {
+            if (typea == (int) '/') {
                 /*Castagna 06/2011*/
 
                 int typeb = other.tokenConsume();
                 /**/
-                if (typeb == '*') {
+                if (typeb == (int) '*') {
                     do {
-                        typea = '*';
+                        typea = (int) '*';
                         /*Castagna 06/2011*/
 
                         typeb = other.tokenConsume();
                         if (typea == -1 && typeb == -1)
                             throw new InvalidTermException("Invalid multi-line comment statement");
                         /**/
-                    } while (typea != '*' || typeb != '/');
+                    } while (typea != (int) '*' || typeb != (int) '/');
                     continue;
                 } else {
                     /*Castagna 06/2011*/
@@ -237,50 +237,50 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
                 result = new Token("", Tokenizer.EOF);
                 break;
             }
-            if (typea == '(') {
+            if (typea == (int) '(') {
                 result = new Token("(", Tokenizer.LPAR);
                 break;
             }
-            if (typea == ')') {
+            if (typea == (int) ')') {
                 result = new Token(")", Tokenizer.RPAR);
                 break;
             }
-            if (typea == '{') {
+            if (typea == (int) '{') {
                 result = new Token("{", Tokenizer.LBRA2);
                 break;
             }
-            if (typea == '}') {
+            if (typea == (int) '}') {
                 result = new Token("}", Tokenizer.RBRA2);
                 break;
             }
-            if (typea == '[') {
+            if (typea == (int) '[') {
                 result = new Token("[", Tokenizer.LBRA);
                 break;
             }
-            if (typea == ']') {
+            if (typea == (int) ']') {
                 result = new Token("]", Tokenizer.RBRA);
                 break;
             }
-            if (typea == '|') {
+            if (typea == (int) '|') {
                 result = new Token("|", Tokenizer.BAR);
                 break;
             }
 
-            if (typea == '!') {
+            if (typea == (int) '!') {
                 result = new Token("!", Tokenizer.ATOM);
                 break;
             }
-            if (typea == ',') {
+            if (typea == (int) ',') {
                 result = new Token(",", Tokenizer.OPERATOR);
                 break;
             }
 
-            if (typea == '.') {
+            if (typea == (int) '.') {
                 /*Castagna 06/2011*/
 
                 int typeb = other.tokenConsume();
                 /**/
-                if (Tokenizer.isWhite(typeb) || typeb == '%' || typeb == StreamTokenizer.TT_EOF) {
+                if (Tokenizer.isWhite(typeb) || typeb == (int) '%' || typeb == StreamTokenizer.TT_EOF) {
                     result = new Token(".", Tokenizer.END);
                     break;
                 } else
@@ -296,10 +296,10 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
             if (typea == TT_WORD) {
                 char firstChar = svala.charAt(0);
 
-                if (Character.isUpperCase(firstChar) || '_' == firstChar) {
+                if (Character.isUpperCase(firstChar) || (int) '_' == (int) firstChar) {
                     result = new Token(svala, Tokenizer.VARIABLE);
                     break;
-                } else if (firstChar >= '0' && firstChar <= '9')
+                } else if ((int) firstChar >= (int) '0' && (int) firstChar <= (int) '9')
                     isNumber = true;
 
                 else {
@@ -309,7 +309,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
                     int typeb = other.tokenConsume();
                     other.tokenPushBack();
                     /**/
-                    if (typeb == '(') {
+                    if (typeb == (int) '(') {
                         result = new Token(svala, Tokenizer.ATOM | Tokenizer.FUNCTOR);
                         break;
                     }
@@ -323,7 +323,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
             }
 
 
-            if (typea == '\'' || typea == '\"' || typea == '`') {
+            if (typea == (int) '\'' || typea == (int) '\"' || typea == (int) '`') {
                 int qType = typea;
                 StringBuilder quote = new StringBuilder();
                 while (true) {
@@ -333,19 +333,19 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
                     /**/
                     svala = other.sval;
 
-                    if (typea == '\\') {
+                    if (typea == (int) '\\') {
                         /*Castagna 06/2011*/
 
                         int typeb = other.tokenConsume();
                         /**/
-                        if (typeb == '\n')
+                        if (typeb == (int) '\n')
                             continue;
-                        if (typeb == '\r') {
+                        if (typeb == (int) '\r') {
                             /*Castagna 06/2011*/
 
                             int typec = other.tokenConsume();
                             /**/
-                            if (typec == '\n')
+                            if (typec == (int) '\n')
                                 continue;
                             /*Castagna 06/2011*/
 
@@ -375,7 +375,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
                             break;
                         }
                     }
-                    if (typea == '\n' || typea == '\r')
+                    if (typea == (int) '\n' || typea == (int) '\r')
                         /*Castagna 06/2011*/
 
                         throw new InvalidTermException("Line break in quote not allowed");
@@ -395,7 +395,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
 
                 String quoteBody = quote.toString();
 
-                qType = qType == '\'' ? SQ_SEQUENCE : qType == '\"' ? DQ_SEQUENCE : SQ_SEQUENCE;
+                qType = qType == (int) '\'' ? SQ_SEQUENCE : qType == (int) '\"' ? DQ_SEQUENCE : SQ_SEQUENCE;
                 if (qType == SQ_SEQUENCE) {
                     if (Parser.isAtom(quoteBody))
                         qType = ATOM;
@@ -405,7 +405,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
                     int typeb = other.tokenConsume();
                     other.tokenPushBack();
                     /**/
-                    if (typeb == '(') {
+                    if (typeb == (int) '(') {
                         result = new Token(quoteBody, qType | FUNCTOR);
                         break;
                     }
@@ -448,15 +448,15 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
 
 
                     if (svala.startsWith("0")) {
-                        if (svala.indexOf('b') == 1) {
+                        if (svala.indexOf((int) 'b') == 1) {
                             result = new Token(String.valueOf(Long.parseLong(svala.substring(2), 2)), Tokenizer.INTEGER);
                             break;
                         }
-                        if (svala.indexOf('o') == 1) {
+                        if (svala.indexOf((int) 'o') == 1) {
                             result = new Token(String.valueOf(Long.parseLong(svala.substring(2), 8)), Tokenizer.INTEGER);
                             break;
                         }
-                        if (svala.indexOf('x') == 1) {
+                        if (svala.indexOf((int) 'x') == 1) {
                             result = new Token(String.valueOf(Long.parseLong(svala.substring(2), 16)), Tokenizer.INTEGER);
                             break;
                         }
@@ -470,7 +470,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
                     String svalb = other.sval;
 
 
-                    if (typeb != '.' && typeb != '\'') {
+                    if (typeb != (int) '.' && typeb != (int) '\'') {
                         /*Castagna 06/2011*/
 
                         other.tokenPushBack();
@@ -480,7 +480,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
                     }
 
 
-                    if (typeb == '\'' && "0".equals(svala)) {
+                    if (typeb == (int) '\'' && "0".equals(svala)) {
                         /*Castagna 06/2011*/
 
                         int typec = other.tokenConsume();
@@ -503,7 +503,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
                     Long.parseLong(svala);
 
 
-                    if (typeb != '.')
+                    if (typeb != (int) '.')
                         /*Castagna 06/2011*/
 
                         throw new InvalidTermException("A number starting with 0-9 cannot be rcognized as an int and does not have a fraction '.'");
@@ -528,9 +528,9 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
                     }
 
 
-                    int exponent = svalc.indexOf('E');
+                    int exponent = svalc.indexOf((int) 'E');
                     if (exponent == -1)
-                        exponent = svalc.indexOf('e');
+                        exponent = svalc.indexOf((int) 'e');
 
                     if (exponent >= 1) {
                         if (exponent == svalc.length() - 1) {
@@ -538,7 +538,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
 
                             int typeb2 = other.tokenConsume();
                             /**/
-                            if (typeb2 == '+' || typeb2 == '-') {
+                            if (typeb2 == (int) '+' || typeb2 == (int) '-') {
                                 /*Castagna 06/2011*/
 
                                 int typec2 = other.tokenConsume();
@@ -600,7 +600,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
         int lastNewline = -1;
     	
     	for (int i = 0; i<newText.length() && i<offset; i++) {
-    		if (newText.charAt(i) == '\n') {
+    		if ((int) newText.charAt(i) == (int) '\n') {
     			lno++;
     			lastNewline = i;
     		}
@@ -622,7 +622,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
             char c = input.charAt(tokenOffset-1);
             String out = input;
             int i = tokenOffset;
-            while(c == '\n'){
+            while((int) c == (int) '\n'){
 	    		out=input.substring(0, i);
 	    		i--;
 	        	c = input.charAt(i);
@@ -666,7 +666,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
         if (svalc != null) {
             int sl = svalc.length();
             if (sl == 1)
-                return svalc.charAt(0);
+                return (int) svalc.charAt(0);
             if (sl > 1) {
 
 
@@ -676,7 +676,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
                 return -1;
             }
         }
-        if (typec == ' ' ||                       
+        if (typec == (int) ' ' ||
             Arrays.binarySearch(GRAPHIC_CHARS, (char)typec) >= 0)  
 
             return typec;
@@ -685,7 +685,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
     }
 
     private static boolean isWhite(int type) {
-        return type == ' ' || type == '\r' || type == '\n' || type == '\t' || type == '\f';
+        return type == (int) ' ' || type == (int) '\r' || type == (int) '\n' || type == (int) '\t' || type == (int) '\f';
     }
 
     /**

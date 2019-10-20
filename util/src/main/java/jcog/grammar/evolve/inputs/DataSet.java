@@ -27,7 +27,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * New dataset structure, this is intended to be serialized in Json format using Gson
@@ -247,7 +246,7 @@ public class DataSet implements Serializable {
 
         for(Bounds match : mm){
 
-            int charMargin = (int) Math.max(((match.size() * marginSize) / 2.0),1.0);
+            int charMargin = (int) Math.max((((double) match.size() * marginSize) / 2.0),1.0);
             Bounds grownMatch = new Bounds(match.start - charMargin, match.end + charMargin);
             grownMatch.start = Math.max(grownMatch.start, 0);
             grownMatch.end = Math.min(grownMatch.end, example.getNumberOfChars());
@@ -317,7 +316,7 @@ public class DataSet implements Serializable {
          if(divideEtImperaLevel == 0){
              return this;
          }
-         return getSeparateAndConquerLevels(jobId).get(divideEtImperaLevel - 1);
+         return getSeparateAndConquerLevels((long) jobId).get(divideEtImperaLevel - 1);
     }
     
     /**
@@ -353,7 +352,7 @@ public class DataSet implements Serializable {
         DataSet dataset = oldDataset.reduceSeparateAndConquerDataset(individualRegex, convertToUnmatch, isFlagging);
         dataset.updateStats();
         boolean modified = (dataset.getNumberMatches() != oldDataset.getNumberMatches());
-        this.getSeparateAndConquerLevels(jobId).add(dataset);
+        this.getSeparateAndConquerLevels((long) jobId).add(dataset);
         if(this.getStripedDataset()!=null){
             modified = this.getStripedDataset().addSeparateAndConquerLevel(individualRegex,jobId, convertToUnmatch, isFlagging) || modified;       
         }
@@ -460,7 +459,7 @@ public class DataSet implements Serializable {
     }
     
     public DataSet getLastSeparateAndConquerDataSet(int jobId){
-        List<DataSet> datasetsList =  this.getSeparateAndConquerLevels(jobId);
+        List<DataSet> datasetsList =  this.getSeparateAndConquerLevels((long) jobId);
         if(datasetsList.isEmpty()){
             return this;
         }
@@ -468,7 +467,7 @@ public class DataSet implements Serializable {
     }
     
     public int getNumberOfSeparateAndConquerLevels(int jobId){
-        return this.getSeparateAndConquerLevels(jobId).size();
+        return this.getSeparateAndConquerLevels((long) jobId).size();
     }
     
     
@@ -523,7 +522,7 @@ public class DataSet implements Serializable {
     
     
     public void removeSeparateAndConquerLevel(int jobID){
-        List<DataSet> separateAndConquerLevelsForJob = this.getSeparateAndConquerLevels(jobID);
+        List<DataSet> separateAndConquerLevelsForJob = this.getSeparateAndConquerLevels((long) jobID);
         if(!separateAndConquerLevelsForJob.isEmpty()){
             separateAndConquerLevelsForJob.remove(separateAndConquerLevelsForJob.size()-1);
         }

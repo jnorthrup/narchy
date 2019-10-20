@@ -29,7 +29,7 @@ public class spawn_temp_t {
 	
 	public String sky="";
 	public float skyrotate;
-	public float[] skyaxis = { 0, 0, 0 };
+	public float[] skyaxis = {(float) 0, (float) 0, (float) 0};
 	
 	public String nextmap="";
 

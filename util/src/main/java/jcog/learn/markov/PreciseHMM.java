@@ -25,7 +25,6 @@
 package jcog.learn.markov;
 
 import java.text.DecimalFormat;
-import java.util.Arrays;
 import java.util.Vector;
 
 /**
@@ -88,7 +87,7 @@ public class PreciseHMM {
 
         pi[0] = 1.0;
 		for(int i = 1; i<numStates; i++) {
-			pi[i] = 0;
+			pi[i] = (double) 0;
 		}
 
 
@@ -102,7 +101,7 @@ public class PreciseHMM {
 				} else if(i==numStates-2 && j==numStates-1) { 
 					a[i][j] = 0.5;
 				} else if(i<=j && i>j-jumplimit-1) {
-					a[i][j] = 1.0/(jumplimit+1);
+					a[i][j] = 1.0/ (double) (jumplimit + 1);
 				} else {
 					a[i][j] = 0.0;
 				}
@@ -138,8 +137,8 @@ public class PreciseHMM {
 		
 		for(int i = 0; i<a.length; i++) {
 			for(int j = 0; j<a[i].length; j++) {
-				double zaehler=0;
-				double nenner=0;
+				double zaehler= (double) 0;
+				double nenner= (double) 0;
 			
 				for(int k = 0; k<trainsequence.size(); k++) {
 
@@ -149,8 +148,8 @@ public class PreciseHMM {
                     double[][] fwd = this.scaledForwardProc(sequence);
                     double[][] bwd = this.scaledBackwardProc(sequence, sf);
 		
-					double zaehler_innersum=0;
-					double nenner_innersum=0;
+					double zaehler_innersum= (double) 0;
+					double nenner_innersum= (double) 0;
 					
 					for(int t = 0; t<sequence.length-1; t++) {
 						zaehler_innersum+=fwd[i][t]*a[i][j]*b[j][sequence[t+1]]*bwd[j][t+1]*sf[t+1];
@@ -167,8 +166,8 @@ public class PreciseHMM {
 		
 		for(int i = 0; i<b.length; i++) {
 			for(int j = 0; j<b[i].length; j++) {
-				double zaehler=0;
-				double nenner=0;
+				double zaehler= (double) 0;
+				double nenner= (double) 0;
 			
 				for(int k = 0; k<trainsequence.size(); k++) {
 
@@ -178,8 +177,8 @@ public class PreciseHMM {
                     double[][] fwd = this.scaledForwardProc(sequence);
                     double[][] bwd = this.scaledBackwardProc(sequence, sf);
 		
-					double zaehler_innersum=0;
-					double nenner_innersum=0;
+					double zaehler_innersum= (double) 0;
+					double nenner_innersum= (double) 0;
 					
 					for(int t = 0; t<sequence.length-1; t++) {
 						if(sequence[t]==j) {
@@ -226,7 +225,7 @@ public class PreciseHMM {
 		}
 		
 		
-		sf[0] = 1/sum0;
+		sf[0] = 1.0 /sum0;
 		
 		
 		
@@ -240,7 +239,7 @@ public class PreciseHMM {
 				}
 			}
 			
-			double sum = 0;
+			double sum = (double) 0;
 			for(int i = 0; i<help.length; i++) {
 				sum+=help[i][t];
 			}
@@ -250,7 +249,7 @@ public class PreciseHMM {
 			}
 
 			
-			sf[t] = 1 / sum;
+			sf[t] = 1.0 / sum;
 			
 		} 
 		
@@ -268,7 +267,7 @@ public class PreciseHMM {
         double[][] out = new double[fwd.length][fwd[0].length];
 		for(int i = 0; i<fwd.length; i++) {
 			for(int t = 0; t<sequence.length; t++) {
-				double sum = 0;
+				double sum = (double) 0;
 				for(int j = 0; j<fwd.length; j++) {
 					sum+=fwd[j][t];
 				}
@@ -283,7 +282,7 @@ public class PreciseHMM {
         double[][] out = new double[bwd.length][bwd[0].length];
 		for(int i = 0; i<bwd.length; i++) {
 			for(int t = 0; t<sequence.length; t++) {
-				out[i][t]=1;
+				out[i][t]= 1.0;
 				for(int r = t+1; r<sequence.length; r++) {
 					out[i][t]*=sf[r]*bwd[i][t];
 				}
@@ -320,10 +319,10 @@ public class PreciseHMM {
 			for(int i = 0; i<this.numStates; i++) {
 				sum+=fwd[i][t];
 			}
-			sum = 1/sum;
+			sum = 1.0 /sum;
 			prod*=sum;
 		}
-		return 1/prod;
+		return 1.0 /prod;
 	}
 	
 	public double scaledViterbi(int[] o) {
@@ -348,7 +347,7 @@ public class PreciseHMM {
 		}
 
         boolean seen = false;
-        double best = 0;
+        double best = (double) 0;
         for (int i = 0; i < this.numStates; i++) {
             double v = phi[i][o.length - 1];
             if (v >= Double.NEGATIVE_INFINITY) {
@@ -380,7 +379,7 @@ public class PreciseHMM {
 		}
 		for (int i = 1; i < o.length; i++) {
 			for (int k = 0; k < f.length; k++) {
-				double sum = 0;
+				double sum = (double) 0;
 				for (int l = 0; l < numStates; l++) {
 					sum += f[l][i-1] * a[l][k];
 				}
@@ -401,11 +400,11 @@ public class PreciseHMM {
         double[][] bwd = new double[numStates][T];
 		/* Basisfall */
 		for (int i = 0; i < numStates; i++)
-			bwd[i][T - 1] = 1;
+			bwd[i][T - 1] = 1.0;
 		/* Induktion */
 		for (int t = T - 2; t >= 0; t--) {
 			for (int i = 0; i < numStates; i++) {
-				bwd[i][t] = 0;
+				bwd[i][t] = (double) 0;
 				for (int j = 0; j < numStates; j++)
 					bwd[i][t] += (bwd[j][t + 1] * a[i][j] * b[j][o[t + 1]]);
 			}

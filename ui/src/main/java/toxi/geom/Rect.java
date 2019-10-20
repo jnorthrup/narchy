@@ -31,8 +31,6 @@ import toxi.math.MathUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static java.lang.Float.floatToIntBits;
 
@@ -60,7 +58,7 @@ public class Rect implements Shape2D {
      */
     public static Rect getBoundingRect(List<? extends Vec2D> points) {
         Vec2D first = points.get(0);
-        Rect bounds = new Rect(first.x, first.y, 0, 0);
+        Rect bounds = new Rect(first.x, first.y, (float) 0, (float) 0);
         for (int i = 1, num = points.size(); i < num; i++) {
             bounds.growToContainPoint(points.get(i));
         }
@@ -206,7 +204,7 @@ public class Rect implements Shape2D {
     @Override
     public Circle getBoundingCircle() {
         return new Circle(getCentroid(),
-                new Vec2D(width, height).magnitude() / 2);
+                new Vec2D(width, height).magnitude() / 2.0F);
     }
 
     /**
@@ -233,7 +231,7 @@ public class Rect implements Shape2D {
 
     @Override
     public final float getCircumference() {
-        return 2 * width + 2 * height;
+        return 2.0F * width + 2.0F * height;
     }
 
     /**
@@ -385,10 +383,10 @@ public class Rect implements Shape2D {
     @Override
     public int hashCode() {
         long bits = 1L;
-        bits = 31L * bits + floatToIntBits(x);
-        bits = 31L * bits + floatToIntBits(y);
-        bits = 31L * bits + floatToIntBits(width);
-        bits = 31L * bits + floatToIntBits(height);
+        bits = 31L * bits + (long) floatToIntBits(x);
+        bits = 31L * bits + (long) floatToIntBits(y);
+        bits = 31L * bits + (long) floatToIntBits(width);
+        bits = 31L * bits + (long) floatToIntBits(height);
         return (int) (bits ^ (bits >> 32));
     }
 
@@ -414,7 +412,7 @@ public class Rect implements Shape2D {
     }
 
     public boolean intersectsCircle(Vec2D c, float r) {
-        float s, d = 0;
+        float s, d = (float) 0;
 
         float thisX = this.x;
         float x2 = thisX + width;
@@ -455,8 +453,8 @@ public class Rect implements Shape2D {
      */
     public ReadonlyVec2D intersectsRay(Ray2D ray, float minDist, float maxDist) {
         Vec2D invDir = ray.getDirection().reciprocal();
-        boolean signDirX = invDir.x < 0;
-        boolean signDirY = invDir.y < 0;
+        boolean signDirX = invDir.x < (float) 0;
+        boolean signDirY = invDir.y < (float) 0;
         Vec2D min = getTopLeft();
         Vec2D max = getBottomRight();
         Vec2D bbox = signDirX ? max : min;
@@ -556,7 +554,7 @@ public class Rect implements Shape2D {
     private static void toPolyArc(Polygon2D poly, Vec2D o, float radius, float theta,
                                   int res) {
         for (int i = 0; i <= res; i++) {
-            poly.add(o.add(Vec2D.fromTheta(theta + i * MathUtils.HALF_PI / res)
+            poly.add(o.add(Vec2D.fromTheta(theta + (float) i * MathUtils.HALF_PI / (float) res)
                     .scaleSelf(radius)));
         }
     }
@@ -592,7 +590,7 @@ public class Rect implements Shape2D {
         toPolyArc(poly, new Vec2D(x + width - radius, y + radius), radius,
                 -MathUtils.HALF_PI, res);
         toPolyArc(poly, new Vec2D(x + width - radius, y + height - radius),
-                radius, 0, res);
+                radius, (float) 0, res);
         toPolyArc(poly, new Vec2D(x + radius, y + height - radius), radius,
                 MathUtils.HALF_PI, res);
         toPolyArc(poly, new Vec2D(x + radius, y + radius), radius,

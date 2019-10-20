@@ -16,8 +16,8 @@ public class SawtoothWave extends KarplusStrongString {
         setMaxVolume(0.2);
         pluckDelta = .9998;
         releaseDelta = .9;
-        filterIn = 0;
-        filterOut = 0;
+        filterIn = (double) 0;
+        filterOut = (double) 0;
     }
 
     public void pluck() {
@@ -25,7 +25,7 @@ public class SawtoothWave extends KarplusStrongString {
         clear();
         int capacity = buffer.capacity();
         for (int i = 0; i < capacity; i++) {
-            double sample = (-0.5 + (i / (capacity - 1)) * 2 * getMaxVolume());
+            double sample = (-0.5 + (double) (i / (capacity - 1)) * 2.0 * getMaxVolume());
             buffer.enqueue(sample);
         }
     }

@@ -14,7 +14,7 @@ import java.util.function.Consumer;
  */
 public class Flatten<X> implements SpaceTransform<X>, Consumer<Spatial<X>> {
 
-    private final Quaternion up = new Quaternion().setFromAngleNormalAxis(0, new float[] { 0,0,1});
+    private final Quaternion up = new Quaternion().setFromAngleNormalAxis((float) 0, new float[] {(float) 0, (float) 0, 1.0F});
 
 
     private final float zSpeed;

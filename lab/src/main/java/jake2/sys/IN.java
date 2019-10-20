@@ -35,7 +35,6 @@ import jake2.qcommon.xcommand_t;
 import jake2.util.Math3D;
 
 import static jake2.Defines.*;
-import static jake2.Defines.PITCH;
 
 /**
  * IN
@@ -173,7 +172,7 @@ public final class IN extends Globals {
 
     public static void CenterView() {
         cl.viewangles[PITCH] = -Math3D
-                .SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[PITCH]);
+                .SHORT2ANGLE((int) cl.frame.playerstate.pmove.delta_angles[PITCH]);
     }
 
     public static void Move(usercmd_t cmd) {
@@ -188,22 +187,22 @@ public final class IN extends Globals {
         IN.old_mouse_x = KBD.mx;
         IN.old_mouse_y = KBD.my;
 
-        KBD.mx *= Globals.sensitivity.value;
-        KBD.my *= Globals.sensitivity.value;
+        KBD.mx = (int) ((float) KBD.mx * Globals.sensitivity.value);
+        KBD.my = (int) ((float) KBD.my * Globals.sensitivity.value);
 
         
         if ((CL_input.in_strafe.state & 1) != 0
-                || ((Globals.lookstrafe.value != 0) && IN.mlooking)) {
-            cmd.sidemove += Globals.m_side.value * KBD.mx;
+                || ((Globals.lookstrafe.value != (float) 0) && IN.mlooking)) {
+            cmd.sidemove = (short) ((float) cmd.sidemove + Globals.m_side.value * (float) KBD.mx);
         } else {
-            Globals.cl.viewangles[YAW] -= Globals.m_yaw.value * KBD.mx;
+            Globals.cl.viewangles[YAW] -= Globals.m_yaw.value * (float) KBD.mx;
         }
 
         if ((IN.mlooking || Globals.freelook.value != 0.0f)
                 && (CL_input.in_strafe.state & 1) == 0) {
-            Globals.cl.viewangles[PITCH] += Globals.m_pitch.value * KBD.my;
+            Globals.cl.viewangles[PITCH] += Globals.m_pitch.value * (float) KBD.my;
         } else {
-            cmd.forwardmove -= Globals.m_forward.value * KBD.my;
+            cmd.forwardmove = (short) ((float) cmd.forwardmove - Globals.m_forward.value * (float) KBD.my);
         }
         KBD.mx = KBD.my = 0;
     }
@@ -218,7 +217,7 @@ public final class IN extends Globals {
     }
 
     static void Force_CenterView_f() {
-        Globals.cl.viewangles[PITCH] = 0;
+        Globals.cl.viewangles[PITCH] = (float) 0;
     }
 
 }

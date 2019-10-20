@@ -13,19 +13,19 @@ public class LSTMView extends Gridding {
     public static final MatrixView.ViewFunction1D colorize = (x, gl) -> {
         float x1 = x / 2f + 0.5f;
         
-        gl.glColor3f(0, x1, x1 /2);
-        return 0;
+        gl.glColor3f((float) 0, x1, x1 / 2.0F);
+        return (float) 0;
     };
     public static final MatrixView.ViewFunction1D colorize1 = (x, gl) -> {
 
 
         Draw.colorBipolar(gl, x);
-        return 0;
+        return (float) 0;
     };
     public static final MatrixView.ViewFunction1D colorize2 = (x, gl) -> {
         float x1 = x / 2f + 0.5f;
-        gl.glColor3f(x1,0, x1 /2);
-        return 0;
+        gl.glColor3f(x1, (float) 0, x1 / 2.0F);
+        return (float) 0;
     };
     public LSTMView(SimpleLSTM lstm) {
         super(

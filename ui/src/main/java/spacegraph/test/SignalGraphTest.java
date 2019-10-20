@@ -61,9 +61,9 @@ public class SignalGraphTest {
             w.add(new Surplier(c.toString(), Surface.class, () -> {
                 return Splitting.row(new ConstantPort(c), 0.1f, new VideoSurface(c));
                 ///return new PushButton("cam1");
-            })).posRel(0, 0, 0.25f, 0.2f);
+            })).posRel((float) 0, (float) 0, 0.25f, 0.2f);
         }
-        w.add(new VideoTransformPort(WebcamGestures.VideoBackgroundRemoval::new)).posRel(0,0, 0.1f, 0.1f);
+        w.add(new VideoTransformPort(WebcamGestures.VideoBackgroundRemoval::new)).posRel((float) 0, (float) 0, 0.1f, 0.1f);
 //        for (AudioSource a : AudioSource.all()) {
 //            w.add(new SupplierPort(a.toString(), Surface.class, ()->new SignalView(
 //                    new SignalInput().set(a, a.sampleRate(),1)

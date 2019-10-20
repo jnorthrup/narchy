@@ -89,22 +89,22 @@ public class MapScene extends Scene {
         int height = 240 / 16 + 1;
         level = new int[width][height];
         data = new int[width][height];
-        double xo0 = random.nextDouble() * 512;
-        double yo0 = random.nextDouble() * 512;
-        double xo1 = random.nextDouble() * 512;
-        double yo1 = random.nextDouble() * 512;
+        double xo0 = random.nextDouble() * 512.0;
+        double yo0 = random.nextDouble() * 512.0;
+        double xo1 = random.nextDouble() * 512.0;
+        double yo1 = random.nextDouble() * 512.0;
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                double xd = ((x + 1) / (double) width - 0.5) * 2;
-                double yd = ((y + 1) / (double) height - 0.5) * 2;
+                double xd = ((double) (x + 1) / (double) width - 0.5) * 2.0;
+                double yd = ((double) (y + 1) / (double) height - 0.5) * 2.0;
                 @SuppressWarnings("unused")
-                double d = Math.sqrt(xd * xd + yd * yd) * 2;
-                if (x == 0 || y == 0 || x >= width - 3 || y >= height - 3) d = 100;
-                double t0 = n0.perlinNoise(x * 10.0 + xo0, y * 10.0 + yo0);
-                double t1 = n1.perlinNoise(x * 10.0 + xo1, y * 10.0 + yo1);
+                double d = Math.sqrt(xd * xd + yd * yd) * 2.0;
+                if (x == 0 || y == 0 || x >= width - 3 || y >= height - 3) d = 100.0;
+                double t0 = n0.perlinNoise((double) x * 10.0 + xo0, (double) y * 10.0 + yo0);
+                double t1 = n1.perlinNoise((double) x * 10.0 + xo1, (double) y * 10.0 + yo1);
                 double td = (t0 - t1);
-                double t = (td * 2);
-                level[x][y] = t > 0 ? TILE_WATER : TILE_GRASS;
+                double t = (td * 2.0);
+                level[x][y] = t > (double) 0 ? TILE_WATER : TILE_GRASS;
             }
         }
 
@@ -141,8 +141,8 @@ public class MapScene extends Scene {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 if (level[x][y] == TILE_GRASS && (x != xFarthestCap || y != yFarthestCap - 1)) {
-                    double t0 = dec.perlinNoise(x * 10.0 + xo0, y * 10.0 + yo0);
-                    if (t0 > 0) level[x][y] = TILE_DECORATION;
+                    double t0 = dec.perlinNoise((double) x * 10.0 + xo0, (double) y * 10.0 + yo0);
+                    if (t0 > (double) 0) level[x][y] = TILE_DECORATION;
                 }
             }
         }
@@ -368,18 +368,18 @@ public class MapScene extends Scene {
             }
         }
         if (!Mario.large) {
-            g.drawImage(map[(tick) / 6 % 2][1], xMario + (int) (xMarioA * alpha), yMario + (int) (yMarioA * alpha) - 6, null);
+            g.drawImage(map[(tick) / 6 % 2][1], xMario + (int) ((float) xMarioA * alpha), yMario + (int) ((float) yMarioA * alpha) - 6, null);
         } else {
             if (!Mario.fire) {
-                g.drawImage(map[(tick) / 6 % 2 + 2][0], xMario + (int) (xMarioA * alpha), yMario + (int) (yMarioA * alpha) - 6 - 16, null);
-                g.drawImage(map[(tick) / 6 % 2 + 2][1], xMario + (int) (xMarioA * alpha), yMario + (int) (yMarioA * alpha) - 6, null);
+                g.drawImage(map[(tick) / 6 % 2 + 2][0], xMario + (int) ((float) xMarioA * alpha), yMario + (int) ((float) yMarioA * alpha) - 6 - 16, null);
+                g.drawImage(map[(tick) / 6 % 2 + 2][1], xMario + (int) ((float) xMarioA * alpha), yMario + (int) ((float) yMarioA * alpha) - 6, null);
             } else {
-                g.drawImage(map[(tick) / 6 % 2 + 4][0], xMario + (int) (xMarioA * alpha), yMario + (int) (yMarioA * alpha) - 6 - 16, null);
-                g.drawImage(map[(tick) / 6 % 2 + 4][1], xMario + (int) (xMarioA * alpha), yMario + (int) (yMarioA * alpha) - 6, null);
+                g.drawImage(map[(tick) / 6 % 2 + 4][0], xMario + (int) ((float) xMarioA * alpha), yMario + (int) ((float) yMarioA * alpha) - 6 - 16, null);
+                g.drawImage(map[(tick) / 6 % 2 + 4][1], xMario + (int) ((float) xMarioA * alpha), yMario + (int) ((float) yMarioA * alpha) - 6, null);
             }
         }
 
-        drawStringDropShadow(g, "MARIO " + df.format(Mario.lives), 0, 0, 7);
+        drawStringDropShadow(g, "MARIO " + df.format((long) Mario.lives), 0, 0, 7);
 
         drawStringDropShadow(g, "WORLD " + (worldNumber + 1), 32, 0, 7);
     }
@@ -393,7 +393,7 @@ public class MapScene extends Scene {
     private static void drawString(Graphics g, String text, int x, int y, int c) {
         char[] ch = text.toCharArray();
         for (int i = 0; i < ch.length; i++) {
-            g.drawImage(Art.font[ch[i] - 32][c], x + i * 8, y, null);
+            g.drawImage(Art.font[(int) ch[i] - 32][c], x + i * 8, y, null);
         }
     }
 
@@ -442,7 +442,7 @@ public class MapScene extends Scene {
                         Mario.levelString = (worldNumber + 1) + "-";
                         int difficulty = worldNumber + 1;
                         int type = LevelGenerator.TYPE_OVERGROUND;
-                        if (data[x][y] > 1 && new Random(seed + x * 313211 + y * 534321).nextInt(3) == 0) {
+                        if (data[x][y] > 1 && new Random(seed + (long) (x * 313211) + (long) (y * 534321)).nextInt(3) == 0) {
                             type = LevelGenerator.TYPE_UNDERGROUND;
                         }
                         if (data[x][y] < 0) {
@@ -466,7 +466,7 @@ public class MapScene extends Scene {
                         }
 
                         Art.stopMusic();
-                        marioComponent.startLevel(seed * x * y + x * 31871 + y * 21871, difficulty, type);
+                        marioComponent.startLevel(seed * (long) x * (long) y + (long) (x * 31871) + (long) (y * 21871), difficulty, type);
                     }
                 }
             }
@@ -521,12 +521,12 @@ public class MapScene extends Scene {
 
     @Override
     public float getX(float alpha) {
-        return 160;
+        return 160.0F;
     }
 
     @Override
     public float getY(float alpha) {
-        return 120;
+        return 120.0F;
     }
 
     public void levelWon() {

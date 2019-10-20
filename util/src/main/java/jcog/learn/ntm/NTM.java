@@ -88,7 +88,7 @@ public class NTM implements AbstractNTM
     public double getInput(int i) {
         if (prevInput!=null)
             return prevInput[i];
-        return 0;
+        return (double) 0;
     }
 
     public int inputSize() {

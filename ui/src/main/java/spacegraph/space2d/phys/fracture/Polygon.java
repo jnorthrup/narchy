@@ -10,7 +10,6 @@ import spacegraph.space2d.phys.fracture.poly2Tri.Triangulation;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.IntStream;
 
 /**
  * Polygon - je reprezentovany postupnostou vrcholov
@@ -18,7 +17,7 @@ import java.util.stream.IntStream;
  * @author Marek Benovic
  */
 public class Polygon implements Iterable<v2>, Cloneable {
-    private static final float AABBConst = 1;
+    private static final float AABBConst = 1.0F;
     private static final SingletonHM HM = new SingletonHM();
 
     /**
@@ -151,13 +150,13 @@ public class Polygon implements Iterable<v2>, Cloneable {
      * @return Vrati hmotnost telesa.
      */
     private double mass() {
-        double m = 0;
+        double m = (double) 0;
         for (int i = 0, j = 1; i != vertexCount; i = j, j++) {
             v2 b1 = get(i);
             v2 b2 = get(j == vertexCount ? 0 : j);
-            m += v2.cross(b1, b2);
+            m = m + (double) v2.cross(b1, b2);
         }
-        m = Math.abs(m / 2);
+        m = Math.abs(m / 2.0);
         return m;
     }
 
@@ -166,19 +165,19 @@ public class Polygon implements Iterable<v2>, Cloneable {
      */
     public v2 centroid() {
         v2 C = new v2();
-        double m = 0;
+        double m = (double) 0;
         v2 g = new v2();
         for (int i = 0, j = 1; i != vertexCount; i = j, j++) {
             v2 b1 = get(i);
             v2 b2 = get(j == vertexCount ? 0 : j);
             float s = v2.cross(b1, b2);
-            m += s;
+            m = m + (double) s;
             g.set(b1);
             g.added(b2);
             g.scaled(s);
             C.added(g);
         }
-        C.scaled((float) (1 / (3 * m)));
+        C.scaled((float) (1.0 / (3.0 * m)));
         return C;
     }
 
@@ -186,9 +185,9 @@ public class Polygon implements Iterable<v2>, Cloneable {
      * @return Vrati najvacsiu vzdialenost 2 bodov.
      */
     private double radius() {
-        double ln = Float.NEGATIVE_INFINITY;
+        double ln = (double) Float.NEGATIVE_INFINITY;
         for (int i = 0; i < vertexCount; ++i) {
-            ln = Math.max(get(i).distanceSq(cycleGet(i + 1)), ln);
+            ln = Math.max((double) get(i).distanceSq(cycleGet(i + 1)), ln);
         }
         return Math.sqrt(ln);
     }
@@ -302,17 +301,17 @@ public class Polygon implements Iterable<v2>, Cloneable {
      * @return Vrati true, pokial je postupnost vrcholov v smere hodinovych ruciciek
      */
     public boolean isClockwise() {
-        double signedArea = 0;
+        double signedArea = (double) 0;
         for (int i = 0; i < size(); ++i) {
             v2 v1 = get(i);
             v2 v2 = cycleGet(i + 1);
-            double v1x = v1.x;
-            double v1y = v1.y;
-            double v2x = v2.x;
-            double v2y = v2.y;
+            double v1x = (double) v1.x;
+            double v1y = (double) v1.y;
+            double v2x = (double) v2.x;
+            double v2y = (double) v2.y;
             signedArea += v1x * v2y - v2x * v1y;
         }
-        return signedArea < 0;
+        return signedArea < (double) 0;
     }
 
 

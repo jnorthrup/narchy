@@ -77,13 +77,13 @@ public class Secure {
     private static final int SEC_CC_REDIRECT_VERSION_4 = 0x03;
     private static final int SEC_CC_REDIRECT_VERSION_5 = 0x04;
     private static final int SEC_CC_REDIRECT_VERSION_6 = 0x05;
-    private static final byte[] pad_54 = {54, 54, 54, 54, 54, 54, 54, 54, 54,
-            54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54,
-            54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54};
-    private static final byte[] pad_92 = {92, 92, 92, 92, 92, 92, 92, 92, 92,
-            92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92,
-            92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92,
-            92, 92, 92, 92, 92};
+    private static final byte[] pad_54 = {(byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54,
+            (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54,
+            (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54, (byte) 54};
+    private static final byte[] pad_92 = {(byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92,
+            (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92,
+            (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92,
+            (byte) 92, (byte) 92, (byte) 92, (byte) 92, (byte) 92};
     private final Licence licence = new Licence(this);
     private final MCS McsLayer;
     private final RC4 rc4_enc;
@@ -175,7 +175,7 @@ public class Secure {
      */
     private static void reverse(byte[] data) {
         int i = 0, j = 0;
-        byte temp = 0;
+        byte temp = (byte) 0;
 
         for (i = 0, j = data.length - 1; i < j; i++, j--) {
             temp = data[i];
@@ -186,7 +186,7 @@ public class Secure {
 
     public static void reverse(byte[] data, int length) {
         int i = 0, j = 0;
-        byte temp = 0;
+        byte temp = (byte) 0;
 
         for (i = 0, j = length - 1; i < j; i++, j--) {
             temp = data[i];
@@ -202,7 +202,7 @@ public class Secure {
      */
     private static void make40bit(byte[] key) {
         key[0] = (byte) 0xd1;
-        key[1] = 0x26;
+        key[1] = (byte) 0x26;
         key[2] = (byte) 0x9e;
     }
 
@@ -881,28 +881,28 @@ public class Secure {
         Secure.reverse(inr);
 
         BigInteger mod = null;
-        if ((this.modulus[0] & 0x80) != 0) {
+        if (((int) this.modulus[0] & 0x80) != 0) {
             byte[] temp = new byte[this.modulus.length + 1];
             System.arraycopy(this.modulus, 0, temp, 1, this.modulus.length);
-            temp[0] = 0;
+            temp[0] = (byte) 0;
             mod = new BigInteger(temp);
         } else {
             mod = new BigInteger(this.modulus);
         }
         BigInteger exp = null;
-        if ((this.exponent[0] & 0x80) != 0) {
+        if (((int) this.exponent[0] & 0x80) != 0) {
             byte[] temp = new byte[this.exponent.length + 1];
             System.arraycopy(this.exponent, 0, temp, 1, this.exponent.length);
-            temp[0] = 0;
+            temp[0] = (byte) 0;
             exp = new BigInteger(temp);
         } else {
             exp = new BigInteger(this.exponent);
         }
         BigInteger x = null;
-        if ((inr[0] & 0x80) != 0) {
+        if (((int) inr[0] & 0x80) != 0) {
             byte[] temp = new byte[inr.length + 1];
             System.arraycopy(inr, 0, temp, 1, inr.length);
-            temp[0] = 0;
+            temp[0] = (byte) 0;
             x = new BigInteger(temp);
         } else {
             x = new BigInteger(inr);
@@ -911,7 +911,7 @@ public class Secure {
         BigInteger y = x.modPow(exp, mod);
         this.sec_crypted_random = y.toByteArray();
 
-        if ((this.sec_crypted_random[0] & 0x80) != 0) {
+        if (((int) this.sec_crypted_random[0] & 0x80) != 0) {
             throw new RdesktopException(
                     "Wrong Sign! Expected positive Integer!");
         }
@@ -926,7 +926,7 @@ public class Secure {
             System.arraycopy(this.sec_crypted_random, 0, temp, 0,
                     this.sec_crypted_random.length);
             for (int i = this.sec_crypted_random.length; i < temp.length; i++) {
-                temp[i] = 0;
+                temp[i] = (byte) 0;
             }
             this.sec_crypted_random = temp;
 

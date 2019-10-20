@@ -25,7 +25,7 @@ public interface BeliefTable extends TaskTable {
     }
 
     static double eternalTaskValueWithOriginality(Task eternal) {
-        return eternalTaskValue(eternal) * eternal.originality();
+        return eternalTaskValue(eternal) * (double) eternal.originality();
     }
 
 

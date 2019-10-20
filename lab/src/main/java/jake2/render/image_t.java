@@ -67,7 +67,7 @@ public class image_t {
 		registration_sequence = 0; 
 		texturechain = null;
 		texnum = 0; 
-		sl =  tl = sh = th = 0;
+		sl =  tl = sh = th = (float) 0;
 		scrap = false;
 		has_alpha = false;
 		paletted = false;

@@ -28,14 +28,14 @@ public abstract class AbstractTaskView<X> extends MutableUnitContainer implement
 	public AbstractTaskView(What w, PriMerge merge, int capacity) {
 		this.what = w;
 
-		rate = 1f/capacity;
+		rate = 1f/ (float) capacity;
 
         PLinkArrayBag<X> _bag = new PLinkArrayBag<X>(merge, capacity);
 		bag = new SimpleBufferedBag<>(_bag);
 
 		scroll = new ScrollXY<>(new ArrayBagGridModel<>(_bag), this);
-		scroll.viewMinMax(new v2(1,1), new v2(1, capacity));
-		scroll.view(1, Math.min(bag.capacity(), 32));
+		scroll.viewMinMax(new v2(1.0F, 1.0F), new v2(1.0F, (float) capacity));
+		scroll.view(1.0F, (float) Math.min(bag.capacity(), 32));
 
 		set(DurSurface.get(scroll, w.nar, this::commit) );
 	}

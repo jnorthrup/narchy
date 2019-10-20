@@ -37,7 +37,6 @@ import org.slf4j.LoggerFactory;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.stream.IntStream;
 
 public class MCS {
     public static final int MCS_GLOBAL_CHANNEL = 1003;

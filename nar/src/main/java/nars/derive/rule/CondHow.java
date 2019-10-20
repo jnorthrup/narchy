@@ -146,7 +146,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 	public void taskPunc(boolean belief, boolean goal, boolean question, boolean quest, boolean command) {
 		pre.removeIf(x -> x instanceof PuncMap); //remove any existing
         byte accepts = PuncMap.TRUE;
-		pre.add(new PuncMap(belief ? accepts : 0, goal ? accepts : 0, question ? accepts : 0, quest ? accepts : 0, command ? accepts : 0));
+		pre.add(new PuncMap(belief ? accepts : (byte) 0, goal ? accepts : (byte) 0, question ? accepts : (byte) 0, quest ? accepts : (byte) 0, command ? accepts : (byte) 0));
 	}
 
 	/** adds a condition opcode
@@ -511,7 +511,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 			if (p == null)
 				p = new ByteArrayList(8);
 
-			for (byte i = 0; i < n; i++) {
+			for (byte i = (byte) 0; (int) i < n; i++) {
 				p.add(i);
 				guardOpVolStruct(r, root, p);
 				p.popByte();

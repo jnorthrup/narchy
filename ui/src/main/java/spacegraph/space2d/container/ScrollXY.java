@@ -46,9 +46,9 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
      * current view, in local grid coordinate
      */
     private RectFloat view = RectFloat.Zero;
-    private v2 viewMin = new v2(0,0);
+    private v2 viewMin = new v2((float) 0, (float) 0);
     //private volatile v2 viewDefault = new v2(0,0);
-    protected v2 viewMax = new v2(1,1);
+    protected v2 viewMax = new v2(1.0F, 1.0F);
 
 
     public <X> ScrollXY(GridModel<X> grid, GridRenderer<X> renderer) {
@@ -66,8 +66,8 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         super();
 
         this.scale = new XYSlider();
-        this.scrollX = new FloatProportionalSlider("X", () -> 0, () -> view.w / viewMax.x, () -> viewMax.x - view.w, true);
-        this.scrollY = new FloatProportionalSlider("Y", () -> 0, () -> view.h / viewMax.y, () -> viewMax.y - view.h, false);
+        this.scrollX = new FloatProportionalSlider("X", () -> (float) 0, () -> view.w / viewMax.x, () -> viewMax.x - view.w, true);
+        this.scrollY = new FloatProportionalSlider("Y", () -> (float) 0, () -> view.h / viewMax.y, () -> viewMax.y - view.h, false);
 
         set(E,scrollY);
         set(S,scrollX);
@@ -75,7 +75,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
         scrollX.on((sx, x) -> scroll(x, view.y, view.w, view.h));
         scrollY.on((sy, y) -> scroll(view.x, y, view.w, view.h));
-        scale.set(1,1);
+        scale.set(1.0F, 1.0F);
         scale.on((w, h)-> scroll(view.x, view.y, lerp(w, viewMin.x, viewMax.x), lerp(h, viewMin.y, viewMax.y)));
 
 
@@ -147,8 +147,8 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
             float vh = Util.clamp(view.h, viewMin.y, viewMax.y);
             scale.set(Util.normalize(view.w, viewMin.x, viewMax.x),Util.normalize(view.h, viewMin.y, viewMax.y));
             this.view = maybeEqual(this.view, RectFloat.X0Y0WH(
-                    Util.clamp(view.x, 0, viewMax.x),
-                    Util.clamp(view.y, 0, viewMax.y),
+                    Util.clamp(view.x, (float) 0, viewMax.x),
+                    Util.clamp(view.y, (float) 0, viewMax.y),
                     vw, vh));
         }
 
@@ -191,14 +191,14 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
     public ScrollXY<S> setScrollBar(boolean xOrY, boolean scrollVisible, boolean scaleVisible) {
         if (xOrY) {
             scrollX.visible(scrollVisible);
-            borderSize(S, scrollVisible ? defaultScrollEdge : 0);
+            borderSize(S, scrollVisible ? defaultScrollEdge : (float) 0);
             //scaleW.visible(scaleVisible);
-            borderSize(N, scaleVisible ? defaultScrollEdge : 0);
+            borderSize(N, scaleVisible ? defaultScrollEdge : (float) 0);
         } else {
             scrollY.visible(scrollVisible);
-            borderSize(E, scrollVisible ? defaultScrollEdge : 0);
+            borderSize(E, scrollVisible ? defaultScrollEdge : (float) 0);
             //scaleH.visible(scaleVisible);
-            borderSize(W, scaleVisible ? defaultScrollEdge : 0);
+            borderSize(W, scaleVisible ? defaultScrollEdge : (float) 0);
         }
 
 
@@ -217,7 +217,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
 
     public final ScrollXY scroll(float w, float h) {
-        return scroll(0, 0, w, h);
+        return scroll((float) 0, (float) 0, w, h);
     }
 
     public/*synchronized*/ ScrollXY scroll(float x, float y, float w, float h) {

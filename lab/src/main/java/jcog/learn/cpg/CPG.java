@@ -103,8 +103,8 @@ public class CPG {
             v2 += dv2 * dt;
 
             //  Calc outputs each neuron using new vals
-            yp = Util.clamp(xp, -1, +1); //max(xp, 0.0f);
-            yn = Util.clamp(xn, -1, +1); //max(xn, 0.0f);
+            yp = Util.clamp(xp, -1.0F, (float) +1); //max(xp, 0.0f);
+            yn = Util.clamp(xn, -1.0F, (float) +1); //max(xn, 0.0f);
 
             //  and the final output
             y = yp - yn;
@@ -174,7 +174,7 @@ public class CPG {
         for (int i = 0; i < 4200; i++) {
             nextInput.set(
                     //i < 600 ? (float) Math.sin(Math.cos(i/40f) / 4f) : -1
-                    (float) Math.sin(i / (i < 2200 ?  4f : 10f))*0.5f
+                    (float) Math.sin((double) (i / (i < 2200 ? 4f : 10f)))*0.5f
                     //0.01f * (Math.random() - 0.5f)
             );
 

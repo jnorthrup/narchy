@@ -12,7 +12,6 @@ import nars.term.Term;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static java.lang.System.arraycopy;
 
@@ -43,7 +42,7 @@ public class EmbeddedNAgent extends Agent {
 
         senseValue = new float[inputs];
 
-        n.time.dur(DUR_CYCLES);
+        n.time.dur((float) DUR_CYCLES);
 
         this.env = new Game("agent");
 

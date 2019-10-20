@@ -42,16 +42,16 @@ public class BurrowsWheeler {
             int n = input.length;
 			for (int i = 0; i < n; i++) {
 				byte c1 = input[t1], c2 = input[t2];
-				if (c1 < c2)
+				if ((int) c1 < (int) c2)
 					return -1;
-				else if (c1 > c2)
+				else if ((int) c1 > (int) c2)
 					return 1;
 
 				if (++t1 == n) t1 = 0;
 				if (++t2 == n) t2 = 0;
 			}
 
-			return (int) Math.signum(s2 - s1); // the longest byte[] is the most
+			return (int) Math.signum((float) (s2 - s1)); // the longest byte[] is the most
 		}
 
 	}

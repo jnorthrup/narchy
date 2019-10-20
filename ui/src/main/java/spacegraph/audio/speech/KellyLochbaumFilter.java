@@ -28,7 +28,7 @@ public class KellyLochbaumFilter /*implements Filter*/ {
 	}
 
 	 */
-    private static final double DEFAULT_dampingCoeff = 1;
+    private static final double DEFAULT_dampingCoeff = 1.0;
     
     /** How much damping in system (1 == no damping)*/
     protected double dampingCoeff=DEFAULT_dampingCoeff;
@@ -73,9 +73,9 @@ public class KellyLochbaumFilter /*implements Filter*/ {
         cylRadius = new double[nTubeSections+1];
         kCoeff = new double[nTubeSections+1]; //reflections coefficients
         for(int i = 0; i<=nTubeSections; i++) {
-            cylRadius[i] = 1;
-            li[i]=lo[i]=gi[i]=go[i]=0;
-            kCoeff[i]=0;
+            cylRadius[i] = 1.0;
+            li[i]=lo[i]=gi[i]=go[i]= (double) 0;
+            kCoeff[i]= (double) 0;
         }
 
         computeKCoeff();
@@ -118,7 +118,7 @@ public class KellyLochbaumFilter /*implements Filter*/ {
     /** Clear filter of past history */
     public void resetFilter() {
         for(int i = 0; i<=nTubeSections; i++) {
-            li[i]=lo[i]=gi[i]=go[i]=0;
+            li[i]=lo[i]=gi[i]=go[i]= (double) 0;
         }
     }
 
@@ -139,14 +139,14 @@ public class KellyLochbaumFilter /*implements Filter*/ {
         int ii = inputOffset;
         for (int k = 0; k<nsamples; k++) {
 			//Input into system
-			li[0]=input[k]/2.0;
+			li[0]= (double) input[k] /2.0;
 			//Calculate all reflections
 			for (int i = nTubeSections; i>=0; i--)
 			{
 		  		//to lips
-		  		lo[i]=dampingCoeff*((1+kCoeff[i])*li[i]+kCoeff[i]*gi[i]);
+		  		lo[i]=dampingCoeff*((1.0 +kCoeff[i])*li[i]+kCoeff[i]*gi[i]);
 		  		//to glottis
-		  		go[i]=dampingCoeff*((1-kCoeff[i])*gi[i]-kCoeff[i]*li[i]);
+		  		go[i]=dampingCoeff*((1.0 -kCoeff[i])*gi[i]-kCoeff[i]*li[i]);
 		  		//To glottis without delay!
 		  		if(i>1)
 		  		{
@@ -173,14 +173,14 @@ public class KellyLochbaumFilter /*implements Filter*/ {
 		public float srate;
 
 		/** Amplitude or volume*/
-		protected float volume = 1;
+		protected float volume = 1.0F;
 
 		/** Current phase */
-		protected float phase = 0;
+		protected float phase = (float) 0;
 		protected boolean odd = true; // flip to alternate sign
 
 		/** Freq. in Hertz */
-		protected float freq = 440;
+		protected float freq = 440.0F;
 
 		protected float openQuotient = .5f;
 
@@ -244,8 +244,8 @@ public class KellyLochbaumFilter /*implements Filter*/ {
 		}
 
 		private void computePars() {
-			T = 1/freq;
-			Tn = T*openQuotient/(1+speedQuotient);
+			T = 1.0F /freq;
+			Tn = T*openQuotient/(1.0F +speedQuotient);
 			Tp = speedQuotient * Tn;
 		}
 
@@ -254,15 +254,15 @@ public class KellyLochbaumFilter /*implements Filter*/ {
 			for(int i = 0; i<bufsz; i++) {
 				float y;
 				if(phase > (Tn+Tp)) {
-					y=0;
+					y= (float) 0;
 				} else if(phase<Tp) {
                     float tmp = phase/Tp;
-					y = (3-2*tmp)*tmp*tmp;
+					y = (3.0F - 2.0F *tmp)*tmp*tmp;
 				} else {
                     float tmp = (phase-Tp)/T;
-					y = 1-tmp*tmp;
+					y = 1.0F -tmp*tmp;
 				}
-				phase += 1/srate;
+				phase += 1.0F /srate;
 				if(phase > T) {
 					phase -= T;
 					odd = ! odd;

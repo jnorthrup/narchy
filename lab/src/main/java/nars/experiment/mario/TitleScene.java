@@ -31,7 +31,7 @@ public class TitleScene extends Scene {
         bgLayer0.render(g, tick, alpha);
 
 
-        int yo = 16 - Math.abs((int) (Math.sin((tick + alpha) / 6.0) * 8));
+        int yo = 16 - Math.abs((int) (Math.sin((double) ((float) tick + alpha) / 6.0) * 8.0));
         g.drawImage(Art.logo, 0, yo, null);
         g.drawImage(Art.titleScreen, 0, 120, null);
     }
@@ -40,7 +40,7 @@ public class TitleScene extends Scene {
     private static void drawString(Graphics g, String text, int x, int y, int c) {
         char[] ch = text.toCharArray();
         for (int i = 0; i < ch.length; i++) {
-            g.drawImage(Art.font[ch[i] - 32][c], x + i * 8, y, null);
+            g.drawImage(Art.font[(int) ch[i] - 32][c], x + i * 8, y, null);
         }
     }
 
@@ -60,12 +60,12 @@ public class TitleScene extends Scene {
 
     @Override
     public float getX(float alpha) {
-        return 0;
+        return (float) 0;
     }
 
     @Override
     public float getY(float alpha) {
-        return 0;
+        return (float) 0;
     }
 
 }

@@ -167,7 +167,7 @@ public class SpaceGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>>
             int maxSubsteps = 0;
             dyn.update(
 
-                    Math.max(dtMS / 1000f, 1000000f / video.renderFPS)
+                    Math.max((float) dtMS / 1000f, 1000000f / video.renderFPS)
                             / 1000000.f, maxSubsteps
 
             );
@@ -182,9 +182,9 @@ public class SpaceGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>>
         //perspective(gl, aspect);
 
 
-        int dtMS = Math.max(1, Math.round(1000 * dtS));
+        int dtMS = Math.max(1, Math.round(1000.0F * dtS));
 
-        update(dtMS);
+        update((long) dtMS);
 
         for (Spatial<X> xSpatial : this) {
             xSpatial.renderAbsolute(gl, dtMS);
@@ -258,7 +258,7 @@ public class SpaceGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>>
 //        gl.glTranslatef(camPos.x, camPos.y, camPos.z);
 
 
-        Draw.glu.gluSphere(quad, 1000.0f, 9, 9);
+        Draw.glu.gluSphere(quad, 1000.0, 9, 9);
         video.gl.glPopMatrix();
 
         tHv.disable(video.gl);    ////TTTTTTTTTTTTTTT

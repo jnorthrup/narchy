@@ -19,12 +19,12 @@ public class dA {
         this.n_visible = n_visible;
         this.n_hidden = n_hidden;
 
-        if (rng == null) this.rng = new Random(1234);
+        if (rng == null) this.rng = new Random(1234L);
         else this.rng = rng;
 
         if (W == null) {
             this.W = new double[this.n_hidden][this.n_visible];
-            double a = 1.0 / this.n_visible;
+            double a = 1.0 / (double) this.n_visible;
 
             for (int i = 0; i < this.n_hidden; i++) {
                 for (int j = 0; j < this.n_visible; j++) {
@@ -37,14 +37,14 @@ public class dA {
 
         if (hbias == null) {
             this.hbias = new double[this.n_hidden];
-            for (int i = 0; i < this.n_hidden; i++) this.hbias[i] = 0;
+            for (int i = 0; i < this.n_hidden; i++) this.hbias[i] = (double) 0;
         } else {
             this.hbias = hbias;
         }
 
         if (vbias == null) {
             this.vbias = new double[this.n_visible];
-            for (int i = 0; i < this.n_visible; i++) this.vbias[i] = 0;
+            for (int i = 0; i < this.n_visible; i++) this.vbias[i] = (double) 0;
         } else {
             this.vbias = vbias;
         }
@@ -52,8 +52,8 @@ public class dA {
 
     public void get_corrupted_input(double[] x, double[] tilde_x, double p) {
         for (int i = 0; i < n_visible; i++) {
-            if (x[i] == 0) {
-                tilde_x[i] = 0;
+            if (x[i] == (double) 0) {
+                tilde_x[i] = (double) 0;
             } else {
                 tilde_x[i] = utils.binomial(1, p, rng);
             }
@@ -63,7 +63,7 @@ public class dA {
     
     public double[] encode(double[] x, double[] y) {
         for (int i = 0; i < n_hidden; i++) {
-            y[i] = 0;
+            y[i] = (double) 0;
             for (int j = 0; j < n_visible; j++) {
                 y[i] += W[i][j] * x[j];
             }
@@ -76,7 +76,7 @@ public class dA {
     
     public void decode(double[] y, double[] z) {
         for (int i = 0; i < n_visible; i++) {
-            z[i] = 0;
+            z[i] = (double) 0;
             for (int j = 0; j < n_hidden; j++) {
                 z[i] += W[j][i] * y[j];
             }
@@ -93,7 +93,7 @@ public class dA {
         double[] L_vbias = new double[n_visible];
         double[] L_hbias = new double[n_hidden];
 
-        double p = 1 - corruption_level;
+        double p = 1.0 - corruption_level;
         get_corrupted_input(x, tilde_x, p);
 
         encode(tilde_x, y);
@@ -107,11 +107,11 @@ public class dA {
 
         
         for (int i = 0; i < n_hidden; i++) {
-            L_hbias[i] = 0;
+            L_hbias[i] = (double) 0;
             for (int j = 0; j < n_visible; j++) {
                 L_hbias[i] += W[i][j] * L_vbias[j];
             }
-            L_hbias[i] *= y[i] * (1 - y[i]);
+            L_hbias[i] *= y[i] * (1.0 - y[i]);
             hbias[i] += lr * L_hbias[i];
         }
 
@@ -132,7 +132,7 @@ public class dA {
     }
 
     private static void test_dA() {
-        Random rng = new Random(123);
+        Random rng = new Random(123L);
 
         double learning_rate = 0.1;
         double corruption_level = 0.3;
@@ -143,16 +143,16 @@ public class dA {
         int n_hidden = 5;
 
         double[][] train_X = {
-                {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0}
+                {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0},
+                {1.0, (double) 0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0},
+                {1.0, 1.0, (double) 0, 1.0, 1.0, 1.0, 1.0, 1.0, (double) 0, 1.0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0},
+                {1.0, 1.0, 1.0, 1.0, (double) 0, (double) 0, 1.0, 1.0, 1.0, 1.0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0},
+                {(double) 0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0},
+                {(double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
+                {(double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, 1.0, (double) 0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
+                {(double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, 1.0, 1.0, (double) 0, 1.0, 1.0, 1.0, 1.0, 1.0, (double) 0, 1.0},
+                {(double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, 1.0, 1.0, 1.0, 1.0, (double) 0, (double) 0, 1.0, 1.0, 1.0, 1.0},
+                {(double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, (double) 0}
         };
 
         dA da = new dA(n_visible, n_hidden, null, null, null, rng);
@@ -166,8 +166,8 @@ public class dA {
 
         
         double[][] test_X = {
-                {1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0}
+                {1.0, (double) 0, 1.0, (double) 0, 1.0, (double) 0, 1.0, (double) 0, 1.0, 1.0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0},
+                {(double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, 1.0, 1.0, (double) 0, 1.0, 1.0, (double) 0, 1.0, 1.0, (double) 0}
         };
 
         int test_N = 2;
@@ -190,7 +190,7 @@ public class dA {
     public void randomize() {
         for (int i = 0; i < n_hidden; i++) {
             for (int j = 0; j < n_visible; j++) {
-                W[i][j] = ((rng.nextFloat()-0.5f)*2f)/n_visible;
+                W[i][j] = (double) (((rng.nextFloat() - 0.5f) * 2f) / (float) n_visible);
             }
         }
     }

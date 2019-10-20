@@ -70,9 +70,9 @@ public class ParticleGroupDef {
     public ParticleGroupDef() {
         flags = 0;
         groupFlags = 0;
-        angle = 0;
-        angularVelocity = 0;
-        strength = 1;
+        angle = (float) 0;
+        angularVelocity = (float) 0;
+        strength = 1.0F;
         destroyAutomatically = true;
     }
 }

@@ -149,7 +149,7 @@ public enum Factorize {
         /** shadow target -> replacements */
         final UnifiedSetMultimap<Term, ObjectBytePair<Term>>[] pp = new UnifiedSetMultimap[]{null};
         final byte n = (byte) x.length;
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < (int) n; i++) {
             final Term s = x[i];
             final int pathMin = s.subs() == 1 ? 2 : 1; //dont factor the direct subterm of 1-arity compound (ex: negation, {x}, (x) )
             if (s instanceof Compound) {
@@ -184,10 +184,10 @@ public enum Factorize {
 
         final Pair<Term, RichIterable<ObjectBytePair<Term>>> rr = r.get(0);
         final ByteSet masked = rr.getTwo().collectByte(ObjectBytePair::getTwo).toSet();
-        final Set<Term> t = new UnifiedSet<>(n - masked.size() + 1);
-        for (byte i = 0; i < n; i++)
+        final Set<Term> t = new UnifiedSet<>((int) n - masked.size() + 1);
+        for (byte i = (byte) 0; (int) i < (int) n; i++)
             if (!masked.contains(i)) {
-                t.add(x[i]);
+                t.add(x[(int) i]);
             }
         final Term s = $.sete(rr.getTwo().collect((ob) -> {
             final Term y = ob.getOne();

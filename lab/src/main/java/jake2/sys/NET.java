@@ -80,8 +80,8 @@ public final class NET {
      * Compares ip address and port.
      */
     public static boolean CompareAdr(netadr_t a, netadr_t b) {
-        return (a.ip[0] == b.ip[0] && a.ip[1] == b.ip[1] && a.ip[2] == b.ip[2]
-                && a.ip[3] == b.ip[3] && a.port == b.port);
+        return ((int) a.ip[0] == (int) b.ip[0] && (int) a.ip[1] == (int) b.ip[1] && (int) a.ip[2] == (int) b.ip[2]
+                && (int) a.ip[3] == (int) b.ip[3] && a.port == b.port);
     }
 
     /**
@@ -95,8 +95,8 @@ public final class NET {
             return true;
 
         if (a.type == Defines.NA_IP) {
-            return (a.ip[0] == b.ip[0] && a.ip[1] == b.ip[1]
-                    && a.ip[2] == b.ip[2] && a.ip[3] == b.ip[3]);
+            return ((int) a.ip[0] == (int) b.ip[0] && (int) a.ip[1] == (int) b.ip[1]
+                    && (int) a.ip[2] == (int) b.ip[2] && (int) a.ip[3] == (int) b.ip[3]);
         }
         return false;
     }
@@ -105,9 +105,9 @@ public final class NET {
      * Returns a string holding ip address and port like "ip0.ip1.ip2.ip3:port".
      */
     public static String AdrToString(netadr_t a) {
-        String sb = String.valueOf(a.ip[0] & 0xFF) + '.' + (a.ip[1] & 0xFF) +
+        String sb = String.valueOf((int) a.ip[0] & 0xFF) + '.' + ((int) a.ip[1] & 0xFF) +
                 '.' +
-                (a.ip[2] & 0xFF) + '.' + (a.ip[3] & 0xFF) +
+                ((int) a.ip[2] & 0xFF) + '.' + ((int) a.ip[3] & 0xFF) +
                 ':' + a.port;
         return sb;
     }
@@ -116,9 +116,9 @@ public final class NET {
      * Returns IP address without the port as string.
      */
     public static String BaseAdrToString(netadr_t a) {
-        String sb = String.valueOf(a.ip[0] & 0xFF) + '.' + (a.ip[1] & 0xFF) +
+        String sb = String.valueOf((int) a.ip[0] & 0xFF) + '.' + ((int) a.ip[1] & 0xFF) +
                 '.' +
-                (a.ip[2] & 0xFF) + '.' + (a.ip[3] & 0xFF);
+                ((int) a.ip[2] & 0xFF) + '.' + ((int) a.ip[3] & 0xFF);
         return sb;
     }
 
@@ -235,7 +235,7 @@ public final class NET {
             
             net_message.cursize = packetLength;
             
-            net_message.data[packetLength] = 0;
+            net_message.data[packetLength] = (byte) 0;
             return true;
 
         } catch (IOException e) {
@@ -362,12 +362,12 @@ public final class NET {
     /** Sleeps msec or until net socket is ready. */
     public static void Sleep(int msec) {
         if (ip_sockets[Defines.NS_SERVER] == null
-                || (Globals.dedicated != null && Globals.dedicated.value == 0))
+                || (Globals.dedicated != null && Globals.dedicated.value == (float) 0))
             return; 
 
         try {
             
-            Thread.sleep(msec);
+            Thread.sleep((long) msec);
         } catch (InterruptedException e) {
         }
         

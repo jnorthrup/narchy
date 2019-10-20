@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import static nars.Op.*;
 import static nars.time.Tense.*;
@@ -155,10 +154,10 @@ public class Occurrify extends TimeGraph {
                         if (!d.isBeliefOrGoal()) {
                             return u; //questions or quests
                         } else {
-                            long tRange = 1 + taskEnd - taskStart, bRange = 1 + beliefEnd - beliefStart;
-                            double uRange = 1.0 + u[1] - u[0];
+                            long tRange = 1L + taskEnd - taskStart, bRange = 1L + beliefEnd - beliefStart;
+                            double uRange = 1.0 + (double) u[1] - (double) u[0];
                             //long iRange = LongInterval.intersectLength(taskStart, taskEnd, beliefStart, beliefEnd);
-                            double pct = Math.max(tRange, bRange) / (uRange);
+                            double pct = (double) Math.max(tRange, bRange) / (uRange);
                             //assert(pct <= 1.0);
 
                             if (d.doubt(pct))
@@ -203,9 +202,9 @@ public class Occurrify extends TimeGraph {
 
     private static float score(Event e, boolean occ) {
         Term st = e.id;
-        float points = 1;
+        float points = 1.0F;
         if (e instanceof Absolute) {
-            points += occ ? (absolutePoints*2) : absolutePoints;
+            points = points + (float) (occ ? (absolutePoints * 2) : absolutePoints);
 //            if (node(st)==null)
 //                points += novelPoints;
         }
@@ -213,7 +212,7 @@ public class Occurrify extends TimeGraph {
 //            points += sameAsPatternRootPoints;
 //        }
         if (!st.hasXternal()) {
-            points += occ ? noXternalPoints : (noXternalPoints*2f);
+            points += occ ? (float) noXternalPoints : ((float) noXternalPoints *2f);
         }
         return points;
     }
@@ -245,10 +244,10 @@ public class Occurrify extends TimeGraph {
         long taskStart = taskOccurr ? d.taskStart : TIMELESS,
                 taskEnd = taskOccurr ? d.taskEnd : TIMELESS,
                 beliefStart =
-                        beliefOccurr && (!d.single || (d.punc ==QUESTION || d.punc ==QUEST)) ? d.beliefStart : TIMELESS,
+                        beliefOccurr && (!d.single || ((int) d.punc == (int) QUESTION || (int) d.punc == (int) QUEST)) ? d.beliefStart : TIMELESS,
                         //d.beliefStart,
                 beliefEnd =
-                        beliefOccurr && (!d.single || (d.punc ==QUESTION || d.punc ==QUEST)) ? d.beliefEnd : TIMELESS;
+                        beliefOccurr && (!d.single || ((int) d.punc == (int) QUESTION || (int) d.punc == (int) QUEST)) ? d.beliefEnd : TIMELESS;
                         //d.beliefEnd;
 
         this.decomposeEvents = decomposeEvents;
@@ -315,12 +314,12 @@ public class Occurrify extends TimeGraph {
     private void imageNormalize(Event p) {
         Term ip = Image.imageNormalize(p.id);
         if (!p.id.equals(ip))
-            link(p, 0, shadow(ip));
+            link(p, 0L, shadow(ip));
     }
     private void imageNormalize(Term p) {
         Term ip = Image.imageNormalize(p);
         if (!p.equals(ip))
-            link(shadow(p), 0, shadow(ip));
+            link(shadow(p), 0L, shadow(ip));
     }
 
     /**
@@ -345,7 +344,7 @@ public class Occurrify extends TimeGraph {
         ttl = NAL.derive.TIMEGRAPH_ITERATIONS;
         this.pattern = pattern;
         this.patternVolumeMin =
-                (int) Math.floor(NAL.derive.TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR * pattern.volume());
+                (int) Math.floor((double) (NAL.derive.TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR * (float) pattern.volume()));
         this.patternVolumeMax = d.termVolMax + 1; //+1 for possible negation/unnegation
 
         this.nodesMax = d.termVolMax * 2 + pattern.volume();  //should be plenty of event nodes
@@ -532,8 +531,8 @@ public class Occurrify extends TimeGraph {
                     x[0] = imm;
                     x[1] = imm + r;
 
-                    if (delta > 0)
-                        d.doubt(NAL.eviEternalizable(1, delta, d.dur));
+                    if (delta > 0L)
+                        d.doubt(NAL.eviEternalizable(1.0, delta, d.dur));
 
                 }
                 if (x == null) {
@@ -625,7 +624,7 @@ public class Occurrify extends TimeGraph {
                     y = terms.conjMerge(a, Tense.occToDT(dt), b);
 
                     //dont dither occ[] here, since it will be done in Taskify
-                    long range = Math.max(Math.min((1 + d.taskEnd - tTime), (1 + d.beliefEnd - bTime)) - 1, 0);
+                    long range = Math.max(Math.min((1L + d.taskEnd - tTime), (1L + d.beliefEnd - bTime)) - 1L, 0L);
                     occ = new long[]{earlyStart, earlyStart + range};
                 }
 
@@ -840,7 +839,7 @@ public class Occurrify extends TimeGraph {
 //        d.taskBelief_TimeIntersection[0] != TIMELESS;
 
     private static final Predicate<Derivation> differentTermsOrTimes = d ->
-        !d.taskTerm.equals(d.beliefTerm) || !Tense.simultaneous(d.taskStart, d.beliefStart, d.ditherDT);
+        !d.taskTerm.equals(d.beliefTerm) || !Tense.simultaneous(d.taskStart, d.beliefStart, (float) d.ditherDT);
 
 }
 

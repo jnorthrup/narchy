@@ -31,19 +31,19 @@ import jcog.math.v2;
  */
 public class PlatformMathUtils {
 
-    private static final float SHIFT23 = 1 << 23;
+    private static final float SHIFT23 = (float) (1 << 23);
     private static final float INV_SHIFT23 = 1.0f / SHIFT23;
     private static final double DEFICIT = 0.0001; 
 
     public static float fastPow(float a, float b) {
-        float x = Float.floatToRawIntBits(a);
+        float x = (float) Float.floatToRawIntBits(a);
         x *= INV_SHIFT23;
-        x -= 127;
-        float y = x - (x >= 0 ? (int) x : (int) x - 1);
+        x -= 127.0F;
+        float y = x - (float) (x >= (float) 0 ? (int) x : (int) x - 1);
         b *= x + (y - y * y) * 0.346607f;
-        y = b - (b >= 0 ? (int) b : (int) b - 1);
+        y = b - (float) (b >= (float) 0 ? (int) b : (int) b - 1);
         y = (y - y * y) * 0.33971f;
-        return Float.intBitsToFloat((int) ((b + 127 - y) * SHIFT23));
+        return Float.intBitsToFloat((int) ((b + 127.0F - y) * SHIFT23));
     }
 
     /**
@@ -52,11 +52,11 @@ public class PlatformMathUtils {
      * @return Kvadraticky uhol v rozmedzi (0-4) medzi vektorom (b - a) a vektorom (0, 1).
      */
     public static double angle(v2 a, v2 b) {
-        double vx = b.x - a.x;
-        double vy = b.y - a.y;
+        double vx = (double) (b.x - a.x);
+        double vy = (double) (b.y - a.y);
         double x = vx * vx;
         double cos = x / (x + vy * vy);
-        return vx > 0 ? vy > 0 ? 3 + cos : 1 - cos : vy > 0 ? 3 - cos : 1 + cos;
+        return vx > (double) 0 ? vy > (double) 0 ? 3.0 + cos : 1.0 - cos : vy > (double) 0 ? 3.0 - cos : 1.0 + cos;
     }
 
     /**
@@ -68,8 +68,8 @@ public class PlatformMathUtils {
      * <tt>1</tt>, ak sa bod <tt>v</tt> nachadza na pravo od usecky |ab|<br>
      */
     public static int site(v2 a, v2 b, v2 v) {
-        double g = (b.x - a.x) * (v.y - b.y);
-        double h = (v.x - b.x) * (b.y - a.y);
+        double g = (double) ((b.x - a.x) * (v.y - b.y));
+        double h = (double) ((v.x - b.x) * (b.y - a.y));
         return Double.compare(g, h);
     }
 
@@ -80,14 +80,14 @@ public class PlatformMathUtils {
      * @return Rovnako ako funkcia site, s tym rozdielom, ze zohladnuje deficit.
      */
     public static int siteDef(v2 a, v2 b, v2 v) {
-        double ux = b.x - a.x;
-        double uy = b.y - a.y;
-        double wx = b.x - v.x;
-        double wy = b.y - v.y;
+        double ux = (double) (b.x - a.x);
+        double uy = (double) (b.y - a.y);
+        double wx = (double) (b.x - v.x);
+        double wy = (double) (b.y - v.y);
         double sin = (ux * wy - wx * uy) / Math.sqrt((ux * ux + uy * uy) * (wx * wx + wy * wy));
         if (Double.isNaN(sin) || Math.abs(sin) < DEFICIT) {
             return 0;
         }
-        return sin < 0 ? 1 : -1;
+        return sin < (double) 0 ? 1 : -1;
     }
 }

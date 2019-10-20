@@ -415,19 +415,19 @@ public abstract class Tuple4f implements java.io.Serializable, Cloneable {
 
         float diff = x - t1.x;
         if (Float.isNaN(diff)) return false;
-        if ((diff < 0 ? -diff : diff) > epsilon) return false;
+        if ((diff < (float) 0 ? -diff : diff) > epsilon) return false;
 
         diff = y - t1.y;
         if (Float.isNaN(diff)) return false;
-        if ((diff < 0 ? -diff : diff) > epsilon) return false;
+        if ((diff < (float) 0 ? -diff : diff) > epsilon) return false;
 
         diff = z - t1.z;
         if (Float.isNaN(diff)) return false;
-        if ((diff < 0 ? -diff : diff) > epsilon) return false;
+        if ((diff < (float) 0 ? -diff : diff) > epsilon) return false;
 
         diff = w - t1.w;
         if (Float.isNaN(diff)) return false;
-        return (diff < 0 ? -diff : diff) <= epsilon;
+        return (diff < (float) 0 ? -diff : diff) <= epsilon;
 
     }
 
@@ -443,10 +443,10 @@ public abstract class Tuple4f implements java.io.Serializable, Cloneable {
      */
     public int hashCode() {
         long bits = 1L;
-        bits = 31L * bits + VecMathUtil.floatToIntBits(x);
-        bits = 31L * bits + VecMathUtil.floatToIntBits(y);
-        bits = 31L * bits + VecMathUtil.floatToIntBits(z);
-        bits = 31L * bits + VecMathUtil.floatToIntBits(w);
+        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(x);
+        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(y);
+        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(z);
+        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(w);
         return (int) (bits ^ (bits >> 32));
     }
 
@@ -614,10 +614,10 @@ public abstract class Tuple4f implements java.io.Serializable, Cloneable {
      * @param alpha the alpha interpolation parameter
      */
     public void interpolate(Tuple4f t1, Tuple4f t2, float alpha) {
-        this.x = (1 - alpha) * t1.x + alpha * t2.x;
-        this.y = (1 - alpha) * t1.y + alpha * t2.y;
-        this.z = (1 - alpha) * t1.z + alpha * t2.z;
-        this.w = (1 - alpha) * t1.w + alpha * t2.w;
+        this.x = (1.0F - alpha) * t1.x + alpha * t2.x;
+        this.y = (1.0F - alpha) * t1.y + alpha * t2.y;
+        this.z = (1.0F - alpha) * t1.z + alpha * t2.z;
+        this.w = (1.0F - alpha) * t1.w + alpha * t2.w;
 
     }
 
@@ -630,10 +630,10 @@ public abstract class Tuple4f implements java.io.Serializable, Cloneable {
      * @param alpha the alpha interpolation parameter
      */
     public void interpolate(Tuple4f t1, float alpha) {
-        this.x = (1 - alpha) * this.x + alpha * t1.x;
-        this.y = (1 - alpha) * this.y + alpha * t1.y;
-        this.z = (1 - alpha) * this.z + alpha * t1.z;
-        this.w = (1 - alpha) * this.w + alpha * t1.w;
+        this.x = (1.0F - alpha) * this.x + alpha * t1.x;
+        this.y = (1.0F - alpha) * this.y + alpha * t1.y;
+        this.z = (1.0F - alpha) * this.z + alpha * t1.z;
+        this.w = (1.0F - alpha) * this.w + alpha * t1.w;
 
     }
 

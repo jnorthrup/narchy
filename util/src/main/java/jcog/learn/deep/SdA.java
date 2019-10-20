@@ -23,7 +23,7 @@ public class SdA {
         this.sigmoid_layers = new HiddenLayer[n_layers];
         this.dA_layers = new dA[n_layers];
 
-        if(rng == null)	this.rng = new Random(1234);
+        if(rng == null)	this.rng = new Random(1234L);
         else this.rng = rng;
 
         
@@ -81,7 +81,7 @@ public class SdA {
                         }
                     }
 
-                    dA_layers[i].train(layer_input, lr/N, corruption_level);
+                    dA_layers[i].train(layer_input, lr/ (double) N, corruption_level);
                 }
             }
         }
@@ -113,7 +113,7 @@ public class SdA {
                             
                 }
 
-                log_layer.train(layer_input, train_Y[n], lr/N);
+                log_layer.train(layer_input, train_Y[n], lr/ (double) N);
             }
             
         }
@@ -146,7 +146,7 @@ public class SdA {
         }
 
         for(int i = 0; i<log_layer.n_out; i++) {
-            y[i] = 0;
+            y[i] = (double) 0;
             for(int j = 0; j<log_layer.n_in; j++) {
                 y[i] += log_layer.W[i][j] * layer_input[j];
             }
@@ -158,7 +158,7 @@ public class SdA {
 
 
     private static void test_sda() {
-        Random rng = new Random(123);
+        Random rng = new Random(123L);
 
         double pretrain_lr = 0.1;
         double corruption_level = 0.3;
@@ -171,16 +171,16 @@ public class SdA {
 
         
         double[][] train_X = {
-                {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1}
+                {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0},
+                {(double) 0, 1.0, 1.0, 1.0, 1.0, (double) 0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0},
+                {1.0, 1.0, (double) 0, 1.0, 1.0, 1.0, (double) 0, 1.0, 1.0, 1.0, 1.0, 1.0, (double) 0, 1.0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0},
+                {(double) 0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, (double) 0, (double) 0, 1.0, 1.0, 1.0, 1.0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0},
+                {1.0, 1.0, (double) 0, (double) 0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0},
+                {(double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
+                {(double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, 1.0, (double) 0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, (double) 0, 1.0, (double) 0, 1.0},
+                {(double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, 1.0, 1.0, (double) 0, 1.0, 1.0, 1.0, 1.0, 1.0, (double) 0, 1.0, 1.0, (double) 0, 1.0, 1.0},
+                {(double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, 1.0, 1.0, 1.0, 1.0, (double) 0, (double) 0, 1.0, 1.0, 1.0, 1.0, (double) 0, 1.0, 1.0, 1.0},
+                {(double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, (double) 0, 1.0, 1.0, 1.0, 1.0}
         };
 
 
@@ -191,16 +191,16 @@ public class SdA {
 
 
         double[][] train_Y = {
-                {1, 0},
-                {1, 0},
-                {1, 0},
-                {1, 0},
-                {1, 0},
-                {0, 1},
-                {0, 1},
-                {0, 1},
-                {0, 1},
-                {0, 1}
+                {1.0, (double) 0},
+                {1.0, (double) 0},
+                {1.0, (double) 0},
+                {1.0, (double) 0},
+                {1.0, (double) 0},
+                {(double) 0, 1.0},
+                {(double) 0, 1.0},
+                {(double) 0, 1.0},
+                {(double) 0, 1.0},
+                {(double) 0, 1.0}
         };
         int finetune_epochs = 500;
         double finetune_lr = 0.1;
@@ -209,10 +209,10 @@ public class SdA {
 
         
         double[][] test_X = {
-                {1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1}
+                {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, (double) 0, 1.0, (double) 0, 1.0, 1.0, 1.0, 1.0, 1.0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0},
+                {1.0, 1.0, 1.0, 1.0, 1.0, (double) 0, 1.0, (double) 0, 1.0, 1.0, (double) 0, 1.0, 1.0, 1.0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0},
+                {(double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, 1.0, 1.0, 1.0, 1.0, (double) 0, (double) 0, 1.0, 1.0, (double) 0, 1.0, 1.0, 1.0, 1.0, 1.0},
+                {(double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, (double) 0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, (double) 0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}
         };
 
         int test_N = 4;
@@ -230,7 +230,7 @@ public class SdA {
 
     /** encode */
     public double[] put(double[] x, double learnRate) {
-        return pretrain(x, learnRate, 0, 1);
+        return pretrain(x, learnRate, (double) 0, 1);
 
 
 

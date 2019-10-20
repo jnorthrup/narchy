@@ -18,8 +18,8 @@ import static nars.Op.*;
 public final class PuncMap extends AbstractPred<PreDerivation> {
     //private final BytePredicate taskPunc;
 
-    public static final byte FALSE = 0;
-    public static final byte TRUE = 1;
+    public static final byte FALSE = (byte) 0;
+    public static final byte TRUE = (byte) 1;
     public static final PuncMap All = new PuncMap(TRUE, TRUE, TRUE, TRUE, TRUE);
 
     final byte belief;
@@ -29,7 +29,7 @@ public final class PuncMap extends AbstractPred<PreDerivation> {
     final byte command;
 
     public static byte p(BytePredicate enable, ByteToByteFunction p, byte b) {
-        return enable.accept(b) ? p.valueOf(b) : 0;
+        return enable.accept(b) ? p.valueOf(b) : (byte) 0;
     }
 
     public PuncMap(boolean belief, boolean goal, boolean question, boolean quest) {
@@ -49,15 +49,15 @@ public final class PuncMap extends AbstractPred<PreDerivation> {
 
     private static Term id(byte belief, byte goal, byte question, byte quest, byte command) {
         Atom PUNC = Atomic.atom("punc");
-        if (belief != 0 && goal != 0&& question!= 0 && quest!= 0 && command!= 0) {
+        if ((int) belief != 0 && (int) goal != 0&& (int) question != 0 && (int) quest != 0 && (int) command != 0) {
             return PUNC;
         } else {
             java.util.Set<Term> s = new UnifiedSet(5);
-            if (belief!=0) s.add(idTerm(Task.BeliefAtom, belief));
-            if (goal!=0) s.add(idTerm(Task.GoalAtom, goal));
-            if (question!=0) s.add(idTerm(Task.QuestionAtom, question));
-            if (quest!=0) s.add(idTerm(Task.QuestAtom, quest));
-            if (command!=0) s.add(idTerm(Task.CommandAtom, command));
+            if ((int) belief !=0) s.add(idTerm(Task.BeliefAtom, belief));
+            if ((int) goal !=0) s.add(idTerm(Task.GoalAtom, goal));
+            if ((int) question !=0) s.add(idTerm(Task.QuestionAtom, question));
+            if ((int) quest !=0) s.add(idTerm(Task.QuestAtom, quest));
+            if ((int) command !=0) s.add(idTerm(Task.CommandAtom, command));
             //HACK
             Term tt = s.size() == 1 ? s.iterator().next() : SETe.the(s);
 
@@ -77,7 +77,7 @@ public final class PuncMap extends AbstractPred<PreDerivation> {
     }
 
     public boolean all() {
-        return belief!=0 && goal!=0 && question!=0 && quest!=0 && command!=0;
+        return (int) belief !=0 && (int) goal !=0 && (int) question !=0 && (int) quest !=0 && (int) command !=0;
     }
 
     @Override
@@ -87,7 +87,7 @@ public final class PuncMap extends AbstractPred<PreDerivation> {
 
     @Override
     public boolean test(PreDerivation d) {
-        return get(d.taskPunc)!=0;
+        return (int) get(d.taskPunc) !=0;
     }
 
     public final byte get(byte in) {
@@ -98,13 +98,13 @@ public final class PuncMap extends AbstractPred<PreDerivation> {
             case QUESTION: y = question; break;
             case QUEST: y = quest; break;
             case COMMAND: y = command; break;
-            default: y = 0; break;
+            default: y = (byte) 0; break;
         }
         return y;
     }
 
     /** any output punctuation match */
     final boolean outAny(byte p) {
-        return belief==p || goal==p || question==p || quest==p || command==p;
+        return (int) belief == (int) p || (int) goal == (int) p || (int) question == (int) p || (int) quest == (int) p || (int) command == (int) p;
     }
 }

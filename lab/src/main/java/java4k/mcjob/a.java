@@ -27,7 +27,6 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class a extends Applet implements Runnable {
 
@@ -36,7 +35,7 @@ public class a extends Applet implements Runnable {
 
 	@Override
 	public void start() {
-		enableEvents(8);
+		enableEvents(8L);
 		new Thread(this).start();
 	}
 
@@ -204,7 +203,7 @@ public class a extends Applet implements Runnable {
 			sprites[i] = new BufferedImage(k, z, BufferedImage.TYPE_INT_ARGB_PRE);
 			for (y = 0; y < z; y++) {
 				for (x = 0; x < k; x++) {
-					sprites[i].setRGB(x, y, COLORS[S.charAt(m++) - 'a']);
+					sprites[i].setRGB(x, y, COLORS[(int) S.charAt(m++) - (int) 'a']);
 				}
 			}
 		}
@@ -219,7 +218,7 @@ public class a extends Applet implements Runnable {
 				for (x = 0; x < 12; x++) {
 					j = sprites[SPRITE_CUSTOMER].getRGB(x, y);
 					if (j == COLOR_RED) {
-						j = Color.HSBtoRGB(i / 8f, 1, 1);
+						j = Color.HSBtoRGB((float) i / 8f, 1.0F, 1.0F);
 					}
 					customerSprites[i][0].setRGB(x, y, j);
 					customerSprites[i][1].setRGB(11 - x, y, j);
@@ -228,7 +227,7 @@ public class a extends Applet implements Runnable {
 		}
 
         long nextFrameStartTime = System.nanoTime();
-        float gameOverScale = 0;
+        float gameOverScale = (float) 0;
         boolean[] columnBlinking = new boolean[4];
         boolean keysReleased = true;
         boolean showTitle = true;
@@ -301,7 +300,7 @@ public class a extends Applet implements Runnable {
         while (true) {
 
 			do {
-				nextFrameStartTime += 16666667;
+				nextFrameStartTime += 16666667L;
 
 
 				boolean result = true;
@@ -325,7 +324,7 @@ public class a extends Applet implements Runnable {
 				}
 
 				if (showTitle || gameOver > 0) {
-					gameOverScale = (float) (1 + 0.01f * (1 + Math.cos(.03f * gameOver)) * gameOver);
+					gameOverScale = (float) (1.0 + 0.01 * (1.0 + Math.cos((double) (.03f * (float) gameOver))) * (double) gameOver);
 					if (showTitle || --gameOver == 0) {
 						gameOver = 1;
 						if (keysReleased) {
@@ -378,10 +377,10 @@ public class a extends Applet implements Runnable {
 					beatLevel = 300;
 				}
 				if (loseLife > 0) {
-                    float m1 = (float) ((1 - Math.cos(0.196f * loseLife)) / 2);
-                    float m2 = 1 - m1;
+                    float m1 = (float) ((1.0 - Math.cos((double) (0.196f * (float) loseLife))) / 2.0);
+                    float m2 = 1.0F - m1;
 
-					darkGray = new Color((int) (0x5B * m2 + 0xFF * m1), (int) (0x5B * m2), (int) (0x4C * m2));
+					darkGray = new Color((int) ((float) 0x5B * m2 + (float) 0xFF * m1), (int) ((float) 0x5B * m2), (int) ((float) 0x4C * m2));
 
 					if (((--loseLife) & 31) == 0) {
 						if (lives == 0) {
@@ -402,7 +401,7 @@ public class a extends Applet implements Runnable {
 						customerCount = 0;
 					}
 					playerHolding = -1;
-					darkGray = Color.getHSBColor(beatLevel / 60f, 1, 1);
+					darkGray = Color.getHSBColor((float) beatLevel / 60f, 1.0F, 1.0F);
 				}
 
 				
@@ -450,8 +449,8 @@ public class a extends Applet implements Runnable {
 					if (i < 8) {
 						i = 8;
 					}
-                    float fraction = customerCount / (float) (32 + (level << 1));
-					walkRate = (int) (4 * fraction + i * (1 - fraction));
+                    float fraction = (float) customerCount / (float) (32 + (level << 1));
+					walkRate = (int) (4.0F * fraction + (float) i * (1.0F - fraction));
 					if (walkRate < 4) {
 						walkRate = 4;
 					}
@@ -732,14 +731,14 @@ public class a extends Applet implements Runnable {
 
 				if (gameOver > 0) {
 					
-					g.drawImage(sprites[SPRITE_LETTER_G], (int) (128 - 36 * gameOverScale), 146, null);
-					g.drawImage(sprites[SPRITE_LETTER_A], (int) (128 - 28 * gameOverScale), 146, null);
-					g.drawImage(sprites[SPRITE_LETTER_M], (int) (128 - 20 * gameOverScale), 146, null);
-					g.drawImage(sprites[SPRITE_LETTER_E], (int) (128 - 12 * gameOverScale), 146, null);
-					g.drawImage(sprites[SPRITE_DIGIT_0], (int) (128 + 4 * gameOverScale), 146, null);
-					g.drawImage(sprites[SPRITE_LETTER_V], (int) (128 + 12 * gameOverScale), 146, null);
-					g.drawImage(sprites[SPRITE_LETTER_E], (int) (128 + 20 * gameOverScale), 146, null);
-					g.drawImage(sprites[SPRITE_LETTER_R], (int) (128 + 28 * gameOverScale), 146, null);
+					g.drawImage(sprites[SPRITE_LETTER_G], (int) (128.0F - 36.0F * gameOverScale), 146, null);
+					g.drawImage(sprites[SPRITE_LETTER_A], (int) (128.0F - 28.0F * gameOverScale), 146, null);
+					g.drawImage(sprites[SPRITE_LETTER_M], (int) (128.0F - 20.0F * gameOverScale), 146, null);
+					g.drawImage(sprites[SPRITE_LETTER_E], (int) (128.0F - 12.0F * gameOverScale), 146, null);
+					g.drawImage(sprites[SPRITE_DIGIT_0], (int) (128.0F + 4.0F * gameOverScale), 146, null);
+					g.drawImage(sprites[SPRITE_LETTER_V], (int) (128.0F + 12.0F * gameOverScale), 146, null);
+					g.drawImage(sprites[SPRITE_LETTER_E], (int) (128.0F + 20.0F * gameOverScale), 146, null);
+					g.drawImage(sprites[SPRITE_LETTER_R], (int) (128.0F + 28.0F * gameOverScale), 146, null);
 				}
 			}
 
@@ -754,7 +753,7 @@ public class a extends Applet implements Runnable {
 			}
 
 			
-			while (nextFrameStartTime - System.nanoTime() > 0) {
+			while (nextFrameStartTime - System.nanoTime() > 0L) {
 				Thread.yield();
 			}
 		}

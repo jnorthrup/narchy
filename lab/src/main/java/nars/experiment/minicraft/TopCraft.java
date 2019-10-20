@@ -43,8 +43,8 @@ public class TopCraft extends GameX {
 
 
         senseSwitch($.func("dir", id), () -> craft.player.dir, 0, 4);
-        sense($.func("stamina", id), () -> (craft.player.stamina) / ((float) craft.player.maxStamina));
-        sense($.func("health", id), () -> (craft.player.health) / ((float) craft.player.maxHealth));
+        sense($.func("stamina", id), () -> (float) (craft.player.stamina) / ((float) craft.player.maxStamina));
+        sense($.func("health", id), () -> (float) (craft.player.health) / ((float) craft.player.maxHealth));
 
         int tileMax = 13;
         senseSwitch("tile:here", () -> craft.player.tile().id, 0, tileMax);
@@ -67,19 +67,19 @@ public class TopCraft extends GameX {
         });
         actionPushButton($.func("menu", id), ()->0.9f, input.menu::pressIfUnpressed);
 
-        rewardNormalized("score", -1, +1, () -> {
-            float nextScore = craft.frameImmediate();
+        rewardNormalized("score", -1.0F, (float) +1, () -> {
+            float nextScore = (float) craft.frameImmediate();
             float ds = nextScore - prevScore;
-            if (ds == 0)
+            if (ds == (float) 0)
                 return Float.NaN;
             this.prevScore = nextScore;
             //System.out.println("score delta:" + ds);
             return ds;
         });
-        rewardNormalized("health", -1, +1, ()-> {
-            float nextHealth = craft.player.health;
+        rewardNormalized("health", -1.0F, (float) +1, ()-> {
+            float nextHealth = (float) craft.player.health;
             float dh = nextHealth - prevHealth;
-            if (dh == 0)
+            if (dh == (float) 0)
                 return Float.NaN;
             this.prevHealth = nextHealth;
             //System.out.println("health delta: " + dh);
@@ -89,7 +89,7 @@ public class TopCraft extends GameX {
     }
 
     public static void main(String[] args) {
-        Companion.initFn(20, n -> {
+        Companion.initFn(20.0F, n -> {
             try {
                 TopCraft tc = new TopCraft(n);
 

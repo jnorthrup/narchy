@@ -17,7 +17,7 @@ import java.util.function.Consumer;
  */
 public abstract class DurSurface<S extends Surface> extends UnitContainer<S> {
 
-    public static final double minUpdateTimeSeconds = 1 / 30.0; /* 30fps */
+    public static final double minUpdateTimeSeconds = 1.0 / 30.0; /* 30fps */
 
     protected final NAR nar;
     final DurLoop dur;

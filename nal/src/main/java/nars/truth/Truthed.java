@@ -38,11 +38,11 @@ public interface Truthed  {
      * @return The expectation value
      */
     default float expectation() {
-        return (float) TruthFunctions.expectation(freq(), conf());
+        return (float) TruthFunctions.expectation(freq(), (double) conf());
     }
 
     default float expectationNeg() {
-        return (float) TruthFunctions.expectation(1 - freq(), conf());
+        return (float) TruthFunctions.expectation(1.0F - freq(), (double) conf());
     }
 
     /** value between 0 and 1 indicating how distant the frequency is from 0.5 (neutral) */

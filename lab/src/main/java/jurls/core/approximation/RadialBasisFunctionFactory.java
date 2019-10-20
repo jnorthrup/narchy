@@ -23,14 +23,14 @@ public class RadialBasisFunctionFactory implements ActivationFunctionFactory {
         }
         DiffableFunctionSource[] fs = list.toArray(new DiffableFunctionSource[0]);
 
-        Scalar p = gc.newParameter(-1);
-        p.setUpperBound(0);
+        Scalar p = gc.newParameter(-1.0);
+        p.setUpperBound((double) 0);
         return new Exp(new Product(p, new Sum(fs)));
     }
 
     @Override
     public double getDelta() {
-        return -10;
+        return -10.0;
     }
 
 }

@@ -38,14 +38,14 @@ public class Fireball extends Sprite {
         hPic = 8;
 
         xPic = 4;
-        ya = 4;
+        ya = 4.0F;
     }
 
     @Override
     public void move() {
         if (deadTime > 0) {
             for (int i = 0; i < 8; i++) {
-                world.addSprite(new Sparkle((int) (x + Math.random() * 8 - 4) + 4, (int) (y + Math.random() * 8 - 4) + 2, (float) Math.random() * 2 - 1 - facing, (float) Math.random() * 2 - 1, 0, 1, 5));
+                world.addSprite(new Sparkle((int) ((double) x + Math.random() * 8.0 - 4.0) + 4, (int) ((double) y + Math.random() * 8.0 - 4.0) + 2, (float) Math.random() * 2.0F - 1.0F - (float) facing, (float) Math.random() * 2.0F - 1.0F, 0, 1, 5));
             }
             spriteContext.removeSprite(this);
 
@@ -55,32 +55,32 @@ public class Fireball extends Sprite {
         if (facing != 0) anim++;
 
 
-        if (xa > 2) {
+        if (xa > 2.0F) {
             facing = 1;
         }
-        if (xa < -2) {
+        if (xa < -2.0F) {
             facing = -1;
         }
 
         float sideWaysSpeed = 8f;
-        xa = facing * sideWaysSpeed;
+        xa = (float) facing * sideWaysSpeed;
 
         world.checkFireballCollide(this);
 
         xFlipPic = facing == -1;
 
-        runTime += (Math.abs(xa)) + 5;
+        runTime += (Math.abs(xa)) + 5.0F;
 
         xPic = (anim) % 4;
 
 
-        if (!move(xa, 0)) {
+        if (!move(xa, (float) 0)) {
             die();
         }
 
         onGround = false;
-        move(0, ya);
-        if (onGround) ya = -10;
+        move((float) 0, ya);
+        if (onGround) ya = -10.0F;
 
         ya *= 0.95f;
         if (onGround) {
@@ -90,73 +90,73 @@ public class Fireball extends Sprite {
         }
 
         if (!onGround) {
-            ya += 1.5;
+            ya = (float) ((double) ya + 1.5);
         }
     }
 
     private boolean move(float xa, float ya) {
-        while (xa > 8) {
-            if (!move(8, 0)) return false;
-            xa -= 8;
+        while (xa > 8.0F) {
+            if (!move(8.0F, (float) 0)) return false;
+            xa -= 8.0F;
         }
-        while (xa < -8) {
-            if (!move(-8, 0)) return false;
-            xa += 8;
+        while (xa < -8.0F) {
+            if (!move(-8.0F, (float) 0)) return false;
+            xa += 8.0F;
         }
-        while (ya > 8) {
-            if (!move(0, 8)) return false;
-            ya -= 8;
+        while (ya > 8.0F) {
+            if (!move((float) 0, 8.0F)) return false;
+            ya -= 8.0F;
         }
-        while (ya < -8) {
-            if (!move(0, -8)) return false;
-            ya += 8;
+        while (ya < -8.0F) {
+            if (!move((float) 0, -8.0F)) return false;
+            ya += 8.0F;
         }
 
         boolean collide = false;
         int width = 4;
-        if (ya > 0) {
-            if (isBlocking(x + xa - width, y + ya, xa, 0)) collide = true;
-            else if (isBlocking(x + xa + width, y + ya, xa, 0)) collide = true;
-            else if (isBlocking(x + xa - width, y + ya + 1, xa, ya)) collide = true;
-            else if (isBlocking(x + xa + width, y + ya + 1, xa, ya)) collide = true;
+        if (ya > (float) 0) {
+            if (isBlocking(x + xa - (float) width, y + ya, xa, (float) 0)) collide = true;
+            else if (isBlocking(x + xa + (float) width, y + ya, xa, (float) 0)) collide = true;
+            else if (isBlocking(x + xa - (float) width, y + ya + 1.0F, xa, ya)) collide = true;
+            else if (isBlocking(x + xa + (float) width, y + ya + 1.0F, xa, ya)) collide = true;
         }
-        if (ya < 0) {
-            if (isBlocking(x + xa, y + ya - height, xa, ya)) collide = true;
-            else if (collide || isBlocking(x + xa - width, y + ya - height, xa, ya)) collide = true;
-            else if (collide || isBlocking(x + xa + width, y + ya - height, xa, ya)) collide = true;
+        if (ya < (float) 0) {
+            if (isBlocking(x + xa, y + ya - (float) height, xa, ya)) collide = true;
+            else if (collide || isBlocking(x + xa - (float) width, y + ya - (float) height, xa, ya)) collide = true;
+            else if (collide || isBlocking(x + xa + (float) width, y + ya - (float) height, xa, ya)) collide = true;
         }
-        if (xa > 0) {
-            if (isBlocking(x + xa + width, y + ya - height, xa, ya)) collide = true;
-            if (isBlocking(x + xa + width, y + ya - height / 2, xa, ya)) collide = true;
-            if (isBlocking(x + xa + width, y + ya, xa, ya)) collide = true;
+        if (xa > (float) 0) {
+            if (isBlocking(x + xa + (float) width, y + ya - (float) height, xa, ya)) collide = true;
+            if (isBlocking(x + xa + (float) width, y + ya - (float) (height / 2), xa, ya)) collide = true;
+            if (isBlocking(x + xa + (float) width, y + ya, xa, ya)) collide = true;
 
-            if (avoidCliffs && onGround && !world.level.isBlocking((int) ((x + xa + width) / 16), (int) ((y) / 16 + 1), xa, 1))
+            if (avoidCliffs && onGround && !world.level.isBlocking((int) ((x + xa + (float) width) / 16.0F), (int) ((y) / 16.0F + 1.0F), xa, 1.0F))
                 collide = true;
         }
-        if (xa < 0) {
-            if (isBlocking(x + xa - width, y + ya - height, xa, ya)) collide = true;
-            if (isBlocking(x + xa - width, y + ya - height / 2, xa, ya)) collide = true;
-            if (isBlocking(x + xa - width, y + ya, xa, ya)) collide = true;
+        if (xa < (float) 0) {
+            if (isBlocking(x + xa - (float) width, y + ya - (float) height, xa, ya)) collide = true;
+            if (isBlocking(x + xa - (float) width, y + ya - (float) (height / 2), xa, ya)) collide = true;
+            if (isBlocking(x + xa - (float) width, y + ya, xa, ya)) collide = true;
 
-            if (avoidCliffs && onGround && !world.level.isBlocking((int) ((x + xa - width) / 16), (int) ((y) / 16 + 1), xa, 1))
+            if (avoidCliffs && onGround && !world.level.isBlocking((int) ((x + xa - (float) width) / 16.0F), (int) ((y) / 16.0F + 1.0F), xa, 1.0F))
                 collide = true;
         }
 
         if (collide) {
-            if (xa < 0) {
-                x = (int) ((x - width) / 16) * 16 + width;
-                this.xa = 0;
+            if (xa < (float) 0) {
+                x = (float) ((int) ((x - (float) width) / 16.0F) * 16 + width);
+                this.xa = (float) 0;
             }
-            if (xa > 0) {
-                x = (int) ((x + width) / 16 + 1) * 16 - width - 1;
-                this.xa = 0;
+            if (xa > (float) 0) {
+                x = (float) ((int) ((x + (float) width) / 16.0F + 1.0F) * 16 - width - 1);
+                this.xa = (float) 0;
             }
-            if (ya < 0) {
-                y = (int) ((y - height) / 16) * 16 + height;
-                this.ya = 0;
+            if (ya < (float) 0) {
+                y = (float) ((int) ((y - (float) height) / 16.0F) * 16 + height);
+                this.ya = (float) 0;
             }
-            if (ya > 0) {
-                y = (int) (y / 16 + 1) * 16 - 1;
+            if (ya > (float) 0) {
+                y = (float) ((int) (y / 16.0F + 1.0F) * 16 - 1);
                 onGround = true;
             }
             return false;
@@ -168,9 +168,9 @@ public class Fireball extends Sprite {
     }
 
     private boolean isBlocking(float _x, float _y, float xa, float ya) {
-        int x = (int) (_x / 16);
-        int y = (int) (_y / 16);
-        if (x == (int) (this.x / 16) && y == (int) (this.y / 16)) return false;
+        int x = (int) (_x / 16.0F);
+        int y = (int) (_y / 16.0F);
+        if (x == (int) (this.x / 16.0F) && y == (int) (this.y / 16.0F)) return false;
 
         boolean blocking = world.level.isBlocking(x, y, xa, ya);
 
@@ -183,8 +183,8 @@ public class Fireball extends Sprite {
     public void die() {
         dead = true;
 
-        xa = -facing * 2;
-        ya = -5;
+        xa = (float) (-facing * 2);
+        ya = -5.0F;
         deadTime = 100;
     }
 }

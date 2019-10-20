@@ -160,7 +160,7 @@ public class SarsaLearner {
         if (features != null)
             newValue = valueFunction[action].predict(features);
         else
-            newValue = 0;
+            newValue = (double) 0;
 
 
         double delta = reward + gamma * newValue - oldValue;
@@ -223,7 +223,7 @@ public class SarsaLearner {
     protected static void replaceTraces(double[] traces, double factor, double[] state) {
         for (int f = 0; f < traces.length; f++) {
             
-            if (state[f] == 0)
+            if (state[f] == (double) 0)
                 traces[f] *= factor;
             else
                 traces[f] = state[f];
@@ -240,7 +240,7 @@ public class SarsaLearner {
 
 
         if (Math.random() < epsilon) {
-            int r = (int)(Math.random() * numActions);
+            int r = (int)(Math.random() * (double) numActions);
             return r;
         }
 
@@ -269,7 +269,7 @@ public class SarsaLearner {
 
         
         if (ties.size() > 1) {
-            int r = (int)(Math.random() * ties.size());
+            int r = (int)(Math.random() * (double) ties.size());
             bestAction = ties.get(r);
         }
 

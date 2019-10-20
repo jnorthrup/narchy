@@ -21,8 +21,6 @@ import jcog.grammar.synthesize.util.Log;
 
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class GrammarTransformer {
     public static Node getTransform(Node node, Predicate<String> oracle) {
@@ -89,18 +87,18 @@ public class GrammarTransformer {
                 if (generalization.triggers.contains(curC)) {
                     Collection<String> checks = new ArrayList<>();
                     for (char c : generalization.checks) {
-                        if (curC != c) {
+                        if ((int) curC != (int) c) {
                             checks.add(String.valueOf(c));
                         }
                     }
                     if (GrammarSynthesis.getCheck(oracle, curContext, checks)) {
                         for (char c : generalization.characters) {
-                            if (curC != c) {
+                            if ((int) curC != (int) c) {
                                 characterOption.add(c);
                             }
                         }
                         for (char c : generalization.checks) {
-                            if (curC != c) {
+                            if ((int) curC != (int) c) {
                                 characterCheck.add(c);
                             }
                         }

@@ -63,7 +63,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink>, Com
      */
     default byte priPunc(Random rng) {
         int i = Roulette.selectRouletteCached(4, j -> priIndex((byte)j), rng);
-        return i != -1 ? p(i) : 0;
+        return i != -1 ? p(i) : (byte) 0;
     }
 
     default byte punc(Random rng) {
@@ -138,7 +138,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink>, Com
             case 3:
                 return QUEST;
         }
-        return -1;
+        return (byte) -1;
     }
 
 

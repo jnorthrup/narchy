@@ -55,19 +55,19 @@ final class Input extends ComponentAdapter implements KeyListener, MouseListener
     }
 
     public vv3 getKeyboardVector() {
-        vv3 kbVector = new vv3(0, 0, 0);
+        vv3 kbVector = new vv3((double) 0, (double) 0, (double) 0);
 
         if (forward) {
-            kbVector = kbVector.add(new vv3(0, 1, 0));
+            kbVector = kbVector.add(new vv3((double) 0, 1.0, (double) 0));
         }
         if (backward) {
-            kbVector = kbVector.add(new vv3(0, -1, 0));
+            kbVector = kbVector.add(new vv3((double) 0, -1.0, (double) 0));
         }
         if (left) {
-            kbVector = kbVector.add(new vv3(-1, 0, 0));
+            kbVector = kbVector.add(new vv3(-1.0, (double) 0, (double) 0));
         }
         if (right) {
-            kbVector = kbVector.add(new vv3(1, 0, 0));
+            kbVector = kbVector.add(new vv3(1.0, (double) 0, (double) 0));
         }
 
         kbVector = kbVector.normalize().scale(0.3);

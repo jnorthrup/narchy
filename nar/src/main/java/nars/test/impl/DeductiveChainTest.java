@@ -48,13 +48,13 @@ public class DeductiveChainTest  {
         }
         n.nar.question( q );
 
-        n.mustBelieve(timeLimit, q.toString(), 1f, 1f, 0.01f, 1f);
+        n.mustBelieve((long) timeLimit, q.toString(), 1f, 1f, 0.01f, 1f);
 
     }
 
 
     static @NotNull Atomic a(int i) {
-        return $.the((byte)('a' + i));
+        return $.the((byte)((int) 'a' + i));
     }
 
 

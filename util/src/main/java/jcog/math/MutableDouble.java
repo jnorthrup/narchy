@@ -309,7 +309,7 @@ public class MutableDouble extends Number implements Comparable {
   }
 
   public void set(float v) {
-      setValue(v);
+      setValue((double) v);
   }
 
   public void set(double v) {

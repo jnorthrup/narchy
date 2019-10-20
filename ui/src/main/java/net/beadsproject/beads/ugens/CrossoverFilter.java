@@ -39,8 +39,8 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
     private float lb0;
     private float lb1;
 
-    private static final float SQRT2 = (float) Math.sqrt(2);
-    private float freq = 120;
+    private static final float SQRT2 = (float) Math.sqrt(2.0);
+    private float freq = 120.0F;
     private final float pi_sr;
     private UGen freqUGen;
 
@@ -77,7 +77,7 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
      * @param context The audio context.
      */
     public CrossoverFilter(AudioContext context) {
-        this(context, 1, 800);
+        this(context, 1, 800.0F);
     }
 
     /**
@@ -88,7 +88,7 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
      * @param channels The number of channels.
      */
     public CrossoverFilter(AudioContext context, int channels) {
-        this(context, channels, 800);
+        this(context, channels, 800.0F);
     }
 
     /**
@@ -110,7 +110,7 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
             hzms = new float[channels][3];
         }
         float sr = context.getSampleRate();
-        pi_sr = (float) (Math.PI / sr);
+        pi_sr = (float) (Math.PI / (double) sr);
         setFrequency(freq);
     }
 
@@ -187,8 +187,8 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
                         / a0;
 
 
-                float hy0 = (bi[i] - 2 * x1 + x2 - a1 * hy1 - a2 * hy2) / a0;
-                hi[i] = (hy0 - 2 * hy1 + hy2 - a1 * hz1 - a2 * hz2) / a0;
+                float hy0 = (bi[i] - 2.0F * x1 + x2 - a1 * hy1 - a2 * hy2) / a0;
+                hi[i] = (hy0 - 2.0F * hy1 + hy2 - a1 * hz1 - a2 * hz2) / a0;
 
                 
                 x2 = x1;
@@ -211,15 +211,15 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
 
     private void calcVals() {
 
-        float k = (float) Math.tan(freq * pi_sr);
+        float k = (float) Math.tan((double) (freq * pi_sr));
         lb0 = k * k;
         lb1 = 2f * lb0;
         
         
         
-        a0 = lb0 + (SQRT2 * k) + 1;
-        a1 = 2f * (lb0 - 1);
-        a2 = lb0 - (SQRT2 * k) + 1;
+        a0 = lb0 + (SQRT2 * k) + 1.0F;
+        a1 = 2f * (lb0 - 1.0F);
+        a2 = lb0 - (SQRT2 * k) + 1.0F;
 
     }
 
@@ -227,7 +227,7 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
      * Resets the filter in case it "explodes".
      */
     public void reset() {
-        lz2 = lz1 = ly2 = ly1 = hz2 = hz1 = hy2 = hy1 = 0;
+        lz2 = lz1 = ly2 = ly1 = hz2 = hz1 = hy2 = hy1 = (float) 0;
     }
 
     /**

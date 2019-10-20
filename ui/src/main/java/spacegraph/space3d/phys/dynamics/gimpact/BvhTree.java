@@ -54,7 +54,7 @@ class BvhTree {
         v3 tmp1 = new v3();
         v3 tmp2 = new v3();
 
-		mean(primitive_boxes, startIndex, endIndex, means, numIndices, center, tmp1, tmp2);
+		mean(primitive_boxes, startIndex, endIndex, means, (float) numIndices, center, tmp1, tmp2);
 
 		for (int i = startIndex; i<endIndex; i++) {
 			primitive_boxes.getBoundMax(i, tmp1);
@@ -65,7 +65,7 @@ class BvhTree {
 			VectorUtil.mul(diff2, diff2, diff2);
 			variance.add(diff2);
 		}
-		variance.scaled(1f / (numIndices - 1));
+		variance.scaled(1f / (float) (numIndices - 1));
 
 		return VectorUtil.maxAxis(variance);
 	}
@@ -93,7 +93,7 @@ class BvhTree {
         v3 tmp2 = new v3();
 
         int numIndices = endIndex - startIndex;
-        mean(primitive_boxes, startIndex, endIndex, means, numIndices, center, tmp1, tmp2);
+        mean(primitive_boxes, startIndex, endIndex, means, (float) numIndices, center, tmp1, tmp2);
 
         float splitValue = VectorUtil.coord(means, splitAxis);
 

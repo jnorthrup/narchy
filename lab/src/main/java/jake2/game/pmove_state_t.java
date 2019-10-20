@@ -37,15 +37,15 @@ public class pmove_state_t {
 
 	public int pm_type;
 
-	public final short[] origin = { 0, 0, 0 }; 
-	public final short[] velocity = { 0, 0, 0 }; 
+	public final short[] origin = {(short) 0, (short) 0, (short) 0};
+	public final short[] velocity = {(short) 0, (short) 0, (short) 0};
 	/** ducked, jump_held, etc. */
 	public byte pm_flags;
 	/** each unit = 8 ms. */
 	public byte pm_time; 
 	public short gravity;
 	/** add to command angles to get view direction. */
-	public final short[] delta_angles = { 0, 0, 0 };
+	public final short[] delta_angles = {(short) 0, (short) 0, (short) 0};
 	/** changed by spawns, rotating objects, and teleporters.*/
 	
 	private static final pmove_state_t prototype = new pmove_state_t();
@@ -67,18 +67,18 @@ public class pmove_state_t {
 	
 	public boolean equals(pmove_state_t p2) {
 		return pm_type == p2.pm_type
-				&& origin[0] == p2.origin[0]
-				&& origin[1] == p2.origin[1]
-				&& origin[2] == p2.origin[2]
-				&& velocity[0] == p2.velocity[0]
-				&& velocity[1] == p2.velocity[1]
-				&& velocity[2] == p2.origin[2]
-				&& pm_flags == p2.pm_flags
-				&& pm_time == p2.pm_time
-				&& gravity == gravity
-				&& delta_angles[0] == p2.delta_angles[0]
-				&& delta_angles[1] == p2.delta_angles[1]
-				&& delta_angles[2] == p2.origin[2];
+				&& (int) origin[0] == (int) p2.origin[0]
+				&& (int) origin[1] == (int) p2.origin[1]
+				&& (int) origin[2] == (int) p2.origin[2]
+				&& (int) velocity[0] == (int) p2.velocity[0]
+				&& (int) velocity[1] == (int) p2.velocity[1]
+				&& (int) velocity[2] == (int) p2.origin[2]
+				&& (int) pm_flags == (int) p2.pm_flags
+				&& (int) pm_time == (int) p2.pm_time
+				&& (int) gravity == (int) gravity
+				&& (int) delta_angles[0] == (int) p2.delta_angles[0]
+				&& (int) delta_angles[1] == (int) p2.delta_angles[1]
+				&& (int) delta_angles[2] == (int) p2.origin[2];
 
 	}
 
@@ -112,23 +112,23 @@ public class pmove_state_t {
 
 		f.writeInt(pm_type);
 
-		f.writeShort(origin[0]);
-		f.writeShort(origin[1]);
-		f.writeShort(origin[2]);
+		f.writeShort((int) origin[0]);
+		f.writeShort((int) origin[1]);
+		f.writeShort((int) origin[2]);
 
-		f.writeShort(velocity[0]);
-		f.writeShort(velocity[1]);
-		f.writeShort(velocity[2]);
+		f.writeShort((int) velocity[0]);
+		f.writeShort((int) velocity[1]);
+		f.writeShort((int) velocity[2]);
 
-		f.writeByte(pm_flags);
-		f.writeByte(pm_time);
-		f.writeShort(gravity);
+		f.writeByte((int) pm_flags);
+		f.writeByte((int) pm_time);
+		f.writeShort((int) gravity);
 
 		f.writeShort(0);
 
-		f.writeShort(delta_angles[0]);
-		f.writeShort(delta_angles[1]);
-		f.writeShort(delta_angles[2]);
+		f.writeShort((int) delta_angles[0]);
+		f.writeShort((int) delta_angles[1]);
+		f.writeShort((int) delta_angles[2]);
 	}
 
 	public void dump() {

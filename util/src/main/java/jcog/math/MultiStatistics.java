@@ -31,7 +31,7 @@ public class MultiStatistics<X> implements Consumer<X> {
         public String toString() {
             long N = getN();
             return id + ": " +
-                    (N > 0 ? (N +":" + getMin() + ".." + getMax() + ", avg=" + getMean() + ", sum=" + getSum() + ':' + super.toString())
+                    (N > 0L ? (N +":" + getMin() + ".." + getMax() + ", avg=" + getMean() + ", sum=" + getSum() + ':' + super.toString())
                         :
                         "none")
                     ;
@@ -40,12 +40,12 @@ public class MultiStatistics<X> implements Consumer<X> {
 
         @Override
         public void accept(X x) {
-            accept(x, 1);
+            accept(x, 1.0F);
         }
 
         void accept(X parameter, float v) {
             if (filter.test(parameter)) {
-                accept(v);
+                accept((double) v);
             }
         }
     }
@@ -97,7 +97,7 @@ public class MultiStatistics<X> implements Consumer<X> {
         public void accept(X x) {
             float v = test.floatValueOf(x);
             if (v == v)
-                accept(v);
+                accept((double) v);
         }
     }
 
@@ -160,7 +160,7 @@ public class MultiStatistics<X> implements Consumer<X> {
         public void accept(X z) {
             float[] xy = func.apply(z);
             assert(xy.length==2);
-            stats.add(xy[0], xy[1]);
+            stats.add((double) xy[0], (double) xy[1]);
         }
     }
 }

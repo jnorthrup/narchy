@@ -49,7 +49,7 @@ public enum Conceptualization {
                         yyy.eventsAND((when, what)->{
                             t.add(what);
                             return true;
-                        }, 0, true, true);
+                        }, 0L, true, true);
                     } else {
                         if (!(yyy instanceof Interval))
                             t.add(yyy);
@@ -89,7 +89,7 @@ public enum Conceptualization {
                         yyy.unneg().eventsAND((when, what)->{
                             t.add(what.unneg());
                             return true;
-                        }, 0, true, true);
+                        }, 0L, true, true);
                     } else {
                         if (!(yyy instanceof Interval))
                             t.add(yyy.unneg());
@@ -136,7 +136,7 @@ public enum Conceptualization {
 //            }
 
 
-            if (x.opID() == CONJ.id) {
+            if (x.opID() == (int) CONJ.id) {
                 final Term y = transformConj(x);
                 if (y!=null)
                     x = (Compound) y;

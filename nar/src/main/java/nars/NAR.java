@@ -194,7 +194,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         Term tc = t.why();
 		if (tc!=null) {
 		    Why.forEachUnique(t.why(), s-> {
-                Cause c = control.why.get(s);
+                Cause c = control.why.get((int) s);
                 try {
                     out.append(c.toString());
                     out.append('\n');
@@ -256,13 +256,13 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
             HashBag clazz = new HashBag();
             HashBag rootOp = new HashBag();
 
-            Histogram volume = new Histogram(1, term.COMPOUND_VOLUME_MAX, 3);
+            Histogram volume = new Histogram(1L, (long) term.COMPOUND_VOLUME_MAX, 3);
 
             {
                 concepts().filter(xx -> !(xx instanceof Functor)).forEach(c -> {
 
                     Term ct = c.term();
-                    volume.recordValue(ct.volume());
+                    volume.recordValue((long) ct.volume());
                     rootOp.add(ct.op());
                     clazz.add(ct.getClass().toString());
 
@@ -313,7 +313,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         synchronized (exe) {
 
             boolean running = loop.isRunning();
-            float fps = running ? loop.getFPS() : -1;
+            float fps = running ? loop.getFPS() : -1.0F;
 
             stop();
 
@@ -547,7 +547,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public NAR believe(Term term, long start, long end) throws TaskException {
-        input(priDefault(BELIEF), term, BELIEF, start, end, 1f, confDefault(BELIEF));
+        input(priDefault(BELIEF), term, BELIEF, start, end, 1f, (double) confDefault(BELIEF));
         return this;
     }
 
@@ -560,15 +560,15 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public Task believe(float pri, Term term, long start, long end, float freq, float conf) throws TaskException {
-        return input(pri, term, BELIEF, start, end, freq, conf);
+        return input(pri, term, BELIEF, start, end, freq, (double) conf);
     }
 
     public Task want(float pri, Term goal, long start, long end, float freq, float conf) throws TaskException {
-        return input(pri, goal, GOAL, start, end, freq, conf);
+        return input(pri, goal, GOAL, start, end, freq, (double) conf);
     }
 
     public Task input(float pri, Term term, byte punc, long occurrenceTime, float freq, float conf) throws TaskException {
-        return input(pri, term, punc, occurrenceTime, occurrenceTime, freq, conf);
+        return input(pri, term, punc, occurrenceTime, occurrenceTime, freq, (double) conf);
     }
 
     public Task input(float pri, Term term, byte punc, long start, long end, float freq, double conf) throws TaskException {
@@ -617,7 +617,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public Task que(Term term, byte punc, long start, long end) {
-        assert ((punc == QUESTION) || (punc == QUEST));
+        assert (((int) punc == (int) QUESTION) || ((int) punc == (int) QUEST));
 
         return inputTask(
                 NALTask.the(term.unneg(), punc, null, time(), start, end, new long[]{time.nextStamp()}).budget(this)
@@ -1370,7 +1370,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public @Nullable Task answer(Termed t, byte punc, long start, long end) {
-        assert (punc == BELIEF || punc == GOAL);
+        assert ((int) punc == (int) BELIEF || (int) punc == (int) GOAL);
 
 
         Term tt = t.term();

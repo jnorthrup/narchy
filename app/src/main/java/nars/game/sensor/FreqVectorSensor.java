@@ -40,8 +40,8 @@ public class FreqVectorSensor extends VectorSensor {
         assert(fftSize >= components*2);
 
         freqMax = fftSize/2;
-        center = new FloatRange(freqMax/2, 0, freqMax);
-        bandwidth = new FloatRange(freqMax, 0, freqMax);
+        center = new FloatRange((float) (freqMax / 2), (float) 0, (float) freqMax);
+        bandwidth = new FloatRange((float) freqMax, (float) 0, (float) freqMax);
 
         component = new ComponentSignal[components];
         componentValue = new float[components];
@@ -49,7 +49,7 @@ public class FreqVectorSensor extends VectorSensor {
         for (int i = 0; i < components; i++) {
             int finalI = i;
             component[i] = newComponent(termizer.apply(i), ()->componentValue[finalI]);
-            freqValue[i] = 0;
+            freqValue[i] = (float) 0;
         }
 
         dft = new SlidingDFT(fftSize, 1);
@@ -73,20 +73,20 @@ public class FreqVectorSensor extends VectorSensor {
 
         float center = this.center.floatValue();
         float bw = this.bandwidth.floatValue();
-        float fMin = Math.max(0, center - bw/2);
-        float fMax = Math.min(freqMax, center + bw/2);
+        float fMin = Math.max((float) 0, center - bw/ 2.0F);
+        float fMax = Math.min((float) freqMax, center + bw/ 2.0F);
         int n = componentValue.length;
-        float fDelta = (fMax - fMin) / n;
-        float fRad = fDelta/2;
+        float fDelta = (fMax - fMin) / (float) n;
+        float fRad = fDelta/ 2.0F;
         for (int i = 0; i < n; i++) {
-            float c = Util.lerp((i + 0.5f)/n, fMin, fMax);
+            float c = Util.lerp(((float) i + 0.5f)/ (float) n, fMin, fMax);
             float a = c - fRad;
             float b = c + fRad;
-            double f = Util.interpSum(freqValue, a, b)/(b-a);
+            double f = Util.interpSum(freqValue, (double) a, (double) b)/ (double) (b - a);
             componentValue[i] = (float) f;
         }
         float intensity;
-        Util.normalize(componentValue, 0, intensity = Util.max(componentValue));
+        Util.normalize(componentValue, (float) 0, intensity = Util.max(componentValue));
 
         super.accept(g);
     }

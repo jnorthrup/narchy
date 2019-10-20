@@ -14,7 +14,7 @@ public class Arrow extends LevelObject {
 		this.p = new Point(p1);
         int dx = p2.x - p1.x;
         int dy = p2.y - p1.y;
-		angle = (int) Math.toDegrees(Math.atan2(dy, dx));
+		angle = (int) Math.toDegrees(Math.atan2((double) dy, (double) dx));
 		if (angle < 0) {
 			angle += 360;
 		}

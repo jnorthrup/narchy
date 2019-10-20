@@ -5,7 +5,6 @@ import org.eclipse.collections.api.block.predicate.Predicate2;
 import java.util.AbstractList;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.IntStream;
 
 public abstract class LazyList<X> extends AbstractList<X> {
 

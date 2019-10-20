@@ -11,7 +11,7 @@ package jcog.tree.rtree;
         l1Node.insert(data[r1Max], model);
         l2Node.insert(data[r2Max], model);
 
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < (int) size; i++) {
             if ((i != r1Max) && (i != r2Max))
                 leaf.transfer(l1Node, l2Node, data[i], model);
         }

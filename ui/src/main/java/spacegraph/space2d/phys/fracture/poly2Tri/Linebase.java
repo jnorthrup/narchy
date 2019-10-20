@@ -28,7 +28,7 @@ public class Linebase implements SplayTreeItem {
     /**
      * key of a line segment for splay tree searching
      */
-    private double _key = 0;
+    private double _key = (double) 0;
 
     /**
      * Was unsigned int!

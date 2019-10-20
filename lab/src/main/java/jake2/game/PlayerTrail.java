@@ -63,7 +63,7 @@ public class PlayerTrail {
     static void Init() {
 
         
-        if (GameBase.deathmatch.value != 0)
+        if (GameBase.deathmatch.value != (float) 0)
             return;
 
         for (int n = 0; n < PlayerTrail.TRAIL_LENGTH; n++) {
@@ -84,7 +84,7 @@ public class PlayerTrail {
 
         PlayerTrail.trail[trail_head].timestamp = GameBase.level.time;
 
-        float[] temp = {0, 0, 0};
+        float[] temp = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorSubtract(spot,
                 PlayerTrail.trail[PREV(trail_head)].s.origin, temp);
         PlayerTrail.trail[trail_head].s.angles[1] = Math3D.vectoyaw(temp);

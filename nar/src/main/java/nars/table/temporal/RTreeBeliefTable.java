@@ -26,8 +26,6 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -56,7 +54,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             RLeaf l = (RLeaf) next;
             Object[] data = l.data;
             short s = l.size;
-			for (int i = 0; i < s; i++) {
+			for (int i = 0; i < (int) s; i++) {
                 Task x = (Task) data[i];
 				if (x.isDeleted()) {
                     boolean removed = tree.remove(x);
@@ -67,7 +65,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 				weakest.accept(x);
 			}
 
-			if (s >= 2)
+			if ((int) s >= 2)
 				mergeableLeaf.accept(l);
 
 		} else {
@@ -96,7 +94,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         long now = r.time();
 		//long tableDur = tableDur(now);
 
-        Top<Task> weakest = new Top<Task>(new FurthestWeakest(now, 1));
+        Top<Task> weakest = new Top<Task>(new FurthestWeakest(now, 1.0));
 
         Top<RLeaf<TaskRegion>> mergeableLeaf = new Top<RLeaf<TaskRegion>>(
 			//WeakestTemporallyDense(now)
@@ -133,7 +131,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 	private static @Nullable Pair<Task, TruthProjection> mergeLeaf(Top<RLeaf<TaskRegion>> mergeableLeaf, Remember r) {
         RLeaf<TaskRegion> leaf = mergeableLeaf.get();
-		return Revision.merge(r.what.nar, false, 2, leaf.size, leaf.data);
+		return Revision.merge(r.what.nar, false, 2, (int) leaf.size, leaf.data);
 	}
 
 	private static boolean mergeOrEvict(Task weakest, Task merged, TruthProjection merging, Remember r) {
@@ -211,7 +209,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
                 int cursorCapacity = Math.min(n,
 					//ac
-					Math.max(1, (int)Math.ceil(ac / Math.max(1,(RTreeBeliefTable.MAX_TASKS_PER_LEAF/2f))))
+					Math.max(1, (int)Math.ceil((double) (ac / Math.max(1.0F, ((float) RTreeBeliefTable.MAX_TASKS_PER_LEAF / 2f)))))
 				);
 
                 HyperIterator<TaskRegion> h = new HyperIterator<TaskRegion>(new Object[cursorCapacity], timeRank);
@@ -358,8 +356,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 	@Override
 	public long tableDur(long now) {
         TaskRegion root = bounds();
-		return (root == null) ? 1 :
-			1 + Math.round(Math.max(Math.abs(now - root.start()), Math.abs(now - root.end())) * NAL.TEMPORAL_BELIEF_TABLE_DUR_SCALE);
+		return (root == null) ? 1L :
+				1L + Math.round((double) Math.max(Math.abs(now - root.start()), Math.abs(now - root.end())) * NAL.TEMPORAL_BELIEF_TABLE_DUR_SCALE);
 	}
 
 	@Override

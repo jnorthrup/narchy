@@ -49,7 +49,7 @@ public class BagLab {
         int inputs = 10;
         inputSliders = $.newArrayList(inputs);
         for (int i = 0; i < inputs; i++)
-            inputSliders.add(new FloatSlider(0.5f, 0, 1));
+            inputSliders.add(new FloatSlider(0.5f, (float) 0, 1.0F));
 
 
     }
@@ -114,7 +114,7 @@ public class BagLab {
         SpaceGraph.window(
                 bagLab.surface(), 1200, 800);
 
-        long delayMS = 30;
+        long delayMS = 30L;
         
         while (true) {
             bagLab.update();
@@ -140,7 +140,7 @@ public class BagLab {
         int bins = selectionHistogram.length;
 
         if (iteration++ % histogramResetPeriod == 0)
-            Arrays.fill(selectionHistogram, 0);
+            Arrays.fill(selectionHistogram, (float) 0);
 
         long seed = System.nanoTime();
 
@@ -150,7 +150,7 @@ public class BagLab {
 
         List<PriReference<Integer>> sampled = $.newArrayList(1024);
         int batchSize = 32;
-        float sampleBatches = 1;
+        float sampleBatches = 1.0F;
         for (int i = 0; i < (int) sampleBatches; i++) {
             sampled.clear();
 
@@ -170,7 +170,7 @@ public class BagLab {
     }
 
     private void forget() {
-        bag.commit(bag.forget(1));
+        bag.commit(bag.forget(1.0F));
     }
 
     private void inputFlat() {
@@ -179,7 +179,7 @@ public class BagLab {
 
         double sum = 0.0;
         for (FloatSlider inputSlider : inputSliders) {
-            double v = inputSlider.get();
+            double v = (double) inputSlider.get();
             sum += v;
         }
         float totalInputs = (float) sum;
@@ -192,9 +192,9 @@ public class BagLab {
         int r = 0;
         for (int i = 0; i < cap && currentSlider < n; i++) {
             if (sliderRemain == -1) {
-                r = sliderRemain = Math.round((inputSliders.get(currentSlider++).get()/totalInputs)  * cap);
+                r = sliderRemain = Math.round((inputSliders.get(currentSlider++).get()/totalInputs)  * (float) cap);
             }
-            bag.put(new PLink<>(i, (((float)currentSlider) / (n-1)) + (((float)sliderRemain)/r) * (1f/n))) ;
+            bag.put(new PLink<>(i, (((float)currentSlider) / (float) (n - 1)) + (((float)sliderRemain)/ (float) r) * (1f/ (float) n))) ;
             sliderRemain--;
         }
     }
@@ -204,11 +204,11 @@ public class BagLab {
         int inputRate = n*n;
         for (int j = 0; j < inputRate; j++) {
             for (int i = 0; i < n; i++) {
-                if (Math.random() < inputSliders.get(i).get()) {
+                if (Math.random() < (double) inputSliders.get(i).get()) {
                     float p = 0.1f;
                             //(i /* + (float) Math.random()*/) / (n - 1);
 
-                    bag.put(new PLink<>((int) Math.floor(Math.random() * uniques), p));
+                    bag.put(new PLink<>((int) Math.floor(Math.random() * (double) uniques), p));
                 }
             }
         }

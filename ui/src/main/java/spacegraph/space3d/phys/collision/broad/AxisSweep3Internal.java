@@ -33,8 +33,6 @@ import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.math.MiscUtil;
 import spacegraph.space3d.phys.math.VectorUtil;
 
-import java.util.stream.IntStream;
-
 /**
  * AxisSweep3Internal is an internal base class that implements sweep and prune.
  * Use concrete implementation {@link AxisSweep3} or {@link AxisSweep3_32}.
@@ -88,7 +86,7 @@ public abstract class AxisSweep3Internal extends Broadphase {
 
 		int maxInt = this.handleSentinel;
 
-		quantize.set(maxInt / aabbSize.x, maxInt / aabbSize.y, maxInt / aabbSize.z);
+		quantize.set((float) maxInt / aabbSize.x, (float) maxInt / aabbSize.y, (float) maxInt / aabbSize.z);
 
 
 		int maxHandles = userMaxHandles + 1;

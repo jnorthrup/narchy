@@ -28,7 +28,7 @@ public class Plot2D extends Widget {
     public final List<Series> series;
     private final int maxHistory;
     private final PlotVis vis;
-    private final float[] backgroundColor = {0, 0, 0, 0.75f};
+    private final float[] backgroundColor = {(float) 0, (float) 0, (float) 0, 0.75f};
     private String title;
     private Off on;
     private volatile boolean invalid = false;
@@ -49,26 +49,26 @@ public class Plot2D extends Widget {
     private static void plotLine(List<Series> series, GL2 gl, float minValue, float maxValue, boolean lanes, boolean filled) {
         if (minValue == maxValue) {
             float center = minValue;
-            minValue = center - (center / 2);
-            maxValue = center + (center / 2);
+            minValue = center - (center / 2.0F);
+            maxValue = center + (center / 2.0F);
         }
 
         gl.glColor4f(1f, 1f, 1f, 1f);
 
-        gl.glLineWidth(2);
+        gl.glLineWidth(2.0F);
 
         float W = 1.0f;
-        Draw.line(0, 0, W, 0, gl);
+        Draw.line((float) 0, (float) 0, W, (float) 0, gl);
         float H = 1.0f;
-        Draw.line(0, H, W, H, gl);
+        Draw.line((float) 0, H, W, H, gl);
 
-        HersheyFont.hersheyText(gl, Texts.n(minValue, 7), 0.04f, 0, 0, 0, Draw.TextAlignment.Left);
-        HersheyFont.hersheyText(gl, Texts.n(maxValue, 7), 0.04f, 0, H, 0, Draw.TextAlignment.Left);
+        HersheyFont.hersheyText(gl, Texts.n(minValue, 7), 0.04f, (float) 0, (float) 0, (float) 0, Draw.TextAlignment.Left);
+        HersheyFont.hersheyText(gl, Texts.n(maxValue, 7), 0.04f, (float) 0, H, (float) 0, Draw.TextAlignment.Left);
 
         int seriesSize = series.size();
-        float textScale = 1f / (seriesSize) * 0.5f;
+        float textScale = 1f / (float) (seriesSize) * 0.5f;
         float range = maxValue - minValue;
-        float laneHeight = 1f / seriesSize;
+        float laneHeight = 1f / (float) seriesSize;
 
         for (int i = 0; i < seriesSize; i++)
             lineplot(gl, minValue, filled, W, textScale, range, laneHeight, i, series.get(i));
@@ -79,7 +79,7 @@ public class Plot2D extends Widget {
 //            float base = ypos(s.minValue(), lanes, i, seriesSize,
 //                    maxValue-minValue, minValue);
         float Y = NaN;
-        float baseY = i * laneHeight;
+        float baseY = (float) i * laneHeight;
 
         if (range > Float.MIN_NORMAL) {
 
@@ -90,15 +90,15 @@ public class Plot2D extends Widget {
             float r = color[0], g = color[1], b = color[2];
 
             if (!filled) {
-                gl.glLineWidth(3);
+                gl.glLineWidth(3.0F);
                 gl.glBegin(GL.GL_LINE_STRIP);
             }
 
-            float laneOffset = laneHeight * i;
+            float laneOffset = laneHeight * (float) i;
 
-            float a = 0;
-            float dx = (w / histCap);
-            float x = (histCap - histSize) * dx;
+            float a = (float) 0;
+            float dx = (w / (float) histCap);
+            float x = (float) (histCap - histSize) * dx;
             for (int j = 0; j < histSize; j++) {
 
                 float y = s.get(j);
@@ -134,20 +134,20 @@ public class Plot2D extends Widget {
                 gl.glColor4f(color[0], color[1], color[2], 0.5f);
                 float yMean = ypos(mean, minValue, range) * laneHeight + laneOffset;
                 float t = 0.1f;
-                Draw.rect(0, yMean - laneHeight * t/2, w, laneHeight * t/2, gl);
+                Draw.rect((float) 0, yMean - laneHeight * t/ 2.0F, w, laneHeight * t/ 2.0F, gl);
             }
 
         }
 
         if (Y != Y)
-            Y = baseY + laneHeight / 2;
+            Y = baseY + laneHeight / 2.0F;
 
 
-        gl.glColor3f(1, 1, 1);
+        gl.glColor3f(1.0F, 1.0F, 1.0F);
 
-        gl.glLineWidth(2);
+        gl.glLineWidth(2.0F);
 
-        HersheyFont.hersheyText(gl, s.name(), 0.04f * textScale, w, filled ? 0 : Y, 0, Draw.TextAlignment.Right);
+        HersheyFont.hersheyText(gl, s.name(), 0.04f * textScale, w, filled ? (float) 0 : Y, (float) 0, Draw.TextAlignment.Right);
 
 
     }
@@ -161,7 +161,7 @@ public class Plot2D extends Widget {
     }
 
     private static float ypos(float minValue, float range, float v, int lane, int numLanes) {
-        return (v == v ? ((v - minValue) / range) : (0.5f)) / numLanes + (((float) lane) / numLanes);
+        return (v == v ? ((v - minValue) / range) : (0.5f)) / (float) numLanes + (((float) lane) / (float) numLanes);
     }
 
     public void setTitle(String title) {
@@ -248,8 +248,8 @@ public class Plot2D extends Widget {
 
                     add(NaN);
                 } else {
-                    if (v < min) v = min;
-                    if (v > max) v = max;
+                    if (v < (double) min) v = (double) min;
+                    if (v > (double) max) v = (double) max;
                     add((float) v);
                 }
 
@@ -324,7 +324,7 @@ public class Plot2D extends Widget {
 
             gl.glColor3f(1f, 1f, 1f);
             gl.glLineWidth(1f);
-            HersheyFont.hersheyText(gl, title, 0.1f, 0.5f, 0.5f, 0);
+            HersheyFont.hersheyText(gl, title, 0.1f, 0.5f, 0.5f, (float) 0);
 
         }
 
@@ -721,7 +721,7 @@ public class Plot2D extends Widget {
 
     public abstract static class AbstractSeries implements Series {
         protected int capacity;
-        private final float[] color = {1, 1, 1, 0.75f};
+        private final float[] color = {1.0F, 1.0F, 1.0F, 0.75f};
         private String name;
         protected transient float minValue;
         protected transient float maxValue;
@@ -761,7 +761,7 @@ public class Plot2D extends Widget {
             AbstractSeries.this.minValue = autoRange.minMax[0];
             AbstractSeries.this.maxValue = autoRange.minMax[1];
 
-            AbstractSeries.this.meanValue = (float) (autoRange.mean[0] / n);
+            AbstractSeries.this.meanValue = (float) (autoRange.mean[0] / (double) n);
             return AbstractSeries.this;
         }
 
@@ -808,12 +808,12 @@ public class Plot2D extends Widget {
         private static class AutoRange implements FloatProcedure {
             /** min, max, mean */
             final float[] minMax = new float[2];
-            final double[] mean = {0};
+            final double[] mean = {(double) 0};
             final int[] count = {0}; //counts non-NaN values
 
             AutoRange restart() {
                 minMax[0] = Float.POSITIVE_INFINITY; minMax[1] = Float.NEGATIVE_INFINITY;
-                mean[0] = 0; count[0] = 0;
+                mean[0] = (double) 0; count[0] = 0;
                 return this;
             }
 
@@ -822,7 +822,7 @@ public class Plot2D extends Widget {
                 if (v == v) {
                     if (v < minMax[0]) minMax[0] = v;
                     if (v > minMax[1]) minMax[1] = v;
-                    mean[0] += v;
+                    mean[0] = mean[0] + (double) v;
                     count[0]++;
                 }
             }

@@ -11,7 +11,7 @@ public abstract class BoundVar<X> extends DoubleVar {
         super.value(get());
     }
     public void save() {
-        set(floatValue());
+        set((double) floatValue());
     }
 
     protected abstract double get();

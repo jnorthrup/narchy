@@ -38,14 +38,14 @@ public class RuleGenBin {
         for (int i = 0; i < sStr.length(); i++) {
             char cChar = sStr.charAt(i);
             if (Character.isDigit(cChar)) {
-                int iCharVal = cChar - '0';
+                int iCharVal = (int) cChar - (int) '0';
                 iNum = iNum * 10 + iCharVal;
 			} else {
 				if (iNum == 0)
 					iNum = 1;
-				if ((sStr.charAt(i) == 'a') || (sStr.charAt(i) == 'b')) {
+				if (((int) sStr.charAt(i) == (int) 'a') || ((int) sStr.charAt(i) == (int) 'b')) {
 					for (int j = 0; j < iNum; j++) {
-                        sRetString += ((sStr.charAt(i) == 'a') ? "0" : "1");
+                        sRetString += (((int) sStr.charAt(i) == (int) 'a') ? "0" : "1");
 					}
 					iNum = 0;
 				}
@@ -67,17 +67,17 @@ public class RuleGenBin {
             String sTok = st.nextToken();
 
             int i;
-            if (sTok.length() > 0 && sTok.charAt(0) == 'S')
+            if (sTok.length() > 0 && (int) sTok.charAt(0) == (int) 'S')
 			{
 				sTok = ExpandIt(sTok.substring(1));
 				for (i = 0; (i < sTok.length()) && (i < 256); i++)
-					rulesS[i] = (sTok.charAt(i) == '1');
-			} else if (sTok.length() > 0 && sTok.charAt(0) == 'B') 
+					rulesS[i] = ((int) sTok.charAt(i) == (int) '1');
+			} else if (sTok.length() > 0 && (int) sTok.charAt(0) == (int) 'B')
 			{
 				sTok = ExpandIt(sTok.substring(1));
 				for (i = 0; (i < sTok.length()) && (i < 256); i++)
-					rulesB[i] = (sTok.charAt(i) == '1');
-			} else if (sTok.length() > 0 && sTok.charAt(0) == 'C') {
+					rulesB[i] = ((int) sTok.charAt(i) == (int) '1');
+			} else if (sTok.length() > 0 && (int) sTok.charAt(0) == (int) 'C') {
 				i = Integer.valueOf(sTok.substring(1));
 				if (i >= 3) {
 					isHist = true; 
@@ -226,95 +226,95 @@ public class RuleGenBin {
                 int iCnt = 0;
                 if (isHist)
 				{
-					if (bOldVal <= 1) 
+					if ((int) bOldVal <= 1)
 					{
 						if (iNgh == MJRules.NGHTYP_MOOR) {
-							if (crrState[i][lurd[1]] == 1)
+							if ((int) crrState[i][lurd[1]] == 1)
 								iCnt += 1;
-							if (crrState[lurd[2]][lurd[1]] == 1)
+							if ((int) crrState[lurd[2]][lurd[1]] == 1)
 								iCnt += 2;
-							if (crrState[lurd[2]][j] == 1)
+							if ((int) crrState[lurd[2]][j] == 1)
 								iCnt += 4;
-							if (crrState[lurd[2]][lurd[3]] == 1)
+							if ((int) crrState[lurd[2]][lurd[3]] == 1)
 								iCnt += 8;
-							if (crrState[i][lurd[3]] == 1)
+							if ((int) crrState[i][lurd[3]] == 1)
 								iCnt += 16;
-							if (crrState[lurd[0]][lurd[3]] == 1)
+							if ((int) crrState[lurd[0]][lurd[3]] == 1)
 								iCnt += 32;
-							if (crrState[lurd[0]][j] == 1)
+							if ((int) crrState[lurd[0]][j] == 1)
 								iCnt += 64;
-							if (crrState[lurd[0]][lurd[1]] == 1)
+							if ((int) crrState[lurd[0]][lurd[1]] == 1)
 								iCnt += 128;
 						} else {
-							if (crrState[i][lurd[1]] == 1)
+							if ((int) crrState[i][lurd[1]] == 1)
 								iCnt += 1;
-							if (crrState[lurd[2]][j] == 1)
+							if ((int) crrState[lurd[2]][j] == 1)
 								iCnt += 2;
-							if (crrState[i][lurd[3]] == 1)
+							if ((int) crrState[i][lurd[3]] == 1)
 								iCnt += 4;
-							if (crrState[lurd[0]][j] == 1)
+							if ((int) crrState[lurd[0]][j] == 1)
 								iCnt += 8;
 						}
 
 						
-						if (bOldVal == 0) 
+						if ((int) bOldVal == 0)
 						{
 							if (rulesB[iCnt]) 
-								bNewVal = 1; 
+								bNewVal = (short) 1;
 						} else 
 						{
 							if (rulesS[iCnt]) 
 							{
-								bNewVal = 1;
+								bNewVal = (short) 1;
 							} else 
 							{
-								bNewVal = bOldVal < (iClo - 1)
-										? (short) (bOldVal + 1)
-										: 0;
+								bNewVal = (int) bOldVal < (iClo - 1)
+										? (short) ((int) bOldVal + 1)
+										: (short) 0;
 							}
 						}
 					} else 
 					{
-						bNewVal = bOldVal < (iClo - 1)
-								? (short) (bOldVal + 1)
-								: 0;
+						bNewVal = (int) bOldVal < (iClo - 1)
+								? (short) ((int) bOldVal + 1)
+								: (short) 0;
 					}
 				} else 
 				{
 					if (iNgh == MJRules.NGHTYP_MOOR) {
-						if (crrState[i][lurd[1]] != 0)
+						if ((int) crrState[i][lurd[1]] != 0)
 							iCnt += 1;
-						if (crrState[lurd[2]][lurd[1]] != 0)
+						if ((int) crrState[lurd[2]][lurd[1]] != 0)
 							iCnt += 2;
-						if (crrState[lurd[2]][j] != 0)
+						if ((int) crrState[lurd[2]][j] != 0)
 							iCnt += 4;
-						if (crrState[lurd[2]][lurd[3]] != 0)
+						if ((int) crrState[lurd[2]][lurd[3]] != 0)
 							iCnt += 8;
-						if (crrState[i][lurd[3]] != 0)
+						if ((int) crrState[i][lurd[3]] != 0)
 							iCnt += 16;
-						if (crrState[lurd[0]][lurd[3]] != 0)
+						if ((int) crrState[lurd[0]][lurd[3]] != 0)
 							iCnt += 32;
-						if (crrState[lurd[0]][j] != 0)
+						if ((int) crrState[lurd[0]][j] != 0)
 							iCnt += 64;
-						if (crrState[lurd[0]][lurd[1]] != 0)
+						if ((int) crrState[lurd[0]][lurd[1]] != 0)
 							iCnt += 128;
 					} else {
-						if (crrState[i][lurd[1]] != 0)
+						if ((int) crrState[i][lurd[1]] != 0)
 							iCnt += 1;
-						if (crrState[lurd[2]][j] != 0)
+						if ((int) crrState[lurd[2]][j] != 0)
 							iCnt += 2;
-						if (crrState[i][lurd[3]] != 0)
+						if ((int) crrState[i][lurd[3]] != 0)
 							iCnt += 4;
-						if (crrState[lurd[0]][j] != 0)
+						if ((int) crrState[lurd[0]][j] != 0)
 							iCnt += 8;
 					}
 
 					
-					if (bOldVal == 0) 
+					if ((int) bOldVal == 0)
 					{
 						if (rulesB[iCnt]) 
 							bNewVal = ColoringMethod == 1
-									? 1
+									? (short) 1
 									: (short) (mjb.Cycle
 											% (mjb.StatesCount - 1) + 1);
 					} else 
@@ -323,17 +323,17 @@ public class RuleGenBin {
 						{
 							if (ColoringMethod == 1) 
 							{
-								bNewVal = (short) (bOldVal < mjb.StatesCount - 1 ? bOldVal + 1 : mjb.StatesCount - 1);
+								bNewVal = (short) ((int) bOldVal < mjb.StatesCount - 1 ? (int) bOldVal + 1 : mjb.StatesCount - 1);
 							} else {
 								
 							}
 						} else
-							bNewVal = 0; 
+							bNewVal = (short) 0;
 					}
 				}
 
 				tmpState[i][j] = bNewVal;
-				if (bNewVal != bOldVal) {
+				if ((int) bNewVal != (int) bOldVal) {
 					modCnt++; 
 				}
 			}

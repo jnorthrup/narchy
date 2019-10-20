@@ -43,15 +43,15 @@ public abstract class Truthlet implements Truth {
 
     @Deprecated @Override public final double evi() {
         float es = evi(start());
-        if (es > 0) {
+        if (es > (float) 0) {
             float ee = evi(end());
-            if (ee > 0) {
-                return Util.mean(es, ee);
+            if (ee > (float) 0) {
+                return (double) Util.mean(es, ee);
             }
         }
 
         
-        return evi(mid());
+        return (double) evi(mid());
     }
 
     /** computes the average frequency over the interval */
@@ -69,7 +69,7 @@ public abstract class Truthlet implements Truth {
                 return Float.NaN;
 
 
-            if (end - start > 1) {
+            if (end - start > 1L) {
 
                 float fMid = freq((start+end)/2L);
                 if (fMid==fMid) {
@@ -118,7 +118,7 @@ public abstract class Truthlet implements Truth {
     /** sets a FreqEvi vector as unknown */
     static void unknown(float[] freqEvi) {
         freqEvi[0] = Float.NaN;
-        freqEvi[1] = 0;
+        freqEvi[1] = (float) 0;
     }
 
 

@@ -179,8 +179,8 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
      * what % to remain; ex: rate of 25% removes the lower 75%
      */
     public void removePercentage(float below, boolean ofExistingOrCapacity) {
-        assert (below >= 0 && below <= 1.0f);
-        int belowIndex = (int) Math.floor(ofExistingOrCapacity ? size() : capacity() * below);
+        assert (below >= (float) 0 && below <= 1.0f);
+        int belowIndex = (int) Math.floor((double) (ofExistingOrCapacity ? (float) size() : (float) capacity() * below));
         if (belowIndex < size) {
             size = belowIndex;
             Arrays.fill(items, size, items.length - 1, null);
@@ -210,7 +210,7 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
      * 0 < thresh <= 1
      */
     private boolean isFull(float thresh) {
-        return (size >= capacity * thresh);
+        return ((float) size >= (float) capacity * thresh);
     }
 
     public final @Nullable X getRoulette(Random rng) {

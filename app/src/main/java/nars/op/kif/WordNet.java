@@ -442,7 +442,7 @@ public class WordNet {
         if (!pointers.isEmpty() && !" ".equals(pointers)) {
             
             
-            if (synset.charAt(0) == '2') {
+            if ((int) synset.charAt(0) == (int) '2') {
                 
                 m = regexPatterns[4].matcher(pointers);
                 pointers = m.replaceFirst("");
@@ -583,7 +583,7 @@ public class WordNet {
                         processPointers('1' + m.group(1), m.group(2));
                     } else {
                         
-                        if (!line.isEmpty() && line.charAt(0) != ';') {
+                        if (!line.isEmpty() && (int) line.charAt(0) != (int) ';') {
                             System.out.println();
                             System.out.println("Error in WordNet.readNouns(): No match in "
                                     + nounFile.getCanonicalPath()
@@ -595,7 +595,7 @@ public class WordNet {
             }
             System.out.println("x");
             System.out.println("  "
-                    + ((System.currentTimeMillis() - t1) / 1000.0)
+                    + ((double) (System.currentTimeMillis() - t1) / 1000.0)
                     + " seconds to process "
                     + nounFile.getCanonicalPath());
 
@@ -622,7 +622,7 @@ public class WordNet {
                         exceptionNounHash.put(m.group(1), m.group(2));      
                         exceptionNounPluralHash.put(m.group(2), m.group(1));
                         exceptionNounPluralHash.put(m.group(3), m.group(1));
-                    } else if (!line.isEmpty() && line.charAt(0) != ';') {
+                    } else if (!line.isEmpty() && (int) line.charAt(0) != (int) ';') {
                         System.out.println("Error in WordNet.readNouns(): No match in "
                                 + nounFile.getCanonicalPath()
                                 + " for line "
@@ -631,7 +631,7 @@ public class WordNet {
                 }
             }
             System.out.println("  "
-                    + ((System.currentTimeMillis() - t1) / 1000.0)
+                    + ((double) (System.currentTimeMillis() - t1) / 1000.0)
                     + " seconds to process "
                     + nounFile.getCanonicalPath());
         } catch (Exception ex) {
@@ -680,7 +680,7 @@ public class WordNet {
                         processPointers('2' + m.group(1), m.group(2));
                     } else {
                         
-                        if (!line.isEmpty() && line.charAt(0) != ';') {
+                        if (!line.isEmpty() && (int) line.charAt(0) != (int) ';') {
                             System.out.println();
                             System.out.println("Error in WordNet.readVerbs(): No match in "
                                     + verbFile.getCanonicalPath()
@@ -692,7 +692,7 @@ public class WordNet {
             }
             System.out.println("x");
             System.out.println("  "
-                    + ((System.currentTimeMillis() - t1) / 1000.0)
+                    + ((double) (System.currentTimeMillis() - t1) / 1000.0)
                     + " seconds to process "
                     + verbFile.getCanonicalPath());
 
@@ -712,7 +712,7 @@ public class WordNet {
                 if (m.matches()) {
                     exceptionVerbHash.put(m.group(1), m.group(2));          
                     exceptionVerbPastHash.put(m.group(2), m.group(1));
-                } else if (!line.isEmpty() && line.charAt(0) != ';') {
+                } else if (!line.isEmpty() && (int) line.charAt(0) != (int) ';') {
                     System.out.println("Error in WordNet.readVerbs(): No match in "
                             + verbFile.getCanonicalPath()
                             + " for line "
@@ -720,7 +720,7 @@ public class WordNet {
                 }
             }
             System.out.println("  "
-                    + ((System.currentTimeMillis() - t1) / 1000.0)
+                    + ((double) (System.currentTimeMillis() - t1) / 1000.0)
                     + " seconds to process "
                     + verbFile.getCanonicalPath());
         } catch (Exception ex) {
@@ -769,7 +769,7 @@ public class WordNet {
                         processPointers('3' + m.group(1), m.group(2));
                     } else {
                         
-                        if (!line.isEmpty() && line.charAt(0) != ';') {
+                        if (!line.isEmpty() && (int) line.charAt(0) != (int) ';') {
                             System.out.println();
                             System.out.println("Error in WordNet.readAdjectives(): No match in "
                                     + adjFile.getCanonicalPath()
@@ -781,7 +781,7 @@ public class WordNet {
             }
             System.out.println("x");
             System.out.println("  "
-                    + ((System.currentTimeMillis() - t1) / 1000.0)
+                    + ((double) (System.currentTimeMillis() - t1) / 1000.0)
                     + " seconds to process "
                     + adjFile.getCanonicalPath());
         } catch (Exception ex) {
@@ -830,7 +830,7 @@ public class WordNet {
                         processPointers('4' + m.group(1), m.group(2));
                     } else {
                         
-                        if (!line.isEmpty() && line.charAt(0) != ';') {
+                        if (!line.isEmpty() && (int) line.charAt(0) != (int) ';') {
                             System.out.println();
                             System.out.println("Error in WordNet.readAdverbs(): No match in "
                                     + advFile.getCanonicalPath()
@@ -842,7 +842,7 @@ public class WordNet {
             }
             System.out.println("x");
             System.out.println("  "
-                    + ((System.currentTimeMillis() - t1) / 1000.0)
+                    + ((double) (System.currentTimeMillis() - t1) / 1000.0)
                     + " seconds to process "
                     + advFile.getCanonicalPath());
         } catch (Exception ex) {
@@ -888,12 +888,12 @@ public class WordNet {
                         if ("SUMOterm:".equals(words[i])) {
                             i = words.length;
                         } else {
-                            if (words[i].indexOf('_') == -1) {
+                            if (words[i].indexOf((int) '_') == -1) {
                                 
                                 
                             } else {
-                                String word = words[i].substring(0, words[i].indexOf('_'));
-                                String freq = words[i].substring(words[i].lastIndexOf('_') + 1);
+                                String word = words[i].substring(0, words[i].indexOf((int) '_'));
+                                String freq = words[i].substring(words[i].lastIndexOf((int) '_') + 1);
                                 frequencies.put(word.intern(), Integer.decode(freq));
                             }
                         }
@@ -908,7 +908,7 @@ public class WordNet {
             }
             System.out.println("x");
             System.out.println("  "
-                    + ((System.currentTimeMillis() - t1) / 1000.0)
+                    + ((double) (System.currentTimeMillis() - t1) / 1000.0)
                     + " seconds to process "
                     + canonicalPath);
         } catch (Exception i) {
@@ -944,7 +944,7 @@ public class WordNet {
                 stopwords.add(line.intern());
             }
             System.out.println("  "
-                    + ((System.currentTimeMillis() - t1) / 1000.0)
+                    + ((double) (System.currentTimeMillis() - t1) / 1000.0)
                     + " seconds to process "
                     + canonicalPath);
         } catch (Exception i) {
@@ -1007,7 +1007,7 @@ public class WordNet {
             }
             System.out.println("x");
             System.out.println("  "
-                    + ((System.currentTimeMillis() - t1) / 1000.0)
+                    + ((double) (System.currentTimeMillis() - t1) / 1000.0)
                     + " seconds to process "
                     + canonicalPath);
         } catch (Exception i) {
@@ -1939,7 +1939,7 @@ public class WordNet {
         word = "";
         for (int i = 0; i < words.length; i++) {
             if (!words[i].isEmpty()
-                    && (words[i].indexOf('-') > -1 || (words[i].indexOf('.') > -1)
+                    && (words[i].indexOf((int) '-') > -1 || (words[i].indexOf((int) '.') > -1)
                     || (words[i].contains("\\'")) || Character.isUpperCase(words[i].charAt(0)) || Character.isDigit(words[i].charAt(0)))) {
                 words[i] = '\'' + words[i] + '\'';
             }
@@ -1966,19 +1966,19 @@ public class WordNet {
         for (Object o : verbSynsetHash.keySet()) {
             String word = (String) o;
             String compound = "simple";
-            if (word.indexOf('_') > -1) {
+            if (word.indexOf((int) '_') > -1) {
                 compound = "compound";
             }
 
             String stringSynsets = (String) verbSynsetHash.get(word);
             String plural = WordNetUtilities.verbPlural(word);
-            if (word.indexOf('_') > -1) {
+            if (word.indexOf((int) '_') > -1) {
                 word = processMultiWord(word);
                 plural = processMultiWord(plural);
 
             } else {
                 word = word.replace("'", "\\'");
-                if (word.indexOf('-') > -1 || (word.indexOf('.') > -1)
+                if (word.indexOf((int) '-') > -1 || (word.indexOf((int) '.') > -1)
                         || (word.contains("\\'")) || Character.isUpperCase(word.charAt(0)) || Character.isDigit(word.charAt(0))) {
                     word = '\'' + word + '\'';
                     plural = '\'' + plural + '\'';
@@ -2013,17 +2013,17 @@ public class WordNet {
 
         for (Object o : adjectiveSynsetHash.keySet()) {
             String word = (String) o;
-            if (word.indexOf('_') > -1) {
+            if (word.indexOf((int) '_') > -1) {
                 String compound = "compound";
             }
 
             String stringSynsets = (String) adjectiveSynsetHash.get(word);
-            if (word.indexOf('_') > -1) {
+            if (word.indexOf((int) '_') > -1) {
                 word = processMultiWord(word);
 
             } else {
                 word = word.replace("'", "\\'");
-                if (word.indexOf('-') > -1 || (word.indexOf('.') > -1)
+                if (word.indexOf((int) '-') > -1 || (word.indexOf((int) '.') > -1)
                         || (word.contains("\\'")) || Character.isUpperCase(word.charAt(0)) || Character.isDigit(word.charAt(0))) {
                     word = '\'' + word + '\'';
                 }
@@ -2051,17 +2051,17 @@ public class WordNet {
 
         for (Object o : verbSynsetHash.keySet()) {
             String word = (String) o;
-            if (word.indexOf('_') > -1) {
+            if (word.indexOf((int) '_') > -1) {
                 String compound = "compound";
             }
 
             String stringSynsets = (String) verbSynsetHash.get(word);
-            if (word.indexOf('_') > -1) {
+            if (word.indexOf((int) '_') > -1) {
                 word = processMultiWord(word);
 
             } else {
                 word = word.replace("'", "\\'");
-                if (word.indexOf('-') > -1 || (word.indexOf('.') > -1)
+                if (word.indexOf((int) '-') > -1 || (word.indexOf((int) '.') > -1)
                         || (word.contains("\\'")) || Character.isUpperCase(word.charAt(0)) || Character.isDigit(word.charAt(0))) {
                     word = '\'' + word + '\'';
                 }
@@ -2093,11 +2093,11 @@ public class WordNet {
             if (Character.isUpperCase(word.charAt(0))) {
                 uppercase = true;
             }
-            if (word.indexOf('_') > -1) {
+            if (word.indexOf((int) '_') > -1) {
                 word = processMultiWord(word);
             } else {
                 word = word.replace("'", "\\'");
-                if (word.indexOf('-') > -1 || (word.indexOf('.') > -1)
+                if (word.indexOf((int) '-') > -1 || (word.indexOf((int) '.') > -1)
                         || (word.contains("\\'")) || Character.isUpperCase(word.charAt(0)) || Character.isDigit(word.charAt(0))) {
                     word = '\'' + word + '\'';
                 }
@@ -2120,10 +2120,10 @@ public class WordNet {
                         countOrMass = "mass";
                     }
                     boolean instance = false;
-                    if (uppercase && mapping == '@') {
+                    if (uppercase && (int) mapping == (int) '@') {
                         instance = true;
                     }
-                    if (mapping == '=') {
+                    if ((int) mapping == (int) '=') {
                         ArrayList al = kb.instancesOf(bareSumoTerm);
                         if (!al.isEmpty()) {
                             instance = true;
@@ -2173,11 +2173,11 @@ public class WordNet {
         if (senseKey == null || senseKey.isEmpty()) {
             return "";
         }
-        int underscore2 = senseKey.lastIndexOf('_');
+        int underscore2 = senseKey.lastIndexOf((int) '_');
         if (underscore2 < 0) {
             return "";
         }
-        int underscore1 = senseKey.lastIndexOf('_', underscore2 - 1);
+        int underscore1 = senseKey.lastIndexOf((int) '_', underscore2 - 1);
         if (underscore1 < 0) {
             return "";
         }
@@ -2193,11 +2193,11 @@ public class WordNet {
             return "";
         }
 
-        int underscore2 = senseKey.lastIndexOf('_');
+        int underscore2 = senseKey.lastIndexOf((int) '_');
         if (underscore2 < 0) {
             return "";
         }
-        int underscore1 = senseKey.lastIndexOf('_', underscore2 - 1);
+        int underscore1 = senseKey.lastIndexOf((int) '_', underscore2 - 1);
         if (underscore1 < 0) {
             return "";
         }
@@ -2235,8 +2235,8 @@ public class WordNet {
 
         String result = word;
         int start = 0;
-        while (result.indexOf('\'', start) > -1) {
-            int i = result.indexOf('\'', start);
+        while (result.indexOf((int) '\'', start) > -1) {
+            int i = result.indexOf((int) '\'', start);
             
             result = i == 0 ? "''" + result.substring(i + 1) : result.substring(0, i) + "\\'" + result.substring(i + 1);
             start = i + 2;
@@ -2336,8 +2336,8 @@ public class WordNet {
     public static String processPrologString(String doc) {
 
         int start = 0;
-        while (doc.indexOf('\'', start) > -1) {
-            int i = doc.indexOf('\'', start);
+        while (doc.indexOf((int) '\'', start) > -1) {
+            int i = doc.indexOf((int) '\'', start);
             
             doc = i == 0 ? "''" + doc.substring(i + 1) : doc.substring(0, i) + "''" + doc.substring(i + 1);
             start = i + 2;

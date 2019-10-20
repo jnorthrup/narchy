@@ -57,12 +57,12 @@ public class pmove_t {
 
     public final edict_t[] touchents = new edict_t[Defines.MAXTOUCH];
 
-    public final float[] viewangles = { 0, 0, 0 }; 
+    public final float[] viewangles = {(float) 0, (float) 0, (float) 0};
 
     public float viewheight;
 
-    public final float[] mins = { 0, 0, 0 };
-    public final float[] maxs = { 0, 0, 0 }; 
+    public final float[] mins = {(float) 0, (float) 0, (float) 0};
+    public final float[] maxs = {(float) 0, (float) 0, (float) 0};
 
     public edict_t groundentity;
 
@@ -99,7 +99,7 @@ public class pmove_t {
         pointcontents = null;
         Math3D.VectorClear(mins);
         Math3D.VectorClear(maxs);
-        viewheight = 0;
+        viewheight = (float) 0;
         Math3D.VectorClear(viewangles);
         Arrays.fill(touchents, null);
         numtouch = 0;

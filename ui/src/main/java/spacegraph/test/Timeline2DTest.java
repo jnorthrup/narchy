@@ -26,7 +26,7 @@ public class Timeline2DTest {
     protected static Surface timeline2dTest() {
         int range = 50;
 
-        Timeline2D t = new Timeline2D(0, range + 1);
+        Timeline2D t = new Timeline2D(0L, (long) (range + 1));
         t.add(new Timeline2D.TimelineGrid());
         t.add(wave(range));
         t.add(events(range));
@@ -50,8 +50,8 @@ public class Timeline2DTest {
         Timeline2D.SimpleEventBuffer dummyModel = new Timeline2D.SimpleEventBuffer();
         int events = 30;
         for (int i = 0; i < events; i++) {
-            long start = (long) (Math.random() * range);
-            long length = (long) (Math.random() * 10) + 1;
+            long start = (long) (Math.random() * (double) range);
+            long length = (long) (Math.random() * 10.0) + 1L;
             dummyModel.add(new Timeline2D.SimpleEvent("x" + i, start, start + length));
         }
 
@@ -67,13 +67,13 @@ public class Timeline2DTest {
         for (int i = 0; i < 32; i++) {
             float[] noise = new float[s.buffer.width];
             for (int j = 0; j < noise.length; j++)
-                noise[j] = ((float) Math.random() - 0.5f)*2;
+                noise[j] = ((float) Math.random() - 0.5f)* 2.0F;
             s.buffer.set(noise);
         }
 
         return new Timeline2DEvents<>(s, e ->
             e.set(
-                    new Widget(new WaveBitmap(e.id.getTwo(), 1, 128, 32))), new Timeline2DEvents.LaneTimelineUpdater()
+                    new Widget(new WaveBitmap(e.id.getTwo(), 1.0F, 128, 32))), new Timeline2DEvents.LaneTimelineUpdater()
         );
     }
 }

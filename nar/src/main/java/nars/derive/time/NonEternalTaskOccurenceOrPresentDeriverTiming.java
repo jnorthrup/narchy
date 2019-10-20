@@ -10,7 +10,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NonEternalTaskOccurenceOrPresentDeriverTiming implements TimeFocus {
 
-    public final FloatRange durRadius = new FloatRange(1f, 0, 32);
+    public final FloatRange durRadius = new FloatRange(1f, (float) 0, 32.0F);
 
 
     public NonEternalTaskOccurenceOrPresentDeriverTiming() {
@@ -21,9 +21,9 @@ public class NonEternalTaskOccurenceOrPresentDeriverTiming implements TimeFocus 
         if (ts!=ETERNAL) {
             return new long[] {ts, task.end()};
         } else {
-            float rad = what.dur() * durRadius.floatValue()/2;
+            float rad = what.dur() * durRadius.floatValue()/ 2.0F;
             long now = what.time();
-            return new long[] { Math.round(now - rad), Math.round(now + rad) };
+            return new long[] {(long) Math.round((float) now - rad), (long) Math.round((float) now + rad)};
         }
     }
 }

@@ -18,7 +18,6 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * ***************************************************************
@@ -46,7 +45,7 @@ public class WordNetUtilities {
      */
     public static String getPOSfromKey(String sense) {
 
-        int firstUS = sense.indexOf('_');
+        int firstUS = sense.indexOf((int) '_');
         return sense.substring(firstUS + 1, firstUS + 3);
     }
 
@@ -365,7 +364,7 @@ public class WordNetUtilities {
      */
     private static boolean isVowel(char c) {
 
-        return c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u';
+        return (int) c == (int) 'a' || (int) c == (int) 'e' || (int) c == (int) 'i' || (int) c == (int) 'o' || (int) c == (int) 'u';
     }
 
     /**
@@ -377,9 +376,9 @@ public class WordNetUtilities {
 
         String word = verb;
         String remainder = "";
-        if (verb.indexOf('_') > 0) {
-            word = verb.substring(0, verb.indexOf('_'));
-            remainder = verb.substring(verb.indexOf('_'));
+        if (verb.indexOf((int) '_') > 0) {
+            word = verb.substring(0, verb.indexOf((int) '_'));
+            remainder = verb.substring(verb.indexOf((int) '_'));
         }
 
         
@@ -584,7 +583,7 @@ public class WordNetUtilities {
                     String targetSynset = avp.value;
                     String targetSUMO = WordNet.wn.getSUMOMapping(targetSynset);
                     if (targetSUMO != null && !targetSUMO.isEmpty()) {
-                        if (targetSUMO.charAt(targetSUMO.length() - 1) == '[') {
+                        if ((int) targetSUMO.charAt(targetSUMO.length() - 1) == (int) '[') {
                             mappingChar = "[";
                         }
                         if (Character.isUpperCase(targetSUMO.charAt(2))) 

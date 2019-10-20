@@ -61,14 +61,14 @@ public class SND_MIX extends SND_JAVA {
 
         boolean fixed_origin; 
 
-        final float[] origin = { 0, 0, 0 };
+        final float[] origin = {(float) 0, (float) 0, (float) 0};
 
         long begin; 
 
         public void clear() {
             prev = next = null;
             sfx = null;
-            volume = attenuation = begin = entnum = entchannel = 0;
+            volume = attenuation =  begin =   entnum = entchannel = 0;
             fixed_origin = false;
             Math3D.VectorClear(origin);
         }
@@ -91,7 +91,7 @@ public class SND_MIX extends SND_JAVA {
 
         int entchannel; 
 
-        final float[] origin = { 0, 0, 0 }; 
+        final float[] origin = {(float) 0, (float) 0, (float) 0};
 
         float dist_mult; 
 
@@ -103,7 +103,7 @@ public class SND_MIX extends SND_JAVA {
 
         void clear() {
             sfx = null;
-            dist_mult = leftvol = rightvol = end = pos = looping = entnum = entchannel = master_vol = 0;
+            dist_mult =  leftvol = rightvol = end = pos = looping = entnum = entchannel = master_vol = 0;
             Math3D.VectorClear(origin);
             fixed_origin = autosound = false;
         }
@@ -162,7 +162,7 @@ public class SND_MIX extends SND_JAVA {
             int val = snd_p.get(i) >> 8;
             if (val > 0x7fff)
                 snd_out.put(i, (short) 0x7fff);
-            else if (val < (short) 0x8000)
+            else if (val < (int) (short) 0x8000)
                 snd_out.put(i, (short) 0x8000);
             else
                 snd_out.put(i, (short) val);
@@ -170,7 +170,7 @@ public class SND_MIX extends SND_JAVA {
             val = snd_p.get(i + 1) >> 8;
             if (val > 0x7fff)
                 snd_out.put(i + 1, (short) 0x7fff);
-            else if (val < (short) 0x8000)
+            else if (val < (int) (short) 0x8000)
                 snd_out.put(i + 1, (short) 0x8000);
             else
                 snd_out.put(i + 1, (short) val);
@@ -224,7 +224,7 @@ public class SND_MIX extends SND_JAVA {
 
             int count2 = (endtime - paintedtime) * 2;
             for (int i = 0; i < count2; i += 2) {
-                int v = (int) (Math.sin((paintedtime + i) * 0.1) * 20000 * 256);
+                int v = (int) (Math.sin((double) (paintedtime + i) * 0.1) * 20000.0 * 256.0);
                 paintbuffer.put(i, v);
                 paintbuffer.put(i + 1, v);
             }
@@ -249,8 +249,8 @@ public class SND_MIX extends SND_JAVA {
                         p += step;
                         if (val > 0x7fff)
                             val = 0x7fff;
-                        else if (val < (short) 0x8000)
-                            val = (short) 0x8000;
+                        else if (val < (int) (short) 0x8000)
+                            val = (int) (short) 0x8000;
                         out.put(out_idx, (short) val);
 
                         out_idx = (out_idx + 1) & out_mask;
@@ -263,8 +263,8 @@ public class SND_MIX extends SND_JAVA {
                         p += step;
                         if (val > 0x7fff)
                             val = 0x7fff;
-                        else if (val < (short) 0x8000)
-                            val = (short) 0x8000;
+                        else if (val < (int) (short) 0x8000)
+                            val = (int) (short) 0x8000;
                         pbuf.put(out_idx, (byte) (val >>> 8));
                         out_idx = (out_idx + 1) & out_mask;
                     }
@@ -282,7 +282,7 @@ public class SND_MIX extends SND_JAVA {
      */
     static void PaintChannels(int endtime) {
 
-        snd_vol = (int) (s_volume.value * 256);
+        snd_vol = (int) (s_volume.value * 256.0F);
 
         
         while (paintedtime < endtime) {
@@ -296,12 +296,12 @@ public class SND_MIX extends SND_JAVA {
                 playsound_t ps = s_pendingplays.next;
                 if (ps == s_pendingplays)
                     break; 
-                if (ps.begin <= paintedtime) {
+                if (ps.begin <= (long) paintedtime) {
                     SND_DMA.IssuePlaysound(ps);
                     continue;
                 }
 
-                if (ps.begin < end)
+                if (ps.begin < (long) end)
                     end = (int) ps.begin; 
                 break;
             }
@@ -398,9 +398,9 @@ public class SND_MIX extends SND_JAVA {
 
         s_volume.modified = false;
         for (int i = 0; i < 32; i++) {
-            int scale = (int) (i * 8 * 256 * s_volume.value);
+            int scale = (int) ((float) i * 8.0F * 256.0F * s_volume.value);
             for (int j = 0; j < 256; j++)
-                snd_scaletable[i][j] = ((byte) j) * scale;
+                snd_scaletable[i][j] = (int) ((byte) j) * scale;
         }
     }
 
@@ -423,7 +423,7 @@ public class SND_MIX extends SND_JAVA {
         for (int i = 0; i < count; i++, offset++) {
             int left = paintbuffer.get(offset * 2);
             int right = paintbuffer.get(offset * 2 + 1);
-            int data = sc.data[sfx + i];
+            int data = (int) sc.data[sfx + i];
             left += lscale[data];
             right += rscale[data];
             paintbuffer.put(offset * 2, left);
@@ -450,7 +450,7 @@ public class SND_MIX extends SND_JAVA {
         for (int i = 0; i < count; i++, offset++) {
             int left = paintbuffer.get(offset * 2);
             int right = paintbuffer.get(offset * 2 + 1);
-            int data = sb.get(sfx + i);
+            int data = (int) sb.get(sfx + i);
             left += (data * leftvol) >> 8;
             right += (data * rightvol) >> 8;
             paintbuffer.put(offset * 2, left);

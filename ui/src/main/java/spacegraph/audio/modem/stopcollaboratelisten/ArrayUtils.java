@@ -7,8 +7,6 @@ package spacegraph.audio.modem.stopcollaboratelisten;
  */
 
 
-import java.util.Arrays;
-
 /**
  * A set of handy array manipulation utilities
  * @author CVL

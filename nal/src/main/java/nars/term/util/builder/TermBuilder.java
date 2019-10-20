@@ -92,7 +92,7 @@ public abstract class TermBuilder implements TermConstructor {
         CompoundNormalization c = new CompoundNormalization(x, varOffset);
         Term y = c.apply(x); //x.transform();
 
-        if (varOffset == 0 && y instanceof Compound)
+        if ((int) varOffset == 0 && y instanceof Compound)
             ((Compound)y).subtermsDirect().setNormalized();
 
         return y;
@@ -151,8 +151,8 @@ public abstract class TermBuilder implements TermConstructor {
             return conj(0, a, b);
         else
             return (dt >= 0) ?
-                    ConjSeq.sequence(a, 0, b, +dt + aRange, this) :
-                    ConjSeq.sequence(b, 0, a, -dt + bRange, this);
+                    ConjSeq.sequence(a, 0L, b, (long) (+dt + aRange), this) :
+                    ConjSeq.sequence(b, 0L, a, (long) (-dt + bRange), this);
     }
 
     /** merges two events with a dt offset applied to 'b' relative to a */
@@ -162,7 +162,7 @@ public abstract class TermBuilder implements TermConstructor {
 
         int aRange = a.eventRange(), bRange = b.eventRange();
 
-		return dt == 0 && aRange == 0 && bRange == 0 ? conj(0, a, b) : ConjSeq.sequence(a, 0, b, dt, this);
+		return dt == 0 && aRange == 0 && bRange == 0 ? conj(0, a, b) : ConjSeq.sequence(a, 0L, b, (long) dt, this);
     }
 
     public Term root(Compound x) {
@@ -255,7 +255,7 @@ public abstract class TermBuilder implements TermConstructor {
 //        }
 
         short i = Intrin.id(u);
-        if (i!=0)
+        if ((int) i !=0)
             return new Neg.NegIntrin(i);
 
         return NAL.NEG_CACHE_VOL_THRESHOLD <= 0 || (u.volume() > NAL.NEG_CACHE_VOL_THRESHOLD) ?

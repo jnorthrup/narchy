@@ -45,7 +45,7 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 	 * adjust CONJ concepts for series task generation
 	 */
 	protected static Term taskTerm(Term x) {
-		return x.opID() == CONJ.id ? ((Compound) x).dt(0) : x;
+		return x.opID() == (int) CONJ.id ? ((Compound) x).dt(0) : x;
 	}
 
 	@Override
@@ -65,8 +65,8 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 			//choose now as the default focus time
             long now = a.time();
             float dur = a.dur;
-			s = now - (long)Math.ceil(dur / 2);
-			e = now + (long)Math.ceil(dur / 2);
+			s = now - (long)Math.ceil((double) (dur / 2.0F));
+			e = now + (long)Math.ceil((double) (dur / 2.0F));
 		} else {
 			e = a.end;
 		}
@@ -114,7 +114,7 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 		long sStart = series.start(), sEnd;
 		if (sStart != TIMELESS && (sEnd = series.end()) != TIMELESS) {
 
-			long finalEnd = sEnd - marginCycles, finalStart = sStart + marginCycles;
+			long finalEnd = sEnd - (long) marginCycles, finalStart = sStart + (long) marginCycles;
 			if (finalStart < finalEnd) {
 
 				Predicate<Task> cleaner = t -> absorbNonSignal(t, finalStart, finalEnd);
@@ -207,12 +207,12 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 
         long gapCycles = (nextStart - lastEnd);
 
-		if (gapCycles <= AbstractTaskSeries.latchDurs() * dur) {
+		if ((float) gapCycles <= AbstractTaskSeries.latchDurs() * dur) {
 
 			if (next!=null) {
                 long lastStart = last.start();
                 long stretchCycles = (nextStart - lastStart);
-                boolean stretchable = stretchCycles <= AbstractTaskSeries.stretchDurs() * dur;
+                boolean stretchable = (float) stretchCycles <= AbstractTaskSeries.stretchDurs() * dur;
 				if (stretchable && last.truth().equals(next)) {
 					//continue, if not excessively long
 					stretch(last, nextEnd);
@@ -221,9 +221,9 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 			}
 
 			//form new task either because the value changed, or because the latch duration was exceeded
-			if (lastEnd < nextStart-1) {
+			if (lastEnd < nextStart- 1L) {
 				//stretch the previous to the current starting point for the new task
-				stretch(last, nextStart - 1);
+				stretch(last, nextStart - 1L);
 			}
 
 		}

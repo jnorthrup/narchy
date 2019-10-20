@@ -50,7 +50,7 @@ import java.awt.*;
  */
 public class Color4f extends Tuple4f {
 
-    public static final Color3f BLACK = new Color3f(0, 0, 0);
+    public static final Color3f BLACK = new Color3f((float) 0, (float) 0, (float) 0);
 
     /**
      * Constructs and initializes a Color4f from the specified xyzw
@@ -117,10 +117,10 @@ public class Color4f extends Tuple4f {
      * @since vecmath 1.2
      */
     public Color4f(Color color) {
-        super(color.getRed() / 255.0f,
-                color.getGreen() / 255.0f,
-                color.getBlue() / 255.0f,
-                color.getAlpha() / 255.0f);
+        super((float) color.getRed() / 255.0f,
+                (float) color.getGreen() / 255.0f,
+                (float) color.getBlue() / 255.0f,
+                (float) color.getAlpha() / 255.0f);
     }
 
 
@@ -142,10 +142,10 @@ public class Color4f extends Tuple4f {
      * @since vecmath 1.2
      */
     public final void set(Color color) {
-        x = color.getRed() / 255.0f;
-        y = color.getGreen() / 255.0f;
-        z = color.getBlue() / 255.0f;
-        w = color.getAlpha() / 255.0f;
+        x = (float) color.getRed() / 255.0f;
+        y = (float) color.getGreen() / 255.0f;
+        z = (float) color.getBlue() / 255.0f;
+        w = (float) color.getAlpha() / 255.0f;
     }
 
 
@@ -190,7 +190,7 @@ public class Color4f extends Tuple4f {
     }
 
     public Color4f hsl(int hash, float sat, float lightness) {
-        return hsl(Math.abs(hash)/1000f % 1, sat, lightness, 1f);
+        return hsl((float) Math.abs(hash) /1000f % 1.0F, sat, lightness, 1f);
     }
 
     public Color4f hsl(float hue, float sat, float lightness, float a) {

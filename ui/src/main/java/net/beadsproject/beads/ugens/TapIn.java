@@ -30,8 +30,8 @@ public class TapIn extends UGen {
      */
     public TapIn(AudioContext ac, float maxDelayInMS) {
         super(ac, 1, 0);
-        sampsPerMS = (float) ac.msToSamples(1);
-        maxDelay = (int) ac.msToSamples(maxDelayInMS) + 1;
+        sampsPerMS = (float) ac.msToSamples(1.0);
+        maxDelay = (int) ac.msToSamples((double) maxDelayInMS) + 1;
         if (maxDelay < bufferSize) {
             maxDelay = bufferSize;
         }
@@ -42,7 +42,7 @@ public class TapIn extends UGen {
     }
 
     public float getMaxDelayMS() {
-        return (float) context.samplesToMs(maxDelay);
+        return (float) context.samplesToMs((double) maxDelay);
     }
 
     @Override
@@ -58,36 +58,36 @@ public class TapIn extends UGen {
         int base = (counter - bufferSize + memLength) % memLength;
         for (int i = 0; i < buf.length; i++) {
             float numSamplesBack;
-            if ((numSamplesBack = env.getValue(0, i) * sampsPerMS) < 0) {
-                numSamplesBack = 0;
-            } else if (numSamplesBack > maxDelay) {
-                numSamplesBack = maxDelay;
+            if ((numSamplesBack = env.getValue(0, i) * sampsPerMS) < (float) 0) {
+                numSamplesBack = (float) 0;
+            } else if (numSamplesBack > (float) maxDelay) {
+                numSamplesBack = (float) maxDelay;
             }
 
-            float frac = numSamplesBack % 1;
+            float frac = numSamplesBack % 1.0F;
             int d1 = ((base + i - ((int) numSamplesBack) - 1) + memLength)
                     % memLength;
             int d2 = (d1 + 1) % memLength;
 
-            buf[i] = mem[d1] * frac + mem[d2] * (1 - frac);
+            buf[i] = mem[d1] * frac + mem[d2] * (1.0F - frac);
 
         }
     }
 
     public void fillBufferLinear(float[] buf, float numSamplesBack) {
-        if (numSamplesBack < 0) {
-            numSamplesBack = 0;
-        } else if (numSamplesBack > maxDelay) {
-            numSamplesBack = maxDelay;
+        if (numSamplesBack < (float) 0) {
+            numSamplesBack = (float) 0;
+        } else if (numSamplesBack > (float) maxDelay) {
+            numSamplesBack = (float) maxDelay;
         }
-        float frac = numSamplesBack % 1;
+        float frac = numSamplesBack % 1.0F;
 
         int base = (counter - bufferSize - ((int) numSamplesBack) - 1
                 + memLength + memLength);
 
         for (int i = 0; i < buf.length; i++) {
             int d1 = (base + i) % memLength;
-            buf[i] = mem[d1] * frac + mem[(d1 + 1) % memLength] * (1 - frac);
+            buf[i] = mem[d1] * frac + mem[(d1 + 1) % memLength] * (1.0F - frac);
         }
 
     }
@@ -96,7 +96,7 @@ public class TapIn extends UGen {
         int base = (counter - bufferSize + memLength + memLength);
         for (int i = 0; i < buf.length; i++) {
             int numSamplesBack;
-            if ((numSamplesBack = (int) (env.getValue(0, i) * sampsPerMS + .5)) < 0) {
+            if ((numSamplesBack = (int) ((double) (env.getValue(0, i) * sampsPerMS) + .5)) < 0) {
                 numSamplesBack = 0;
             } else if (numSamplesBack > maxDelay) {
                 numSamplesBack = maxDelay;
@@ -122,14 +122,14 @@ public class TapIn extends UGen {
         int base = counter - bufferSize + memLength + memLength;
         for (int i = 0; i < buf.length; i++) {
             float numSamplesBack;
-            if ((numSamplesBack = env.getValue(0, i) * sampsPerMS) < 0) {
-                numSamplesBack = 0;
-            } else if (numSamplesBack > maxDelay) {
-                numSamplesBack = maxDelay;
+            if ((numSamplesBack = env.getValue(0, i) * sampsPerMS) < (float) 0) {
+                numSamplesBack = (float) 0;
+            } else if (numSamplesBack > (float) maxDelay) {
+                numSamplesBack = (float) maxDelay;
             }
 
-            float frac = numSamplesBack % 1;
-            float g = (1 - frac) / (1 + frac);
+            float frac = numSamplesBack % 1.0F;
+            float g = (1.0F - frac) / (1.0F + frac);
             int d1 = ((base + i - ((int) numSamplesBack) - 1) + memLength)
                     % memLength;
 

@@ -99,9 +99,9 @@ class BTreePrinter {
             return;
 
         int floor = maxLevel - level;
-        int endgeLines = (int) Math.pow(2, (Math.max(floor - 1, 0)));
-        int firstSpaces = (int) Math.pow(2, (floor)) - 1;
-        int betweenSpaces = (int) Math.pow(2, (floor + 1)) - 1;
+        int endgeLines = (int) Math.pow(2.0, (double) (Math.max(floor - 1, 0)));
+        int firstSpaces = (int) Math.pow(2.0, (double) (floor)) - 1;
+        int betweenSpaces = (int) Math.pow(2.0, (double) (floor + 1)) - 1;
 
         BTreePrinter.printWhitespaces(firstSpaces);
 

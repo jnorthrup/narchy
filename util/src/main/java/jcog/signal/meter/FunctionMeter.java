@@ -7,11 +7,8 @@ package jcog.signal.meter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Convenience implementation for a 1-signal meter

@@ -30,7 +30,7 @@ import static nars.Op.NEG;
     @Override
     default @Nullable Term normalize(byte varOffset) {
         Term x = sub();
-        Term y = x instanceof Variable ? ((Variable) x).normalizedVariable((byte) (varOffset + 1)) : x.normalize(varOffset);
+        Term y = x instanceof Variable ? ((Variable) x).normalizedVariable((byte) ((int) varOffset + 1)) : x.normalize(varOffset);
         return y != x ? y.neg() : this;
     }
 
@@ -56,7 +56,7 @@ import static nars.Op.NEG;
 
 
         public NegCached(Term negated) {
-            super(NEG.id, negated);
+            super((int) NEG.id, negated);
         }
 
         @Override
@@ -65,7 +65,7 @@ import static nars.Op.NEG;
         }
         @Override
         public int opID() {
-            return NEG.id;
+            return (int) NEG.id;
         }
 
         @Override
@@ -106,7 +106,7 @@ import static nars.Op.NEG;
 
         @Override
         public int opID() {
-            return NEG.id;
+            return (int) NEG.id;
         }
 
         @Override
@@ -116,7 +116,7 @@ import static nars.Op.NEG;
 
         @Override
         public Term normalize(byte varOffset) {
-            switch (Intrin.group(sub)) {
+            switch (Intrin.group((int) sub)) {
                 case Intrin.VARDEPs:
                 case Intrin.VARINDEPs:
                 case Intrin.VARPATTERNs:
@@ -129,9 +129,9 @@ import static nars.Op.NEG;
         @Override
         public final boolean equalsNeg(Term t) {
             if (t instanceof Atomic) {
-                int i = ((Atomic)t).intrin();
+                int i = (int) ((Atomic) t).intrin();
                 if (i!=0)
-                    return sub==i;
+                    return (int) sub ==i;
             }
             return false;
         }
@@ -170,7 +170,7 @@ import static nars.Op.NEG;
         }
         @Override
         public int opID() {
-            return NEG.id;
+            return (int) NEG.id;
         }
 
         @Override

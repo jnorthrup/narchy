@@ -109,7 +109,7 @@ public class TermBuffer {
      */
     TermBuffer appendCompound(Op o, int dt, Term... subs) {
         int n = subs.length;
-        assert (n < Byte.MAX_VALUE);
+        assert (n < (int) Byte.MAX_VALUE);
         return compoundStart(o, dt).subsStart((byte) n).subs(subs).compoundEnd(o);
     }
 
@@ -119,7 +119,7 @@ public class TermBuffer {
 
 
     TermBuffer subsStart(byte subterms) {
-        code.writeByte(subterms);
+        code.writeByte((int) subterms);
         return this;
     }
 
@@ -129,7 +129,7 @@ public class TermBuffer {
         byte oid = o.id;
 
         if (!o.temporal)
-            c.writeByte(oid);
+            c.writeByte((int) oid);
         else
             c.writeByteInt(oid, dt);
 
@@ -177,8 +177,8 @@ public class TermBuffer {
     }
 
     private TermBuffer appendInterned(byte i) {
-        assert(i < Byte.MAX_VALUE);
-        code.writeByte(MAX_CONTROL_CODES + i);
+        assert((int) i < (int) Byte.MAX_VALUE);
+        code.writeByte((int) MAX_CONTROL_CODES + (int) i);
         return this;
     }
 
@@ -222,12 +222,12 @@ public class TermBuffer {
         int end = range[1];
         int start = range[0];
         byte ctl = bytes[range[0]++];
-        if (ctl >= MAX_CONTROL_CODES)
+        if ((int) ctl >= (int) MAX_CONTROL_CODES)
             return nextInterned(ctl, bytes, range);
-        else if (ctl == NEG.id)
+        else if ((int) ctl == (int) NEG.id)
             return nextTerm(bytes, range).neg();
 
-        Op op = Op.the(ctl);
+        Op op = Op.the((int) ctl);
 
         if (op.atomic)  //alignment error or something
             throw new TermException(TermBuffer.class + ": atomic found where compound op expected: " + op);
@@ -237,12 +237,12 @@ public class TermBuffer {
         int volRemaining = this.volRemain - 1 /* one for the compound itself */;
 
         byte len = bytes[range[0]++];
-        if (len == 0)
+        if ((int) len == 0)
             return emptySubterms(op);
 
         Term[] subterms = null;
 
-        for (int i = 0; i < len; ) {
+        for (int i = 0; i < (int) len; ) {
             //assert(range[0] <= range[1]) //check if this is < or <=
 
             Term nextSub = nextTerm(bytes, range);
@@ -253,8 +253,8 @@ public class TermBuffer {
             if (nextSub.op()==FRAG) {
                 //append fragment subterms
                 int fragmentLen = nextSub.subs();
-                len += fragmentLen - 1;
-                if (len == 0) {
+                len = (byte) ((int) len + fragmentLen - 1);
+                if ((int) len == 0) {
                     //empty fragment was the only subterm; early exit
                     return emptySubterms(op);
                 } else {
@@ -265,7 +265,7 @@ public class TermBuffer {
             } else {
                 //append next subterm
                 if (subterms == null)
-                    subterms = new Term[len];
+                    subterms = new Term[(int) len];
 
                 volRemaining -= nextSub.volume();
 
@@ -345,14 +345,14 @@ public class TermBuffer {
         if (end - to >= span) {
             //search for repeat occurrences of the start..end sequence after this
             int afterTo = to;
-            byte n = 0;
+            byte n = (byte) 0;
             do {
                 int match = ArrayUtil.nextIndexOf(ii, afterTo, end, ii, from, to);
 
                 if (match != -1) {
                     //System.out.println("repeat found");
-                    if (n == 0)
-                        n = (byte) (MAX_CONTROL_CODES + intern(next)); //intern for re-substitute
+                    if ((int) n == 0)
+                        n = (byte) ((int) MAX_CONTROL_CODES + (int) intern(next)); //intern for re-substitute
                     code.set(match, n);
 
                     code.fillBytes((byte) 0, match + 1, match + span); //zero padding, to be ignored
@@ -366,16 +366,16 @@ public class TermBuffer {
     }
 
     private Term nextInterned(byte ctl) {
-        return sub.interned((byte) (ctl - MAX_CONTROL_CODES));
+        return sub.interned((byte) ((int) ctl - (int) MAX_CONTROL_CODES));
     }
 
     /** expand a fragment */
     private static Term[] nextFrag(Term[] subterms, int i, Term fragment, byte len, int fragmentLen) {
         if (subterms == null)
-            subterms = new Term[len];
-        else if (subterms.length != len) {
+            subterms = new Term[(int) len];
+        else if (subterms.length != (int) len) {
             //used to grow OR shrink
-            subterms = Arrays.copyOf(subterms, len);
+            subterms = Arrays.copyOf(subterms, (int) len);
         }
         if (fragmentLen > 0) {
             fragment.addAllTo(subterms, i); //TODO recursively evaluate?
@@ -423,7 +423,7 @@ public class TermBuffer {
     public boolean append(Term x, UnaryOperator<Term> f) {
         if (x instanceof Compound) {
             byte interned = this.term(x);
-            if (interned!=Byte.MIN_VALUE) {
+            if ((int) interned != (int) Byte.MIN_VALUE) {
                 this.appendInterned(interned);
                 return true;
             } else {

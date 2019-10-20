@@ -62,8 +62,8 @@ public class PitchDetectionResult {
     private boolean pitched;
 
     public PitchDetectionResult() {
-        pitch = -1;
-        probability = -1;
+        pitch = -1.0F;
+        probability = -1.0F;
         pitched = false;
     }
 

@@ -50,19 +50,19 @@ public class Change extends UGen {
         for (int i = 1; i < bufferSize; i++) {
             float x;
             if ((x = bi[i]) > lastX) {
-                bo[i] = 1;
+                bo[i] = 1.0F;
                 if (currentDirection != 1) {
                     currentDirection = 1;
                     directionChange(1);
                 }
             } else if (x < lastX) {
-                bo[i] = -1;
+                bo[i] = -1.0F;
                 if (currentDirection != -1) {
                     currentDirection = -1;
                     directionChange(-1);
                 }
             } else {
-                bo[i] = 0;
+                bo[i] = (float) 0;
             }
             lastX = x;
         }

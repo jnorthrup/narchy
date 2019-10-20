@@ -125,7 +125,7 @@ public class CircularFloatBuffer extends CircularBuffer {
         for (int i = 0; i < f.length; i++) {
             byte low = sample[k++];
             byte high = sample[k++];
-            f[i] = ((float)(low | (high << 8)))/Short.MAX_VALUE * gain;
+            f[i] = ((float)((int) low | ((int) high << 8)))/ (float) Short.MAX_VALUE * gain;
         }
         return write(f);
     }
@@ -135,7 +135,7 @@ public class CircularFloatBuffer extends CircularBuffer {
     }
 
     public float peek(long sample) {
-        return peek(Math.toIntExact(sample % data.length));
+        return peek(Math.toIntExact(sample % (long) data.length));
     }
 
     public float peek(int sample) {
@@ -144,10 +144,10 @@ public class CircularFloatBuffer extends CircularBuffer {
     }
 
     public long idx(long sample) {
-        while (sample < 0)
-            sample += data.length; //HACK use non-iterative negative modulo
+        while (sample < 0L)
+            sample = sample + (long) data.length; //HACK use non-iterative negative modulo
 
-        return sample % data.length;
+        return sample % (long) data.length;
     }
 
     public int idx(int sample) {
@@ -313,7 +313,7 @@ public class CircularFloatBuffer extends CircularBuffer {
      * from inclusive, to exclusive
      */
     public float sum(int from, int to) {
-        float s = 0;
+        float s = (float) 0;
         //TODO optimize cursor
         for (int i = from; i < to; i++)
             s += peek(i);
@@ -331,7 +331,7 @@ public class CircularFloatBuffer extends CircularBuffer {
 
     public double mean(double sStart, double sEnd) {
         double sum = sum(sStart, sEnd);
-        return sum / (1+(sEnd - sStart));
+        return sum / (1.0 +(sEnd - sStart));
     }
 
 

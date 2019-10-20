@@ -30,14 +30,14 @@ public class TinySpeech {
 
     public static final int SAMPLE_FREQUENCY = 44100;
     private static final float PI = (float) Math.PI;
-    private static final float PI_2 = 2 * (float) Math.PI;
-    private final Random rng = new XoRoShiRo128PlusRandom(1);
+    private static final float PI_2 = 2.0F * (float) Math.PI;
+    private final Random rng = new XoRoShiRo128PlusRandom(1L);
 
-    float f0 = 120;
+    float f0 = 120.0F;
     float period = 1.2f;
 
     private static float sawtooth(float x) {
-        return 0.5f - (x - (int)(x / PI_2) * PI_2) / PI_2;
+        return 0.5f - (x - (float) (int) (x / PI_2) * PI_2) / PI_2;
     }
 
     static class Phoneme {
@@ -50,8 +50,8 @@ public class TinySpeech {
         final boolean plosive;
 
         Phoneme(Map x) {
-            this.amp = (int) x.get("amp");
-            this.len = (int) x.get("len");
+            this.amp = (float) (int) x.get("amp");
+            this.len = (float) (int) x.get("len");
             this.osc = ((int) x.get("osc")) == 1;
             this.plosive = ((int) x.get("plosive")) == 1;
 
@@ -133,13 +133,13 @@ public class TinySpeech {
 //        for (int i = 0; i < bufPos; i++)
 //            buf[i] /= Short.MAX_VALUE;
 
-        return new SoundSample(buf, 0, bufPos, SAMPLE_FREQUENCY);
+        return new SoundSample(buf, 0, bufPos, (float) SAMPLE_FREQUENCY);
     }
 
     private int say(char c, float f0, float speed, float[] buf, int bufPos, float amp) {
 
-        if (c == ' ' || c == '\n') {
-            bufPos += (int)(SAMPLE_FREQUENCY * 0.2f * speed); //skip
+        if ((int) c == (int) ' ' || (int) c == (int) '\n') {
+            bufPos += (int)((float) SAMPLE_FREQUENCY * 0.2f * speed); //skip
         }
 
         Phoneme p = g_phonemes.get((byte) c);
@@ -147,46 +147,46 @@ public class TinySpeech {
             return bufPos;
 
         float v = p.amp * amp;
-        int sl = Math.round(speed * p.len * SAMPLE_FREQUENCY / 15);
+        int sl = Math.round(speed * p.len * (float) SAMPLE_FREQUENCY / 15.0F);
         int[] pf = p.f;
         int[] pw = p.w;
         boolean osc = p.osc;
         for (int formant = 0; formant < 3; formant++) {
-            float ff = pf[formant];
-            if (ff == 0)
+            float ff = (float) pf[formant];
+            if (ff == (float) 0)
                 continue;
 
-            float freq = ff * 50f / SAMPLE_FREQUENCY;
+            float freq = ff * 50f / (float) SAMPLE_FREQUENCY;
 
-            float xx = 0, xxx = 0;
+            float xx = (float) 0, xxx = (float) 0;
             float q =
-                1.0f - pw[formant] * (PI * 10/ SAMPLE_FREQUENCY); //adjust 10 to tune resonance
+                1.0f - (float) pw[formant] * (PI * 10.0F / (float) SAMPLE_FREQUENCY); //adjust 10 to tune resonance
                 //(float) (1 / (pw[formant] * tan(2 * PI * 0.5)));
 
             int pos = bufPos;
-            float xp = 0;
+            float xp = (float) 0;
 
             for (int s = 0; s < sl; s++) {
                 float x;
 
                 if (!osc) {
-                    xp = 0;
+                    xp = (float) 0;
                     x = resonator(f0, s);
                 } else {
                     x = noise();
                 }
 
                 // Apply formant filter
-                x = (float) ((x + (2 * Math.cos(PI_2 * freq) * xx * q)) - (xxx * q * q));
+                x = (float) (((double) x + (2.0 * Math.cos((double) (PI_2 * freq)) * (double) xx * (double) q)) - (double) (xxx * q * q));
                 xxx = xx;
                 xx = x;
                 x = x * v + xp;
                 xp = x;
 
                 // envelope
-                double e = Math.sin((PI * s) / sl); //sine  /-\
+                double e = Math.sin((double) ((PI * (float) s) / (float) sl)); //sine  /-\
 
-                x *= e;
+                x = (float) ((double) x * e);
 
 
 
@@ -206,12 +206,12 @@ public class TinySpeech {
             //0.1f;
             //0;
 
-        bufPos += Math.round( (1-overlap)*sl + (p.plosive ? (sl & 0xfffffe) : 0));
+        bufPos += Math.round( (1.0F -overlap)* (float) sl + (float) (p.plosive ? (sl & 0xfffffe) : 0));
         return bufPos;
     }
 
     private static float resonator(float f0, int s) {
-        float x = sawtooth(s * (f0 * PI_2 / SAMPLE_FREQUENCY));
+        float x = sawtooth((float) s * (f0 * PI_2 / (float) SAMPLE_FREQUENCY));
         return x;
     }
 

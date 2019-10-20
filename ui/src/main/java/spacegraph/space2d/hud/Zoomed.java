@@ -33,19 +33,19 @@ import static java.lang.Math.sin;
  */
 public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implements /*Deprecated*/ KeyPressed {
 
-    public static final short PAN_BUTTON = 0;
+    public static final short PAN_BUTTON = (short) 0;
 
     /**
      * middle mouse button (wheel when pressed, apart from its roll which are detected in the wheel/wheelabsorber)
      */
-    public static final short ZOOM_BUTTON = 2;
+    public static final short ZOOM_BUTTON = (short) 2;
 
     private static final int ZOOM_STACK_MAX = 8;
-    private static final float focusAngle = (float) Math.toRadians(45);
+    private static final float focusAngle = (float) Math.toRadians(45.0);
     /**
      * current view area, in absolute world coords
      */
-    public final v2 scale = new v2(1, 1);
+    public final v2 scale = new v2(1.0F, 1.0F);
     public final Camera cam;
     /**
      * parent
@@ -57,7 +57,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
     private static final float wheelZoomRate = 0.6f;
 
-    private final Fingering zoomDrag = new Dragging(ZOOM_BUTTON) {
+    private final Fingering zoomDrag = new Dragging((int) ZOOM_BUTTON) {
 
         final v2 start = new v2();
         static final float maxIterationChange = 0.25f;
@@ -76,16 +76,16 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
             float dy = start.distanceToY(current);
             float dx = start.distanceToX(current);
-            float d = (float) Math.sqrt(dy*dy + dx*dx);
+            float d = (float) Math.sqrt((double) (dy * dy + dx * dx));
 
-            zoomDelta(f.posGlobal(), Util.clamp((float) Math.pow(d * rate, 1), -maxIterationChange, +maxIterationChange));
+            zoomDelta(f.posGlobal(), Util.clamp((float) Math.pow((double) (d * rate), 1.0), -maxIterationChange, +maxIterationChange));
 
             start.set(current); //incremental
 
             return true;
         }
     };
-    private final Fingering contentPan = new FingerMoveWindow(PAN_BUTTON) {
+    private final Fingering contentPan = new FingerMoveWindow((int) PAN_BUTTON) {
 
         static final float speed = 1f;
         private v3 camStart;
@@ -114,10 +114,10 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     };
 
 //    float CORNER_RADIUS = 4;
-    private float camXmin = -1;
-    private float camXmax = +1;
-    private float camYmin = -1;
-    private float camYmax = +1;
+    private float camXmin = -1.0F;
+    private float camXmax = (float) +1;
+    private float camYmin = -1.0F;
+    private float camYmax = (float) +1;
 
     public Zoomed(JoglDisplay space, NewtKeyboard keyboard, S content) {
         super(content);
@@ -145,7 +145,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     }
 
     private float camZMax() {
-        return targetDepth(Math.min(space.video.getWidth(), space.video.getHeight()));
+        return targetDepth((float) Math.min(space.video.getWidth(), space.video.getHeight()));
     }
 
     @Override
@@ -154,7 +154,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
         GL2 gl = render.gl;
 
-        float zoom = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
+        float zoom = (float) (sin(Math.PI / 2.0 - (double) (focusAngle / 2.0F)) / ((double) cam.z * sin((double) (focusAngle / 2.0F))));
         float H = h();
         float W = w();
         float s = zoom * Math.min(W, H);
@@ -178,8 +178,8 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
         gl.glPushMatrix();
 
-        gl.glScalef(s, s, 1);
-        gl.glTranslatef((W / 2) / s - cam.x, (H / 2) / s - cam.y, 0);
+        gl.glScalef(s, s, 1.0F);
+        gl.glTranslatef((W / 2.0F) / s - cam.x, (H / 2.0F) / s - cam.y, (float) 0);
 
         super.renderContent(render);
 
@@ -199,7 +199,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
             if (!(innerTouched instanceof Finger.ScrollWheelConsumer)) {
                 //wheel zoom: absorb remaining rotationY
                 float dy = f.rotationY(true);
-                if (dy != 0) {
+                if (dy != (float) 0) {
                     zoomDelta(f.posGlobal(), dy * wheelZoomRate);
                     //zoomDelta(dy * wheelZoomRate);
                     zoomStackReset();
@@ -313,12 +313,12 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 //        else
 //            d = w; //limit by width
 
-        return targetDepth(d * (1 + margin));
+        return targetDepth(d * (1.0F + margin));
     }
 
 
     private static float targetDepth(float viewDiameter) {
-        return (float) ((viewDiameter * sin(Math.PI / 2 - focusAngle / 2)) / sin(focusAngle / 2));
+        return (float) (((double) viewDiameter * sin(Math.PI / 2.0 - (double) (focusAngle / 2.0F))) / sin((double) (focusAngle / 2.0F)));
     }
 
     private void zoom(float x, float y, float sx, float sy, float margin) {
@@ -349,11 +349,11 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         protected boolean change = true;
 
         {
-            setDirect(0, 0, 1); //(camZmin + camZmax) / 2);
+            setDirect((float) 0, (float) 0, 1.0F); //(camZmin + camZmax) / 2);
         }
 
         public Camera() {
-            super(1);
+            super(1.0F);
         }
 
 //        public v3 snapshot() {
@@ -384,7 +384,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
             float CAM_RATE = 3f;
             speed.set(Math.max(W, H) * CAM_RATE);
 
-            float visW = W / scale.x / 2, visH = H / scale.y / 2; //TODO optional extra margin
+            float visW = W / scale.x / 2.0F, visH = H / scale.y / 2.0F; //TODO optional extra margin
             camXmin = bounds.x + visW;
             camYmin = bounds.y + visH;
             camXmax = bounds.x + W - visW;
@@ -397,7 +397,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         }
 
         public float camZ(float z) {
-            float camZmin = 1;
+            float camZmin = 1.0F;
             return Util.clampSafe(z, camZmin, camZMax());
         }
 
@@ -418,15 +418,15 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
         public v2 globalToPixel(float gx, float gy) {
             return new v2(
-                    ((gx - cam.x) * scale.x) + (w() / 2),
-                    ((gy - cam.y) * scale.y) + (h() / 2)
+                    ((gx - cam.x) * scale.x) + (w() / 2.0F),
+                    ((gy - cam.y) * scale.y) + (h() / 2.0F)
             );
         }
 
         public void pixelToGlobal(float px, float py, v2 target) {
             target.set(
-                    ((px - (w() / 2)) / scale.x + cam.x),
-                    ((py - (h() / 2)) / scale.y + cam.y)
+                    ((px - (w() / 2.0F)) / scale.x + cam.x),
+                    ((py - (h() / 2.0F)) / scale.y + cam.y)
             );
         }
 

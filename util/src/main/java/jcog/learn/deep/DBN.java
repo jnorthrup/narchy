@@ -31,7 +31,7 @@ public class DBN {
         this.sigmoid_layers = new HiddenLayerDiscrete[n_layers];
         this.rbm_layers = new RBM[n_layers];
 
-        if(rng == null)	this.rng = new Random(1234);
+        if(rng == null)	this.rng = new Random(1234L);
         else this.rng = rng;
 
         
@@ -50,7 +50,7 @@ public class DBN {
             this.rbm_layers[i] = new RBM(input_size, this.hidden_layer_sizes[i], this.sigmoid_layers[i].W, this.sigmoid_layers[i].b, null, rng) {
                 @Override
                 public double activate(double a) {
-                    return Util.tanhFast((float)a);
+                    return (double) Util.tanhFast((float) a);
                 }
             };
         }
@@ -85,7 +85,7 @@ public class DBN {
                         }
                     }
 
-                    rbm_layers[i].contrastive_divergence(layer_input, lr/N, k);
+                    rbm_layers[i].contrastive_divergence(layer_input, lr/ (double) N, k);
                 }
             }
         }
@@ -146,7 +146,7 @@ public class DBN {
         }
 
         for(int i = 0; i<log_layer.n_out; i++) {
-            y[i] = 0;
+            y[i] = (double) 0;
             for(int j = 0; j<log_layer.n_in; j++) {
                 y[i] += log_layer.W[i][j] * layer_input[j];
             }
@@ -157,7 +157,7 @@ public class DBN {
     }
 
     private static void test_dbn() {
-        Random rng = new Random(123);
+        Random rng = new Random(123L);
 
         double pretrain_lr = 0.1;
         int pretraining_epochs = 1000;
@@ -171,12 +171,12 @@ public class DBN {
 
         
         double[][] train_X = {
-                {1, 1, 1, 0, 0, 0},
-                {1, 0, 1, 0, 0, 0},
-                {1, 1, 1, 0, 0, 0},
-                {0, 0, 1, 1, 1, 0},
-                {0, 0, 1, 1, 0, 0},
-                {0, 0, 1, 1, 1, 0}
+                {1.0, 1.0, 1.0, (double) 0, (double) 0, (double) 0},
+                {1.0, (double) 0, 1.0, (double) 0, (double) 0, (double) 0},
+                {1.0, 1.0, 1.0, (double) 0, (double) 0, (double) 0},
+                {(double) 0, (double) 0, 1.0, 1.0, 1.0, (double) 0},
+                {(double) 0, (double) 0, 1.0, 1.0, (double) 0, (double) 0},
+                {(double) 0, (double) 0, 1.0, 1.0, 1.0, (double) 0}
         };
 
 
@@ -187,12 +187,12 @@ public class DBN {
 
 
         double[][] train_Y = {
-                {1, 0},
-                {1, 0},
-                {1, 0},
-                {0, 1},
-                {0, 1},
-                {0, 1},
+                {1.0, (double) 0},
+                {1.0, (double) 0},
+                {1.0, (double) 0},
+                {(double) 0, 1.0},
+                {(double) 0, 1.0},
+                {(double) 0, 1.0},
         };
         int finetune_epochs = 500;
         double finetune_lr = 0.1;
@@ -201,10 +201,10 @@ public class DBN {
 
         
         double[][] test_X = {
-                {1, 1, 0, 0, 0, 0},
-                {1, 1, 1, 1, 0, 0},
-                {0, 0, 0, 1, 1, 0},
-                {0, 0, 1, 1, 1, 0},
+                {1.0, 1.0, (double) 0, (double) 0, (double) 0, (double) 0},
+                {1.0, 1.0, 1.0, 1.0, (double) 0, (double) 0},
+                {(double) 0, (double) 0, (double) 0, 1.0, 1.0, (double) 0},
+                {(double) 0, (double) 0, 1.0, 1.0, 1.0, (double) 0},
         };
 
         int test_N = 4;

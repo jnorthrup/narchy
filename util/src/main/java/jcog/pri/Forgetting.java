@@ -23,7 +23,7 @@ public abstract class Forgetting {
 
                     if (mass > Float.MIN_NORMAL) {
                         //return PriForget.forgetPressure(temperature, 0, size, cap, pressure, mass);
-                        return PriForget.forgetIdeal(temperature, 0.5f, size, cap, pressure, mass);
+                        return PriForget.forgetIdeal((double) temperature, 0.5, size, cap, (double) pressure, (double) mass);
                     }
                 }
             }

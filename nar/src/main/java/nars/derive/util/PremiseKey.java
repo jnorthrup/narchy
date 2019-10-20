@@ -31,7 +31,7 @@ public class PremiseKey extends ByteKeyExternalWithParameter<PreDerivation> {
         }
 
         key.writeByte(
-            (Task.i(d.taskPunc) << 1)
+            ((int) Task.i(d.taskPunc) << 1)
                 |
             (d.hasBeliefTruth() ? 1 : 0)
         );

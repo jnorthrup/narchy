@@ -517,7 +517,7 @@ public class ClassReloader extends ClassLoader {
 
     private static String getClassName(File file, String pkg) {
         String classSimpleName = file.getName();
-        int lastDotIdx = classSimpleName.lastIndexOf('.');
+        int lastDotIdx = classSimpleName.lastIndexOf((int) '.');
         String className = classSimpleName.substring(0, lastDotIdx);
         if (!pkg.isEmpty()) {
             className = pkg + '.' + className;

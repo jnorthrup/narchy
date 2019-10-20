@@ -57,11 +57,11 @@ public class DecideSoftmax implements Deciding {
 
             if (onlyPositive) {
                 for (int i = 0; i < vector.length; i++)
-                    vector[i] = Math.max(0, vector[i]);
+                    vector[i] = Math.max((float) 0, vector[i]);
             }
 
             float sumMotivation = Util.sum(vector);
-            if (sumMotivation > Float.MIN_NORMAL * actions) {
+            if (sumMotivation > Float.MIN_NORMAL * (float) actions) {
 
 
                 if (normalize) {
@@ -76,7 +76,7 @@ public class DecideSoftmax implements Deciding {
                 }
 
                 /* http://www.cse.unsw.edu.au/~cs9417ml/RL1/source/RLearner.java */
-                float sumProb = 0;
+                float sumProb = (float) 0;
                 for (int i = 0; i < actions; i++) {
                     sumProb += (motProb[i] = Util.softmax(mot[i], temperature));
                 }
@@ -87,7 +87,7 @@ public class DecideSoftmax implements Deciding {
                 for (i = actions - 1; i >= 1; i--) {
                     float m = motProb[i];
                     r -= m;
-                    if (r <= 0) {
+                    if (r <= (float) 0) {
                         break;
                     }
                 }
@@ -101,7 +101,7 @@ public class DecideSoftmax implements Deciding {
             //logger.error
             System.err.println(e.getMessage());
         } finally {
-            decisiveness = 0;
+            decisiveness = (float) 0;
             return random.nextInt(vector.length);
         }
 

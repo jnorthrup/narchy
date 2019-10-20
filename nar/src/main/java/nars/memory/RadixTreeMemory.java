@@ -65,7 +65,7 @@ public class RadixTreeMemory extends Memory implements Consumer<NAR> {
         r *= r;
 
 
-		return l.get(Math.round((levels - 1) * (1 - r)));
+		return l.get(Math.round((float) (levels - 1) * (1.0F - r)));
 	}
 
 	private int sizeEst() {
@@ -188,12 +188,12 @@ public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 				return;
 
             float maxIterationRemovalPct = 0.05f;
-            int maxConceptsThatCanBeRemovedAtATime = (int) Math.max(1, sizeBefore * maxIterationRemovalPct);
+            int maxConceptsThatCanBeRemovedAtATime = (int) Math.max(1.0F, (float) sizeBefore * maxIterationRemovalPct);
 //        if (overflow < maxConceptsThatCanBeRemovedAtATime)
 //            return;
 
             float overflowSafetyPct = 0.1f;
-            if ((((float) overflow) / sizeLimit) > overflowSafetyPct) {
+            if ((((float) overflow) / (float) sizeLimit) > overflowSafetyPct) {
 				//major collection, strong
 				concepts.acquireWriteLock();
 			} else {

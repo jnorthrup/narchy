@@ -29,7 +29,7 @@ public class Anchor extends Leaf<String> {
     static final List<String> allowedClasses = Arrays.asList("\\w", "\\d", ".", "\\b", "\\s");
 
     public Anchor() {
-        super(allowedClasses.get((int)(Math.random()*allowedClasses.size())));
+        super(allowedClasses.get((int)(Math.random()* (double) allowedClasses.size())));
     }
 
     public Anchor(Anchor value) {

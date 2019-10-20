@@ -86,7 +86,7 @@ public class CircularByteBuffer extends CircularBuffer {
                 int result = CircularByteBuffer.this.readFully(singleByteBuf, 0, 1);
                 if (result < 1)
                     return -1;
-                return singleByteBuf[0] & 0x000000FF;
+                return (int) singleByteBuf[0] & 0x000000FF;
             } finally {
                 lock.unlock();
             }

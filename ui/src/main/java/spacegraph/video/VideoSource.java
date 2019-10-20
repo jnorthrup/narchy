@@ -27,8 +27,8 @@ public abstract class VideoSource implements AutoCloseable {
     public float aspect() {
         int w = width, h = height;
         if (w == 0 || h == 0)
-            return 1;
+            return 1.0F;
         else
-            return ((float)height)/width;
+            return ((float)height)/ (float) width;
     }
 }

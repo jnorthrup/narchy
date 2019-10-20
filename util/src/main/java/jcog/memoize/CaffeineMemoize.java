@@ -25,7 +25,7 @@ public class CaffeineMemoize<K, V> implements Memoize<K, V> {
         if (capacity < 1)
             b.softValues();
         else
-            b.maximumSize(capacity);
+            b.maximumSize((long) capacity);
 
         b.executor(MoreExecutors.directExecutor());
 
@@ -43,8 +43,8 @@ public class CaffeineMemoize<K, V> implements Memoize<K, V> {
     public String summary() {
         CacheStats stats = cache.stats();
         String a;
-        if (stats.hitCount() > 0)
-            a = n2(stats.hitRate() * 100f) + "% hits, ";
+        if (stats.hitCount() > 0L)
+            a = n2(stats.hitRate() * 100) + "% hits, ";
         else
             a = "";
         return a + cache.estimatedSize() + " size";

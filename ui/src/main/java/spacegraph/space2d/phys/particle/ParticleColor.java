@@ -15,10 +15,10 @@ import spacegraph.util.math.Color4f;
     public byte a;
 
     public ParticleColor() {
-        r = 127;
-        g = 127;
-        b = 127;
-        a = 50;
+        r = (byte) 127;
+        g = (byte) 127;
+        b = (byte) 127;
+        a = (byte) 50;
     }
 
 
@@ -39,17 +39,17 @@ import spacegraph.util.math.Color4f;
 
 
     private void set(Color4f color) {
-        r = (byte) (127 * color.x);
-        g = (byte) (127 * color.y);
-        b = (byte) (127 * color.z);
-        a = (byte) (127 * color.w);
+        r = (byte) (127.0F * color.x);
+        g = (byte) (127.0F * color.y);
+        b = (byte) (127.0F * color.z);
+        a = (byte) (127.0F * color.w);
     }
 
     private void set(Color3f color) {
-        r = (byte) (127 * color.x);
-        g = (byte) (127 * color.y);
-        b = (byte) (127 * color.z);
-        a = 127;
+        r = (byte) (127.0F * color.x);
+        g = (byte) (127.0F * color.y);
+        b = (byte) (127.0F * color.z);
+        a = (byte) 127;
     }
 
     public void set(ParticleColor color) {
@@ -60,7 +60,7 @@ import spacegraph.util.math.Color4f;
     }
 
     public boolean isZero() {
-        return r == 0 && g == 0 && b == 0 && a == 0;
+        return (int) r == 0 && (int) g == 0 && (int) b == 0 && (int) a == 0;
     }
 
     private void set(byte r, byte g, byte b, byte a) {

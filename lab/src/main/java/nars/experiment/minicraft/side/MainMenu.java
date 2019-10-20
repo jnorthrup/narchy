@@ -44,8 +44,8 @@ public class MainMenu {
     public void draw(GraphicsHandler g) {
         SideScrollMinicraft.drawTileBackground(g, menu_bgTile, 32);
         SideScrollMinicraft.drawCenteredX(g, menu_logo, 70, 397, 50);
-        float tagScale = ((float) Math.abs((game.ticksRunning % 100) - 50)) / 50 + 1;
-        menu_tag.draw(g, 450, 70, (int) (60 * tagScale), (int) (37 * tagScale));
+        float tagScale = ((float) Math.abs((game.ticksRunning % 100L) - 50L)) / 50.0F + 1.0F;
+        menu_tag.draw(g, 450, 70, (int) (60.0F * tagScale), (int) (37.0F * tagScale));
 
         if (newGame) {
             drawNewMenu(g);

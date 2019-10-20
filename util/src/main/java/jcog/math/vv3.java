@@ -6,9 +6,9 @@ import jcog.Util;
 public final class vv3  {
 
     /** TODO read-only impl */
-    public static final vv3 X_AXIS = new vv3(1, 0, 0);
-    public static final vv3 Y_AXIS = new vv3(0, 1, 0);
-    public static final vv3 Z_AXIS = new vv3(0, 0, 1);
+    public static final vv3 X_AXIS = new vv3(1.0, (double) 0, (double) 0);
+    public static final vv3 Y_AXIS = new vv3((double) 0, 1.0, (double) 0);
+    public static final vv3 Z_AXIS = new vv3((double) 0, (double) 0, 1.0);
 
     public double x;
     public double y;
@@ -82,7 +82,7 @@ public final class vv3  {
         if (hasZero()) {
             return this;
         }
-        return scale(1 / length());
+        return scale(1.0 / length());
     }
 
     public vv3 normalizeThis(double scale) {
@@ -93,7 +93,7 @@ public final class vv3  {
     public vv3 normalizeThis() {
         if (hasZero())
             return this;
-        return scaleThis(1 / length());
+        return scaleThis(1.0 / length());
     }
 
     private boolean hasZero() {
@@ -114,7 +114,7 @@ public final class vv3  {
     }
 
     public double distanceSquared(vv3 v) {
-        if (this == v) return 0;
+        if (this == v) return (double) 0;
         return Util.sqr(x - v.x) + Util.sqr(y - v.y) + Util.sqr(z - v.z);
     }
 }

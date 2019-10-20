@@ -29,8 +29,8 @@ public class AudioTransceiver {
 
     /* Sampling Declarations. */
     private static final int WRITE_AUDIO_RATE_SAMPLE_HZ = 44100; // (Guaranteed for all devices!)
-    private static final int WRITE_NUMBER_OF_SAMPLES = (int) (synth.encodedLen() * (synth.symPeriodMS / 1000.0f) * WRITE_AUDIO_RATE_SAMPLE_HZ);
-    private static final int READ_NUMBER_OF_SAMPLES = ((int) ((synth.symPeriodMS / 1000.0f) * WRITE_AUDIO_RATE_SAMPLE_HZ));
+    private static final int WRITE_NUMBER_OF_SAMPLES = (int) ((float) synth.encodedLen() * ((float) synth.symPeriodMS / 1000.0f) * (float) WRITE_AUDIO_RATE_SAMPLE_HZ);
+    private static final int READ_NUMBER_OF_SAMPLES = ((int) (((float) synth.symPeriodMS / 1000.0f) * (float) WRITE_AUDIO_RATE_SAMPLE_HZ));
     private static final int READ_SUBSAMPLING_FACTOR = 9;
 
 
@@ -49,7 +49,7 @@ public class AudioTransceiver {
     private FloatArrayList confBuffer;
     private final PitchProcessor mPitchProcessor = new PitchProcessor(
             PitchProcessor.PitchEstimationAlgorithm.FFT_YIN,
-            WRITE_AUDIO_RATE_SAMPLE_HZ,
+            (float) WRITE_AUDIO_RATE_SAMPLE_HZ,
             (READ_NUMBER_OF_SAMPLES / READ_SUBSAMPLING_FACTOR),
 
             (pPitchDetectionResult, pAudioEvent) -> {
@@ -92,7 +92,7 @@ public class AudioTransceiver {
 //            getAudioDispatcher().getFormat().properties());
 
     public AudioTransceiver(int sampleRate) {
-        this(new AudioFormat(sampleRate, 16, 1, true, false));
+        this(new AudioFormat((float) sampleRate, 16, 1, true, false));
 
 //        int minAudioBufferSize = AudioRecord.getMinBufferSize(sampleRate,
 //                android.media.AudioFormat.CHANNEL_IN_MONO,
@@ -202,12 +202,12 @@ public class AudioTransceiver {
             int ii = synth.identifier.length() + synth.payloadLen;
             for (int i = 0; i < ii; i++) {
                 // Update the Packetized with the corresponding index value.
-                lPacketized[i] = synth.range.chars.indexOf(lAccumulation.charAt(i));
+                lPacketized[i] = synth.range.chars.indexOf((int) lAccumulation.charAt(i));
             }
             // Iterate the Error Symbols.
             for (int i = 0; i < synth.errLen; i++) {
                 // Update the Packetized with the corresponding index value.
-                lPacketized[synth.range.mFrameLength - synth.errLen + i] = synth.range.chars.indexOf(lAccumulation.charAt(synth.identifier.length() + synth.payloadLen + i));
+                lPacketized[synth.range.mFrameLength - synth.errLen + i] = synth.range.chars.indexOf((int) lAccumulation.charAt(synth.identifier.length() + synth.payloadLen + i));
             }
             // Attempt to Reed/Solomon Decode.
             try {
@@ -217,7 +217,7 @@ public class AudioTransceiver {
                 boolean acc = true;
                 int bound = synth.identifier.length();
                 for (int i1 = 0; i1 < bound; i1++) {
-                    boolean aBoolean = synth.identifier.charAt(i1) == (synth.range.chars.charAt(lPacketized[i1]));
+                    boolean aBoolean = (int) synth.identifier.charAt(i1) == (int) (synth.range.chars.charAt(lPacketized[i1]));
                     acc = acc && aBoolean;
                 }
                 boolean lIsValid = acc;
@@ -250,7 +250,7 @@ public class AudioTransceiver {
         int len = pData.length();
         for (int i = 0; i < len; i++) {
             // Update the contents of the Array.
-            pBuffer[pOffset + i] = synth.range.chars.indexOf(pData.charAt(i));
+            pBuffer[pOffset + i] = synth.range.chars.indexOf((int) pData.charAt(i));
         }
     }
 
@@ -259,7 +259,7 @@ public class AudioTransceiver {
      */
     private static float[] encode(CharSequence pData, int pPeriod) {
         // Calculate the Number of Samples per msg.
-        int lNumberOfSamples = (int) (WRITE_AUDIO_RATE_SAMPLE_HZ * (pPeriod / 1000.0f));
+        int lNumberOfSamples = (int) ((float) WRITE_AUDIO_RATE_SAMPLE_HZ * ((float) pPeriod / 1000.0f));
 
         int pdl = pData.length();
         float[] lSampleArray = new float[pdl * lNumberOfSamples];
@@ -276,7 +276,7 @@ public class AudioTransceiver {
             // Iterate the NumberOfSamples. (Per msg data.)
             for (int j = 0; j < lNumberOfSamples; j++) {
                 // Update the SampleArray.
-                lSampleArray[lOffset] = (float) Math.sin(2 * Math.PI * j / (WRITE_AUDIO_RATE_SAMPLE_HZ / lFrequency));
+                lSampleArray[lOffset] = (float) Math.sin(2.0 * Math.PI * (double) j / ((double) WRITE_AUDIO_RATE_SAMPLE_HZ / lFrequency));
                 lOffset++;
             }
         }
@@ -288,14 +288,14 @@ public class AudioTransceiver {
             int lIo = i * lNumberOfSamples;
             int lIa = lIo + lNumberOfSamples;
             // Declare the RampWidth. We'll change it between iterations for more tuneful sound.)
-            int lRw = (int) (lNumberOfSamples * 0.3);
+            int lRw = (int) ((double) lNumberOfSamples * 0.3);
             // Iterate the Ramp.
             for (int j = 0; j < lRw; j++) {
                 // Calculate the progression of the Ramp.
-                double lP = j / (double) lRw;
+                double lP = (double) j / (double) lRw;
                 // Scale the corresponding samples.
-                lSampleArray[lIo + j] *= lP;
-                lSampleArray[lIa - j - 1] *= lP;
+                lSampleArray[lIo + j] = (float) ((double) lSampleArray[lIo + j] * lP);
+                lSampleArray[lIa - j - 1] = (float) ((double) lSampleArray[lIa - j - 1] * lP);
             }
         }
         return lSampleArray;
@@ -357,7 +357,7 @@ public class AudioTransceiver {
         // Iterate through the Message.
         for (char c : pMessage.toCharArray()) {
             // Update the search metric.
-            lIsSupported &= synth.range.chars.indexOf(c) != -1;
+            lIsSupported &= synth.range.chars.indexOf((int) c) != -1;
         }
         // Is the message not supported?
         if (!lIsSupported) {
@@ -421,16 +421,16 @@ public class AudioTransceiver {
          */
         static final IDetector DETECTOR_MEAN = (pSynth, pSamples, pConfidences, pOffset, pLength) -> {
             // Ignore the First/Last 18% of the Samples. (Protected against slew rate.)
-            int lIgnore = (int) Math.ceil(pLength * 0.3);
+            int lIgnore = (int) Math.ceil((double) pLength * 0.3);
             // Declare buffers to accumulate the sampled frequencies.
             double lFacc = 0.0;
             int lCount = 0;
             // Iterate the Samples.
             for (int i = pOffset + lIgnore; i < pOffset + pLength - lIgnore; i++) { /** TODO: fn */
                 // Are we confident in this sample?
-                if (pConfidences.get(i) > 0.75) {
+                if ((double) pConfidences.get(i) > 0.75) {
                     // Fetch the Sample.
-                    double lSample = pSamples.get(i);
+                    double lSample = (double) pSamples.get(i);
                     // Is the Sample valid?
 //                    if (lSample != -1) {
                         // Accumulate the Sample.
@@ -443,7 +443,7 @@ public class AudioTransceiver {
             // Result valid?
             if (lCount != 0) {
                 // Calculate the Mean.
-                double lMean = lFacc / lCount;
+                double lMean = lFacc / (double) lCount;
                 /** TODO: Frequency tolerance? */
                 // Return the Result.
                 return new Result(pSynth.character(lMean), true);
@@ -481,7 +481,7 @@ public class AudioTransceiver {
                 // Fetch the Character.
                 char c = pRange.chars.charAt(i);
                 // Calculate the Frequency.
-                double lFrequency = pBaseFrequency * Math.pow(Synth.SEMITONE, i);
+                double lFrequency = pBaseFrequency * Math.pow(Synth.SEMITONE, (double) i);
                 // Buffer the Frequency.
                 lFrequencies[i] = lFrequency;
                 // Buffer the Frequency.
@@ -609,7 +609,7 @@ public class AudioTransceiver {
                 /** TODO: Check lengths etc */
                 /* Default Declarations. */
                 // Declares the initial frequency which the range of transmissions uses
-                return new Synth(Synth.DEFAULT_FREQUENCY_BASE, Synth.DEFAULT_IDENTIFIER, mRange, Synth.DEFAULT_LENGTH_PAYLOAD, Synth.DEFAULT_LENGTH_CRC, getSymbolPeriodMs());
+                return new Synth((double) Synth.DEFAULT_FREQUENCY_BASE, Synth.DEFAULT_IDENTIFIER, mRange, Synth.DEFAULT_LENGTH_PAYLOAD, Synth.DEFAULT_LENGTH_CRC, getSymbolPeriodMs());
             }
 
             final int getSymbolPeriodMs() {

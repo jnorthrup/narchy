@@ -24,7 +24,7 @@ public interface ScalarValue extends Prioritized {
     /** > 2 * EPSILON */
     float EPSILONcoarse =
             //EPSILON*8;
-            (float)Math.sqrt(EPSILON);
+            (float)Math.sqrt((double) EPSILON);
 
     /** setter
      *  @return this instance
@@ -86,7 +86,7 @@ public interface ScalarValue extends Prioritized {
         if (x != x)
             //remains deleted by non-positive addend
             //undeleted by positive addend
-            return y <= 0 ? Float.NaN : y;
+            return y <= (float) 0 ? Float.NaN : y;
         else
             return x + y;
     };
@@ -103,7 +103,7 @@ public interface ScalarValue extends Prioritized {
 //    }
 
     default void priSub(float toSubtract) {
-        assert (toSubtract >= 0) : "trying to subtract negative priority: " + toSubtract;
+        assert (toSubtract >= (float) 0) : "trying to subtract negative priority: " + toSubtract;
 
         priAdd(-toSubtract);
     }
@@ -126,7 +126,7 @@ public interface ScalarValue extends Prioritized {
 
     default float priGetAndSetZero() {
         float p = pri();
-        pri(0);
+        pri((float) 0);
         return p;
     }
     default float priGetAndSet(float next) {

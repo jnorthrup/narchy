@@ -18,6 +18,6 @@ public class Rover extends CompoundSpatial {
 
     @Override
     public float radius() {
-        return 1;
+        return 1.0F;
     }
 }

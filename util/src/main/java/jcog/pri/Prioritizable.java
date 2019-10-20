@@ -40,7 +40,7 @@ public interface Prioritizable extends Prioritized, ScalarValue {
     default float take(Prioritizable source, float p, boolean amountOrFraction, boolean copyOrMove) {
 
         if (p!=p || p < ScalarValue.EPSILON)
-            return 0; //amount is insignificant
+            return (float) 0; //amount is insignificant
 
         assert(this!=source);
 
@@ -48,14 +48,14 @@ public interface Prioritizable extends Prioritized, ScalarValue {
         if (amountOrFraction) {
             float s = source.pri();
             if (s!=s || s < ScalarValue.EPSILON)
-                return 0; //source is depleted
+                return (float) 0; //source is depleted
 
             amount = Math.min(s, p);
         } else {
             assert(p <= 1f);
             amount = source.priElseZero() * p;
             if (amount < ScalarValue.EPSILON)
-                return 0; //request*source is insignificant
+                return (float) 0; //request*source is insignificant
         }
 
         float[] before = new float[1];
@@ -63,14 +63,14 @@ public interface Prioritizable extends Prioritized, ScalarValue {
         float after = pri((x, a)->{
             float x1 = x;
             if (x1 != x1)
-                x1 = 0;
+                x1 = (float) 0;
             before[0] = x1;
             return x1 + a;
         }, amount);
 
         float b = before[0];
         if (b!=b)
-            b = 0;
+            b = (float) 0;
 
         float taken = after - b;
 
@@ -140,15 +140,15 @@ public interface Prioritizable extends Prioritized, ScalarValue {
 
         assert (src.length > 0);
 
-        double priTarget = Math.min(maxPri, Util.sumDouble(s -> {
-            if (s == null) return 0;
+        double priTarget = Math.min((double) maxPri, Util.sumDouble(s -> {
+            if (s == null) return (float) 0;
             return getPri.apply(s).priElseZero();
         }, src));
 
         UnitPri u = new UnitPri();
 
-        if (priTarget > ScalarValue.EPSILON) {
-            float perSrc = (float) (priTarget / src.length);
+        if (priTarget > (double) ScalarValue.EPSILON) {
+            float perSrc = (float) (priTarget / (double) src.length);
             //TODO random visit order if not copying (transferring)
             for (X t: src) {
                 if (t != null) {

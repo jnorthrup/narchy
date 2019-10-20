@@ -231,9 +231,9 @@ public class GjkPairDetector extends DiscreteCollisionDetectorInterface {
                 degenerateSimplex = 5;
             }
             if (lenSqr > BulletGlobals.FLT_EPSILON * BulletGlobals.FLT_EPSILON) {
-                float rlen = 1f / (float) Math.sqrt(lenSqr);
+                float rlen = 1f / (float) Math.sqrt((double) lenSqr);
                 normalInB.scaled(rlen);
-                float s = (float) Math.sqrt(squaredDistance);
+                float s = (float) Math.sqrt((double) squaredDistance);
 
                 assert (s > 0f);
 
@@ -277,7 +277,7 @@ public class GjkPairDetector extends DiscreteCollisionDetectorInterface {
 
                     float lenSqr = tmpNormalInB.lengthSquared();
                     if (lenSqr > (BulletGlobals.FLT_EPSILON * BulletGlobals.FLT_EPSILON)) {
-                        tmpNormalInB.scaled(1f / (float) Math.sqrt(lenSqr));
+                        tmpNormalInB.scaled(1f / (float) Math.sqrt((double) lenSqr));
                         tmp.sub(tmpPointOnA, tmpPointOnB);
                         float distance2 = -tmp.length();
                         

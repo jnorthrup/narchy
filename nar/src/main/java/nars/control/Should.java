@@ -99,7 +99,7 @@ public enum Should { ;
 			{
 
 
-				double errTotal = 0;
+				double errTotal = (double) 0;
 				for (int i = 0; i < ww; i++) {
 
 					fNorm[i] = Util.normalizeSafe(f[i], min, max);
@@ -116,13 +116,13 @@ public enum Should { ;
                     float[] out = P.put(want, new float[] { fNorm[i] }, specificLearningRate);
 
                     float p = Util.unitize(out[0]);
-                    float pri = p * (1-explorationRate) + explorationRate;
+                    float pri = p * (1.0F -explorationRate) + explorationRate;
 					c[i].pri(pri);
 
 					errTotal += P.errorAbs();
 				}
 
-                double errAvg = errTotal / ww;
+                double errAvg = errTotal / (double) ww;
 
 				//if(PRINT_AVG_ERR && n.random().nextFloat() < 0.03f)
 					//System.out.println(this + ":\t" + errAvg + " avg err");
@@ -156,7 +156,7 @@ public enum Should { ;
 			float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY;
 			for (int i = 0; i < ww; i++) {
                 float v = c[i].value;
-				v = Math.max(0, v); //clip at 0
+				v = Math.max((float) 0, v); //clip at 0
 				f[i] = v;
 				min = Math.min(v, min);
 				max = Math.max(v, max);
@@ -175,7 +175,7 @@ public enum Should { ;
 			}
 			//System.out.println(n4(min) + " " + n4(max) + "\t" + n4(nmin) + " " + n4(nmax));
 
-            float range = 1 - explorationRate;
+            float range = 1.0F - explorationRate;
 			for (int i = 0; i < ww; i++)
 				c[i].pri(explorationRate + range * fNorm[i]);
 
@@ -217,7 +217,7 @@ public enum Should { ;
 				for (int i = 0; i < ww; i++)
 					c[i].pri(explorationRate); //flat
 			} else {
-                float range = 1 - explorationRate;
+                float range = 1.0F - explorationRate;
 				for (int i = 0; i < ww; i++)
 					c[i].pri(explorationRate + range * Util.normalizeSafe(f[i], min, max));
 			}

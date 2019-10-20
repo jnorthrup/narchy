@@ -52,15 +52,15 @@ public enum DynamicConjTruth {
             if (d.size() == 2 && d.get(0).term().equals(d.get(1).term())) {
 
                 final long sep = d.get(0).minTimeTo(d.get(1));
-                final int dither = sep == 0 ? 0 : d.nar.dtDither();
-                if (sep <= dither) {
+                final int dither = sep == 0L ? 0 : d.nar.dtDither();
+                if (sep <= (long) dither) {
                     //collapse to a point smaller than dither time:  same starting time and all terms are the same.
                     //try revision
                     final Pair<Task, TruthProjection> ab = Revision._merge(d.nar, d.ditherTruth, 2, new Task[]{d.get(0), d.get(1)});
                     if (ab != null)
                         return Revision.afterMerge(ab);
                 }
-                if (sep < dither) {
+                if (sep < (long) dither) {
                     return null; //will yield an invalid result TODO verify if this is always true
                 }
 
@@ -99,7 +99,7 @@ public enum DynamicConjTruth {
                             s = ts;
                             e = t.end();
                         } else {
-                            if (Math.abs(s - ts) >= dither || Math.abs(e - t.end()) >= dither) {
+                            if (Math.abs(s - ts) >= (long) dither || Math.abs(e - t.end()) >= (long) dither) {
                                 aligned = false;
                                 break;
                             }
@@ -243,7 +243,7 @@ public enum DynamicConjTruth {
         final int cc = c.size();
         final long start2 = end!=start ?
                 end :
-                start+(Math.max(conj.eventRange(), 1)); //HACK TODO use a dur
+                start+ (long) (Math.max(conj.eventRange(), 1)); //HACK TODO use a dur
 
         for (int i = 0; i < cc; i++) {
             final Term ci = c.get(i);

@@ -131,9 +131,9 @@ public class CL_input {
 
 		
 		c = Cmd.Argv(2);
-		b.downtime = Lib.atoi(c);
-		if (b.downtime == 0)
-			b.downtime = Globals.sys_frame_time - 100;
+		b.downtime = (long) Lib.atoi(c);
+		if (b.downtime == 0L)
+			b.downtime = (long) (Globals.sys_frame_time - 100);
 
 		b.state |= 3; 
 	}
@@ -168,9 +168,9 @@ public class CL_input {
 		c = Cmd.Argv(2);
         int uptime = Lib.atoi(c);
 		if (uptime != 0)
-			b.msec += uptime - b.downtime;
+			b.msec += (long) uptime - b.downtime;
 		else
-			b.msec += 10;
+			b.msec += 10L;
 
 		b.state &= ~1; 
 		b.state |= 4; 
@@ -310,19 +310,19 @@ public class CL_input {
         key.state &= 1;
 
         long msec = key.msec;
-		key.msec = 0;
+		key.msec = 0L;
 
 		if (key.state != 0) {
 			
-			msec += Globals.sys_frame_time - key.downtime;
-			key.downtime = Globals.sys_frame_time;
+			msec += (long) Globals.sys_frame_time - key.downtime;
+			key.downtime = (long) Globals.sys_frame_time;
 		}
 
-        float val = (float) msec / frame_msec;
-		if (val < 0)
-			val = 0;
-		if (val > 1)
-			val = 1;
+        float val = (float) msec / (float) frame_msec;
+		if (val < (float) 0)
+			val = (float) 0;
+		if (val > 1.0F)
+			val = 1.0F;
 
 		return val;
 	}
@@ -371,47 +371,47 @@ public class CL_input {
 
 		Math3D.VectorCopy(Globals.cl.viewangles, cmd.angles);
 		if ((in_strafe.state & 1) != 0) {
-			cmd.sidemove += Globals.cl_sidespeed.value * KeyState(in_right);
-			cmd.sidemove -= Globals.cl_sidespeed.value * KeyState(in_left);
+            cmd.sidemove = (short) ((float) cmd.sidemove + Globals.cl_sidespeed.value * KeyState(in_right));
+            cmd.sidemove = (short) ((float) cmd.sidemove - Globals.cl_sidespeed.value * KeyState(in_left));
 		}
 
-		cmd.sidemove += Globals.cl_sidespeed.value * KeyState(in_moveright);
-		cmd.sidemove -= Globals.cl_sidespeed.value * KeyState(in_moveleft);
+        cmd.sidemove = (short) ((float) cmd.sidemove + Globals.cl_sidespeed.value * KeyState(in_moveright));
+        cmd.sidemove = (short) ((float) cmd.sidemove - Globals.cl_sidespeed.value * KeyState(in_moveleft));
 
-		cmd.upmove += Globals.cl_upspeed.value * KeyState(in_up);
-		cmd.upmove -= Globals.cl_upspeed.value * KeyState(in_down);
+        cmd.upmove = (short) ((float) cmd.upmove + Globals.cl_upspeed.value * KeyState(in_up));
+        cmd.upmove = (short) ((float) cmd.upmove - Globals.cl_upspeed.value * KeyState(in_down));
 
 		if ((in_klook.state & 1) == 0) {
-			cmd.forwardmove += Globals.cl_forwardspeed.value * KeyState(in_forward);
-			cmd.forwardmove -= Globals.cl_forwardspeed.value * KeyState(in_back);
+            cmd.forwardmove = (short) ((float) cmd.forwardmove + Globals.cl_forwardspeed.value * KeyState(in_forward));
+            cmd.forwardmove = (short) ((float) cmd.forwardmove - Globals.cl_forwardspeed.value * KeyState(in_back));
 		}
 
 		
 		
 		
 		if (((in_speed.state & 1) ^ (int) (Globals.cl_run.value)) != 0) {
-			cmd.forwardmove *= 2;
-			cmd.sidemove *= 2;
-			cmd.upmove *= 2;
+            cmd.forwardmove = (short) ((int) cmd.forwardmove * 2);
+            cmd.sidemove = (short) ((int) cmd.sidemove * 2);
+            cmd.upmove = (short) ((int) cmd.upmove * 2);
 		}
 
 	}
 
 	static void ClampPitch() {
 
-        float pitch = Math3D.SHORT2ANGLE(Globals.cl.frame.playerstate.pmove.delta_angles[Defines.PITCH]);
-		if (pitch > 180)
-			pitch -= 360;
+        float pitch = Math3D.SHORT2ANGLE((int) Globals.cl.frame.playerstate.pmove.delta_angles[Defines.PITCH]);
+		if (pitch > 180.0F)
+			pitch -= 360.0F;
 
-		if (Globals.cl.viewangles[Defines.PITCH] + pitch < -360)
-			Globals.cl.viewangles[Defines.PITCH] += 360; 
-		if (Globals.cl.viewangles[Defines.PITCH] + pitch > 360)
-			Globals.cl.viewangles[Defines.PITCH] -= 360; 
+		if (Globals.cl.viewangles[Defines.PITCH] + pitch < -360.0F)
+			Globals.cl.viewangles[Defines.PITCH] += 360.0F;
+		if (Globals.cl.viewangles[Defines.PITCH] + pitch > 360.0F)
+			Globals.cl.viewangles[Defines.PITCH] -= 360.0F;
 
-		if (Globals.cl.viewangles[Defines.PITCH] + pitch > 89)
-			Globals.cl.viewangles[Defines.PITCH] = 89 - pitch;
-		if (Globals.cl.viewangles[Defines.PITCH] + pitch < -89)
-			Globals.cl.viewangles[Defines.PITCH] = -89 - pitch;
+		if (Globals.cl.viewangles[Defines.PITCH] + pitch > 89.0F)
+			Globals.cl.viewangles[Defines.PITCH] = 89.0F - pitch;
+		if (Globals.cl.viewangles[Defines.PITCH] + pitch < -89.0F)
+			Globals.cl.viewangles[Defines.PITCH] = -89.0F - pitch;
 	}
 
 	/*
@@ -421,18 +421,18 @@ public class CL_input {
 
 
         if ((in_attack.state & 3) != 0)
-			cmd.buttons |= Defines.BUTTON_ATTACK;
+            cmd.buttons = (byte) ((int) cmd.buttons | Defines.BUTTON_ATTACK);
 		in_attack.state &= ~2;
 
 		if ((in_use.state & 3) != 0)
-			cmd.buttons |= Defines.BUTTON_USE;
+            cmd.buttons = (byte) ((int) cmd.buttons | Defines.BUTTON_USE);
 		in_use.state &= ~2;
 
 		if (Key.anykeydown != 0 && Globals.cls.key_dest == Defines.key_game)
-			cmd.buttons |= Defines.BUTTON_ANY;
+            cmd.buttons = (byte) ((int) cmd.buttons | Defines.BUTTON_ANY);
 
 
-        int ms = (int) (Globals.cls.frametime * 1000);
+        int ms = (int) (Globals.cls.frametime * 1000.0F);
 		if (ms > 250)
 			ms = 100; 
 		cmd.msec = (byte) ms;
@@ -454,11 +454,11 @@ public class CL_input {
 	static void CreateCmd(usercmd_t cmd) {
 		
 
-		frame_msec = Globals.sys_frame_time - old_sys_frame_time;
-		if (frame_msec < 1)
-			frame_msec = 1;
-		if (frame_msec > 200)
-			frame_msec = 200;
+		frame_msec = (long) Globals.sys_frame_time - old_sys_frame_time;
+		if (frame_msec < 1L)
+			frame_msec = 1L;
+		if (frame_msec > 200L)
+			frame_msec = 200L;
 
 		
 		BaseMove(cmd);
@@ -468,7 +468,7 @@ public class CL_input {
 
 		FinishMove(cmd);
 
-		old_sys_frame_time = Globals.sys_frame_time;
+		old_sys_frame_time = (long) Globals.sys_frame_time;
 
 		
 	}
@@ -712,7 +712,7 @@ public class CL_input {
 
 		SZ.Init(buf, data, data.length);
 
-		if (cmd.buttons != 0 && Globals.cl.cinematictime > 0 && !Globals.cl.attractloop
+		if ((int) cmd.buttons != 0 && Globals.cl.cinematictime > 0 && !Globals.cl.attractloop
 				&& Globals.cls.realtime - Globals.cl.cinematictime > 1000) { 
 																			 
 																			 

@@ -40,7 +40,7 @@ public class IRL {
     }
 
 
-    final Memoize<RectFloat, Osm> reqCache = CaffeineMemoize.build(bounds -> load(bounds.left(), bounds.bottom(), bounds.right(), bounds.top()), 1024, false);
+    final Memoize<RectFloat, Osm> reqCache = CaffeineMemoize.build(bounds -> load((double) bounds.left(), (double) bounds.bottom(), (double) bounds.right(), (double) bounds.top()), 1024, false);
 
 
     /**
@@ -50,10 +50,10 @@ public class IRL {
     public @Nullable Osm request(float lon, float lat, float lonRange, float latRange) {
         Osm o  = reqCache.apply(
                 RectFloat.XYXY(
-                    Util.round(lon - lonRange/(2-Float.MIN_NORMAL), lonRange),
-                    Util.round(lat - latRange/(2-Float.MIN_NORMAL), latRange),
-                    Util.round(lon + lonRange/(2-Float.MIN_NORMAL), lonRange),
-                    Util.round(lat + latRange/(2-Float.MIN_NORMAL), latRange)
+                    Util.round(lon - lonRange/(2.0F -Float.MIN_NORMAL), lonRange),
+                    Util.round(lat - latRange/(2.0F -Float.MIN_NORMAL), latRange),
+                    Util.round(lon + lonRange/(2.0F -Float.MIN_NORMAL), lonRange),
+                    Util.round(lat + latRange/(2.0F -Float.MIN_NORMAL), latRange)
                 )
         );
 

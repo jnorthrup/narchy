@@ -33,7 +33,6 @@ import spacegraph.video.GLScreenShot;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-import static jake2.Defines.STAT_FRAGS;
 import static jake2.Globals.STAT_FRAGS;
 import static jake2.Globals.cl;
 import static nars.$.$;
@@ -47,10 +46,10 @@ public class Jake2Agent extends GameX implements Runnable {
     static final int FPS = 24;
     static float timeScale = 2.5f;
 
-    static float yawSpeed = 10;
+    static float yawSpeed = 10.0F;
 
     private static final boolean lookPitch = false;
-    static float pitchSpeed = 5;
+    static float pitchSpeed = 5.0F;
 
     private final GLScreenShot rgb;
     private final GLScreenShot depth;
@@ -103,7 +102,7 @@ public class Jake2Agent extends GameX implements Runnable {
                 return;
             }
 
-            health = p.health;
+            health = (float) p.health;
 
 
             weaponState = p.client.weaponstate;
@@ -117,7 +116,7 @@ public class Jake2Agent extends GameX implements Runnable {
             velX = v[0];
             velY = v[1];
             velZ = v[2];
-            speed = (float) Math.sqrt(velX * velX + velY * velY + velZ * velZ);
+            speed = (float) Math.sqrt((double) (velX * velX + velY * velY + velZ * velZ));
 
         }
 
@@ -149,7 +148,7 @@ public class Jake2Agent extends GameX implements Runnable {
                 new BrightnessNormalize(
                         new ImageFlip(false, true, new ScaledBitmap2D(rgb, px, py))
                 ), px, py);
-        rgbVision.setZoom(0);
+        rgbVision.setZoom((float) 0);
 
         Bitmap2DSensor depthVision = senseCamera("depth", new BrightnessNormalize(
             new ImageFlip(false, true, new ScaledBitmap2D(depth, px / 4, py / 4)
@@ -212,8 +211,8 @@ public class Jake2Agent extends GameX implements Runnable {
         if (lookPitch) {
             actionPushButtonMutex(
                     $.the("lookUp"), $.the("lookDown"),
-                    () -> cl.viewangles[Defines.PITCH] = Math.min(+30, cl.viewangles[Defines.PITCH] + pitchSpeed),
-                    () -> cl.viewangles[Defines.PITCH] = Math.max(-30, cl.viewangles[Defines.PITCH] - pitchSpeed)
+                    () -> cl.viewangles[Defines.PITCH] = Math.min((float) +30, cl.viewangles[Defines.PITCH] + pitchSpeed),
+                    () -> cl.viewangles[Defines.PITCH] = Math.max(-30.0F, cl.viewangles[Defines.PITCH] - pitchSpeed)
             );
         }
 
@@ -223,10 +222,10 @@ public class Jake2Agent extends GameX implements Runnable {
 
         onFrame(player::update);
 
-        rewardNormalized("health", -1, +1, new FloatFirstOrderDifference(nar::time, () -> player.health).nanIfZero());
+        rewardNormalized("health", -1.0F, (float) +1, new FloatFirstOrderDifference(nar::time, () -> player.health).nanIfZero());
 
-        rewardNormalized("speed", 0, +1, new FloatNormalized(() -> player.speed));
-        rewardNormalized("frags", 0, +1,
+        rewardNormalized("speed", (float) 0, (float) +1, new FloatNormalized(() -> player.speed));
+        rewardNormalized("frags", (float) 0, (float) +1,
                 new FloatFirstOrderDifference(nar::time, player.damageInflicted::getOpaque).nanIfZero());
 
 
@@ -362,7 +361,7 @@ public class Jake2Agent extends GameX implements Runnable {
 
     public static void main(String[] args) {
 
-        Companion.initFn(FPS, nar1 -> {
+        Companion.initFn((float) FPS, nar1 -> {
             try {
                 return new Jake2Agent(nar1);
             } catch (Narsese.NarseseException e) {

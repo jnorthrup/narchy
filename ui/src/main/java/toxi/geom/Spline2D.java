@@ -160,7 +160,7 @@ public class Spline2D {
                 (points[2].y - points[0].y - delta[0].y) * tightness);
         int numP = getNumPoints();
         for (int i = 2; i < numP - 1; i++) {
-            bi[i] = -1 / (invTightness + bi[i - 1]);
+            bi[i] = -1.0F / (invTightness + bi[i - 1]);
             coeffA[i].set(
                     -(points[i + 1].x - points[i - 1].x - coeffA[i - 1].x)
                             * bi[i],

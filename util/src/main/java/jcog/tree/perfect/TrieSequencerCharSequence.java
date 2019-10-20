@@ -17,8 +17,6 @@
 package jcog.tree.perfect;
 
 
-import java.util.stream.IntStream;
-
 /**
  * A {@link TrieSequencer} implementation where any subclass of CharSequence
  * (i.e. String) is the sequence type. This implementation is case-sensitive.
@@ -33,7 +31,7 @@ public class TrieSequencerCharSequence<S extends CharSequence> implements TrieSe
    public int matches( S sequenceA, int indexA, S sequenceB, int indexB, int count )
    {
        for (int i = 0; i < count; i++) {
-           if (sequenceA.charAt(indexA + i) != sequenceB.charAt(indexB + i)) {
+           if ((int) sequenceA.charAt(indexA + i) != (int) sequenceB.charAt(indexB + i)) {
                return i;
            }
        }
@@ -50,7 +48,7 @@ public class TrieSequencerCharSequence<S extends CharSequence> implements TrieSe
    @Override
    public int hashOf( S sequence, int i )
    {
-      return sequence.charAt( i );
+      return (int) sequence.charAt(i);
    }
 
 }

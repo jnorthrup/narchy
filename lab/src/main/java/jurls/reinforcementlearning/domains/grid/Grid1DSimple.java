@@ -28,15 +28,15 @@ public class Grid1DSimple implements World {
     public Grid1DSimple(int size, int totalTime, double noise, double focusVelocity) {
         this.time = 1;
         this.size = size;
-        double VISUALIZE_PERIOD = Math.pow(10, 4);
+        double VISUALIZE_PERIOD = Math.pow(10.0, 4.0);
         this.ENERGY_COST_FACTOR = 0.5;
-        this.MATCH_REWARD_FACTOR = size*1.1;
-        this.REWARD_MAGNITUDE = 1;
+        this.MATCH_REWARD_FACTOR = (double) size *1.1;
+        this.REWARD_MAGNITUDE = 1.0;
         this.JUMP_FRACTION = 0.0;
         this.noise = noise;
         this.focusVelocity = focusVelocity;
         
-        this.focusPosition = size/2;
+        this.focusPosition = (double) (size / 2);
         this.totalTime = totalTime;
     }
 
@@ -57,15 +57,15 @@ public class Grid1DSimple implements World {
         
         
         if (Math.random() < JUMP_FRACTION) {
-            focusPosition = size * Math.random();
+            focusPosition = (double) size * Math.random();
         }
         else {            
             focusPosition += focusVelocity;
         }
         
         
-        if (focusPosition > size) focusPosition -= size;
-        if (focusPosition < 0) focusPosition = size + focusPosition;
+        if (focusPosition > (double) size) focusPosition = focusPosition - (double) size;
+        if (focusPosition < (double) 0) focusPosition = (double) size + focusPosition;
         
         /*        
         # Assign basic_feature_input elements as binary. 
@@ -80,8 +80,8 @@ public class Grid1DSimple implements World {
             if (i < action2.length-1) action2[i] += 0.5 * action[i+1];
         } */           
                   
-        double match = 0;        
-        double energyCost = 0;
+        double match = (double) 0;
+        double energyCost = (double) 0;
         for (int i = 0; i < size; i++) {
             match += Math.abs( sensor[i] * action[i] );
             energyCost += action[i];
@@ -92,12 +92,12 @@ public class Grid1DSimple implements World {
         
         
         
-        double min=0, max=0;
+        double min= (double) 0, max= (double) 0;
         for (int i = 0; i < size; i++) {
             final double exp = 3.0;
             sensor[i] = Math.pow(1.0 / (1.0 + Math.abs( ((double)i)-focusPosition)),exp) + (Math.random()*noise);
-            if (sensor[i] < 0)
-                sensor[i] = 0;
+            if (sensor[i] < (double) 0)
+                sensor[i] = (double) 0;
             if (i == 0) {
                 min = max = sensor[0];
             }
@@ -132,7 +132,7 @@ public class Grid1DSimple implements World {
         s += "\n";
         for (int i = 0; i < size; i++) {
             char c;
-            if (action[i] > 0)
+            if (action[i] > (double) 0)
                 c = 'X';
             else
                 c = '.';

@@ -75,7 +75,7 @@ public class XoRoShiRo128PlusRandom extends Random implements Rand {
      * @param seed a seed for the generator.
      */
     public XoRoShiRo128PlusRandom(long seed) {
-        super(0);
+        super(0L);
         setSeed(seed);
     }
 
@@ -123,19 +123,19 @@ public class XoRoShiRo128PlusRandom extends Random implements Rand {
      * @return the next pseudorandom {@code long} value between {@code 0} (inclusive) and {@code n} (exclusive).
      */
     public long nextLong(long n) {
-        if (n <= 0) throw new IllegalArgumentException("illegal bound " + n + " (must be positive)");
+        if (n <= 0L) throw new IllegalArgumentException("illegal bound " + n + " (must be positive)");
         long t = nextLong();
-        long nMinus1 = n - 1;
+        long nMinus1 = n - 1L;
         
-        if ((n & nMinus1) == 0) return (t >>> Long.numberOfLeadingZeros(nMinus1)) & nMinus1;
+        if ((n & nMinus1) == 0L) return (t >>> Long.numberOfLeadingZeros(nMinus1)) & nMinus1;
         
-        for (long u = t >>> 1; u + nMinus1 - (t = u % n) < 0; u = nextLong() >>> 1) ;
+        for (long u = t >>> 1; u + nMinus1 - (t = u % n) < 0L; u = nextLong() >>> 1) ;
         return t;
     }
 
     @Override
     public double nextDouble() {
-        return (nextLong() >>> 11) * 0x1.0p-53;
+        return (double) (nextLong() >>> 11) * 0x1.0p-53;
     }
 
     /**
@@ -167,12 +167,12 @@ public class XoRoShiRo128PlusRandom extends Random implements Rand {
 
     @Override
     public float nextFloat() {
-        return (nextLong() >>> 40) * 0x1.0p-24f;
+        return (float) (nextLong() >>> 40) * 0x1.0p-24f;
     }
 
     @Override
     public boolean nextBoolean() {
-        return nextLong() < 0;
+        return nextLong() < 0L;
     }
 
     @Override
@@ -180,7 +180,7 @@ public class XoRoShiRo128PlusRandom extends Random implements Rand {
         int i = bytes.length;
         while (i != 0) {
             int n = Math.min(i, 8);
-            for (long bits = nextLong(); n-- != 0; bits >>= 8) bytes[--i] = (byte) bits;
+            for (long bits = nextLong(); n-- != 0; bits >>= 8L) bytes[--i] = (byte) bits;
         }
     }
 

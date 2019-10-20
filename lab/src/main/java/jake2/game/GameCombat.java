@@ -28,8 +28,6 @@ import jake2.Globals;
 import jake2.qcommon.Com;
 import jake2.util.Math3D;
 
-import java.util.stream.IntStream;
-
 public class GameCombat {
 
     /**
@@ -39,7 +37,7 @@ public class GameCombat {
      * explosions and melee attacks.
      */
     static boolean CanDamage(edict_t targ, edict_t inflictor) {
-        float[] dest = { 0, 0, 0 };
+        float[] dest = {(float) 0, (float) 0, (float) 0};
         trace_t trace;
     
         
@@ -56,39 +54,39 @@ public class GameCombat {
         trace = game_import_t.trace(inflictor.s.origin, Globals.vec3_origin,
                 Globals.vec3_origin, targ.s.origin, inflictor,
                 Defines.MASK_SOLID);
-        if (trace.fraction == 1.0)
+        if ((double) trace.fraction == 1.0)
             return true;
     
         Math3D.VectorCopy(targ.s.origin, dest);
-        dest[0] += 15.0;
-        dest[1] += 15.0;
+        dest[0] = (float) ((double) dest[0] + 15.0);
+        dest[1] = (float) ((double) dest[1] + 15.0);
         trace = game_import_t.trace(inflictor.s.origin, Globals.vec3_origin,
                 Globals.vec3_origin, dest, inflictor, Defines.MASK_SOLID);
-        if (trace.fraction == 1.0)
+        if ((double) trace.fraction == 1.0)
             return true;
     
         Math3D.VectorCopy(targ.s.origin, dest);
-        dest[0] += 15.0;
-        dest[1] -= 15.0;
+        dest[0] = (float) ((double) dest[0] + 15.0);
+        dest[1] = (float) ((double) dest[1] - 15.0);
         trace = game_import_t.trace(inflictor.s.origin, Globals.vec3_origin,
                 Globals.vec3_origin, dest, inflictor, Defines.MASK_SOLID);
-        if (trace.fraction == 1.0)
+        if ((double) trace.fraction == 1.0)
             return true;
     
         Math3D.VectorCopy(targ.s.origin, dest);
-        dest[0] -= 15.0;
-        dest[1] += 15.0;
+        dest[0] = (float) ((double) dest[0] - 15.0);
+        dest[1] = (float) ((double) dest[1] + 15.0);
         trace = game_import_t.trace(inflictor.s.origin, Globals.vec3_origin,
                 Globals.vec3_origin, dest, inflictor, Defines.MASK_SOLID);
-        if (trace.fraction == 1.0)
+        if ((double) trace.fraction == 1.0)
             return true;
     
         Math3D.VectorCopy(targ.s.origin, dest);
-        dest[0] -= 15.0;
-        dest[1] -= 15.0;
+        dest[0] = (float) ((double) dest[0] - 15.0);
+        dest[1] = (float) ((double) dest[1] - 15.0);
         trace = game_import_t.trace(inflictor.s.origin, Globals.vec3_origin,
                 Globals.vec3_origin, dest, inflictor, Defines.MASK_SOLID);
-        return trace.fraction == 1.0;
+        return (double) trace.fraction == 1.0;
 
     }
 
@@ -109,7 +107,7 @@ public class GameCombat {
             
             if (0 == (targ.monsterinfo.aiflags & Defines.AI_GOOD_GUY)) {
                 GameBase.level.killed_monsters++;
-                if (GameBase.coop.value != 0 && attacker.client != null)
+                if (GameBase.coop.value != (float) 0 && attacker.client != null)
                     attacker.client.resp.score++;
                 
                 if ("monster_medic".equals(attacker.classname))
@@ -187,15 +185,15 @@ public class GameCombat {
         int pa_te_type;
         int damagePerCell;
         if (power_armor_type == Defines.POWER_ARMOR_SCREEN) {
-            float[] forward = { 0, 0, 0 };
+            float[] forward = {(float) 0, (float) 0, (float) 0};
     
             
             Math3D.AngleVectors(ent.s.angles, forward, null, null);
-            float[] vec = {0, 0, 0};
+            float[] vec = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorSubtract(point, ent.s.origin, vec);
             Math3D.VectorNormalize(vec);
             float dot = Math3D.DotProduct(vec, forward);
-            if (dot <= 0.3)
+            if ((double) dot <= 0.3)
                 return 0;
     
             damagePerCell = 1;
@@ -250,9 +248,9 @@ public class GameCombat {
 
         int save;
         if (0 != (dflags & Defines.DAMAGE_ENERGY))
-            save = (int) Math.ceil(garmor.energy_protection * damage);
+            save = (int) Math.ceil((double) (garmor.energy_protection * (float) damage));
         else
-            save = (int) Math.ceil(garmor.normal_protection * damage);
+            save = (int) Math.ceil((double) (garmor.normal_protection * (float) damage));
     
         if (save >= client.pers.inventory[index])
             save = client.pers.inventory[index];
@@ -353,8 +351,8 @@ public class GameCombat {
             float damage, edict_t ignore, float radius, int mod) {
         EdictIterator edictit = null;
     
-        float[] v = { 0, 0, 0 };
-        float[] dir = { 0, 0, 0 };
+        float[] v = {(float) 0, (float) 0, (float) 0};
+        float[] dir = {(float) 0, (float) 0, (float) 0};
     
         while ((edictit = GameBase.findradius(edictit, inflictor.s.origin,
                 radius)) != null) {
@@ -370,7 +368,7 @@ public class GameCombat {
             float points = damage - 0.5f * Math3D.VectorLength(v);
             if (ent == attacker)
                 points *= 0.5f;
-            if (points > 0) {
+            if (points > (float) 0) {
                 if (CanDamage(ent, inflictor)) {
                     Math3D.VectorSubtract(ent.s.origin, inflictor.s.origin, dir);
                     T_Damage(ent, inflictor, attacker, dir, inflictor.s.origin,
@@ -392,7 +390,7 @@ public class GameCombat {
         
         
         if ((targ != attacker)
-                && ((GameBase.deathmatch.value != 0 && 0 != ((int) (GameBase.dmflags.value) & (Defines.DF_MODELTEAMS | Defines.DF_SKINTEAMS))) || GameBase.coop.value != 0)) {
+                && ((GameBase.deathmatch.value != (float) 0 && 0 != ((int) (GameBase.dmflags.value) & (Defines.DF_MODELTEAMS | Defines.DF_SKINTEAMS))) || GameBase.coop.value != (float) 0)) {
             if (GameUtil.OnSameTeam(targ, attacker)) {
                 if (((int) (GameBase.dmflags.value) & Defines.DF_NO_FRIENDLY_FIRE) != 0)
                     damage = 0;
@@ -403,9 +401,9 @@ public class GameCombat {
         GameBase.meansOfDeath = mod;
     
         
-        if (GameBase.skill.value == 0 && GameBase.deathmatch.value == 0
+        if (GameBase.skill.value == (float) 0 && GameBase.deathmatch.value == (float) 0
                 && targ.client != null) {
-            damage *= 0.5;
+            damage = (int) ((double) damage * 0.5);
             if (damage == 0)
                 damage = 1;
         }
@@ -439,11 +437,11 @@ public class GameCombat {
                 float mass;
     
                 if (targ.mass < 50)
-                    mass = 50;
+                    mass = 50.0F;
                 else
-                    mass = targ.mass;
+                    mass = (float) targ.mass;
 
-                float[] kvel = {0, 0, 0};
+                float[] kvel = {(float) 0, (float) 0, (float) 0};
                 if (targ.client != null && attacker == targ)
                     Math3D.VectorScale(dir, 1600.0f * (float) knockback / mass,
                             kvel);
@@ -468,13 +466,13 @@ public class GameCombat {
         }
     
         
-        if ((client != null && client.invincible_framenum > GameBase.level.framenum)
+        if ((client != null && client.invincible_framenum > (float) GameBase.level.framenum)
                 && 0 == (dflags & Defines.DAMAGE_NO_PROTECTION)) {
             if (targ.pain_debounce_time < GameBase.level.time) {
                 game_import_t.sound(targ, Defines.CHAN_ITEM, game_import_t
-                        .soundindex("items/protect4.wav"), 1,
-                        Defines.ATTN_NORM, 0);
-                targ.pain_debounce_time = GameBase.level.time + 2;
+                        .soundindex("items/protect4.wav"), 1.0F,
+                        (float) Defines.ATTN_NORM, (float) 0);
+                targ.pain_debounce_time = GameBase.level.time + 2.0F;
             }
             take = 0;
             save = damage;
@@ -516,17 +514,17 @@ public class GameCombat {
             M_ReactToDamage(targ, attacker);
             if (0 == (targ.monsterinfo.aiflags & Defines.AI_DUCKED)
                     && (take != 0)) {
-                targ.pain.pain(targ, attacker, knockback, take);
+                targ.pain.pain(targ, attacker, (float) knockback, take);
                 
-                if (GameBase.skill.value == 3)
-                    targ.pain_debounce_time = GameBase.level.time + 5;
+                if (GameBase.skill.value == 3.0F)
+                    targ.pain_debounce_time = GameBase.level.time + 5.0F;
             }
         } else if (client != null) {
             if (((targ.flags & Defines.FL_GODMODE) == 0) && (take != 0))
-                targ.pain.pain(targ, attacker, knockback, take);
+                targ.pain.pain(targ, attacker, (float) knockback, take);
         } else if (take != 0) {
             if (targ.pain != null)
-                targ.pain.pain(targ, attacker, knockback, take);
+                targ.pain.pain(targ, attacker, (float) knockback, take);
         }
 
         if (attacker.hurt!=null) {

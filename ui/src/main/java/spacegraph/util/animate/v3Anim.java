@@ -16,7 +16,7 @@ public class v3Anim extends v3 implements Animated {
         Exponential {
             @Override
             public void interp(float dt, v3Anim v) {
-                float d = Math.max(0, v.speed.floatValue() * dt);
+                float d = Math.max((float) 0, v.speed.floatValue() * dt);
                 v.moveDirect(d, 0.75f);
             }
         },
@@ -25,7 +25,7 @@ public class v3Anim extends v3 implements Animated {
             public void interp(float dt, v3Anim v) {
 
                 /** constants speed: delta to move, in length */
-                float d = Math.max(0, v.speed.floatValue() * dt);
+                float d = Math.max((float) 0, v.speed.floatValue() * dt);
                 v.moveDirect(d, 1f);
 
             }
@@ -35,7 +35,7 @@ public class v3Anim extends v3 implements Animated {
             public void interp(float dt, v3Anim v) {
                 float rate = 10f * dt;
                 v3 w = v.target;
-                if (rate >= 1) {
+                if (rate >= 1.0F) {
                     v.setDirect(w);
                     v.set(w);
                 } else {
@@ -69,7 +69,7 @@ public class v3Anim extends v3 implements Animated {
             return;
 
 
-        float len = (float) Math.sqrt(lenSq);
+        float len = (float) Math.sqrt((double) lenSq);
         d = Math.min(len*proportion, d) / len;
 
 
@@ -94,7 +94,7 @@ public class v3Anim extends v3 implements Animated {
     private final InterpolationCurve curve = InterpolationCurve.LERP;
 
     public v3Anim(float speed) {
-        this(0, 0, 0, speed);
+        this((float) 0, (float) 0, (float) 0, speed);
     }
 
     public v3Anim(float x, float y, float z, float speed) {
@@ -137,7 +137,7 @@ public class v3Anim extends v3 implements Animated {
 
     @Override
     public void add(float dx, float dy) {
-        target.add( dx,  dy,  0);
+        target.add( dx,  dy, (float) 0);
     }
 
     public final void setDirect(v3 v) {

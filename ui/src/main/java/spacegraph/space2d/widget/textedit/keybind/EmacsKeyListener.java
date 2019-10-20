@@ -11,7 +11,6 @@ import java.net.URL;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.IntStream;
 
 import static com.jogamp.newt.event.KeyEvent.*;
 import static spacegraph.space2d.widget.textedit.keybind.SupportKey.*;
@@ -201,7 +200,7 @@ public class EmacsKeyListener implements TextEditKeys {
         if (pressedOrReleased) {
 
             TextEditModel model = editor;
-            if (!keyPressed(SupportKey.NONE, e.getKeyCode(), e.getWhen(), model)) {
+            if (!keyPressed(SupportKey.NONE, (int) e.getKeyCode(), e.getWhen(), model)) {
                 if (e.isPrintableKey()) {
                     model.execute(/* TODO: "insert" ? */"type", String.valueOf(e.getKeyChar()));
                 }
@@ -213,7 +212,7 @@ public class EmacsKeyListener implements TextEditKeys {
     boolean keyPressed(SupportKey supportKey, int keyCode, long when, TextEditModel model) {
 //        this.when = when;
 
-        if (keyCode == VK_SHIFT || keyCode == VK_ALT || keyCode == VK_CONTROL) {
+        if (keyCode == (int) VK_SHIFT || keyCode == (int) VK_ALT || keyCode == (int) VK_CONTROL) {
 //            this.executed = true;
             return true;
         }

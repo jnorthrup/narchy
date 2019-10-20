@@ -74,7 +74,7 @@ public class SoNAR extends TimerTask {
 
 
 
-            return new SineWave((float) (Math.random() * 1000 + 200));
+            return new SineWave((float) (Math.random() * 1000.0 + 200.0));
         }
     }
 
@@ -131,7 +131,7 @@ public class SoNAR extends TimerTask {
             SoundProducer ss = p.apply(kk);
             return audio.play(ss, soundVolume,
                     0.5f, /* priority */
-                    (float) (Math.random() - 0.5f) /* balance */
+                    (float) (Math.random() - 0.5) /* balance */
             );
         });
     }
@@ -168,8 +168,8 @@ public class SoNAR extends TimerTask {
 
             if (s.producer instanceof Granulize) {
                 float stretchFactor = (b.freq() - 0.5f) * 2f;
-                if (stretchFactor > 0 && stretchFactor < 0.05f) stretchFactor = 0.05f;
-                else if (stretchFactor < 0 && stretchFactor > -0.05f) stretchFactor = -0.05f;
+                if (stretchFactor > (float) 0 && stretchFactor < 0.05f) stretchFactor = 0.05f;
+                else if (stretchFactor < (float) 0 && stretchFactor > -0.05f) stretchFactor = -0.05f;
                 ((Granulize) s.producer).setStretchFactor(stretchFactor);
             }
 //            if (s.producer instanceof SoundProducer.Amplifiable) {

@@ -115,7 +115,7 @@ public class AWTCamera {
                 g2d.setColor(component.getBackground());
                 g2d.fillRect(region.x, region.y, region.width, region.height);
             }
-            g2d.setTransform(AffineTransform.getTranslateInstance(0, 0));
+            g2d.setTransform(AffineTransform.getTranslateInstance((double) 0, (double) 0));
             g2d.translate(-region.x, -region.y);
             component.paint(g2d);
 

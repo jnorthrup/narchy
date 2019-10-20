@@ -22,8 +22,6 @@ import java.net.URL;
 import java.sql.Clob;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * @author Kamnev Georgiy (nt.gocha@gmail.com)
@@ -640,7 +638,7 @@ public class ExtendedCastGraph extends CastGraph {
     };
     //</ed_itor-fold>
     //<ed_itor-fold defaultstate="collapsed" desc="char - string">
-    public static final Function char2String = new MutableWeightedCaster(2) {
+    public static final Function char2String = new MutableWeightedCaster(2.0) {
         @Override
         public Object apply(Object from) {
             char c = (Character) from;
@@ -652,7 +650,7 @@ public class ExtendedCastGraph extends CastGraph {
             return "char2String";
         }
     };
-    public static final Function String2char = new MutableWeightedCaster(2) {
+    public static final Function String2char = new MutableWeightedCaster(2.0) {
         @Override
         public Object apply(Object from) {
             String str = (String) from;
@@ -763,7 +761,7 @@ public class ExtendedCastGraph extends CastGraph {
         }
     };
     //<ed_itor-fold defaultstate="collapsed" desc="String 2 Double">
-    public static final Function String2Double = new MutableWeightedCaster(2) {
+    public static final Function String2Double = new MutableWeightedCaster(2.0) {
         @Override
         public Object apply(Object from) {
             String str = (String) from;
@@ -778,7 +776,7 @@ public class ExtendedCastGraph extends CastGraph {
     //</ed_itor-fold>
     //</ed_itor-fold>
     //<ed_itor-fold defaultstate="collapsed" desc="String 2 Double">
-    public static final Function String2double = new MutableWeightedCaster(2) {
+    public static final Function String2double = new MutableWeightedCaster(2.0) {
         @Override
         public Object apply(Object from) {
             String str = (String) from;
@@ -791,7 +789,7 @@ public class ExtendedCastGraph extends CastGraph {
         }
     };
     //<ed_itor-fold defaultstate="collapsed" desc="String 2 BigDecimal">
-    public static final Function String2BigDecimal = new MutableWeightedCaster(2) {
+    public static final Function String2BigDecimal = new MutableWeightedCaster(2.0) {
         @Override
         public Object apply(Object from) {
             String str = (String) from;
@@ -1402,7 +1400,7 @@ public class ExtendedCastGraph extends CastGraph {
 
         addEdge(v2.class, (Function<v2, float[]>) (v3 -> new float[]{v3.x, v3.y}), float[].class);
         addEdge(v3.class, (Function<v3, float[]>) (v2 -> new float[]{v2.x, v2.y, v2.z}), float[].class);
-        addEdge(v2.class, (Function<v2, v3>) (v1 -> new v3(v1.x, v1.y, 0)), v3.class);
+        addEdge(v2.class, (Function<v2, v3>) (v1 -> new v3(v1.x, v1.y, (float) 0)), v3.class);
 
         addEdge(float[].class, (Function<float[], Tensor>) (ArrayTensor::new), Tensor.class);
         addEdge(double[].class, (Function<double[], float[]>) Util::toFloat, float[].class);

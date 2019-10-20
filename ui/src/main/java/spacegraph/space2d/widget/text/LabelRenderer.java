@@ -18,7 +18,7 @@ public interface LabelRenderer extends BiConsumer<VectorLabel, GL2> {
         label.fgColor.apply(gl);
         gl.glLineWidth(label.textThickness);
 
-        HersheyFont.hersheyText(gl, label.text, label.textScaleX, label.textScaleY, 0, label.textY, 0, Draw.TextAlignment.Left);
+        HersheyFont.hersheyText(gl, label.text, label.textScaleX, label.textScaleY, (float) 0, label.textY, (float) 0, Draw.TextAlignment.Left);
     });
 
 
@@ -32,10 +32,10 @@ public interface LabelRenderer extends BiConsumer<VectorLabel, GL2> {
         float y = b.y;
         float W = b.w;
         float H = b.h;
-        float w = W * label.textScaleX * label.text.length();
+        float w = W * label.textScaleX * (float) label.text.length();
         float h = H * label.textScaleY;
-        float wm = (W - w) / 2;
-        float hm = (H - h) / 2;
+        float wm = (W - w) / 2.0F;
+        float hm = (H - h) / 2.0F;
         Draw.rect(x + wm, y + hm, w, h, gl);
 
     };

@@ -83,7 +83,7 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
         this.sampleRate = (long) saf.sampleRate;
         this.numChannels = data.length;
         this.validBits = saf.bitDepth;
-        this.numFrames = data[0].length;
+        this.numFrames = (long) data[0].length;
         this.file = new File(filename);
         this.ioState = IOState.WRITING;
 
@@ -154,7 +154,7 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
      */
     @Override
     public SampleAudioFormat getSampleAudioFormat() {
-        return new SampleAudioFormat(this.sampleRate, this.validBits, this.numChannels);
+        return new SampleAudioFormat((float) this.sampleRate, this.validBits, this.numChannels);
     }
 
     /**
@@ -170,10 +170,10 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
         
         if (numChannels < 1 || numChannels > 65535)
             throw new FileFormatException("Illegal number of channels, valid range 1 to 65536");
-        if (numFrames < 0) throw new FileFormatException("Number of frames must be positive");
+        if (numFrames < 0L) throw new FileFormatException("Number of frames must be positive");
         if (validBits < 2 || validBits > 65535)
             throw new FileFormatException("Illegal number of valid bits, valid range 2 to 65536");
-        if (sampleRate < 0) throw new FileFormatException("Sample rate must be positive");
+        if (sampleRate < 0L) throw new FileFormatException("Sample rate must be positive");
 
         
         compressionCode = validBits == 32 || validBits == 64 ? WAVE_FORMAT_IEEE_FLOAT : WAVE_FORMAT_PCM;
@@ -182,51 +182,51 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
         oStream = new FileOutputStream(file);
 
 
-        long dataChunkSize = blockAlign * numFrames;
+        long dataChunkSize = (long) blockAlign * numFrames;
         int formatDataSize = compressionCode == WAVE_FORMAT_PCM ? 16 : 18;
-        long mainChunkSize = 4 +
-                8 +                    
-                formatDataSize +    
-                8 +                
+        long mainChunkSize = 4L +
+                8L +
+                (long) formatDataSize +
+                8L +
                 dataChunkSize;
 
         
         
-        if (dataChunkSize % 2 == 1) {
-            mainChunkSize += 1;
+        if (dataChunkSize % 2L == 1L) {
+            mainChunkSize += 1L;
             wordAlignAdjust = true;
         } else {
             wordAlignAdjust = false;
         }
 
         
-        putLE(RIFF_CHUNK_ID, buffer, 0, 4);
+        putLE((long) RIFF_CHUNK_ID, buffer, 0, 4);
         putLE(mainChunkSize, buffer, 4, 4);
-        putLE(RIFF_TYPE_ID, buffer, 8, 4);
+        putLE((long) RIFF_TYPE_ID, buffer, 8, 4);
 
         
         oStream.write(buffer, 0, 12);
 
 
-        long averageBytesPerSecond = sampleRate * blockAlign;
+        long averageBytesPerSecond = sampleRate * (long) blockAlign;
 
-        putLE(FMT_CHUNK_ID, buffer, 0, 4);        
-        putLE(formatDataSize, buffer, 4, 4);        
-        putLE(compressionCode, buffer, 8, 2);        
-        putLE(numChannels, buffer, 10, 2);        
+        putLE((long) FMT_CHUNK_ID, buffer, 0, 4);
+        putLE((long) formatDataSize, buffer, 4, 4);
+        putLE((long) compressionCode, buffer, 8, 2);
+        putLE((long) numChannels, buffer, 10, 2);
         putLE(sampleRate, buffer, 12, 4);        
         putLE(averageBytesPerSecond, buffer, 16, 4);        
-        putLE(blockAlign, buffer, 20, 2);        
-        putLE(validBits, buffer, 22, 2);        
+        putLE((long) blockAlign, buffer, 20, 2);
+        putLE((long) validBits, buffer, 22, 2);
         if (compressionCode == WAVE_FORMAT_IEEE_FLOAT) {
-            putLE(0, buffer, 24, 2);        
+            putLE(0L, buffer, 24, 2);
         }
 
         
         oStream.write(buffer, 0, 8 + formatDataSize);
 
         
-        putLE(DATA_CHUNK_ID, buffer, 0, 4);        
+        putLE((long) DATA_CHUNK_ID, buffer, 0, 4);
         putLE(dataChunkSize, buffer, 4, 4);        
 
         
@@ -236,19 +236,19 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
         if (validBits > 8) {
             
             
-            floatOffset = 0;
-            floatScale = Long.MAX_VALUE >> (64 - validBits);
+            floatOffset = (double) 0;
+            floatScale = (double) (Long.MAX_VALUE >> (64 - validBits));
         } else {
             
             
-            floatOffset = 1;
-            floatScale = 0.5 * ((1 << validBits) - 1);
+            floatOffset = 1.0;
+            floatScale = 0.5 * (double) ((1 << validBits) - 1);
         }
 
         
         bufferPointer = 0;
         bytesRead = 0;
-        frameCounter = 0;
+        frameCounter = 0L;
 
         this.ioState = IOState.WRITING;
     }
@@ -262,10 +262,10 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
     private void writeData(float[][] data) throws IOException {
         int frameCounter = 0;
         int blockSize = 10000;
-        while (frameCounter < numFrames) {
+        while ((long) frameCounter < numFrames) {
 
             long remaining = getFramesRemaining();
-            int toWrite = (remaining > blockSize) ? blockSize : (int) remaining;
+            int toWrite = (remaining > (long) blockSize) ? blockSize : (int) remaining;
 
             
             writeFrames(data, frameCounter, toWrite);
@@ -293,13 +293,13 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
         long riffTypeID = getLE(buffer, 8, 4);
 
         
-        if (riffChunkID != RIFF_CHUNK_ID)
+        if (riffChunkID != (long) RIFF_CHUNK_ID)
             throw new FileFormatException("Invalid Wav Header data, incorrect riff chunk ID");
-        if (riffTypeID != RIFF_TYPE_ID)
+        if (riffTypeID != (long) RIFF_TYPE_ID)
             throw new FileFormatException("Invalid Wav Header data, incorrect riff type ID");
 
         
-        if (file.length() != chunkSize + 8) {
+        if (file.length() != chunkSize + 8L) {
             throw new FileFormatException("Header chunk size (" + chunkSize + ") does not match file size (" + file.length() + ')');
         }
 
@@ -318,9 +318,9 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
             chunkSize = getLE(buffer, 4, 4);
 
 
-            long numChunkBytes = (chunkSize % 2 == 1) ? chunkSize + 1 : chunkSize;
+            long numChunkBytes = (chunkSize % 2L == 1L) ? chunkSize + 1L : chunkSize;
 
-            if (chunkID == FMT_CHUNK_ID) {
+            if (chunkID == (long) FMT_CHUNK_ID) {
                 
                 foundFormat = true;
 
@@ -357,9 +357,9 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
 
                 
                 
-                numChunkBytes -= 16;
-                if (numChunkBytes > 0) iStream.skip(numChunkBytes);
-            } else if (chunkID == DATA_CHUNK_ID) {
+                numChunkBytes -= 16L;
+                if (numChunkBytes > 0L) iStream.skip(numChunkBytes);
+            } else if (chunkID == (long) DATA_CHUNK_ID) {
                 
                 
                 
@@ -367,11 +367,11 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
 
                 
                 
-                if (chunkSize % this.blockAlign != 0)
+                if (chunkSize % (long) this.blockAlign != 0L)
                     throw new FileFormatException("Data Chunk size is not multiple of Block Align");
 
                 
-                this.numFrames = chunkSize / this.blockAlign;
+                this.numFrames = chunkSize / (long) this.blockAlign;
 
                 
                 foundData = true;
@@ -391,18 +391,18 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
         if (validBits > 8) {
             
             
-            floatOffset = 0;
-            floatScale = 1 << (validBits - 1);
+            floatOffset = (double) 0;
+            floatScale = (double) (1 << (validBits - 1));
         } else {
             
             
-            floatOffset = -1;
-            floatScale = 0.5 * ((1 << validBits) - 1);
+            floatOffset = -1.0;
+            floatScale = 0.5 * (double) ((1 << validBits) - 1);
         }
 
         this.bufferPointer = 0;
         this.bytesRead = 0;
-        this.frameCounter = 0;
+        this.frameCounter = 0L;
 
         this.ioState = IOState.READING;
     }
@@ -415,16 +415,16 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
     private float[][] readData() throws IOException {
 
         float[][] data = new float[this.numChannels][(int) this.numFrames];
-        long framesRead = 0;
+        long framesRead = 0L;
         int offset = 0;
         int blockSize = 10000;
 
         do {
             
-            framesRead = readFrames(data, offset, blockSize);
-            offset += framesRead;
+            framesRead = (long) readFrames(data, offset, blockSize);
+            offset = (int) ((long) offset + framesRead);
         }
-        while (framesRead != 0);
+        while (framesRead != 0L);
 
         return data;
     }
@@ -475,7 +475,7 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
                 if (frameCounter == numFrames) return f;
 
                 for (int c = 0; c < numChannels; c++) {
-                    writeSample(Float.floatToIntBits(sampleBuffer[c][offset]));
+                    writeSample((long) Float.floatToIntBits(sampleBuffer[c][offset]));
                 }
                 offset++;
                 frameCounter++;
@@ -486,7 +486,7 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
                 if (frameCounter == numFrames) return f;
 
                 for (int c = 0; c < numChannels; c++) {
-                    writeSample(Double.doubleToLongBits(sampleBuffer[c][offset]));
+                    writeSample(Double.doubleToLongBits((double) sampleBuffer[c][offset]));
                 }
                 offset++;
                 frameCounter++;
@@ -497,7 +497,7 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
                 if (frameCounter == numFrames) return f;
 
                 for (int c = 0; c < numChannels; c++) {
-                    writeSample((long) (floatScale * (floatOffset + sampleBuffer[c][offset])));
+                    writeSample((long) (floatScale * (floatOffset + (double) sampleBuffer[c][offset])));
                 }
                 offset++;
                 frameCounter++;
@@ -528,7 +528,7 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
                 if (frameCounter == numFrames) return f;
 
                 for (int c = 0; c < numChannels; c++) {
-                    writeSample(Float.floatToIntBits((float) sampleBuffer[c][offset]));
+                    writeSample((long) Float.floatToIntBits((float) sampleBuffer[c][offset]));
                 }
                 offset++;
                 frameCounter++;
@@ -573,8 +573,8 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
                 bufferPointer = 0;
             }
 
-            buffer[bufferPointer] = (byte) (val & 0xFF);
-            val >>= 8;
+            buffer[bufferPointer] = (byte) (val & 0xFFL);
+            val >>= 8L;
             bufferPointer++;
         }
     }
@@ -619,7 +619,7 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
                 if (frameCounter == numFrames) return f;
 
                 for (int c = 0; c < numChannels; c++) {
-                    sampleBuffer[c][offset] = (float) (floatOffset + readSample() / floatScale);
+                    sampleBuffer[c][offset] = (float) (floatOffset + (double) readSample() / floatScale);
                 }
                 offset++;
                 frameCounter++;
@@ -650,7 +650,7 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
                 if (frameCounter == numFrames) return f;
 
                 for (int c = 0; c < numChannels; c++) {
-                    sampleBuffer[c][offset] = (Float.intBitsToFloat((int) readSample()));
+                    sampleBuffer[c][offset] = (double) (Float.intBitsToFloat((int) readSample()));
                 }
                 offset++;
                 frameCounter++;
@@ -672,7 +672,7 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
                 if (frameCounter == numFrames) return f;
 
                 for (int c = 0; c < numChannels; c++) {
-                    sampleBuffer[c][offset] = floatOffset + readSample() / floatScale;
+                    sampleBuffer[c][offset] = floatOffset + (double) readSample() / floatScale;
                 }
                 offset++;
                 frameCounter++;
@@ -689,7 +689,7 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
      * @throws IOException
      */
     private long readSample() throws IOException {
-        long val = 0;
+        long val = 0L;
 
         for (int b = 0; b < bytesPerSample; b++) {
             if (bufferPointer == bytesRead) {
@@ -699,7 +699,7 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
                 bufferPointer = 0;
             }
 
-            long v = buffer[bufferPointer];
+            long v = (long) buffer[bufferPointer];
             if (b < bytesPerSample - 1 || bytesPerSample == 1) v &= 0xFFL;
             val += v << (b * 8);
 
@@ -726,8 +726,8 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
         numBytes--;
         pos += numBytes;
 
-        long val = buffer[pos] & 0xFF;
-        for (int b = 0; b < numBytes; b++) val = (val << 8) + (buffer[--pos] & 0xFF);
+        long val = (long) ((int) buffer[pos] & 0xFF);
+        for (int b = 0; b < numBytes; b++) val = (val << 8) + (long) ((int) buffer[--pos] & 0xFF);
 
         return val;
     }
@@ -742,8 +742,8 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
      */
     private static void putLE(long val, byte[] buffer, int pos, int numBytes) {
         for (int b = 0; b < numBytes; b++) {
-            buffer[pos] = (byte) (val & 0xFF);
-            val >>= 8;
+            buffer[pos] = (byte) (val & 0xFFL);
+            val >>= 8L;
             pos++;
         }
     }

@@ -582,7 +582,7 @@ public class Dynamics2D {
     private void clearForces() {
         bodies(b -> {
             b.force.setZero();
-            b.torque = 0;
+            b.torque = (float) 0;
         });
     }
 
@@ -1045,7 +1045,7 @@ public class Dynamics2D {
             for (Contact c = contactManager.m_contactList; c != null; c = c.m_next) {
 
                 c.m_flags &= ~(Contact.TOI_FLAG | Contact.ISLAND_FLAG);
-                c.m_toiCount = 0;
+                c.m_toiCount = (float) 0;
                 c.m_toi = 1.0f;
             }
         }
@@ -1063,7 +1063,7 @@ public class Dynamics2D {
                 }
 
 
-                if (c.m_toiCount > Settings.maxSubSteps) {
+                if (c.m_toiCount > (float) Settings.maxSubSteps) {
                     continue;
                 }
 
@@ -1315,7 +1315,7 @@ public class Dynamics2D {
 
     private static final Integer LIQUID_INT = 1234598372;
     private static final float liquidLength = .12f;
-    private static final float averageLinearVel = -1;
+    private static final float averageLinearVel = -1.0F;
     private final v2 liquidOffset = new v2();
     private final v2 circCenterMoved = new v2();
     private final Color3f liquidColor = new Color3f(.4f, .4f, 1f);
@@ -1663,9 +1663,9 @@ public class Dynamics2D {
         boolean active = false;
 
         private static final int LONG_AVG_NUMS = 20;
-        private static final float LONG_FRACTION = 1f / LONG_AVG_NUMS;
+        private static final float LONG_FRACTION = 1f / (float) LONG_AVG_NUMS;
         private static final int SHORT_AVG_NUMS = 5;
-        private static final float SHORT_FRACTION = 1f / SHORT_AVG_NUMS;
+        private static final float SHORT_FRACTION = 1f / (float) SHORT_AVG_NUMS;
 
         public class ProfileEntry {
             float longAvg;
@@ -1685,14 +1685,14 @@ public class Dynamics2D {
             }
 
             void record(float value) {
-                longAvg = longAvg * (1 - LONG_FRACTION) + value * LONG_FRACTION;
-                shortAvg = shortAvg * (1 - SHORT_FRACTION) + value * SHORT_FRACTION;
+                longAvg = longAvg * (1.0F - LONG_FRACTION) + value * LONG_FRACTION;
+                shortAvg = shortAvg * (1.0F - SHORT_FRACTION) + value * SHORT_FRACTION;
                 min = MathUtils.min(value, min);
                 max = MathUtils.max(value, max);
             }
 
             void startAccum() {
-                accum = 0;
+                accum = (float) 0;
             }
 
             public void accum(FloatSupplier value) {
@@ -1774,32 +1774,32 @@ public class Dynamics2D {
 
         if (bottom) {
             Body2D _bottom = world.addBody(new BodyDef(BodyType.STATIC),
-                    new FixtureDef(PolygonShape.box(w / 2 - thick / 2, thick / 2),
-                            0, 0));
-            _bottom.setTransform(new v2(cx, y1), 0);
+                    new FixtureDef(PolygonShape.box(w / 2.0F - thick / 2.0F, thick / 2.0F),
+                            (float) 0, (float) 0));
+            _bottom.setTransform(new v2(cx, y1), (float) 0);
         }
 
         if (top) {
             Body2D _top = world.addBody(new BodyDef(BodyType.STATIC),
-                    new FixtureDef(PolygonShape.box(w / 2 - thick / 2, thick / 2),
-                            0, 0));
-            _top.setTransform(new v2(cx, y2), 0);
+                    new FixtureDef(PolygonShape.box(w / 2.0F - thick / 2.0F, thick / 2.0F),
+                            (float) 0, (float) 0));
+            _top.setTransform(new v2(cx, y2), (float) 0);
         }
 
         float cy = (y1 + y2) / 2f;
         if (left) {
             Body2D _left = world.addBody(new BodyDef(BodyType.STATIC),
-                    new FixtureDef(PolygonShape.box(thick / 2, h / 2 - thick / 2),
-                            0, 0));
-            _left.setTransform(new v2(x1, cy), 0);
+                    new FixtureDef(PolygonShape.box(thick / 2.0F, h / 2.0F - thick / 2.0F),
+                            (float) 0, (float) 0));
+            _left.setTransform(new v2(x1, cy), (float) 0);
 
         }
 
         if (right) {
             Body2D _right = world.addBody(new BodyDef(BodyType.STATIC),
-                    new FixtureDef(PolygonShape.box(thick / 2, h / 2 - thick / 2),
-                            0, 0));
-            _right.setTransform(new v2(x2, cy), 0);
+                    new FixtureDef(PolygonShape.box(thick / 2.0F, h / 2.0F - thick / 2.0F),
+                            (float) 0, (float) 0));
+            _right.setTransform(new v2(x2, cy), (float) 0);
         }
 
 
@@ -1827,7 +1827,7 @@ class WorldRayCastWrapper implements TreeRayCastCallback {
             float fraction = output.fraction;
 
             temp.set(input.p2).scaled(fraction);
-            point.set(input.p1).scaled(1 - fraction).added(temp);
+            point.set(input.p1).scaled(1.0F - fraction).added(temp);
             return callback.reportFixture(fixture, point, output.normal, fraction);
         }
 

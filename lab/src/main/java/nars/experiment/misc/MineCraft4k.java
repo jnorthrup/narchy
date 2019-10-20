@@ -418,17 +418,17 @@ public class MineCraft4k extends JFrame implements Runnable, KeyListener, MouseL
 
 	@Override
 	public void keyTyped(KeyEvent keyEvent) {
-		handleEvent(keyEvent.getID(), keyEvent.getKeyChar(), keyEvent.getModifiers(), 0, 0);
+		handleEvent(keyEvent.getID(), (int) keyEvent.getKeyChar(), keyEvent.getModifiers(), 0, 0);
 	}
 
 	@Override
 	public void keyPressed(KeyEvent keyEvent) {
-		handleEvent(keyEvent.getID(), keyEvent.getKeyChar(), keyEvent.getModifiers(), 0, 0);
+		handleEvent(keyEvent.getID(), (int) keyEvent.getKeyChar(), keyEvent.getModifiers(), 0, 0);
 	}
 
 	@Override
 	public void keyReleased(KeyEvent keyEvent) {
-		handleEvent(keyEvent.getID(), keyEvent.getKeyChar(), keyEvent.getModifiers(), 0, 0);
+		handleEvent(keyEvent.getID(), (int) keyEvent.getKeyChar(), keyEvent.getModifiers(), 0, 0);
 	}
 	@Override
 	public void mouseClicked(MouseEvent e) {

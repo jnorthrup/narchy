@@ -12,7 +12,7 @@ public class LabeledPane extends Splitting {
     }
 
     public static Surface awesome(Surface x, String icon) {
-        return new Stacking(x, ImageTexture.awesome(icon).view(1));
+        return new Stacking(x, ImageTexture.awesome(icon).view(1.0F));
     }
 
     public static Surface the(String label, Surface content) {

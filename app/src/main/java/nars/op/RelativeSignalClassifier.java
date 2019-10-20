@@ -23,17 +23,17 @@ public abstract class RelativeSignalClassifier  {
     public void run() {
         float h = input();
 
-        float dMean = (float)(h - history.getMean());
+        float dMean = (float)((double) h - history.getMean());
         double varianceThresh = history.getVariance();
-        history.addValue(h);
+        history.addValue((double) h);
 
         
         int y;
 
         Compound e;
-        if (dMean > varianceThresh) {
+        if ((double) dMean > varianceThresh) {
             y = +1;
-        } else if (dMean < -varianceThresh) {
+        } else if ((double) dMean < -varianceThresh) {
             y = -1;
         } else {
             y = 0;

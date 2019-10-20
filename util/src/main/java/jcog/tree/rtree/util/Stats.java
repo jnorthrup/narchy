@@ -66,11 +66,11 @@ public class Stats {
     }
 
     public float getEntriesPerLeaf() {
-        return ((entryCount * 1.0f) / leafCount);
+        return (((float) entryCount * 1.0f) / (float) leafCount);
     }
 
     private float getLeafFillPercentage() {
-        return (getEntriesPerLeaf() * 100) / maxFill;
+        return (getEntriesPerLeaf() * 100.0F) / (float) maxFill;
     }
 
     public Spatialization getType() {

@@ -147,31 +147,31 @@ public class RuleRTab {
                 short bOldVal = crrState[i][j];
 
                 int iCnt = 0;
-                if (fMoore && ((crrState[lurd[0]][lurd[1]] & rtMask) == 1))
+                if (fMoore && (((int) crrState[lurd[0]][lurd[1]] & rtMask) == 1))
 					iCnt++;
-				if ((crrState[lurd[0]][j] & rtMask) == 1)
+				if (((int) crrState[lurd[0]][j] & rtMask) == 1)
 					iCnt++;
-				if (fMoore && ((crrState[lurd[0]][lurd[3]] & rtMask) == 1))
-					iCnt++;
-
-				if ((crrState[i][lurd[1]] & rtMask) == 1)
-					iCnt++;
-				if (fCtrCell && ((crrState[i][j] & rtMask) == 1))
-					iCnt++;
-				if ((crrState[i][lurd[3]] & rtMask) == 1)
+				if (fMoore && (((int) crrState[lurd[0]][lurd[3]] & rtMask) == 1))
 					iCnt++;
 
-				if (fMoore && ((crrState[lurd[2]][lurd[1]] & rtMask) == 1))
+				if (((int) crrState[i][lurd[1]] & rtMask) == 1)
 					iCnt++;
-				if ((crrState[lurd[2]][j] & rtMask) == 1)
+				if (fCtrCell && (((int) crrState[i][j] & rtMask) == 1))
 					iCnt++;
-				if (fMoore && ((crrState[lurd[2]][lurd[3]] & rtMask) == 1))
+				if (((int) crrState[i][lurd[3]] & rtMask) == 1)
 					iCnt++;
 
-                short bNewVal = (short) table[bOldVal][iCnt];
+				if (fMoore && (((int) crrState[lurd[2]][lurd[1]] & rtMask) == 1))
+					iCnt++;
+				if (((int) crrState[lurd[2]][j] & rtMask) == 1)
+					iCnt++;
+				if (fMoore && (((int) crrState[lurd[2]][lurd[3]] & rtMask) == 1))
+					iCnt++;
+
+                short bNewVal = (short) table[(int) bOldVal][iCnt];
 
                 tmpState[i][j] = bNewVal;
-				if (bNewVal != bOldVal) {
+				if ((int) bNewVal != (int) bOldVal) {
 					modCnt++; 
 				}
 			}

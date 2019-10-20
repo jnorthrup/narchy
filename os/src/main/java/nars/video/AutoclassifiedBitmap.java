@@ -39,8 +39,8 @@ public class AutoclassifiedBitmap extends VectorSensor {
     public final Autoencoder ae;
     private final FasterList<ComponentSignal> signals;
 
-    public final FloatRange alpha = new FloatRange(1f, 0, 1);
-    public final FloatRange noise = new FloatRange(0.01f, 0, 1);
+    public final FloatRange alpha = new FloatRange(1f, (float) 0, 1.0F);
+    public final FloatRange noise = new FloatRange(0.01f, (float) 0, 1.0F);
 
 
 
@@ -73,7 +73,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
     private Bitmap2D src = null;
 
     public boolean learn = true;
-    public final FloatRange confResolution = new FloatRange(0, 0, 1);
+    public final FloatRange confResolution = new FloatRange((float) 0, (float) 0, 1.0F);
 
 
     public Surface newChart() {
@@ -163,8 +163,8 @@ public class AutoclassifiedBitmap extends VectorSensor {
         this.sh = sh;
         this.pw = pw;
         this.ph = ph;
-        this.nw = (int) Math.ceil(pw / ((float) sw));
-        this.nh = (int) Math.ceil(ph / ((float) sh));
+        this.nw = (int) Math.ceil((double) (pw / ((float) sw)));
+        this.nh = (int) Math.ceil((double) (ph / ((float) sh)));
         this.ins = new float[ae.x.length];
         this.pixRecon = new float[pw][ph];
 
@@ -238,12 +238,12 @@ public class AutoclassifiedBitmap extends VectorSensor {
         float noise = this.noise.floatValue();
 
         int regionPixels = sw * sh;
-        float sumErr = 0;
+        float sumErr = (float) 0;
 
         int states = ae.y.length;
         float outputThresh = //TODO make adjustable
                 //1f - (1f / (states - 1));
-                1f - (1f / (states / 2f));
+                1f - (1f / ((float) states / 2f));
 
 
         float confRes = confResolution.floatValue();
@@ -281,11 +281,11 @@ public class AutoclassifiedBitmap extends VectorSensor {
 
 
                     float conf;
-                    if ((conf = 1f - (regionError / regionPixels)) > 0) {
+                    if ((conf = 1f - (regionError / (float) regionPixels)) > (float) 0) {
                         short[] features = ae.max(outputThresh);
                         if (features != null) {
 
-                            conf = Util.round(w2cSafe(c2wSafe(baseConf * conf) / features.length), confRes);
+                            conf = Util.round(w2cSafe(c2wSafe(baseConf * conf) / (float) features.length), confRes);
                             if ((pixConf[i][j] = (conf)) >= minConf) {
                                 po = features;
                             }
@@ -300,15 +300,15 @@ public class AutoclassifiedBitmap extends VectorSensor {
 
                 float[] peij = encoded[i][j];
 
-                Arrays.fill(peij, 0);
+                Arrays.fill(peij, (float) 0);
                 float mult;
                 if (po != null && po.length > 0) {
-                    mult = +1;
-                    float f = 0.5f + 0.5f / po.length;
+                    mult = (float) +1;
+                    float f = 0.5f + 0.5f / (float) po.length;
                     for (short ppp : po)
-                        peij[ppp] = f;
+                        peij[(int) ppp] = f;
                 } else {
-                    mult = -1;
+                    mult = -1.0F;
                 }
 
 

@@ -102,7 +102,7 @@ public class MD4 extends MessageDigest implements Cloneable {
 		context[3] = 0x10325476;
 		count = 0L;
 		for (int i = 0; i < BLOCK_LENGTH; i++)
-			buffer[i] = 0;
+			buffer[i] = (byte) 0;
 	}
 
 	/**
@@ -111,7 +111,7 @@ public class MD4 extends MessageDigest implements Cloneable {
 	@Override
     public void engineUpdate(byte b) {
 
-        int i = (int) (count % BLOCK_LENGTH);
+        int i = (int) (count % (long) BLOCK_LENGTH);
 		count++; 
 		buffer[i] = b;
 		if (i == BLOCK_LENGTH - 1)
@@ -133,12 +133,12 @@ public class MD4 extends MessageDigest implements Cloneable {
 	@Override
     public void engineUpdate(byte[] input, int offset, int len) {
 		
-		if (offset < 0 || len < 0 || (long) offset + len > input.length)
+		if (offset < 0 || len < 0 || (long) offset + (long) len > (long) input.length)
 			throw new ArrayIndexOutOfBoundsException();
 
 
-        int bufferNdx = (int) (count % BLOCK_LENGTH);
-		count += len;
+        int bufferNdx = (int) (count % (long) BLOCK_LENGTH);
+        count = count + (long) len;
         int partLen = BLOCK_LENGTH - bufferNdx;
         int i = 0;
 		if (len >= partLen) {
@@ -165,7 +165,7 @@ public class MD4 extends MessageDigest implements Cloneable {
 	@Override
     public byte[] engineDigest() {
 
-        int bufferNdx = (int) (count % BLOCK_LENGTH);
+        int bufferNdx = (int) (count % (long) BLOCK_LENGTH);
         int padLen = (bufferNdx < 56) ? (56 - bufferNdx) : (120 - bufferNdx);
 
 
@@ -176,7 +176,7 @@ public class MD4 extends MessageDigest implements Cloneable {
 		
 		
 		for (int i = 0; i < 8; i++)
-			tail[padLen + i] = (byte) ((count * 8) >>> (8 * i));
+			tail[padLen + i] = (byte) ((count * 8L) >>> (8 * i));
 
 		engineUpdate(tail, 0, tail.length);
 
@@ -209,9 +209,9 @@ public class MD4 extends MessageDigest implements Cloneable {
 		
 		for (int i = 0; i < 16; i++)
 			X[i] =
-				(block[offset++] & 0xFF) | (block[offset++] & 0xFF)
-					<< 8 | (block[offset++] & 0xFF)
-					<< 16 | (block[offset++] & 0xFF)
+				((int) block[offset++] & 0xFF) | ((int) block[offset++] & 0xFF)
+					<< 8 | ((int) block[offset++] & 0xFF)
+					<< 16 | ((int) block[offset++] & 0xFF)
 					<< 24;
 
         int A = context[0];

@@ -75,7 +75,7 @@ public class Monster {
             float[] aimdir, int damage, int speed, int flashtype) {
         GameWeapon
                 .fire_grenade(self, start, aimdir, damage, speed, 2.5f,
-                        damage + 40);
+                        (float) (damage + 40));
 
         game_import_t.WriteByte(Defines.svc_muzzleflash2);
         game_import_t.WriteShort(self.index);
@@ -86,7 +86,7 @@ public class Monster {
     /** The Moster fires the rocket. */
     public static void monster_fire_rocket(edict_t self, float[] start,
             float[] dir, int damage, int speed, int flashtype) {
-        GameWeapon.fire_rocket(self, start, dir, damage, speed, damage + 20, damage);
+        GameWeapon.fire_rocket(self, start, dir, damage, speed, (float) (damage + 20), damage);
 
         game_import_t.WriteByte(Defines.svc_muzzleflash2);
         game_import_t.WriteShort(self.index);
@@ -143,7 +143,7 @@ public class Monster {
 
     
     public static boolean monster_start(edict_t self) {
-        if (GameBase.deathmatch.value != 0) {
+        if (GameBase.deathmatch.value != (float) 0) {
             GameUtil.G_FreeEdict(self);
             return false;
         }
@@ -163,7 +163,7 @@ public class Monster {
         self.svflags |= Defines.SVF_MONSTER;
         self.s.renderfx |= Defines.RF_FRAMELERP;
         self.takedamage = Defines.DAMAGE_AIM;
-        self.air_finished = GameBase.level.time + 12;
+        self.air_finished = GameBase.level.time + 12.0F;
         self.use = GameUtil.monster_use;
         self.max_health = self.health;
         self.clipmask = Defines.MASK_MONSTERSOLID;
@@ -187,7 +187,7 @@ public class Monster {
         
         if (self.monsterinfo.currentmove != null)
             self.s.frame = self.monsterinfo.currentmove.firstframe
-                    + (Lib.rand() % (self.monsterinfo.currentmove.lastframe
+                    + ((int) Lib.rand() % (self.monsterinfo.currentmove.lastframe
                             - self.monsterinfo.currentmove.firstframe + 1));
 
         return true;
@@ -264,10 +264,10 @@ public class Monster {
                                 + self.target + " at "
                                 + Lib.vtos(self.s.origin) + '\n');
                 self.target = null;
-                self.monsterinfo.pausetime = 100000000;
+                self.monsterinfo.pausetime = 100000000.0F;
                 self.monsterinfo.stand.think(self);
             } else if (Lib.strcmp(self.movetarget.classname, "path_corner") == 0) {
-                float[] v = {0, 0, 0};
+                float[] v = {(float) 0, (float) 0, (float) 0};
                 Math3D.VectorSubtract(self.goalentity.s.origin, self.s.origin,
                         v);
                 self.ideal_yaw = self.s.angles[Defines.YAW] = Math3D
@@ -276,11 +276,11 @@ public class Monster {
                 self.target = null;
             } else {
                 self.goalentity = self.movetarget = null;
-                self.monsterinfo.pausetime = 100000000;
+                self.monsterinfo.pausetime = 100000000.0F;
                 self.monsterinfo.stand.think(self);
             }
         } else {
-            self.monsterinfo.pausetime = 100000000;
+            self.monsterinfo.pausetime = 100000000.0F;
             self.monsterinfo.stand.think(self);
         }
 
@@ -312,13 +312,13 @@ public class Monster {
         @Override
         public boolean think(edict_t self) {
 
-            self.s.origin[2] += 1;
+            self.s.origin[2] += 1.0F;
             GameUtil.KillBox(self);
 
             self.solid = Defines.SOLID_BBOX;
             self.movetype = Defines.MOVETYPE_STEP;
             self.svflags &= ~Defines.SVF_NOCLIENT;
-            self.air_finished = GameBase.level.time + 12;
+            self.air_finished = GameBase.level.time + 12.0F;
             game_import_t.linkentity(self);
 
             Monster.monster_start_go(self);
@@ -358,7 +358,7 @@ public class Monster {
             self.solid = Defines.SOLID_NOT;
             self.movetype = Defines.MOVETYPE_NONE;
             self.svflags |= Defines.SVF_NOCLIENT;
-            self.nextthink = 0;
+            self.nextthink = (float) 0;
             self.use = monster_triggered_spawn_use;
             return true;
         }

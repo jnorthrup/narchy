@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.*;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -66,7 +65,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
 
     protected static int grow(int oldSize) {
-        return 1 + (int) (oldSize * GROWTH_RATE);
+        return 1 + (int) ((float) oldSize * GROWTH_RATE);
 
     }
 
@@ -527,17 +526,17 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
         X[] items = this.items;
 
-        if (delta > 0) {
+        if (delta > (float) 0) {
             if (posBefore > 0) {
-                if (-valueAt(posBefore - 1, cmp) > priAfter - ScalarValue.EPSILON / 2)
+                if (-valueAt(posBefore - 1, cmp) > priAfter - ScalarValue.EPSILON / 2.0F)
                     return; //order doesnt change
             } else {
                 //already highest
                 return;
             }
-        } else if (delta < 0) {
+        } else if (delta < (float) 0) {
             if (posBefore < size() - 1) {
-                if (-valueAt(posBefore+1, cmp) < priAfter + ScalarValue.EPSILON / 2)
+                if (-valueAt(posBefore+1, cmp) < priAfter + ScalarValue.EPSILON / 2.0F)
                     return; //order doesnt change
             } else {
                 //already lowest

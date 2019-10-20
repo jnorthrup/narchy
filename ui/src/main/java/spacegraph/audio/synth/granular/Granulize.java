@@ -64,7 +64,7 @@ public class Granulize extends SoundProducer.Amplifiable {
 	private int calculateCurrentBufferIndex() {
         float sf = stretchFactor.floatValue();
 
-		return Math.abs(Math.round(playOffset + (now - playTime) / sf)) % sourceBuffer.length;
+		return Math.abs(Math.round((float) playOffset + (now - playTime) / sf)) % sourceBuffer.length;
 	}
 
 	public Granulize setStretchFactor(float stretchFactor) {
@@ -80,22 +80,22 @@ public class Granulize extends SoundProducer.Amplifiable {
 		}
 
         float amp = currentAmplitude;
-        float dAmp = (amp() - amp) / buf.length;
+        float dAmp = (amp() - amp) / (float) buf.length;
 
 
 //		if (!p)
 //			dAmp = (0 - amp) / buf.length;
 
-		long samples = buf.length;
+		long samples = (long) buf.length;
 
         long[] cGrain = currentGrain;
         long[] fGrain = fadingGrain;
         float dNow = pitchFactor.floatValue();
         float n = now;
 
-		for (int i = 0; i < samples; i++ ) {
-            float nextSample = 0;
-            long lnow = Math.round(n);
+		for (int i = 0; (long) i < samples; i++ ) {
+            float nextSample = (float) 0;
+            long lnow = (long) Math.round(n);
 			if (cGrain != null) {
 				nextSample = grains.sample(cGrain, lnow);
 				if (Granulator.isFading(cGrain, lnow)) {
@@ -125,7 +125,7 @@ public class Granulize extends SoundProducer.Amplifiable {
 
     @Override
     public void skip(int samplesToSkip, int readRate) {
-        now += (pitchFactor.floatValue() * samplesToSkip);// / readRate;
+        now += (pitchFactor.floatValue() * (float) samplesToSkip);// / readRate;
     }
 
 

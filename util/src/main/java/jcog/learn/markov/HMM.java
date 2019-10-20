@@ -26,7 +26,6 @@ package jcog.learn.markov;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
-import java.util.Arrays;
 
 
 /**
@@ -85,9 +84,9 @@ public class HMM implements Serializable{
 	private void reset() {
 
 
-        pi[0] = 1;
+        pi[0] = 1.0;
 		for(int i = 1; i<numStates; i++) {
-			pi[i] = 0;
+			pi[i] = (double) 0;
 		}
 
 
@@ -101,7 +100,7 @@ public class HMM implements Serializable{
 				} else if(i==numStates-2 && j==numStates-1) { 
 					a[i][j] = 0.5;
 				} else if(i<=j && i>j-jumplimit-1) {
-					a[i][j] = 1.0/(jumplimit+1);
+					a[i][j] = 1.0/ (double) (jumplimit + 1);
 				} else {
 					a[i][j] = 0.0;
 				}
@@ -138,8 +137,8 @@ public class HMM implements Serializable{
 		
 		for(int i = 0; i<a.length; i++) {
 			for(int j = 0; j<a[i].length; j++) {
-				double zaehler=0;
-				double nenner=0;
+				double zaehler= (double) 0;
+				double nenner= (double) 0;
 
 				for (int[] sequence : trainsequence) {
 
@@ -147,16 +146,16 @@ public class HMM implements Serializable{
                     double[][] bwd = this.backwardProc(sequence);
                     double prob = this.getProbability(sequence);
 		
-					double zaehler_innersum=0;
-					double nenner_innersum=0;
+					double zaehler_innersum= (double) 0;
+					double nenner_innersum= (double) 0;
 					
 					
 					for(int t = 0; t<sequence.length-1; t++) {
 						zaehler_innersum+=fwd[i][t]*a[i][j]*b[j][sequence[t+1]]*bwd[j][t+1];
 						nenner_innersum+=fwd[i][t]*bwd[i][t];
 					}
-					zaehler+=(1/prob)*zaehler_innersum;
-					nenner+=(1/prob)*nenner_innersum;
+					zaehler+=(1.0 /prob)*zaehler_innersum;
+					nenner+=(1.0 /prob)*nenner_innersum;
 				} 
 		
 				a_new[i][j] = zaehler/nenner;
@@ -166,8 +165,8 @@ public class HMM implements Serializable{
 		
 		for(int i = 0; i<b.length; i++) {
 			for(int j = 0; j<b[i].length; j++) {
-				double zaehler=0;
-				double nenner=0;
+				double zaehler= (double) 0;
+				double nenner= (double) 0;
 			
 				for (int[] sequence : trainsequence) {
 
@@ -175,8 +174,8 @@ public class HMM implements Serializable{
                     double[][] bwd = this.backwardProc(sequence);
                     double prob = this.getProbability(sequence);
 		
-					double zaehler_innersum=0;
-					double nenner_innersum=0;
+					double zaehler_innersum= (double) 0;
+					double nenner_innersum= (double) 0;
 					
 					
 					for(int t = 0; t<sequence.length-1; t++) {
@@ -185,8 +184,8 @@ public class HMM implements Serializable{
 						}
 						nenner_innersum+=fwd[i][t]*bwd[i][t];
 					}
-					zaehler+=(1/prob)*zaehler_innersum;
-					nenner+=(1/prob)*nenner_innersum;
+					zaehler+=(1.0 /prob)*zaehler_innersum;
+					nenner+=(1.0 /prob)*nenner_innersum;
 				} 
 		
 				b_new[i][j] = zaehler/nenner;
@@ -211,7 +210,7 @@ public class HMM implements Serializable{
 		}
 		for (int i = 1; i < o.length; i++) {
 			for (int k = 0; k < f.length; k++) {
-				double sum = 0;
+				double sum = (double) 0;
 				for (int l = 0; l < numStates; l++) {
 					sum += f[l][i-1] * a[l][k];
 				}
@@ -252,11 +251,11 @@ public class HMM implements Serializable{
         double[][] bwd = new double[numStates][T];
 		/* Basisfall */
 		for (int i = 0; i < numStates; i++)
-			bwd[i][T - 1] = 1;
+			bwd[i][T - 1] = 1.0;
 		/* Induktion */
 		for (int t = T - 2; t >= 0; t--) {
 			for (int i = 0; i < numStates; i++) {
-				bwd[i][t] = 0;
+				bwd[i][t] = (double) 0;
 				for (int j = 0; j < numStates; j++)
 					bwd[i][t] += (bwd[j][t + 1] * a[i][j] * b[j][o[t + 1]]);
 			}

@@ -43,7 +43,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
         long le = l.end();
 
         int head = q.head();
-        int mid = indexNear(head, (ls + le) / 2);
+        int mid = indexNear(head, (ls + le) / 2L);
         if (mid != -1) {
             Task t = q.peek(head, mid);
             if (t != null && t.intersects(l))
@@ -194,7 +194,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
         int head = q.head();
 
         if (minT != ETERNAL && minT != TIMELESS) {
-            long T = (minT+maxT)/2;
+            long T = (minT+maxT)/ 2L;
 
             int center = indexNear(head, T);
 

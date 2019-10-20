@@ -38,7 +38,7 @@ public class a extends GamePanel {
 
 	@Override
 	public void start() {
-		enableEvents(8);
+		enableEvents(8L);
 		new Thread(this).start();
 	}
 
@@ -83,7 +83,7 @@ public class a extends GamePanel {
 			for (x = 0; x < width; x++) {
 				for (y = 0; y < height; y++) {
 					for (i = 0; i < 8; i++) {
-						j = (S.charAt((k == 0 ? 0 : 440) + height * x + y) >> (i << 1)) & 3;
+						j = ((int) S.charAt((k == 0 ? 0 : 440) + height * x + y) >> (i << 1)) & 3;
 						pixels[i] = j == 0 ? 0 : 0xFF000000 | (j == 1 ? 0 : j == 2 ? 0x7F7F7F : 0xBFBFBF);
 					}
 					sprites[k].setRGB(x << 3, y, 8, 1, pixels, 0, 8);
@@ -137,15 +137,15 @@ public class a extends GamePanel {
         Graphics2D g3 = null;
         final ArrayList<int[]> enemies = new ArrayList<int[]>();
         final ArrayList<float[]> lasers = new ArrayList<float[]>();
-        float yawSin = 0;
-        float yawCos = 0;
-        float heightVelocity = 0;
-        float yawVelocity = 0;
-        float roll = 0;
-        float yaw = 0;
-        float zo = 0;
-        float yo = 0;
-        float xo = 0;
+        float yawSin = (float) 0;
+        float yawCos = (float) 0;
+        float heightVelocity = (float) 0;
+        float yawVelocity = (float) 0;
+        float roll = (float) 0;
+        float yaw = (float) 0;
+        float zo = (float) 0;
+        float yo = (float) 0;
+        float xo = (float) 0;
         boolean paused = true;
         boolean fadingIn = false;
         boolean fading = true;
@@ -221,7 +221,7 @@ public class a extends GamePanel {
         while (true) {
 
 			do {
-				nextFrameStartTime += 16666667;
+				nextFrameStartTime += 16666667L;
 
 
                 float Y;
@@ -253,15 +253,15 @@ public class a extends GamePanel {
 
 						playerPower = 64;
 						lastEnemyDrawn = 0;
-						xo = 0;
-						yo = MIN_Y;
-						zo = 16384;
-						yaw = 0;
-						roll = 0;
-						yawCos = 1;
-						yawSin = 0;
-						yawVelocity = 0;
-						heightVelocity = 0;
+						xo = (float) 0;
+						yo = (float) MIN_Y;
+						zo = 16384.0F;
+						yaw = (float) 0;
+						roll = (float) 0;
+						yawCos = 1.0F;
+						yawSin = (float) 0;
+						yawVelocity = (float) 0;
+						heightVelocity = (float) 0;
 
 						lasers.clear();
 						enemies.clear();
@@ -269,10 +269,10 @@ public class a extends GamePanel {
 						
 						for (i = 0; i < (level << 2) + 3; i++) {
 							X = random.nextFloat() * 6.28f;
-							Y = random.nextFloat() * 16384;
+							Y = random.nextFloat() * 16384.0F;
                             final int[] atat = new int[8];
-							atat[ENEMY_X] = (int) (Y * Math.cos(X));
-							atat[ENEMY_Z] = (int) (Y * Math.sin(X));
+							atat[ENEMY_X] = (int) ((double) Y * Math.cos((double) X));
+							atat[ENEMY_Z] = (int) ((double) Y * Math.sin((double) X));
 							atat[ENEMY_TYPE] = random.nextInt(2);
 							atat[ENEMY_POWER] = 64;
 							enemies.add(atat);
@@ -305,8 +305,8 @@ public class a extends GamePanel {
 					enemyHitCountdown--;
 				}
 
-				yawCos = (float) Math.cos(yaw);
-				yawSin = (float) Math.sin(yaw);
+				yawCos = (float) Math.cos((double) yaw);
+				yawSin = (float) Math.sin((double) yaw);
 
 				if (enemyLaserDelay > 0) {
 					enemyLaserDelay--;
@@ -316,17 +316,17 @@ public class a extends GamePanel {
 
                         final int[] enemy = enemies.get(lastEnemyDrawn);
                         final float[] laser = new float[8];
-						laser[LASER_X] = enemy[ENEMY_X];
-						laser[LASER_Y] = enemy[ENEMY_TYPE] == ENEMY_TYPE_ATAT ? 640 : 128;
-						laser[LASER_Z] = enemy[ENEMY_Z];
-						laser[LASER_RX] = random.nextInt(768) - 384 + xo - enemy[ENEMY_X];
-						laser[LASER_RY] = random.nextInt(768) - 384 + yo - laser[LASER_Y];
-						laser[LASER_RZ] = random.nextInt(768) - 384 + zo - enemy[ENEMY_Z];
-                        final float mag = (float) Math.sqrt(laser[LASER_RX] * laser[LASER_RX] + laser[LASER_RY] * laser[LASER_RY] + laser[LASER_RZ] * laser[LASER_RZ]);
+						laser[LASER_X] = (float) enemy[ENEMY_X];
+						laser[LASER_Y] = (float) (enemy[ENEMY_TYPE] == ENEMY_TYPE_ATAT ? 640 : 128);
+						laser[LASER_Z] = (float) enemy[ENEMY_Z];
+						laser[LASER_RX] = (float) (random.nextInt(768) - 384) + xo - (float) enemy[ENEMY_X];
+						laser[LASER_RY] = (float) (random.nextInt(768) - 384) + yo - laser[LASER_Y];
+						laser[LASER_RZ] = (float) (random.nextInt(768) - 384) + zo - (float) enemy[ENEMY_Z];
+                        final float mag = (float) Math.sqrt((double) (laser[LASER_RX] * laser[LASER_RX] + laser[LASER_RY] * laser[LASER_RY] + laser[LASER_RZ] * laser[LASER_RZ]));
 						laser[LASER_RX] /= mag;
 						laser[LASER_RY] /= mag;
 						laser[LASER_RZ] /= mag;
-						laser[LASER_TYPE] = LASER_TYPE_ENEMY;
+						laser[LASER_TYPE] = (float) LASER_TYPE_ENEMY;
 						lasers.add(laser);
 					}
 				}
@@ -342,35 +342,35 @@ public class a extends GamePanel {
                         float[] laser = new float[8];
 						laser[LASER_RX] = yawSin;
 						laser[LASER_RZ] = -yawCos;
-						laser[LASER_X] = xo - QUARTER_SCREEN_SIZE * yawCos;
-						laser[LASER_Y] = yo - HALF_SCREEN_SIZE;
-						laser[LASER_Z] = zo - QUARTER_SCREEN_SIZE * yawSin;
+						laser[LASER_X] = xo - (float) QUARTER_SCREEN_SIZE * yawCos;
+						laser[LASER_Y] = yo - (float) HALF_SCREEN_SIZE;
+						laser[LASER_Z] = zo - (float) QUARTER_SCREEN_SIZE * yawSin;
 						lasers.add(laser);
 						laser = new float[8];
 						laser[LASER_RX] = yawSin;
 						laser[LASER_RZ] = -yawCos;
-						laser[LASER_X] = xo + QUARTER_SCREEN_SIZE * yawCos;
-						laser[LASER_Y] = yo - HALF_SCREEN_SIZE;
-						laser[LASER_Z] = zo + QUARTER_SCREEN_SIZE * yawSin;
+						laser[LASER_X] = xo + (float) QUARTER_SCREEN_SIZE * yawCos;
+						laser[LASER_Y] = yo - (float) HALF_SCREEN_SIZE;
+						laser[LASER_Z] = zo + (float) QUARTER_SCREEN_SIZE * yawSin;
 						lasers.add(laser);
 					}
 				}
 
 				
-				xo += k * yawSin;
-				zo -= k * yawCos;
+				xo += (float) k * yawSin;
+				zo -= (float) k * yawCos;
 
 				yaw += yawVelocity;
 				roll = ROLL_SCALE * yawVelocity;
 
-				if (xo * xo + zo * zo > MAX_BATTLE_DISTANCE_2) {
+				if (xo * xo + zo * zo > (float) MAX_BATTLE_DISTANCE_2) {
 					
 					
 
 					X = yaw + 0.01f;
 					Y = yaw - 0.01f;
 
-					if (zo * Math.cos(X) - xo * Math.sin(X) > zo * Math.cos(Y) - xo * Math.sin(Y)) {
+					if ((double) zo * Math.cos((double) X) - (double) xo * Math.sin((double) X) > (double) zo * Math.cos((double) Y) - (double) xo * Math.sin((double) Y)) {
 						if (yawVelocity < MAX_YAW_VELOCITY) {
 							yawVelocity += YAW_ACCELERATION;
 						}
@@ -397,33 +397,33 @@ public class a extends GamePanel {
 					} else if (yawVelocity < -YAW_ACCELERATION) {
 						yawVelocity += YAW_ACCELERATION;
 					} else {
-						yawVelocity = 0;
+						yawVelocity = (float) 0;
 					}
 
 					
 					if (a[VK_DOWN]) {
-						if (heightVelocity > -MAX_HEIGHT_VELOCITY) {
-							heightVelocity -= HEIGHT_ACCELERATION;
+						if (heightVelocity > (float) -MAX_HEIGHT_VELOCITY) {
+                            heightVelocity = heightVelocity - (float) HEIGHT_ACCELERATION;
 						}
-					} else if (a[VK_UP] && yo < MAX_Y) {
-						if (heightVelocity < MAX_HEIGHT_VELOCITY) {
-							heightVelocity += HEIGHT_ACCELERATION;
+					} else if (a[VK_UP] && yo < (float) MAX_Y) {
+						if (heightVelocity < (float) MAX_HEIGHT_VELOCITY) {
+                            heightVelocity = heightVelocity + (float) HEIGHT_ACCELERATION;
 						}
-					} else if (heightVelocity > HEIGHT_ACCELERATION) {
-						heightVelocity -= HEIGHT_ACCELERATION;
-					} else if (heightVelocity < -HEIGHT_ACCELERATION) {
-						heightVelocity += HEIGHT_ACCELERATION;
+					} else if (heightVelocity > (float) HEIGHT_ACCELERATION) {
+                        heightVelocity = heightVelocity - (float) HEIGHT_ACCELERATION;
+					} else if (heightVelocity < (float) -HEIGHT_ACCELERATION) {
+                        heightVelocity = heightVelocity + (float) HEIGHT_ACCELERATION;
 					} else {
-						heightVelocity = 0;
+						heightVelocity = (float) 0;
 					}
 
 					yo += heightVelocity;
-					if (yo > MAX_Y) {
-						yo = MAX_Y;
-						heightVelocity = 0;
-					} else if (yo < MIN_Y) {
-						yo = MIN_Y;
-						heightVelocity = 0;
+					if (yo > (float) MAX_Y) {
+						yo = (float) MAX_Y;
+						heightVelocity = (float) 0;
+					} else if (yo < (float) MIN_Y) {
+						yo = (float) MIN_Y;
+						heightVelocity = (float) 0;
 					}
 				}
 
@@ -431,23 +431,23 @@ public class a extends GamePanel {
                 float Z;
                 for (i = lasers.size() - 1; i >= 0; i--) {
                     final float[] laser = lasers.get(i);
-					laser[LASER_X] += LASER_SPEED * laser[LASER_RX];
-					laser[LASER_Y] += LASER_SPEED * laser[LASER_RY];
-					laser[LASER_Z] += LASER_SPEED * laser[LASER_RZ];
+					laser[LASER_X] += (float) LASER_SPEED * laser[LASER_RX];
+					laser[LASER_Y] += (float) LASER_SPEED * laser[LASER_RY];
+					laser[LASER_Z] += (float) LASER_SPEED * laser[LASER_RZ];
 
-					if (laser[LASER_TYPE] == LASER_TYPE_ENEMY) {
+					if (laser[LASER_TYPE] == (float) LASER_TYPE_ENEMY) {
 						X = xo - laser[LASER_X];
 						Y = yo - laser[LASER_Y];
 						Z = zo - laser[LASER_Z];
 
-						if (X * X + Y * Y + Z * Z < 32768 && --playerPower <= 0) {
+						if (X * X + Y * Y + Z * Z < 32768.0F && --playerPower <= 0) {
 							dying = true;
 							fading = true;
 							fadingIn = false;
 						}
 					}
 
-					if (++laser[LASER_COUNT] > LASER_MAX_COUNT || laser[LASER_Y] < 0 || laser[LASER_Y] > SKY_Y) {
+					if (++laser[LASER_COUNT] > (float) LASER_MAX_COUNT || laser[LASER_Y] < (float) 0 || laser[LASER_Y] > (float) SKY_Y) {
 						lasers.remove(i);
 					}
 				}
@@ -466,8 +466,8 @@ public class a extends GamePanel {
 						}
 					} else {
 						
-						X = enemy[ENEMY_X] - xo;
-						Z = enemy[ENEMY_Z] - zo;
+						X = (float) enemy[ENEMY_X] - xo;
+						Z = (float) enemy[ENEMY_Z] - zo;
 
                         float xe = yawCos;
                         float ze = yawSin;
@@ -482,7 +482,7 @@ public class a extends GamePanel {
                         int w;
                         int v;
                         int u;
-                        if (x2 * x2 + z2 * z2 < 1024) {
+                        if (x2 * x2 + z2 * z2 < 1024.0F) {
 							
 							if (enemy[ENEMY_TYPE] == ENEMY_TYPE_ATAT) {
 								u = 16;
@@ -497,8 +497,8 @@ public class a extends GamePanel {
 								p = 56;
 								q = 64;
 							}
-							x = (int) (v - dot / u);
-							y = (int) (w - yo / u);
+							x = (int) ((float) v - dot / (float) u);
+							y = (int) ((float) w - yo / (float) u);
 
 							
 							if (x >= 0 && y >= 0 && x < p && y < q && (enemy[ENEMY_TYPE] == ENEMY_TYPE_ATST || sprites[SPRITE_ATAT].getRGB(x, y) != 0)) {
@@ -511,10 +511,10 @@ public class a extends GamePanel {
 						
 						outter: for (i = lasers.size() - 1; i >= 0; i--) {
                             final float[] laser = lasers.get(i);
-							if (laser[LASER_TYPE] == LASER_TYPE_PLAYER) {
+							if (laser[LASER_TYPE] == (float) LASER_TYPE_PLAYER) {
 								for (k = 0; k < 512; k += 32) {
-									X = enemy[ENEMY_X] - (laser[LASER_X] + k * laser[LASER_RX]);
-									Z = enemy[ENEMY_Z] - (laser[LASER_Z] + k * laser[LASER_RZ]);
+									X = (float) enemy[ENEMY_X] - (laser[LASER_X] + (float) k * laser[LASER_RX]);
+									Z = (float) enemy[ENEMY_Z] - (laser[LASER_Z] + (float) k * laser[LASER_RZ]);
 
 									xe = yawCos;
 									ze = yawSin;
@@ -524,7 +524,7 @@ public class a extends GamePanel {
 									x2 = X - xe;
 									z2 = Z - ze;
 
-									if (x2 * x2 + z2 * z2 < 1024) {
+									if (x2 * x2 + z2 * z2 < 1024.0F) {
 										
 										
 										if (enemy[ENEMY_TYPE] == ENEMY_TYPE_ATAT) {
@@ -540,8 +540,8 @@ public class a extends GamePanel {
 											p = 56;
 											q = 64;
 										}
-										x = (int) (v - dot / u);
-										y = (int) (w - laser[LASER_Y] / u);
+										x = (int) ((float) v - dot / (float) u);
+										y = (int) ((float) w - laser[LASER_Y] / (float) u);
 
 										
 										if (x >= 0 && y >= 0 && x < p && y < q && (enemy[ENEMY_TYPE] == ENEMY_TYPE_ATST || sprites[SPRITE_ATAT].getRGB(x, y) != 0)) {
@@ -565,9 +565,9 @@ public class a extends GamePanel {
 											for (u = 0; u < v; u++) {
                                                 final int[] explosion = new int[8];
 												explosion[ENEMY_TYPE] = ENEMY_TYPE_EXPLOSION;
-												explosion[ENEMY_X] = (int) (laser[LASER_X] + k * laser[LASER_RX]);
-												explosion[ENEMY_Y] = (int) (laser[LASER_Y] + k * laser[LASER_RY]);
-												explosion[ENEMY_Z] = (int) (laser[LASER_Z] + k * laser[LASER_RZ]);
+												explosion[ENEMY_X] = (int) (laser[LASER_X] + (float) k * laser[LASER_RX]);
+												explosion[ENEMY_Y] = (int) (laser[LASER_Y] + (float) k * laser[LASER_RY]);
+												explosion[ENEMY_Z] = (int) (laser[LASER_Z] + (float) k * laser[LASER_RZ]);
 												explosion[ENEMY_RX] = random.nextInt(w) - p;
 												explosion[ENEMY_RY] = random.nextInt(w) - p;
 												explosion[ENEMY_RZ] = random.nextInt(w) - p;
@@ -603,21 +603,21 @@ public class a extends GamePanel {
 			for (i = 0; i < 362; i++) { 
 
 				
-				float ry = HALF_SCREEN_SIZE - i;
-				float rz = -SCREEN_DISTANCE;
-                final float mag = (float) Math.sqrt(ry * ry + rz * rz);
+				float ry = (float) (HALF_SCREEN_SIZE - i);
+				float rz = (float) -SCREEN_DISTANCE;
+                final float mag = (float) Math.sqrt((double) (ry * ry + rz * rz));
 				ry /= mag;
 				rz /= mag;
 
 				
 				for (k = 0; k < 2; k++) {
-                    final float t = (SKY_Y * k - yo) / ry;
+                    final float t = ((float) (SKY_Y * k) - yo) / ry;
                     final int[][] texture = k == 0 ? floorTexture : skyTexture;
                     final int textureScale = k == 0 ? 4 : 8;
-					if (t > 0) {
+					if (t > (float) 0) {
 
-                        final float scale = t / SCREEN_DISTANCE;
-                        final float floorX = -scale * HALF_SCREEN_SIZE;
+                        final float scale = t / (float) SCREEN_DISTANCE;
+                        final float floorX = -scale * (float) HALF_SCREEN_SIZE;
                         final float floorZ = rz * t;
 
 
@@ -644,15 +644,15 @@ public class a extends GamePanel {
 			for (i = enemies.size() - 1; i >= 0; i--) {
                 final int[] enemy = enemies.get(i);
 
-                final float x0 = enemy[ENEMY_X] - xo;
-                final float z0 = enemy[ENEMY_Z] - zo;
+                final float x0 = (float) enemy[ENEMY_X] - xo;
+                final float z0 = (float) enemy[ENEMY_Z] - zo;
 
 
                 final float x1 = yawCos * x0 + yawSin * z0;
                 final float z1 = yawCos * z0 - yawSin * x0;
 
-				if (z1 < 0) {
-                    final float K = SCREEN_DISTANCE / -z1;
+				if (z1 < (float) 0) {
+                    final float K = (float) SCREEN_DISTANCE / -z1;
 
                     int width = 1024;
                     int height = 864;
@@ -676,11 +676,11 @@ public class a extends GamePanel {
 
 					if (spriteCount < 4096) {
                         final int[] scaledSprite = scaledSprites[spriteCount++];
-						scaledSprite[SPRITE_X] = 181 + (int) ((x1 - offsetX) * K);
-						scaledSprite[SPRITE_Y] = 181 - (int) ((offsetY - yo) * K);
+						scaledSprite[SPRITE_X] = 181 + (int) ((x1 - (float) offsetX) * K);
+						scaledSprite[SPRITE_Y] = 181 - (int) (((float) offsetY - yo) * K);
 						scaledSprite[SPRITE_Z] = (int) z1;
-						scaledSprite[SPRITE_WIDTH] = (int) (K * width);
-						scaledSprite[SPRITE_HEIGHT] = (int) (K * height);
+						scaledSprite[SPRITE_WIDTH] = (int) (K * (float) width);
+						scaledSprite[SPRITE_HEIGHT] = (int) (K * (float) height);
 						scaledSprite[SPRITE_INDEX] = enemy[ENEMY_TYPE];
 						scaledSprite[SPRITE_DRAWN] = 0;
 						scaledSprite[SPRITE_ENEMY_INDEX] = i;
@@ -721,9 +721,9 @@ public class a extends GamePanel {
                 final float y1 = laser[LASER_Y] - yo;
                 final float z1 = laser[LASER_Z] - zo;
 
-                final float x2 = x1 + LASER_LENGTH * laser[LASER_RX];
-                final float y2 = y1 + LASER_LENGTH * laser[LASER_RY];
-                final float z2 = z1 + LASER_LENGTH * laser[LASER_RZ];
+                final float x2 = x1 + (float) LASER_LENGTH * laser[LASER_RX];
+                final float y2 = y1 + (float) LASER_LENGTH * laser[LASER_RY];
+                final float z2 = z1 + (float) LASER_LENGTH * laser[LASER_RZ];
 
 
                 final float _x1 = yawCos * x1 + yawSin * z1;
@@ -733,14 +733,14 @@ public class a extends GamePanel {
                 final float _z2 = yawCos * z2 - yawSin * x2;
 
 				
-				if (_z1 < 0 && _z2 < 0) {
-                    final float k1 = SCREEN_DISTANCE / -_z1;
-                    final float k2 = SCREEN_DISTANCE / -_z2;
+				if (_z1 < (float) 0 && _z2 < (float) 0) {
+                    final float k1 = (float) SCREEN_DISTANCE / -_z1;
+                    final float k2 = (float) SCREEN_DISTANCE / -_z2;
 
-					xPoints[0] = 181 + (int) ((_x1 - LASER_HALF_WIDTH) * k1);
-					xPoints[1] = 181 + (int) ((_x1 + LASER_HALF_WIDTH) * k1);
-					xPoints[2] = 181 + (int) ((_x2 + LASER_HALF_WIDTH) * k2);
-					xPoints[3] = 181 + (int) ((_x2 - LASER_HALF_WIDTH) * k2);
+					xPoints[0] = 181 + (int) ((_x1 - (float) LASER_HALF_WIDTH) * k1);
+					xPoints[1] = 181 + (int) ((_x1 + (float) LASER_HALF_WIDTH) * k1);
+					xPoints[2] = 181 + (int) ((_x2 + (float) LASER_HALF_WIDTH) * k2);
+					xPoints[3] = 181 + (int) ((_x2 - (float) LASER_HALF_WIDTH) * k2);
 					yPoints[0] = yPoints[1] = 181 - (int) (y1 * k1);
 					yPoints[2] = yPoints[3] = 181 - (int) (y2 * k2);
 
@@ -753,7 +753,7 @@ public class a extends GamePanel {
 
 			
 			g2.translate(-107, -107);
-			g2.rotate(roll, 362, 362);
+			g2.rotate((double) roll, 362.0, 362.0);
 			g2.drawImage(image, 0, 0, 724, 724, null);
 			g2.setTransform(transform);
 
@@ -773,13 +773,13 @@ public class a extends GamePanel {
 				g2.fillOval(-2, -2, 4, 4);
 				g2.drawLine(0, 0, 14, -29);
 				g2.drawLine(0, 0, -14, -29);
-				g2.rotate(-yaw);
+				g2.rotate((double) -yaw);
 				g2.drawLine(0, 0, ((int) (-xo)) >> 9, ((int) (-zo)) >> 9);
 				g2.drawOval((((int) (-xo)) >> 9) - 4, (((int) (-zo)) >> 9) - 4, 6, 6);
 				for (i = 0; i < enemies.size(); i++) {
                     final int[] enemy = enemies.get(i);
-					j = ((int) (enemy[ENEMY_X] - xo)) >> 9;
-					k = ((int) (enemy[ENEMY_Z] - zo)) >> 9;
+					j = ((int) ((float) enemy[ENEMY_X] - xo)) >> 9;
+					k = ((int) ((float) enemy[ENEMY_Z] - zo)) >> 9;
 					if (j * j + k * k <= 1024) {
 						g2.fillOval(j - 2, k - 2, 4, 4);
 					}
@@ -808,7 +808,7 @@ public class a extends GamePanel {
 			}
 
 			
-			while (nextFrameStartTime - System.nanoTime() > 0) {
+			while (nextFrameStartTime - System.nanoTime() > 0L) {
 				Thread.yield();
 			}
 		}
@@ -845,7 +845,7 @@ public class a extends GamePanel {
 	  frame.pack();
 	  frame.setLocationRelativeTo(null);
 	  frame.setVisible(true);
-	  Thread.sleep(250);
+	  Thread.sleep(250L);
 	  applet.start();
 	}
 }

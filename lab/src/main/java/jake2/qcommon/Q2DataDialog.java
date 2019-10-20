@@ -73,7 +73,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 1;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        gridBagConstraints.weightx = 0;
+        gridBagConstraints.weightx = (double) 0;
         gridBagConstraints.anchor = GridBagConstraints.SOUTHWEST;
         choosePanel.add(new JLabel("baseq2 directory"), gridBagConstraints);
 
@@ -82,7 +82,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.insets = new java.awt.Insets(5, 2, 5, 2);
-        gridBagConstraints.weightx = 1;
+        gridBagConstraints.weightx = 1.0;
         choosePanel.add(jTextField1, gridBagConstraints);
 
         changeButton.setText("...");
@@ -90,7 +90,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 1;
-        gridBagConstraints.weightx = 0;
+        gridBagConstraints.weightx = (double) 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.NONE;
         gridBagConstraints.insets = new java.awt.Insets(5, 2, 5, 5);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
@@ -99,8 +99,8 @@ public class Q2DataDialog extends javax.swing.JDialog {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = 4;
-        gridBagConstraints.weightx = 0;
-        gridBagConstraints.weighty = 1;
+        gridBagConstraints.weightx = (double) 0;
+        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         choosePanel.add(new JPanel(), gridBagConstraints);
 
@@ -109,7 +109,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.gridwidth = 4;
-        gridBagConstraints.weighty = 0;
+        gridBagConstraints.weighty = (double) 0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         choosePanel.add(cancelButton, gridBagConstraints);
@@ -327,7 +327,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
             constraints.gridx = 1;
             constraints.gridy = 1;
             constraints.gridwidth = 2;
-            constraints.weightx = 1;
+            constraints.weightx = 1.0;
             constraints.fill = GridBagConstraints.HORIZONTAL;
             constraints.insets = new Insets(0, 2, 0, 5);
             constraints.anchor = GridBagConstraints.WEST;
@@ -360,7 +360,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
             constraints.gridx = 0;
             constraints.gridy = 1;
             constraints.gridwidth = 1;
-            constraints.weightx = 0;
+            constraints.weightx = (double) 0;
             constraints.insets = new Insets(0, 5, 0, 2);
             constraints.fill = GridBagConstraints.NONE;
             constraints.anchor = GridBagConstraints.EAST;
@@ -374,7 +374,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
             constraints.gridx = 0;
             constraints.gridy = 3;
             constraints.gridwidth = 2;
-            constraints.weighty = 1;
+            constraints.weighty = 1.0;
             constraints.insets = new Insets(5, 5, 5, 5);
             constraints.fill = GridBagConstraints.NONE;
             constraints.anchor = GridBagConstraints.SOUTHWEST;
@@ -438,7 +438,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
 
             constraints.gridx = 1;
             constraints.gridy = 0;
-            constraints.weightx = 1;
+            constraints.weightx = 1.0;
             constraints.gridwidth = 3;
             constraints.insets = new Insets(5, 5, 0, 5);
             constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -455,7 +455,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
 
             constraints.gridx = 3;
             constraints.gridy = 1;
-            constraints.weightx = 0;
+            constraints.weightx = (double) 0;
             constraints.gridwidth = 1;
             constraints.fill = GridBagConstraints.NONE;
             JButton choose = new JButton("...");
@@ -465,7 +465,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
             constraints.gridx = 0;
             constraints.gridy = 2;
             constraints.gridwidth = 1;
-            constraints.weighty = 1;
+            constraints.weighty = 1.0;
             constraints.fill = GridBagConstraints.NONE;
             JButton exit = new JButton("Exit");
             exit.addActionListener(e -> exit());
@@ -596,8 +596,8 @@ public class Q2DataDialog extends javax.swing.JDialog {
             gridBagConstraints.gridy = 1;
             gridBagConstraints.anchor = GridBagConstraints.SOUTH;
             gridBagConstraints.fill = GridBagConstraints.NONE;
-            gridBagConstraints.weighty = 1;
-            gridBagConstraints.weightx = 0;
+            gridBagConstraints.weighty = 1.0;
+            gridBagConstraints.weightx = (double) 0;
             cancel.addActionListener(e -> cancel());
             add(cancel, gridBagConstraints);
 

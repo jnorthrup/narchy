@@ -75,7 +75,7 @@ public class CylinderShape extends BoxShape {
 
         float s = (VectorUtil.coord(v, XX) * VectorUtil.coord(v, XX) + VectorUtil.coord(v, ZZ) * VectorUtil.coord(v, ZZ));
 		if (s != 0f) {
-            float d = radius / (float) Math.sqrt(s);
+            float d = radius / (float) Math.sqrt((double) s);
             VectorUtil.setCoord(out, XX, VectorUtil.coord(v, XX) * d);
 			VectorUtil.setCoord(out, YY, VectorUtil.coord(v, YY) < 0f ? -halfHeight : halfHeight);
 			VectorUtil.setCoord(out, ZZ, VectorUtil.coord(v, ZZ) * d);

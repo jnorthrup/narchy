@@ -12,7 +12,7 @@ public class SpaceProblem implements Problem<SpaceProblem.SpaceFind> {
         return dist(currentNode.x, currentNode.y, successorNode.x, successorNode.y);
     }
     public static double dist(int x, int y, int otherX, int otherY) {
-        return Math.sqrt(Math.pow(x - otherX, 2) + Math.pow(y - otherY, 2));
+        return Math.sqrt(Math.pow((double) (x - otherX), 2.0) + Math.pow((double) (y - otherY), 2.0));
     }
 
     @Override
@@ -49,7 +49,7 @@ public class SpaceProblem implements Problem<SpaceProblem.SpaceFind> {
 
         @Override
         public double g() {
-            return 0;
+            return (double) 0;
         }
 
         @Override
@@ -94,7 +94,7 @@ public class SpaceProblem implements Problem<SpaceProblem.SpaceFind> {
 
             @Override
             public double cost(SpaceFind currentNode, SpaceFind successorNode) {
-                return Math.sqrt(Math.pow(currentNode.x - successorNode.x, 2) + Math.pow(currentNode.y - successorNode.y, 2));
+                return Math.sqrt(Math.pow((double) (currentNode.x - successorNode.x), 2.0) + Math.pow((double) (currentNode.y - successorNode.y), 2.0));
             }
 
             @Override

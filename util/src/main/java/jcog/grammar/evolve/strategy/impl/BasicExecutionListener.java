@@ -99,8 +99,8 @@ public class BasicExecutionListener implements ExecutionListener, ExecutionListe
       
         this.status.overallGenerationsDone++;
 
-        double timeTakenPerGen = (double)(System.currentTimeMillis() - startTime) / this.status.overallGenerationsDone;
-        long elapsedMillis = (long)((this.status.overallGenerations - this.status.overallGenerationsDone) * timeTakenPerGen);
+        double timeTakenPerGen = (double)(System.currentTimeMillis() - startTime) / (double) this.status.overallGenerationsDone;
+        long elapsedMillis = (long)((double) (this.status.overallGenerations - this.status.overallGenerationsDone) * timeTakenPerGen);
 
         this.status.evolutionEta = String.format("%d h, %d m, %d s",
                 TimeUnit.MILLISECONDS.toHours(elapsedMillis),
@@ -120,7 +120,7 @@ public class BasicExecutionListener implements ExecutionListener, ExecutionListe
         
         
 
-        results.addCharachterEvaluated(strategy.getContext().getCurrentDataSet().getNumberOfChars() * population.size());
+        results.addCharachterEvaluated((long) (strategy.getContext().getCurrentDataSet().getNumberOfChars() * population.size()));
     }
 
     @Override
@@ -240,10 +240,10 @@ public class BasicExecutionListener implements ExecutionListener, ExecutionListe
             DataSet.Example example = dataset.getExample(index);
             extractionsSet.removeAll(example.getMatch());
             BasicStats exampleStats = new BasicStats();
-            exampleStats.fn = -1; 
-            exampleStats.fp = extractionsSet.size();
-            exampleStats.tp = extractionsList.length - exampleStats.fp;
-            exampleStats.tn = -1; 
+            exampleStats.fn = -1L;
+            exampleStats.fp = (long) extractionsSet.size();
+            exampleStats.tp = (long) extractionsList.length - exampleStats.fp;
+            exampleStats.tn = -1L;
             statsPerExample.add(exampleStats);
         }
         return statsPerExample;

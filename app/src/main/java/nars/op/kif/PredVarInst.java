@@ -13,7 +13,6 @@ package nars.op.kif;
  */
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class PredVarInst {
     

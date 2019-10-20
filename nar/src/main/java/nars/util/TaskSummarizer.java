@@ -43,7 +43,7 @@ public class TaskSummarizer extends NARPart implements Consumer<Task> {
                 case 2: return QUESTION;
                 case 3: return QUEST;
             }
-            return -1;
+            return (byte) -1;
         }
 
         static final int NUM = 0;
@@ -100,8 +100,8 @@ public class TaskSummarizer extends NARPart implements Consumer<Task> {
                     int num = x[0].get();
                     if (num > 0) {
                         Op o = Op.the(oi);
-                        float volMean = x[1].floatValue() / num;
-                        float priMean = Math.max(0, ((x[2].floatValue()-1)/PRI_DIGITS) / num);
+                        float volMean = x[1].floatValue() / (float) num;
+                        float priMean = Math.max((float) 0, ((x[2].floatValue()- 1.0F)/ (float) PRI_DIGITS) / (float) num);
                         c.accept(punc, num, o, volMean, priMean);
                     }
                 }

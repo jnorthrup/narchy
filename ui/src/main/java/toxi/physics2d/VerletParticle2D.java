@@ -83,11 +83,11 @@ public class VerletParticle2D extends Vec2D {
      * @param y
      */
     public VerletParticle2D(float x, float y) {
-        this(x, y, 1);
+        this(x, y, 1.0F);
     }
 
     public VerletParticle2D() {
-        this(0,0);
+        this((float) 0, (float) 0);
     }
 
     /**
@@ -109,7 +109,7 @@ public class VerletParticle2D extends Vec2D {
      * @param v position
      */
     public VerletParticle2D(ReadonlyVec2D v) {
-        this(v.x(), v.y(), 1);
+        this(v.x(), v.y(), 1.0F);
     }
 
     /**
@@ -220,7 +220,7 @@ public class VerletParticle2D extends Vec2D {
         Vec2D d = (this.sub(prev).scale(1f - drag)).addSelf(force.scale(
                 //invWeight * dt * dt
                 //invWeight * dt
-                1/mass
+                1.0F /mass
         ));
 
         next.addSelf(d);
@@ -279,7 +279,7 @@ public class VerletParticle2D extends Vec2D {
      * @return the inverse weight (1/weight)
      */
     public final float getInvMass() {
-        return 1/mass;
+        return 1.0F /mass;
     }
 
 //    /**
@@ -296,7 +296,7 @@ public class VerletParticle2D extends Vec2D {
     }
 
     public float getSpeed() {
-        return (float) Math.sqrt(getSpeedSq());
+        return (float) Math.sqrt((double) getSpeedSq());
     }
 
     public float getSpeedSq() {

@@ -80,7 +80,7 @@ public abstract class AbstractTimedCallable<X> extends AbstractTimedFuture<X> {
                 return r;
             else {
                 //TODO abstract sleep strategy
-                sleepMS(DEFAULT_TIMEOUT_POLL_PERIOD_MS);
+                sleepMS((long) DEFAULT_TIMEOUT_POLL_PERIOD_MS);
                 //Util.pauseNextIterative( );
             }
 

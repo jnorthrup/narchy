@@ -31,7 +31,7 @@ public abstract class LearnerAndActor {
         iterationsPerSecondCounter++;
 
         long t1 = System.currentTimeMillis();
-        if (t1 - t0 > 1000) {
+        if (t1 - t0 > 1000L) {
             t0 = t1;
             iterationsPerSecond = iterationsPerSecondCounter;
             iterationsPerSecondCounter = 0;

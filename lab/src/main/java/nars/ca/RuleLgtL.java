@@ -51,10 +51,10 @@ public class RuleLgtL {
 
 
 			int iTmp;
-			if (sTok.length() > 0 && sTok.charAt(0) == 'R')
+			if (sTok.length() > 0 && (int) sTok.charAt(0) == (int) 'R')
 			{
 				iRng = Integer.valueOf(sTok.substring(1));
-			} else if (sTok.length() > 0 && sTok.charAt(0) == 'C') 
+			} else if (sTok.length() > 0 && (int) sTok.charAt(0) == (int) 'C')
 																	
 			{
 				int i = Integer.valueOf(sTok.substring(1));
@@ -63,7 +63,7 @@ public class RuleLgtL {
 					iClo = i;
 				} else
 					isHist = false; 
-			} else if (sTok.length() > 0 && sTok.charAt(0) == 'M') 
+			} else if (sTok.length() > 0 && (int) sTok.charAt(0) == (int) 'M')
 																	
 			{
 				isCentr = (Integer.valueOf(sTok.substring(1)) > 0);
@@ -73,7 +73,7 @@ public class RuleLgtL {
 			} else if (sTok.startsWith("NN")) 
 			{
 				iNgh = MJRules.NGHTYP_NEUM;
-			} else if (sTok.length() > 0 && sTok.charAt(0) == 'S') 
+			} else if (sTok.length() > 0 && (int) sTok.charAt(0) == (int) 'S')
 																	
 			{
 				if (sTok.length() >= 4) {
@@ -85,7 +85,7 @@ public class RuleLgtL {
 						iSMax = Integer.valueOf(sBff);
 					}
 				}
-			} else if (sTok.length() > 0 && sTok.charAt(0) == 'B') 
+			} else if (sTok.length() > 0 && (int) sTok.charAt(0) == (int) 'B')
 																	
 			{
 				if (sTok.length() >= 4) {
@@ -220,14 +220,14 @@ public class RuleLgtL {
 				}
                 short bOldVal = crrState[i][j];
                 short bNewVal = bOldVal;
-				if (bNewVal >= iClo)
+				if ((int) bNewVal >= iClo)
 					bNewVal = (short) (iClo - 1);
 
                 int iCnt = 0;
 				int ir;
 				int ic;
 				if (isHist) {
-					if (bOldVal <= 1) 
+					if ((int) bOldVal <= 1)
 					{
 						for (ic = 10 - iRng; ic <= 10 + iRng; ic++) {
 							for (ir = 10 - iRng; ir <= 10 + iRng; ir++) {
@@ -235,7 +235,7 @@ public class RuleLgtL {
 									if ((fMoore)
 											|| ((Math.abs(ic - 10) + Math
 													.abs(ir - 10)) <= iRng)) {
-										if (crrState[xVector[ic]][yVector[ir]] == 1) {
+										if ((int) crrState[xVector[ic]][yVector[ir]] == 1) {
 											iCnt++;
 										}
 									}
@@ -243,29 +243,29 @@ public class RuleLgtL {
 							}
 						}
 						
-						if (bOldVal == 0) 
+						if ((int) bOldVal == 0)
 						{
 							if ((iCnt >= iBMin) && (iCnt <= iBMax)) 
 																	
-								bNewVal = 1; 
+								bNewVal = (short) 1;
 						} else 
 						{
 							if ((iCnt >= iSMin) && (iCnt <= iSMax)) 
 																	
 							{
-								bNewVal = 1;
+								bNewVal = (short) 1;
 							} else 
 							{
-								bNewVal = bOldVal < (iClo - 1)
-										? (short) (bOldVal + 1)
-										: 0;
+								bNewVal = (int) bOldVal < (iClo - 1)
+										? (short) ((int) bOldVal + 1)
+										: (short) 0;
 							}
 						}
 					} else 
 					{
-						bNewVal = bOldVal < (iClo - 1)
-								? (short) (bOldVal + 1)
-								: 0;
+						bNewVal = (int) bOldVal < (iClo - 1)
+								? (short) ((int) bOldVal + 1)
+								: (short) 0;
 					}
 				} else 
 				{
@@ -275,7 +275,7 @@ public class RuleLgtL {
 								if ((fMoore)
 										|| ((Math.abs(ic - 10) + Math
 												.abs(ir - 10)) <= iRng)) {
-									if (crrState[xVector[ic]][yVector[ir]] != 0) {
+									if ((int) crrState[xVector[ic]][yVector[ir]] != 0) {
 										iCnt++;
 									}
 								}
@@ -283,12 +283,12 @@ public class RuleLgtL {
 						}
 					}
 					
-					if (bOldVal == 0) 
+					if ((int) bOldVal == 0)
 					{
 						if ((iCnt >= iBMin) && (iCnt <= iBMax)) 
 																
 							bNewVal = ColoringMethod == 1
-									? 1
+									? (short) 1
 									: (short) (mjb.Cycle
 											% (mjb.StatesCount - 1) + 1);
 					} else 
@@ -298,16 +298,16 @@ public class RuleLgtL {
 						{
 							if (ColoringMethod == 1) 
 							{
-								bNewVal = (short) (bOldVal < mjb.StatesCount - 1 ? bOldVal + 1 : mjb.StatesCount - 1);
+								bNewVal = (short) ((int) bOldVal < mjb.StatesCount - 1 ? (int) bOldVal + 1 : mjb.StatesCount - 1);
 							} else {
 								
 							}
 						} else
-							bNewVal = 0; 
+							bNewVal = (short) 0;
 					}
 				}
 				tmpState[i][j] = bNewVal;
-				if (bNewVal != bOldVal) 
+				if ((int) bNewVal != (int) bOldVal)
 				{
 					modCnt++; 
 				}

@@ -27,8 +27,6 @@ import jake2.Globals;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
-import java.util.stream.IntStream;
-
 public class GameFunc {
 
     static void Move_Calc(edict_t ent, float[] dest, EntThinkAdapter func) {
@@ -50,7 +48,7 @@ public class GameFunc {
             }
         } else {
             
-            ent.moveinfo.current_speed = 0;
+            ent.moveinfo.current_speed = (float) 0;
             ent.think = Think_AccelMove;
             ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
         }
@@ -75,7 +73,7 @@ public class GameFunc {
      * next frame.
      */
     static float AccelerationDistance(float target, float rate) {
-        return target * ((target / rate) + 1) / 2;
+        return target * ((target / rate) + 1.0F) / 2.0F;
     }
 
     static void plat_CalcAcceleratedMove(moveinfo_t moveinfo) {
@@ -90,12 +88,12 @@ public class GameFunc {
         float accel_dist = AccelerationDistance(moveinfo.speed, moveinfo.accel);
         float decel_dist = AccelerationDistance(moveinfo.speed, moveinfo.decel);
 
-        if ((moveinfo.remaining_distance - accel_dist - decel_dist) < 0) {
+        if ((moveinfo.remaining_distance - accel_dist - decel_dist) < (float) 0) {
 
             float f = (moveinfo.accel + moveinfo.decel)
                     / (moveinfo.accel * moveinfo.decel);
-            moveinfo.move_speed = (float) ((-2 + Math.sqrt(4 - 4 * f
-                    * (-2 * moveinfo.remaining_distance))) / (2 * f));
+            moveinfo.move_speed = (float) ((-2.0 + Math.sqrt((double) (4 - 4.0F * f
+                    * (-2.0F * moveinfo.remaining_distance)))) / (double) (2.0F * f));
             decel_dist = AccelerationDistance(moveinfo.move_speed,
                     moveinfo.decel);
         }
@@ -107,9 +105,9 @@ public class GameFunc {
         
         if (moveinfo.remaining_distance <= moveinfo.decel_distance) {
             if (moveinfo.remaining_distance < moveinfo.decel_distance) {
-                if (moveinfo.next_speed != 0) {
+                if (moveinfo.next_speed != (float) 0) {
                     moveinfo.current_speed = moveinfo.next_speed;
-                    moveinfo.next_speed = 0;
+                    moveinfo.next_speed = (float) 0;
                     return;
                 }
                 if (moveinfo.current_speed > moveinfo.decel)
@@ -167,8 +165,8 @@ public class GameFunc {
         if (0 == (ent.flags & Defines.FL_TEAMSLAVE)) {
             if (ent.moveinfo.sound_start != 0)
                 game_import_t.sound(ent, Defines.CHAN_NO_PHS_ADD
-                        + Defines.CHAN_VOICE, ent.moveinfo.sound_start, 1,
-                        Defines.ATTN_STATIC, 0);
+                        + Defines.CHAN_VOICE, ent.moveinfo.sound_start, 1.0F,
+                        (float) Defines.ATTN_STATIC, (float) 0);
             ent.s.sound = ent.moveinfo.sound_middle;
         }
         ent.moveinfo.state = STATE_UP;
@@ -184,28 +182,28 @@ public class GameFunc {
         trigger.solid = Defines.SOLID_TRIGGER;
         trigger.enemy = ent;
 
-        float[] tmin = {0, 0, 0};
-        tmin[0] = ent.mins[0] + 25;
-        tmin[1] = ent.mins[1] + 25;
+        float[] tmin = {(float) 0, (float) 0, (float) 0};
+        tmin[0] = ent.mins[0] + 25.0F;
+        tmin[1] = ent.mins[1] + 25.0F;
         tmin[2] = ent.mins[2];
 
-        float[] tmax = {0, 0, 0};
-        tmax[0] = ent.maxs[0] - 25;
-        tmax[1] = ent.maxs[1] - 25;
-        tmax[2] = ent.maxs[2] + 8;
+        float[] tmax = {(float) 0, (float) 0, (float) 0};
+        tmax[0] = ent.maxs[0] - 25.0F;
+        tmax[1] = ent.maxs[1] - 25.0F;
+        tmax[2] = ent.maxs[2] + 8.0F;
 
-        tmin[2] = tmax[2] - (ent.pos1[2] - ent.pos2[2] + GameBase.st.lip);
+        tmin[2] = tmax[2] - (ent.pos1[2] - ent.pos2[2] + (float) GameBase.st.lip);
 
         if ((ent.spawnflags & PLAT_LOW_TRIGGER) != 0)
-            tmax[2] = tmin[2] + 8;
+            tmax[2] = tmin[2] + 8.0F;
 
-        if (tmax[0] - tmin[0] <= 0) {
+        if (tmax[0] - tmin[0] <= (float) 0) {
             tmin[0] = (ent.mins[0] + ent.maxs[0]) * 0.5f;
-            tmax[0] = tmin[0] + 1;
+            tmax[0] = tmin[0] + 1.0F;
         }
-        if (tmax[1] - tmin[1] <= 0) {
+        if (tmax[1] - tmin[1] <= (float) 0) {
             tmin[1] = (ent.mins[1] + ent.maxs[1]) * 0.5f;
-            tmax[1] = tmin[1] + 1;
+            tmax[1] = tmin[1] + 1.0F;
         }
 
         Math3D.VectorCopy(tmin, trigger.mins);
@@ -242,20 +240,20 @@ public class GameFunc {
 
         ent.blocked = plat_blocked;
 
-        if (0 == ent.speed)
-            ent.speed = 20;
+        if ((float) 0 == ent.speed)
+            ent.speed = 20.0F;
         else
-            ent.speed *= 0.1;
+            ent.speed = (float) ((double) ent.speed * 0.1);
 
-        if (ent.accel == 0)
-            ent.accel = 5;
+        if (ent.accel == (float) 0)
+            ent.accel = 5.0F;
         else
-            ent.accel *= 0.1;
+            ent.accel = (float) ((double) ent.accel * 0.1);
 
-        if (ent.decel == 0)
-            ent.decel = 5;
+        if (ent.decel == (float) 0)
+            ent.decel = 5.0F;
         else
-            ent.decel *= 0.1;
+            ent.decel = (float) ((double) ent.decel * 0.1);
 
         if (ent.dmg == 0)
             ent.dmg = 2;
@@ -267,9 +265,9 @@ public class GameFunc {
         Math3D.VectorCopy(ent.s.origin, ent.pos1);
         Math3D.VectorCopy(ent.s.origin, ent.pos2);
         if (GameBase.st.height != 0)
-            ent.pos2[2] -= GameBase.st.height;
+            ent.pos2[2] = ent.pos2[2] - (float) GameBase.st.height;
         else
-            ent.pos2[2] -= (ent.maxs[2] - ent.mins[2]) - GameBase.st.lip;
+            ent.pos2[2] -= (ent.maxs[2] - ent.mins[2]) - (float) GameBase.st.lip;
 
         ent.use = Use_Plat;
 
@@ -346,7 +344,7 @@ public class GameFunc {
 
         if (self.moveinfo.state == STATE_TOP) {
             
-            if (self.moveinfo.wait >= 0)
+            if (self.moveinfo.wait >= (float) 0)
                 self.nextthink = GameBase.level.time + self.moveinfo.wait;
             return;
         }
@@ -354,8 +352,8 @@ public class GameFunc {
         if (0 == (self.flags & Defines.FL_TEAMSLAVE)) {
             if (self.moveinfo.sound_start != 0)
                 game_import_t.sound(self, Defines.CHAN_NO_PHS_ADD
-                        + Defines.CHAN_VOICE, self.moveinfo.sound_start, 1,
-                        Defines.ATTN_STATIC, 0);
+                        + Defines.CHAN_VOICE, self.moveinfo.sound_start, 1.0F,
+                        (float) Defines.ATTN_STATIC, (float) 0);
             self.s.sound = self.moveinfo.sound_middle;
         }
         self.moveinfo.state = STATE_UP;
@@ -410,13 +408,13 @@ public class GameFunc {
 
         
         Math3D.VectorCopy(self.s.origin, self.pos1);
-        float[] abs_movedir = {0, 0, 0};
+        float[] abs_movedir = {(float) 0, (float) 0, (float) 0};
         abs_movedir[0] = Math.abs(self.movedir[0]);
         abs_movedir[1] = Math.abs(self.movedir[1]);
         abs_movedir[2] = Math.abs(self.movedir[2]);
         self.moveinfo.distance = abs_movedir[0] * self.size[0] + abs_movedir[1]
                 * self.size[1] + abs_movedir[2] * self.size[2]
-                - GameBase.st.lip;
+                - (float) GameBase.st.lip;
         Math3D.VectorMA(self.pos1, self.moveinfo.distance, self.movedir,
                 self.pos2);
 
@@ -434,17 +432,17 @@ public class GameFunc {
 
         self.moveinfo.state = STATE_BOTTOM;
 
-        if (0 == self.speed)
-            self.speed = 25;
+        if ((float) 0 == self.speed)
+            self.speed = 25.0F;
         self.moveinfo.accel = self.moveinfo.decel = self.moveinfo.speed = self.speed;
 
-        if (0 == self.wait)
-            self.wait = -1;
+        if ((float) 0 == self.wait)
+            self.wait = -1.0F;
         self.moveinfo.wait = self.wait;
 
         self.use = door_use;
 
-        if (self.wait == -1)
+        if (self.wait == -1.0F)
             self.spawnflags |= DOOR_TOGGLE;
 
         self.classname = "func_door";
@@ -453,7 +451,7 @@ public class GameFunc {
     }
 
     static void train_resume(edict_t self) {
-        float[] dest = { 0, 0, 0 };
+        float[] dest = {(float) 0, (float) 0, (float) 0};
 
         edict_t ent = self.target_ent;
 
@@ -484,8 +482,8 @@ public class GameFunc {
             self.moveinfo.sound_middle = game_import_t
                     .soundindex(GameBase.st.noise);
 
-        if (0 == self.speed)
-            self.speed = 100;
+        if ((float) 0 == self.speed)
+            self.speed = 100.0F;
 
         self.moveinfo.speed = self.speed;
         self.moveinfo.accel = self.moveinfo.decel = self.moveinfo.speed;
@@ -507,7 +505,7 @@ public class GameFunc {
     }
 
     static void SP_func_timer(edict_t self) {
-        if (0 == self.wait)
+        if ((float) 0 == self.wait)
             self.wait = 1.0f;
 
         self.use = func_timer_use;
@@ -590,7 +588,7 @@ public class GameFunc {
         @Override
         public boolean think(edict_t ent) {
 
-            if (ent.moveinfo.remaining_distance == 0) {
+            if (ent.moveinfo.remaining_distance == (float) 0) {
                 Move_Done.think(ent);
                 return true;
             }
@@ -618,8 +616,8 @@ public class GameFunc {
             Math3D.VectorScale(ent.moveinfo.dir, ent.moveinfo.speed,
                     ent.velocity);
             float frames = (float) Math
-                    .floor((ent.moveinfo.remaining_distance / ent.moveinfo.speed)
-                            / Defines.FRAMETIME);
+                    .floor((double) ((ent.moveinfo.remaining_distance / ent.moveinfo.speed)
+                            / Defines.FRAMETIME));
             ent.moveinfo.remaining_distance -= frames * ent.moveinfo.speed
                     * Defines.FRAMETIME;
             ent.nextthink = GameBase.level.time + (frames * Defines.FRAMETIME);
@@ -648,7 +646,7 @@ public class GameFunc {
         public String getID() { return "angle_move_final";}
         @Override
         public boolean think(edict_t ent) {
-            float[] move = { 0, 0, 0 };
+            float[] move = {(float) 0, (float) 0, (float) 0};
 
             if (ent.moveinfo.state == STATE_UP)
                 Math3D.VectorSubtract(ent.moveinfo.end_angles, ent.s.angles,
@@ -675,7 +673,7 @@ public class GameFunc {
         public String getID() { return "angle_move_begin";}
         @Override
         public boolean think(edict_t ent) {
-            float[] destdelta = { 0, 0, 0 };
+            float[] destdelta = {(float) 0, (float) 0, (float) 0};
 
 
             if (ent.moveinfo.state == STATE_UP)
@@ -696,7 +694,7 @@ public class GameFunc {
                 return true;
             }
 
-            float frames = (float) (Math.floor(traveltime / Defines.FRAMETIME));
+            float frames = (float) (Math.floor((double) (traveltime / Defines.FRAMETIME)));
 
             
             
@@ -716,7 +714,7 @@ public class GameFunc {
         public boolean think(edict_t ent) {
             ent.moveinfo.remaining_distance -= ent.moveinfo.current_speed;
 
-            if (ent.moveinfo.current_speed == 0) 
+            if (ent.moveinfo.current_speed == (float) 0)
                 plat_CalcAcceleratedMove(ent.moveinfo);
 
             plat_Accelerate(ent.moveinfo);
@@ -728,7 +726,7 @@ public class GameFunc {
             }
 
             Math3D.VectorScale(ent.moveinfo.dir,
-                    ent.moveinfo.current_speed * 10, ent.velocity);
+                    ent.moveinfo.current_speed * 10.0F, ent.velocity);
             ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
             ent.think = Think_AccelMove;
             return true;
@@ -743,14 +741,14 @@ public class GameFunc {
             if (0 == (ent.flags & Defines.FL_TEAMSLAVE)) {
                 if (ent.moveinfo.sound_end != 0)
                     game_import_t.sound(ent, Defines.CHAN_NO_PHS_ADD
-                            + Defines.CHAN_VOICE, ent.moveinfo.sound_end, 1,
-                            Defines.ATTN_STATIC, 0);
+                            + Defines.CHAN_VOICE, ent.moveinfo.sound_end, 1.0F,
+                            (float) Defines.ATTN_STATIC, (float) 0);
                 ent.s.sound = 0;
             }
             ent.moveinfo.state = STATE_TOP;
 
             ent.think = plat_go_down;
-            ent.nextthink = GameBase.level.time + 3;
+            ent.nextthink = GameBase.level.time + 3.0F;
             return true;
         }
     };
@@ -764,8 +762,8 @@ public class GameFunc {
             if (0 == (ent.flags & Defines.FL_TEAMSLAVE)) {
                 if (ent.moveinfo.sound_end != 0)
                     game_import_t.sound(ent, Defines.CHAN_NO_PHS_ADD
-                            + Defines.CHAN_VOICE, ent.moveinfo.sound_end, 1,
-                            Defines.ATTN_STATIC, 0);
+                            + Defines.CHAN_VOICE, ent.moveinfo.sound_end, 1.0F,
+                            (float) Defines.ATTN_STATIC, (float) 0);
                 ent.s.sound = 0;
             }
             ent.moveinfo.state = STATE_BOTTOM;
@@ -781,8 +779,8 @@ public class GameFunc {
             if (0 == (ent.flags & Defines.FL_TEAMSLAVE)) {
                 if (ent.moveinfo.sound_start != 0)
                     game_import_t.sound(ent, Defines.CHAN_NO_PHS_ADD
-                            + Defines.CHAN_VOICE, ent.moveinfo.sound_start, 1,
-                            Defines.ATTN_STATIC, 0);
+                            + Defines.CHAN_VOICE, ent.moveinfo.sound_start, 1.0F,
+                            (float) Defines.ATTN_STATIC, (float) 0);
                 ent.s.sound = ent.moveinfo.sound_middle;
             }
             ent.moveinfo.state = STATE_DOWN;
@@ -853,7 +851,7 @@ public class GameFunc {
                     plat_go_up(ent);
                     break;
                 case STATE_TOP:
-                    ent.nextthink = GameBase.level.time + 1;
+                    ent.nextthink = GameBase.level.time + 1.0F;
 
 
                     break;
@@ -893,7 +891,7 @@ public class GameFunc {
         public void touch(edict_t self, edict_t other, cplane_t plane,
                           csurface_t surf) {
             for (int i : new int[]{0, 1, 2}) {
-                if (self.avelocity[i] != 0) {
+                if (self.avelocity[i] != (float) 0) {
                     GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
                             other.s.origin, Globals.vec3_origin, self.dmg, 1, 0,
                             Defines.MOD_CRUSH);
@@ -946,8 +944,8 @@ public class GameFunc {
             if ((ent.spawnflags & 2) != 0)
                 Math3D.VectorNegate(ent.movedir, ent.movedir);
 
-            if (0 == ent.speed)
-                ent.speed = 100;
+            if ((float) 0 == ent.speed)
+                ent.speed = 100.0F;
             if (0 == ent.dmg)
                 ent.dmg = 2;
 
@@ -1034,7 +1032,7 @@ public class GameFunc {
 
             GameUtil.G_UseTargets(self, self.activator);
             self.s.frame = 1;
-            if (self.moveinfo.wait >= 0) {
+            if (self.moveinfo.wait >= (float) 0) {
                 self.nextthink = GameBase.level.time + self.moveinfo.wait;
                 self.think = button_return;
             }
@@ -1055,8 +1053,8 @@ public class GameFunc {
             if (self.moveinfo.sound_start != 0
                     && 0 == (self.flags & Defines.FL_TEAMSLAVE))
                 game_import_t.sound(self, Defines.CHAN_NO_PHS_ADD
-                        + Defines.CHAN_VOICE, self.moveinfo.sound_start, 1,
-                        Defines.ATTN_STATIC, 0);
+                        + Defines.CHAN_VOICE, self.moveinfo.sound_start, 1.0F,
+                        (float) Defines.ATTN_STATIC, (float) 0);
             Move_Calc(self, self.moveinfo.end_origin, button_wait);
             return true;
         }
@@ -1119,25 +1117,25 @@ public class GameFunc {
                 ent.moveinfo.sound_start = game_import_t
                         .soundindex("switches/butn2.wav");
 
-            if (0 == ent.speed)
-                ent.speed = 40;
-            if (0 == ent.accel)
+            if ((float) 0 == ent.speed)
+                ent.speed = 40.0F;
+            if ((float) 0 == ent.accel)
                 ent.accel = ent.speed;
-            if (0 == ent.decel)
+            if ((float) 0 == ent.decel)
                 ent.decel = ent.speed;
 
-            if (0 == ent.wait)
-                ent.wait = 3;
+            if ((float) 0 == ent.wait)
+                ent.wait = 3.0F;
             if (0 == GameBase.st.lip)
                 GameBase.st.lip = 4;
 
             Math3D.VectorCopy(ent.s.origin, ent.pos1);
-            float[] abs_movedir = {0, 0, 0};
+            float[] abs_movedir = {(float) 0, (float) 0, (float) 0};
             abs_movedir[0] = Math.abs(ent.movedir[0]);
             abs_movedir[1] = Math.abs(ent.movedir[1]);
             abs_movedir[2] = Math.abs(ent.movedir[2]);
             float dist = abs_movedir[0] * ent.size[0] + abs_movedir[1] * ent.size[1]
-                    + abs_movedir[2] * ent.size[2] - GameBase.st.lip;
+                    + abs_movedir[2] * ent.size[2] - (float) GameBase.st.lip;
             Math3D.VectorMA(ent.pos1, dist, ent.movedir, ent.pos2);
 
             ent.use = button_use;
@@ -1174,14 +1172,14 @@ public class GameFunc {
             if (0 == (self.flags & Defines.FL_TEAMSLAVE)) {
                 if (self.moveinfo.sound_end != 0)
                     game_import_t.sound(self, Defines.CHAN_NO_PHS_ADD
-                            + Defines.CHAN_VOICE, self.moveinfo.sound_end, 1,
-                            Defines.ATTN_STATIC, 0);
+                            + Defines.CHAN_VOICE, self.moveinfo.sound_end, 1.0F,
+                            (float) Defines.ATTN_STATIC, (float) 0);
                 self.s.sound = 0;
             }
             self.moveinfo.state = STATE_TOP;
             if ((self.spawnflags & DOOR_TOGGLE) != 0)
                 return true;
-            if (self.moveinfo.wait >= 0) {
+            if (self.moveinfo.wait >= (float) 0) {
                 self.think = door_go_down;
                 self.nextthink = GameBase.level.time + self.moveinfo.wait;
             }
@@ -1197,8 +1195,8 @@ public class GameFunc {
             if (0 == (self.flags & Defines.FL_TEAMSLAVE)) {
                 if (self.moveinfo.sound_end != 0)
                     game_import_t.sound(self, Defines.CHAN_NO_PHS_ADD
-                            + Defines.CHAN_VOICE, self.moveinfo.sound_end, 1,
-                            Defines.ATTN_STATIC, 0);
+                            + Defines.CHAN_VOICE, self.moveinfo.sound_end, 1.0F,
+                            (float) Defines.ATTN_STATIC, (float) 0);
                 self.s.sound = 0;
             }
             self.moveinfo.state = STATE_BOTTOM;
@@ -1215,8 +1213,8 @@ public class GameFunc {
             if (0 == (self.flags & Defines.FL_TEAMSLAVE)) {
                 if (self.moveinfo.sound_start != 0)
                     game_import_t.sound(self, Defines.CHAN_NO_PHS_ADD
-                            + Defines.CHAN_VOICE, self.moveinfo.sound_start, 1,
-                            Defines.ATTN_STATIC, 0);
+                            + Defines.CHAN_VOICE, self.moveinfo.sound_start, 1.0F,
+                            (float) Defines.ATTN_STATIC, (float) 0);
                 self.s.sound = self.moveinfo.sound_middle;
             }
             if (self.max_health != 0) {
@@ -1338,9 +1336,9 @@ public class GameFunc {
             if ((ent.flags & Defines.FL_TEAMSLAVE) != 0)
                 return true;
 
-            float[] mins = {0, 0, 0};
+            float[] mins = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorCopy(ent.absmin, mins);
-            float[] maxs = {0, 0, 0};
+            float[] maxs = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorCopy(ent.absmax, maxs);
 
             edict_t other;
@@ -1350,10 +1348,10 @@ public class GameFunc {
             }
 
             
-            mins[0] -= 60;
-            mins[1] -= 60;
-            maxs[0] += 60;
-            maxs[1] += 60;
+            mins[0] -= 60.0F;
+            mins[1] -= 60.0F;
+            maxs[0] += 60.0F;
+            maxs[1] += 60.0F;
 
             other = GameUtil.G_Spawn();
             Math3D.VectorCopy(mins, other.mins);
@@ -1400,7 +1398,7 @@ public class GameFunc {
             
             
             
-            if (self.moveinfo.wait >= 0) {
+            if (self.moveinfo.wait >= (float) 0) {
                 edict_t ent;
                 if (self.moveinfo.state == STATE_DOWN) {
                     for (ent = self.teammaster; ent != null; ent = ent.teamchain)
@@ -1443,7 +1441,7 @@ public class GameFunc {
 
             game_import_t.centerprintf(other, self.message);
             game_import_t.sound(other, Defines.CHAN_AUTO, game_import_t
-                    .soundindex("misc/talk1.wav"), 1, Defines.ATTN_NORM, 0);
+                    .soundindex("misc/talk1.wav"), 1.0F, (float) Defines.ATTN_NORM, (float) 0);
         }
     };
 
@@ -1470,18 +1468,18 @@ public class GameFunc {
             ent.blocked = door_blocked;
             ent.use = door_use;
 
-            if (0 == ent.speed)
-                ent.speed = 100;
-            if (GameBase.deathmatch.value != 0)
-                ent.speed *= 2;
+            if ((float) 0 == ent.speed)
+                ent.speed = 100.0F;
+            if (GameBase.deathmatch.value != (float) 0)
+                ent.speed *= 2.0F;
 
-            if (0 == ent.accel)
+            if ((float) 0 == ent.accel)
                 ent.accel = ent.speed;
-            if (0 == ent.decel)
+            if ((float) 0 == ent.decel)
                 ent.decel = ent.speed;
 
-            if (0 == ent.wait)
-                ent.wait = 3;
+            if ((float) 0 == ent.wait)
+                ent.wait = 3.0F;
             if (0 == GameBase.st.lip)
                 GameBase.st.lip = 8;
             if (0 == ent.dmg)
@@ -1489,13 +1487,13 @@ public class GameFunc {
 
             
             Math3D.VectorCopy(ent.s.origin, ent.pos1);
-            float[] abs_movedir = {0, 0, 0};
+            float[] abs_movedir = {(float) 0, (float) 0, (float) 0};
             abs_movedir[0] = Math.abs(ent.movedir[0]);
             abs_movedir[1] = Math.abs(ent.movedir[1]);
             abs_movedir[2] = Math.abs(ent.movedir[2]);
             ent.moveinfo.distance = abs_movedir[0] * ent.size[0]
                     + abs_movedir[1] * ent.size[1] + abs_movedir[2]
-                    * ent.size[2] - GameBase.st.lip;
+                    * ent.size[2] - (float) GameBase.st.lip;
 
             Math3D.VectorMA(ent.pos1, ent.moveinfo.distance, ent.movedir,
                     ent.pos2);
@@ -1605,9 +1603,9 @@ public class GameFunc {
             }
 
             Math3D.VectorCopy(ent.s.angles, ent.pos1);
-            Math3D.VectorMA(ent.s.angles, GameBase.st.distance, ent.movedir,
+            Math3D.VectorMA(ent.s.angles, (float) GameBase.st.distance, ent.movedir,
                     ent.pos2);
-            ent.moveinfo.distance = GameBase.st.distance;
+            ent.moveinfo.distance = (float) GameBase.st.distance;
 
             ent.movetype = Defines.MOVETYPE_PUSH;
             ent.solid = Defines.SOLID_BSP;
@@ -1616,15 +1614,15 @@ public class GameFunc {
             ent.blocked = door_blocked;
             ent.use = door_use;
 
-            if (0 == ent.speed)
-                ent.speed = 100;
-            if (0 == ent.accel)
+            if ((float) 0 == ent.speed)
+                ent.speed = 100.0F;
+            if ((float) 0 == ent.accel)
                 ent.accel = ent.speed;
-            if (0 == ent.decel)
+            if ((float) 0 == ent.decel)
                 ent.decel = ent.speed;
 
-            if (0 == ent.wait)
-                ent.wait = 3;
+            if ((float) 0 == ent.wait)
+                ent.wait = 3.0F;
             if (0 == ent.dmg)
                 ent.dmg = 2;
 
@@ -1748,8 +1746,8 @@ public class GameFunc {
                     return true;
             }
 
-            if (self.moveinfo.wait != 0) {
-                if (self.moveinfo.wait > 0) {
+            if (self.moveinfo.wait != (float) 0) {
+                if (self.moveinfo.wait > (float) 0) {
                     self.nextthink = GameBase.level.time + self.moveinfo.wait;
                     self.think = train_next;
                 } else if (0 != (self.spawnflags & TRAIN_TOGGLE)) 
@@ -1757,14 +1755,14 @@ public class GameFunc {
                     train_next.think(self);
                     self.spawnflags &= ~TRAIN_START_ON;
                     Math3D.VectorClear(self.velocity);
-                    self.nextthink = 0;
+                    self.nextthink = (float) 0;
                 }
 
                 if (0 == (self.flags & Defines.FL_TEAMSLAVE)) {
                     if (self.moveinfo.sound_end != 0)
                         game_import_t.sound(self, Defines.CHAN_NO_PHS_ADD
                                 + Defines.CHAN_VOICE, self.moveinfo.sound_end,
-                                1, Defines.ATTN_STATIC, 0);
+                                1.0F, (float) Defines.ATTN_STATIC, (float) 0);
                     self.s.sound = 0;
                 }
             } else {
@@ -1824,12 +1822,12 @@ public class GameFunc {
             if (0 == (self.flags & Defines.FL_TEAMSLAVE)) {
                 if (self.moveinfo.sound_start != 0)
                     game_import_t.sound(self, Defines.CHAN_NO_PHS_ADD
-                            + Defines.CHAN_VOICE, self.moveinfo.sound_start, 1,
-                            Defines.ATTN_STATIC, 0);
+                            + Defines.CHAN_VOICE, self.moveinfo.sound_start, 1.0F,
+                            (float) Defines.ATTN_STATIC, (float) 0);
                 self.s.sound = self.moveinfo.sound_middle;
             }
 
-            float[] dest = {0, 0, 0};
+            float[] dest = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorSubtract(ent.s.origin, self.mins, dest);
             self.moveinfo.state = STATE_TOP;
             Math3D.VectorCopy(self.s.origin, self.moveinfo.start_origin);
@@ -1886,7 +1884,7 @@ public class GameFunc {
                     return;
                 self.spawnflags &= ~TRAIN_START_ON;
                 Math3D.VectorClear(self.velocity);
-                self.nextthink = 0;
+                self.nextthink = (float) 0;
             } else {
                 if (self.target_ent != null)
                     train_resume(self);
@@ -1906,7 +1904,7 @@ public class GameFunc {
         @Override
         public void use(edict_t self, edict_t other, edict_t activator) {
 
-            if (0 != self.movetarget.nextthink) {
+            if ((float) 0 != self.movetarget.nextthink) {
                 
                 return;
             }
@@ -2002,13 +2000,13 @@ public class GameFunc {
             self.activator = activator;
 
             
-            if (self.nextthink != 0) {
-                self.nextthink = 0;
+            if (self.nextthink != (float) 0) {
+                self.nextthink = (float) 0;
                 return;
             }
 
             
-            if (self.delay != 0)
+            if (self.delay != (float) 0)
                 self.nextthink = GameBase.level.time + self.delay;
             else
                 func_timer_think.think(self);
@@ -2027,10 +2025,10 @@ public class GameFunc {
         @Override
         public void use(edict_t self, edict_t other, edict_t activator) {
             if ((self.spawnflags & 1) != 0) {
-                self.speed = 0;
+                self.speed = (float) 0;
                 self.spawnflags &= ~1;
             } else {
-                self.speed = self.count;
+                self.speed = (float) self.count;
                 self.spawnflags |= 1;
             }
 
@@ -2045,12 +2043,12 @@ public class GameFunc {
         @Override
         public boolean think(edict_t self) {
 
-            if (0 == self.speed)
-                self.speed = 100;
+            if ((float) 0 == self.speed)
+                self.speed = 100.0F;
 
             if (0 == (self.spawnflags & 1)) {
                 self.count = (int) self.speed;
-                self.speed = 0;
+                self.speed = (float) 0;
             }
 
             self.use = func_conveyor_use;
@@ -2121,7 +2119,7 @@ public class GameFunc {
         public String getID() { return "door_secret_move3";}
         @Override
         public boolean think(edict_t self) {
-            if (self.wait == -1)
+            if (self.wait == -1.0F)
                 return true;
             self.nextthink = GameBase.level.time + self.wait;
             self.think = door_secret_move4;
@@ -2243,18 +2241,18 @@ public class GameFunc {
             if (0 == ent.dmg)
                 ent.dmg = 2;
 
-            if (0 == ent.wait)
-                ent.wait = 5;
+            if ((float) 0 == ent.wait)
+                ent.wait = 5.0F;
 
-            ent.moveinfo.accel = ent.moveinfo.decel = ent.moveinfo.speed = 50;
+            ent.moveinfo.accel = ent.moveinfo.decel = ent.moveinfo.speed = 50.0F;
 
 
-            float[] up = {0, 0, 0};
-            float[] right = {0, 0, 0};
-            float[] forward = {0, 0, 0};
+            float[] up = {(float) 0, (float) 0, (float) 0};
+            float[] right = {(float) 0, (float) 0, (float) 0};
+            float[] forward = {(float) 0, (float) 0, (float) 0};
             Math3D.AngleVectors(ent.s.angles, forward, right, up);
             Math3D.VectorClear(ent.s.angles);
-            float side = 1.0f - (ent.spawnflags & SECRET_1ST_LEFT);
+            float side = 1.0f - (float) (ent.spawnflags & SECRET_1ST_LEFT);
             float width;
             if ((ent.spawnflags & SECRET_1ST_DOWN) != 0)
                 width = Math.abs(Math3D.DotProduct(up, ent.size));
@@ -2262,7 +2260,7 @@ public class GameFunc {
                 width = Math.abs(Math3D.DotProduct(right, ent.size));
             float length = Math.abs(Math3D.DotProduct(forward, ent.size));
             if ((ent.spawnflags & SECRET_1ST_DOWN) != 0)
-                Math3D.VectorMA(ent.s.origin, -1 * width, up, ent.pos1);
+                Math3D.VectorMA(ent.s.origin, -1.0F * width, up, ent.pos1);
             else
                 Math3D.VectorMA(ent.s.origin, side * width, right, ent.pos1);
             Math3D.VectorMA(ent.pos1, length, forward, ent.pos2);

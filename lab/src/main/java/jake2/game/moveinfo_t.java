@@ -29,10 +29,10 @@ import java.io.IOException;
 
 public class moveinfo_t {
 	
-	float[] start_origin= { 0, 0, 0 };
-	float[] start_angles= { 0, 0, 0 };
-	float[] end_origin= { 0, 0, 0 };
-	float[] end_angles= { 0, 0, 0 };
+	float[] start_origin= {(float) 0, (float) 0, (float) 0};
+	float[] start_angles= {(float) 0, (float) 0, (float) 0};
+	float[] end_origin= {(float) 0, (float) 0, (float) 0};
+	float[] end_angles= {(float) 0, (float) 0, (float) 0};
 
 	int sound_start;
 	int sound_middle;
@@ -47,7 +47,7 @@ public class moveinfo_t {
 
 	
 	int state;
-	float[] dir= { 0, 0, 0 };
+	float[] dir= {(float) 0, (float) 0, (float) 0};
 
 	float current_speed;
 	float move_speed;

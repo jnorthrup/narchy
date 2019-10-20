@@ -19,8 +19,8 @@ public class Log01Wave extends WaveFactory {
         int size = bufferSize;
         ArrayTensor b = new ArrayTensor(size);
         for (int i = 0; i < bufferSize; i++) {
-            float fract = (float) i / (bufferSize - 1);
-            b.data[i] = 1f / (1f - (float) Math.log(fract));
+            float fract = (float) i / (float) (bufferSize - 1);
+            b.data[i] = 1f / (1f - (float) Math.log((double) fract));
         }
         return b;
     }

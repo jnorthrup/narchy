@@ -51,7 +51,7 @@ public class NeuralGasMap extends NeuralGasNet<NeuralGasMap.AECentroid> {
 
         public AECentroid(int id, int dimensions) {
             super(id, dimensions);
-            randomizeUniform(-1, 1);
+            randomizeUniform(-1.0, 1.0);
         }
 
         public float[] center() {
@@ -65,7 +65,7 @@ public class NeuralGasMap extends NeuralGasNet<NeuralGasMap.AECentroid> {
     public NeuralGasMap(int in, int maxNodes, int out) {
         super(in, maxNodes, null);
         this.outs = out;
-        this.enc = new Autoencoder(in, out, new XorShift128PlusRandom(1));
+        this.enc = new Autoencoder(in, out, new XorShift128PlusRandom(1L));
         
         
     }

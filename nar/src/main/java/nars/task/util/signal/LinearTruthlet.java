@@ -34,7 +34,7 @@ public class LinearTruthlet extends RangeTruthlet {
         }
 
         if (during(when)) {
-            freqEvi[0] = Util.lerp(Util.normalize(when, start, end), freqStart, freqEnd);
+            freqEvi[0] = Util.lerp(Util.normalize((float) when, (float) start, (float) end), freqStart, freqEnd);
             freqEvi[1] = evi;
         } else {
             unknown(freqEvi);

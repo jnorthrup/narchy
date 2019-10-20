@@ -347,7 +347,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
 
 
     public float priSum() {
-        return priIfyNonDeleted(0, Float::sum);
+        return priIfyNonDeleted((float) 0, Float::sum);
     }
 
     /**
@@ -356,7 +356,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
      */
     @Deprecated public float priMin() {
         float m = priIfyNonDeleted(Float.POSITIVE_INFINITY, Math::min);
-        return Float.isFinite(m) ? m : 0;
+        return Float.isFinite(m) ? m : (float) 0;
     }
 
     /**
@@ -365,7 +365,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
      */
     @Deprecated public float priMax() {
         float m = priIfyNonDeleted(Float.NEGATIVE_INFINITY, Math::max);
-        return Float.isFinite(m) ? m : 0;
+        return Float.isFinite(m) ? m : (float) 0;
     }
 
 
@@ -385,24 +385,24 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
     public float[] histogram(float[] x) {
         int bins = x.length;
         for (Y budget : this) {
-            float p = priElse(budget, 0);
+            float p = priElse(budget, (float) 0);
             int b = Util.bin(p, bins - 1);
             x[b]++;
         }
-        double total = 0;
+        double total = (double) 0;
         for (float e : x) {
-            total += e;
+            total = total + (double) e;
         }
-        if (total > 0) {
+        if (total > (double) 0) {
             for (int i = 0; i < bins; i++)
-                x[i] /= total;
+                x[i] = (float) ((double) x[i] / total);
         }
         return x;
     }
 
 
     public Iterable<Y> commit() {
-        return commit(forget(1));
+        return commit(forget(1.0F));
     }
 
     /**
@@ -496,17 +496,17 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
     @Override
     public void depressurize(float toRemove) {
         if (toRemove == toRemove && toRemove > Float.MIN_NORMAL)
-            PRESSURE.update(this, (p, a) -> Math.max(0, p - a), toRemove);
+            PRESSURE.update(this, (p, a) -> Math.max((float) 0, p - a), toRemove);
     }
 
     @Override
     public float depressurizePct(float percentToRemove) {
         assertUnitized(percentToRemove);
         if (percentToRemove < ScalarValue.EPSILON) {
-            return 0; //remove nothing
+            return (float) 0; //remove nothing
         }
 
-        float percentToRemain = 1-percentToRemove;
+        float percentToRemain = 1.0F -percentToRemove;
 
         float[] delta = new float[1];
         PRESSURE.update(this, (priBefore, f) -> {
@@ -515,7 +515,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
             return priAfter;
         }, percentToRemain);
 
-        return Math.max(0, delta[0]);
+        return Math.max((float) 0, delta[0]);
     }
 
 

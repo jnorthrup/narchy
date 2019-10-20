@@ -55,7 +55,7 @@ public class BitFont {
             if (id >= 0) {
                 glyphs[i].image = new float[charWidth[id] * 9];
                 for (int n = 0; n < chars[id].length; n++) {
-                    glyphs[i].image[n] = (chars[id][n] == 1) ? 0xffffffff : 0x00000000;
+                    glyphs[i].image[n] = (float) ((chars[id][n] == 1) ? 0xffffffff : 0x00000000);
                 }
                 glyphs[i].height = 9;
                 glyphs[i].width = charWidth[id];
@@ -74,7 +74,7 @@ public class BitFont {
         int value = 0;
         for (int i = 0; i < 2; i++) {
             int shift = (2 - 1 - i) * 8;
-            value += (b[i] & 0x00FF) << shift;
+            value += ((int) b[i] & 0x00FF) << shift;
         }
         return value;
     }
@@ -85,7 +85,7 @@ public class BitFont {
     }
 
     public Glyph getGlyph(char c) {
-        int n = c;
+        int n = (int) c;
         /* if c is out of the BitFont-glyph bounds, return
          * the defaultChar glyph (the space char by
          * default). */
@@ -115,7 +115,7 @@ public class BitFont {
         float[] tex = new float[w * h];
         for (int i = off; i < bytes.length; i++) {
             for (int j = 0; j < 8; j++) {
-                tex[(i - off) * 8 + j] = getBit(bytes[i], j) == 1 ? 0xff000000 : 0xffffffff;
+                tex[(i - off) * 8 + j] = (float) (getBit((int) bytes[i], j) == 1 ? 0xff000000 : 0xffffffff);
             }
         }
 
@@ -123,10 +123,10 @@ public class BitFont {
 
 
         for (i = 0; i < s; i++) {
-            while (++cnt != bytes[i + 8]) {
+            while (++cnt != (int) bytes[i + 8]) {
             }
             n += cnt;
-            tex[n] = 0xffff0000;
+            tex[n] = (float) 0xffff0000;
             cnt = 0;
         }
 
@@ -147,7 +147,7 @@ public class BitFont {
 
         for (int i = 0; i < textureWidth; i++) {
             currWidth++;
-            if (texture[i] == 0xffff0000) {
+            if (texture[i] == (float) 0xffff0000) {
                 charWidth[characters++] = currWidth;
                 currWidth = 0;
             }
@@ -160,7 +160,7 @@ public class BitFont {
         for (int i = 0; i < characters; i++) {
             chars[i] = new int[charWidth[i] * charHeight];
             for (int u = 0; u < charWidth[i] * charHeight; u++) {
-                chars[i][u] = texture[indent + (u / charWidth[i]) * textureWidth + (u % charWidth[i])] == 0xff000000 ? 1 : 0;
+                chars[i][u] = texture[indent + (u / charWidth[i]) * textureWidth + (u % charWidth[i])] == (float) 0xff000000 ? 1 : 0;
             }
             indent += charWidth[i];
         }

@@ -20,7 +20,7 @@ public class HaiQae extends HaiQ {
     public Autoencoder ae;
     float perceptionAlpha = 0.01f;
     float perceptionNoise = 0.0f;
-    float perceptionCorruption = 0; //0.01f;
+    float perceptionCorruption = (float) 0; //0.01f;
 //    float perceptionForget;
     public float perceptionError;
 
@@ -34,7 +34,7 @@ public class HaiQae extends HaiQ {
 
     public HaiQae(int inputs, int outputs) {
         this(inputs,
-                (i,o)->(int) Math.ceil(/*Math.sqrt*/(1 + i*2)), outputs);
+                (i,o)->(int) Math.ceil(/*Math.sqrt*/(double) (1 + i * 2)), outputs);
     }
 
     public HaiQae(int inputs, BiFunction<Integer,Integer,Integer> states, int outputs) {
@@ -52,7 +52,7 @@ public class HaiQae extends HaiQ {
 
         perceptionError = ae.put(input, perceptionAlpha, perceptionNoise, perceptionCorruption,
                 false, true, true)
-            / input.length;
+            / (float) input.length;
 
 
         return decideState.applyAsInt(ae.y);

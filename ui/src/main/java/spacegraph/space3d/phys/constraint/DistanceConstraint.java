@@ -114,7 +114,7 @@ public class DistanceConstraint extends TypedConstraint {
     @Override
     public void buildJacobian() {
 
-        appliedImpulse = 0;
+        appliedImpulse = (float) 0;
 
         Transform posA = rbA.getCenterOfMassTransform(new Transform());
         Transform posB = rbB.getCenterOfMassTransform(new Transform());
@@ -128,7 +128,7 @@ public class DistanceConstraint extends TypedConstraint {
         v3 del = new v3();
         del.sub(posB, posA);
 
-        float currDist = (float) Math.sqrt(del.dot(del));
+        float currDist = (float) Math.sqrt((double) del.dot(del));
 
         v3 ortho = del;
         ortho.scaled(1f / currDist);

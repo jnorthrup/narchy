@@ -33,23 +33,23 @@ import java.util.Objects;
 public class GameTurret {
 
     public static void AnglesNormalize(float[] vec) {
-        while (vec[0] > 360)
-            vec[0] -= 360;
-        while (vec[0] < 0)
-            vec[0] += 360;
-        while (vec[1] > 360)
-            vec[1] -= 360;
-        while (vec[1] < 0)
-            vec[1] += 360;
+        while (vec[0] > 360.0F)
+            vec[0] -= 360.0F;
+        while (vec[0] < (float) 0)
+            vec[0] += 360.0F;
+        while (vec[1] > 360.0F)
+            vec[1] -= 360.0F;
+        while (vec[1] < (float) 0)
+            vec[1] += 360.0F;
     }
 
     public static float SnapToEights(float x) {
-        x *= 8.0;
-        if (x > 0.0)
-            x += 0.5;
+        x = (float) ((double) x * 8.0);
+        if ((double) x > 0.0)
+            x = (float) ((double) x + 0.5);
         else
-            x -= 0.5;
-        return 0.125f * (int) x;
+            x = (float) ((double) x - 0.5);
+        return 0.125f * (float) (int) x;
     }
 
     /**
@@ -66,21 +66,21 @@ public class GameTurret {
      */
 
     public static void turret_breach_fire(edict_t self) {
-        float[] f = { 0, 0, 0 }, r = { 0, 0, 0 }, u = { 0, 0, 0 };
+        float[] f = {(float) 0, (float) 0, (float) 0}, r = {(float) 0, (float) 0, (float) 0}, u = {(float) 0, (float) 0, (float) 0};
 
         Math3D.AngleVectors(self.s.angles, f, r, u);
-        float[] start = {0, 0, 0};
+        float[] start = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorMA(self.s.origin, self.move_origin[0], f, start);
         Math3D.VectorMA(start, self.move_origin[1], r, start);
         Math3D.VectorMA(start, self.move_origin[2], u, start);
 
-        int damage = (int) (100 + Lib.random() * 50);
-        int speed = (int) (550 + 50 * GameBase.skill.value);
-        GameWeapon.fire_rocket(self.teammaster.owner, start, f, damage, speed, 150,
+        int damage = (int) (100.0F + Lib.random() * 50.0F);
+        int speed = (int) (550.0F + 50.0F * GameBase.skill.value);
+        GameWeapon.fire_rocket(self.teammaster.owner, start, f, damage, speed, 150.0F,
                 damage);
         game_import_t.positioned_sound(start, self, Defines.CHAN_WEAPON,
-                game_import_t.soundindex("weapons/rocklf1a.wav"), 1,
-                Defines.ATTN_NORM, 0);
+                game_import_t.soundindex("weapons/rocklf1a.wav"), 1.0F,
+                (float) Defines.ATTN_NORM, (float) 0);
     }
 
     public static void SP_turret_breach(edict_t self) {
@@ -88,21 +88,21 @@ public class GameTurret {
         self.movetype = Defines.MOVETYPE_PUSH;
         game_import_t.setmodel(self, self.model);
 
-        if (self.speed == 0)
-            self.speed = 50;
+        if (self.speed == (float) 0)
+            self.speed = 50.0F;
         if (self.dmg == 0)
             self.dmg = 10;
 
-        if (GameBase.st.minpitch == 0)
-            GameBase.st.minpitch = -30;
-        if (GameBase.st.maxpitch == 0)
-            GameBase.st.maxpitch = 30;
-        if (GameBase.st.maxyaw == 0)
-            GameBase.st.maxyaw = 360;
+        if (GameBase.st.minpitch == (float) 0)
+            GameBase.st.minpitch = -30.0F;
+        if (GameBase.st.maxpitch == (float) 0)
+            GameBase.st.maxpitch = 30.0F;
+        if (GameBase.st.maxyaw == (float) 0)
+            GameBase.st.maxyaw = 360.0F;
 
-        self.pos1[Defines.PITCH] = -1 * GameBase.st.minpitch;
+        self.pos1[Defines.PITCH] = -1.0F * GameBase.st.minpitch;
         self.pos1[Defines.YAW] = GameBase.st.minyaw;
-        self.pos2[Defines.PITCH] = -1 * GameBase.st.maxpitch;
+        self.pos2[Defines.PITCH] = -1.0F * GameBase.st.maxpitch;
         self.pos2[Defines.YAW] = GameBase.st.maxyaw;
 
         self.ideal_yaw = self.s.angles[Defines.YAW];
@@ -129,7 +129,7 @@ public class GameTurret {
     }
 
     public static void SP_turret_driver(edict_t self) {
-        if (GameBase.deathmatch.value != 0) {
+        if (GameBase.deathmatch.value != (float) 0) {
             GameUtil.G_FreeEdict(self);
             return;
         }
@@ -138,8 +138,8 @@ public class GameTurret {
         self.solid = Defines.SOLID_BBOX;
         self.s.modelindex = game_import_t
                 .modelindex("models/monsters/infantry/tris.md2");
-        Math3D.VectorSet(self.mins, -16, -16, -24);
-        Math3D.VectorSet(self.maxs, 16, 16, 32);
+        Math3D.VectorSet(self.mins, -16.0F, -16.0F, -24.0F);
+        Math3D.VectorSet(self.maxs, 16.0F, 16.0F, 32.0F);
 
         self.health = 100;
         self.gib_health = 0;
@@ -196,14 +196,14 @@ public class GameTurret {
         @Override
         public boolean think(edict_t self) {
 
-            float[] current_angles = { 0, 0, 0 };
+            float[] current_angles = {(float) 0, (float) 0, (float) 0};
 
             Math3D.VectorCopy(self.s.angles, current_angles);
             AnglesNormalize(current_angles);
 
             AnglesNormalize(self.move_angles);
-            if (self.move_angles[Defines.PITCH] > 180)
-                self.move_angles[Defines.PITCH] -= 360;
+            if (self.move_angles[Defines.PITCH] > 180.0F)
+                self.move_angles[Defines.PITCH] -= 360.0F;
 
             
             if (self.move_angles[Defines.PITCH] > self.pos1[Defines.PITCH])
@@ -216,42 +216,42 @@ public class GameTurret {
 
                 float dmin = Math.abs(self.pos1[Defines.YAW]
                         - self.move_angles[Defines.YAW]);
-                if (dmin < -180)
-                    dmin += 360;
-                else if (dmin > 180)
-                    dmin -= 360;
+                if (dmin < -180.0F)
+                    dmin += 360.0F;
+                else if (dmin > 180.0F)
+                    dmin -= 360.0F;
                 float dmax = Math.abs(self.pos2[Defines.YAW]
                         - self.move_angles[Defines.YAW]);
-                if (dmax < -180)
-                    dmax += 360;
-                else if (dmax > 180)
-                    dmax -= 360;
+                if (dmax < -180.0F)
+                    dmax += 360.0F;
+                else if (dmax > 180.0F)
+                    dmax -= 360.0F;
                 if (Math.abs(dmin) < Math.abs(dmax))
                     self.move_angles[Defines.YAW] = self.pos1[Defines.YAW];
                 else
                     self.move_angles[Defines.YAW] = self.pos2[Defines.YAW];
             }
 
-            float[] delta = {0, 0, 0};
+            float[] delta = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorSubtract(self.move_angles, current_angles, delta);
-            if (delta[0] < -180)
-                delta[0] += 360;
-            else if (delta[0] > 180)
-                delta[0] -= 360;
-            if (delta[1] < -180)
-                delta[1] += 360;
-            else if (delta[1] > 180)
-                delta[1] -= 360;
-            delta[2] = 0;
+            if (delta[0] < -180.0F)
+                delta[0] += 360.0F;
+            else if (delta[0] > 180.0F)
+                delta[0] -= 360.0F;
+            if (delta[1] < -180.0F)
+                delta[1] += 360.0F;
+            else if (delta[1] > 180.0F)
+                delta[1] -= 360.0F;
+            delta[2] = (float) 0;
 
             if (delta[0] > self.speed * Defines.FRAMETIME)
                 delta[0] = self.speed * Defines.FRAMETIME;
-            if (delta[0] < -1 * self.speed * Defines.FRAMETIME)
-                delta[0] = -1 * self.speed * Defines.FRAMETIME;
+            if (delta[0] < -1.0F * self.speed * Defines.FRAMETIME)
+                delta[0] = -1.0F * self.speed * Defines.FRAMETIME;
             if (delta[1] > self.speed * Defines.FRAMETIME)
                 delta[1] = self.speed * Defines.FRAMETIME;
-            if (delta[1] < -1 * self.speed * Defines.FRAMETIME)
-                delta[1] = -1 * self.speed * Defines.FRAMETIME;
+            if (delta[1] < -1.0F * self.speed * Defines.FRAMETIME)
+                delta[1] = -1.0F * self.speed * Defines.FRAMETIME;
 
             Math3D.VectorScale(delta, 1.0f / Defines.FRAMETIME, self.avelocity);
 
@@ -269,23 +269,23 @@ public class GameTurret {
 
 
                 float angle = self.s.angles[1] + self.owner.move_origin[1];
-                angle *= (Math.PI * 2 / 360);
-                float[] target = {0, 0, 0};
-                target[0] = GameTurret.SnapToEights((float) (self.s.origin[0] +
-                			Math.cos(angle) * self.owner.move_origin[0]));
-                target[1] = GameTurret.SnapToEights((float) (self.s.origin[1] + 
-                			Math.sin(angle) * self.owner.move_origin[0]));
+                angle = (float) ((double) angle * (Math.PI * 2.0 / 360.0));
+                float[] target = {(float) 0, (float) 0, (float) 0};
+                target[0] = GameTurret.SnapToEights((float) ((double) self.s.origin[0] +
+                			Math.cos((double) angle) * (double) self.owner.move_origin[0]));
+                target[1] = GameTurret.SnapToEights((float) ((double) self.s.origin[1] +
+                			Math.sin((double) angle) * (double) self.owner.move_origin[0]));
                 target[2] = self.owner.s.origin[2];
 
-                float[] dir = {0, 0, 0};
+                float[] dir = {(float) 0, (float) 0, (float) 0};
                 Math3D.VectorSubtract(target, self.owner.s.origin, dir);
                 self.owner.velocity[0] = dir[0] * 1.0f / Defines.FRAMETIME;
                 self.owner.velocity[1] = dir[1] * 1.0f / Defines.FRAMETIME;
 
                 
-                angle = self.s.angles[Defines.PITCH] * (float) (Math.PI * 2f / 360f);
-                float target_z = GameTurret.SnapToEights((float) (self.s.origin[2]
-                        + self.owner.move_origin[0] * Math.tan(angle) + self.owner.move_origin[2]));
+                angle = self.s.angles[Defines.PITCH] * (float) (Math.PI * 2 / 360);
+                float target_z = GameTurret.SnapToEights((float) ((double) self.s.origin[2]
+                        + (double) self.owner.move_origin[0] * Math.tan((double) angle) + (double) self.owner.move_origin[2]));
 
                 float diff = target_z - self.owner.s.origin[2];
                 self.owner.velocity[2] = diff * 1.0f / Defines.FRAMETIME;
@@ -336,7 +336,7 @@ public class GameTurret {
                         int damage, float[] point) {
 
 
-            self.target_ent.move_angles[0] = 0;
+            self.target_ent.move_angles[0] = (float) 0;
 
 
             edict_t ent;
@@ -383,10 +383,10 @@ public class GameTurret {
             }
 
 
-            float[] target = {0, 0, 0};
+            float[] target = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorCopy(self.enemy.s.origin, target);
-            target[2] += self.enemy.viewheight;
-            float[] dir = {0, 0, 0};
+            target[2] = target[2] + (float) self.enemy.viewheight;
+            float[] dir = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorSubtract(target, self.target_ent.s.origin, dir);
             Math3D.vectoangles(dir, self.target_ent.move_angles);
 
@@ -394,7 +394,7 @@ public class GameTurret {
             if (GameBase.level.time < self.monsterinfo.attack_finished)
                 return true;
 
-            float reaction_time = (3 - GameBase.skill.value) * 1.0f;
+            float reaction_time = (3.0F - GameBase.skill.value) * 1.0f;
             if ((GameBase.level.time - self.monsterinfo.trail_time) < reaction_time)
                 return true;
 
@@ -420,10 +420,10 @@ public class GameTurret {
             self.target_ent.teammaster.owner = self;
             Math3D.VectorCopy(self.target_ent.s.angles, self.s.angles);
 
-            float[] vec = {0, 0, 0};
+            float[] vec = {(float) 0, (float) 0, (float) 0};
             vec[0] = self.target_ent.s.origin[0] - self.s.origin[0];
             vec[1] = self.target_ent.s.origin[1] - self.s.origin[1];
-            vec[2] = 0;
+            vec[2] = (float) 0;
             self.move_origin[0] = Math3D.VectorLength(vec);
 
             Math3D.VectorSubtract(self.s.origin, self.target_ent.s.origin, vec);

@@ -34,7 +34,7 @@ public class Interleaver {
     public static final int kSkipFactor = 4;
 
     public static void interleave(byte[] items) {
-        int jump = (int) Math.ceil(items.length / kSkipFactor);
+        int jump = (int) Math.ceil((double) (items.length / kSkipFactor));
         byte[] result = new byte[items.length];
         int k = 0;
         for (int i = 0; i < jump; ++i) {
@@ -46,7 +46,7 @@ public class Interleaver {
     }
 
     public static void deinterleave(byte[] items) {
-        int jump = (int) Math.ceil(items.length / kSkipFactor);
+        int jump = (int) Math.ceil((double) (items.length / kSkipFactor));
         byte[] result = new byte[items.length];
         int k = 0;
         for (int i = 0; i < jump; ++i) {

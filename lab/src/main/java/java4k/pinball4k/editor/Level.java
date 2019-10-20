@@ -5,8 +5,6 @@ import java.awt.geom.Point2D;
 import java.io.*;
 import java.util.List;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Before packing flags, score and behavior id:
@@ -253,10 +251,10 @@ public class Level {
 				if (writeBeziers) {
 					beziers.add(bezier);
 				} else {
-                    Point2D.Float p1 = bezier.interpolate(0);
+                    Point2D.Float p1 = bezier.interpolate((float) 0);
                     int subdivs = bezier.subdivs;
 					for (int i = 1; i<=subdivs; i++) {
-                        Point2D.Float p2 = bezier.interpolate(i/(float)subdivs);
+                        Point2D.Float p2 = bezier.interpolate((float) i /(float)subdivs);
 
                         Point p1Int = new Point(Math.round(p1.x), Math.round(p1.y));
                         Point p2Int = new Point(Math.round(p2.x), Math.round(p2.y));
@@ -308,8 +306,8 @@ public class Level {
 
         DataOutputStream dataOut = new DataOutputStream(out);
 
-		dataOut.writeByte('|');
-		dataOut.writeByte('|');
+		dataOut.writeByte((int) '|');
+		dataOut.writeByte((int) '|');
 		dataOut.writeByte(flippers.size());
 		dataOut.writeByte(sircles.size());
 		dataOut.writeByte(arrows.size());
@@ -329,39 +327,39 @@ public class Level {
 			idx++;
 		}
 		for (LevelObject obj : objects) {
-			dataOut.writeByte((byte) (obj.p.x / 4));
-			dataOut.writeByte((byte) (obj.p.y / 6));
+			dataOut.writeByte((int) (byte) (obj.p.x / 4));
+			dataOut.writeByte((int) (byte) (obj.p.y / 6));
 		}
 		
 		
 		for (Sircle sircle : sircles) {
 
-				dataOut.writeByte((byte) sircle.radius);
+				dataOut.writeByte((int) (byte) sircle.radius);
 
 		}
 		
 		
 		for (Arrow arrow : arrows) {
-			dataOut.writeByte((byte) arrow.angle);
+			dataOut.writeByte((int) (byte) arrow.angle);
 		}
 
 		
 		for (Flipper flipper : flippers) {
 			if (flipper.minAngle < 0 || flipper.maxAngle < 0) {
-				flipper.minAngle = Flipper.toPacked(Flipper.toAngle(flipper.minAngle) + 2*Math.PI);
-				flipper.maxAngle = Flipper.toPacked(Flipper.toAngle(flipper.maxAngle) + 2*Math.PI);
+				flipper.minAngle = Flipper.toPacked(Flipper.toAngle(flipper.minAngle) + 2.0 *Math.PI);
+				flipper.maxAngle = Flipper.toPacked(Flipper.toAngle(flipper.maxAngle) + 2.0 *Math.PI);
 			}
 			
-			dataOut.writeByte((byte) (flipper.minAngle));
-			dataOut.writeByte((byte) (flipper.maxAngle));
+			dataOut.writeByte((int) (byte) (flipper.minAngle));
+			dataOut.writeByte((int) (byte) (flipper.maxAngle));
 			dataOut.writeByte(flipper.leftFlipper ? 0 : 2);
 		}
 
 
         int lineStartIdx = flippers.size() + sircles.size() + arrows.size();
 		for (Line line : lines) {
-			dataOut.writeByte((byte) (line.p2.x / 4));
-			dataOut.writeByte((byte) (line.p2.y / 6));
+			dataOut.writeByte((int) (byte) (line.p2.x / 4));
+			dataOut.writeByte((int) (byte) (line.p2.y / 6));
 		}
 		
 		
@@ -370,8 +368,8 @@ public class Level {
 			dataOut.writeByte(strip.size());
 			dataOut.writeByte(stripLineMap.get(strip)+lineStartIdx);
 			for (Line line : strip) {
-				dataOut.writeByte((byte) (line.p2.x / 4));
-				dataOut.writeByte((byte) (line.p2.y / 6));
+				dataOut.writeByte((int) (byte) (line.p2.x / 4));
+				dataOut.writeByte((int) (byte) (line.p2.y / 6));
 				objIdxMap.put(line, new Integer(idx));
 				idx++;
 			}
@@ -399,13 +397,13 @@ public class Level {
 			dataOut.writeByte(beziers.size());
 			
 			for (Bezier bezier : beziers) {
-				dataOut.writeByte((byte) (bezier.p.x / 4));
-				dataOut.writeByte((byte) (bezier.p.y / 6));
-				dataOut.writeByte((byte) (bezier.p2.x / 4));
-				dataOut.writeByte((byte) (bezier.p2.y / 6));
-				dataOut.writeByte((byte) (bezier.p3.x / 4));
-				dataOut.writeByte((byte) (bezier.p3.y / 6));
-				dataOut.writeByte((byte) bezier.subdivs);
+				dataOut.writeByte((int) (byte) (bezier.p.x / 4));
+				dataOut.writeByte((int) (byte) (bezier.p.y / 6));
+				dataOut.writeByte((int) (byte) (bezier.p2.x / 4));
+				dataOut.writeByte((int) (byte) (bezier.p2.y / 6));
+				dataOut.writeByte((int) (byte) (bezier.p3.x / 4));
+				dataOut.writeByte((int) (byte) (bezier.p3.y / 6));
+				dataOut.writeByte((int) (byte) bezier.subdivs);
 			}
 		}
 		
@@ -430,7 +428,7 @@ public class Level {
 		if (obj.isGate) {
 			flags |= GATE_MASK;
 		}
-		if (obj.bounce > 1) {
+		if (obj.bounce > 1.0F) {
 			flags |= BUMPER_MASK;
 		}
 
@@ -443,9 +441,9 @@ public class Level {
 		
 		dataIn.readUnsignedByte();
 		dataIn.readUnsignedByte();
-		int flippers = dataIn.readByte();
-		int sircles = dataIn.readByte();
-		int arrows = dataIn.readByte();
+		int flippers = (int) dataIn.readByte();
+		int sircles = (int) dataIn.readByte();
+		int arrows = (int) dataIn.readByte();
         int lineCnt = dataIn.readUnsignedByte();
 		
 		dataIn.readUnsignedByte();
@@ -471,7 +469,7 @@ public class Level {
 		}			
 		
 		for (LevelObject obj : levelObjects) {
-			int flags = dataIn.readByte();
+			int flags = (int) dataIn.readByte();
 			obj.visible = (flags & VISIBLE_MASK) != 0;
 			obj.collidable = (flags & COLLIDABLE_MASK) != 0;
 			obj.isRollOver = (flags & ROLL_OVER_MASK) != 0;
@@ -516,7 +514,7 @@ public class Level {
 
         ArrayList<ArrayList<Line>> stripsArray = new ArrayList<ArrayList<Line>>();
 		
-		int strips = dataIn.readByte();
+		int strips = (int) dataIn.readByte();
         int stripBytes = 1+(strips*2);
 		for (int stripIdx = 0; stripIdx<strips; stripIdx++) {
             int lines = dataIn.readUnsignedByte();
@@ -540,10 +538,10 @@ public class Level {
 			stripsArray.add(linesArray);			
 		}
 		
-		int groupCnt = dataIn.readByte();
+		int groupCnt = (int) dataIn.readByte();
 		for (int groupIdx = 0; groupIdx < groupCnt; groupIdx++) {
-			int objCnt = dataIn.readByte();
-			int firstIdx = dataIn.readByte();
+			int objCnt = (int) dataIn.readByte();
+			int firstIdx = (int) dataIn.readByte();
 			ArrayList<LevelObject> group = new ArrayList<>();
 			for (int objIdx = 0; objIdx < objCnt; objIdx++) {
 				int i = firstIdx + objIdx;
@@ -554,7 +552,7 @@ public class Level {
 		}
 
 		if (dataIn.available() > 0) {
-			int beziers = dataIn.readByte();
+			int beziers = (int) dataIn.readByte();
 			for (int i = 0; i < beziers; i++) {
                 Bezier bezier = new Bezier(new Point(0, 0), new Point(0, 0), new Point(0, 0));
 				bezier.p.x = dataIn.readUnsignedByte() * 4;

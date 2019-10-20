@@ -33,7 +33,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * */
 public class MetaFlow {
 
-    final Random rng = new XoRoShiRo128PlusRandom(1);
+    final Random rng = new XoRoShiRo128PlusRandom(1L);
 
     public void good(float value, Object... args) {
         value(cursor().reset(2).append(args).arrayCopy(), GOOD.id, value);
@@ -76,14 +76,14 @@ public class MetaFlow {
             r.run();
         } catch (Throwable t) {
             //TODO generatecorrect exception stack frame representation
-            bad(1, t.getStackTrace()[0].toString(), "throw", t.getClass().getName());
+            bad(1.0F, t.getStackTrace()[0].toString(), "throw", t.getClass().getName());
         }
     }
 
 
 
     static final int digitResolution = 3;
-    final float ditherScale = (float) Math.pow(10, digitResolution);
+    final float ditherScale = (float) Math.pow(10.0, (double) digitResolution);
 
     private void value(byte[] cursor, byte quality, float value) {
         Node n = plan.putIfAbsent(cursor, Node::new);
@@ -94,7 +94,7 @@ public class MetaFlow {
                     return Texts.histogramString(this, false);
                 }
             })
-                .recordValue(Math.round(ditherScale * value));
+                .recordValue((long) Math.round(ditherScale * value));
     }
 
     @Retention(value=RUNTIME)
@@ -142,7 +142,7 @@ public class MetaFlow {
 
             StringBuilder sb = new StringBuilder(512);
             sb.append('{');
-            forEachKeyValue((k,v)-> sb.append(qualia.getIndex(k).name).append('=').append(v).append(", "));
+            forEachKeyValue((k,v)-> sb.append(qualia.getIndex((int) k).name).append('=').append(v).append(", "));
             sb.setLength(sb.length()-2);
             sb.append('}');
             return sb.toString();
@@ -178,7 +178,7 @@ public class MetaFlow {
             //store the character position of each frame so that on ascent, it can just reposition to that previous location
             buffer.clear();
             walkerSummary.walk((s) -> {
-                s.skip(preSkip).takeWhile(f -> {
+                s.skip((long) preSkip).takeWhile(f -> {
 //                    if (f == at) {
 //                        //no change
 //                        return false;
@@ -203,7 +203,7 @@ public class MetaFlow {
                 write(prev, next);
                 if (i != 0) {
                     char SEPARATOR = '{';
-                    writeByte((byte)SEPARATOR);
+                    writeByte((int) (byte) SEPARATOR);
                 }
                 prev = next;
             }
@@ -224,7 +224,7 @@ public class MetaFlow {
                     nClass = nClass.substring(pClass.length());
                 }
                 writeUTF(nClass);
-                writeByte((byte)'{');
+                writeByte((int) (byte) '{');
             }
             writeUTF(next.getMethodName());
             write(compactDescriptor(next.getDescriptor()));
@@ -248,10 +248,10 @@ public class MetaFlow {
 
 
             //TODO add to buffer, with codepoints etc
-            writeByte('{');
+            writeByte((int) '{');
             for (Object x : args) {
                 writeUTF(x.toString()); //HACK
-                writeByte(',');
+                writeByte((int) ',');
             }
             rewind(1);//.writeByte('{');
 
@@ -311,8 +311,8 @@ public class MetaFlow {
 
     static final ThreadLocal<MetaFlow> meta = ThreadLocal.withInitial(MetaFlow::new);
 
-    final Quality BAD = quality("bad").value(-1);
-    final Quality GOOD = quality("good").value(+1);
+    final Quality BAD = quality("bad").value(-1.0F);
+    final Quality GOOD = quality("good").value((float) +1);
 
 
     public static MetaFlow exe() {

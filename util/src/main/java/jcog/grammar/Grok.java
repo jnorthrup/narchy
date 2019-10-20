@@ -1085,13 +1085,13 @@ public class Grok implements Serializable {
             }
             char[] tmp = value.toCharArray();
             char t0 = tmp[0];
-            if (tmp.length == 1 && (t0 == '"' || t0 == '\'')) {
+            if (tmp.length == 1 && ((int) t0 == (int) '"' || (int) t0 == (int) '\'')) {
                 return "";
             } else {
                 int vlen = value.length();
                 char tl = tmp[vlen - 1];
-                if ((t0 == '"' && tl == '"')
-                        || (t0 == '\'' && tl == '\'')) {
+                if (((int) t0 == (int) '"' && (int) tl == (int) '"')
+                        || ((int) t0 == (int) '\'' && (int) tl == (int) '\'')) {
                     return value.substring(1, vlen - 1);
                 } else {
                     return value;

@@ -71,6 +71,6 @@ public class LFO_Granulation_01 {
 
         
         ac.start();
-        Util.sleepMS((100 * 1000));
+        Util.sleepMS((long) (100 * 1000));
     }
 }

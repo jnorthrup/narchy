@@ -87,7 +87,7 @@ public class UnicodeHandler extends TypeHandler {
             int lengthBy2 = length * 2;
             RdpPacket p = new RdpPacket_Localised(lengthBy2);
             for (byte sByte : sBytes) {
-                p.setLittleEndian16(sByte);
+                p.setLittleEndian16((int) sByte);
             }
             sBytes = new byte[length * 2];
             p.copyToByteArray(sBytes, 0, 0, lengthBy2);

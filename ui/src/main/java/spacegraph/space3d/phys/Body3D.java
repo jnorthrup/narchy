@@ -168,7 +168,7 @@ public class Body3D<X> extends Collidable<X> {
 		setCollisionShape(collisionShape);
 
 		setMass(mass, localInertia);
-		setDamping(0,0);
+		setDamping((float) 0, (float) 0);
 		updateInertiaTensor();
 	}
 	
@@ -303,10 +303,10 @@ public class Body3D<X> extends Collidable<X> {
 		
 		
 		
-		if (linearDamping > 0)
-			linearVelocity.scaled((float) Math.pow(1f - linearDamping, timeStep));
-		if (angularDamping > 0)
-			angularVelocity.scaled((float) Math.pow(1f - angularDamping, timeStep));
+		if (linearDamping > (float) 0)
+			linearVelocity.scaled((float) Math.pow((double) (1f - linearDamping), (double) timeStep));
+		if (angularDamping > (float) 0)
+			angularVelocity.scaled((float) Math.pow((double) (1f - angularDamping), (double) timeStep));
 		
 
 

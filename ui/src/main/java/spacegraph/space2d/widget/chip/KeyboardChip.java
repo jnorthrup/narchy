@@ -32,7 +32,7 @@ public class KeyboardChip extends Widget implements KeyPressed {
     public boolean key(KeyEvent e, boolean pressedOrReleased) {
         //FIFO, 0=unpressed
         if (pressedOrReleased)
-            out((e.isPrintableKey() ? e.getKeyChar() : e.getKeyCode()));
+            out((e.isPrintableKey() ? (int) e.getKeyChar() : (int) e.getKeyCode()));
         else
             out(0);
 

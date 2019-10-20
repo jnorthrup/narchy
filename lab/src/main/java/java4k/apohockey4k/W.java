@@ -92,9 +92,9 @@ public class W extends GamePanel {
 		 * 7 = enemy velocity
 		 */
 		playerspaddle = new float[8];
-		playerspaddle[0] = playerspaddle[3] = 190;
-		playerspaddle[1] = 450;
-		playerspaddle[4] = 90;
+		playerspaddle[0] = playerspaddle[3] = 190.0F;
+		playerspaddle[1] = 450.0F;
+		playerspaddle[4] = 90.0F;
 
 		/**
 		 * 0 = farbe
@@ -111,9 +111,9 @@ public class W extends GamePanel {
 		 * 5 = color
 		 */
 		paddleVec = new float[6];
-		paddleVec[0] = 205;
-		paddleVec[1] = 345;
-		paddleVec[5] = 3;
+		paddleVec[0] = 205.0F;
+		paddleVec[1] = 345.0F;
+		paddleVec[5] = 3.0F;
 	}
 
 	@Override
@@ -137,30 +137,30 @@ public class W extends GamePanel {
 			if (p[7] <= 0) {
                 float[] oldValues = new float[6];
                 System.arraycopy(playerspaddle, 0, oldValues, 0, 6);
-				playerspaddle[0] = p[0] - 30;
-				playerspaddle[1] = p[1] - 30;
+				playerspaddle[0] = (float) (p[0] - 30);
+				playerspaddle[1] = (float) (p[1] - 30);
 
-				if (playerspaddle[7] > 0) {
-                    playerspaddle[3] += playerspaddle[7] * (float) Math.sin(Math.toRadians(playerspaddle[6]));
-                    playerspaddle[4] -= playerspaddle[7] * (float) Math.cos(Math.toRadians(playerspaddle[6]));
+				if (playerspaddle[7] > (float) 0) {
+                    playerspaddle[3] += playerspaddle[7] * (float) Math.sin(Math.toRadians((double) playerspaddle[6]));
+                    playerspaddle[4] -= playerspaddle[7] * (float) Math.cos(Math.toRadians((double) playerspaddle[6]));
 				}
 				for (int i = 0; i < 5; i += 3) {
-					if (playerspaddle[i] < 18) {
-						playerspaddle[i] = 18;
+					if (playerspaddle[i] < 18.0F) {
+						playerspaddle[i] = 18.0F;
 					}
-					if (playerspaddle[i] >= 424 - 60) {
-						playerspaddle[i] = 424 - 60;
+					if (playerspaddle[i] >= (float) (424 - 60)) {
+						playerspaddle[i] = (float) (424 - 60);
 					}
 
                     int add = -287;
 					if (i == 0) {
 						add = 0;
 					}
-					if (playerspaddle[i + 1] <= 300 + add) {
-						playerspaddle[i + 1] = 300 + add;
+					if (playerspaddle[i + 1] <= (float) (300 + add)) {
+						playerspaddle[i + 1] = (float) (300 + add);
 					}
-					if (playerspaddle[i + 1] >= 587 - 60 + add) {
-						playerspaddle[i + 1] = 587 - 60 + add;
+					if (playerspaddle[i + 1] >= (float) (587 - 60 + add)) {
+						playerspaddle[i + 1] = (float) (587 - 60 + add);
 					}
 				}
 
@@ -173,15 +173,15 @@ public class W extends GamePanel {
 
 				
 				for (int i = 2; i < 6; i += 3) {
-					playerspaddle[i] -= 10;
-					if (playerspaddle[i] < 0) {
-						playerspaddle[i] = 0;
+					playerspaddle[i] -= 10.0F;
+					if (playerspaddle[i] < (float) 0) {
+						playerspaddle[i] = (float) 0;
 					}
 				}
 				
-				paddleVec[4] -= 10;
-				if (paddleVec[4] < 0) {
-					paddleVec[4] = 3000;
+				paddleVec[4] -= 10.0F;
+				if (paddleVec[4] < (float) 0) {
+					paddleVec[4] = 3000.0F;
 				}
 
 				
@@ -189,19 +189,19 @@ public class W extends GamePanel {
                     double angle = 0.0d;
                     double angle1 = 0.0d;
                     double angle2 = 0.0d;
-                    float newX = ((paddleVec[0] + 15 - (playerspaddle[i] + 30)) * (paddleVec[0] + 15 - (playerspaddle[i] + 30)));
-                    float newY = ((paddleVec[1] + 15 - (playerspaddle[i + 1] + 30)) * (paddleVec[1] + 15 - (playerspaddle[i + 1] + 30)));
+                    float newX = ((paddleVec[0] + 15.0F - (playerspaddle[i] + 30.0F)) * (paddleVec[0] + 15.0F - (playerspaddle[i] + 30.0F)));
+                    float newY = ((paddleVec[1] + 15.0F - (playerspaddle[i + 1] + 30.0F)) * (paddleVec[1] + 15.0F - (playerspaddle[i + 1] + 30.0F)));
 
                     for (int j = 0; j < 2; j++) {
-						double dx = paddleVec[0] + 15 - (playerspaddle[i] + 30);
-						double dy = paddleVec[1] + 15 - (playerspaddle[i + 1] + 30);
+						double dx = (double) (paddleVec[0] + 15.0F - (playerspaddle[i] + 30.0F));
+						double dy = (double) (paddleVec[1] + 15.0F - (playerspaddle[i + 1] + 30.0F));
 
 						if ((j == 0) && (i > 0)) {
-							dx = paddleVec[0] - 5 - (playerspaddle[i] + 30);
+							dx = (double) (paddleVec[0] - 5.0F - (playerspaddle[i] + 30.0F));
 						}
 						if (j == 1) {
-							dx = 220 - (playerspaddle[i] + 30);
-							dy = 50 - (playerspaddle[i + 1] + 30);
+							dx = (double) (220 - (playerspaddle[i] + 30.0F));
+							dy = (double) (50 - (playerspaddle[i + 1] + 30.0F));
 						}
 
 						if (dx == 0.0) {
@@ -222,14 +222,14 @@ public class W extends GamePanel {
 							if (dx < 0.0) {
 								angle1 = Math.atan(dy / dx) + Math.PI;
 							} else if (dy < 0.0) {
-								angle1 = Math.atan(dy / dx) + (2 * Math.PI);
+								angle1 = Math.atan(dy / dx) + (2.0 * Math.PI);
 							} else {
 								angle1 = Math.atan(dy / dx);
 							}
 						}
-						angle1 = (float) ((angle1 * 180) / Math.PI) + 90;
-						if (angle1 >= 360) {
-							angle1 -= 360;
+						angle1 = (double) ((float) ((angle1 * 180.0) / Math.PI) + 90.0F);
+						if (angle1 >= 360.0) {
+							angle1 -= 360.0;
 						}
 						if (j == 0) {
 							angle = angle1;
@@ -240,33 +240,33 @@ public class W extends GamePanel {
 
 					/** ai */
 					if (i == 3) {
-						if ((paddleVec[3] <= 0.001f) && (paddleVec[1] < 299)) {
+						if ((paddleVec[3] <= 0.001f) && (paddleVec[1] < 299.0F)) {
 							playerspaddle[6] = (float) angle;
 							playerspaddle[7] = 2.0f;
 						} else {
 							playerspaddle[6] = (float) angle2;
 							playerspaddle[7] = 2.0f;
 
-							if ((playerspaddle[4] > 16) && (playerspaddle[4] < 24) && (paddleVec[1] > 45)) {
+							if ((playerspaddle[4] > 16.0F) && (playerspaddle[4] < 24.0F) && (paddleVec[1] > 45.0F)) {
 								playerspaddle[7] = 2.1f;
 								if (playerspaddle[3] < paddleVec[0]) {
-									playerspaddle[6] = 90;
+									playerspaddle[6] = 90.0F;
 								} else if (playerspaddle[3] > paddleVec[0]) {
-									playerspaddle[6] = 270;
+									playerspaddle[6] = 270.0F;
 								}
 							}
 						}
 					}
 
-                    float newRadius = ((45) * (45));
+                    float newRadius = (float) ((45) * (45));
                     if (newX + newY <= newRadius) {
-						playerspaddle[i + 2] = 3000;
+						playerspaddle[i + 2] = 3000.0F;
 						paddleVec[2] = (float) (angle);
                         float speed = (Math.abs(oldValues[i] - playerspaddle[i]) + Math.abs(oldValues[i + 1] - playerspaddle[i + 1])) * 0.015f;
-						if (speed > 0.022) {
+						if ((double) speed > 0.022) {
 							speed = 0.022f;
 						}
-						if (speed != 0) {
+						if (speed != (float) 0) {
 							paddleVec[3] = speed;
 						}
 
@@ -274,75 +274,75 @@ public class W extends GamePanel {
 				}
 
 
-                float speed = paddleVec[3] * 10 * 30;
-				double alpha = paddleVec[2];
-				if (alpha > 360) {
-					alpha = 360 - alpha;
-				} else if (alpha < 0) {
-					alpha = 360 + alpha;
+                float speed = paddleVec[3] * 10.0F * 30.0F;
+				double alpha = (double) paddleVec[2];
+				if (alpha > 360.0) {
+					alpha = 360.0 - alpha;
+				} else if (alpha < (double) 0) {
+					alpha = 360.0 + alpha;
 				}
 				if (speed > 0.001f) {
-                    float newX = paddleVec[0] + 15 + speed * (float) Math.sin(Math.toRadians(alpha));
-                    float newY = paddleVec[1] + 15 - speed * (float) Math.cos(Math.toRadians(alpha));
-					paddleVec[0] = (newX - 15);
-					paddleVec[1] = (newY - 15);
-                    float next = 0.000002f * 10;
+                    float newX = paddleVec[0] + 15.0F + speed * (float) Math.sin(Math.toRadians(alpha));
+                    float newY = paddleVec[1] + 15.0F - speed * (float) Math.cos(Math.toRadians(alpha));
+					paddleVec[0] = (newX - 15.0F);
+					paddleVec[1] = (newY - 15.0F);
+                    float next = 0.000002f * 10.0F;
                     paddleVec[3] -= next;
-					if (paddleVec[3] < 0) {
-						paddleVec[3] = 0;
+					if (paddleVec[3] < (float) 0) {
+						paddleVec[3] = (float) 0;
 					}
-					if (paddleVec[1] < -25) {
+					if (paddleVec[1] < -25.0F) {
 						p[11] = p[9] += 1;
 						if (p[9] >= 7) {
 							p[7] = 1;
 							p[11] = 0;
 						}
-					} else if (paddleVec[1] > 595) {
+					} else if (paddleVec[1] > 595.0F) {
 						p[10] = p[8] += 1;
 						if (p[8] >= 7) {
 							p[7] = 1;
 							p[10] = 0;
 						}
-					} else if (paddleVec[3] != 0) {
+					} else if (paddleVec[3] != (float) 0) {
 
                         float los = paddleVec[2];
 						for (int i = 0; i < WALLS.length; i += 4) {
-							if (new Rectangle2D.Float(WALLS[i], WALLS[i + 1], WALLS[i + 2], WALLS[i + 3]).intersects(paddleVec[0], paddleVec[1], 30, 30)) {
+							if (new Rectangle2D.Float((float) WALLS[i], (float) WALLS[i + 1], (float) WALLS[i + 2], (float) WALLS[i + 3]).intersects((double) paddleVec[0], (double) paddleVec[1], 30.0, 30.0)) {
                                 boolean bPaddle = false;
 								if (WALLS[i + 2] < WALLS[i + 3]) {
-									if ((los >= 90) && (los <= 270)) {
-										if (los < 180) {
-                                            float dif = los - 90;
-											paddleVec[2] = (90 - dif);
+									if ((los >= 90.0F) && (los <= 270.0F)) {
+										if (los < 180.0F) {
+                                            float dif = los - 90.0F;
+											paddleVec[2] = (90.0F - dif);
 										} else {
-                                            float dif = 270 - los;
-											paddleVec[2] = (270 + dif);
+                                            float dif = 270.0F - los;
+											paddleVec[2] = (270.0F + dif);
 										}
 										bPaddle = true;
 									} else {
-										if (los < 180) {
-											paddleVec[2] = (180 - los);
+										if (los < 180.0F) {
+											paddleVec[2] = (180.0F - los);
 										} else {
-                                            float dif = 270 - los;
-											paddleVec[2] = (270 + dif);
+                                            float dif = 270.0F - los;
+											paddleVec[2] = (270.0F + dif);
 										}
 										bPaddle = true;
 									}
 								} else {
-									if (los >= 180) {
-										if (los >= 270) {
-											paddleVec[2] = (360 - los);
+									if (los >= 180.0F) {
+										if (los >= 270.0F) {
+											paddleVec[2] = (360.0F - los);
 										} else {
-                                            float dif = 180 - los;
-											paddleVec[2] = (180 + dif);
+                                            float dif = 180.0F - los;
+											paddleVec[2] = (180.0F + dif);
 										}
 										bPaddle = true;
 									} else {
-										if (los < 90) {
-											paddleVec[2] = (360 - los);
+										if (los < 90.0F) {
+											paddleVec[2] = (360.0F - los);
 										} else {
-                                            float dif = 180 - los;
-											paddleVec[2] = (180 + dif);
+                                            float dif = 180.0F - los;
+											paddleVec[2] = (180.0F + dif);
 										}
 										bPaddle = true;
 									}
@@ -350,36 +350,36 @@ public class W extends GamePanel {
 								if (bPaddle) {
 
                                     int count = 0;
-									while ((count < 30) && (new Rectangle2D.Float(WALLS[i], WALLS[i + 1], WALLS[i + 2], WALLS[i + 3]).intersects(paddleVec[0], paddleVec[1], 30, 30))) {
+									while ((count < 30) && (new Rectangle2D.Float((float) WALLS[i], (float) WALLS[i + 1], (float) WALLS[i + 2], (float) WALLS[i + 3]).intersects((double) paddleVec[0], (double) paddleVec[1], 30.0, 30.0))) {
                                         count++;
                                         float radiusOne = 0.5f;
-                                        paddleVec[0] -= radiusOne * (float) Math.sin(Math.toRadians(paddleVec[2]));
-                                        paddleVec[1] += radiusOne * (float) Math.cos(Math.toRadians(paddleVec[2]));
+                                        paddleVec[0] -= radiusOne * (float) Math.sin(Math.toRadians((double) paddleVec[2]));
+                                        paddleVec[1] += radiusOne * (float) Math.cos(Math.toRadians((double) paddleVec[2]));
 									}
 
-									paddleVec[2] += 180;
-									while (paddleVec[2] > 360) {
-										paddleVec[2] -= 360;
+									paddleVec[2] += 180.0F;
+									while (paddleVec[2] > 360.0F) {
+										paddleVec[2] -= 360.0F;
 									}
 									colors[i / 2] += 1;
 									colors[i / 2 + 1] = 3000;
 
 									if (WALLS[i + 2] > WALLS[i + 3]) {
-										if (new Rectangle2D.Float(WALLS[i], WALLS[i + 1], WALLS[i + 2], WALLS[i + 3]).intersects(paddleVec[0], paddleVec[1], 30, 30)) {
-											if ((paddleVec[2] >= 90) && (paddleVec[2] <= 270)) {
-												if (paddleVec[2] < 180) {
-                                                    float dif = paddleVec[2] - 90;
-													paddleVec[2] = (90 - dif);
+										if (new Rectangle2D.Float((float) WALLS[i], (float) WALLS[i + 1], (float) WALLS[i + 2], (float) WALLS[i + 3]).intersects((double) paddleVec[0], (double) paddleVec[1], 30.0, 30.0)) {
+											if ((paddleVec[2] >= 90.0F) && (paddleVec[2] <= 270.0F)) {
+												if (paddleVec[2] < 180.0F) {
+                                                    float dif = paddleVec[2] - 90.0F;
+													paddleVec[2] = (90.0F - dif);
 												} else {
-                                                    float dif = 270 - paddleVec[2];
-													paddleVec[2] = (270 + dif);
+                                                    float dif = 270.0F - paddleVec[2];
+													paddleVec[2] = (270.0F + dif);
 												}
 											} else {
-												if (paddleVec[2] < 180) {
-													paddleVec[2] = (180 - paddleVec[2]);
+												if (paddleVec[2] < 180.0F) {
+													paddleVec[2] = (180.0F - paddleVec[2]);
 												} else {
-                                                    float dif = 270 - paddleVec[2];
-													paddleVec[2] = (270 + dif);
+                                                    float dif = 270.0F - paddleVec[2];
+													paddleVec[2] = (270.0F + dif);
 												}
 											}
 										}
@@ -388,11 +388,11 @@ public class W extends GamePanel {
 							}
 						}
 					}
-					if (paddleVec[0] < 16) {
-						paddleVec[0] = 16;
+					if (paddleVec[0] < 16.0F) {
+						paddleVec[0] = 16.0F;
 					}
-					if (paddleVec[0] > 424 - 30) {
-						paddleVec[0] = 424 - 30;
+					if (paddleVec[0] > (float) (424 - 30)) {
+						paddleVec[0] = (float) (424 - 30);
 					}
 				}
 			}
@@ -404,19 +404,19 @@ public class W extends GamePanel {
 
 				colors = new int[16];
 				for (int i = 0; i < WALLS.length; i += 4) {
-					colors[i / 2] = (int) (Math.random() * COLOR_ORDER.length);
+					colors[i / 2] = (int) (Math.random() * (double) COLOR_ORDER.length);
 				}
 				playerspaddle = new float[8];
-				playerspaddle[0] = playerspaddle[3] = 190;
-				playerspaddle[1] = 450;
-				playerspaddle[4] = 90;
+				playerspaddle[0] = playerspaddle[3] = 190.0F;
+				playerspaddle[1] = 450.0F;
+				playerspaddle[4] = 90.0F;
 				paddleVec = new float[6];
-				paddleVec[0] = 205;
-				paddleVec[1] = 345;
+				paddleVec[0] = 205.0F;
+				paddleVec[1] = 345.0F;
 				if (p[11] > 0) {
-					paddleVec[1] = 225;
+					paddleVec[1] = 225.0F;
 				}
-				paddleVec[5] = 3;
+				paddleVec[5] = 3.0F;
 
 				p[10] = 0;
 				p[11] = 0;
@@ -453,8 +453,8 @@ public class W extends GamePanel {
 
 			width = 10 - Math.abs(1500 - colors[i / 2 + 1]) / 150 + 14;
 			for (int w = 0; w < width / 2 - 2; w++) {
-                float add = 200f / (width / 2f - 2f);
-                int alpha = 255 - ((int) ((width / 2 - 2 - w) * add));
+                float add = 200f / ((float) width / 2f - 2f);
+                int alpha = 255 - ((int) ((float) (width / 2 - 2 - w) * add));
 				offscreenGraphics.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha));
 				if (WALLS[i + 2] < WALLS[i + 3]) {
 					offscreenGraphics.fillRect(WALLS[i] + WALLS[i + 2] / 2 - width / 2 + w, WALLS[i + 1], 1, WALLS[i + 3]);
@@ -475,40 +475,40 @@ public class W extends GamePanel {
 			if (i == 3)
 				c = Color.RED;
 
-			offscreenGraphics.setStroke(new BasicStroke(1));
-			width = (int) (10 - Math.abs(1500 - playerspaddle[i + 2]) / 150 + 14);
+			offscreenGraphics.setStroke(new BasicStroke(1.0F));
+			width = (int) (10.0F - Math.abs(1500.0F - playerspaddle[i + 2]) / 150.0F + 14.0F);
 			for (int w = 0; w < width / 2 - 2; w++) {
-                float add = 200f / (width / 2f - 2f);
-                int alpha = 255 - ((int) ((width / 2 - 2 - w) * add));
+                float add = 200f / ((float) width / 2f - 2f);
+                int alpha = 255 - ((int) ((float) (width / 2 - 2 - w) * add));
 				offscreenGraphics.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha));
-				offscreenGraphics.drawOval((int) (playerspaddle[i] - width / 2 + 2 + w), (int) (playerspaddle[i + 1] - width / 2 + 2 + w), 60 + 2 * (width / 2 - 2 - w),
+				offscreenGraphics.drawOval((int) (playerspaddle[i] - (float) (width / 2) + 2.0F + (float) w), (int) (playerspaddle[i + 1] - (float) (width / 2) + 2.0F + (float) w), 60 + 2 * (width / 2 - 2 - w),
 						60 + 2 * (width / 2 - 2 - w));
-				offscreenGraphics.drawOval((int) (playerspaddle[i] + width / 2 - 2 - w), (int) (playerspaddle[i + 1] + width / 2 - 2 - w), 60 - 2 * (width / 2 - 2 - w),
+				offscreenGraphics.drawOval((int) (playerspaddle[i] + (float) (width / 2) - 2.0F - (float) w), (int) (playerspaddle[i + 1] + (float) (width / 2) - 2.0F - (float) w), 60 - 2 * (width / 2 - 2 - w),
 						60 - 2 * (width / 2 - 2 - w));
 			}
 
-			offscreenGraphics.setStroke(new BasicStroke(3));
+			offscreenGraphics.setStroke(new BasicStroke(3.0F));
 			offscreenGraphics.setColor(Color.WHITE);
 			offscreenGraphics.drawOval((int) (playerspaddle[i]), (int) (playerspaddle[i + 1]), 60, 60);
 		}
 
-		offscreenGraphics.setStroke(new BasicStroke(1));
+		offscreenGraphics.setStroke(new BasicStroke(1.0F));
 		c = COLOR_ORDER[(int) (paddleVec[5])];
 		
-		width = (int) (10 - Math.abs(1500 - paddleVec[4]) / 150 + 14);
+		width = (int) (10.0F - Math.abs(1500.0F - paddleVec[4]) / 150.0F + 14.0F);
 		for (int w = 0; w < width / 2 - 2; w++) {
-            float add = 200f / (width / 2f - 2f);
-            int alpha = 255 - ((int) ((width / 2 - 2 - w) * add));
+            float add = 200f / ((float) width / 2f - 2f);
+            int alpha = 255 - ((int) ((float) (width / 2 - 2 - w) * add));
 			offscreenGraphics.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha));
-			offscreenGraphics.drawOval((int) (paddleVec[0] - width / 2 + 2 + w), (int) (paddleVec[1] - width / 2 + 2 + w), 30 + 2 * (width / 2 - 2 - w), 30 + 2 * (width / 2 - 2 - w));
-			offscreenGraphics.drawOval((int) (paddleVec[0] + width / 2 - 2 - w), (int) (paddleVec[1] + width / 2 - 2 - w), 30 - 2 * (width / 2 - 2 - w), 30 - 2 * (width / 2 - 2 - w));
+			offscreenGraphics.drawOval((int) (paddleVec[0] - (float) (width / 2) + 2.0F + (float) w), (int) (paddleVec[1] - (float) (width / 2) + 2.0F + (float) w), 30 + 2 * (width / 2 - 2 - w), 30 + 2 * (width / 2 - 2 - w));
+			offscreenGraphics.drawOval((int) (paddleVec[0] + (float) (width / 2) - 2.0F - (float) w), (int) (paddleVec[1] + (float) (width / 2) - 2.0F - (float) w), 30 - 2 * (width / 2 - 2 - w), 30 - 2 * (width / 2 - 2 - w));
 		}
 
-		offscreenGraphics.setStroke(new BasicStroke(3));
+		offscreenGraphics.setStroke(new BasicStroke(3.0F));
 		offscreenGraphics.setColor(Color.WHITE);
 		offscreenGraphics.drawOval((int) (paddleVec[0]), (int) (paddleVec[1]), 30, 30);
 
-		offscreenGraphics.setStroke(new BasicStroke(1));
+		offscreenGraphics.setStroke(new BasicStroke(1.0F));
 
 		offscreenGraphics.setFont(offscreenGraphics.getFont().deriveFont(30f).deriveFont(1));
 		for (int i = 8; i < 10; i++) {

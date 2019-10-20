@@ -115,7 +115,7 @@ public class Line extends LevelObject {
         public boolean intersects(Rectangle rect) {
             Line2D.Float line = new Line2D.Float(p, p2);
 			if (rect.width <= 1 && rect.height <= 1) {
-				return line.ptSegDist(new Point(rect.x, rect.y)) < 5;
+				return line.ptSegDist(new Point(rect.x, rect.y)) < 5.0;
 			} 
 
 			return line.intersects(rect);

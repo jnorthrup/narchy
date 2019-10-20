@@ -34,7 +34,7 @@ public class RenderParameterizedFunction2D implements RenderFunction2D {
     @Override
     public double compute(double x, double y) {
         if (parameterizedFunction == null) {
-            return 0;
+            return (double) 0;
         }
         xs[0] = x;
         xs[1] = y;

@@ -31,8 +31,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static java.util.stream.Collectors.toList;
-
 /**
  * @param S subject of the experiment
  * @param E experiment containing the subject
@@ -99,14 +97,14 @@ public class Optimize<S, E> extends Lab<E>  {
 
     public static <X> FloatFunction<X> repeat(FloatFunction<X> f, int repeats) {
         return (x) -> {
-            double sum = 0;
+            double sum = (double) 0;
             for (int i = 0; i < repeats; i++) {
                 float y = f.floatValueOf(x);
                 if (!Float.isFinite(y))
                     return y;
-                sum += y;
+                sum = sum + (double) y;
             }
-            return (float) (sum / repeats);
+            return (float) (sum / (double) repeats);
         };
     }
 
@@ -145,19 +143,19 @@ public class Optimize<S, E> extends Lab<E>  {
             Object guess = s.get(example);
 
 
-            double mi = min[i] = s.getMin();
-            double ma = max[i] = s.getMax();
-            double inc = this.inc[i] = s.getInc();
+            double mi = min[i] = (double) s.getMin();
+            double ma = max[i] = (double) s.getMax();
+            double inc = this.inc[i] = (double) s.getInc();
 
             if (guess!=null && (mi!=mi || ma!=ma || inc!=inc)) {
                 float x = (float)guess;
                 //HACK assumption
-                mi = min[i] = x/2;
-                ma = max[i] = x*2;
-                inc = this.inc[i] = x/4;
+                mi = min[i] = (double) (x / 2.0F);
+                ma = max[i] = (double) (x * 2.0F);
+                inc = this.inc[i] = (double) (x / 4.0F);
             }
 
-            mid[i] = guess != null ? Util.clamp((float) guess, mi, ma) : (mi + ma) / 2f;
+            mid[i] = guess != null ? Util.clamp((double) (float) guess, mi, ma) : (mi + ma) / 2;
 
             if (!(mid[i] >= min[i]))
                 throw new WTF();
@@ -412,10 +410,10 @@ public class Optimize<S, E> extends Lab<E>  {
         protected void run(Optimize o, ObjectiveFunction func) {
 
             int popSize =
-                    (int) Math.ceil(4 + 3 * Math.log(o.var.size()));
+                    (int) Math.ceil(4.0 + 3.0 * Math.log((double) o.var.size()));
 
 
-            double[] sigma = MathArrays.scale(1f, o.inc);
+            double[] sigma = MathArrays.scale(1, o.inc);
 
             MyCMAESOptimizer m = new MyCMAESOptimizer(maxIter, Double.NaN,
                     true, 0,

@@ -25,7 +25,7 @@ public class MLP2 {
 	// | Constants |
 	// +-----------+
 	
-	private float Epochs       = 1000;     // Default number of iterations
+	private float Epochs       = 1000.0F;     // Default number of iterations
 	private float LearningRate = 1e-3f;     // Default learning rate (good only for stochastic learning process)
 	private float Momentum     = 0.9f;      // Default momentum for stochastic learning process
 	private float Lambda       = 0.0f;      // Default regularization parameter for batch learning process, no regularization 
@@ -217,7 +217,7 @@ public class MLP2 {
 	}
 	
 	public void setEpochs(int value){
-		Epochs = value;
+		Epochs = (float) value;
 	}
 	
 	public void setLearningRate(float value){
@@ -317,7 +317,7 @@ public class MLP2 {
         int nLayers = layer.length;
 		for (int i = 0; i < layer[nLayers - 1].size; i++){
             float diff = Expected[i] - layer[nLayers - 1].out[i];
-			res += 0.5 * diff * diff;
+            res = (float) ((double) res + 0.5 * (double) diff * (double) diff);
 		}
 		
 		return res;
@@ -331,7 +331,7 @@ public class MLP2 {
         int nLayers = layer.length;
         for (int i = 0; i < layer[nLayers - 1].size; i++){
             float out = layer[nLayers - 1].out[i];
-			layer[nLayers - 1].theta[i] = out * (1 - out) * (Expected[i] - out);
+			layer[nLayers - 1].theta[i] = out * (1.0F - out) * (Expected[i] - out);
 		}
 	
 		for (int i = 1; i < nLayers - 1; i++)
@@ -340,7 +340,7 @@ public class MLP2 {
 				for (int v = 0; v < layer[i + 1].size; v++)
 					sum += layer[i + 1].theta[v] * layer[i].weight[j][v];
                 float out = layer[i].out[j];
-				layer[i].theta[j] = out * (1 - out) * sum;
+				layer[i].theta[j] = out * (1.0F - out) * sum;
 			}
     }
 
@@ -380,7 +380,7 @@ public class MLP2 {
 			}
 		}
 
-		for (int iter = 0; iter < Epochs; iter++){
+		for (int iter = 0; (float) iter < Epochs; iter++){
 			Perceptron();
 			StochasticBackPropagation();
 
@@ -416,7 +416,7 @@ public class MLP2 {
                     float out = layer[i].out[j];
                     float theta = layer[i + 1].theta[v];
 					
-					layer[i].delta[j][v] += (LearningRate * theta * out) / nSamples;
+					layer[i].delta[j][v] += (LearningRate * theta * out) / (float) nSamples;
 				}
 	}
 	
@@ -426,7 +426,7 @@ public class MLP2 {
 	
 	public float BatchLearning(int nSamples, float[][] Input, float[][] ExpectedOutput, String WeightsFileName) {
         int nLayers = layer.length;
-		for (int iter = 0; iter < Epochs; iter++){
+		for (int iter = 0; (float) iter < Epochs; iter++){
 	        System.out.print("Iteration " + iter + ": ");
 	        
 	        for (int i = 0; i < nLayers - 1; i++) {
@@ -454,7 +454,7 @@ public class MLP2 {
 	        for (int i = 0; i < nLayers - 1; i++)
 			    for (int j = 0; j < layer[i].size; j++)
 				    for (int v = 0; v < layer[i + 1].size; v++){
-                        float RegularizationTerm = LearningRate * Lambda * layer[i].weight[j][v] / nSamples;
+                        float RegularizationTerm = LearningRate * Lambda * layer[i].weight[j][v] / (float) nSamples;
 					    
 					    layer[i].weight[j][v] += layer[i].delta[j][v] - RegularizationTerm;
 					}

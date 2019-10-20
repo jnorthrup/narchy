@@ -143,9 +143,9 @@ public class Remember {
         n.emotion.perceive(t);
 
         byte punc = t.punc();
-        if (punc == BELIEF || punc == GOAL) {
+        if ((int) punc == (int) BELIEF || (int) punc == (int) GOAL) {
             float value = NAL.valueBeliefOrGoal(t);
-            (punc == BELIEF ? MetaGoal.Believe : MetaGoal.Desire)
+            ((int) punc == (int) BELIEF ? MetaGoal.Believe : MetaGoal.Desire)
                     .learn(t, value, n);
 
 //            if (t.isGoal()) {
@@ -227,10 +227,10 @@ public class Remember {
         if (priChange) { //dont compare time if pri already detected changed
             novel = true;
         } else {
-            long dCycles = Math.max(0, nextCreation - prevCreation);
+            long dCycles = Math.max(0L, nextCreation - prevCreation);
             float dur = what.dur();
-            float dDurs = dCycles == 0 ? 0 : (dCycles / dur); //maybe what.dur()
-            novel = dDurs >= NAL.belief.REMEMBER_REPEAT_THRESH_DURS;
+            float dDurs = dCycles == 0L ? (float) 0 : ((float) dCycles / dur); //maybe what.dur()
+            novel = dDurs >= (float) NAL.belief.REMEMBER_REPEAT_THRESH_DURS;
         }
 
         if (novel) {

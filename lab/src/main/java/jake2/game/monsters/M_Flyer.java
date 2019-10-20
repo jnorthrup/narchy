@@ -27,8 +27,6 @@ import jake2.game.*;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
-import java.util.stream.IntStream;
-
 public class M_Flyer {
     
 
@@ -367,8 +365,8 @@ public class M_Flyer {
         public String getID() { return "flyer_sight"; }
         @Override
         public boolean interact(edict_t self, edict_t other) {
-            game_import_t.sound(self, Defines.CHAN_VOICE, sound_sight, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_VOICE, sound_sight, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
@@ -378,8 +376,8 @@ public class M_Flyer {
         public String getID() { return "flyer_idle"; }
         @Override
         public boolean think(edict_t self) {
-            game_import_t.sound(self, Defines.CHAN_VOICE, sound_idle, 1,
-                    Defines.ATTN_IDLE, 0);
+            game_import_t.sound(self, Defines.CHAN_VOICE, sound_idle, 1.0F,
+                    (float) Defines.ATTN_IDLE, (float) 0);
             return true;
         }
     };
@@ -389,158 +387,158 @@ public class M_Flyer {
         public String getID() { return "flyer_pop_blades"; }
         @Override
         public boolean think(edict_t self) {
-            game_import_t.sound(self, Defines.CHAN_VOICE, sound_sproing, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_VOICE, sound_sproing, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
 
     static final mframe_t[] flyer_frames_stand = {
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null) };
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null) };
 
     static final mmove_t flyer_move_stand = new mmove_t(FRAME_stand01, FRAME_stand45,
             flyer_frames_stand, null);
 
     static final mframe_t[] flyer_frames_walk = {
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null) };
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null) };
 
     static final mmove_t flyer_move_walk = new mmove_t(FRAME_stand01, FRAME_stand45,
             flyer_frames_walk, null);
 
     static final mframe_t[] flyer_frames_run = {
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 10, null) };
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null) };
 
     static final mmove_t flyer_move_run = new mmove_t(FRAME_stand01, FRAME_stand45,
             flyer_frames_run, null);
@@ -599,24 +597,24 @@ public class M_Flyer {
     };
 
     static final mframe_t[] flyer_frames_start = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, flyer_nextmove) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, flyer_nextmove) };
 
     static final mmove_t flyer_move_start = new mmove_t(FRAME_start01, FRAME_start06,
             flyer_frames_start, null);
 
     static final mframe_t[] flyer_frames_stop = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, flyer_nextmove) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, flyer_nextmove) };
 
     static final mmove_t flyer_move_stop = new mmove_t(FRAME_stop01, FRAME_stop07,
             flyer_frames_stop, null);
@@ -642,97 +640,97 @@ public class M_Flyer {
     };
 
     static final mframe_t[] flyer_frames_rollright = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static mmove_t flyer_move_rollright = new mmove_t(FRAME_rollr01,
             FRAME_rollr09, flyer_frames_rollright, null);
 
     static final mframe_t[] flyer_frames_rollleft = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static mmove_t flyer_move_rollleft = new mmove_t(FRAME_rollf01,
             FRAME_rollf09, flyer_frames_rollleft, null);
 
     static final mframe_t[] flyer_frames_pain3 = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t flyer_move_pain3 = new mmove_t(FRAME_pain301, FRAME_pain304,
             flyer_frames_pain3, flyer_run);
 
     static final mframe_t[] flyer_frames_pain2 = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t flyer_move_pain2 = new mmove_t(FRAME_pain201, FRAME_pain204,
             flyer_frames_pain2, flyer_run);
 
     static final mframe_t[] flyer_frames_pain1 = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t flyer_move_pain1 = new mmove_t(FRAME_pain101, FRAME_pain109,
             flyer_frames_pain1, flyer_run);
 
     static final mframe_t[] flyer_frames_defense = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
             
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static mmove_t flyer_move_defense = new mmove_t(FRAME_defens01,
             FRAME_defens06, flyer_frames_defense, null);
 
     static final mframe_t[] flyer_frames_bankright = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static mmove_t flyer_move_bankright = new mmove_t(FRAME_bankr01,
             FRAME_bankr07, flyer_frames_bankright, null);
 
     static final mframe_t[] flyer_frames_bankleft = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static mmove_t flyer_move_bankleft = new mmove_t(FRAME_bankl01,
             FRAME_bankl07, flyer_frames_bankleft, null);
@@ -758,24 +756,24 @@ public class M_Flyer {
     };
 
     static final mframe_t[] flyer_frames_attack2 = {
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, -10, flyer_fireleft),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, -10.0F, flyer_fireleft),
             
-            new mframe_t(GameAI.ai_charge, -10, flyer_fireright), 
-            new mframe_t(GameAI.ai_charge, -10, flyer_fireleft), 
-            new mframe_t(GameAI.ai_charge, -10, flyer_fireright), 
-            new mframe_t(GameAI.ai_charge, -10, flyer_fireleft), 
-            new mframe_t(GameAI.ai_charge, -10, flyer_fireright), 
-            new mframe_t(GameAI.ai_charge, -10, flyer_fireleft), 
-            new mframe_t(GameAI.ai_charge, -10, flyer_fireright), 
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null) };
+            new mframe_t(GameAI.ai_charge, -10.0F, flyer_fireright),
+            new mframe_t(GameAI.ai_charge, -10.0F, flyer_fireleft),
+            new mframe_t(GameAI.ai_charge, -10.0F, flyer_fireright),
+            new mframe_t(GameAI.ai_charge, -10.0F, flyer_fireleft),
+            new mframe_t(GameAI.ai_charge, -10.0F, flyer_fireright),
+            new mframe_t(GameAI.ai_charge, -10.0F, flyer_fireleft),
+            new mframe_t(GameAI.ai_charge, -10.0F, flyer_fireright),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null) };
 
     static final mmove_t flyer_move_attack2 = new mmove_t(FRAME_attak201,
             FRAME_attak217, flyer_frames_attack2, flyer_run);
@@ -785,12 +783,12 @@ public class M_Flyer {
         public String getID() { return "flyer_slash_left"; }
         @Override
         public boolean think(edict_t self) {
-            float[] aim = { 0, 0, 0 };
+            float[] aim = {(float) 0, (float) 0, (float) 0};
 
-            Math3D.VectorSet(aim, Defines.MELEE_DISTANCE, self.mins[0], 0);
+            Math3D.VectorSet(aim, (float) Defines.MELEE_DISTANCE, self.mins[0], (float) 0);
             GameWeapon.fire_hit(self, aim, 5, 0);
-            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_slash, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_slash, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
@@ -800,12 +798,12 @@ public class M_Flyer {
         public String getID() { return "flyer_slash_right"; }
         @Override
         public boolean think(edict_t self) {
-            float[] aim = { 0, 0, 0 };
+            float[] aim = {(float) 0, (float) 0, (float) 0};
 
-            Math3D.VectorSet(aim, Defines.MELEE_DISTANCE, self.maxs[0], 0);
+            Math3D.VectorSet(aim, (float) Defines.MELEE_DISTANCE, self.maxs[0], (float) 0);
             GameWeapon.fire_hit(self, aim, 5, 0);
-            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_slash, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_slash, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
@@ -825,39 +823,39 @@ public class M_Flyer {
     };
 
     static final mframe_t[] flyer_frames_start_melee = {
-            new mframe_t(GameAI.ai_charge, 0, flyer_pop_blades),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null) };
+            new mframe_t(GameAI.ai_charge, (float) 0, flyer_pop_blades),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null) };
 
     static final mmove_t flyer_move_start_melee = new mmove_t(FRAME_attak101,
             FRAME_attak106, flyer_frames_start_melee, flyer_loop_melee);
 
     static final mframe_t[] flyer_frames_end_melee = {
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null) };
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null) };
 
     static final mmove_t flyer_move_end_melee = new mmove_t(FRAME_attak119,
             FRAME_attak121, flyer_frames_end_melee, flyer_run);
 
     static final mframe_t[] flyer_frames_loop_melee = {
-            new mframe_t(GameAI.ai_charge, 0, null), 
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, flyer_slash_left),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, flyer_slash_left),
             
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, flyer_slash_right),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, flyer_slash_right),
             
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null) 
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null)
 
     };
 
@@ -867,7 +865,7 @@ public class M_Flyer {
         @Override
         public boolean think(edict_t self) {
             if (GameUtil.range(self, self.enemy) == Defines.RANGE_MELEE)
-                if (Lib.random() <= 0.8)
+                if ((double) Lib.random() <= 0.8)
                     self.monsterinfo.currentmove = flyer_move_loop_melee;
                 else
                     self.monsterinfo.currentmove = flyer_move_end_melee;
@@ -930,25 +928,25 @@ public class M_Flyer {
             if (GameBase.level.time < self.pain_debounce_time)
                 return;
 
-            self.pain_debounce_time = GameBase.level.time + 3;
-            if (GameBase.skill.value == 3)
+            self.pain_debounce_time = GameBase.level.time + 3.0F;
+            if (GameBase.skill.value == 3.0F)
                 return;
 
-            int n = Lib.rand() % 3;
+            int n = (int) Lib.rand() % 3;
             switch (n) {
                 case 0:
-                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
-                            Defines.ATTN_NORM, 0);
+                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1.0F,
+                            (float) Defines.ATTN_NORM, (float) 0);
                     self.monsterinfo.currentmove = flyer_move_pain1;
                     break;
                 case 1:
-                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain2, 1,
-                            Defines.ATTN_NORM, 0);
+                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain2, 1.0F,
+                            (float) Defines.ATTN_NORM, (float) 0);
                     self.monsterinfo.currentmove = flyer_move_pain2;
                     break;
                 default:
-                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
-                            Defines.ATTN_NORM, 0);
+                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1.0F,
+                            (float) Defines.ATTN_NORM, (float) 0);
                     self.monsterinfo.currentmove = flyer_move_pain3;
                     break;
             }
@@ -962,8 +960,8 @@ public class M_Flyer {
         @Override
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                         int damage, float[] point) {
-            game_import_t.sound(self, Defines.CHAN_VOICE, sound_die, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_VOICE, sound_die, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             GameMisc.BecomeExplosion1(self);
         }
     };
@@ -982,18 +980,18 @@ public class M_Flyer {
             effect = Defines.EF_HYPERBLASTER;
         else
             effect = 0;
-        float[] right = {0, 0, 0};
-        float[] forward = {0, 0, 0};
+        float[] right = {(float) 0, (float) 0, (float) 0};
+        float[] forward = {(float) 0, (float) 0, (float) 0};
         Math3D.AngleVectors(self.s.angles, forward, right, null);
-        float[] start = {0, 0, 0};
+        float[] start = {(float) 0, (float) 0, (float) 0};
         Math3D.G_ProjectSource(self.s.origin,
                 M_Flash.monster_flash_offset[flash_number], forward, right,
                 start);
 
-        float[] end = {0, 0, 0};
+        float[] end = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorCopy(self.enemy.s.origin, end);
-        end[2] += self.enemy.viewheight;
-        float[] dir = {0, 0, 0};
+        end[2] = end[2] + (float) self.enemy.viewheight;
+        float[] dir = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorSubtract(end, start, dir);
 
         Monster.monster_fire_blaster(self, start, dir, 1, 1000, flash_number,
@@ -1005,14 +1003,14 @@ public class M_Flyer {
      * Trigger_Spawn Sight
      */
     public static void SP_monster_flyer(edict_t self) {
-        if (GameBase.deathmatch.value != 0) {
+        if (GameBase.deathmatch.value != (float) 0) {
             GameUtil.G_FreeEdict(self);
             return;
         }
 
         
         if ("jail5".equalsIgnoreCase(GameBase.level.mapname)
-                && (self.s.origin[2] == -104)) {
+                && (self.s.origin[2] == -104.0F)) {
             self.targetname = self.target;
             self.target = null;
         }
@@ -1029,8 +1027,8 @@ public class M_Flyer {
 
         self.s.modelindex = game_import_t
                 .modelindex("models/monsters/flyer/tris.md2");
-        Math3D.VectorSet(self.mins, -16, -16, -24);
-        Math3D.VectorSet(self.maxs, 16, 16, 32);
+        Math3D.VectorSet(self.mins, -16.0F, -16.0F, -24.0F);
+        Math3D.VectorSet(self.maxs, 16.0F, 16.0F, 32.0F);
         self.movetype = Defines.MOVETYPE_STEP;
         self.solid = Defines.SOLID_BBOX;
 

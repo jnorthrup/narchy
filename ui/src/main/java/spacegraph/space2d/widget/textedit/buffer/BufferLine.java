@@ -5,7 +5,6 @@ import jcog.data.list.FasterList;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class BufferLine implements Comparable<BufferLine> {
 

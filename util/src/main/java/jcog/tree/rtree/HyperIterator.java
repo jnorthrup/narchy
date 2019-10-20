@@ -10,7 +10,6 @@ import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
 
 /**
  * BFS that descends through RTree visiting nodes and leaves in an order determined
@@ -69,7 +68,7 @@ public class HyperIterator<X>  {
                     RBranch xb = (RBranch) x;
                     Object[] data = xb.data;
                     boolean added = false;
-                    for (int j = 0, dataLength = xb.size; j < dataLength; j++) {
+                    for (int j = 0, dataLength = (int) xb.size; j < dataLength; j++) {
                         Object y = data[j];
                         added |= plan.add(y);
                         if (added && y instanceof RBranch)
@@ -101,7 +100,7 @@ public class HyperIterator<X>  {
         Object[] pp = plan.items;
         int n = 0;
         for (int i = 0; i < leaves; i++) {
-            int i1 = (remain[i] = ((RLeaf) pp[i]).size);
+            int i1 = (remain[i] = (int) ((RLeaf) pp[i]).size);
             n += i1;
         }
         int c = 0;
@@ -112,7 +111,7 @@ public class HyperIterator<X>  {
             int pk = remain[k];
             if (pk > 0) {
                 RLeaf<X> lk = (RLeaf<X>) pp[k];
-                if (!whle.test( lk.data[ (--remain[k] + o ) % lk.size ] ))
+                if (!whle.test( lk.data[ (--remain[k] + o ) % (int) lk.size] ))
                     break;
             }
             if (++k == leaves) { k = 0; o++; }
@@ -122,15 +121,15 @@ public class HyperIterator<X>  {
     private static <X> void leaf(RLeaf<X> rl, Predicate whle, Random random) {
         short ls = rl.size;
         X[] rld = rl.data;
-        if (ls <= 1) {
+        if ((int) ls <= 1) {
             whle.test(rld[0]);
         } else {
-            short[] order = new short[ls];
-            for (short i = 0; i < ls; i++)
-                order[i] = i;
+            short[] order = new short[(int) ls];
+            for (short i = (short) 0; (int) i < (int) ls; i++)
+                order[(int) i] = i;
             ArrayUtil.shuffle(order, random);
-            for (short i = 0; i < ls; i++) {
-                if (!whle.test(rld[order[i]]))
+            for (short i = (short) 0; (int) i < (int) ls; i++) {
+                if (!whle.test(rld[(int) order[(int) i]]))
                     break;
             }
         }

@@ -75,13 +75,13 @@ class FNMatch {
                                                        finished = true;
                                                        break;
                                                    } else if ((flags & FNM_FILE_NAME) != 0
-                                                           && string.charAt(n) == File.separatorChar) {
+                                                           && (int) string.charAt(n) == (int) File.separatorChar) {
                                                        finished = true;
                                                        break;
                                                    } else if ((flags & FNM_PERIOD) != 0
-                                                           && string.charAt(n) == '.'
+                                                           && (int) string.charAt(n) == (int) '.'
                                                            && (n == 0 || (flags & FNM_FILE_NAME) != 0
-                                                           && string.charAt(n - 1) == File.separatorChar)) {
+                                                           && (int) string.charAt(n - 1) == (int) File.separatorChar)) {
                                                        finished = true;
                                                        break;
                                                    }
@@ -89,7 +89,7 @@ class FNMatch {
 
                                                case '\\':
                                                    if ((flags & FNM_NOESCAPE) != 0) c = fold(pattern.charAt(p++), flags);
-                                                   if (fold(string.charAt(n), flags) != c) {
+                                                   if ((int) fold(string.charAt(n), flags) != (int) c) {
                                                        finished = true;
                                                        break;
                                                    }
@@ -97,21 +97,21 @@ class FNMatch {
 
                                                case '*':
                                                    if ((flags & FNM_PERIOD) != 0
-                                                           && string.charAt(n) == '.'
+                                                           && (int) string.charAt(n) == (int) '.'
                                                            && (n == 0 || (flags & FNM_FILE_NAME) != 0
-                                                           && string.charAt(n - 1) == File.separatorChar)) {
+                                                           && (int) string.charAt(n - 1) == (int) File.separatorChar)) {
                                                        finished = true;
                                                        break;
                                                    }
-                                                   for (c = pattern.charAt(p++); c == '?' || c == '*'; c = pattern
+                                                   for (c = pattern.charAt(p++); (int) c == (int) '?' || (int) c == (int) '*'; c = pattern
                                                            .charAt(p++), ++n) {
                                                        if (p == pattern.length()) {
                                                            result = FNM_MATCH;
                                                            finished = true;
                                                            break;
                                                        }
-                                                       if (((flags & FNM_FILE_NAME) != 0 && string.charAt(n) == File.separatorChar)
-                                                               || (c == '?' && string.length() == n)) {
+                                                       if (((flags & FNM_FILE_NAME) != 0 && (int) string.charAt(n) == (int) File.separatorChar)
+                                                               || ((int) c == (int) '?' && string.length() == n)) {
                                                            finished = true;
                                                            break;
                                                        }
@@ -123,10 +123,10 @@ class FNMatch {
                                                        break;
                                                    }
 
-                                                   c1 = ((flags & FNM_NOESCAPE) == 0 && c == '\\') ? pattern.charAt(p) : c;
+                                                   c1 = ((flags & FNM_NOESCAPE) == 0 && (int) c == (int) '\\') ? pattern.charAt(p) : c;
                                                    c1 = fold(c1, flags);
                                                    for (--p; string.length() != n; ++n)
-                                                       if ((c == '[' || fold(string.charAt(n), flags) == c1)
+                                                       if (((int) c == (int) '[' || (int) fold(string.charAt(n), flags) == (int) c1)
                                                                && fnmatch(pattern.substring(p),
                                                                string.substring(n), flags & ~FNM_PERIOD)) {
                                                            result = FNM_MATCH;
@@ -146,13 +146,13 @@ class FNMatch {
                                                    }
 
                                                    if ((flags & FNM_PERIOD) != 0
-                                                           && string.charAt(n) == '.'
+                                                           && (int) string.charAt(n) == (int) '.'
                                                            && (n == 0 || (flags & FNM_FILE_NAME) != 0
-                                                           && string.charAt(n - 1) == File.separatorChar)) {
+                                                           && (int) string.charAt(n - 1) == (int) File.separatorChar)) {
                                                        finished = true;
                                                        break;
                                                    }
-                                                   boolean not = (pattern.charAt(p) == '!' || pattern.charAt(p) == '^');
+                                                   boolean not = ((int) pattern.charAt(p) == (int) '!' || (int) pattern.charAt(p) == (int) '^');
                                                    if (not)
                                                        ++p;
 
@@ -161,7 +161,7 @@ class FNMatch {
                                                    boolean matched = false;
                                                    for (; ; ) {
                                                        char cstart = c, cend = c;
-                                                       if ((flags & FNM_NOESCAPE) == 0 && c == '\\')
+                                                       if ((flags & FNM_NOESCAPE) == 0 && (int) c == (int) '\\')
                                                            cstart = cend = pattern.charAt(p++);
                                                        cstart = cend = fold(cstart, flags);
                                                        if (p == pattern.length()) {
@@ -170,13 +170,13 @@ class FNMatch {
                                                        }
                                                        c = fold(pattern.charAt(++p), flags);
 
-                                                       if ((flags & FNM_FILE_NAME) != 0 && c == File.separatorChar) {
+                                                       if ((flags & FNM_FILE_NAME) != 0 && (int) c == (int) File.separatorChar) {
                                                            finished = true;
                                                            break;
                                                        }
-                                                       if (c == '-' && pattern.charAt(p) != ']') {
+                                                       if ((int) c == (int) '-' && (int) pattern.charAt(p) != (int) ']') {
                                                            cend = pattern.charAt(p++);
-                                                           if ((flags & FNM_NOESCAPE) == 0 && cend == '\\') cend = pattern.charAt(p++);
+                                                           if ((flags & FNM_NOESCAPE) == 0 && (int) cend == (int) '\\') cend = pattern.charAt(p++);
                                                            if (p == pattern.length()) {
                                                                finished = true;
                                                                break;
@@ -186,11 +186,11 @@ class FNMatch {
                                                        }
 
                                                        c1 = fold(string.charAt(n), flags);
-                                                       if (c1 >= cstart && c1 <= cend) {
+                                                       if ((int) c1 >= (int) cstart && (int) c1 <= (int) cend) {
                                                            matched = true;
                                                            break;
                                                        }
-                                                       if (c == ']')
+                                                       if ((int) c == (int) ']')
                                                            break;
                                                    }
                                                    if (finished) break;
@@ -202,13 +202,13 @@ class FNMatch {
                                                        break;
 
 
-                                                   while (c != ']') {
+                                                   while ((int) c != (int) ']') {
                                                        if (p == pattern.length()) {
                                                            finished = true;
                                                            break;
                                                        }
                                                        c = pattern.charAt(p++);
-                                                       if ((flags & FNM_NOESCAPE) == 0 && c == '\\') ++p;
+                                                       if ((flags & FNM_NOESCAPE) == 0 && (int) c == (int) '\\') ++p;
                                                    }
                                                    if (finished) break;
                                                    if (not) {
@@ -218,7 +218,7 @@ class FNMatch {
                                                    break;
 
                                                default:
-                                                   if (n >= string.length() || c != fold(string.charAt(n), flags)) {
+                                                   if (n >= string.length() || (int) c != (int) fold(string.charAt(n), flags)) {
                                                        finished = true;
                                                        break;
                                                    }
@@ -231,7 +231,7 @@ class FNMatch {
             if (string.length() == n) {
                 result = FNM_MATCH;
             } else if ((flags & FNM_LEADING_DIR) != 0
-                    && string.charAt(n) == File.separatorChar) {
+                    && (int) string.charAt(n) == (int) File.separatorChar) {
                 result = FNM_MATCH;
             }
 

@@ -8,7 +8,7 @@ import static nars.$.the;
 
 public abstract class MiniTest extends Game {
 
-    public float rewardSum = 0;
+    public float rewardSum = (float) 0;
     public final SummaryStatistics dex = new SummaryStatistics();
 
     public MiniTest(NAR n) {

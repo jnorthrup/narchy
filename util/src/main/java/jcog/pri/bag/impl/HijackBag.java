@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -96,7 +95,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     protected HijackBag(int initialCapacity, int reprobes) {
         this.id = serial.getAndIncrement();
 
-        this.reprobes = reprobes; assert (reprobes < Byte.MAX_VALUE - 1);
+        this.reprobes = reprobes; assert (reprobes < (int) Byte.MAX_VALUE - 1);
 
         setCapacity(initialCapacity);
     }
@@ -171,7 +170,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         pressureZero();
         massZero();
         SIZE.set(this, 0);
-        min = max = 0;
+        min = max = (float) 0;
 
 
     }
@@ -214,7 +213,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
             }
         }
         int filled = (int) count;
-        return ((float) filled) / mm;
+        return ((float) filled) / (float) mm;
     }
 
     enum Mode {
@@ -312,7 +311,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
                                 float before = pri(v);
                                 V next = merge(v, incoming, overflowing);
                                 float after = pri(v);
-                                depressurize(Math.max(0, incomingPri - (after - before)));
+                                depressurize(Math.max((float) 0, incomingPri - (after - before)));
 
                                 assert (next != null);
                                 if (next != v) {
@@ -436,9 +435,9 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         //OPTIONAL: victim noise
         //      causes insertion to underestimate the priority allowing disproportionate replacement
         //      in some low probability of cases, allowing more item churn
-        if (VICTIM_NOISE> 0) {
-            float victimNoise = VICTIM_NOISE / (reprobes * reprobes);
-            currentVictimPri *= victimNoise > 0 ? (1 - (random().nextFloat() * victimNoise)) : 1;
+        if (VICTIM_NOISE> (float) 0) {
+            float victimNoise = VICTIM_NOISE / (float) (reprobes * reprobes);
+            currentVictimPri *= victimNoise > (float) 0 ? (1.0F - (random().nextFloat() * victimNoise)) : 1.0F;
         }
 
 
@@ -556,9 +555,9 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     protected boolean hijackSoftmax2(float newPri, float oldPri, Random random) {
 
 
-        newPri = newPri * newPri * reprobes;
-        oldPri = oldPri * oldPri * reprobes;
-        if (oldPri > 2 * Float.MIN_NORMAL) {
+        newPri = newPri * newPri * (float) reprobes;
+        oldPri = oldPri * oldPri * (float) reprobes;
+        if (oldPri > 2.0F * Float.MIN_NORMAL) {
             float thresh = 1.0f - (1.0f - (oldPri / (newPri + oldPri)));
             return random.nextFloat() > thresh;
         } else {
@@ -631,7 +630,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
                 V v = map.getFast(i);
 
                 if (v != null) {
-                    float p = priElse(v, 0);
+                    float p = priElse(v, (float) 0);
                     if (p != p) {
                         evict(map, i, v);
                         mapNullSeen++;
@@ -674,7 +673,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
                 } else if (next.remove) {
                     if (windowSize == windowCap) {
                         wVal[which] = null;
-                        wPri[which] = 0;
+                        wPri[which] = (float) 0;
                     } else {
                         //compact the array by swapping the empty cell with the entry cell's (TODO or any other non-null)
 						ArrayUtil.swapObj(wVal, windowSize - 1, which);
@@ -803,7 +802,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     public Bag<K,V> commit(@Nullable Consumer<V> update) {
 
 
-        float mass = 0;
+        float mass = (float) 0;
         float min = Float.POSITIVE_INFINITY;
         float max = NEGATIVE_INFINITY;
 
@@ -844,7 +843,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
             this.max = max;
         } else {
             this.massZero();
-            this.min = this.max = 0;
+            this.min = this.max = (float) 0;
         }
 
 
@@ -860,11 +859,11 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     protected boolean regrowForSize(int s, int sp) {
 
 
-        if (s >= (loadFactor * sp)) {
+        if ((float) s >= (loadFactor * (float) sp)) {
             int cp = capacity();
             if (sp < cp) {
                 int ns =
-                    Math.min(cp, Math.round(sp * growthRate));
+                    Math.min(cp, Math.round((float) sp * growthRate));
                 if (ns != sp) {
                     resize(ns);
                     return true;

@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.BiConsumer;
-import java.util.stream.IntStream;
 
 import static jcog.signal.wave2d.vectorize.SVGUtils.svgpathstring;
 import static jcog.signal.wave2d.vectorize.SVGUtils.tosvgcolorstr;
@@ -52,7 +51,7 @@ public class ImageTracer {
                 String[] parameternames = {
                         "ltres", "qtres", "pathomit", "numberofcolors", "colorquantcycles", "scale", "roundcoords", "lcpr", "qcpr", "desc", "viewbox", "outfilename", "blurammount"};
                 int j = -1;
-                float f = -1;
+                float f = -1.0F;
                 for (String parametername : parameternames) {
                     j = arraycontains(args, parametername);
                     if (j > -1) {
@@ -62,7 +61,7 @@ public class ImageTracer {
                             }
                         } else {
                             f = parsenext(args, j);
-                            if (f > -1) {
+                            if (f > -1.0F) {
                                 options.put(parametername, f);
                             }
                         }
@@ -140,7 +139,7 @@ public class ImageTracer {
 
                     Double[] lkp0 = lk.get(pcnt).get(0);
 
-                    double label = (lkp0[2] * w) + lkp0[1];
+                    double label = (lkp0[2] * (double) w) + lkp0[1];
                     int finalPcnt = pcnt;
                     int finalK = k;
                     
@@ -164,11 +163,11 @@ public class ImageTracer {
         
         public String toSVG(HashMap<String, Float> options) {
             
-            float w = (int) (this.width * options.get("scale")), h = (int) (this.height * options.get("scale"));
+            float w = (float) (int) ((float) this.width * options.get("scale")), h = (float) (int) ((float) this.height * options.get("scale"));
 
-            String viewboxorviewport = options.get("viewbox") != 0 ? "viewBox=\"0 0 " + w + ' ' + h + "\" " : "width=\"" + w + "\" height=\"" + h + "\" ";
+            String viewboxorviewport = options.get("viewbox") != (float) 0 ? "viewBox=\"0 0 " + w + ' ' + h + "\" " : "width=\"" + w + "\" height=\"" + h + "\" ";
             StringBuilder svgstr = new StringBuilder("<svg " + viewboxorviewport + "version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" ");
-            if (options.get("desc") != 0) {
+            if (options.get("desc") != (float) 0) {
                 svgstr.append("desc=\"Created with ImageTracer.java version ").append(ImageTracer.versionnumber).append("\" ");
             }
             svgstr.append('>');
@@ -194,10 +193,10 @@ public class ImageTracer {
     
     
     private static byte bytetrans(byte b) {
-        if (b < 0) {
-            return (byte) (b + 128);
+        if ((int) b < 0) {
+            return (byte) ((int) b + 128);
         } else {
-            return (byte) (b - 128);
+            return (byte) ((int) b - 128);
         }
     }
 
@@ -218,7 +217,7 @@ public class ImageTracer {
             bytepalette[i][0] = (byte) c.getRed();
             bytepalette[i][1] = (byte) c.getGreen();
             bytepalette[i][2] = (byte) c.getBlue();
-            bytepalette[i][3] = 0;
+            bytepalette[i][3] = (byte) 0;
         }
         return bytepalette;
     }
@@ -349,7 +348,7 @@ public class ImageTracer {
 
             int[][][] rawlayers = VectorizingUtils.layering(ii);
 
-            ArrayList<ArrayList<ArrayList<Integer[]>>> bps = VectorizingUtils.batchpathscan(rawlayers, (int) (Math.floor(options.get("pathomit"))));
+            ArrayList<ArrayList<ArrayList<Integer[]>>> bps = VectorizingUtils.batchpathscan(rawlayers, (float) (int) (Math.floor(options.get("pathomit"))));
 
             ArrayList<ArrayList<ArrayList<Double[]>>> bis = VectorizingUtils.batchinternodes(bps);
             

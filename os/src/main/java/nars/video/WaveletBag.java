@@ -29,7 +29,7 @@ public class WaveletBag implements Bitmap2D {
     public final float[][] pixels;
 
     WaveletTransform<GrayF32,GrayF32,WlCoef_F32> waveletTran =
-            FactoryWaveletTransform.create(GrayF32.class, GFactoryWavelet.haar(GrayF32.class), NUM_LEVELS,0,255);
+            FactoryWaveletTransform.create(GrayF32.class, GFactoryWavelet.haar(GrayF32.class), NUM_LEVELS, (double) 0, 255.0);
     
     private GrayF32 imageWavelet;
 
@@ -55,7 +55,7 @@ public class WaveletBag implements Bitmap2D {
         bufferedToGray(src, image.data, image.startIndex, image.stride);
 
         imageWavelet = waveletTran.transform(image, imageWavelet);
-        UtilWavelet.adjustForDisplay(imageWavelet, waveletTran.getLevels(), 1f);
+        UtilWavelet.adjustForDisplay(imageWavelet, waveletTran.getLevels(), 1);
 
         
 

@@ -106,7 +106,7 @@ public abstract class UGen extends Auvent {
 	public UGen(AudioContext context, int ins, int outs) {
 		dependents = new FastCoWList<>(UGen.class);
 		noInputs = true;
-		lastTimeStep = -1;
+		lastTimeStep = -1L;
 		outputInitializationRegime = OutputInitializationRegime.JUNK;
 		outputPauseRegime = OutputPauseRegime.ZERO;
 		//timerMode = false;
@@ -713,7 +713,7 @@ public abstract class UGen extends Auvent {
 	 * @return value of specified sample.
 	 */
 	public double getValueDouble(int i, int j) {
-		return getValue(i, j);
+		return (double) getValue(i, j);
 	}
 
 	/**
@@ -722,7 +722,7 @@ public abstract class UGen extends Auvent {
 	 * @return the value.
 	 */
 	public double getValueDouble() {
-		return getValue();
+		return (double) getValue();
 	}
 
 	/**

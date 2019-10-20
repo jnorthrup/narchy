@@ -39,7 +39,6 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 /**
  * Surf
@@ -49,7 +48,7 @@ import java.util.stream.IntStream;
 public abstract class Surf extends Draw {
 
     
-    final float[] modelorg = {0, 0, 0};        
+    final float[] modelorg = {(float) 0, (float) 0, (float) 0};
 
     msurface_t r_alpha_surfaces;
 
@@ -151,7 +150,7 @@ public abstract class Surf extends Draw {
      * version that handles scrolling texture
      */
     void DrawGLFlowingPoly(glpoly_t p) {
-        float scroll = -64 * ((r_newrefdef.time / 40.0f) - (int) (r_newrefdef.time / 40.0f));
+        float scroll = -64.0F * ((r_newrefdef.time / 40.0f) - (float) (int) (r_newrefdef.time / 40.0f));
         if (scroll == 0.0f)
             scroll = -64.0f;
         p.beginScrolling(scroll);
@@ -163,12 +162,12 @@ public abstract class Surf extends Draw {
      * R_DrawTriangleOutlines
      */
     void R_DrawTriangleOutlines() {
-        if (gl_showtris.value == 0)
+        if (gl_showtris.value == (float) 0)
             return;
 
         gl.glDisable(GL_TEXTURE_2D);
         gl.glDisable(GL_DEPTH_TEST);
-        gl.glColor4f(1, 1, 1, 1);
+        gl.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
         for (int i = 0; i < MAX_LIGHTMAPS; i++) {
             for (msurface_t surf = gl_lms.lightmap_surfaces[i]; surf != null; surf = surf.lightmapchain) {
@@ -230,8 +229,8 @@ public abstract class Surf extends Draw {
 		** check for lightmap modification
 		*/
         int maps;
-        for (maps = 0; maps < Defines.MAXLIGHTMAPS && fa.styles[maps] != (byte) 255; maps++) {
-            if (r_newrefdef.lightstyles[fa.styles[maps] & 0xFF].white != fa.cached_light[maps]) {
+        for (maps = 0; maps < Defines.MAXLIGHTMAPS && (int) fa.styles[maps] != (int) (byte) 255; maps++) {
+            if (r_newrefdef.lightstyles[(int) fa.styles[maps] & 0xFF].white != fa.cached_light[maps]) {
                 gotoDynamic = true;
                 break;
             }
@@ -244,7 +243,7 @@ public abstract class Surf extends Draw {
         boolean is_dynamic = false;
         if (gotoDynamic || (fa.dlightframe == r_framecount)) {
             
-            if (gl_dynamic.value != 0) {
+            if (gl_dynamic.value != (float) 0) {
                 if ((fa.texinfo.flags & (Defines.SURF_SKY | Defines.SURF_TRANS33 | Defines.SURF_TRANS66 | Defines.SURF_WARP)) == 0) {
                     is_dynamic = true;
                 }
@@ -252,10 +251,10 @@ public abstract class Surf extends Draw {
         }
 
         if (is_dynamic) {
-            if (((fa.styles[maps] & 0xFF) >= 32 || fa.styles[maps] == 0) && (fa.dlightframe != r_framecount)) {
+            if ((((int) fa.styles[maps] & 0xFF) >= 32 || (int) fa.styles[maps] == 0) && (fa.dlightframe != r_framecount)) {
 
-                int smax = (fa.extents[0] >> 4) + 1;
-                int tmax = (fa.extents[1] >> 4) + 1;
+                int smax = ((int) fa.extents[0] >> 4) + 1;
+                int tmax = ((int) fa.extents[1] >> 4) + 1;
 
                 R_BuildLightMap(fa, temp2, smax);
                 R_SetCacheState(fa);
@@ -311,7 +310,7 @@ public abstract class Surf extends Draw {
             else if ((s.texinfo.flags & Defines.SURF_TRANS66) != 0)
                 gl.glColor4f(intens, intens, intens, 0.66f);
             else
-                gl.glColor4f(intens, intens, intens, 1);
+                gl.glColor4f(intens, intens, intens, 1.0F);
             if ((s.flags & Defines.SURF_DRAWTURB) != 0)
                 EmitWaterPolys(s);
             else if ((s.texinfo.flags & Defines.SURF_FLOWING) != 0)            
@@ -321,7 +320,7 @@ public abstract class Surf extends Draw {
         }
 
         GL_TexEnv(GL_REPLACE);
-        gl.glColor4f(1, 1, 1, 1);
+        gl.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         gl.glDisable(GL_BLEND);
 
         r_alpha_surfaces = null;
@@ -388,8 +387,8 @@ public abstract class Surf extends Draw {
         byte[] styles = surf.styles;
         float[] cached_light = surf.cached_light;
         lightstyle_t[] lightstyles = r_newrefdef.lightstyles;
-        for (map = 0; map < Defines.MAXLIGHTMAPS && (styles[map] != (byte) 255); map++) {
-            if (lightstyles[styles[map] & 0xFF].white != cached_light[map]) {
+        for (map = 0; map < Defines.MAXLIGHTMAPS && ((int) styles[map] != (int) (byte) 255); map++) {
+            if (lightstyles[(int) styles[map] & 0xFF].white != cached_light[map]) {
                 gotoDynamic = true;
                 break;
             }
@@ -402,7 +401,7 @@ public abstract class Surf extends Draw {
         boolean is_dynamic = false;
         if (gotoDynamic || (surf.dlightframe == r_framecount)) {
             
-            if (gl_dynamic.value != 0) {
+            if (gl_dynamic.value != (float) 0) {
                 if ((surf.texinfo.flags & (Defines.SURF_SKY | Defines.SURF_TRANS33 | Defines.SURF_TRANS66 | Defines.SURF_WARP)) == 0) {
                     is_dynamic = true;
                 }
@@ -417,9 +416,9 @@ public abstract class Surf extends Draw {
             
             int smax, tmax;
 
-            if (((styles[map] & 0xFF) >= 32 || styles[map] == 0) && (surf.dlightframe != r_framecount)) {
-                smax = (surf.extents[0] >> 4) + 1;
-                tmax = (surf.extents[1] >> 4) + 1;
+            if ((((int) styles[map] & 0xFF) >= 32 || (int) styles[map] == 0) && (surf.dlightframe != r_framecount)) {
+                smax = ((int) surf.extents[0] >> 4) + 1;
+                tmax = ((int) surf.extents[1] >> 4) + 1;
 
                 R_BuildLightMap(surf, temp, smax);
                 R_SetCacheState(surf);
@@ -435,8 +434,8 @@ public abstract class Surf extends Draw {
                         GL_UNSIGNED_BYTE, temp);
 
             } else {
-                smax = (surf.extents[0] >> 4) + 1;
-                tmax = (surf.extents[1] >> 4) + 1;
+                smax = ((int) surf.extents[0] >> 4) + 1;
+                tmax = ((int) surf.extents[1] >> 4) + 1;
 
                 R_BuildLightMap(surf, temp, smax);
 
@@ -461,7 +460,7 @@ public abstract class Surf extends Draw {
             
             if ((surf.texinfo.flags & Defines.SURF_FLOWING) != 0) {
 
-                float scroll = -64 * ((r_newrefdef.time / 40.0f) - (int) (r_newrefdef.time / 40.0f));
+                float scroll = -64.0F * ((r_newrefdef.time / 40.0f) - (float) (int) (r_newrefdef.time / 40.0f));
                 if (scroll == 0.0f)
                     scroll = -64.0f;
 
@@ -487,8 +486,8 @@ public abstract class Surf extends Draw {
             
             if ((surf.texinfo.flags & Defines.SURF_FLOWING) != 0) {
 
-                float scroll = -64 * ((r_newrefdef.time / 40.0f) - (int) (r_newrefdef.time / 40.0f));
-                if (scroll == 0.0)
+                float scroll = -64.0F * ((r_newrefdef.time / 40.0f) - (float) (int) (r_newrefdef.time / 40.0f));
+                if ((double) scroll == 0.0)
                     scroll = -64.0f;
 
                 for (p = surf.polys; p != null; p = p.chain) {
@@ -516,7 +515,7 @@ public abstract class Surf extends Draw {
      */
     void R_DrawInlineBModel() {
         
-        if (gl_flashblend.value == 0) {
+        if (gl_flashblend.value == (float) 0) {
             dlight_t[] dlights = r_newrefdef.dlights;
             mnode_t[] nodes = currentmodel.nodes;
             int num_dlights = r_newrefdef.num_dlights;
@@ -534,7 +533,7 @@ public abstract class Surf extends Draw {
 
         if ((currententity.flags & Defines.RF_TRANSLUCENT) != 0) {
             gl.glEnable(GL_BLEND);
-            gl.glColor4f(1, 1, 1, 0.25f);
+            gl.glColor4f(1.0F, 1.0F, 1.0F, 0.25f);
             GL_TexEnv(GL_MODULATE);
         }
 
@@ -564,18 +563,18 @@ public abstract class Surf extends Draw {
 
         if ((currententity.flags & Defines.RF_TRANSLUCENT) != 0) {
             gl.glDisable(GL_BLEND);
-            gl.glColor4f(1, 1, 1, 1);
+            gl.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             GL_TexEnv(GL_REPLACE);
         }
     }
 
     
-    private final float[] mins = {0, 0, 0};
-    private final float[] maxs = {0, 0, 0};
-    private final float[] org = {0, 0, 0};
-    private final float[] forward = {0, 0, 0};
-    private final float[] right = {0, 0, 0};
-    private final float[] up = {0, 0, 0};
+    private final float[] mins = {(float) 0, (float) 0, (float) 0};
+    private final float[] maxs = {(float) 0, (float) 0, (float) 0};
+    private final float[] org = {(float) 0, (float) 0, (float) 0};
+    private final float[] forward = {(float) 0, (float) 0, (float) 0};
+    private final float[] right = {(float) 0, (float) 0, (float) 0};
+    private final float[] up = {(float) 0, (float) 0, (float) 0};
 
     /**
      * R_DrawBrushModel
@@ -591,7 +590,7 @@ public abstract class Surf extends Draw {
         float[] ea = e.angles;
         boolean b = false;
         for (int v : new int[]{0, 1, 2}) {
-            if (ea[v] != 0) {
+            if (ea[v] != (float) 0) {
                 b = true;
                 break;
             }
@@ -614,7 +613,7 @@ public abstract class Surf extends Draw {
 
         if (R_CullBox(mins, maxs)) return;
 
-        gl.glColor3f(1, 1, 1);
+        gl.glColor3f(1.0F, 1.0F, 1.0F);
 
         
 
@@ -685,7 +684,7 @@ public abstract class Surf extends Draw {
 
             
             if (r_newrefdef.areabits != null) {
-                if (((r_newrefdef.areabits[pleaf.area >> 3] & 0xFF) & (1 << (pleaf.area & 7))) == 0)
+                if ((((int) r_newrefdef.areabits[pleaf.area >> 3] & 0xFF) & (1 << (pleaf.area & 7))) == 0)
                     return;        
             }
 
@@ -775,7 +774,7 @@ public abstract class Surf extends Draw {
      */
     @Override
     void R_DrawWorld() {
-        if (r_drawworld.value == 0)
+        if (r_drawworld.value == (float) 0)
             return;
 
         if ((r_newrefdef.rdflags & Defines.RDF_NOWORLDMODEL) != 0)
@@ -788,12 +787,12 @@ public abstract class Surf extends Draw {
         entity_t ent = worldEntity;
         
         ent.clear();
-        ent.frame = (int) (r_newrefdef.time * 2);
+        ent.frame = (int) (r_newrefdef.time * 2.0F);
         currententity = ent;
 
         gl_state.currenttextures[0] = gl_state.currenttextures[1] = -1;
 
-        gl.glColor3f(1, 1, 1);
+        gl.glColor3f(1.0F, 1.0F, 1.0F);
         
         
         
@@ -809,7 +808,7 @@ public abstract class Surf extends Draw {
         gl.glTexCoordPointer(2, glpoly_t.BYTE_STRIDE, globalPolygonTexCoord1Buf);
         gl.glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-        GL_TexEnv(gl_lightmap.value != 0 ? GL_REPLACE : GL_MODULATE);
+        GL_TexEnv(gl_lightmap.value != (float) 0 ? GL_REPLACE : GL_MODULATE);
 
         R_RecursiveWorldNode(r_worldmodel.nodes[0]); 
 
@@ -832,12 +831,12 @@ public abstract class Surf extends Draw {
      */
     @Override
     void R_MarkLeaves() {
-        if (r_oldviewcluster == r_viewcluster && r_oldviewcluster2 == r_viewcluster2 && r_novis.value == 0 && r_viewcluster != -1)
+        if (r_oldviewcluster == r_viewcluster && r_oldviewcluster2 == r_viewcluster2 && r_novis.value == (float) 0 && r_viewcluster != -1)
             return;
 
         
         
-        if (gl_lockpvs.value != 0)
+        if (gl_lockpvs.value != (float) 0)
             return;
 
         r_visframecount++;
@@ -845,7 +844,7 @@ public abstract class Surf extends Draw {
         r_oldviewcluster2 = r_viewcluster2;
 
         int i;
-        if (r_novis.value != 0 || r_viewcluster == -1 || r_worldmodel.vis == null) {
+        if (r_novis.value != (float) 0 || r_viewcluster == -1 || r_worldmodel.vis == null) {
             
             for (i = 0; i < r_worldmodel.numleafs; i++)
                 r_worldmodel.leafs[i].visframe = r_visframecount;
@@ -863,10 +862,10 @@ public abstract class Surf extends Draw {
             int c = (r_worldmodel.numleafs + 31) >> 5;
             c <<= 2;
             for (int k = 0; k < c; k += 4) {
-                fatvis[k] |= vis[k];
-                fatvis[k + 1] |= vis[k + 1];
-                fatvis[k + 2] |= vis[k + 2];
-                fatvis[k + 3] |= vis[k + 3];
+                fatvis[k] = (byte) ((int) fatvis[k] | (int) vis[k]);
+                fatvis[k + 1] = (byte) ((int) fatvis[k + 1] | (int) vis[k + 1]);
+                fatvis[k + 2] = (byte) ((int) fatvis[k + 2] | (int) vis[k + 2]);
+                fatvis[k + 3] = (byte) ((int) fatvis[k + 3] | (int) vis[k + 3]);
             }
 
             vis = fatvis;
@@ -877,7 +876,7 @@ public abstract class Surf extends Draw {
             int cluster = leaf.cluster;
             if (cluster == -1)
                 continue;
-            if (((vis[cluster >> 3] & 0xFF) & (1 << (cluster & 7))) != 0) {
+            if ((((int) vis[cluster >> 3] & 0xFF) & (1 << (cluster & 7))) != 0) {
                 mnode_t node = leaf;
                 do {
                     if (node.visframe == r_visframecount)
@@ -913,8 +912,8 @@ public abstract class Surf extends Draw {
         int texture = (dynamic) ? 0 : gl_lms.current_lightmap_texture;
 
         GL_Bind(gl_state.lightmap_textures + texture);
-        gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (float) GL_LINEAR);
+        gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (float) GL_LINEAR);
 
         gl_lms.lightmap_buffer.rewind();
         if (dynamic) {
@@ -1020,10 +1019,10 @@ public abstract class Surf extends Draw {
                 vec = currentmodel.vertexes[r_pedge.v[1]].position;
             }
             float s = Math3D.DotProduct(vec, fa.texinfo.vecs[0]) + fa.texinfo.vecs[0][3];
-            s /= fa.texinfo.image.width;
+            s = s / (float) fa.texinfo.image.width;
 
             float t = Math3D.DotProduct(vec, fa.texinfo.vecs[1]) + fa.texinfo.vecs[1][3];
-            t /= fa.texinfo.image.height;
+            t = t / (float) fa.texinfo.image.height;
 
             poly.x(i, vec[0]);
             poly.y(i, vec[1]);
@@ -1036,16 +1035,16 @@ public abstract class Surf extends Draw {
             
             
             s = Math3D.DotProduct(vec, fa.texinfo.vecs[0]) + fa.texinfo.vecs[0][3];
-            s -= fa.texturemins[0];
-            s += fa.light_s * 16;
-            s += 8;
-            s /= BLOCK_WIDTH * 16; 
+            s = s - (float) fa.texturemins[0];
+            s = s + (float) fa.light_s * 16;
+            s += 8.0F;
+            s = s / (float) BLOCK_WIDTH * 16;
 
             t = Math3D.DotProduct(vec, fa.texinfo.vecs[1]) + fa.texinfo.vecs[1][3];
-            t -= fa.texturemins[1];
-            t += fa.light_t * 16;
-            t += 8;
-            t /= BLOCK_HEIGHT * 16; 
+            t = t - (float) fa.texturemins[1];
+            t = t + (float) fa.light_t * 16;
+            t += 8.0F;
+            t = t / (float) BLOCK_HEIGHT * 16;
 
             poly.s2(i, s);
             poly.t2(i, t);
@@ -1059,8 +1058,8 @@ public abstract class Surf extends Draw {
         if ((surf.flags & (Defines.SURF_DRAWSKY | Defines.SURF_DRAWTURB)) != 0)
             return;
 
-        int smax = (surf.extents[0] >> 4) + 1;
-        int tmax = (surf.extents[1] >> 4) + 1;
+        int smax = ((int) surf.extents[0] >> 4) + 1;
+        int tmax = ((int) surf.extents[1] >> 4) + 1;
 
         pos_t lightPos = new pos_t(surf.light_s, surf.light_t);
 
@@ -1117,10 +1116,10 @@ public abstract class Surf extends Draw {
 		** the first time they're seen
 		*/
         for (i = 0; i < Defines.MAX_LIGHTSTYLES; i++) {
-            lightstyles[i].rgb[0] = 1;
-            lightstyles[i].rgb[1] = 1;
-            lightstyles[i].rgb[2] = 1;
-            lightstyles[i].white = 3;
+            lightstyles[i].rgb[0] = 1.0F;
+            lightstyles[i].rgb[1] = 1.0F;
+            lightstyles[i].rgb[2] = 1.0F;
+            lightstyles[i].white = 3.0F;
         }
         r_newrefdef.lightstyles = lightstyles;
 
@@ -1171,8 +1170,8 @@ public abstract class Surf extends Draw {
 		** initialize the dynamic lightmap texture
 		*/
         GL_Bind(gl_state.lightmap_textures + 0);
-        gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (float) GL_LINEAR);
+        gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (float) GL_LINEAR);
         gl.glTexImage2D(GL_TEXTURE_2D,
                 0,
                 gl_lms.internal_format,

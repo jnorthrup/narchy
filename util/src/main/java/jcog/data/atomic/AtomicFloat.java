@@ -73,7 +73,7 @@ public class AtomicFloat extends NumberX implements FloatSupplier {
 
     @Override
     public double doubleValue() {
-        return floatValue();
+        return (double) floatValue();
     }
 
     @Override
@@ -83,7 +83,7 @@ public class AtomicFloat extends NumberX implements FloatSupplier {
 
     @Override
     public long longValue() {
-        return Math.round(floatValue());
+        return (long) Math.round(floatValue());
     }
 
     public final void add(float x) {

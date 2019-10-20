@@ -19,10 +19,10 @@ public final class NanoTimer extends Timer {
     public long currentTimeMillis() {
         long time = System.nanoTime();
         long delta = time - base;
-		if (delta < 0) {
-			delta += Long.MAX_VALUE + 1;
+		if (delta < 0L) {
+			delta += Long.MAX_VALUE + 1L;
 		}
-		return (long)(delta * 0.000001);
+		return (long)((double) delta * 0.000001);
 	}
 
 }

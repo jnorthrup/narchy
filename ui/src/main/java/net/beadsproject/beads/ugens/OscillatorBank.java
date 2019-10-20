@@ -69,7 +69,7 @@ public class OscillatorBank extends UGen {
         this.gain = gain;
         assert(gain.volume() == size);
 
-        gainMaster = 1f / size;
+        gainMaster = 1f / (float) size;
 
         increment = new double[size];
         point = new float[size];
@@ -133,16 +133,16 @@ public class OscillatorBank extends UGen {
 
         float sampleRate = context.getSampleRate();
         for (int i = 0; i < size; i++) {
-            increment[i] = frequency.getAt(i) / sampleRate;
+            increment[i] = (double) (frequency.getAt(i) / sampleRate);
         }
 
         for (int i = 0; i < bufferSize; i++) {
-            float x =0;
+            float x = (float) 0;
             for (int j = 0; j < size; j++) {
 
-                float p = (float) (point[j] + increment[j]);
-                while (p > 1)
-                    p -= 1;
+                float p = (float) ((double) point[j] + increment[j]);
+                while (p > 1.0F)
+                    p -= 1.0F;
                 point[j] = p;
 
                 x += gain.getAt(j) * sampled.getFractInterp(p);

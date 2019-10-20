@@ -43,11 +43,11 @@ public class entity_state_t implements Cloneable
 	public int number;
 	
 	public edict_t surrounding_ent;
-	public float[] origin = { 0, 0, 0 };
-	public float[] angles = { 0, 0, 0 };
+	public float[] origin = {(float) 0, (float) 0, (float) 0};
+	public float[] angles = {(float) 0, (float) 0, (float) 0};
 	
 	/** for lerping. */
-	public float[] old_origin = { 0, 0, 0 }; 
+	public float[] old_origin = {(float) 0, (float) 0, (float) 0};
 	public int modelindex;
 	/** weapons, CTF flags, etc. */
 	public int modelindex2;

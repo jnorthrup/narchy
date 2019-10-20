@@ -55,7 +55,7 @@ public class MJOpen {
 		m_CColors = -1; 
 		m_Coloring = -1; 
 		m_sPalette = ""; 
-		m_dMclVsn = 0; 
+		m_dMclVsn = (double) 0;
 
 		sFileName = CorrectFileName(sFileName);
         String sFilePath = mjUI.sBaseURL + "p/" + sFileName;
@@ -75,7 +75,7 @@ public class MJOpen {
                     String sBff = (String) vLines.elementAt(i);
 					if ((sBff.isEmpty()) || (sBff.startsWith("#C"))
 							|| (sBff.startsWith("#D"))
-							|| (sBff.length() > 0 && sBff.charAt(0) == '!')) {
+							|| (sBff.length() > 0 && (int) sBff.charAt(0) == (int) '!')) {
 						i++; 
 					} else {
 						sFirstLine = sBff;
@@ -88,7 +88,7 @@ public class MJOpen {
 					fOk = ReadLife105(vLines);
 				else if (sFirstLine.startsWith("#MCell") || sFirstLine.startsWith("#Life 1.06"))
 					fOk = ReadMCL(vLines);
-				else if (sFirstLine.startsWith("#Life 1.05b") || sFirstLine.length() > 0 && sFirstLine.charAt(0) == 'x')
+				else if (sFirstLine.startsWith("#Life 1.05b") || sFirstLine.length() > 0 && (int) sFirstLine.charAt(0) == (int) 'x')
 					fOk = ReadLife106(vLines);
 
 				if (!fOk)
@@ -251,8 +251,8 @@ public class MJOpen {
         boolean fOk = false;
 		if (!bff.isEmpty()) {
 			
-			if ((bff.charAt(0) == '#') || (bff.charAt(0) == '!')
-					|| (bff.charAt(0) == '/')) {
+			if (((int) bff.charAt(0) == (int) '#') || ((int) bff.charAt(0) == (int) '!')
+					|| ((int) bff.charAt(0) == (int) '/')) {
 
 				String sTok;
 				if (bff.startsWith("#P"))
@@ -286,14 +286,14 @@ public class MJOpen {
 				{
 					sTok = bff.substring(2);
 					if (!sTok.isEmpty()) 
-						if (sTok.charAt(0) == ' ')
+						if ((int) sTok.charAt(0) == (int) ' ')
 							sTok = sTok.substring(1);
 					m_vDescr.add(sTok); 
-				} else if (bff.length() > 0 && bff.charAt(0) == '!') 
+				} else if (bff.length() > 0 && (int) bff.charAt(0) == (int) '!')
 				{
 					sTok = bff.substring(1);
 					if (!sTok.isEmpty()) 
-						if (sTok.charAt(0) == ' ')
+						if ((int) sTok.charAt(0) == (int) ' ')
 							sTok = sTok.substring(1);
 					m_vDescr.add(sTok); 
 				}
@@ -302,14 +302,14 @@ public class MJOpen {
                 int iCol = 0;
                 int iNum = 0;
 				for (int i = 0; i < bff.length(); i++) {
-					if ((bff.charAt(i) >= '0') && (bff.charAt(i) <= '9')) {
-						iNum = iNum * 10 + (bff.charAt(i) - '0');
+					if (((int) bff.charAt(i) >= (int) '0') && ((int) bff.charAt(i) <= (int) '9')) {
+						iNum = iNum * 10 + ((int) bff.charAt(i) - (int) '0');
 					} else {
 						if (iNum == 0)
 							iNum = 1;
 						
-						if ((bff.charAt(i) == '*') || (bff.charAt(i) == 'o')
-								|| (bff.charAt(i) == 'O')) {
+						if (((int) bff.charAt(i) == (int) '*') || ((int) bff.charAt(i) == (int) 'o')
+								|| ((int) bff.charAt(i) == (int) 'O')) {
 							for (int j = 0; j <= iNum - 1; j++)
 								m_vCells.add(new CACell(
                                         iCol + j + iBlkX, iRow105 + iBlkY,
@@ -400,7 +400,7 @@ public class MJOpen {
 			{
 				sTok = bff.substring(2);
 				if (!sTok.isEmpty()) 
-					if (sTok.charAt(0) == ' ')
+					if ((int) sTok.charAt(0) == (int) ' ')
 						sTok = sTok.substring(1);
 				m_vDescr.add(sTok); 
 			} else if (bff.startsWith("#BOARD")) 
@@ -441,8 +441,8 @@ public class MJOpen {
 				bff = bff.substring(2).trim();
                 int iAdd = 0;
 				for (int i = 0; i < bff.length(); i++) {
-					if ((bff.charAt(i) >= '0') && (bff.charAt(i) <= '9')) {
-						iNumMCL = iNumMCL * 10 + (bff.charAt(i) - '0');
+					if (((int) bff.charAt(i) >= (int) '0') && ((int) bff.charAt(i) <= (int) '9')) {
+						iNumMCL = iNumMCL * 10 + ((int) bff.charAt(i) - (int) '0');
 					} else {
 						if (iNumMCL == 0)
 							iNumMCL = 1;
@@ -459,19 +459,19 @@ public class MJOpen {
 							break;
 
 						default:
-							if ((bff.charAt(i) >= 'a')
-									&& (bff.charAt(i) <= 'j')) {
+							if (((int) bff.charAt(i) >= (int) 'a')
+									&& ((int) bff.charAt(i) <= (int) 'j')) {
 								
-								iAdd = (bff.charAt(i) - 'a' + 1) * 24;
-							} else if ((bff.charAt(i) >= 'A')
-									&& (bff.charAt(i) <= 'X')) {
+								iAdd = ((int) bff.charAt(i) - (int) 'a' + 1) * 24;
+							} else if (((int) bff.charAt(i) >= (int) 'A')
+									&& ((int) bff.charAt(i) <= (int) 'X')) {
 								
 								for (int j = 0; j < iNumMCL; j++) {
 									m_vCells
 											.add(new CACell(
                                                     iColMCL + j,
                                                     iRowMCL,
-                                                    (short) (bff.charAt(i) - 'A' + 1 + iAdd)));
+                                                    (short) ((int) bff.charAt(i) - (int) 'A' + 1 + iAdd)));
 								}
                                 iColMCL += iNumMCL;
 								fOk = true; 
@@ -536,7 +536,7 @@ public class MJOpen {
 		{
             String sTok = bff.substring(2);
 			if (!sTok.isEmpty()) 
-				if (sTok.charAt(0) == ' ')
+				if ((int) sTok.charAt(0) == (int) ' ')
 					sTok = sTok.substring(1);
 			m_vDescr.add(sTok); 
 		} else {
@@ -545,7 +545,7 @@ public class MJOpen {
 				m_vDescr.add(bff); 
 			} else {
 				if (!bff.isEmpty()) {
-					if ((!fXYFound) && bff.length() > 0 && bff.charAt(0) == 'x') 
+					if ((!fXYFound) && bff.length() > 0 && (int) bff.charAt(0) == (int) 'x')
 					{
 						fXYFound = true;
 						fOk = true;
@@ -585,9 +585,9 @@ public class MJOpen {
 					} else 
 					{
 						for (int i = 0; (i < bff.length()) && (!fEndFlg); i++) {
-							if ((bff.charAt(i) >= '0')
-									&& (bff.charAt(i) <= '9')) {
-								iNum = iNum * 10 + (bff.charAt(i) - '0');
+							if (((int) bff.charAt(i) >= (int) '0')
+									&& ((int) bff.charAt(i) <= (int) '9')) {
+								iNum = iNum * 10 + ((int) bff.charAt(i) - (int) '0');
 							} else {
 								if (iNum == 0)
 									iNum = 1;
@@ -608,10 +608,10 @@ public class MJOpen {
 									break;
 
 								default: 
-									if (((bff.charAt(i) >= 'a') && (bff
-											.charAt(i) <= 'z'))
-											|| ((bff.charAt(i) >= 'A') && (bff
-													.charAt(i) <= 'Z'))) {
+									if ((((int) bff.charAt(i) >= (int) 'a') && ((int) bff
+                                            .charAt(i) <= (int) 'z'))
+											|| (((int) bff.charAt(i) >= (int) 'A') && ((int) bff
+                                            .charAt(i) <= (int) 'Z'))) {
 										int iTmp;
 										switch (bff.charAt(i)) {
 										case 'x':
@@ -688,8 +688,8 @@ public class MJOpen {
         boolean fOk = false;
 		if (!bff.isEmpty()) {
 			
-			if ((bff.charAt(0) == '#') || (bff.charAt(0) == '/')
-					|| (bff.charAt(0) == '!')) {
+			if (((int) bff.charAt(0) == (int) '#') || ((int) bff.charAt(0) == (int) '/')
+					|| ((int) bff.charAt(0) == (int) '!')) {
 
 				String sTok;
 				if (bff.startsWith("#N"))
@@ -713,14 +713,14 @@ public class MJOpen {
 					
 					sTok = bff.substring(2);
 					if (!sTok.isEmpty()) 
-						if (sTok.charAt(0) == ' ')
+						if ((int) sTok.charAt(0) == (int) ' ')
 							sTok = sTok.substring(1);
 					m_vDescr.add(sTok); 
-				} else if (bff.length() > 0 && bff.charAt(0) == '!') {
+				} else if (bff.length() > 0 && (int) bff.charAt(0) == (int) '!') {
 					
 					sTok = bff.substring(1);
 					if (!sTok.isEmpty()) 
-						if (sTok.charAt(0) == ' ')
+						if ((int) sTok.charAt(0) == (int) ' ')
 							sTok = sTok.substring(1);
 					m_vDescr.add(sTok); 
 				}

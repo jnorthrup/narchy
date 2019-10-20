@@ -33,7 +33,6 @@ import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * This is a simplified postprocessor which implements only the basic workflow, i.e. solution selection
@@ -133,10 +132,10 @@ public class BasicPostprocessor implements Postprocessor {
             Example example = dataset.getExample(index);
             extractionsSet.removeAll(example.getMatch());
             BasicStats exampleStats = new BasicStats();
-            exampleStats.fn = -1; 
-            exampleStats.fp = extractionsSet.size();
-            exampleStats.tp = extractionsList.length - exampleStats.fp;
-            exampleStats.tn = -1; 
+            exampleStats.fn = -1L;
+            exampleStats.fp = (long) extractionsSet.size();
+            exampleStats.tp = (long) extractionsList.length - exampleStats.fp;
+            exampleStats.tn = -1L;
             statsPerExample.add(exampleStats);
         }
         return statsPerExample;

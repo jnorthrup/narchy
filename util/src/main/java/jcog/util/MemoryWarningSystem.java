@@ -85,15 +85,15 @@ public class MemoryWarningSystem {
         if (percentage <= 0.0 || percentage > 1.0)
             throw new IllegalArgumentException("Percentage not in range");
 
-        double maxMemory = tenuredGenPool.getUsage().getMax();
+        double maxMemory = (double) tenuredGenPool.getUsage().getMax();
         long warningThreshold = Math.round(maxMemory * percentage);
         tenuredGenPool.setUsageThreshold(warningThreshold);
     }
 
     public double getPercentageUsageThreshold() {
         long maxMemory = tenuredGenPool.getUsage().getMax();
-        double warningThreshold = tenuredGenPool.getUsageThreshold();
-        return warningThreshold / maxMemory;
+        double warningThreshold = (double) tenuredGenPool.getUsageThreshold();
+        return warningThreshold / (double) maxMemory;
     }
 
     /**

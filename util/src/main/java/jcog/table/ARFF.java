@@ -54,7 +54,6 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Pattern;
-import java.util.stream.IntStream;
 
 
 /**
@@ -98,7 +97,7 @@ import java.util.stream.IntStream;
 
     static final double valueIfNull =
             //Double.NaN;
-            0;
+            (double) 0;
 
     private String relation;
     private String comment;
@@ -199,7 +198,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
     static boolean isQuoteNecessary(CharSequence t) {
         int len = t.length();
 
-        if (len > 1 && t.charAt(0) == '\"' && t.charAt(len - 1) == '\"')
+        if (len > 1 && (int) t.charAt(0) == (int) '\"' && (int) t.charAt(len - 1) == (int) '\"')
             return false; 
 
         for (int i = 0; i < len; i++) {
@@ -226,7 +225,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
         int ll = line.length();
         switch (state[0]) {
             case COMMENT:
-                if (ll > 1 && line.charAt(0) == '%') {
+                if (ll > 1 && (int) line.charAt(0) == (int) '%') {
                     collectedComment.append(line.substring(2));
                     collectedComment.append(NEW_LINE);
                 } else {
@@ -250,14 +249,14 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
                 break;
 
             case DATA:
-                if (ll > 0 && line.charAt(0) != '%')
+                if (ll > 0 && (int) line.charAt(0) != (int) '%')
                     parseData(lineNum, line);
                 break;
         }
     }
 
     private void readRelationDefinition(String line) {
-        int i = line.indexOf(' ');
+        int i = line.indexOf((int) ' ');
         relation = line.substring(i + 1);
     }
 
@@ -280,9 +279,9 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
         } else if ("string".equals(lowertype)) {
             defineText(name);
         } else  {
-            int a = line.indexOf('{');
+            int a = line.indexOf((int) '{');
             if (a != -1) {
-                int b = line.indexOf('}');
+                int b = line.indexOf((int) '}');
                 if (b != -1) {
                     line = line.substring(a+1, b);
                     defineNominal(name, line.split("\\s*,\\s*"));

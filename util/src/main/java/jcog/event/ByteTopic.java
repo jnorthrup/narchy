@@ -16,11 +16,11 @@ public class ByteTopic<X> {
     }*/
 
     /** last channel is reserved for general catch 'all' sent once in all cases */
-    private static final byte ANY = Byte.MAX_VALUE-1;
+    private static final byte ANY = (byte) ((int) Byte.MAX_VALUE - 1);
 
     private static final boolean allowDynamic = false;
 
-    private final Topic<X>[] chan = new Topic[Byte.MAX_VALUE /* signed max */];
+    private final Topic<X>[] chan = new Topic[(int) Byte.MAX_VALUE /* signed max */];
 
     /** TODO write atomic variant of LongMetalBitset */
     private final MetalBitSet active = MetalBitSet.bits(255);//new AtomicMetalBitSet();
@@ -28,10 +28,10 @@ public class ByteTopic<X> {
     public ByteTopic(byte... preDefined) {
         validate(false, preDefined);
         for (byte c : preDefined)
-            chan[c] = newTopic(c);
+            chan[(int) c] = newTopic(c);
 
-        assert(chan[ANY] == null);
-        chan[ANY] = newTopic(ANY);
+        assert(chan[(int) ANY] == null);
+        chan[(int) ANY] = newTopic(ANY);
 
     }
 
@@ -76,8 +76,8 @@ public class ByteTopic<X> {
     }
 
     private Off _on(Consumer<X> each, byte c, boolean strong) {
-        active.set(c, true);
-        return chan[c].on(each, strong);
+        active.set((int) c, true);
+        return chan[(int) c].on(each, strong);
     }
 
     public final void emit(X x, byte chan) {
@@ -92,17 +92,17 @@ public class ByteTopic<X> {
     }
 
     private void _emit(X x, byte c) {
-        if (active.get(c))
-            chan[c].emit(x);
+        if (active.get((int) c))
+            chan[(int) c].emit(x);
     }
 
     private void validate(boolean afterConstruction, byte[] chans) {
         if (chans.length == 0)
             throw new UnsupportedOperationException();
         for (byte c : chans) {
-            if (c < 0 || c >= ANY)
+            if ((int) c < 0 || (int) c >= (int) ANY)
                 throw new ArrayIndexOutOfBoundsException();
-            if (afterConstruction && (!allowDynamic && chan[c] == null))
+            if (afterConstruction && (!allowDynamic && chan[(int) c] == null))
                 throw new NullPointerException();
         }
     }
@@ -118,7 +118,7 @@ public class ByteTopic<X> {
         @Override
         public void start(Consumer<X> o) {
             //synchronized (this) {
-                active.set(c, true);
+                active.set((int) c, true);
                 super.start(o);
             //}
         }
@@ -128,7 +128,7 @@ public class ByteTopic<X> {
             //synchronized (this) {
                 super.stop(o);
                 if (isEmpty())
-                    active.set(c, false);
+                    active.set((int) c, false);
             //}
         }
     }

@@ -44,7 +44,7 @@ public class DFA {
         Map<NFAState, CharObjectHashMap<Set<NFAState>>> nfaTransitionMap = new HashMap<>();
         for (NFAState state : nfaStateList) {
             CharObjectHashMap<Set<NFAState>> subMap = new CharObjectHashMap();
-            for (char ch = 0; ch < CommonSets.ENCODING_LENGTH; ch++) {
+            for (char ch = (char) 0; (int) ch < CommonSets.ENCODING_LENGTH; ch++) {
                 Set<NFAState> closure = closureMap.get(state);
                 Set<NFAState> reachable = traceReachable(closure, ch, closureMap);
                 if (!reachable.isEmpty()) {
@@ -68,7 +68,7 @@ public class DFA {
             subMap = new CharObjectHashMap<>();
             originalDFATransitionMap.put(stateSet, subMap);
         }
-        for (char ch = 0; ch < CommonSets.ENCODING_LENGTH; ch++) {
+        for (char ch = (char) 0; (int) ch < CommonSets.ENCODING_LENGTH; ch++) {
             Set<NFAState> union = new HashSet<>();
             for (NFAState state : stateSet) {
                 Set<NFAState> nfaSet = nfaTransitionMap.get(state).get(ch);
@@ -141,7 +141,7 @@ public class DFA {
             int[] state = newRejectState();
             CharObjectHashMap<Set<NFAState>> ev = entry.getValue();
 
-            ev.forEachKeyValue( (k, v) -> state[k] = stateRenamingMap.get(v));
+            ev.forEachKeyValue( (k, v) -> state[(int) k] = stateRenamingMap.get(v));
 
             renamedDFATransitionTable.put(renamingStateID, state);
 
@@ -166,8 +166,8 @@ public class DFA {
                     int group = groupFlags.get(sid);
                     if (sensitiveGroup == group) {
                         Map<Integer, Integer> targetGroupTable = new HashMap<>(CommonSets.ENCODING_LENGTH);
-                        for (char ch = 0; ch < CommonSets.ENCODING_LENGTH; ch++) {
-                            int targetState = renamedDFATransitionTable.get(sid)[ch];
+                        for (char ch = (char) 0; (int) ch < CommonSets.ENCODING_LENGTH; ch++) {
+                            int targetState = renamedDFATransitionTable.get(sid)[(int) ch];
                             int targetGroup = groupFlags.get(targetState);
                             targetGroupTable.put((int) ch, targetGroup);
                         }
@@ -218,9 +218,9 @@ public class DFA {
                 if (groupID == groupFlags.get(sid)) {
                     int[] oriState = renamedDFATransitionTable.get(sid);
                     int[] state = new int[CommonSets.ENCODING_LENGTH];
-                    for (char ch = 0; ch < CommonSets.ENCODING_LENGTH; ch++) {
-                        int next = oriState[ch];
-                        state[ch] = groupFlags.get(next);
+                    for (char ch = (char) 0; (int) ch < CommonSets.ENCODING_LENGTH; ch++) {
+                        int next = oriState[(int) ch];
+                        state[(int) ch] = groupFlags.get(next);
                     }
                     tt[groupID] = state;
                     break;

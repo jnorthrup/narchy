@@ -3,7 +3,6 @@ package spacegraph.space2d.phys.fracture.util;
 import java.util.AbstractList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.IntStream;
 
 /**
  * Optializovany ArrayList.

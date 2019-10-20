@@ -27,16 +27,16 @@ public class UsageNS<X> {
         for (Map.Entry<X, AtomicHistogram> entry : usage.entrySet()) {
             X x = entry.getKey();
             AtomicHistogram h = entry.getValue();
-            if (h.getTotalCount() > 0) {
+            if (h.getTotalCount() > 0L) {
                 fl.add(new HashCachedPair(x, h.copy()));
             }
         }
         fl.sortThis((a,b) -> {
             if (a ==b) return 0;
             AtomicHistogram aa = a.getTwo();
-            double am = aa.getTotalCount() * aa.getMean();
+            double am = (double) aa.getTotalCount() * aa.getMean();
             AtomicHistogram bb = b.getTwo();
-            double bm = bb.getTotalCount() * bb.getMean();
+            double bm = (double) bb.getTotalCount() * bb.getMean();
             int abm = Double.compare(bm, am); //descending
             if (abm != 0) {
                 return abm;
@@ -61,6 +61,6 @@ public class UsageNS<X> {
 
     public AtomicHistogram the(X x) {
         return usage.computeIfAbsent(x, a ->
-                new AtomicHistogram(1,1_000_000_000L, 2));
+                new AtomicHistogram(1L,1_000_000_000L, 2));
     }
 }

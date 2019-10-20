@@ -837,7 +837,7 @@ public class DynamicTree implements BroadPhaseStrategy {
     private void drawTree(DebugDraw argDraw, DynamicTreeNode node, int spot, int height) {
         node.aabb.vertices(drawVecs);
 
-        color.set(1, (height - spot) * 1f / height, (height - spot) * 1f / height);
+        color.set(1.0F, (float) (height - spot) * 1f / (float) height, (float) (height - spot) * 1f / (float) height);
         argDraw.drawPolygon(drawVecs, 4, color);
 
         argDraw.getViewportTranform().getWorldToScreen(node.aabb.upperBound, textVec);

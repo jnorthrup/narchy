@@ -38,7 +38,7 @@ public abstract class Entity implements java.io.Serializable {
         this.y = y;
         this.widthPX = width;
         this.heightPX = height;
-        this.dx = this.dy = 0;
+        this.dx = this.dy = (float) 0;
     }
 
     @Override
@@ -47,7 +47,7 @@ public abstract class Entity implements java.io.Serializable {
     }
 
     public void updatePosition(World world, int tileSize) {
-        int pixels = (int) Math.ceil(Math.max(Math.abs(dx), Math.abs(dy)) * tileSize);
+        int pixels = (int) Math.ceil((double) (Math.max(Math.abs(dx), Math.abs(dy)) * (float) tileSize));
 
         boolean favorVertical = (Math.abs(dy) > Math.abs(dx));
         boolean hitTop = false;
@@ -65,7 +65,7 @@ public abstract class Entity implements java.io.Serializable {
         boolean middleLeft = true;
         boolean middleRight = true;
 
-        float scale = 1.f / pixels;
+        float scale = 1.f / (float) pixels;
 
         if (favorVertical) {
             for (int i = 1; i <= pixels && topLeft && topRight && bottomLeft && bottomRight; i++) {
@@ -76,8 +76,8 @@ public abstract class Entity implements java.io.Serializable {
                 topRight = world.passable((int) right, (int) top);
                 bottomLeft = world.passable((int) left, (int) bottom);
                 bottomRight = world.passable((int) right, (int) bottom);
-                middleLeft = world.passable((int) left, (int) (top + (bottom - top) / 2));
-                middleRight = world.passable((int) right, (int) (top + (bottom - top) / 2));
+                middleLeft = world.passable((int) left, (int) (top + (bottom - top) / 2.0F));
+                middleRight = world.passable((int) right, (int) (top + (bottom - top) / 2.0F));
 
                 if (!(topLeft && topRight && bottomLeft && bottomRight && middleLeft && middleRight)) {
                     hitTop |= !topLeft || !topRight;
@@ -94,8 +94,8 @@ public abstract class Entity implements java.io.Serializable {
                 topRight = world.passable((int) right, (int) top);
                 bottomLeft = world.passable((int) left, (int) bottom);
                 bottomRight = world.passable((int) right, (int) bottom);
-                middleLeft = world.passable((int) left, (int) (top + (bottom - top) / 2));
-                middleRight = world.passable((int) right, (int) (top + (bottom - top) / 2));
+                middleLeft = world.passable((int) left, (int) (top + (bottom - top) / 2.0F));
+                middleRight = world.passable((int) right, (int) (top + (bottom - top) / 2.0F));
 
                 if (!(topLeft && topRight && bottomLeft && bottomRight && middleLeft && middleRight)) {
                     left -= dx * scale;
@@ -111,8 +111,8 @@ public abstract class Entity implements java.io.Serializable {
                 topRight = world.passable((int) right, (int) top);
                 bottomLeft = world.passable((int) left, (int) bottom);
                 bottomRight = world.passable((int) right, (int) bottom);
-                middleLeft = world.passable((int) left, (int) (top + (bottom - top) / 2));
-                middleRight = world.passable((int) right, (int) (top + (bottom - top) / 2));
+                middleLeft = world.passable((int) left, (int) (top + (bottom - top) / 2.0F));
+                middleRight = world.passable((int) right, (int) (top + (bottom - top) / 2.0F));
 
                 if (!(topLeft && topRight && bottomLeft && bottomRight && middleLeft && middleRight)) {
                     left -= dx * scale;
@@ -127,8 +127,8 @@ public abstract class Entity implements java.io.Serializable {
                 topRight = world.passable((int) right, (int) top);
                 bottomLeft = world.passable((int) left, (int) bottom);
                 bottomRight = world.passable((int) right, (int) bottom);
-                middleLeft = world.passable((int) left, (int) (top + (bottom - top) / 2));
-                middleRight = world.passable((int) right, (int) (top + (bottom - top) / 2));
+                middleLeft = world.passable((int) left, (int) (top + (bottom - top) / 2.0F));
+                middleRight = world.passable((int) right, (int) (top + (bottom - top) / 2.0F));
 
                 if (!(topLeft && topRight && bottomLeft && bottomRight && middleLeft && middleRight)) {
                     hitTop |= !topLeft || !topRight;
@@ -145,7 +145,7 @@ public abstract class Entity implements java.io.Serializable {
                     || world.isClimbable((int) left, (int) bottom)
                     || world.isClimbable((int) right, (int) bottom)) {
                 dy += waterAcceleration;
-                if (dy > 0) {
+                if (dy > (float) 0) {
                     dy = Math.min(maxWaterDY, dy);
                 } else {
                     dy = Math.max(-maxWaterDY, dy);
@@ -156,17 +156,17 @@ public abstract class Entity implements java.io.Serializable {
             if (hitBottom) {
 
 
-                int dmg = ((int) (114 * dy)) - 60;
+                int dmg = ((int) (114.0F * dy)) - 60;
                 if (dmg > 0) {
                     this.takeDamage(dmg);
                 }
-                dx *= 0.9;
+                dx = (float) ((double) dx * 0.9);
             }
         }
         if (hitTop) {
             dy = 0.0000001f;
         } else if (hitBottom) {
-            dy = 0;
+            dy = (float) 0;
         }
 
         x = left;
@@ -174,11 +174,11 @@ public abstract class Entity implements java.io.Serializable {
     }
 
     public float getCenterY(int tileSize) {
-        return y + (float) heightPX / (2 * tileSize);
+        return y + (float) heightPX / (float) (2 * tileSize);
     }
 
     public float getCenterX(int tileSize) {
-        return x + (float) widthPX / (2 * tileSize);
+        return x + (float) widthPX / (float) (2 * tileSize);
     }
 
     public float getTop(int tileSize) {
@@ -186,7 +186,7 @@ public abstract class Entity implements java.io.Serializable {
     }
 
     public float getBottom(int tileSize) {
-        return (y + (float) (heightPX) / tileSize);
+        return (y + (float) (heightPX) / (float) tileSize);
     }
 
     public float getLeft(int tileSize) {
@@ -194,7 +194,7 @@ public abstract class Entity implements java.io.Serializable {
     }
 
     public float getRight(int tileSize) {
-        return x + (float) (widthPX) / tileSize;
+        return x + (float) (widthPX) / (float) tileSize;
     }
 
     public boolean isInWater(World world, int tileSize) {

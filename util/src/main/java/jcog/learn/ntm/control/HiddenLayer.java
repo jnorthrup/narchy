@@ -4,7 +4,6 @@ import jcog.learn.ntm.learn.IWeightUpdater;
 import jcog.learn.ntm.memory.ReadData;
 
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 public class HiddenLayer {
 	public final IDifferentiableFunction activation;
@@ -87,7 +86,7 @@ public class HiddenLayer {
 
 	private double readDataContributionToHiddenLayer(int neuronIndex, ReadData[] readData) {
         Unit[][] readWeightsForEachHead = readDataToHiddenLayerWeights[neuronIndex];
-		double tempSum = 0;
+		double tempSum = (double) 0;
 		for (int headIndex = 0; headIndex < heads; headIndex++) {
             Unit[] headWeights = readWeightsForEachHead[headIndex];
             ReadData read = readData[headIndex];

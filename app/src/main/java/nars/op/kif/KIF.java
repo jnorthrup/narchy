@@ -30,7 +30,6 @@ import nars.op.Equal;
 import nars.op.MathFunc;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Variable;
 import nars.term.atom.IdempotentBool;
 import nars.term.atom.IdempotInt;
 import org.eclipse.collections.api.block.function.Function;
@@ -47,8 +46,6 @@ import java.io.StringReader;
 import java.util.Set;
 import java.util.*;
 import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static nars.$.$$;

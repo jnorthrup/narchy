@@ -233,7 +233,7 @@ public class IntervalTree<K extends Comparable<? super K>, V> {
 			total += i;
 			count ++;
 		}
-		return (double) total / count;
+		return (double) total / (double) count;
 		
 	}
 

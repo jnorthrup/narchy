@@ -58,7 +58,7 @@ public class LinearSplit<X> implements Split<X> {
             double dab = m.bounds(data[iiMax[MIN]]).coord(d, true);
             double dbb = m.bounds(data[iiMax[MAX]]).coord(d, true);
 
-            for (int j = 1; j < size; j++) {
+            for (int j = 1; j < (int) size; j++) {
 
                 HyperRegion rj = m.bounds(data[j]);
 
@@ -95,7 +95,7 @@ public class LinearSplit<X> implements Split<X> {
 
         if (r1Max == r2Max) {
             r1Max = 0;
-            r2Max = size - 1;
+            r2Max = (int) size - 1;
         }
 
         return newBranch(x, leaf, m, size, r1Max, r2Max, data);

@@ -22,11 +22,11 @@ public class DutyCycleMeter {
         stopTime = System.nanoTime();
         long onTime = stopTime - startTime;
         long totalTime = stopTime - previousStopTime;
-        if (totalTime > 0) {
+        if (totalTime > 0L) {
 
             double rate = 0.01;
-            averageOnTime = (averageOnTime * (1.0 - rate)) + (onTime * rate);
-            averageTotalTime = (averageTotalTime * (1.0 - rate)) + (totalTime * rate);
+            averageOnTime = (averageOnTime * (1.0 - rate)) + ((double) onTime * rate);
+            averageTotalTime = (averageTotalTime * (1.0 - rate)) + ((double) totalTime * rate);
         }
     }
 

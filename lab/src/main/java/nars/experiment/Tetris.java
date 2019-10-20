@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.IntStream;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -53,7 +52,7 @@ public class Tetris extends GameX {
             , TetrisPiece.EMPTY_ROW
             , TetrisPiece.EMPTY_ROW};
     static float FPS = 24f;
-    static float thinkPerFrame = 2;
+    static float thinkPerFrame = 2.0F;
     private final TetrisState state;
     final Bitmap2DSensor<Bitmap2D> gridVision;
     public Bitmap2DSensor<Bitmap2D> pixels;
@@ -113,7 +112,7 @@ public class Tetris extends GameX {
         Bitmap2D grid = new AbstractBitmap2D(state.width, state.height) {
             @Override
             public float brightness(int x, int y) {
-                return state.seen[y * w + x] > 0 ? 1f : 0f;
+                return state.seen[y * w + x] > (double) 0 ? 1f : 0f;
             }
         };
         gridVision = addSensor(
@@ -122,52 +121,52 @@ public class Tetris extends GameX {
                 ));
 
         if (TETRIS_USE_DENSITY) {
-            reward("density", 1, () -> {
+            reward("density", 1.0F, () -> {
 
                 long count = 0L;
                 for (double s : state.grid) {
-                    if (s > 0) {
+                    if (s > (double) 0) {
                         count++;
                     }
                 }
                 int filled = (int) count;
 
                 int r = state.rowsFilled;
-                return r > 0 ? ((float) filled) / (r * state.width) : 0;
+                return r > 0 ? ((float) filled) / (float) (r * state.width) : (float) 0;
             });
         }
 
         actionUnipolar($.inh(id, "speed"), (s) -> {
             int fastest = (int) this.timePerFall.min, slowest = (int) this.timePerFall.max;
-            int t = Math.round(Util.lerp(s, slowest, fastest));
-            this.timePerFall.set(t);
-            return Util.unlerp(t, slowest, fastest); //get the effective frequency after discretizing
+            int t = Math.round(Util.lerp(s, (float) slowest, (float) fastest));
+            this.timePerFall.set((float) t);
+            return Util.unlerp((float) t, (float) slowest, (float) fastest); //get the effective frequency after discretizing
         });
 
 
         int[] lastRowsFilled = {0};
-        SimpleReward lower = reward("lower", 1, () -> {
+        SimpleReward lower = reward("lower", 1.0F, () -> {
             int rowsFilled = state.rowsFilled;
             int deltaRows = rowsFilled - lastRowsFilled[0];
             lastRowsFilled[0] = rowsFilled;
             if (deltaRows > 0) {
-                return -1;
+                return -1.0F;
             } else if (deltaRows == 0)
                 return
                         Float.NaN;
                 //0.5f;
             else {//if (deltaRows < 0) {
                 if (deltaRows > 5)
-                    return -1; //board clear
+                    return -1.0F; //board clear
                 else
-                    return +1; //lower due to line
+                    return (float) +1; //lower due to line
             }
         });
 
 
         Exe.runLater(() -> //HACK
             {
-                lower.setDefault($.t(0.5f, n.confDefault(BELIEF) / 3));
+                lower.setDefault($.t(0.5f, n.confDefault(BELIEF) / 3.0F));
                 //lower.addGuard(true,false);
             }
         );
@@ -221,13 +220,13 @@ public class Tetris extends GameX {
 
         actionPushButton(tROT, debounce(b ->
                         b && state.act(TetrisState.actions.CW)
-                , debounceDurs));
+                , (float) debounceDurs));
 
         if (TETRIS_CAN_FALL)
             actionPushButton(tFALL,
                     debounce(b ->
                                     b && state.act(TetrisState.actions.FALL)
-                            , debounceDurs * 2)
+                            , (float) (debounceDurs * 2))
             );
 
     }
@@ -257,14 +256,14 @@ public class Tetris extends GameX {
     private float density() {
         long count = 0L;
         for (double s : state.grid) {
-            if (s > 0) {
+            if (s > (double) 0) {
                 count++;
             }
         }
         int filled = (int) count;
 
         int r = state.rowsFilled;
-        return r > 0 ? (float) filled / (r * state.width) : 0;
+        return r > 0 ? (float) filled / (float) (r * state.width) : (float) 0;
     }
 
     public static class TetrisPiece {
@@ -338,8 +337,8 @@ public class Tetris extends GameX {
         protected void reset() {
             currentX = width / 2 - 1;
             currentY = 0;
-            score = 0;
-            Arrays.fill(grid, 0f);
+            score = (float) 0;
+            Arrays.fill(grid, 0);
             currentRotation = 0;
             is_game_over = false;
 
@@ -359,14 +358,14 @@ public class Tetris extends GameX {
         private void toVector(boolean monochrome, double[] target) {
 
 
-            Arrays.fill(target, -1f);
+            Arrays.fill(target, -1);
 
             int x = 0;
             for (double i : grid) {
                 if (monochrome)
-                    target[x] = i > 0 ? 1.0f : -1.0f;
+                    target[x] = (double) (i > (double) 0 ? 1.0f : -1.0f);
                 else
-                    target[x] = i > 0 ?   i : -1.0f;
+                    target[x] = i > (double) 0 ?   i : -1.0;
                 x++;
             }
             writeCurrentBlock(0.5f, target);
@@ -375,15 +374,15 @@ public class Tetris extends GameX {
         private void writeCurrentBlock(float color, double[] f) {
             int[][] thisPiece = possibleBlocks.get(currentBlockId).thePiece[currentRotation];
 
-            if (color == -1)
-                color = currentBlockId + 1;
+            if (color == -1.0F)
+                color = (float) (currentBlockId + 1);
             for (int y = 0; y < thisPiece[0].length; ++y)
                 for (int x = 0; x < thisPiece.length; ++x)
                     if (thisPiece[x][y] != 0) {
 
 
                         int linearIndex = i(currentX + x, currentY + y);
-                        f[linearIndex] = color;
+                        f[linearIndex] = (double) color;
                     }
 
         }
@@ -496,7 +495,7 @@ public class Tetris extends GameX {
                     boolean b1 = !(i < 0 || i >= height);
                     for (int x = 0; x < ll && !result; ++x) {
                         int i1 = checkX + x;
-                        result = (!b1 || i1 < 0 || i1 >= width || grid[i(i1, i)] != 0) && thePiece[x][y] != 0;
+                        result = (!b1 || i1 < 0 || i1 >= width || grid[i(i1, i)] != (double) 0) && thePiece[x][y] != 0;
                     }
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
@@ -521,7 +520,7 @@ public class Tetris extends GameX {
                     if (i1 >= 0 && i1 < height)
                         for (int x = 0; x < ll && !result; ++x) {
                             int i = checkX + x;
-                            result = thePiece[x][y] != 0 && i >= 0 && i < width && grid[i(i, i1)] != 0;
+                            result = thePiece[x][y] != 0 && i >= 0 && i < width && grid[i(i, i1)] != (double) 0;
                         }
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
@@ -603,7 +602,7 @@ public class Tetris extends GameX {
 
             if (onSomething || nextColliding()) {
                 running = false;
-                writeCurrentBlock(-1, grid);
+                writeCurrentBlock(-1.0F, grid);
             } else {
                 if (time % timePerFall == 0)
                     currentY += 1;
@@ -667,11 +666,11 @@ public class Tetris extends GameX {
             int diff = prevRows - rowsFilled;
 
             if (diff >= height - 1) score = Float.NaN;
-            else score = diff;
+            else score = (float) diff;
         }
 
         public float height() {
-            return (float) rowsFilled / height;
+            return (float) rowsFilled / (float) height;
         }
 
         /**
@@ -685,7 +684,7 @@ public class Tetris extends GameX {
             int bound = width;
             for (int x = 0; x < bound; x++) {
                 double s = grid[i(x, y)];
-                if (filledOrClear ? s == 0 : s != 0) {
+                if (filledOrClear ? s == (double) 0 : s != (double) 0) {
                     return false;
                 }
             }
@@ -707,7 +706,7 @@ public class Tetris extends GameX {
 
             for (int x = 0; x < width; ++x) {
                 int linearIndex = i(x, y);
-                grid[linearIndex] = 0f;
+                grid[linearIndex] = 0;
             }
 
 
@@ -721,7 +720,7 @@ public class Tetris extends GameX {
 
             for (int x = 0; x < width; ++x) {
                 int linearIndex = i(x, 0);
-                grid[linearIndex] = 0f;
+                grid[linearIndex] = 0;
             }
 
         }

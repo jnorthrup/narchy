@@ -6,7 +6,6 @@ import jcog.util.FloatFloatToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.StringJoiner;
-import java.util.stream.IntStream;
 
 import static jcog.Texts.n4;
 
@@ -23,7 +22,7 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
 
     //TODO atomic addAt methods
     private static final int[] QUAD_16_SHAPE = { 4 };
-    public static final float SHORT_TO_FLOAT_SCALE = Short.MAX_VALUE*2 + 1;
+    public static final float SHORT_TO_FLOAT_SCALE = (float) (Short.MAX_VALUE * 2 + 1);
     private static final MetalAtomicLongFieldUpdater<AtomicFixedPoint4x16bitVector> X =
         new MetalAtomicLongFieldUpdater<>(AtomicFixedPoint4x16bitVector.class, "x");
     private volatile long x;
@@ -32,15 +31,15 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
      * @param c quad selector: 0, 1, 2, 3
      */
     private static float toFloat(long x, int c) {
-        return toFloat(shortAt(x, c));
+        return toFloat((long) shortAt(x, c));
     }
 
     private static int shortAt(long x, int c) {
-        return ((int) (x >>> (c * 16))) & '\uffff';
+        return ((int) (x >>> (c * 16))) & (int) '\uffff';
     }
 
     static float toFloat(long s) {
-        return s / SHORT_TO_FLOAT_SCALE;
+        return (float) s / SHORT_TO_FLOAT_SCALE;
     }
 
     static int toShort(float f) {
@@ -49,15 +48,15 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
 
     @Override
     public void fill(float x) {
-        long pattern = toShort(x);
+        long pattern = (long) toShort(x);
         X.set(this, pattern | (pattern << 16) | (pattern << 32) | (pattern << 48) );
     }
 
     @Override
     public float sumValues() {
-        long x = X.get(this), s = 0;
+        long x = X.get(this), s = 0L;
         for (int i = 0; i < 4; i++)
-            s += shortAt(x, i);
+            s = s + (long) shortAt(x, i);
         return toFloat(s);
     }
 
@@ -83,8 +82,8 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
         do {
             _x = X.get(this);
 
-            int xi = (int) (_x >> shift) & '\uffff'; //shortAt(_x, c)
-            x = toFloat(xi);
+            int xi = (int) (_x >> shift) & (int) '\uffff'; //shortAt(_x, c)
+            x = toFloat((long) xi);
 
             y = F.apply(x, arg);
 

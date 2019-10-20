@@ -42,9 +42,9 @@ public class Math3D {
 		c[2] = a[2] - b[2];
 	}
 	public static void VectorSubtract(short[] a, short[] b, int[] c) {
-		c[0] = a[0] - b[0];
-		c[1] = a[1] - b[1];
-		c[2] = a[2] - b[2];
+		c[0] = (int) a[0] - (int) b[0];
+		c[1] = (int) a[1] - (int) b[1];
+		c[2] = (int) a[2] - (int) b[2];
 	}
 	public static void VectorAdd(float[] a, float[] b, float[] to) {
 		to[0] = a[0] + b[0];
@@ -62,9 +62,9 @@ public class Math3D {
 		to[2] = from[2];
 	}
 	public static void VectorCopy(short[] from, float[] to) {
-		to[0] = from[0];
-		to[1] = from[1];
-		to[2] = from[2];
+		to[0] = (float) from[0];
+		to[1] = (float) from[1];
+		to[2] = (float) from[2];
 	}
 	public static void VectorCopy(float[] from, short[] to) {
 		to[0] = (short) from[0];
@@ -72,7 +72,7 @@ public class Math3D {
 		to[2] = (short) from[2];
 	}
 	public static void VectorClear(float[] a) {
-		a[0] = a[1] = a[2] = 0;
+		a[0] = a[1] = a[2] = (float) 0;
 	}
 	public static boolean VectorEquals(float[] v1, float[] v2) {
 		return !(v1[0] != v2[0] || v1[1] != v2[1] || v1[2] != v2[2]);
@@ -105,7 +105,7 @@ public class Math3D {
 		return length;
 	}
 	public static final float VectorLength(float[] v) {
-		return (float) Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+		return (float) Math.sqrt((double) (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]));
 	}
 	public static void VectorInverse(float[] v) {
 		v[0] = -v[0];
@@ -121,18 +121,18 @@ public class Math3D {
 		float yaw;
 
 		if (/*vec[YAW] == 0 &&*/
-			vec[Defines.PITCH] == 0) {
-			yaw = 0;
-			if (vec[Defines.YAW] > 0)
-				yaw = 90;
-			else if (vec[Defines.YAW] < 0)
-				yaw = -90;
+			vec[Defines.PITCH] == (float) 0) {
+			yaw = (float) 0;
+			if (vec[Defines.YAW] > (float) 0)
+				yaw = 90.0F;
+			else if (vec[Defines.YAW] < (float) 0)
+				yaw = -90.0F;
 		}
 		else {
 
-			yaw = (int) (Math.atan2(vec[Defines.YAW], vec[Defines.PITCH]) * 180 / Math.PI);
-			if (yaw < 0)
-				yaw += 360;
+			yaw = (float) (int) (Math.atan2((double) vec[Defines.YAW], (double) vec[Defines.PITCH]) * 180.0 / Math.PI);
+			if (yaw < (float) 0)
+				yaw += 360.0F;
 		}
 
 		return yaw;
@@ -141,32 +141,32 @@ public class Math3D {
 
 		float yaw, pitch;
 
-		if (value1[1] == 0 && value1[0] == 0) {
-			yaw = 0;
-			if (value1[2] > 0)
-				pitch = 90;
+		if (value1[1] == (float) 0 && value1[0] == (float) 0) {
+			yaw = (float) 0;
+			if (value1[2] > (float) 0)
+				pitch = 90.0F;
 			else
-				pitch = 270;
+				pitch = 270.0F;
 		}
 		else {
-			if (value1[0] != 0)
-				yaw = (int) (Math.atan2(value1[1], value1[0]) * 180 / Math.PI);
-			else if (value1[1] > 0)
-				yaw = 90;
+			if (value1[0] != (float) 0)
+				yaw = (float) (int) (Math.atan2((double) value1[1], (double) value1[0]) * 180.0 / Math.PI);
+			else if (value1[1] > (float) 0)
+				yaw = 90.0F;
 			else
-				yaw = -90;
-			if (yaw < 0)
-				yaw += 360;
+				yaw = -90.0F;
+			if (yaw < (float) 0)
+				yaw += 360.0F;
 
-            float forward = (float) Math.sqrt(value1[0] * value1[0] + value1[1] * value1[1]);
-			pitch = (int) (Math.atan2(value1[2], forward) * 180 / Math.PI);
-			if (pitch < 0)
-				pitch += 360;
+            float forward = (float) Math.sqrt((double) (value1[0] * value1[0] + value1[1] * value1[1]));
+			pitch = (float) (int) (Math.atan2((double) value1[2], (double) forward) * 180.0 / Math.PI);
+			if (pitch < (float) 0)
+				pitch += 360.0F;
 		}
 
 		angles[Defines.PITCH] = -pitch;
 		angles[Defines.YAW] = yaw;
-		angles[Defines.ROLL] = 0;
+		angles[Defines.ROLL] = (float) 0;
 	}
 	private static final float[][] m = new float[3][3];
 	private static final float[][] im = new float[3][3];
@@ -174,9 +174,9 @@ public class Math3D {
 	private static final float[][] zrot = new float[3][3];
 	
 	
-	private static final float[] vr = {0, 0, 0};
-	private static final float[] vup = {0, 0, 0};
-	private static final float[] vf = {0, 0, 0};
+	private static final float[] vr = {(float) 0, (float) 0, (float) 0};
+	private static final float[] vup = {(float) 0, (float) 0, (float) 0};
+	private static final float[] vf = {(float) 0, (float) 0, (float) 0};
 
 	public static void RotatePointAroundVector(float[] dst, float[] dir, float[] point, float degrees) {
 		vf[0] = dir[0];
@@ -213,8 +213,8 @@ public class Math3D {
 
 		zrot[2][2] = 1.0F;
 
-		zrot[0][0] = zrot[1][1] = (float) Math.cos(DEG2RAD(degrees));
-		zrot[0][1] = (float) Math.sin(DEG2RAD(degrees));
+		zrot[0][0] = zrot[1][1] = (float) Math.cos((double) DEG2RAD(degrees));
+		zrot[0][1] = (float) Math.sin((double) DEG2RAD(degrees));
 		zrot[1][0] = -zrot[0][1];
 
 		R_ConcatRotations(m, zrot, tmpmat);
@@ -239,7 +239,7 @@ public class Math3D {
 		CrossProduct(right, forward, up);
 	}
 	public static float SHORT2ANGLE(int x) {
-		return (x * shortratio);
+		return ((float) x * shortratio);
 	}
 	/*
 	================
@@ -297,7 +297,7 @@ public class Math3D {
 		dst[2] = p[2] - d * dst[2];
 	}
 	
-	private static final float[][] PLANE_XYZ = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}; 
+	private static final float[][] PLANE_XYZ = {{1.0F, (float) 0, (float) 0}, {(float) 0, 1.0F, (float) 0}, {(float) 0, (float) 0, 1.0F}};
 	
 	/** assumes "src" is normalized */
 	public static void PerpendicularVector(float[] dst, float[] src) {
@@ -330,10 +330,10 @@ public class Math3D {
 
         byte ptype = p.type;
         float pDist = p.dist;
-		if (ptype < 3) {
-			if (pDist <= emins[ptype])
+		if ((int) ptype < 3) {
+			if (pDist <= emins[(int) ptype])
 				return 1;
-			if (pDist >= emaxs[ptype])
+			if (pDist >= emaxs[(int) ptype])
 				return 2;
 			return 3;
 		}
@@ -385,7 +385,7 @@ public class Math3D {
 				dist2 = n0 * max0 + n1 * max1 + n2 * max2;
 				break;
 			default :
-				dist1 = dist2 = 0;
+				dist1 = dist2 = (float) 0;
 				assert(false) : "BoxOnPlaneSide bug";
 				break;
 		}
@@ -432,11 +432,11 @@ public class Math3D {
         float cr = 2.0f * piratio;
 
         float angle = angles[Defines.YAW] * (cr);
-        float sy = (float) Math.sin(angle);
-        float cy = (float) Math.cos(angle);
+        float sy = (float) Math.sin((double) angle);
+        float cy = (float) Math.cos((double) angle);
         float angle2 = angles[Defines.PITCH] * (cr);
-        float sp = (float) Math.sin(angle2);
-        float cp = (float) Math.cos(angle2);
+        float sp = (float) Math.sin((double) angle2);
+        float cp = (float) Math.cos((double) angle2);
 
 		if (forward != null) {
 			forward[0] = cp * cy;
@@ -446,8 +446,8 @@ public class Math3D {
 
 		if (right != null || up != null) {
             float angle3 = angles[Defines.ROLL] * (cr);
-            float sr = (float) Math.sin(angle3);
-			cr = (float) Math.cos(angle3);
+            float sr = (float) Math.sin((double) angle3);
+			cr = (float) Math.cos((double) angle3);
 
 			if (right != null) {
 				right[0] = (-sr * sp * cy + cr * sy);
@@ -496,16 +496,16 @@ public class Math3D {
 		return (in * (float) Math.PI) / 180.0f;
 	}
 	public static float anglemod(float a) {
-		return shortratio * ((int) (a / (shortratio)) & 65535);
+		return shortratio * (float) ((int) (a / (shortratio)) & 65535);
 	}
 	public static int ANGLE2SHORT(float x) {
 		return ((int) ((x) / shortratio) & 65535);
 	}
 	public static float LerpAngle(float a2, float a1, float frac) {
-		if (a1 - a2 > 180)
-			a1 -= 360;
-		if (a1 - a2 < -180)
-			a1 += 360;
+		if (a1 - a2 > 180.0F)
+			a1 -= 360.0F;
+		if (a1 - a2 < -180.0F)
+			a1 += 360.0F;
 		return a2 + frac * (a1 - a2);
 	}
 
@@ -513,6 +513,6 @@ public class Math3D {
 		if (fov_x < 1.0f || fov_x > 179.0f)
 			Com.Error(Defines.ERR_DROP, "Bad fov: " + fov_x);
 
-		return (float)(Math.atan(height / (width / Math.tan(fov_x * piratio)))) / piratio;
+		return (float)(Math.atan((double) height / ((double) width / Math.tan((double) (fov_x * piratio))))) / piratio;
 	}
 }

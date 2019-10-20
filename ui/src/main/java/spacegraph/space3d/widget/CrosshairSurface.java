@@ -103,9 +103,9 @@ public class CrosshairSurface extends PaintSurface implements MouseListener {
 
     private void update(MouseEvent e) {
         int mx = e.getX();
-        smx = mx;
+        smx = (float) mx;
         int my = e.getY();
-        smy = (space.getHeight() - ((float) my)) ;
+        smy = ((float) space.getHeight() - ((float) my)) ;
 
         pressed = e.getButtonsDown();
     }

@@ -48,13 +48,13 @@ public class GameTarget {
 
         ent.noise_index = game_import_t.soundindex(buffer);
 
-        if (ent.volume == 0)
+        if (ent.volume == (float) 0)
             ent.volume = 1.0f;
 
-        if (ent.attenuation == 0)
+        if (ent.attenuation == (float) 0)
             ent.attenuation = 1.0f;
-        else if (ent.attenuation == -1) 
-            ent.attenuation = 0;
+        else if (ent.attenuation == -1.0F)
+            ent.attenuation = (float) 0;
 
         
         if ((ent.spawnflags & 1) != 0)
@@ -73,7 +73,7 @@ public class GameTarget {
      * message light will be set on all clients status bars.
      */
     public static void SP_target_help(edict_t ent) {
-        if (GameBase.deathmatch.value != 0) { 
+        if (GameBase.deathmatch.value != (float) 0) {
             GameUtil.G_FreeEdict(ent);
             return;
         }
@@ -88,7 +88,7 @@ public class GameTarget {
     }
 
     public static void SP_target_secret(edict_t ent) {
-        if (GameBase.deathmatch.value != 0) { 
+        if (GameBase.deathmatch.value != (float) 0) {
             GameUtil.G_FreeEdict(ent);
             return;
         }
@@ -101,13 +101,13 @@ public class GameTarget {
         GameBase.level.total_secrets++;
         
         if (0 == Lib.Q_stricmp(GameBase.level.mapname, "mine3")
-                && ent.s.origin[0] == 280 && ent.s.origin[1] == -2048
-                && ent.s.origin[2] == -624)
+                && ent.s.origin[0] == 280.0F && ent.s.origin[1] == -2048.0F
+                && ent.s.origin[2] == -624.0F)
             ent.message = "You have found a secret area.";
     }
 
     public static void SP_target_goal(edict_t ent) {
-        if (GameBase.deathmatch.value != 0) { 
+        if (GameBase.deathmatch.value != (float) 0) {
             GameUtil.G_FreeEdict(ent);
             return;
         }
@@ -155,7 +155,7 @@ public class GameTarget {
     public static void SP_target_spawner(edict_t self) {
         self.use = use_target_spawner;
         self.svflags = Defines.SVF_NOCLIENT;
-        if (self.speed != 0) {
+        if (self.speed != (float) 0) {
             GameBase.G_SetMovedir(self.s.angles, self.movedir);
             Math3D.VectorScale(self.movedir, self.speed, self.movedir);
         }
@@ -168,8 +168,8 @@ public class GameTarget {
 
         if (0 == self.dmg)
             self.dmg = 15;
-        if (0 == self.speed)
-            self.speed = 1000;
+        if ((float) 0 == self.speed)
+            self.speed = 1000.0F;
 
         self.svflags = Defines.SVF_NOCLIENT;
     }
@@ -180,8 +180,8 @@ public class GameTarget {
     }
 
     public static void SP_target_crosslevel_target(edict_t self) {
-        if (0 == self.delay)
-            self.delay = 1;
+        if ((float) 0 == self.delay)
+            self.delay = 1.0F;
         self.svflags = Defines.SVF_NOCLIENT;
 
         self.think = target_crosslevel_target_think;
@@ -199,27 +199,27 @@ public class GameTarget {
     public static void target_laser_off(edict_t self) {
         self.spawnflags &= ~1;
         self.svflags |= Defines.SVF_NOCLIENT;
-        self.nextthink = 0;
+        self.nextthink = (float) 0;
     }
 
     public static void SP_target_laser(edict_t self) {
         
         self.think = target_laser_start;
-        self.nextthink = GameBase.level.time + 1;
+        self.nextthink = GameBase.level.time + 1.0F;
     }
 
     public static void SP_target_lightramp(edict_t self) {
         if (self.message == null || self.message.length() != 2
-                || self.message.charAt(0) < 'a' || self.message.charAt(0) > 'z'
-                || self.message.charAt(1) < 'a' || self.message.charAt(1) > 'z'
-                || self.message.charAt(0) == self.message.charAt(1)) {
+                || (int) self.message.charAt(0) < (int) 'a' || (int) self.message.charAt(0) > (int) 'z'
+                || (int) self.message.charAt(1) < (int) 'a' || (int) self.message.charAt(1) > (int) 'z'
+                || (int) self.message.charAt(0) == (int) self.message.charAt(1)) {
             game_import_t.dprintf("target_lightramp has bad ramp ("
                     + self.message + ") at " + Lib.vtos(self.s.origin) + '\n');
             GameUtil.G_FreeEdict(self);
             return;
         }
 
-        if (GameBase.deathmatch.value != 0) {
+        if (GameBase.deathmatch.value != (float) 0) {
             GameUtil.G_FreeEdict(self);
             return;
         }
@@ -235,8 +235,8 @@ public class GameTarget {
         self.use = target_lightramp_use;
         self.think = target_lightramp_think;
 
-        self.movedir[0] = self.message.charAt(0) - 'a';
-        self.movedir[1] = self.message.charAt(1) - 'a';
+        self.movedir[0] = (float) ((int) self.message.charAt(0) - (int) 'a');
+        self.movedir[1] = (float) ((int) self.message.charAt(1) - (int) 'a');
         self.movedir[2] = (self.movedir[1] - self.movedir[0])
                 / (self.speed / Defines.FRAMETIME);
     }
@@ -249,8 +249,8 @@ public class GameTarget {
         if (0 == self.count)
             self.count = 5;
 
-        if (0 == self.speed)
-            self.speed = 200;
+        if ((float) 0 == self.speed)
+            self.speed = 200.0F;
 
         self.svflags |= Defines.SVF_NOCLIENT;
         self.think = target_earthquake_think;
@@ -308,7 +308,7 @@ public class GameTarget {
                 
                 
                 game_import_t.positioned_sound(ent.s.origin, ent, chan,
-                        ent.noise_index, ent.volume, ent.attenuation, 0);
+                        ent.noise_index, ent.volume, ent.attenuation, (float) 0);
             }
 
         }
@@ -339,8 +339,8 @@ public class GameTarget {
         public String getID() { return "use_target_secret"; }
         @Override
         public void use(edict_t ent, edict_t other, edict_t activator) {
-            game_import_t.sound(ent, Defines.CHAN_VOICE, ent.noise_index, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(ent, Defines.CHAN_VOICE, ent.noise_index, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
 
             GameBase.level.found_secrets++;
 
@@ -358,8 +358,8 @@ public class GameTarget {
         public String getID() { return "use_target_goal"; }
         @Override
         public void use(edict_t ent, edict_t other, edict_t activator) {
-            game_import_t.sound(ent, Defines.CHAN_VOICE, ent.noise_index, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(ent, Defines.CHAN_VOICE, ent.noise_index, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
 
             GameBase.level.found_goals++;
 
@@ -390,11 +390,11 @@ public class GameTarget {
             game_import_t.WritePosition(self.s.origin);
             game_import_t.multicast(self.s.origin, Defines.MULTICAST_PHS);
 
-            GameCombat.T_RadiusDamage(self, self.activator, self.dmg, null,
-                    self.dmg + 40, Defines.MOD_EXPLOSIVE);
+            GameCombat.T_RadiusDamage(self, self.activator, (float) self.dmg, null,
+                    (float) (self.dmg + 40), Defines.MOD_EXPLOSIVE);
 
             float save = self.delay;
-            self.delay = 0;
+            self.delay = (float) 0;
             GameUtil.G_UseTargets(self, self.activator);
             self.delay = save;
             return true;
@@ -408,7 +408,7 @@ public class GameTarget {
         public void use(edict_t self, edict_t other, edict_t activator) {
             self.activator = activator;
 
-            if (0 == self.delay) {
+            if ((float) 0 == self.delay) {
                 target_explosion_explode.think(self);
                 return;
             }
@@ -427,16 +427,16 @@ public class GameTarget {
         public String getID() { return "use_target_changelevel"; }
         @Override
         public void use(edict_t self, edict_t other, edict_t activator) {
-            if (GameBase.level.intermissiontime != 0)
+            if (GameBase.level.intermissiontime != (float) 0)
                 return; 
 
-            if (0 == GameBase.deathmatch.value && 0 == GameBase.coop.value) {
+            if ((float) 0 == GameBase.deathmatch.value && (float) 0 == GameBase.coop.value) {
                 if (GameBase.g_edicts[1].health <= 0)
                     return;
             }
 
             
-            if (GameBase.deathmatch.value != 0
+            if (GameBase.deathmatch.value != (float) 0
                     && 0 == ((int) GameBase.dmflags.value & Defines.DF_ALLOW_EXIT)
                     && other != GameBase.g_edicts[0] /* world */
             ) {
@@ -447,7 +447,7 @@ public class GameTarget {
             }
 
             
-            if (GameBase.deathmatch.value != 0) {
+            if (GameBase.deathmatch.value != (float) 0) {
                 if (activator != null && activator.client != null)
                     game_import_t.bprintf(Defines.PRINT_HIGH,
                             activator.client.pers.netname
@@ -455,7 +455,7 @@ public class GameTarget {
             }
 
             
-            if (self.map.indexOf('*') > -1)
+            if (self.map.indexOf((int) '*') > -1)
                 GameBase.game.serverflags &= ~(Defines.SFL_CROSS_TRIGGER_MASK);
 
             PlayerHud.BeginIntermission(self);
@@ -486,8 +486,8 @@ public class GameTarget {
             game_import_t.multicast(self.s.origin, Defines.MULTICAST_PVS);
 
             if (self.dmg != 0)
-                GameCombat.T_RadiusDamage(self, activator, self.dmg, null,
-                        self.dmg + 40, Defines.MOD_SPLASH);
+                GameCombat.T_RadiusDamage(self, activator, (float) self.dmg, null,
+                        (float) (self.dmg + 40), Defines.MOD_SPLASH);
         }
     };
 
@@ -516,7 +516,7 @@ public class GameTarget {
             game_import_t.unlinkentity(ent);
             GameUtil.KillBox(ent);
             game_import_t.linkentity(ent);
-            if (self.speed != 0)
+            if (self.speed != (float) 0)
                 Math3D.VectorCopy(self.movedir, ent.velocity);
         }
     };
@@ -546,8 +546,8 @@ public class GameTarget {
                     Defines.MOD_TARGET_BLASTER != 0
             /* true */
             );
-            game_import_t.sound(self, Defines.CHAN_VOICE, self.noise_index, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_VOICE, self.noise_index, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
         }
     };
 
@@ -611,9 +611,9 @@ public class GameTarget {
                 count = 4;
 
             if (self.enemy != null) {
-                float[] last_movedir = {0, 0, 0};
+                float[] last_movedir = {(float) 0, (float) 0, (float) 0};
                 Math3D.VectorCopy(self.movedir, last_movedir);
-                float[] point = {0, 0, 0};
+                float[] point = {(float) 0, (float) 0, (float) 0};
                 Math3D.VectorMA(self.enemy.absmin, 0.5f, self.enemy.size, point);
                 Math3D.VectorSubtract(point, self.s.origin, self.movedir);
                 Math3D.VectorNormalize(self.movedir);
@@ -622,10 +622,10 @@ public class GameTarget {
             }
 
             edict_t ignore = self;
-            float[] start = {0, 0, 0};
+            float[] start = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorCopy(self.s.origin, start);
-            float[] end = {0, 0, 0};
-            Math3D.VectorMA(start, 2048, self.movedir, end);
+            float[] end = {(float) 0, (float) 0, (float) 0};
+            Math3D.VectorMA(start, 2048.0F, self.movedir, end);
             trace_t tr;
             while (true) {
                 tr = game_import_t.trace(start, null, null, end, ignore,
@@ -733,8 +733,8 @@ public class GameTarget {
             if (0 == self.dmg)
                 self.dmg = 1;
 
-            Math3D.VectorSet(self.mins, -8, -8, -8);
-            Math3D.VectorSet(self.maxs, 8, 8, 8);
+            Math3D.VectorSet(self.mins, -8.0F, -8.0F, -8.0F);
+            Math3D.VectorSet(self.maxs, 8.0F, 8.0F, 8.0F);
             game_import_t.linkentity(self);
 
             if ((self.spawnflags & 1) != 0)
@@ -757,7 +757,7 @@ public class GameTarget {
         @Override
         public boolean think(edict_t self) {
 
-            char[] tmp = {(char) ('a' + (int) (self.movedir[0] + (GameBase.level.time - self.timestamp)
+            char[] tmp = {(char) ((int) 'a' + (int) (self.movedir[0] + (GameBase.level.time - self.timestamp)
                     / Defines.FRAMETIME * self.movedir[2]))};
             
             game_import_t.configstring(Defines.CS_LIGHTS + self.enemy.style,
@@ -769,8 +769,8 @@ public class GameTarget {
 
                 char temp = (char) self.movedir[0];
                 self.movedir[0] = self.movedir[1];
-                self.movedir[1] = temp;
-                self.movedir[2] *= -1;
+                self.movedir[1] = (float) temp;
+                self.movedir[2] *= -1.0F;
             }
 
             return true;
@@ -838,7 +838,7 @@ public class GameTarget {
             if (self.last_move_time < GameBase.level.time) {
                 game_import_t.positioned_sound(self.s.origin, self,
                         Defines.CHAN_AUTO, self.noise_index, 1.0f,
-                        Defines.ATTN_NONE, 0);
+                        (float) Defines.ATTN_NONE, (float) 0);
                 self.last_move_time = GameBase.level.time + 0.5f;
             }
 
@@ -853,9 +853,9 @@ public class GameTarget {
                     continue;
 
                 e.groundentity = null;
-                e.velocity[0] += Lib.crandom() * 150;
-                e.velocity[1] += Lib.crandom() * 150;
-                e.velocity[2] = self.speed * (100.0f / e.mass);
+                e.velocity[0] += Lib.crandom() * 150.0F;
+                e.velocity[1] += Lib.crandom() * 150.0F;
+                e.velocity[2] = self.speed * (100.0f / (float) e.mass);
             }
 
             if (GameBase.level.time < self.timestamp)
@@ -870,10 +870,10 @@ public class GameTarget {
         public String getID() { return "target_earthquake_use"; }
         @Override
         public void use(edict_t self, edict_t other, edict_t activator) {
-            self.timestamp = GameBase.level.time + self.count;
+            self.timestamp = GameBase.level.time + (float) self.count;
             self.nextthink = GameBase.level.time + Defines.FRAMETIME;
             self.activator = activator;
-            self.last_move_time = 0;
+            self.last_move_time = (float) 0;
         }
     };
 }

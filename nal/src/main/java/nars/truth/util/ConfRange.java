@@ -11,7 +11,7 @@ public final class ConfRange extends FloatRange {
     private double _evi;
 
     public ConfRange() {
-        this(0);
+        this((float) 0);
     }
 
     public ConfRange(float initialValue) {
@@ -21,12 +21,12 @@ public final class ConfRange extends FloatRange {
     @Override
     public void set(float conf) {
         super.set(conf);
-        _evi = c2wSafe(conf());
+        _evi = (double) c2wSafe(conf());
     }
 
     public final void conf(double conf) {
         super.set(conf);
-        _evi = c2wSafe(conf());
+        _evi = (double) c2wSafe(conf());
     }
     public final void evi(double e) {
        set(w2cSafe(e));

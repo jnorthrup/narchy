@@ -22,16 +22,16 @@ public final class ImprovedNoise {
                 B = p[X + 1] + Y, BA = p[B] + Z, BB = p[B + 1] + Z;
 
         return lerp(w, lerp(v, lerp(u, grad(p[AA], x, y, z),
-                grad(p[BA], x - 1, y, z)),
-                lerp(u, grad(p[AB], x, y - 1, z),
-                        grad(p[BB], x - 1, y - 1, z))),
-                lerp(v, lerp(u, grad(p[AA + 1], x, y, z - 1),
-                        grad(p[BA + 1], x - 1, y, z - 1)),
-                        lerp(u, grad(p[AB + 1], x, y - 1, z - 1), grad(p[BB + 1], x - 1, y - 1, z - 1))));
+                grad(p[BA], x - 1.0, y, z)),
+                lerp(u, grad(p[AB], x, y - 1.0, z),
+                        grad(p[BB], x - 1.0, y - 1.0, z))),
+                lerp(v, lerp(u, grad(p[AA + 1], x, y, z - 1.0),
+                        grad(p[BA + 1], x - 1.0, y, z - 1.0)),
+                        lerp(u, grad(p[AB + 1], x, y - 1.0, z - 1.0), grad(p[BB + 1], x - 1.0, y - 1.0, z - 1.0))));
     }
 
     static double fade(double t) {
-        return t * t * t * (t * (t * 6 - 15) + 10);
+        return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
     }
 
     static double lerp(double t, double a, double b) {
@@ -48,11 +48,11 @@ public final class ImprovedNoise {
     int[] p = new int[512];
 
     public double perlinNoise(double x, double y) {
-        double n = 0;
+        double n = (double) 0;
 
         for (int i = 0; i < 8; i++) {
-            double stepSize = 64.0 / ((1 << i));
-            n += noise(x / stepSize, y / stepSize, 128) * 1.0 / (1 << i);
+            double stepSize = 64.0 / (double) ((1 << i));
+            n += noise(x / stepSize, y / stepSize, 128.0) * 1.0 / (double) (1 << i);
         }
 
         return n;

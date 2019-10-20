@@ -19,8 +19,8 @@ public class ViolinDiffDecayString extends ViolinString {
     }
 
     private void setVolume() {
-        if (frequency > 440) {
-            double factor = Math.log(frequency / 440) / Math.log(2);
+        if (frequency > 440.0) {
+            double factor = Math.log(frequency / 440.0) / Math.log(2.0);
             setMaxVolume(0.2 + (0.1 * factor));
         }
     }
@@ -32,19 +32,19 @@ public class ViolinDiffDecayString extends ViolinString {
         } else if (getTics() < 20000) {
             setDeltaVolume(1.02);
         } else if (getTics() < 80000) {
-            setDeltaVolume(1);
+            setDeltaVolume(1.0);
         } else {
             setDeltaVolume(decayDelta);
         }
     }
 
     private double attackDelta() {
-        double factor = 440 / frequency;
+        double factor = 440.0 / frequency;
         return Math.pow(1.2, factor);
     }
 
     private double decayDelta() {
-        double factor = 440 / frequency;
+        double factor = 440.0 / frequency;
         return Math.pow(0.99, factor);
     }
 }

@@ -57,9 +57,9 @@ public abstract class Mesh extends Light {
 
     final float[][] r_avertexnormals = Anorms.VERTEXNORMALS;
 
-    final float[] shadevector = {0, 0, 0};
+    final float[] shadevector = {(float) 0, (float) 0, (float) 0};
 
-    final float[] shadelight = {0, 0, 0};
+    final float[] shadelight = {(float) 0, (float) 0, (float) 0};
 
     
     static final int SHADEDOT_QUANT = 16;
@@ -93,13 +93,13 @@ public abstract class Mesh extends Light {
                 vv = v[i];
                 float[] normal = r_avertexnormals[(vv >>> 24) & 0xFF];
                 ovv = ov[i];
-                lerp.put(j, move[0] + (ovv & 0xFF) * backv[0] + (vv & 0xFF)
+                lerp.put(j, move[0] + (float) (ovv & 0xFF) * backv[0] + (float) (vv & 0xFF)
                         * frontv[0] + normal[0] * Defines.POWERSUIT_SCALE);
-                lerp.put(j + 1, move[1] + ((ovv >>> 8) & 0xFF) * backv[1]
-                        + ((vv >>> 8) & 0xFF) * frontv[1] + normal[1]
+                lerp.put(j + 1, move[1] + (float) ((ovv >>> 8) & 0xFF) * backv[1]
+                        + (float) ((vv >>> 8) & 0xFF) * frontv[1] + normal[1]
                         * Defines.POWERSUIT_SCALE);
-                lerp.put(j + 2, move[2] + ((ovv >>> 16) & 0xFF) * backv[2]
-                        + ((vv >>> 16) & 0xFF) * frontv[2] + normal[2]
+                lerp.put(j + 2, move[2] + (float) ((ovv >>> 16) & 0xFF) * backv[2]
+                        + (float) ((vv >>> 16) & 0xFF) * frontv[2] + normal[2]
                         * Defines.POWERSUIT_SCALE);
                 j += 3;
             }
@@ -109,12 +109,12 @@ public abstract class Mesh extends Light {
                 ovv = ov[i];
                 vv = v[i];
 
-                lerp.put(j, move[0] + (ovv & 0xFF) * backv[0] + (vv & 0xFF)
+                lerp.put(j, move[0] + (float) (ovv & 0xFF) * backv[0] + (float) (vv & 0xFF)
                         * frontv[0]);
-                lerp.put(j + 1, move[1] + ((ovv >>> 8) & 0xFF) * backv[1]
-                        + ((vv >>> 8) & 0xFF) * frontv[1]);
-                lerp.put(j + 2, move[2] + ((ovv >>> 16) & 0xFF) * backv[2]
-                        + ((vv >>> 16) & 0xFF) * frontv[2]);
+                lerp.put(j + 1, move[1] + (float) ((ovv >>> 8) & 0xFF) * backv[1]
+                        + (float) ((vv >>> 8) & 0xFF) * frontv[1]);
+                lerp.put(j + 2, move[2] + (float) ((ovv >>> 16) & 0xFF) * backv[2]
+                        + (float) ((vv >>> 16) & 0xFF) * frontv[2]);
                 j += 3;
             }
         }
@@ -128,17 +128,17 @@ public abstract class Mesh extends Light {
 
     boolean isFilled;
 
-    float[] tmpVec = {0, 0, 0};
+    float[] tmpVec = {(float) 0, (float) 0, (float) 0};
 
-    final float[][] vectors = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0} 
+    final float[][] vectors = {{(float) 0, (float) 0, (float) 0}, {(float) 0, (float) 0, (float) 0}, {(float) 0, (float) 0, (float) 0}
     };
 
     
-    private final float[] move = {0, 0, 0}; 
+    private final float[] move = {(float) 0, (float) 0, (float) 0};
 
-    private final float[] frontv = {0, 0, 0}; 
+    private final float[] frontv = {(float) 0, (float) 0, (float) 0};
 
-    private final float[] backv = {0, 0, 0}; 
+    private final float[] backv = {(float) 0, (float) 0, (float) 0};
 
     /**
      * GL_DrawAliasFrameLerp
@@ -257,7 +257,7 @@ public abstract class Mesh extends Light {
             srcIndex = pos << 1;
             srcIndex--;
             for (int k = 0; k < count; k++) {
-                dstIndex = srcIndexBuf.get(k) << 1;
+                dstIndex = (int) srcIndexBuf.get(k) << 1;
                 dstTextureCoords
                         .put(dstIndex, srcTextureCoords.get(++srcIndex));
                 dstTextureCoords.put(++dstIndex, srcTextureCoords
@@ -277,7 +277,7 @@ public abstract class Mesh extends Light {
         gl.glDisableClientState(GL_COLOR_ARRAY);
     }
 
-    private final float[] point = {0, 0, 0};
+    private final float[] point = {(float) 0, (float) 0, (float) 0};
 
     /**
      * GL_DrawAliasShadow
@@ -323,9 +323,9 @@ public abstract class Mesh extends Light {
 
     
     
-    private final float[] mins = {0, 0, 0};
+    private final float[] mins = {(float) 0, (float) 0, (float) 0};
 
-    private final float[] maxs = {0, 0, 0};
+    private final float[] maxs = {(float) 0, (float) 0, (float) 0};
 
     /**
      * R_CullAliasModel
@@ -354,13 +354,13 @@ public abstract class Mesh extends Light {
         if (pframe == poldframe) {
             for (int i = 0; i < 3; i++) {
                 mins[i] = pframe.translate[i];
-                maxs[i] = mins[i] + pframe.scale[i] * 255;
+                maxs[i] = mins[i] + pframe.scale[i] * 255.0F;
             }
         } else {
             for (int i = 0; i < 3; i++) {
-                float thismaxs = pframe.translate[i] + pframe.scale[i] * 255;
+                float thismaxs = pframe.translate[i] + pframe.scale[i] * 255.0F;
 
-                float oldmaxs = poldframe.translate[i] + poldframe.scale[i] * 255;
+                float oldmaxs = poldframe.translate[i] + poldframe.scale[i] * 255.0F;
 
                 if (pframe.translate[i] < poldframe.translate[i])
                     mins[i] = pframe.translate[i];
@@ -422,7 +422,7 @@ public abstract class Mesh extends Light {
             for (int f = 0; f < 4; f++) {
                 float dp = Math3D.DotProduct(frustum[f].normal, bbox[p]);
 
-                if ((dp - frustum[f].dist) < 0) {
+                if ((dp - frustum[f].dist) < (float) 0) {
                     mask |= (1 << f);
                 }
             }
@@ -435,8 +435,8 @@ public abstract class Mesh extends Light {
     }
 
     
-    final float[][] bbox = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0},
-            {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+    final float[][] bbox = {{(float) 0, (float) 0, (float) 0}, {(float) 0, (float) 0, (float) 0}, {(float) 0, (float) 0, (float) 0}, {(float) 0, (float) 0, (float) 0},
+            {(float) 0, (float) 0, (float) 0}, {(float) 0, (float) 0, (float) 0}, {(float) 0, (float) 0, (float) 0}, {(float) 0, (float) 0, (float) 0}};
 
     
 
@@ -497,18 +497,18 @@ public abstract class Mesh extends Light {
                 
                 if (shadelight[0] > shadelight[1]) {
                     if (shadelight[0] > shadelight[2])
-                        r_lightlevel.value = 150 * shadelight[0];
+                        r_lightlevel.value = 150.0F * shadelight[0];
                     else
-                        r_lightlevel.value = 150 * shadelight[2];
+                        r_lightlevel.value = 150.0F * shadelight[2];
                 } else {
                     if (shadelight[1] > shadelight[2])
-                        r_lightlevel.value = 150 * shadelight[1];
+                        r_lightlevel.value = 150.0F * shadelight[1];
                     else
-                        r_lightlevel.value = 150 * shadelight[2];
+                        r_lightlevel.value = 150.0F * shadelight[2];
                 }
             }
 
-            if (gl_monolightmap.string.charAt(0) != '0') {
+            if ((int) gl_monolightmap.string.charAt(0) != (int) '0') {
                 float s = shadelight[0];
 
                 if (s < shadelight[1])
@@ -536,7 +536,7 @@ public abstract class Mesh extends Light {
         if ((currententity.flags & Defines.RF_GLOW) != 0) {
 
 
-            float scale = (float) (0.1f * Math.sin(r_newrefdef.time * 7));
+            float scale = (float) (0.1 * Math.sin((double) (r_newrefdef.time * 7.0F)));
             for (i = 0; i < 3; i++) {
                 float min = shadelight[i] * 0.8f;
                 shadelight[i] += scale;
@@ -556,13 +556,13 @@ public abstract class Mesh extends Light {
         
         
 
-        shadedots = r_avertexnormal_dots[((int) (currententity.angles[1] * (SHADEDOT_QUANT / 360.0)))
+        shadedots = r_avertexnormal_dots[((int) ((double) currententity.angles[1] * ((double) SHADEDOT_QUANT / 360.0)))
                 & (SHADEDOT_QUANT - 1)];
 
-        float an = (float) (currententity.angles[1] / 180 * Math.PI);
-        shadevector[0] = (float) Math.cos(-an);
-        shadevector[1] = (float) Math.sin(-an);
-        shadevector[2] = 1;
+        float an = (float) ((double) (currententity.angles[1] / 180.0F) * Math.PI);
+        shadevector[0] = (float) Math.cos((double) -an);
+        shadevector[1] = (float) Math.sin((double) -an);
+        shadevector[2] = 1.0F;
         Math3D.VectorNormalize(shadevector);
 
         
@@ -580,17 +580,17 @@ public abstract class Mesh extends Light {
             
             
             
-            gl.glDepthRange(gldepthmin, gldepthmin + 0.3
-                    * (gldepthmax - gldepthmin));
+            gl.glDepthRange((double) gldepthmin, (double) gldepthmin + 0.3
+                    * (double) (gldepthmax - gldepthmin));
 
         if ((currententity.flags & Defines.RF_WEAPONMODEL) != 0
                 && (r_lefthand.value == 1.0f)) {
             gl.glMatrixMode(GL_PROJECTION);
             gl.glPushMatrix();
             gl.glLoadIdentity();
-            gl.glScalef(-1, 1, 1);
-            MYgluPerspective(r_newrefdef.fov_y, (float) r_newrefdef.width
-                    / r_newrefdef.height, 4, 4096);
+            gl.glScalef(-1.0F, 1.0F, 1.0F);
+            MYgluPerspective((double) r_newrefdef.fov_y, (double) ((float) r_newrefdef.width
+                    / (float) r_newrefdef.height), 4.0, 4096.0);
             gl.glMatrixMode(GL_MODELVIEW);
 
             gl.glCullFace(GL_BACK);
@@ -646,7 +646,7 @@ public abstract class Mesh extends Light {
         }
 
         if (r_lerpmodels.value == 0.0f)
-            currententity.backlerp = 0;
+            currententity.backlerp = (float) 0;
 
         GL_DrawAliasFrameLerp(paliashdr, currententity.backlerp);
 
@@ -668,7 +668,7 @@ public abstract class Mesh extends Light {
         }
 
         if ((currententity.flags & Defines.RF_DEPTHHACK) != 0)
-            gl.glDepthRange(gldepthmin, gldepthmax);
+            gl.glDepthRange((double) gldepthmin, (double) gldepthmax);
 
         if (gl_shadows.value != 0.0f
                 && (currententity.flags & (Defines.RF_TRANSLUCENT | Defines.RF_WEAPONMODEL)) == 0) {
@@ -676,12 +676,12 @@ public abstract class Mesh extends Light {
             R_RotateForEntity(e);
             gl.glDisable(GL_TEXTURE_2D);
             gl.glEnable(GL_BLEND);
-            gl.glColor4f(0, 0, 0, 0.5f);
+            gl.glColor4f((float) 0, (float) 0, (float) 0, 0.5f);
             GL_DrawAliasShadow(paliashdr, currententity.frame);
             gl.glEnable(GL_TEXTURE_2D);
             gl.glDisable(GL_BLEND);
             gl.glPopMatrix();
         }
-        gl.glColor4f(1, 1, 1, 1);
+        gl.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
     }
 }

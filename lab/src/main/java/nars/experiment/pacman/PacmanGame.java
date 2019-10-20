@@ -76,7 +76,7 @@ public class PacmanGame {
 
     public void restart() {
         maze = Maze.create(15, 13);
-        float playerSpeed = GHOST_SPEED * 2;
+        float playerSpeed = GHOST_SPEED * 2.0F;
         player = new Player(maze, maze.playerStart().x, maze.playerStart().y, playerSpeed);
         resetGhosts();
         text = "";
@@ -125,7 +125,7 @@ public class PacmanGame {
 
                 }
 
-                ghosts[2].target(new Point((int) (3 * player.x - 2 * ghosts[0].x), (int) (3 * player.x - 2 * ghosts[0].x)));
+                ghosts[2].target(new Point((int) (3.0 * player.x - 2.0 * ghosts[0].x), (int) (3.0 * player.x - 2.0 * ghosts[0].x)));
                 ghosts[3].random = true;
             }
 
@@ -155,7 +155,7 @@ public class PacmanGame {
 
                         ghostEatCount++;
                         score += 4;
-                        splashes.add(new PacComponent.SplashModel("" + 100 * Math.pow(2, ghostEatCount), g.x, g.y, Color.white));
+                        splashes.add(new PacComponent.SplashModel("" + 100.0 * Math.pow(2.0, (double) ghostEatCount), g.x, g.y, Color.white));
                         g.reset();
 
                     } else {
@@ -196,7 +196,7 @@ public class PacmanGame {
 
             if (maze.fruit != Maze.Fruit.none) {
 
-                if (Math.abs(player.x - maze.playerStart().x) < 1 && Math.abs(player.y - maze.playerStart().y) < 1) {
+                if (Math.abs(player.x - (double) maze.playerStart().x) < 1.0 && Math.abs(player.y - (double) maze.playerStart().y) < 1.0) {
 
                     switch (maze.fruit) {
 
@@ -223,7 +223,7 @@ public class PacmanGame {
                     fruitTime = 0;
                     maze.fruit = Maze.Fruit.none;
 
-                } else if (fruitTime > (1500 + Math.random() * 30000)) {
+                } else if ((double) fruitTime > (1500.0 + Math.random() * 30000.0)) {
 
                     maze.fruit = Maze.Fruit.none;
                     fruitTime = 0;

@@ -378,7 +378,7 @@ public class ContactConstraint {
 
         float combinedFriction = cpd.friction;
 
-        if (cpd.appliedImpulse > 0) {
+        if (cpd.appliedImpulse > (float) 0) {
             if (lat_rel_vel > BulletGlobals.FLT_EPSILON) {
                 lat_vel.scaled(1f / lat_rel_vel);
 

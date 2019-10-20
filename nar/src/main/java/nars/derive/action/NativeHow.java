@@ -13,7 +13,7 @@ public abstract class NativeHow/*Builder*/ extends CondHow {
 	protected abstract void run(RuleCause why, Derivation d);
 
 	public float pri(Derivation d) {
-		return 1;
+		return 1.0F;
 	}
 
 	@Override

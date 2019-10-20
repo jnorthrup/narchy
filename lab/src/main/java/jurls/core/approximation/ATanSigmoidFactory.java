@@ -20,7 +20,7 @@ public class ATanSigmoidFactory implements ActivationFunctionFactory {
 
     @Override
     public double getDelta() {
-        return -10;
+        return -10.0;
     }
 
 }

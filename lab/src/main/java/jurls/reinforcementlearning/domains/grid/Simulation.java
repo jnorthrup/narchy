@@ -20,12 +20,12 @@ public class Simulation {
 
     public static boolean DISPLAY = true;
 
-    long displayPeriodMS = 1000;
+    long displayPeriodMS = 1000L;
 
     private double rewardTotal;
     
     long cycleDelayMS;
-    long lastDisplay = -1;
+    long lastDisplay = -1L;
     long lastCycleTime;
     
     /*
@@ -51,7 +51,7 @@ public class Simulation {
     }
 
     public Simulation(Class<? extends Agent> agentClass, World world) throws Exception {
-        this(agentClass, world, 0);
+        this(agentClass, world, 0L);
     }
             
     public void init(Agent a) {
@@ -141,7 +141,7 @@ public class Simulation {
             agent.step(reward);
 
             long now = System.currentTimeMillis();
-            if ((lastDisplay == -1) || (now - lastDisplay > displayPeriodMS)) {
+            if ((lastDisplay == -1L) || (now - lastDisplay > displayPeriodMS)) {
                 
                 if (jf!=null) jf.setTitle("Reward: " + reward + ", @" + time);
                 lastDisplay = System.currentTimeMillis();
@@ -149,7 +149,7 @@ public class Simulation {
                 long n = System.nanoTime();
 
                 double cycleTime = ((((double)n) - ((double)lastCycleTime))/1000000000.0);
-                double fps = cycles/cycleTime;
+                double fps = (double) cycles /cycleTime;
                 System.out.println(time + " (" + fps + " cycles/sec)" + " " + cycleTime + "s");
 
 
@@ -159,7 +159,7 @@ public class Simulation {
                 cycles = 0;            
             }
             
-            if (cycleDelayMS > 0) {
+            if (cycleDelayMS > 0L) {
                 try {
                     Thread.sleep(cycleDelayMS);
                 } catch (InterruptedException ex) {

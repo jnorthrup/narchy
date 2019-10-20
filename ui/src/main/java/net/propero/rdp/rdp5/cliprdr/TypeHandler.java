@@ -33,7 +33,6 @@ import net.propero.rdp.RdpPacket;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
-import java.util.Arrays;
 
 public abstract class TypeHandler {
 

@@ -47,7 +47,7 @@ public class Word extends Terminal {
 
         char[] letters = new char[n];
 		for (int i = 0; i < n; i++) {
-            int c = (int) (26.0 * Math.random()) + 'a';
+            int c = (int) (26.0 * Math.random()) + (int) 'a';
 			letters[i] = workOnCharForRandomExpansion((char) c, i);
 		}
 

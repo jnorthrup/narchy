@@ -64,7 +64,7 @@ public class DecisionTree<K, V> {
         V result = null;
         for (final Map.Entry<V, Long> e : labelCount.entrySet()) {
             final long nbOfLabels = e.getValue();
-            if ((nbOfLabels / (double) totalCount) >= homogenityPercentage) {
+            if (((double) nbOfLabels / (double) totalCount) >= (double) homogenityPercentage) {
                 result = e.getKey();
                 break;
             }

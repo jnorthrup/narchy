@@ -233,7 +233,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      *  determines when desire is answered to produce feedback in the present frame.
      *  represents a natural latency between decision and effect. */
     public static final float ACTION_DESIRE_SHIFT_DUR =
-        0;
+            (float) 0;
         //-0.5f;
 
 
@@ -269,7 +269,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * <p>
          * TODO make this a per-sensor implementation decision
          */
-        public static final float SIGNAL_STRETCH_LIMIT_DURS = 8;
+        public static final float SIGNAL_STRETCH_LIMIT_DURS = 8.0F;
         /**
          * maximum time between signal updates to stretch an equivalently-truthed data point across.
          * stretches perception across some amount of lag
@@ -299,7 +299,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
             //0.5f;
 
         public static final float CLEAN_MARGIN_DURS =
-            0;
+                (float) 0;
             //0.5f;
     }
 
@@ -323,9 +323,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 //            , 0, 2f);
 
     /** max tolerance time difference (in durations) for unification of temporal terms */
-    public final FloatRange unifyDTToleranceDurs = new FloatRange(0.5f, 0, 2 );
+    public final FloatRange unifyDTToleranceDurs = new FloatRange(0.5f, (float) 0, 2.0F);
 
-    @Deprecated public final FloatRange questionForgetRate = new FloatRange(1f, 0, 1);
+    @Deprecated public final FloatRange questionForgetRate = new FloatRange(1f, (float) 0, 1.0F);
 
     @Deprecated public final IntRange deriveBranchTTL = new IntRange(20, 1, 256);
 
@@ -446,7 +446,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
         //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
-        double e = (evi / (1.0 + Util.sqr(((double) dt) / dur)));
+        double e = (evi / (1.0 + Util.sqr(((double) dt) / (double) dur)));
 
 
         //linear decay WARNING - not finite integral
@@ -537,7 +537,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
             case GOAL: p = this.goalPriDefault; break;
             case QUESTION: p = this.questionPriDefault; break;
             case QUEST: p = this.questPriDefault; break;
-            case COMMAND: return 1;
+            case COMMAND: return 1.0F;
             default: throw new RuntimeException("Unknown punctuation: " + punctuation);
         }
         return p.pri();
@@ -559,10 +559,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final float TRUTH_EPSILON = 0.01f;
 
         /** discrete confidence step for fine-grain 23-bit taskregion conf */
-        public static final double TASK_REGION_CONF_EPSILON = 1.0/(1<<23);
+        public static final double TASK_REGION_CONF_EPSILON = 1.0/ (double) (1 << 23);
 
         public static final float CONF_MAX = 1f - TRUTH_EPSILON;
-        public static final double EVI_MAX = c2wSafe(CONF_MAX);
+        public static final double EVI_MAX = (double) c2wSafe(CONF_MAX);
         public static final double EVI_MIN =
                 //c2wSafe(TRUTH_EPSILON);
                 //ScalarValue.EPSILON;
@@ -676,16 +676,16 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * absolute limit for constructing terms in any context in which a NAR is not known, which could provide a limit.
          * typically a NAR instance's 'compoundVolumeMax' parameter will be lower than this
          */
-        public static final int COMPOUND_VOLUME_MAX = Short.MAX_VALUE;
+        public static final int COMPOUND_VOLUME_MAX = (int) Short.MAX_VALUE;
         /**
          * limited because some subterm paths are stored as byte[]. to be safe, use 7-bits
          */
-        public static final int SUBTERMS_MAX = Byte.MAX_VALUE;
+        public static final int SUBTERMS_MAX = (int) Byte.MAX_VALUE;
         public static final int MAX_INTERNED_VARS = 32;
         /**
          * how many INT terms are canonically interned/cached. [0..n)
          */
-        public static final int ANON_INT_MAX = Byte.MAX_VALUE;
+        public static final int ANON_INT_MAX = (int) Byte.MAX_VALUE;
 
         public static final int TERM_BUFFER_MIN_REPLACE_AHEAD_SPAN = 2;
         public static final int TERM_BUFFER_MIN_INTERN_VOL = 2;
@@ -711,7 +711,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         /**
          * how precise unit test results must match expected values to pass
          */
-        public static final float TRUTH_ERROR_TOLERANCE = NAL.truth.TRUTH_EPSILON*2;
+        public static final float TRUTH_ERROR_TOLERANCE = NAL.truth.TRUTH_EPSILON* 2.0F;
         public static final boolean DEBUG_EXTRA = false;
         public static boolean DEBUG_ENSURE_DITHERED_TRUTH = DEBUG_EXTRA;
         public static boolean DEBUG_ENSURE_DITHERED_OCCURRENCE= DEBUG_EXTRA;

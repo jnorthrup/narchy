@@ -49,7 +49,7 @@ public class Optilive<S,E>  {
     final List<Sensor<E, ?>> sensors;
     private Thread thread;
 
-    private static final long SLEEP_TIME_MS = 500;
+    private static final long SLEEP_TIME_MS = 500L;
     private long currentStart;
 
     Scientist sci = null;
@@ -166,7 +166,7 @@ public class Optilive<S,E>  {
             logger.error("{}", t);
         } finally {
             long currentEnd = System.currentTimeMillis();
-            logger.info("experiment end {}\t({})", new Date(currentEnd), Texts.timeStr(1_000_000 * (currentEnd - currentStart)));
+            logger.info("experiment end {}\t({})", new Date(currentEnd), Texts.timeStr((double) (1_000_000L * (currentEnd - currentStart))));
 
             if (outDir!=null) {
                 save();

@@ -125,7 +125,7 @@ public class MetaFrame extends Bordering  {
 
             set(S,wm);
         else
-            borderSouth=0;
+            borderSouth= (float) 0;
 
 
 

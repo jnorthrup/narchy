@@ -73,7 +73,7 @@ public class RecordToSample extends UGen {
      * Resizing parameters - in ms.
      */
     private double doubleUpTime;
-    private double constantResizeLength = 10000;
+    private double constantResizeLength = 10000.0;
 
     
     private long doubleUpFrame;
@@ -127,8 +127,8 @@ public class RecordToSample extends UGen {
      */
     private void setSample(Sample sample) {
         this.sample = sample;
-        framesWritten = 0;
-        position = 0;
+        framesWritten = 0L;
+        position = 0L;
         doubleUpFrame = (long) sample.msToSamples(doubleUpTime);
         constantResizeLengthInFrames = (long) sample.msToSamples(constantResizeLength);
     }
@@ -137,7 +137,7 @@ public class RecordToSample extends UGen {
      * Resets the Recorder to record into the beginning of the Sample.
      */
     public void reset() {
-        position = 0;
+        position = 0L;
     }
 
     /**
@@ -165,7 +165,7 @@ public class RecordToSample extends UGen {
     public void gen() {
         if (sample != null) {
             long nFrames = sample.getNumFrames();
-            if ((position + bufferSize) >= nFrames) {
+            if ((position + (long) bufferSize) >= nFrames) {
                 switch (mode) {
                     case FINITE:
                         sample.putFrames((int) position, bufIn, 0, (int) (nFrames - position));
@@ -194,7 +194,7 @@ public class RecordToSample extends UGen {
                         sample.putFrames((int) position, bufIn, 0, framesToEnd);
                         sample.putFrames(0, bufIn, framesToEnd, numframesleft);
 
-                        position += bufferSize;
+                        position = position + (long) bufferSize;
                         position %= nFrames;
                         framesWritten = Math.max(framesWritten, nFrames);
                         break;
@@ -204,21 +204,21 @@ public class RecordToSample extends UGen {
                         
                         try {
                             if (position < doubleUpFrame) {
-                                sample.resize(nFrames * 2);
+                                sample.resize(nFrames * 2L);
                             } else {
                                 sample.resize(nFrames + constantResizeLengthInFrames);
                             }
                         } catch (Exception e) { /* won't happen */ }
 
                         sample.putFrames((int) position, bufIn);
-                        position += bufferSize;
+                        position = position + (long) bufferSize;
                         framesWritten = Math.max(framesWritten, position);
                         break;
                 }
             } else 
             {
                 sample.putFrames((int) position, bufIn);
-                position += bufferSize;
+                position = position + (long) bufferSize;
                 framesWritten = Math.max(framesWritten, position);
             }
         }
@@ -230,7 +230,7 @@ public class RecordToSample extends UGen {
      * @return the position
      */
     public double getPosition() {
-        return context.samplesToMs(position);
+        return context.samplesToMs((double) position);
     }
 
     /**

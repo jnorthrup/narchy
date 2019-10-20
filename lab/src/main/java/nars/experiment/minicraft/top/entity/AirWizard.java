@@ -40,8 +40,8 @@ public class AirWizard extends Mob {
 
         if (attackTime > 0) {
             attackTime--;
-            double dir = attackTime * 0.25 * (attackTime % 2 * 2 - 1);
-            double speed = (0.7) + attackType * 0.2;
+            double dir = (double) attackTime * 0.25 * (double) (attackTime % 2 * 2 - 1);
+            double speed = (0.7) + (double) attackType * 0.2;
             level.add(new Spark(this, Math.cos(dir) * speed, Math.sin(dir) * speed));
             return;
         }

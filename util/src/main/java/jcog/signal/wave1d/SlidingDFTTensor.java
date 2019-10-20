@@ -24,7 +24,7 @@ public class SlidingDFTTensor extends ArrayTensor {
         if(tmp==null || tmp.length!= sv) {
             tmp = new float[sv];
         } else {
-            Arrays.fill(tmp, 0);
+            Arrays.fill(tmp, (float) 0);
         }
 
         src.writeTo(tmp);
@@ -46,7 +46,7 @@ public class SlidingDFTTensor extends ArrayTensor {
         if (!(minmax[1] - minmax[0] < Float.MIN_NORMAL)) {
             Util.normalize(data, minmax[0], minmax[1]);
         } else {
-            Arrays.fill(data, 0);
+            Arrays.fill(data, (float) 0);
         }
     }
 

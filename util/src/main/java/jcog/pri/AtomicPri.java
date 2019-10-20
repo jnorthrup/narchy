@@ -88,7 +88,7 @@ public abstract class AtomicPri implements ScalarValue {
         return x!=x ? Float.NaN : x;
     }
     private static float _vNonZero(float x) {
-        return x!=x ? Float.NaN : Math.max(0, x);
+        return x!=x ? Float.NaN : Math.max((float) 0, x);
     }
     /** allows NaN */
     private static float _vUnit(float x) {
@@ -121,7 +121,7 @@ public abstract class AtomicPri implements ScalarValue {
 
     @Override
     public final float priGetAndSet(float p) {
-        return PRI.INT.getAndSet(this, floatToIntBits(post().valueOf(p)));
+        return (float) PRI.INT.getAndSet(this, floatToIntBits(post().valueOf(p)));
     }
 
     @Override public float priSetAndGet(float p) {

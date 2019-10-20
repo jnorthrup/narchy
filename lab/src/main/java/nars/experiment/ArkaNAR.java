@@ -109,7 +109,7 @@ public class ArkaNAR extends GameX {
     public static class MultiArkaNAR {
         public static void main(String[] args) {
 
-            NAR n = Companion.initC(40, nn -> {
+            NAR n = Companion.initC(40.0F, nn -> {
 
                 ArkaNAR a = new ArkaNAR($$("(noid,a)"), nn, cam, numeric);
                 a.ballSpeed.set( 0.7f * a.ballSpeed.floatValue() );
@@ -128,7 +128,7 @@ public class ArkaNAR extends GameX {
 
     public static void main(String[] args) {
 
-        Companion.initC(fps*2, n -> {
+        Companion.initC(fps* 2.0F, n -> {
 
             ArkaNAR a = new ArkaNAR(n, cam, numeric);
             n.add(a);
@@ -150,7 +150,7 @@ public class ArkaNAR extends GameX {
         noid = new Arkanoid();
 
 
-        paddleSpeed = 40 * noid.BALL_VELOCITY;
+        paddleSpeed = 40.0F * noid.BALL_VELOCITY;
 
 
         initUnipolar();
@@ -171,14 +171,14 @@ public class ArkaNAR extends GameX {
         if (numeric) {
             float numRes = 0.2f;
             float resX = 0.02f;
-            AbstractSensor px = senseNumberBi($.inh(id,"px"), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
+            AbstractSensor px = senseNumberBi($.inh(id,"px"), (() -> noid.paddle.x / (float) noid.getWidth())).resolution(resX);
             px.resolution(numRes);
-            AbstractSensor dx = senseNumberBi($.inh(id, "dx"), (() -> 0.5f + 0.5f * (noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
+            AbstractSensor dx = senseNumberBi($.inh(id, "dx"), (() -> 0.5f + 0.5f * (noid.ball.x - noid.paddle.x) / (float) noid.getWidth())).resolution(resX);
             dx.resolution(numRes);
-            AbstractSensor cx = senseNumberBi($.inh(id, $.p("b", "x")), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
+            AbstractSensor cx = senseNumberBi($.inh(id, $.p("b", "x")), (() -> (noid.ball.x / (float) noid.getWidth()))).resolution(resX);
             cx.resolution(numRes);
             float resY = 0.02f;
-            AbstractSensor cy = senseNumberBi($.inh(id ,$.p("b", "y")), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
+            AbstractSensor cy = senseNumberBi($.inh(id ,$.p("b", "y")), (() -> 1f - (noid.ball.y / (float) noid.getHeight()))).resolution(resY);
             cy.resolution(numRes);
 //            window(NARui.beliefCharts(dx.components(), nar), 500, 500);
 
@@ -193,11 +193,11 @@ public class ArkaNAR extends GameX {
 
         onFrame(noid::next);
 
-        SimpleReward dontDie = (SimpleReward) reward("die", 0, () -> Math.min(1, noid.die - noid.prevDie));
+        SimpleReward dontDie = (SimpleReward) reward("die", (float) 0, () -> (float) Math.min(1, noid.die - noid.prevDie));
         //dontDie.addGuard(true,false);
 
 
-        reward("score",  () -> Math.min(1, noid.score - noid.prevScore));
+        reward("score",  () -> (float) Math.min(1, noid.score - noid.prevScore));
         //s.setDefault($.t(0.5f, 0.9f));
 
         /*actionTriState*/
@@ -230,7 +230,7 @@ public class ArkaNAR extends GameX {
             if (noid.paddle.move(dx * paddleSpeed))
                 return dx;
             else
-                return 0;
+                return (float) 0;
         });
     }
 
@@ -251,12 +251,12 @@ public class ArkaNAR extends GameX {
     }
 
     private void initUnipolar() {
-        actionUnipolar($.inh(id,NAct.NEG), true, (prev)->0,
+        actionUnipolar($.inh(id,NAct.NEG), true, (prev)-> (float) 0,
                 //u -> u > 0.5f && noid.paddle.move(-paddleSpeed * 2 * Util.sqr(2 * (u - 0.5f))) ? u : 0);
-                u -> noid.paddle.move(-paddleSpeed * u) ? u : 0);
-        actionUnipolar($.inh(id,NAct.POS), true, (prev)->0,
+                u -> noid.paddle.move(-paddleSpeed * u) ? u : (float) 0);
+        actionUnipolar($.inh(id,NAct.POS), true, (prev)-> (float) 0,
                 //u -> u > 0.5f && noid.paddle.move(+paddleSpeed * 2 * Util.sqr(2 * (u - 0.5f))) ? u : 0);
-                u -> noid.paddle.move(+paddleSpeed * u) ? u : 0);
+                u -> noid.paddle.move(+paddleSpeed * u) ? u : (float) 0);
     }
 
 
@@ -306,7 +306,7 @@ public class ArkaNAR extends GameX {
 //            if (visible)
 //                this.setVisible(true);
 
-            paddle.x = SCREEN_WIDTH / 2;
+            paddle.x = (float) (SCREEN_WIDTH / 2);
 
 
 //            setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -331,7 +331,7 @@ public class ArkaNAR extends GameX {
             }
         }
 
-        public final Paddle paddle = new Paddle(SCREEN_WIDTH / 2, SCREEN_HEIGHT - PADDLE_HEIGHT);
+        public final Paddle paddle = new Paddle((float) (SCREEN_WIDTH / 2), (float) SCREEN_HEIGHT - PADDLE_HEIGHT);
         public final Ball ball = new Ball(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
         public final Collection<Brick> bricks = Collections.newSetFromMap(new ConcurrentHashMap());
 
@@ -406,7 +406,7 @@ public class ArkaNAR extends GameX {
              */
             public synchronized boolean move(float dx) {
                 float px = x;
-                x = Util.clamp(x + dx, sizeX, SCREEN_WIDTH - sizeX);
+                x = Util.clamp(x + dx, sizeX, (float) SCREEN_WIDTH - sizeX);
                 return !Util.equals(px, x, 1f);
             }
 
@@ -417,11 +417,11 @@ public class ArkaNAR extends GameX {
             }
 
             public void set(float freq) {
-                x = freq * SCREEN_WIDTH;
+                x = freq * (float) SCREEN_WIDTH;
             }
 
             public float moveTo(float target, float paddleSpeed) {
-                target *= SCREEN_WIDTH;
+                target = target * (float) SCREEN_WIDTH;
 
                 if (Math.abs(target - x) <= paddleSpeed) {
                     x = target;
@@ -431,10 +431,10 @@ public class ArkaNAR extends GameX {
                     x += paddleSpeed;
                 }
 
-                x = Math.min(x, SCREEN_WIDTH - 1);
-                x = Math.max(x, 0);
+                x = Math.min(x, (float) (SCREEN_WIDTH - 1));
+                x = Math.max(x, (float) 0);
 
-                return x / SCREEN_WIDTH;
+                return x / (float) SCREEN_WIDTH;
             }
         }
 
@@ -476,18 +476,18 @@ public class ArkaNAR extends GameX {
             public float velocityY;
 
             Ball(int x, int y) {
-                this.x = x;
-                this.y = y;
+                this.x = (float) x;
+                this.y = (float) y;
                 setVelocityRandom();
             }
 
             public void setVelocityRandom() {
-                this.setVelocity(BALL_VELOCITY, (float) (Math.random() * -Math.PI * (2 / 3f) + -Math.PI - Math.PI / 6));
+                this.setVelocity(BALL_VELOCITY, (float) (Math.random() * -Math.PI * (double) (2.0F / 3f) + -Math.PI - Math.PI / 6.0));
             }
 
             public void setVelocity(float speed, float angle) {
-                this.velocityX = (float) Math.cos(angle) * speed;
-                this.velocityY = (float) Math.sin(angle) * speed;
+                this.velocityX = (float) Math.cos((double) angle) * speed;
+                this.velocityY = (float) Math.sin((double) angle) * speed;
             }
 
             void draw(Graphics g) {
@@ -500,16 +500,16 @@ public class ArkaNAR extends GameX {
                 x += velocityX * FT_STEP;
                 y += velocityY * FT_STEP;
 
-                if (left() < 0)
+                if (left() < (float) 0)
                     velocityX = BALL_VELOCITY;
-                else if (right() > SCREEN_WIDTH)
+                else if (right() > (float) SCREEN_WIDTH)
                     velocityX = -BALL_VELOCITY;
-                if (top() < 0) {
+                if (top() < (float) 0) {
                     velocityY = BALL_VELOCITY;
-                } else if (bottom() > SCREEN_HEIGHT) {
+                } else if (bottom() > (float) SCREEN_HEIGHT) {
                     velocityY = -BALL_VELOCITY;
                     x = paddle.x;
-                    y = paddle.y - 50;
+                    y = paddle.y - 50.0F;
                     die++;
                     die();
                 }
@@ -586,8 +586,8 @@ public class ArkaNAR extends GameX {
 
             for (int iX = 0; iX < COUNT_BLOCKS_X; ++iX) {
                 for (int iY = 0; iY < COUNT_BLOCKS_Y; ++iY) {
-                    bricks.add(new Brick((iX + 1) * (BLOCK_WIDTH + 3) + BLOCK_LEFT_MARGIN,
-                            (iY + 2) * (BLOCK_HEIGHT + 3) + BLOCK_TOP_MARGIN));
+                    bricks.add(new Brick((float) (iX + 1) * (BLOCK_WIDTH + 3.0F) + (float) BLOCK_LEFT_MARGIN,
+                            (float) (iY + 2) * (BLOCK_HEIGHT + 3.0F) + (float) BLOCK_TOP_MARGIN));
                 }
             }
 
@@ -596,8 +596,8 @@ public class ArkaNAR extends GameX {
 
         public void reset() {
             initializeBricks(bricks);
-            ball.x = SCREEN_WIDTH / 2;
-            ball.y = SCREEN_HEIGHT / 2;
+            ball.x = (float) (SCREEN_WIDTH / 2);
+            ball.y = (float) (SCREEN_HEIGHT / 2);
             ball.setVelocityRandom();
         }
 
@@ -623,7 +623,7 @@ public class ArkaNAR extends GameX {
             }
 
 
-            return score;
+            return (float) score;
         }
 
 

@@ -43,19 +43,19 @@ public class LongND implements HyperPoint, Serializable, Comparable<LongND> {
     @Override
     public double distance(HyperPoint h) {
         LongND p = (LongND) h;
-        double sumSq = 0;
+        double sumSq = (double) 0;
         for (int i = 0; i < coord.length; i++) {
             long x = coord[i];
             long y = p.coord[i];
             long xMinY = x - y;
-            sumSq += xMinY * xMinY;
+            sumSq = sumSq + (double) xMinY * xMinY;
         }
         return Math.sqrt(sumSq);
     }
 
     @Override
     public double distance(HyperPoint p, int i) {
-        return Math.abs(coord[i] - ((LongND) p).coord[i]);
+        return (double) Math.abs(coord[i] - ((LongND) p).coord[i]);
     }
 
     @Override

@@ -356,7 +356,7 @@ public class GameSave {
             Lib.fclose(f);
 
             
-            for (int i = 0; i < GameBase.maxclients.value; i++) {
+            for (int i = 0; (float) i < GameBase.maxclients.value; i++) {
                 ent = GameBase.g_edicts[i + 1];
                 ent.client = GameBase.game.clients[i];
                 ent.client.pers.connected = false;

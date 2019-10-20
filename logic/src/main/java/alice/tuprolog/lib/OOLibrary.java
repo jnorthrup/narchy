@@ -32,7 +32,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.IntStream;
 
 /**
  * 
@@ -800,7 +799,7 @@ public class OOLibrary extends PrologLib {
                                 .toString()));
                     }
                     byte v = (byte) ((NumberTerm) what).intValue();
-                    Array.setInt(obj, index.intValue(), v);
+                    Array.setInt(obj, index.intValue(), (int) v);
                     break;
                 }
                 case "class [D": {
@@ -827,7 +826,7 @@ public class OOLibrary extends PrologLib {
                                 .toString()));
                     }
                     long v = ((NumberTerm) what).longValue();
-                    Array.setFloat(obj, index.intValue(), v);
+                    Array.setFloat(obj, index.intValue(), (float) v);
                     break;
                 }
                 case "class [C": {
@@ -963,7 +962,7 @@ public class OOLibrary extends PrologLib {
                                     what.toString()));
                     }
                 case "class [B": {
-                    Term value = new NumberTerm.Int(Array.getByte(obj, index
+                    Term value = new NumberTerm.Int((int) Array.getByte(obj, index
                             .intValue()));
                     if (unify(what, value))
                         return true;

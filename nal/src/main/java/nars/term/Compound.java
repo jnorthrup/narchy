@@ -111,11 +111,11 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
     static int opX(short volume, byte op, byte subs) {
-        return ((volume & 0b11111111111) << (16 + 5))
+        return (((int) volume & 0b11111111111) << (16 + 5))
                 |
-                (op << 16)
+                ((int) op << 16)
                 |
-                subs;
+                (int) subs;
     }
 
 //    @Override
@@ -481,7 +481,7 @@ public interface Compound extends Term, IPair, Subterms {
         boolean decompose;
         int dt;
 
-        if (opID() != CONJ.id) {
+        if (opID() != (int) CONJ.id) {
             decompose = false;
             dt = DTERNAL;
         } else {
@@ -570,7 +570,7 @@ public interface Compound extends Term, IPair, Subterms {
                     return false;
 
                 if (changeDT && i < s)
-                    t += dt + ei.eventRange();
+                    t = t + (long) dt + ei.eventRange();
             }
 
 
@@ -586,7 +586,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default @Nullable Term normalize(byte varOffset) {
-        if (varOffset == 0 && this.isNormalized())
+        if ((int) varOffset == 0 && this.isNormalized())
             return this;
 
         return Op.terms.normalize(this, varOffset);
@@ -707,7 +707,7 @@ public interface Compound extends Term, IPair, Subterms {
             eventsAND((when, what) -> {
                 first[0] = what;
                 return false; //done got first
-            }, 0, false, false);
+            }, 0L, false, false);
             return first[0];
         }
         return this;
@@ -722,7 +722,7 @@ public interface Compound extends Term, IPair, Subterms {
             eventsAND((when, what) -> {
                 last[0] = what;
                 return true; //HACK keep going to end
-            }, 0, false, false);
+            }, 0L, false, false);
             return last[0];
         }
         return this;

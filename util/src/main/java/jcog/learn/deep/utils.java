@@ -10,7 +10,7 @@ public class utils {
     }
 
     public static double binomial(int n, double p, Random rng) {
-        if(p < 0 || p > 1) return 0;
+        if(p < (double) 0 || p > 1.0) return (double) 0;
 
         int c = 0;
 
@@ -19,7 +19,7 @@ public class utils {
             if (r < p) c++;
         }
 
-        return c;
+        return (double) c;
     }
 
     public static double sigmoid(double x) {
@@ -40,7 +40,7 @@ public class utils {
     }
 
     public static double ReLU(double x) {
-        if(x > 0) {
+        if(x > (double) 0) {
             return x;
         } else {
             return 0.;
@@ -48,7 +48,7 @@ public class utils {
     }
 
     public static double dReLU(double x) {
-        if(x > 0) {
+        if(x > (double) 0) {
             return 1.;
         } else {
             return 0.;

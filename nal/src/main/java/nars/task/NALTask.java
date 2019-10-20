@@ -60,7 +60,7 @@ public abstract class NALTask extends AbstractTask {
         if (!term.op().taskable)
             throw new TaskException("invalid task term: " + term, term);
 
-        if (truth == null ^ (!((punc == BELIEF) || (punc == GOAL))))
+        if (truth == null ^ (!(((int) punc == (int) BELIEF) || ((int) punc == (int) GOAL))))
             throw new TaskException("null truth", term);
 
         if ((start == LongInterval.ETERNAL && end != LongInterval.ETERNAL) ||

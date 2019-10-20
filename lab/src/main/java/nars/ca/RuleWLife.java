@@ -151,81 +151,81 @@ public class RuleWLife {
                 int iCnt = 0;
                 if (isHist)
 				{
-					if (bOldVal <= 1) 
+					if ((int) bOldVal <= 1)
 					{
-						if (crrState[lurd[0]][lurd[1]] == 1)
+						if ((int) crrState[lurd[0]][lurd[1]] == 1)
 							iCnt += wgtAry[1];
-						if (crrState[i][lurd[1]] == 1)
+						if ((int) crrState[i][lurd[1]] == 1)
 							iCnt += wgtAry[2];
-						if (crrState[lurd[2]][lurd[1]] == 1)
+						if ((int) crrState[lurd[2]][lurd[1]] == 1)
 							iCnt += wgtAry[3];
-						if (crrState[lurd[0]][j] == 1)
+						if ((int) crrState[lurd[0]][j] == 1)
 							iCnt += wgtAry[4];
-						if (crrState[i][j] == 1)
+						if ((int) crrState[i][j] == 1)
 							iCnt += wgtAry[5];
-						if (crrState[lurd[2]][j] == 1)
+						if ((int) crrState[lurd[2]][j] == 1)
 							iCnt += wgtAry[6];
-						if (crrState[lurd[0]][lurd[3]] == 1)
+						if ((int) crrState[lurd[0]][lurd[3]] == 1)
 							iCnt += wgtAry[7];
-						if (crrState[i][lurd[3]] == 1)
+						if ((int) crrState[i][lurd[3]] == 1)
 							iCnt += wgtAry[8];
-						if (crrState[lurd[2]][lurd[3]] == 1)
+						if ((int) crrState[lurd[2]][lurd[3]] == 1)
 							iCnt += wgtAry[9];
 						if (iCnt < 0)
 							iCnt = 0; 
 
 						
-						if (bOldVal == 0) 
+						if ((int) bOldVal == 0)
 						{
 							if (rulesB[iCnt]) 
-								bNewVal = 1; 
+								bNewVal = (short) 1;
 						} else 
 						{
 							if (rulesS[iCnt]) 
 							{
-								bNewVal = 1;
+								bNewVal = (short) 1;
 							} else 
 							{
-								bNewVal = bOldVal < (iClo - 1)
-										? (short) (bOldVal + 1)
-										: 0;
+								bNewVal = (int) bOldVal < (iClo - 1)
+										? (short) ((int) bOldVal + 1)
+										: (short) 0;
 							}
 						}
 					} else 
 					{
-						bNewVal = bOldVal < (iClo - 1)
-								? (short) (bOldVal + 1)
-								: 0;
+						bNewVal = (int) bOldVal < (iClo - 1)
+								? (short) ((int) bOldVal + 1)
+								: (short) 0;
 					}
 				} else 
 				{
-					if (crrState[lurd[0]][lurd[1]] != 0)
+					if ((int) crrState[lurd[0]][lurd[1]] != 0)
 						iCnt += wgtAry[1];
-					if (crrState[i][lurd[1]] != 0)
+					if ((int) crrState[i][lurd[1]] != 0)
 						iCnt += wgtAry[2];
-					if (crrState[lurd[2]][lurd[1]] != 0)
+					if ((int) crrState[lurd[2]][lurd[1]] != 0)
 						iCnt += wgtAry[3];
-					if (crrState[lurd[0]][j] != 0)
+					if ((int) crrState[lurd[0]][j] != 0)
 						iCnt += wgtAry[4];
-					if (crrState[i][j] != 0)
+					if ((int) crrState[i][j] != 0)
 						iCnt += wgtAry[5];
-					if (crrState[lurd[2]][j] != 0)
+					if ((int) crrState[lurd[2]][j] != 0)
 						iCnt += wgtAry[6];
-					if (crrState[lurd[0]][lurd[3]] != 0)
+					if ((int) crrState[lurd[0]][lurd[3]] != 0)
 						iCnt += wgtAry[7];
-					if (crrState[i][lurd[3]] != 0)
+					if ((int) crrState[i][lurd[3]] != 0)
 						iCnt += wgtAry[8];
-					if (crrState[lurd[2]][lurd[3]] != 0)
+					if ((int) crrState[lurd[2]][lurd[3]] != 0)
 						iCnt += wgtAry[9];
 					if (iCnt < 0)
 						iCnt = 0; 
 
 					
-					if (bOldVal == 0) 
+					if ((int) bOldVal == 0)
 					{
 						if (rulesB[iCnt]) 
 							bNewVal = ColoringMethod == 1
-									? 1
+									? (short) 1
 									: (short) (mjb.Cycle
 											% (mjb.StatesCount - 1) + 1);
 					} else 
@@ -234,17 +234,17 @@ public class RuleWLife {
 						{
 							if (ColoringMethod == 1) 
 							{
-								bNewVal = (short) (bOldVal < mjb.StatesCount - 1 ? bOldVal + 1 : mjb.StatesCount - 1);
+								bNewVal = (short) ((int) bOldVal < mjb.StatesCount - 1 ? (int) bOldVal + 1 : mjb.StatesCount - 1);
 							} else {
 								
 							}
 						} else
-							bNewVal = 0; 
+							bNewVal = (short) 0;
 					}
 				}
 
 				tmpState[i][j] = bNewVal;
-				if (bNewVal != bOldVal) {
+				if ((int) bNewVal != (int) bOldVal) {
 					modCnt++; 
 				}
 			} 

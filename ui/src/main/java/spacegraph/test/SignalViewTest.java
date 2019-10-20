@@ -51,7 +51,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
-import static java.util.stream.Collectors.toList;
 import static spacegraph.SpaceGraph.window;
 
 public class SignalViewTest {
@@ -69,7 +68,7 @@ public class SignalViewTest {
 
         n.connectAll();
 
-        Util.sleepMS(2000); //HACK
+        Util.sleepMS(2000L); //HACK
 
 
 //        {
@@ -88,7 +87,7 @@ public class SignalViewTest {
         long now = System.currentTimeMillis();
 
         return new Timeline2D.AnalyzedEvent(new AspectAlign(Tex.view(t),
-                ((float) t.getHeight()) / t.getWidth()), now - dur, now);
+                ((float) t.getHeight()) / (float) t.getWidth()), now - dur, now);
     }
 
     static class GraphPanel extends Bordering {
@@ -107,7 +106,7 @@ public class SignalViewTest {
                 GraphEdit2D g = new GraphEdit2D();
                 center(g);
 
-                Util.sleepMS(2000);
+                Util.sleepMS(2000L);
 
                 Exe.runLater(() -> {
                     Surface local = new RealTimeLine(n);
@@ -180,9 +179,9 @@ public class SignalViewTest {
             this.i = i;
 
             in = new SignalInput();
-            float audioFPS = 4;
-            in.set(i, 1 / audioFPS);
-            float granularity = 2;
+            float audioFPS = 4.0F;
+            in.set(i, 1.0F / audioFPS);
+            float granularity = 2.0F;
             in.setFPS(audioFPS * granularity);
         }
 
@@ -306,7 +305,7 @@ public class SignalViewTest {
             HttpServer tcp = new HttpServer(udp.addr(), h);
 
 
-            udp.setFPS(5);
+            udp.setFPS(5.0F);
             tcp.setFPS(5f);
 
         }
@@ -383,7 +382,7 @@ public class SignalViewTest {
 
     public static class RealTimeLine extends Gridding {
 
-        float viewWindowSeconds = 4;
+        float viewWindowSeconds = 4.0F;
 
         public RealTimeLine(SensorNode node) {
             super(VERTICAL);
@@ -408,7 +407,7 @@ public class SignalViewTest {
             add(new LabeledPane(label, new Clipped(new Animating(g, () -> {
 
                 long e = System.currentTimeMillis();
-                g.setTime(e - Math.round(viewWindowSeconds * 1000), e); //slide window
+                g.setTime(e - (long) Math.round(viewWindowSeconds * 1000.0F), e); //slide window
             }, 0.04f))));
 
             return g;
@@ -429,7 +428,7 @@ public class SignalViewTest {
                 try {
                     BufferedImage ii = w.webcam.getImage();
                     if (ii != null)
-                        ge.add(capture(ii, Math.round(1000 / camFPS)));
+                        ge.add(capture(ii, (long) Math.round(1000.0F / camFPS)));
 
                 } catch (Exception e) {
                     //ignore
@@ -465,11 +464,11 @@ public class SignalViewTest {
 
 //                    Util.mul(preAmp.asFloat(), a.data);
 
-                double rms = 0;
+                double rms = (double) 0;
                 for (float x : a.data) {
-                    rms += x * x;
+                    rms = rms + (double) x * x;
                 }
-                rms /= a.data.length;
+                rms = rms / (double) a.data.length;
                 rms = Math.sqrt(rms);
 
 
@@ -486,12 +485,12 @@ public class SignalViewTest {
                             if (fy == fy) {
 
 
-                                fy = (float) (fy < 0 ? -Math.sqrt(-fy) : Math.sqrt(fy));
+                                fy = (float) (fy < (float) 0 ? -Math.sqrt((double) -fy) : Math.sqrt((double) fy));
 
                                 float fs = 0.5f + 0.5f * (fy * Util.unitize(fRMS));
                                 float fb = 0.05f + 0.95f * fy;
                                 return
-                                        Draw.colorHSB(fRMS * 2, fs, fb);
+                                        Draw.colorHSB(fRMS * 2.0F, fs, fb);
                                 //Draw.colorBipolar(f[y])
                             } else {
                                 //"static" noise
@@ -534,11 +533,11 @@ public class SignalViewTest {
         final Random rng = new XoRoShiRo128PlusRandom();
         int sampleRate = 5000;
         int frames = 100;
-        final RateLimiter r = RateLimiter.create(frames);
+        final RateLimiter r = RateLimiter.create((double) frames);
 
         @Override
         public int next(float[] target, int targetIndex, int samplesAtMost) {
-            int n = Math.round(Math.min(((float) sampleRate) / frames, samplesAtMost));
+            int n = Math.round(Math.min(((float) sampleRate) / (float) frames, (float) samplesAtMost));
             for (int i = 0; i < n; i++) {
                 target[targetIndex++] = rng.nextFloat();
             }
@@ -547,7 +546,7 @@ public class SignalViewTest {
 
         @Override
         public boolean hasNext(int samplesAtLeast) {
-            return r.tryAcquire(1, 0, TimeUnit.MILLISECONDS);
+            return r.tryAcquire(1, 0L, TimeUnit.MILLISECONDS);
         }
 
         @Override

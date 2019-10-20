@@ -43,7 +43,7 @@ public class Digit extends Terminal {
 	 */
 	@Override
 	public List<String> randomExpansion(int maxDepth, int depth) {
-        char c = (char) (10 * Math.random() + '0');
+        char c = (char) (10.0 * Math.random() + (double) '0');
 		List<String> v = new ArrayList<>();
 		v.add(new String(new char[] { c }));
 		return v;

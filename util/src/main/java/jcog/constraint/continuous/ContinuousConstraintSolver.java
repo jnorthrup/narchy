@@ -497,7 +497,7 @@ public class ContinuousConstraintSolver {
             if ((symbolRowEntry.getKey()).type != Symbol.Type.EXTERNAL) {
                 Row candidateRow = symbolRowEntry.getValue();
                 double temp = candidateRow.coefficientFor(entering);
-                if (temp < 0) {
+                if (temp < (double) 0) {
                     double temp_ratio = (-candidateRow.getConstant() / temp);
                     if (temp_ratio < ratio) {
                         ratio = temp_ratio;

@@ -177,12 +177,12 @@ class PstCache {
 
             int result = 0;
             for (int i = 0; i < cellhdr.bitmap_id.length; i++) {
-                result += cellhdr.bitmap_id[i];
+                result = result + (int) cellhdr.bitmap_id[i];
             }
 
             if (result != 0) {
                 for (int i = 0; i < 8; i++) {
-                    idlist[(n * 8) + i] = cellhdr.bitmap_id[i];
+                    idlist[(n * 8) + i] = (int) cellhdr.bitmap_id[i];
                 }
 
                 if (cellhdr.stamp != 0) {
@@ -269,13 +269,13 @@ class CELLHEADER {
     public CELLHEADER(byte[] data) {
         System.arraycopy(data, 0, bitmap_id, 0, bitmap_id.length);
 
-        width = data[bitmap_id.length];
-        height = data[bitmap_id.length + 1];
-        length = (data[bitmap_id.length + 2] >> 8) + data[bitmap_id.length + 3];
-        stamp = (data[bitmap_id.length + 6] >> 24)
-                + (data[bitmap_id.length + 6] >> 16)
-                + (data[bitmap_id.length + 6] >> 8)
-                + data[bitmap_id.length + 7];
+        width = (int) data[bitmap_id.length];
+        height = (int) data[bitmap_id.length + 1];
+        length = ((int) data[bitmap_id.length + 2] >> 8) + (int) data[bitmap_id.length + 3];
+        stamp = ((int) data[bitmap_id.length + 6] >> 24)
+                + ((int) data[bitmap_id.length + 6] >> 16)
+                + ((int) data[bitmap_id.length + 6] >> 8)
+                + (int) data[bitmap_id.length + 7];
     }
 
     static int size() {

@@ -201,7 +201,7 @@ class MJBoard extends Panel implements Runnable {
 
                 int iDelay = AnimDelay;
 				try {
-					Thread.sleep(iDelay);
+					Thread.sleep((long) iDelay);
 				} catch (InterruptedException e) {
 				}
 			}
@@ -343,12 +343,12 @@ class MJBoard extends Panel implements Runnable {
 	
 	public final void SetCell(int x, int y, short bState) {
 		if ((x >= 0) && (y >= 0) && (x < UnivSize.x) && (y < UnivSize.y)) {
-			if (crrState[x][y] != bState) {
-				Populations[crrState[x][y]]--;
-				Populations[bState]++;
-				if (0 == crrState[x][y])
+			if ((int) crrState[x][y] != (int) bState) {
+				Populations[(int) crrState[x][y]]--;
+				Populations[(int) bState]++;
+				if (0 == (int) crrState[x][y])
 					Population++;
-				else if (0 == bState)
+				else if (0 == (int) bState)
 					Population--;
 				crrState[x][y] = bState;
 			}
@@ -360,12 +360,12 @@ class MJBoard extends Panel implements Runnable {
 	public final void SetCell(CACell cell) {
 		if ((cell.x >= 0) && (cell.y >= 0) && (cell.x < UnivSize.x)
 				&& (cell.y < UnivSize.y)) {
-			if (crrState[cell.x][cell.y] != cell.state) {
-				Populations[crrState[cell.x][cell.y]]--;
-				Populations[cell.state]++;
-				if (0 == crrState[cell.x][cell.y])
+			if ((int) crrState[cell.x][cell.y] != (int) cell.state) {
+				Populations[(int) crrState[cell.x][cell.y]]--;
+				Populations[(int) cell.state]++;
+				if (0 == (int) crrState[cell.x][cell.y])
 					Population++;
-				else if (0 == cell.state)
+				else if (0 == (int) cell.state)
 					Population--;
 				crrState[cell.x][cell.y] = cell.state;
 			}
@@ -378,7 +378,7 @@ class MJBoard extends Panel implements Runnable {
 		if ((x >= 0) && (y >= 0) && (x < UnivSize.x) && (y < UnivSize.y)) {
 			return crrState[x][y];
 		}
-		return 0;
+		return (short) 0;
 	}
 
 	
@@ -403,7 +403,7 @@ class MJBoard extends Panel implements Runnable {
 		
 		stop();
 		try {
-			Thread.sleep(100);
+			Thread.sleep(100L);
 		} catch (InterruptedException e) {
 		}
 
@@ -417,11 +417,11 @@ class MJBoard extends Panel implements Runnable {
 			int i;
 			for (i = UnivSize.x; i <= MAX_X; i++)
 				for (j = 0; j <= MAX_Y; j++)
-					crrState[i][j] = 0;
+					crrState[i][j] = (short) 0;
 
 			for (i = 0; i <= UnivSize.x; i++)
 				for (j = UnivSize.y; j <= MAX_Y; j++)
-					crrState[i][j] = 0;
+					crrState[i][j] = (short) 0;
 
 			fNewSize = true;
 			UpdatePopulation();
@@ -552,8 +552,8 @@ class MJBoard extends Panel implements Runnable {
 		for (int iCol = 0; iCol < UnivSize.x; iCol++) {
 			for (int iRow = 0; iRow < UnivSize.y; iRow++) {
                 short bVal = GetCell(iCol, iRow);
-				Populations[bVal]++;
-				if (bVal != 0) {
+				Populations[(int) bVal]++;
+				if ((int) bVal != 0) {
 					Population++;
 				}
 			}
@@ -609,7 +609,7 @@ class MJBoard extends Panel implements Runnable {
 
 		for (int iCol = 0; iCol < UnivSize.x; iCol++)
 			for (int iRow = 0; iRow < UnivSize.y; iRow++)
-				if (GetCell(iCol, iRow) != 0) {
+				if ((int) GetCell(iCol, iRow) != 0) {
 					if (rct.x > iCol)
 						rct.x = iCol;
 					if (rct.x + rct.width - 1 < iCol)
@@ -654,26 +654,26 @@ class MJBoard extends Panel implements Runnable {
 
 		if (rct.width >= 0) 
 		{
-			double facX = LastPanelSize.x / rct.width;
-			double facY = LastPanelSize.y / rct.height;
+			double facX = (double) (LastPanelSize.x / rct.width);
+			double facY = (double) (LastPanelSize.y / rct.height);
 
             double fac = facX < facY ? facX : facY;
 
 
 			int iFac;
-			if (fac >= 12)
+			if (fac >= 12.0)
 				iFac = 11;
-			else if (fac >= 10)
+			else if (fac >= 10.0)
 				iFac = 9;
-			else if (fac >= 7)
+			else if (fac >= 7.0)
 				iFac = 7;
-			else if (fac >= 5)
+			else if (fac >= 5.0)
 				iFac = 5;
-			else if (fac >= 4)
+			else if (fac >= 4.0)
 				iFac = 4;
-			else if (fac >= 3)
+			else if (fac >= 3.0)
 				iFac = 3;
-			else if (fac >= 2)
+			else if (fac >= 2.0)
 				iFac = 2;
 			else
 				iFac = 1;
@@ -822,8 +822,8 @@ class MJBoard extends Panel implements Runnable {
 			for (int i = 0; i < CellsInView.x; i++) {
                 int ixCellSize = i * CellSize;
 				for (int j = iMinY; j < iMaxY; j++) {
-                    int newClo = mjPal.Palette[crrState[ViewOrg.x + i][ViewOrg.y
-							+ j]];
+                    int newClo = mjPal.Palette[(int) crrState[ViewOrg.x + i][ViewOrg.y
+                            + j]];
 
 					if ((fDrawAll)
 							|| (screen[(j * CellSize) * dx + i * CellSize] != newClo)) {
@@ -1094,13 +1094,13 @@ class MJBoard extends Panel implements Runnable {
 			short newStt;
 			if (mjUI.chkUni.getState())
 			{
-				newStt = (short) (Math.ceil(Math.random() * StatesCount) - 1);
+				newStt = (short) (Math.ceil(Math.random() * (double) StatesCount) - 1.0);
 				SetCell(x, y, newStt); 
 			} else 
 			{
 				if (Math.random() <= maxVal) {
 					newStt = (short) Math.ceil(Math.random()
-							* (StatesCount - 1));
+							* (double) (StatesCount - 1));
 					SetCell(x, y, newStt); 
 				}
 			}
@@ -1118,7 +1118,7 @@ class MJBoard extends Panel implements Runnable {
         boolean fOldRun = (caThread != null);
 		stop();
 		try {
-			Thread.sleep(300);
+			Thread.sleep(300L);
 		} catch (InterruptedException e) {
 		}
 
@@ -1143,7 +1143,7 @@ class MJBoard extends Panel implements Runnable {
 		}
 		sHow = sHow.substring(0, sHow.length() - 1);
         int i = Integer.parseInt(sHow.trim());
-        double maxVal = i / 100.0;
+        double maxVal = (double) i / 100.0;
 		if (!mjUI.chkAdd.getState()) 
 		{
 			Clear(false);
@@ -1172,7 +1172,7 @@ class MJBoard extends Panel implements Runnable {
         boolean fOldRun = caThread != null;
 		stop();
 		try {
-			Thread.sleep(300);
+			Thread.sleep(300L);
 		} catch (InterruptedException e) {
 		}
 
@@ -1188,7 +1188,7 @@ class MJBoard extends Panel implements Runnable {
 		if (sHow.startsWith("BLK"))
 		{
 			sHow = sHow.substring(3).trim();
-            int iPos = sHow.indexOf('x');
+            int iPos = sHow.indexOf((int) 'x');
 			if (iPos >= 0) {
 				int dx = Integer.valueOf(sHow.substring(0, iPos));
 				int dy = Integer.valueOf(
@@ -1208,7 +1208,7 @@ class MJBoard extends Panel implements Runnable {
 		} else if (sHow.startsWith("FRM")) 
 		{
 			sHow = sHow.substring(3).trim();
-            int iPos = sHow.indexOf('x');
+            int iPos = sHow.indexOf((int) 'x');
 			if (iPos >= 0) {
 				int dx = Integer.valueOf(sHow.substring(0, iPos));
 				int dy = Integer.valueOf(
@@ -1252,7 +1252,7 @@ class MJBoard extends Panel implements Runnable {
 	public void Clear(boolean fRedraw) {
 		stop();
 		try {
-			Thread.sleep(300);
+			Thread.sleep(300L);
 		} catch (InterruptedException e) {
 		}
 		int i;

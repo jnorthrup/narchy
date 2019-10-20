@@ -7,7 +7,7 @@ package spacegraph.audio.synth.string;
 public class TestViolinString extends ViolinString {
 
     public TestViolinString(double frequency) {
-        super(frequency / 2);
+        super(frequency / 2.0);
     }
 
     public void tic() {

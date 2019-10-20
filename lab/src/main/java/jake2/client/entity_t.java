@@ -31,18 +31,18 @@ import jake2.util.Math3D;
 public class entity_t implements Cloneable{
 	
 	public model_t model;
-    public float[] angles = {0, 0, 0};
+    public float[] angles = {(float) 0, (float) 0, (float) 0};
 
     /*
      ** most recent data
      */
-    public float[] origin = {0, 0, 0};
+    public float[] origin = {(float) 0, (float) 0, (float) 0};
 	public int frame; 
 
 	/*
 	** previous data for lerping
 	*/
-	public final float[] oldorigin = { 0, 0, 0 }; 
+	public final float[] oldorigin = {(float) 0, (float) 0, (float) 0};
 	public int oldframe;
 
 	/*
@@ -81,10 +81,10 @@ public class entity_t implements Cloneable{
 		frame = 0;
 		Math3D.VectorClear(oldorigin);
 		oldframe = 0;
-		backlerp = 0;
+		backlerp = (float) 0;
 		skinnum = 0;
 		lightstyle = 0;
-		alpha = 0;
+		alpha = (float) 0;
 		skin = null;
 		flags = 0;
 	}

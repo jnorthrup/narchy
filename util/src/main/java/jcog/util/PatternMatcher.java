@@ -132,15 +132,15 @@ public class PatternMatcher {
         while ((ip<NP) && (im<NM)) {
             char c = nextChar;
             ip++;
-            nextChar = ip < NP ? pattern.charAt(ip) : 0;
-            boolean escaped = (c == '\\');
+            nextChar = ip < NP ? pattern.charAt(ip) : (char) 0;
+            boolean escaped = ((int) c == (int) '\\');
             if (escaped) {
                 c = nextChar;
                 ip++;
-                nextChar = ip < NP ? pattern.charAt(ip) : 0;
+                nextChar = ip < NP ? pattern.charAt(ip) : (char) 0;
             }
-            if (nextChar == '*') {
-                if (!escaped && c == '.') {
+            if ((int) nextChar == (int) '*') {
+                if (!escaped && (int) c == (int) '.') {
                     if (ip >= (NP-1)) {
                         
                         
@@ -150,12 +150,12 @@ public class PatternMatcher {
                     nextChar = pattern.charAt(ip);
                     
                     
-                    if (nextChar == '\\') {
+                    if ((int) nextChar == (int) '\\') {
                         ip++;
-                        nextChar = ip < NP ? pattern.charAt(ip) : 0;
+                        nextChar = ip < NP ? pattern.charAt(ip) : (char) 0;
                     }
                     do {
-                        if (match.charAt(im) == nextChar) {
+                        if ((int) match.charAt(im) == (int) nextChar) {
                             break;
                         }
                         im++;
@@ -166,21 +166,21 @@ public class PatternMatcher {
                         return false;
                     }
                     ip++;
-                    nextChar = ip < NP ? pattern.charAt(ip) : 0;
+                    nextChar = ip < NP ? pattern.charAt(ip) : (char) 0;
                     im++;
                 } else {
                     
                     do {
-                        if (match.charAt(im) != c) {
+                        if ((int) match.charAt(im) != (int) c) {
                             break;
                         }
                         im++;
                     } while (im < NM);
                     ip++;
-                    nextChar = ip < NP ? pattern.charAt(ip) : 0;
+                    nextChar = ip < NP ? pattern.charAt(ip) : (char) 0;
                 }
             } else {
-                if (c != '.' && match.charAt(im) != c) return false;
+                if ((int) c != (int) '.' && (int) match.charAt(im) != (int) c) return false;
                 im++;
             }
         }
@@ -193,8 +193,8 @@ public class PatternMatcher {
         
         
         
-        return ip == NP - 2 && pattern.charAt(ip) == '.'
-                && pattern.charAt(ip + 1) == '*';
+        return ip == NP - 2 && (int) pattern.charAt(ip) == (int) '.'
+                && (int) pattern.charAt(ip + 1) == (int) '*';
 
     }
     /**
@@ -220,7 +220,7 @@ public class PatternMatcher {
                     if (inSet) {
                         addToParsedPattern = true; 
                     } else {
-                        if (pattern.charAt(ip + 1) == '^') {
+                        if ((int) pattern.charAt(ip + 1) == (int) '^') {
                             sParsedPatternScratch[it++] = PARSED_TOKEN_CHAR_SET_INVERSE_START;
                             ip++; 
                         } else {
@@ -296,23 +296,23 @@ public class PatternMatcher {
             }
             if (inSet) {
                 if (inCharClass) {
-                    sParsedPatternScratch[it++] = c;
+                    sParsedPatternScratch[it++] = (int) c;
                     inCharClass = false;
                 } else {
                     
                     if (ip + 2 < LP
-                            && pattern.charAt(ip + 1) == '-'
-                            && pattern.charAt(ip + 2) != ']') {
+                            && (int) pattern.charAt(ip + 1) == (int) '-'
+                            && (int) pattern.charAt(ip + 2) != (int) ']') {
                         inCharClass = true;
-                        sParsedPatternScratch[it++] = c; 
+                        sParsedPatternScratch[it++] = (int) c;
                         ip++; 
                     } else { 
-                        sParsedPatternScratch[it++] = c; 
-                        sParsedPatternScratch[it++] = c; 
+                        sParsedPatternScratch[it++] = (int) c;
+                        sParsedPatternScratch[it++] = (int) c;
                     }
                 }
             } else if (inRange) {
-                int endOfSet = pattern.indexOf('}', ip);
+                int endOfSet = pattern.indexOf((int) '}', ip);
                 if (endOfSet < 0) {
                     throw new IllegalArgumentException("Range not ended with '}'");
                 }
@@ -320,7 +320,7 @@ public class PatternMatcher {
                 try {
                     int rangeMin;
                     int rangeMax;
-                    int commaIndex = rangeString.indexOf(',');
+                    int commaIndex = rangeString.indexOf((int) ',');
                     if (commaIndex < 0) {
                         int parsedRange = Integer.parseInt(rangeString);
                         rangeMin = rangeMax = parsedRange;
@@ -344,7 +344,7 @@ public class PatternMatcher {
                 ip = endOfSet;
                 continue; 
             } else if (addToParsedPattern) {
-                sParsedPatternScratch[it++] = c;
+                sParsedPatternScratch[it++] = (int) c;
             }
             ip++;
         }
@@ -456,7 +456,7 @@ public class PatternMatcher {
             case TOKEN_TYPE_SET:
                 for (int i = tokenStart; i < tokenEnd; i += 2) {
                     char matchChar = match.charAt(im);
-                    if (matchChar >= parsedPattern[i] && matchChar <= parsedPattern[i + 1]) {
+                    if ((int) matchChar >= parsedPattern[i] && (int) matchChar <= parsedPattern[i + 1]) {
                         return true;
                     }
                 }
@@ -464,13 +464,13 @@ public class PatternMatcher {
             case TOKEN_TYPE_INVERSE_SET:
                 for (int i = tokenStart; i < tokenEnd; i += 2) {
                     char matchChar = match.charAt(im);
-                    if (matchChar >= parsedPattern[i] && matchChar <= parsedPattern[i + 1]) {
+                    if ((int) matchChar >= parsedPattern[i] && (int) matchChar <= parsedPattern[i + 1]) {
                         return false;
                     }
                 }
                 return true;
             case TOKEN_TYPE_LITERAL:
-                return match.charAt(im) == parsedPattern[tokenStart];
+                return (int) match.charAt(im) == parsedPattern[tokenStart];
             default:
                 return false;
         }

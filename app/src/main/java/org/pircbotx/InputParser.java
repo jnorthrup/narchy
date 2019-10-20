@@ -232,7 +232,7 @@ public class InputParser implements Closeable {
 		}
         List<String> parsedLine = tokenizeLine(line);
         String sourceRaw = "";
-		if (parsedLine.get(0).charAt(0) == ':') sourceRaw = parsedLine.remove(0);
+		if ((int) parsedLine.get(0).charAt(0) == (int) ':') sourceRaw = parsedLine.remove(0);
         String command = parsedLine.remove(0).toUpperCase(configuration.getLocale());
 		// Check for server pings.
 		if ("PING".equals(command)) {
@@ -280,10 +280,10 @@ public class InputParser implements Closeable {
 		//StringTokenizer, String.split, toCharArray, and charAt
         String trimmedInput = input.trim(); //CharMatcher.WHITESPACE.trimFrom(input);
 		int pos = 0, end;
-		while ((end = trimmedInput.indexOf(' ', pos)) >= 0) {
+		while ((end = trimmedInput.indexOf((int) ' ', pos)) >= 0) {
 			stringParts.add(trimmedInput.substring(pos, end));
 			pos = end + 1;
-			if (trimmedInput.charAt(pos) == ':') {
+			if ((int) trimmedInput.charAt(pos) == (int) ':') {
 				stringParts.add(trimmedInput.substring(pos + 1));
 				return stringParts;
 			}
@@ -611,7 +611,7 @@ public class InputParser implements Closeable {
                 Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
                 UserHostmask setBy = configuration.getBotFactory().createUserHostmask(bot, parsedResponse.get(2));
                 long date = Utils.tryParseLong(parsedResponse.get(3), -1);
-                channel.setTopicTimestamp(date * 1000);
+                channel.setTopicTimestamp(date * 1000L);
                 channel.setTopicSetter(setBy);
                 configuration.getListenerManager().onEvent(new TopicEvent(bot, channel, null, channel.getTopic(), setBy, date, false));
                 break;
@@ -629,7 +629,7 @@ public class InputParser implements Closeable {
                 processUserStatus(channel, curUser, parsedResponse.get(6));
                 //Extra parsing needed since tokenizer stopped at :
                 String rawEnding = parsedResponse.get(7);
-                int rawEndingSpaceIndex = rawEnding.indexOf(' ');
+                int rawEndingSpaceIndex = rawEnding.indexOf((int) ' ');
                 if (rawEndingSpaceIndex == -1) {
                     //parsedResponse data is trimmed, so if the index == -1, then there was no real name given and the space separating hops from real name was trimmed.
                     curUser.setHops(Integer.parseInt(rawEnding));
@@ -666,7 +666,7 @@ public class InputParser implements Closeable {
                 Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
                 int createDate = Utils.tryParseInt(parsedResponse.get(2), -1);
                 //Set in channel
-                channel.setCreateTimestamp(createDate);
+                channel.setCreateTimestamp((long) createDate);
                 break;
             }
             case RPL_MOTDSTART:
@@ -851,7 +851,7 @@ public class InputParser implements Closeable {
 	 * @param mode The mode that has been setAt.
 	 */
 	public void processMode(UserHostmask userHostmask, User user, String target, String mode) {
-		if (configuration.getChannelPrefixes().indexOf(target.charAt(0)) >= 0) {
+		if (configuration.getChannelPrefixes().indexOf((int) target.charAt(0)) >= 0) {
 			// The mode of a channel is being changed.
             Channel channel = bot.getUserChannelDao().getChannel(target);
 			channel.parseMode(mode);

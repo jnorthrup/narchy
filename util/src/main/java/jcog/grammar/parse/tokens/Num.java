@@ -45,7 +45,7 @@ public class Num extends Terminal {
 	 */
 	@Override
 	public List<String> randomExpansion(int maxDepth, int depth) {
-        double d = Math.floor(1000.0 * Math.random()) / 10;
+        double d = Math.floor(1000.0 * Math.random()) / 10.0;
 		List<String> v = new ArrayList<>();
 		v.add(Double.toString(d));
 		return v;

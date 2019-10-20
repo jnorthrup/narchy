@@ -273,9 +273,9 @@ public class MJDiversities {
 				ifRedraw = true; 
 				for (int i = 1; i <= m_NoiseCells; i++) {
 					iCol = (int) Math
-							.ceil(Math.random() * (mjb.UnivSize.x - 1));
+							.ceil(Math.random() * (double) (mjb.UnivSize.x - 1));
 					iRow = (int) Math
-							.ceil(Math.random() * (mjb.UnivSize.y - 1));
+							.ceil(Math.random() * (double) (mjb.UnivSize.y - 1));
 					mjb.SetCell(iCol, iRow, (short) m_NoiseState);
 				}
 			}

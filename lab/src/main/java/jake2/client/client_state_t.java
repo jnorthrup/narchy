@@ -70,9 +70,9 @@ public class client_state_t {
 	float predicted_step; 
 	int predicted_step_time;
 
-	final float[] predicted_origin ={0,0,0}; 
-	final float[] predicted_angles={0,0,0};
-	final float[] prediction_error={0,0,0};
+	final float[] predicted_origin ={(float) 0, (float) 0, (float) 0};
+	final float[] predicted_angles={(float) 0, (float) 0, (float) 0};
+	final float[] prediction_error={(float) 0, (float) 0, (float) 0};
 
 	public final frame_t frame = new frame_t(); 
 	int surpressCount; 
@@ -83,7 +83,7 @@ public class client_state_t {
 	
 	
 	
-	public final float[] viewangles = { 0, 0, 0 };
+	public final float[] viewangles = {(float) 0, (float) 0, (float) 0};
 
 	public int time; 
 	
@@ -91,9 +91,9 @@ public class client_state_t {
 
 	final refdef_t refdef = new refdef_t();
 
-	final float[] v_forward = { 0, 0, 0 };
-	final float[] v_right = { 0, 0, 0 };
-	final float[] v_up = { 0, 0, 0 }; 
+	final float[] v_forward = {(float) 0, (float) 0, (float) 0};
+	final float[] v_right = {(float) 0, (float) 0, (float) 0};
+	final float[] v_up = {(float) 0, (float) 0, (float) 0};
 
 	
 	

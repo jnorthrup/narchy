@@ -31,7 +31,7 @@ public class Dynamics2DView extends PaintSurface {
     public Dynamics2DView world(Dynamics2D world) {
         this.world = world;
 
-        renderer.setCamera(-200, -100, 1);
+        renderer.setCamera(-200.0F, -100.0F, 1.0F);
         return this;
     }
 
@@ -133,16 +133,16 @@ public class Dynamics2DView extends PaintSurface {
 
         public Dynamics2DRenderer() {
 
-            mat[8] = 0;
-            mat[9] = 0;
-            mat[2] = 0;
-            mat[6] = 0;
-            mat[10] = 1;
-            mat[14] = 0;
-            mat[3] = 0;
-            mat[7] = 0;
-            mat[11] = 0;
-            mat[15] = 1;
+            mat[8] = (float) 0;
+            mat[9] = (float) 0;
+            mat[2] = (float) 0;
+            mat[6] = (float) 0;
+            mat[10] = 1.0F;
+            mat[14] = (float) 0;
+            mat[3] = (float) 0;
+            mat[7] = (float) 0;
+            mat[11] = (float) 0;
+            mat[15] = 1.0F;
         }
 
         @Override
@@ -162,8 +162,8 @@ public class Dynamics2DView extends PaintSurface {
             mat[4] = vt.ey.x;
             // mat[8] = 0;
             mat[12] = e.x;
-            mat[1] = f * vt.ex.y;
-            mat[5] = f * vt.ey.y;
+            mat[1] = (float) f * vt.ex.y;
+            mat[5] = (float) f * vt.ey.y;
             // mat[9] = 0;
             mat[13] = e.y;
             // mat[2] = 0;
@@ -176,7 +176,7 @@ public class Dynamics2DView extends PaintSurface {
             // mat[15] = 1;
 
             gl.glMultMatrixf(mat, 0);
-            gl.glTranslatef(center.x - vc.x, center.y - vc.y, 0);
+            gl.glTranslatef(center.x - vc.x, center.y - vc.y, (float) 0);
         }
 
         @Override
@@ -233,17 +233,17 @@ public class Dynamics2DView extends PaintSurface {
 
             gl.glPushMatrix();
             transformViewport(gl, zero);
-            float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
-            float c = (float) Math.cos(theta);
-            float s = (float) Math.sin(theta);
+            float theta = 2.0F * MathUtils.PI / (float) NUM_CIRCLE_POINTS;
+            float c = (float) Math.cos((double) theta);
+            float s = (float) Math.sin((double) theta);
             float cx = center.x;
             float cy = center.y;
             gl.glBegin(GL.GL_LINE_LOOP);
-            gl.glColor4f(color.x, color.y, color.z, 1);
-            float y = 0;
+            gl.glColor4f(color.x, color.y, color.z, 1.0F);
+            float y = (float) 0;
             float x = radius;
             for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
-                gl.glVertex3f(x + cx, y + cy, 0);
+                gl.glVertex3f(x + cx, y + cy, (float) 0);
                 // apply the rotation matrix
                 float temp = x;
                 x = c * x - s * y;
@@ -258,17 +258,17 @@ public class Dynamics2DView extends PaintSurface {
 
             gl.glPushMatrix();
             transformViewport(gl, zero);
-            float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
-            float c = (float) Math.cos(theta);
-            float s = (float) Math.sin(theta);
+            float theta = 2.0F * MathUtils.PI / (float) NUM_CIRCLE_POINTS;
+            float c = (float) Math.cos((double) theta);
+            float s = (float) Math.sin((double) theta);
             float cx = center.x;
             float cy = center.y;
             gl.glBegin(GL.GL_LINE_LOOP);
-            gl.glColor4f(color.x, color.y, color.z, 1);
-            float y = 0;
+            gl.glColor4f(color.x, color.y, color.z, 1.0F);
+            float y = (float) 0;
             float x = radius;
             for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
-                gl.glVertex3f(x + cx, y + cy, 0);
+                gl.glVertex3f(x + cx, y + cy, (float) 0);
                 // apply the rotation matrix
                 float temp = x;
                 x = c * x - s * y;
@@ -276,8 +276,8 @@ public class Dynamics2DView extends PaintSurface {
             }
             gl.glEnd();
             gl.glBegin(GL.GL_LINES);
-            gl.glVertex3f(cx, cy, 0);
-            gl.glVertex3f(cx + axis.x * radius, cy + axis.y * radius, 0);
+            gl.glVertex3f(cx, cy, (float) 0);
+            gl.glVertex3f(cx + axis.x * radius, cy + axis.y * radius, (float) 0);
             gl.glEnd();
             gl.glPopMatrix();
         }
@@ -287,17 +287,17 @@ public class Dynamics2DView extends PaintSurface {
 
             gl.glPushMatrix();
             transformViewport(gl, zero);
-            float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
-            float c = (float) Math.cos(theta);
-            float s = (float) Math.sin(theta);
+            float theta = 2.0F * MathUtils.PI / (float) NUM_CIRCLE_POINTS;
+            float c = (float) Math.cos((double) theta);
+            float s = (float) Math.sin((double) theta);
             float cx = center.x;
             float cy = center.y;
             gl.glBegin(GL.GL_TRIANGLE_FAN);
             gl.glColor4f(color.x, color.y, color.z, .4f);
-            float y = 0;
+            float y = (float) 0;
             float x = radius;
             for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
-                gl.glVertex3f(x + cx, y + cy, 0);
+                gl.glVertex3f(x + cx, y + cy, (float) 0);
                 // apply the rotation matrix
                 float temp = x;
                 x = c * x - s * y;
@@ -305,9 +305,9 @@ public class Dynamics2DView extends PaintSurface {
             }
             gl.glEnd();
             gl.glBegin(GL.GL_LINE_LOOP);
-            gl.glColor4f(color.x, color.y, color.z, 1);
+            gl.glColor4f(color.x, color.y, color.z, 1.0F);
             for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
-                gl.glVertex3f(x + cx, y + cy, 0);
+                gl.glVertex3f(x + cx, y + cy, (float) 0);
                 // apply the rotation matrix
                 float temp = x;
                 x = c * x - s * y;
@@ -315,8 +315,8 @@ public class Dynamics2DView extends PaintSurface {
             }
             gl.glEnd();
             gl.glBegin(GL.GL_LINES);
-            gl.glVertex3f(cx, cy, 0);
-            gl.glVertex3f(cx + axis.x * radius, cy + axis.y * radius, 0);
+            gl.glVertex3f(cx, cy, (float) 0);
+            gl.glVertex3f(cx + axis.x * radius, cy + axis.y * radius, (float) 0);
             gl.glEnd();
             gl.glPopMatrix();
         }
@@ -328,8 +328,8 @@ public class Dynamics2DView extends PaintSurface {
             transformViewport(gl, zero);
             gl.glBegin(GL.GL_LINES);
             gl.glColor3f(color.x, color.y, color.z);
-            gl.glVertex3f(p1.x, p1.y, 0);
-            gl.glVertex3f(p2.x, p2.y, 0);
+            gl.glVertex3f(p1.x, p1.y, (float) 0);
+            gl.glVertex3f(p2.x, p2.y, (float) 0);
             gl.glEnd();
             gl.glPopMatrix();
         }
@@ -340,12 +340,12 @@ public class Dynamics2DView extends PaintSurface {
             gl.glPushMatrix();
             transformViewport(gl, zero);
 
-            float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
-            float c = (float) Math.cos(theta);
-            float s = (float) Math.sin(theta);
+            float theta = 2.0F * MathUtils.PI / (float) NUM_CIRCLE_POINTS;
+            float c = (float) Math.cos((double) theta);
+            float s = (float) Math.sin((double) theta);
 
             float x = radius;
-            float y = 0;
+            float y = (float) 0;
 
             for (int i = 0; i < count; i++) {
                 v2 center = centers[i];
@@ -353,13 +353,13 @@ public class Dynamics2DView extends PaintSurface {
                 float cy = center.y;
                 gl.glBegin(GL.GL_TRIANGLE_FAN);
                 if (colors == null) {
-                    gl.glColor4f(1, 1, 1, .4f);
+                    gl.glColor4f(1.0F, 1.0F, 1.0F, .4f);
                 } else {
                     ParticleColor color = colors[i];
                     gl.glColor4b(color.r, color.g, color.b, color.a);
                 }
                 for (int j = 0; j < NUM_CIRCLE_POINTS; j++) {
-                    gl.glVertex3f(x + cx, y + cy, 0);
+                    gl.glVertex3f(x + cx, y + cy, (float) 0);
                     float temp = x;
                     x = c * x - s * y;
                     y = s * temp + c * y;
@@ -376,12 +376,12 @@ public class Dynamics2DView extends PaintSurface {
             gl.glPushMatrix();
             transformViewport(gl, zero);
 
-            float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
-            float c = (float) Math.cos(theta);
-            float s = (float) Math.sin(theta);
+            float theta = 2.0F * MathUtils.PI / (float) NUM_CIRCLE_POINTS;
+            float c = (float) Math.cos((double) theta);
+            float s = (float) Math.sin((double) theta);
 
             float x = radius;
-            float y = 0;
+            float y = (float) 0;
 
             for (int i = 0; i < count; i++) {
                 v2 center = centers[i];
@@ -389,13 +389,13 @@ public class Dynamics2DView extends PaintSurface {
                 float cy = center.y;
                 gl.glBegin(GL.GL_LINE_LOOP);
                 if (colors == null) {
-                    gl.glColor4f(1, 1, 1, 1);
+                    gl.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
                 } else {
                     ParticleColor color = colors[i];
                     gl.glColor4b(color.r, color.g, color.b, (byte) 127);
                 }
                 for (int j = 0; j < NUM_CIRCLE_POINTS; j++) {
-                    gl.glVertex3f(x + cx, y + cy, 0);
+                    gl.glVertex3f(x + cx, y + cy, (float) 0);
                     float temp = x;
                     x = c * x - s * y;
                     y = s * temp + c * y;
@@ -415,7 +415,7 @@ public class Dynamics2DView extends PaintSurface {
             temp2.setZero();
 
             gl.glBegin(GL.GL_LINES);
-            gl.glColor3f(1, 0, 0);
+            gl.glColor3f(1.0F, (float) 0, (float) 0);
 
             float k_axisScale = 0.4f;
             temp2.x = xf.pos.x + k_axisScale * xf.c;
@@ -424,7 +424,7 @@ public class Dynamics2DView extends PaintSurface {
             gl.glVertex2f(temp.x, temp.y);
             gl.glVertex2f(temp2.x, temp2.y);
 
-            gl.glColor3f(0, 1, 0);
+            gl.glColor3f((float) 0, 1.0F, (float) 0);
             temp2.x = xf.pos.x + -k_axisScale * xf.s;
             temp2.y = xf.pos.y + k_axisScale * xf.c;
             getWorldToScreenToOut(temp2, temp2);

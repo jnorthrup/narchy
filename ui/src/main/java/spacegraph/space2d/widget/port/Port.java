@@ -171,9 +171,9 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     protected void paintWidget(RectFloat bounds, GL2 gl) {
 
         if (beingWiredOut != null) {
-            gl.glColor4f(0.5f, 1, 0, 0.35f);
+            gl.glColor4f(0.5f, 1.0F, (float) 0, 0.35f);
         } else if (beingWiredIn != null) {
-            gl.glColor4f(0, 0.5f, 1, 0.35f);
+            gl.glColor4f((float) 0, 0.5f, 1.0F, 0.35f);
         } else {
             gl.glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
         }
@@ -264,7 +264,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
 
         FloatObjectProcedure<Port<X>> u = this.updater;
         if (u != null)
-            u.value(0, this);
+            u.value((float) 0, this);
 
     }
 

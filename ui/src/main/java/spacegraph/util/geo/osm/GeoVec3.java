@@ -19,7 +19,7 @@ public class GeoVec3 extends v3 {
 //    private final double altitude;
 
     public GeoVec3() {
-        this(0, 0, 0);
+        this((double) 0, (double) 0, (double) 0);
     }
 
     public GeoVec3(double longitude, double latitude, double altitude) {
@@ -35,7 +35,7 @@ public class GeoVec3 extends v3 {
 
     public GeoVec3(Element e) {
         this(parseDouble(e.getAttribute("lon")), parseDouble(e.getAttribute("lat")),
-                parseDoubleOr(e.getAttribute("alt"), 0));
+                parseDoubleOr(e.getAttribute("alt"), (double) 0));
     }
 
     private static double parseDoubleOr(String alt, double otherwise) {

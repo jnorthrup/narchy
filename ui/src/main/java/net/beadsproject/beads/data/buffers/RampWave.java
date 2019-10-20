@@ -18,13 +18,13 @@ public class RampWave extends WaveFactory {
         int size = bufferSize;
         ArrayTensor b = new ArrayTensor(size);
         for (int i = 0; i < bufferSize; i++) {
-            b.data[i] = ramp((i + 0.5f) / bufferSize) / bufferSize;
+            b.data[i] = ramp(((float) i + 0.5f) / (float) bufferSize) / (float) bufferSize;
         }
         return b;
     }
 
     private static float ramp(float x) {
-        return 2 * x;
+        return 2.0F * x;
     }
 
     @Override

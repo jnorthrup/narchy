@@ -34,11 +34,11 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, Task /* questi
 	public static final Logger logger = LoggerFactory.getLogger(InterNAR.class);
 	static final int outCapacity = 128; //TODO abstract
 	public final UDPeer peer;
-	public final FloatRange incomingPriMult = new FloatRange(1f, 0, 2f);
+	public final FloatRange incomingPriMult = new FloatRange(1f, (float) 0, 2f);
 	final What what;
 	private final CauseChannel<Task> recv;
 	private final PriBuffer.BagTaskBuffer send;
-	private float peerFPS = 1;
+	private float peerFPS = 1.0F;
 
 	/**
 	 * @param port
@@ -86,7 +86,7 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, Task /* questi
 
 
 		//TODO
-		float outRate = 1;
+		float outRate = 1.0F;
 		this.send = new PriBuffer.BagTaskBuffer(outCapacity, outRate);
 
 
@@ -177,12 +177,12 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, Task /* questi
 
         @Nullable byte[] msg = IO.taskToBytes(next);
 		assert (msg != null);
-		if (peer.tellSome(msg, ttl(next), true) > 0) {
-			return 1;
+		if (peer.tellSome(msg, (int) ttl(next), true) > 0) {
+			return 1.0F;
 		}
 
 
-		return 0;
+		return (float) 0;
 	}
 
 	protected void receive(UDPeer.MsgReceived m) {

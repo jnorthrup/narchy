@@ -188,7 +188,7 @@ public abstract class TermMatcher {
         public VolMin(int volMin, int depth) {
             assert(volMin > 1);
             this.param = $.the(this.volMin = volMin);
-            this.cost = (0.03f + (0.01f * depth));
+            this.cost = (0.03f + (0.01f * (float) depth));
         }
 
         @Override
@@ -256,7 +256,7 @@ public abstract class TermMatcher {
             this.anyOrAll = anyOrAll;
             this.param = $.func(anyOrAll ? ANY : ALL, Op.strucTerm(struct));
             this.cost = Math.max(
-                    (anyOrAll ? 0.21f : 0.19f) - 0.001f * Integer.bitCount(struct),
+                    (anyOrAll ? 0.21f : 0.19f) - 0.001f * (float) Integer.bitCount(struct),
                     0.1f);
         }
 
@@ -313,15 +313,15 @@ public abstract class TermMatcher {
 
             assert(Integer.bitCount(struct) >= Integer.bitCount(structSubs));
 
-            this.cost = (0.07f + (0.01f * depth)) * (1f / (1 + (Integer.bitCount(struct))));
+            this.cost = (0.07f + (0.01f * (float) depth)) * (1f / (float) (1 + (Integer.bitCount(struct))));
 
-            Atom isParam = Op.the(this.is).strAtom;
+            Atom isParam = Op.the((int) this.is).strAtom;
 			this.param = structSubs != 0 ? $.p(isParam, Op.strucTerm(structSubs)) : isParam;
         }
         @Override
         public boolean test(Term term) {
             return term instanceof Compound &&
-                    term.opID() == is &&
+                    term.opID() == (int) is &&
                     (structSubs==0 || Op.hasAll(term.subStructure(), structSubs));
         }
 //
@@ -456,17 +456,17 @@ public abstract class TermMatcher {
         final short subsMin;
 
         public SubsMin(short subsMin) {
-            this.subsMin = subsMin; assert(subsMin > 0);
+            this.subsMin = subsMin; assert((int) subsMin > 0);
         }
 
         @Override
         public Term param() {
-            return $.the(subsMin);
+            return $.the((int) subsMin);
         }
 
         @Override
         public boolean test(Term term) {
-            return term instanceof Compound && (subsMin==1 || term.subs() >= subsMin);
+            return term instanceof Compound && ((int) subsMin ==1 || term.subs() >= (int) subsMin);
         }
 //
 //        @Override

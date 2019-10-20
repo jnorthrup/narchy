@@ -102,16 +102,16 @@ public class Tokenizer implements ITokenizer {
 
 		setCharacterState(0, 255, symbolState()); 
 
-		setCharacterState(0, ' ', whitespaceState());
-		setCharacterState('a', 'z', wordState());
-		setCharacterState('A', 'Z', wordState());
+		setCharacterState(0, (int) ' ', whitespaceState());
+		setCharacterState((int) 'a', (int) 'z', wordState());
+		setCharacterState((int) 'A', (int) 'Z', wordState());
 		setCharacterState(0xc0, 0xff, wordState());
-		setCharacterState('0', '9', numberState());
-		setCharacterState('-', '-', numberState());
-		setCharacterState('.', '.', numberState());
-		setCharacterState('"', '"', quoteState());
-		setCharacterState('\'', '\'', quoteState());
-		setCharacterState('/', '/', slashState());
+		setCharacterState((int) '0', (int) '9', numberState());
+		setCharacterState((int) '-', (int) '-', numberState());
+		setCharacterState((int) '.', (int) '.', numberState());
+		setCharacterState((int) '"', (int) '"', quoteState());
+		setCharacterState((int) '\'', (int) '\'', quoteState());
+		setCharacterState((int) '/', (int) '/', slashState());
 	}
 
 	/**
@@ -275,7 +275,7 @@ public class Tokenizer implements ITokenizer {
 	}
 
 	public void disableComments() {
-		setCharacterState('/', '/', symbolState());
+		setCharacterState((int) '/', (int) '/', symbolState());
 	}
 
 	/**

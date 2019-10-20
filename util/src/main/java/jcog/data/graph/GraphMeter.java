@@ -92,8 +92,8 @@ public class GraphMeter {
 
         int[] n = g.neighborsOut(i).toArray();
 
-        if (n.length == 0) return 0;
-        if (n.length == 1) return 1;
+        if (n.length == 0) return (double) 0;
+        if (n.length == 1) return 1.0;
 
         int edges = 0;
 
@@ -102,7 +102,7 @@ public class GraphMeter {
                 if (g.isEdge(n[j], n[k]))
                     ++edges;
 
-        return n.length + (((float)edges) * 2.0) / (n.length * (n.length - 1));
+        return (double) n.length + ((double) ((float) edges) * 2.0) / (double) (n.length * (n.length - 1));
     }
 
 

@@ -3,9 +3,9 @@ package spacegraph.space2d.widget.textedit.view;
 import com.jogamp.opengl.GL2;
 
 public class Angle {
-  private SmoothValue x = new SmoothValue(0);
-  private SmoothValue y = new SmoothValue(0);
-  private SmoothValue z = new SmoothValue(0);
+  private SmoothValue x = new SmoothValue((double) 0);
+  private SmoothValue y = new SmoothValue((double) 0);
+  private SmoothValue z = new SmoothValue((double) 0);
 
   public SmoothValue getX() {
     return x;
@@ -49,16 +49,16 @@ public class Angle {
 
   public void updateRotate(GL2 gl) {
       double _x = x.value();
-    if (_x != 0) {
-      gl.glRotated(_x, 1, 0, 0);
+    if (_x != (double) 0) {
+      gl.glRotated(_x, 1.0, (double) 0, (double) 0);
     }
       double _y = y.value();
-    if (_y != 0) {
-      gl.glRotated(_y, 0, 1, 0);
+    if (_y != (double) 0) {
+      gl.glRotated(_y, (double) 0, 1.0, (double) 0);
     }
       double _z = z.value();
-    if (_z != 0) {
-      gl.glRotated(_z, 0, 0, 1);
+    if (_z != (double) 0) {
+      gl.glRotated(_z, (double) 0, (double) 0, 1.0);
     }
   }
 }

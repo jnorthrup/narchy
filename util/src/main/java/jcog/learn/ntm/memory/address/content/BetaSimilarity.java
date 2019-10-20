@@ -4,7 +4,6 @@ import jcog.learn.ntm.control.Unit;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 
 public class BetaSimilarity extends Unit {
@@ -18,7 +17,7 @@ public class BetaSimilarity extends Unit {
     private final double B;
 
     public BetaSimilarity(Unit beta, SimilarityMeasure m) {
-        super(0);
+        super((double) 0);
         _beta = beta;
         measure = m;
         

@@ -100,7 +100,7 @@ public class EdgeShape extends Shape {
         float sx = v2x - v1x;
         float sy = v2y - v1y;
         float ds = dx * sx + dy * sy;
-        if (ds > 0) {
+        if (ds > (float) 0) {
             float s2 = sx * sx + sy * sy;
             if (ds > s2) {
                 dx = p.x - v2x;
@@ -111,13 +111,13 @@ public class EdgeShape extends Shape {
             }
         }
 
-        float d1 = (float) Math.sqrt(dx * dx + dy * dy);
-        if (d1 > 0) {
-            normalOut.x = 1 / d1 * dx;
-            normalOut.y = 1 / d1 * dy;
+        float d1 = (float) Math.sqrt((double) (dx * dx + dy * dy));
+        if (d1 > (float) 0) {
+            normalOut.x = 1.0F / d1 * dx;
+            normalOut.y = 1.0F / d1 * dy;
         } else {
-            normalOut.x = 0;
-            normalOut.y = 0;
+            normalOut.x = (float) 0;
+            normalOut.y = (float) 0;
         }
         return d1;
     }

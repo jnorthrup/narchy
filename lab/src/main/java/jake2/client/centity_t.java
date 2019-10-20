@@ -33,7 +33,7 @@ public class centity_t {
 	int serverframe; 
 
 	int trailcount; 
-	final float[] lerp_origin = { 0, 0, 0 }; 
+	final float[] lerp_origin = {(float) 0, (float) 0, (float) 0};
 
 	int fly_stoptime;
 }

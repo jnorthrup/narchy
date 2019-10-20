@@ -29,7 +29,7 @@ public class StepController implements IntConsumer, IntObjectPair<StepController
         float x = min;
         while (x <= max) {
             f.add(x);
-            x *= 2;
+            x *= 2.0F;
         }
         assert (f.size() > 1);
         return new StepController(update, f.toArray());

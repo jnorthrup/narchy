@@ -180,7 +180,7 @@ public enum Statement {
                     //no validity test necessary
                 } else if (subject.dt() == XTERNAL || predicate.dt() == XTERNAL) { // && !subject.OR(x->x instanceof Ellipsis) && !predicate.OR(x->x instanceof Ellipsis) ) {
                     //do not reduce
-                } else if (subject.unneg().opID()!=CONJ.id && predicate.unneg().opID()!=CONJ.id) {
+                } else if (subject.unneg().opID()!= (int) CONJ.id && predicate.unneg().opID()!= (int) CONJ.id) {
                     //both simple terms
                 } else if (!Term.commonStructure(subject.structure() & (~CONJ.bit), predicate.structure() & (~CONJ.bit))) {
                     //no validity test necessary
@@ -196,11 +196,11 @@ public enum Statement {
 
                     if (op == IMPL) {
                         int subjRange = subject.eventRange();
-                        long po = subjRange + dt; //predicate occurrence
+                        long po = (long) (subjRange + dt); //predicate occurrence
 
                         //subtract any common subject components from predicate
                         ConjList newPredConj = ConjList.events(predicate, po);
-                        int removed = newPredConj.removeAll(subject.unneg(), 0, !(subject instanceof Neg));
+                        int removed = newPredConj.removeAll(subject.unneg(), 0L, !(subject instanceof Neg));
                         Term newPred;
                         switch (removed) {
                             case -1:
@@ -226,7 +226,7 @@ public enum Statement {
                             } else {
 //
 
-                                dt = Tense.occToDT(shift - subjRange);
+                                dt = Tense.occToDT(shift - (long) subjRange);
 
                                 if (newPred.dt() == 0 && predicate.dt() == DTERNAL && predicate.subterms().equals(newPred.subterms())) {
                                     //HACK return to dternal
@@ -250,8 +250,8 @@ public enum Statement {
                         if (subject.dt()==DTERNAL && predicate.dt() == DTERNAL) { //TODO test earlier
                             //INH,SIM
                             //TODO swap order for optimal comparison
-                            boolean sConj = subject instanceof Compound && subject.opID() == CONJ.id;
-                            boolean pConj = predicate instanceof Compound && predicate.opID() == CONJ.id;
+                            boolean sConj = subject instanceof Compound && subject.opID() == (int) CONJ.id;
+                            boolean pConj = predicate instanceof Compound && predicate.opID() == (int) CONJ.id;
                             if (sConj && pConj) {
                                 Subterms ssub = subject.subterms();
                                 Subterms psub = predicate.subterms();

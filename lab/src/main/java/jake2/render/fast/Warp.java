@@ -78,7 +78,7 @@ public abstract class Warp extends Model {
 	
 	String skyname;
 	float	skyrotate;
-	final float[] skyaxis = {0, 0, 0};
+	final float[] skyaxis = {(float) 0, (float) 0, (float) 0};
 	final image_t[] sky_images = new image_t[6];
 
 	msurface_t	warpface;
@@ -93,8 +93,8 @@ public abstract class Warp extends Model {
 	 * @param maxs
 	 */
 	static void BoundPoly(int numverts, float[][] verts, float[] mins, float[] maxs) {
-		mins[0] = mins[1] = mins[2] = 9999;
-		maxs[0] = maxs[1] = maxs[2] = -9999;
+		mins[0] = mins[1] = mins[2] = 9999.0F;
+		maxs[0] = maxs[1] = maxs[2] = -9999.0F;
 
 		for (int i = 0; i<numverts ; i++) {
             float[] v = verts[i];
@@ -131,10 +131,10 @@ public abstract class Warp extends Model {
 		for (i=0 ; i<3 ; i++)
 		{
             float m = (mins[i] + maxs[i]) * 0.5f;
-			m = SUBDIVIDE_SIZE * (float)Math.floor(m / SUBDIVIDE_SIZE + 0.5f);
-			if (maxs[i] - m < 8)
+			m = (float) SUBDIVIDE_SIZE * (float)Math.floor((double) (m / (float) SUBDIVIDE_SIZE + 0.5f));
+			if (maxs[i] - m < 8.0F)
 				continue;
-			if (m - mins[i] < 8)
+			if (m - mins[i] < 8.0F)
 				continue;
 
 
@@ -153,19 +153,19 @@ public abstract class Warp extends Model {
 			for (j=0 ; j<numverts ; j++)
 			{
                 float[] v = verts[j];
-				if (dist[j] >= 0)
+				if (dist[j] >= (float) 0)
 				{
 					Math3D.VectorCopy(v, front[f]);
 					f++;
 				}
-				if (dist[j] <= 0)
+				if (dist[j] <= (float) 0)
 				{
 					Math3D.VectorCopy(v, back[b]);
 					b++;
 				}
-				if (dist[j] == 0 || dist[j+1] == 0) continue;
+				if (dist[j] == (float) 0 || dist[j+1] == (float) 0) continue;
 				
-				if ( (dist[j] > 0) != (dist[j+1] > 0) )
+				if ( (dist[j] > (float) 0) != (dist[j+1] > (float) 0) )
 				{
 
                     float frac = dist[j] / (dist[j] - dist[j + 1]);
@@ -194,8 +194,8 @@ public abstract class Warp extends Model {
 
         float[] total = Vec3Cache.get();
 		Math3D.VectorClear(total);
-		float total_s = 0;
-		float total_t = 0;
+		float total_s = (float) 0;
+		float total_t = (float) 0;
 		for (i = 0; i < numverts; i++) {
             poly.x(i + 1, verts[i][0]);
             poly.y(i + 1, verts[i][1]);
@@ -211,7 +211,7 @@ public abstract class Warp extends Model {
             poly.t1(i + 1, t);
         }
 
-        float scale = 1.0f / numverts;
+        float scale = 1.0f / (float) numverts;
         poly.x(0, total[0] * scale);
         poly.y(0, total[1] * scale);
         poly.z(0, total[2] * scale);
@@ -258,7 +258,7 @@ public abstract class Warp extends Model {
     }
 
 
-	static final float TURBSCALE = (float)(256.0f / (2 * Math.PI));
+	static final float TURBSCALE = (float)(256.0 / (2.0 * Math.PI));
 
 	/**
 	 * EmitWaterPolys
@@ -271,9 +271,9 @@ public abstract class Warp extends Model {
 
 		float scroll;
 		if ((fa.texinfo.flags & Defines.SURF_FLOWING) != 0)
-			scroll = -64 * ( (r_newrefdef.time*0.5f) - (int)(r_newrefdef.time*0.5f) );
+			scroll = -64.0F * ( (r_newrefdef.time*0.5f) - (float) (int) (r_newrefdef.time * 0.5f));
 		else
-			scroll = 0;
+			scroll = (float) 0;
 
 		for (glpoly_t bp = fa.polys; bp != null; bp = bp.next) {
             glpoly_t p = bp;
@@ -286,11 +286,11 @@ public abstract class Warp extends Model {
                 float s = os
 						+ Warp.SIN[(int) ((ot * 0.125f + r_newrefdef.time) * TURBSCALE) & 255];
 				s += scroll;
-                s *= (1.0f / 64);
+                s *= (1.0f / 64.0F);
 
                 float t = ot
 						+ Warp.SIN[(int) ((os * 0.125f + rdt) * TURBSCALE) & 255];
-				t *= (1.0f / 64);
+				t *= (1.0f / 64.0F);
 
                 gl.glTexCoord2f(s, t);
                 gl.glVertex3f(p.x(i), p.y(i), p.z(i));
@@ -302,12 +302,12 @@ public abstract class Warp extends Model {
 
 
 	final float[][] skyclip = {
-		{ 1,  1, 0},
-		{ 1, -1, 0},
-		{ 0, -1, 1},
-		{ 0,  1, 1},
-		{ 1,  0, 1},
-		{-1,  0, 1} 
+		{1.0F, 1.0F, (float) 0},
+		{1.0F, -1.0F, (float) 0},
+		{(float) 0, -1.0F, 1.0F},
+		{(float) 0, 1.0F, 1.0F},
+		{1.0F, (float) 0, 1.0F},
+		{-1.0F, (float) 0, 1.0F}
 	};
 
 	int c_sky;
@@ -345,8 +345,8 @@ public abstract class Warp extends Model {
     float sky_max;
 
 	
-	private final float[] v = {0, 0, 0};
-	private final float[] av = {0, 0, 0};
+	private final float[] v = {(float) 0, (float) 0, (float) 0};
+	private final float[] av = {(float) 0, (float) 0, (float) 0};
 	/**
 	 * DrawSkyPolygon
 	 * @param nump
@@ -368,21 +368,21 @@ public abstract class Warp extends Model {
 		int axis;
 		if (av[0] > av[1] && av[0] > av[2])
 		{
-			if (v[0] < 0)
+			if (v[0] < (float) 0)
 				axis = 1;
 			else
 				axis = 0;
 		}
 		else if (av[1] > av[2] && av[1] > av[0])
 		{
-			if (v[1] < 0)
+			if (v[1] < (float) 0)
 				axis = 3;
 			else
 				axis = 2;
 		}
 		else
 		{
-			if (v[2] < 0)
+			if (v[2] < (float) 0)
 				axis = 5;
 			else
 				axis = 4;
@@ -559,14 +559,14 @@ public abstract class Warp extends Model {
 		
 		for (int i = 0; i<6 ; i++)
 		{
-			skymins0[i] = skymins1[i] = 9999;
-			skymaxs0[i] = skymaxs1[i] = -9999;
+			skymins0[i] = skymins1[i] = 9999.0F;
+			skymaxs0[i] = skymaxs1[i] = -9999.0F;
 		}
 	}
 	
 	
-	private final float[] v1 = {0, 0, 0};
-	private final float[] b = {0, 0, 0};
+	private final float[] v1 = {(float) 0, (float) 0, (float) 0};
+	private final float[] b = {(float) 0, (float) 0, (float) 0};
 	/**
 	 * MakeSkyVec
 	 * @param s
@@ -575,9 +575,9 @@ public abstract class Warp extends Model {
 	 */
 	void MakeSkyVec(float s, float t, int axis)
 	{
-		b[0] = s*2300;
-		b[1] = t*2300;
-		b[2] = 2300;
+		b[0] = s* 2300.0F;
+		b[1] = t* 2300.0F;
+		b[2] = 2300.0F;
 
 		for (int j = 0; j<3 ; j++)
 		{
@@ -589,8 +589,8 @@ public abstract class Warp extends Model {
 		}
 
 		
-		s = (s + 1) * 0.5f;
-		t = (t + 1) * 0.5f;
+		s = (s + 1.0F) * 0.5f;
+		t = (t + 1.0F) * 0.5f;
 
 		if (s < sky_min)
 			s = sky_min;
@@ -616,7 +616,7 @@ public abstract class Warp extends Model {
 	{
 		int i;
 
-		if (skyrotate != 0)
+		if (skyrotate != (float) 0)
 		{	
 			for (i=0 ; i<6 ; i++)
 				if (skymins[0][i] < skymaxs[0][i]
@@ -632,12 +632,12 @@ public abstract class Warp extends Model {
 
 		for (i=0 ; i<6 ; i++)
 		{
-			if (skyrotate != 0)
+			if (skyrotate != (float) 0)
 			{	
-				skymins[0][i] = -1;
-				skymins[1][i] = -1;
-				skymaxs[0][i] = 1;
-				skymaxs[1][i] = 1;
+				skymins[0][i] = -1.0F;
+				skymins[1][i] = -1.0F;
+				skymaxs[0][i] = 1.0F;
+				skymaxs[1][i] = 1.0F;
 			}
 
 			if (skymins[0][i] >= skymaxs[0][i]
@@ -677,11 +677,11 @@ public abstract class Warp extends Model {
 		for (int i = 0; i<6 ; i++)
 		{
 			
-			if (gl_skymip.value != 0 || skyrotate != 0)
+			if (gl_skymip.value != (float) 0 || skyrotate != (float) 0)
 				gl_picmip.value++;
 
 			String pathname;
-			if ( qglColorTableEXT && gl_ext_palettedtexture.value != 0) {
+			if ( qglColorTableEXT && gl_ext_palettedtexture.value != (float) 0) {
 				
 				pathname = "env/" + skyname + suf[i] + ".pcx";
 			} else {
@@ -694,16 +694,16 @@ public abstract class Warp extends Model {
 			if (sky_images[i] == null)
 				sky_images[i] = r_notexture;
 
-			if (gl_skymip.value != 0 || skyrotate != 0)
+			if (gl_skymip.value != (float) 0 || skyrotate != (float) 0)
 			{	
 				gl_picmip.value--;
-				sky_min = 1.0f / 256;
-				sky_max = 255.0f / 256;
+				sky_min = 1.0f / 256.0F;
+				sky_max = 255.0f / 256.0F;
 			}
 			else	
 			{
-				sky_min = 1.0f / 512;
-				sky_max = 511.0f / 512;
+				sky_min = 1.0f / 512.0F;
+				sky_max = 511.0f / 512.0F;
 			}
 		}
 	}

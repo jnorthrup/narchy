@@ -74,7 +74,7 @@ public class ByteBufferVertexData extends VertexData {
 	public int getIndex(int idx) {
 		switch (indexType) {
 			case SHORT:
-				return indexData.getShort(idx * indexStride) & 0xFFFF;
+				return (int) indexData.getShort(idx * indexStride) & 0xFFFF;
 			case INTEGER:
 				return indexData.getInt(idx * indexStride);
 			default:

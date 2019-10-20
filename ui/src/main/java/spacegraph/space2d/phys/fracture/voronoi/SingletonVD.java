@@ -71,7 +71,7 @@ public class SingletonVD {
      */
     private Hull hull;
 
-    private final Random rng = new XoRoShiRo128PlusRandom(1);
+    private final Random rng = new XoRoShiRo128PlusRandom(1L);
 
     private double RND() { return rng.nextDouble() + 0.5; }
 
@@ -152,7 +152,7 @@ public class SingletonVD {
                 double x = triangle.dX;
                 double y = triangle.dY;
 
-                if (x <= maxX && x >= minX && y <= maxY && y >= minY) {
+                if (x <= (double) maxX && x >= (double) minX && y <= (double) maxY && y >= (double) minY) {
                     int ti = triangle.i;
                     int tj = triangle.j;
                     int tk = triangle.k;
@@ -177,11 +177,11 @@ public class SingletonVD {
 
                 float sy = l.x > r.x ? minY : maxY;
                 float y = sy;
-                float x = (float) x(l, r, y);
+                float x = (float) x(l, r, (double) y);
 
                 if (x >= maxX || x <= minX) { 
                     x = l.y > r.y ? maxX : minX;
-                    y = (float) y(l, r, x);
+                    y = (float) y(l, r, (double) x);
 
                     if (y == sy) { 
                         for (int j = 0; j != 4; ++j) {
@@ -204,8 +204,8 @@ public class SingletonVD {
                 if (validCorners[i]) {
                     v2 corner = points[i];
 
-                    double x = corner.x;
-                    double y = corner.y;
+                    double x = (double) corner.x;
+                    double y = (double) corner.y;
 
                     int min = boundaries[0];
                     double distMin = Double.MAX_VALUE;
@@ -329,7 +329,7 @@ public class SingletonVD {
         double COS = Math.cos(RND());
         for (int i = 0; i != size; ++i) {
             v2 v = this.ar[i];
-            comparer[i] = SIN * v.x + COS * v.y;
+            comparer[i] = SIN * (double) v.x + COS * (double) v.y;
         }
         quicksort(0, size - 1); 
         
@@ -465,12 +465,12 @@ public class SingletonVD {
      */
     private static int site(v2 a, v2 b, v2 v) {
         if (a == b) return 0;
-        double ax = a.x;
-        double ay = a.y;
-        double bx = b.x;
-        double by = b.y;
-        double vx = v.x;
-        double vy = v.y;
+        double ax = (double) a.x;
+        double ay = (double) a.y;
+        double bx = (double) b.x;
+        double by = (double) b.y;
+        double vx = (double) v.x;
+        double vy = (double) v.y;
         double g = (bx - ax) * (vy - by);
         double h = (vx - bx) * (by - ay);
         //noinspection UseCompareMethod
@@ -484,11 +484,11 @@ public class SingletonVD {
      * @return Vrati kvadraticku hodnotu uhlu zvierajucom usecka (a, b) v intervale od 0-4
      */
     private static double angle(v2 a, v2 b) {
-        double vx = b.x - a.x;
-        double vy = b.y - a.y;
+        double vx = (double) (b.x - a.x);
+        double vy = (double) (b.y - a.y);
         double x = vx * vx;
         double cos = x / (x + vy * vy);
-        return vx > 0 ? vy > 0 ? 3 + cos : 1 - cos : vy > 0 ? 3 - cos : 1 + cos;
+        return vx > (double) 0 ? vy > (double) 0 ? 3.0 + cos : 1.0 - cos : vy > (double) 0 ? 3.0 - cos : 1.0 + cos;
     }
 
     /**
@@ -498,9 +498,9 @@ public class SingletonVD {
      * @return Vrati x suradnicu bodu, ktory je rovnako vzdialeny od a, b s y-sradnicou.
      */
     private static double x(v2 a, v2 b, double y) {
-        double cx = a.x - b.x;
-        double cy = a.y - b.y;
-        return ((a.x + b.x) * cx + (a.y + b.y) * cy - 2 * y * cy) / (2 * cx);
+        double cx = (double) (a.x - b.x);
+        double cy = (double) (a.y - b.y);
+        return ((double) (a.x + b.x) * cx + (double) (a.y + b.y) * cy - 2.0 * y * cy) / (2.0 * cx);
     }
 
     /**
@@ -510,9 +510,9 @@ public class SingletonVD {
      * @return Vrati y suradnicu bodu, ktory je rovnako vzdialeny od a, b s x-sradnicou.
      */
     private static double y(v2 a, v2 b, double x) {
-        double cx = a.x - b.x;
-        double cy = a.y - b.y;
-        return ((a.x + b.x) * cx + (a.y + b.y) * cy - 2 * x * cx) / (2 * cy);
+        double cx = (double) (a.x - b.x);
+        double cy = (double) (a.y - b.y);
+        return ((double) (a.x + b.x) * cx + (double) (a.y + b.y) * cy - 2.0 * x * cx) / (2.0 * cy);
     }
 
     /**
@@ -521,8 +521,8 @@ public class SingletonVD {
      * @return Vrati vzdialenost ^ 2 bodov
      */
     private static double distSq(double x, double y, v2 b) {
-        x -= b.x;
-        y -= b.y;
+        x = x - (double) b.x;
+        y = y - (double) b.y;
         return x * x + y * y;
     }
 }

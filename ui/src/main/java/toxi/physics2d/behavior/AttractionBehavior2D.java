@@ -47,7 +47,7 @@ public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D
     final Random rng;
 
     public AttractionBehavior2D(V attractor, float radius, float strength) {
-        this(attractor, radius, strength, 0, null);
+        this(attractor, radius, strength, (float) 0, null);
     }
 
     public AttractionBehavior2D(V attractor, float radius, float strength, float jitter, Random rng) {
@@ -73,11 +73,11 @@ public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D
     private void move(VerletParticle2D p, Vec2D delta, float distSq) {
         Vec2D f;
         if (distSq <= Spatialization.EPSILONf) {
-           if (strength < 0) {
+           if (strength < (float) 0) {
                //random direction
-               float theta = (float) ((rng.nextFloat()) * Math.PI * 2);
-               float rx = (float) (Math.cos(theta) * strength * timeStep);
-               float ry = (float) (Math.sin(theta) * strength * timeStep);
+               float theta = (float) ((double) (rng.nextFloat()) * Math.PI * 2.0);
+               float rx = (float) (Math.cos((double) theta) * (double) strength * (double) timeStep);
+               float ry = (float) (Math.sin((double) theta) * (double) strength * (double) timeStep);
                f = new Vec2D(rx, ry);
            } else {
                return; //no effect

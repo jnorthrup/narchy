@@ -35,10 +35,8 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import static jake2.Defines.*;
-import static jake2.Defines.CVAR_SERVERINFO;
 
 /**
  * FS
@@ -143,7 +141,7 @@ public final class FS extends Globals {
      * Creates any directories needed to store the given filename.
      */
     public static void CreatePath(String path) {
-        int index = path.lastIndexOf('/');
+        int index = path.lastIndexOf((int) '/');
         
         if (index > 0) {
             File f = new File(path.substring(0, index));
@@ -285,7 +283,7 @@ public final class FS extends Globals {
 
 
                     RandomAccessFile raf = new RandomAccessFile(file, "r");
-                    raf.seek(entry.filepos);
+                    raf.seek((long) entry.filepos);
 
                     return raf;
                 }
@@ -356,7 +354,7 @@ public final class FS extends Globals {
     public static byte[] LoadFile(String path) {
 
 
-        int index = path.indexOf('\0');
+        int index = path.indexOf((int) '\0');
         if (index != -1)
             path = path.substring(0, index);
 
@@ -409,8 +407,8 @@ public final class FS extends Globals {
                         input = new FileInputStream(file);
                         channel = input.getChannel();
                         fileLength = (int) channel.size();
-                        buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0,
-                                fileLength);
+                        buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0L,
+                                (long) fileLength);
                         input.close();
                         return buffer;
                     }
@@ -446,7 +444,7 @@ public final class FS extends Globals {
                         if (pak.backbuffer == null) {
                             channel = pak.handle.getChannel();
                             pak.backbuffer = channel.map(
-                                    FileChannel.MapMode.READ_ONLY, 0,
+                                    FileChannel.MapMode.READ_ONLY, 0L,
                                     pak.handle.length());
                             channel.close();
                         }
@@ -467,8 +465,8 @@ public final class FS extends Globals {
                     input = new FileInputStream(file);
                     channel = input.getChannel();
                     fileLength = (int) channel.size();
-                    buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0,
-                            fileLength);
+                    buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0L,
+                            (long) fileLength);
                     input.close();
                     return buffer;
                 }
@@ -492,7 +490,7 @@ public final class FS extends Globals {
         
     }
 
-    static final int IDPAKHEADER = (('K' << 24) + ('C' << 16) + ('A' << 8) + 'P');
+    static final int IDPAKHEADER = (((int) 'K' << 24) + ((int) 'C' << 16) + ((int) 'A' << 8) + (int) 'P');
 
     static class dpackheader_t {
         int ident; 
@@ -525,7 +523,7 @@ public final class FS extends Globals {
         try {
         	file = new RandomAccessFile(packfile, "r");
             FileChannel fc = file.getChannel();
-            ByteBuffer packhandle = fc.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
+            ByteBuffer packhandle = fc.map(FileChannel.MapMode.READ_ONLY, 0L, file.length());
             packhandle.order(ByteOrder.LITTLE_ENDIAN);
  
             fc.close();
@@ -806,7 +804,7 @@ public final class FS extends Globals {
             if (dirnames != null) {
                 int index = 0;
                 for (int i = 0; i < dirnames.length; i++) {
-                    if ((index = dirnames[i].lastIndexOf('/')) > 0) {
+                    if ((index = dirnames[i].lastIndexOf((int) '/')) > 0) {
                         Com.Printf(dirnames[i].substring(index + 1) + '\n');
                     } else {
                         Com.Printf(dirnames[i] + '\n');

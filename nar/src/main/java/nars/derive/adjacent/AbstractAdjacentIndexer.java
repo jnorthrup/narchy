@@ -29,7 +29,7 @@ public abstract class AbstractAdjacentIndexer extends AdjacentIndexer {
 
 	public int ttl(Derivation d) {
 		//return -1; //permanent
-		return Math.round(d.dur * ATOM_TANGENT_REFRESH_DURS);
+		return Math.round(d.dur * (float) ATOM_TANGENT_REFRESH_DURS);
 	}
 
 	@Override

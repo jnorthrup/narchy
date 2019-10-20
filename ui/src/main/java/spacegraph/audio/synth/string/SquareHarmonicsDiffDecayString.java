@@ -12,7 +12,7 @@ public class SquareHarmonicsDiffDecayString extends SquareHarmonicsString {
     }
 
     private static double calcDecay(double frequency) {
-        double factor = 440 / frequency;
+        double factor = 440.0 / frequency;
         return Math.pow(.996, factor);
     }
 

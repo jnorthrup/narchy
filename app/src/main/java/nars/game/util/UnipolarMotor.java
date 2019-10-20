@@ -33,6 +33,6 @@ public class UnipolarMotor implements ActionSignal.MotorFunction {
 
         float feedbackFreq = (goal == goal) ? update.valueOf(goal) : Float.NaN;
 
-        return feedbackFreq == feedbackFreq ? truther.value(feedbackFreq, g!=null ? g.conf() : 0) : null;
+        return feedbackFreq == feedbackFreq ? truther.value(feedbackFreq, g!=null ? g.conf() : (float) 0) : null;
     }
 }

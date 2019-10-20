@@ -69,55 +69,55 @@ public enum Murmur3Hash {
      * @return - hashcode
      */
     public static long hash64(byte[] data, int length, int seed) {
-        long hash = seed;
+        long hash = (long) seed;
         int nblocks = length >> 3;
 
         
         for (int i = 0; i < nblocks; i++) {
             int i8 = i << 3;
-            long k = ((long) data[i8] & 0xff)
-                    | (((long) data[i8 + 1] & 0xff) << 8)
-                    | (((long) data[i8 + 2] & 0xff) << 16)
-                    | (((long) data[i8 + 3] & 0xff) << 24)
-                    | (((long) data[i8 + 4] & 0xff) << 32)
-                    | (((long) data[i8 + 5] & 0xff) << 40)
-                    | (((long) data[i8 + 6] & 0xff) << 48)
-                    | (((long) data[i8 + 7] & 0xff) << 56);
+            long k = ((long) data[i8] & 0xffL)
+                    | (((long) data[i8 + 1] & 0xffL) << 8)
+                    | (((long) data[i8 + 2] & 0xffL) << 16)
+                    | (((long) data[i8 + 3] & 0xffL) << 24)
+                    | (((long) data[i8 + 4] & 0xffL) << 32)
+                    | (((long) data[i8 + 5] & 0xffL) << 40)
+                    | (((long) data[i8 + 6] & 0xffL) << 48)
+                    | (((long) data[i8 + 7] & 0xffL) << 56);
 
             
             k *= C1;
             k = Long.rotateLeft(k, R1);
             k *= C2;
             hash ^= k;
-            hash = Long.rotateLeft(hash, R2) * M + N1;
+            hash = Long.rotateLeft(hash, R2) * (long) M + (long) N1;
         }
 
         
-        long k1 = 0;
+        long k1 = 0L;
         int tailStart = nblocks << 3;
         switch (length - tailStart) {
             case 7:
-                k1 ^= ((long) data[tailStart + 6] & 0xff) << 48;
+                k1 ^= ((long) data[tailStart + 6] & 0xffL) << 48;
             case 6:
-                k1 ^= ((long) data[tailStart + 5] & 0xff) << 40;
+                k1 ^= ((long) data[tailStart + 5] & 0xffL) << 40;
             case 5:
-                k1 ^= ((long) data[tailStart + 4] & 0xff) << 32;
+                k1 ^= ((long) data[tailStart + 4] & 0xffL) << 32;
             case 4:
-                k1 ^= ((long) data[tailStart + 3] & 0xff) << 24;
+                k1 ^= ((long) data[tailStart + 3] & 0xffL) << 24;
             case 3:
-                k1 ^= ((long) data[tailStart + 2] & 0xff) << 16;
+                k1 ^= ((long) data[tailStart + 2] & 0xffL) << 16;
             case 2:
-                k1 ^= ((long) data[tailStart + 1] & 0xff) << 8;
+                k1 ^= ((long) data[tailStart + 1] & 0xffL) << 8;
             case 1:
-                k1 ^= ((long) data[tailStart] & 0xff);
+                k1 ^= ((long) data[tailStart] & 0xffL);
                 k1 *= C1;
                 k1 = Long.rotateLeft(k1, R1);
                 k1 *= C2;
                 hash ^= k1;
         }
 
-        
-        hash ^= length;
+
+        hash = hash ^ (long) length;
         hash = fmix64(hash);
 
         return hash;
@@ -142,30 +142,30 @@ public enum Murmur3Hash {
      * @return - hashcode (2 longs)
      */
     public static long[] hash128(byte[] data, int length, int seed) {
-        long h1 = seed;
-        long h2 = seed;
+        long h1 = (long) seed;
+        long h2 = (long) seed;
         int nblocks = length >> 4;
 
         
         for (int i = 0; i < nblocks; i++) {
             int i16 = i << 4;
-            long k1 = ((long) data[i16] & 0xff)
-                    | (((long) data[i16 + 1] & 0xff) << 8)
-                    | (((long) data[i16 + 2] & 0xff) << 16)
-                    | (((long) data[i16 + 3] & 0xff) << 24)
-                    | (((long) data[i16 + 4] & 0xff) << 32)
-                    | (((long) data[i16 + 5] & 0xff) << 40)
-                    | (((long) data[i16 + 6] & 0xff) << 48)
-                    | (((long) data[i16 + 7] & 0xff) << 56);
+            long k1 = ((long) data[i16] & 0xffL)
+                    | (((long) data[i16 + 1] & 0xffL) << 8)
+                    | (((long) data[i16 + 2] & 0xffL) << 16)
+                    | (((long) data[i16 + 3] & 0xffL) << 24)
+                    | (((long) data[i16 + 4] & 0xffL) << 32)
+                    | (((long) data[i16 + 5] & 0xffL) << 40)
+                    | (((long) data[i16 + 6] & 0xffL) << 48)
+                    | (((long) data[i16 + 7] & 0xffL) << 56);
 
-            long k2 = ((long) data[i16 + 8] & 0xff)
-                    | (((long) data[i16 + 9] & 0xff) << 8)
-                    | (((long) data[i16 + 10] & 0xff) << 16)
-                    | (((long) data[i16 + 11] & 0xff) << 24)
-                    | (((long) data[i16 + 12] & 0xff) << 32)
-                    | (((long) data[i16 + 13] & 0xff) << 40)
-                    | (((long) data[i16 + 14] & 0xff) << 48)
-                    | (((long) data[i16 + 15] & 0xff) << 56);
+            long k2 = ((long) data[i16 + 8] & 0xffL)
+                    | (((long) data[i16 + 9] & 0xffL) << 8)
+                    | (((long) data[i16 + 10] & 0xffL) << 16)
+                    | (((long) data[i16 + 11] & 0xffL) << 24)
+                    | (((long) data[i16 + 12] & 0xffL) << 32)
+                    | (((long) data[i16 + 13] & 0xffL) << 40)
+                    | (((long) data[i16 + 14] & 0xffL) << 48)
+                    | (((long) data[i16 + 15] & 0xffL) << 56);
 
             
             k1 *= C1;
@@ -174,7 +174,7 @@ public enum Murmur3Hash {
             h1 ^= k1;
             h1 = Long.rotateLeft(h1, R2);
             h1 += h2;
-            h1 = h1 * M + N1;
+            h1 = h1 * (long) M + (long) N1;
 
             
             k2 *= C2;
@@ -183,58 +183,58 @@ public enum Murmur3Hash {
             h2 ^= k2;
             h2 = Long.rotateLeft(h2, R1);
             h2 += h1;
-            h2 = h2 * M + N2;
+            h2 = h2 * (long) M + (long) N2;
         }
 
         
-        long k1 = 0;
-        long k2 = 0;
+        long k1 = 0L;
+        long k2 = 0L;
         int tailStart = nblocks << 4;
         switch (length - tailStart) {
             case 15:
-                k2 ^= (long) (data[tailStart + 14] & 0xff) << 48;
+                k2 ^= (long) ((int) data[tailStart + 14] & 0xff) << 48;
             case 14:
-                k2 ^= (long) (data[tailStart + 13] & 0xff) << 40;
+                k2 ^= (long) ((int) data[tailStart + 13] & 0xff) << 40;
             case 13:
-                k2 ^= (long) (data[tailStart + 12] & 0xff) << 32;
+                k2 ^= (long) ((int) data[tailStart + 12] & 0xff) << 32;
             case 12:
-                k2 ^= (long) (data[tailStart + 11] & 0xff) << 24;
+                k2 ^= (long) ((int) data[tailStart + 11] & 0xff) << 24;
             case 11:
-                k2 ^= (long) (data[tailStart + 10] & 0xff) << 16;
+                k2 ^= (long) ((int) data[tailStart + 10] & 0xff) << 16;
             case 10:
-                k2 ^= (long) (data[tailStart + 9] & 0xff) << 8;
+                k2 ^= (long) ((int) data[tailStart + 9] & 0xff) << 8;
             case 9:
-                k2 ^= (data[tailStart + 8] & 0xff);
+                k2 = k2 ^ (long) ((int) data[tailStart + 8] & 0xff);
                 k2 *= C2;
                 k2 = Long.rotateLeft(k2, R3);
                 k2 *= C1;
                 h2 ^= k2;
 
             case 8:
-                k1 ^= (long) (data[tailStart + 7] & 0xff) << 56;
+                k1 ^= (long) ((int) data[tailStart + 7] & 0xff) << 56;
             case 7:
-                k1 ^= (long) (data[tailStart + 6] & 0xff) << 48;
+                k1 ^= (long) ((int) data[tailStart + 6] & 0xff) << 48;
             case 6:
-                k1 ^= (long) (data[tailStart + 5] & 0xff) << 40;
+                k1 ^= (long) ((int) data[tailStart + 5] & 0xff) << 40;
             case 5:
-                k1 ^= (long) (data[tailStart + 4] & 0xff) << 32;
+                k1 ^= (long) ((int) data[tailStart + 4] & 0xff) << 32;
             case 4:
-                k1 ^= (long) (data[tailStart + 3] & 0xff) << 24;
+                k1 ^= (long) ((int) data[tailStart + 3] & 0xff) << 24;
             case 3:
-                k1 ^= (long) (data[tailStart + 2] & 0xff) << 16;
+                k1 ^= (long) ((int) data[tailStart + 2] & 0xff) << 16;
             case 2:
-                k1 ^= (long) (data[tailStart + 1] & 0xff) << 8;
+                k1 ^= (long) ((int) data[tailStart + 1] & 0xff) << 8;
             case 1:
-                k1 ^= (data[tailStart] & 0xff);
+                k1 = k1 ^ (long) ((int) data[tailStart] & 0xff);
                 k1 *= C1;
                 k1 = Long.rotateLeft(k1, R1);
                 k1 *= C2;
                 h1 ^= k1;
         }
 
-        
-        h1 ^= length;
-        h2 ^= length;
+
+        h1 = h1 ^ (long) length;
+        h2 = h2 ^ (long) length;
 
         h1 += h2;
         h2 += h1;
@@ -285,11 +285,11 @@ public enum Murmur3Hash {
         int block = 0;
         switch (leftOverLength) {
             case 3:
-                block ^= buffer.get(length - 3) << 16;
+                block ^= (int) buffer.get(length - 3) << 16;
             case 2:
-                block ^= buffer.get(length - 2) << 8;
+                block ^= (int) buffer.get(length - 2) << 8;
             case 1:
-                block ^= buffer.get(length - 1);
+                block = block ^ (int) buffer.get(length - 1);
                 block *= AVALANCHING_MULTIPLIER1;
                 block = Integer.rotateLeft(block, 15);
                 block *= AVALANCHING_MULTIPLIER2;

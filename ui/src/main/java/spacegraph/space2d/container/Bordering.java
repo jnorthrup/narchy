@@ -89,8 +89,8 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
 //        if (aspectEqual) {
 //            w2 = h2 = Math.min(W, H) / 2;
 //        } else {
-        float w2 = W / 2;
-        float h2 = H / 2;
+        float w2 = W / 2.0F;
+        float h2 = H / 2.0F;
 //        }
 
 
@@ -99,10 +99,10 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
         boolean sw = get(Bordering.SW) != null;
         boolean nw = get(Bordering.NW) != null;
         boolean autocollapse = true;
-        float borderWest = autocollapse && !(sw || nw || get(Bordering.W) != null) ? 0 : this.borderWest;
-        float borderEast = autocollapse && !(se || ne || get(Bordering.E) != null) ? 0 : this.borderEast;
-        float borderNorth = autocollapse && !(ne || nw || get(Bordering.N) != null) ? 0 : this.borderNorth;
-        float borderSouth = autocollapse && !(se || sw || get(Bordering.S) != null) ? 0 : this.borderSouth;
+        float borderWest = autocollapse && !(sw || nw || get(Bordering.W) != null) ? (float) 0 : this.borderWest;
+        float borderEast = autocollapse && !(se || ne || get(Bordering.E) != null) ? (float) 0 : this.borderEast;
+        float borderNorth = autocollapse && !(ne || nw || get(Bordering.N) != null) ? (float) 0 : this.borderNorth;
+        float borderSouth = autocollapse && !(se || sw || get(Bordering.S) != null) ? (float) 0 : this.borderSouth;
 
         for (int i = 0, childrenLength = 9; i < childrenLength; i++) {
 
@@ -128,12 +128,12 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
                     break;
                 case S:
                     x1 = borderWest * w2;
-                    y1 = 0;
+                    y1 = (float) 0;
                     x2 = W - borderEast * w2;
                     y2 = borderSouth * h2;
                     break;
                 case Bordering.W:
-                    x1 = 0;
+                    x1 = (float) 0;
                     y1 = borderSouth * h2;
                     x2 = borderWest * w2;
                     y2 = H - borderNorth * h2;
@@ -151,21 +151,21 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
                     y2 = H;
                     break;
                 case NW:
-                    x1 = 0;
+                    x1 = (float) 0;
                     y1 = H - borderNorth * h2;
                     x2 = borderWest * w2;
                     y2 = H;
                     break;
                 case SW:
-                    x1 = 0;
+                    x1 = (float) 0;
                     x2 = borderWest * w2;
-                    y1 = 0;
+                    y1 = (float) 0;
                     y2 = borderSouth * h2;
                     break;
                 case SE:
                     x1 = W - borderEast * w2;
                     x2 = W;
-                    y1 = 0;
+                    y1 = (float) 0;
                     y2 = borderSouth * h2;
                     break;
                 default:

@@ -64,7 +64,7 @@ public class Quantiler {
         qileNext = new float[nq];
 
         for (int j = 85; j <= 165; j++) {
-            pval[j] = (j - 75f) / 100f;
+            pval[j] = ((float) j - 75f) / 100f;
         }
 
         for (int j = 84; j >= 0; j--) {
@@ -99,24 +99,24 @@ public class Quantiler {
         float qnew;
         float qold = qnew = qile[0] = newqile[0] = q0;
         qile[nq - 1] = newqile[nq - 1] = qm;
-        pval[0] = Math.min(0.5f / (nt + nd), 0.5f * pval[1]);
-        pval[nq - 1] = Math.max(1f- 0.5f / (nt + nd), 0.5f * (1f + pval[nq - 2]));
+        pval[0] = Math.min(0.5f / (float) (nt + nd), 0.5f * pval[1]);
+        pval[nq - 1] = Math.max(1f- 0.5f / (float) (nt + nd), 0.5f * (1f + pval[nq - 2]));
         float tnew = 0f;
         float told = 0f;
         int jq = 1;
         int jd = 0;
         for (int iq = 1; iq < nq - 1; iq++) {
-            float target = (nt + nd) * pval[iq];
+            float target = (float) (nt + nd) * pval[iq];
             if (tnew < target) {
                 for (;;) {
                     if (jq < nq && (jd >= nd || qile[jq] < dbuf[jd])) {
                         qnew = qile[jq];
-                        tnew = jd + nt * pval[jq++];
+                        tnew = (float) jd + (float) nt * pval[jq++];
 					} else {
                         qnew = dbuf[jd];
                         tnew = told;
                         if (qile[jq] > qile[jq - 1]) {
-                            tnew += nt * (pval[jq] - pval[jq - 1]) * (qnew - qold) / (qile[jq] - qile[jq - 1]);
+                            tnew += (float) nt * (pval[jq] - pval[jq - 1]) * (qnew - qold) / (qile[jq] - qile[jq - 1]);
                         }
                         jd++;
                         if (tnew >= target) {

@@ -28,7 +28,7 @@ public class WinScene extends Scene {
     private static void drawString(Graphics g, String text, int x, int y, int c) {
         char[] ch = text.toCharArray();
         for (int i = 0; i < ch.length; i++) {
-            g.drawImage(Art.font[ch[i] - 32][c], x + i * 8, y, null);
+            g.drawImage(Art.font[(int) ch[i] - 32][c], x + i * 8, y, null);
         }
     }
 
@@ -47,11 +47,11 @@ public class WinScene extends Scene {
 
     @Override
     public float getX(float alpha) {
-        return 0;
+        return (float) 0;
     }
 
     @Override
     public float getY(float alpha) {
-        return 0;
+        return (float) 0;
     }
 }

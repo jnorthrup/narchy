@@ -149,7 +149,7 @@ public class ThreadLibrary extends PrologLib {
 		if (!(millisecs instanceof NumberTerm.Int))
 			throw PrologError.type_error(prolog, 1,
                     "integer", millisecs);
-		long time=((NumberTerm.Int)millisecs).intValue();
+		long time= (long) ((NumberTerm.Int) millisecs).intValue();
 		try {
 			Thread.sleep(time);
 		} catch (InterruptedException e) {

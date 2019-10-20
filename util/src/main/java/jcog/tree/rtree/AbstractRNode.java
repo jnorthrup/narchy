@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 public abstract class AbstractRNode<V,D> implements RNode<V> {
 
-    public /*volatile*/ short size = 0;
+    public /*volatile*/ short size = (short) 0;
     public /*volatile*/ HyperRegion bounds = null;
     public final D[] data;
 
@@ -19,11 +19,11 @@ public abstract class AbstractRNode<V,D> implements RNode<V> {
 
     @Override
     public final Stream<D> streamLocal() {
-        return ArrayIterator.streamNonNull(data, size); //TODO null-terminator iterator eliding 'size'
+        return ArrayIterator.streamNonNull(data, (int) size); //TODO null-terminator iterator eliding 'size'
     }
     @Override
     public final Iterator<D> iterateLocal() {
-        return ArrayIterator.iterateN(data, size);
+        return ArrayIterator.iterateN(data, (int) size);
     }
 
 
@@ -44,11 +44,11 @@ public abstract class AbstractRNode<V,D> implements RNode<V> {
 
     @Override
     public final int size() {
-        return size;
+        return (int) size;
     }
 
     public final void drainLayer(Consumer each) {
-        int s = size;
+        int s = (int) size;
         D[] data = this.data;
         for (int i = 0; i < s; i++) {
             Object x = data[i];
@@ -56,7 +56,7 @@ public abstract class AbstractRNode<V,D> implements RNode<V> {
             //"tail-leaf" optimization: inline 1-arity branches for optimization
             while (x instanceof RLeaf) {
                 RLeaf lx = (RLeaf) x;
-                if (lx.size != 1)
+                if ((int) lx.size != 1)
                     break;
                 x = lx.data[0];
             }

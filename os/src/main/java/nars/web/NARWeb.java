@@ -209,14 +209,14 @@ public abstract class NARWeb extends EvalSocket<NAR> {
                     .time(new RealTime.MS()).exe(sharedExec).index(sharedIndex).get();
 
 
-            assert (path.charAt(0) == '/');
+            assert ((int) path.charAt(0) == (int) '/');
             path = path.substring(1);
 
 
             n.log(); //temporary
 
             int initialFPS = 5;
-            n.startFPS(initialFPS);
+            n.startFPS((float) initialFPS);
 
             starting(n);
 

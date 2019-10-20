@@ -239,8 +239,8 @@ public class M_Gladiator {
         @Override
         public boolean think(edict_t self) {
 
-            game_import_t.sound(self, Defines.CHAN_VOICE, sound_idle, 1,
-                    Defines.ATTN_IDLE, 0);
+            game_import_t.sound(self, Defines.CHAN_VOICE, sound_idle, 1.0F,
+                    (float) Defines.ATTN_IDLE, (float) 0);
             return true;
         }
     };
@@ -251,8 +251,8 @@ public class M_Gladiator {
         @Override
         public boolean interact(edict_t self, edict_t other) {
 
-            game_import_t.sound(self, Defines.CHAN_VOICE, sound_sight, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_VOICE, sound_sight, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
@@ -263,8 +263,8 @@ public class M_Gladiator {
         @Override
         public boolean think(edict_t self) {
 
-            game_import_t.sound(self, Defines.CHAN_VOICE, sound_search, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_VOICE, sound_search, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
@@ -276,19 +276,19 @@ public class M_Gladiator {
         public boolean think(edict_t self) {
 
             game_import_t.sound(self, Defines.CHAN_WEAPON, sound_cleaver_swing,
-                    1, Defines.ATTN_NORM, 0);
+                    1.0F, (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
 
     static final mframe_t[] gladiator_frames_stand = {
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null) };
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null) };
 
     static final mmove_t gladiator_move_stand = new mmove_t(FRAME_stand1,
             FRAME_stand7, gladiator_frames_stand, null);
@@ -305,22 +305,22 @@ public class M_Gladiator {
     };
 
     static final mframe_t[] gladiator_frames_walk = {
-            new mframe_t(GameAI.ai_walk, 15, null),
-            new mframe_t(GameAI.ai_walk, 7, null),
-            new mframe_t(GameAI.ai_walk, 6, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 2, null),
-            new mframe_t(GameAI.ai_walk, 0, null),
-            new mframe_t(GameAI.ai_walk, 2, null),
-            new mframe_t(GameAI.ai_walk, 8, null),
-            new mframe_t(GameAI.ai_walk, 12, null),
-            new mframe_t(GameAI.ai_walk, 8, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 2, null),
-            new mframe_t(GameAI.ai_walk, 2, null),
-            new mframe_t(GameAI.ai_walk, 1, null),
-            new mframe_t(GameAI.ai_walk, 8, null) };
+            new mframe_t(GameAI.ai_walk, 15.0F, null),
+            new mframe_t(GameAI.ai_walk, 7.0F, null),
+            new mframe_t(GameAI.ai_walk, 6.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 2.0F, null),
+            new mframe_t(GameAI.ai_walk, (float) 0, null),
+            new mframe_t(GameAI.ai_walk, 2.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null),
+            new mframe_t(GameAI.ai_walk, 12.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 2.0F, null),
+            new mframe_t(GameAI.ai_walk, 2.0F, null),
+            new mframe_t(GameAI.ai_walk, 1.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null) };
 
     static final mmove_t gladiator_move_walk = new mmove_t(FRAME_walk1, FRAME_walk16,
             gladiator_frames_walk, null);
@@ -338,12 +338,12 @@ public class M_Gladiator {
     };
 
     static final mframe_t[] gladiator_frames_run = {
-            new mframe_t(GameAI.ai_run, 23, null),
-            new mframe_t(GameAI.ai_run, 14, null),
-            new mframe_t(GameAI.ai_run, 14, null),
-            new mframe_t(GameAI.ai_run, 21, null),
-            new mframe_t(GameAI.ai_run, 12, null),
-            new mframe_t(GameAI.ai_run, 13, null) };
+            new mframe_t(GameAI.ai_run, 23.0F, null),
+            new mframe_t(GameAI.ai_run, 14.0F, null),
+            new mframe_t(GameAI.ai_run, 14.0F, null),
+            new mframe_t(GameAI.ai_run, 21.0F, null),
+            new mframe_t(GameAI.ai_run, 12.0F, null),
+            new mframe_t(GameAI.ai_run, 13.0F, null) };
 
     static final mmove_t gladiator_move_run = new mmove_t(FRAME_run1, FRAME_run6,
             gladiator_frames_run, null);
@@ -369,37 +369,37 @@ public class M_Gladiator {
         @Override
         public boolean think(edict_t self) {
 
-            float[] aim = { 0, 0, 0 };
+            float[] aim = {(float) 0, (float) 0, (float) 0};
 
-            Math3D.VectorSet(aim, Defines.MELEE_DISTANCE, self.mins[0], -4);
-            if (GameWeapon.fire_hit(self, aim, (20 + (Lib.rand() % 5)), 300))
+            Math3D.VectorSet(aim, (float) Defines.MELEE_DISTANCE, self.mins[0], -4.0F);
+            if (GameWeapon.fire_hit(self, aim, (20 + ((int) Lib.rand() % 5)), 300))
                 game_import_t.sound(self, Defines.CHAN_AUTO, sound_cleaver_hit,
-                        1, Defines.ATTN_NORM, 0);
+                        1.0F, (float) Defines.ATTN_NORM, (float) 0);
             else
                 game_import_t.sound(self, Defines.CHAN_AUTO, sound_cleaver_miss,
-                        1, Defines.ATTN_NORM, 0);
+                        1.0F, (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
 
     static final mframe_t[] gladiator_frames_attack_melee = {
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, gladiator_cleaver_swing),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, GaldiatorMelee),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, gladiator_cleaver_swing),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, GaldiatorMelee),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null) };
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, gladiator_cleaver_swing),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, GaldiatorMelee),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, gladiator_cleaver_swing),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, GaldiatorMelee),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null) };
 
     static final mmove_t gladiator_move_attack_melee = new mmove_t(FRAME_melee1,
             FRAME_melee17, gladiator_frames_attack_melee, gladiator_run);
@@ -421,10 +421,10 @@ public class M_Gladiator {
         @Override
         public boolean think(edict_t self) {
 
-            float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
+            float[] forward = {(float) 0, (float) 0, (float) 0}, right = {(float) 0, (float) 0, (float) 0};
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
-            float[] start = {0, 0, 0};
+            float[] start = {(float) 0, (float) 0, (float) 0};
             Math3D
                     .G_ProjectSource(
                             self.s.origin,
@@ -432,7 +432,7 @@ public class M_Gladiator {
                             forward, right, start);
 
 
-            float[] dir = {0, 0, 0};
+            float[] dir = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorSubtract(self.pos1, start, dir);
             Math3D.VectorNormalize(dir);
 
@@ -444,15 +444,15 @@ public class M_Gladiator {
     };
 
     static final mframe_t[] gladiator_frames_attack_gun = {
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, GladiatorGun),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null) };
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, GladiatorGun),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null) };
 
     static final mmove_t gladiator_move_attack_gun = new mmove_t(FRAME_attack1,
             FRAME_attack9, gladiator_frames_attack_gun, gladiator_run);
@@ -463,44 +463,44 @@ public class M_Gladiator {
         @Override
         public boolean think(edict_t self) {
 
-            float[] v = { 0, 0, 0 };
+            float[] v = {(float) 0, (float) 0, (float) 0};
 
             
             Math3D.VectorSubtract(self.s.origin, self.enemy.s.origin, v);
             float range = Math3D.VectorLength(v);
-            if (range <= (Defines.MELEE_DISTANCE + 32))
+            if (range <= (float) (Defines.MELEE_DISTANCE + 32))
                 return true;
 
             
-            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_gun, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_gun, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             Math3D.VectorCopy(self.enemy.s.origin, self.pos1);
-            
-            self.pos1[2] += self.enemy.viewheight;
+
+            self.pos1[2] = self.pos1[2] + (float) self.enemy.viewheight;
             self.monsterinfo.currentmove = gladiator_move_attack_gun;
             return true;
         }
     };
 
     static final mframe_t[] gladiator_frames_pain = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t gladiator_move_pain = new mmove_t(FRAME_pain1, FRAME_pain6,
             gladiator_frames_pain, gladiator_run);
 
     static final mframe_t[] gladiator_frames_pain_air = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t gladiator_move_pain_air = new mmove_t(FRAME_painup1,
             FRAME_painup7, gladiator_frames_pain_air, gladiator_run);
@@ -515,25 +515,25 @@ public class M_Gladiator {
                 self.s.skinnum = 1;
 
             if (GameBase.level.time < self.pain_debounce_time) {
-                if ((self.velocity[2] > 100)
+                if ((self.velocity[2] > 100.0F)
                         && (self.monsterinfo.currentmove == gladiator_move_pain))
                     self.monsterinfo.currentmove = gladiator_move_pain_air;
                 return;
             }
 
-            self.pain_debounce_time = GameBase.level.time + 3;
+            self.pain_debounce_time = GameBase.level.time + 3.0F;
 
-            if (Lib.random() < 0.5)
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
-                        Defines.ATTN_NORM, 0);
+            if ((double) Lib.random() < 0.5)
+                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1.0F,
+                        (float) Defines.ATTN_NORM, (float) 0);
             else
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain2, 1,
-                        Defines.ATTN_NORM, 0);
+                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain2, 1.0F,
+                        (float) Defines.ATTN_NORM, (float) 0);
 
-            if (GameBase.skill.value == 3)
+            if (GameBase.skill.value == 3.0F)
                 return; 
 
-            if (self.velocity[2] > 100)
+            if (self.velocity[2] > 100.0F)
                 self.monsterinfo.currentmove = gladiator_move_pain_air;
             else
                 self.monsterinfo.currentmove = gladiator_move_pain;
@@ -547,39 +547,39 @@ public class M_Gladiator {
         @Override
         public boolean think(edict_t self) {
 
-            Math3D.VectorSet(self.mins, -16, -16, -24);
-            Math3D.VectorSet(self.maxs, 16, 16, -8);
+            Math3D.VectorSet(self.mins, -16.0F, -16.0F, -24.0F);
+            Math3D.VectorSet(self.maxs, 16.0F, 16.0F, -8.0F);
             self.movetype = Defines.MOVETYPE_TOSS;
             self.svflags |= Defines.SVF_DEADMONSTER;
-            self.nextthink = 0;
+            self.nextthink = (float) 0;
             game_import_t.linkentity(self);
             return true;
         }
     };
 
     static final mframe_t[] gladiator_frames_death = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t gladiator_move_death = new mmove_t(FRAME_death1,
             FRAME_death22, gladiator_frames_death, gladiator_dead);
@@ -595,8 +595,8 @@ public class M_Gladiator {
             if (self.health <= self.gib_health) {
                 game_import_t
                         .sound(self, Defines.CHAN_VOICE, game_import_t
-                                .soundindex("misc/udeath.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                                .soundindex("misc/udeath.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
                 int n;
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
@@ -615,8 +615,8 @@ public class M_Gladiator {
                 return;
 
             
-            game_import_t.sound(self, Defines.CHAN_VOICE, sound_die, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_VOICE, sound_die, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             self.deadflag = Defines.DEAD_DEAD;
             self.takedamage = Defines.DAMAGE_YES;
 
@@ -630,7 +630,7 @@ public class M_Gladiator {
      * Trigger_Spawn Sight
      */
     public static void SP_monster_gladiator(edict_t self) {
-        if (GameBase.deathmatch.value != 0) {
+        if (GameBase.deathmatch.value != (float) 0) {
             GameUtil.G_FreeEdict(self);
             return;
         }
@@ -650,8 +650,8 @@ public class M_Gladiator {
         self.solid = Defines.SOLID_BBOX;
         self.s.modelindex = game_import_t
                 .modelindex("models/monsters/gladiatr/tris.md2");
-        Math3D.VectorSet(self.mins, -32, -32, -24);
-        Math3D.VectorSet(self.maxs, 32, 32, 64);
+        Math3D.VectorSet(self.mins, -32.0F, -32.0F, -24.0F);
+        Math3D.VectorSet(self.maxs, 32.0F, 32.0F, 64.0F);
 
         self.health = 400;
         self.gib_health = -175;

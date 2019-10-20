@@ -53,7 +53,7 @@ public class Cause extends WhenInternal implements Comparable<Cause>, Caused, Pr
      * current scalar utility estimate for this cause's support of the current MetaGoal's.
      * may be positive or negative, and is in relation to other cause's values
      */
-    public volatile float value = 0;
+    public volatile float value = (float) 0;
 
     /** an effective priority value */
     public volatile float pri = 1f;
@@ -64,7 +64,7 @@ public class Cause extends WhenInternal implements Comparable<Cause>, Caused, Pr
 
     public Cause(short id, @Nullable Object name) {
         this.id = id;
-        this.why = IdempotInt.the(id);
+        this.why = IdempotInt.the((int) id);
         this.name = $.identity(name != null ? name : this);
         credit = new AtomicFloatVector(MetaGoal.values().length);
         //credit = new Credit[MetaGoal.values().length];
@@ -128,7 +128,7 @@ public class Cause extends WhenInternal implements Comparable<Cause>, Caused, Pr
 
     @Override
     public boolean equals(Object obj) {
-        return this == obj || id == ((Cause) obj).id;
+        return this == obj || (int) id == (int) ((Cause) obj).id;
     }
 
     @Override

@@ -53,7 +53,7 @@ public class Channel {
 	static final int FIXED = 1;
 	static final int DYNAMIC = 2;
 	static final int MAX_CHANNELS = 32;
-	static final float[] NULLVECTOR = {0, 0, 0};
+	static final float[] NULLVECTOR = {(float) 0, (float) 0, (float) 0};
 	
 	private static AL al;
 	private static final Channel[] channels = new Channel[MAX_CHANNELS];
@@ -76,7 +76,7 @@ public class Channel {
 	private final int sourceId;
 	private float volume;
 	private float rolloff;
-	private final float[] origin = {0, 0, 0};
+	private final float[] origin = {(float) 0, (float) 0, (float) 0};
 
 	
 	private boolean autosound;
@@ -95,7 +95,7 @@ public class Channel {
 	private void clear() {
 		entnum = entchannel = bufferId = -1;
 		bufferChanged = false;
-		rolloff = 0;
+		rolloff = (float) 0;
 		autosound = false;
 		active = false;
 		modified = false;
@@ -289,7 +289,7 @@ public class Channel {
 		ch.bufferId = ps.bufferId;
 		ch.volumeChanged = (ch.volume != ps.volume);			
 		ch.volume = ps.volume;
-		ch.rolloff = ps.attenuation * 2;
+		ch.rolloff = ps.attenuation * 2.0F;
 		ch.active = true;
 		ch.modified = true;
 		return true;
@@ -306,7 +306,7 @@ public class Channel {
                 ch.bufferId = bufferId;
            		ch.volumeChanged = (ch.volume < 1.0f);			
                 ch.volume = 1.0f;
-                ch.rolloff = attenuation * 2;
+                ch.rolloff = attenuation * 2.0F;
                 ch.active = true;
                 ch.modified = true;
                 return ch;
@@ -316,8 +316,8 @@ public class Channel {
     }
 
 	
-	private static final float[] entityOrigin = {0, 0, 0};
-	private static final float[] sourceOrigin = {0, 0, 0};
+	private static final float[] entityOrigin = {(float) 0, (float) 0, (float) 0};
+	private static final float[] sourceOrigin = {(float) 0, (float) 0, (float) 0};
 
 	static void playAllSounds(float[] listenerOrigin) {
         int[] tmp = {0};
@@ -411,7 +411,7 @@ public class Channel {
 				continue;
 
 			
-			ch = Channel.pickForLoop(buffers[sfx.bufferId], 6);
+			ch = Channel.pickForLoop(buffers[sfx.bufferId], 6.0F);
 			if (ch == null)
 				break;
 				

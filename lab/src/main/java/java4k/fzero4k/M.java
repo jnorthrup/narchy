@@ -24,7 +24,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.util.stream.IntStream;
 
 public class M extends JFrame {
 
@@ -40,10 +39,10 @@ public class M extends JFrame {
 
       int[][][] wiresBitmap = new int[32][256][256];
       for(int i = 0; i < 32; i++) {
-      for(double t = 0; t < 2.0 * Math.PI; t += 0.001) {
-          int X = 128 + (int)((256 + 64 * Math.cos(t * 3.0)) * Math.sin(t));
-          int Y = 128 + (int)((256 + 64 * Math.sin(t * 3.0)) * Math.cos(t));
-          int color = C(t + i * Math.PI / 16.0, 1, 1);
+      for(double t = (double) 0; t < 2.0 * Math.PI; t += 0.001) {
+          int X = 128 + (int)((256.0 + 64.0 * Math.cos(t * 3.0)) * Math.sin(t));
+          int Y = 128 + (int)((256.0 + 64.0 * Math.sin(t * 3.0)) * Math.cos(t));
+          int color = C(t + (double) i * Math.PI / 16.0, 1.0, 1.0);
         for(int y = 0; y < 16; y++) {
           for(int x = 0; x < 16; x++) {
             wiresBitmap[i][0xFF & (Y + y)][0xFF & (X + x)] = color;
@@ -60,26 +59,26 @@ public class M extends JFrame {
           64, 32, BufferedImage.TYPE_INT_ARGB_PRE);
       for(int y = 0, k = 0; y < 32; y++) {
         for(int x = 0; x < 64; x++, k++) {
-          double dx = (x - 32.0) / 2, dy = y - 26;
+          double dx = ((double) x - 32.0) / 2.0, dy = (double) (y - 26);
             double dist1 = dx*dx + dy*dy;
-          dx = (x - 31.5) / 2;
-          dy = y - 15.5;
+          dx = ((double) x - 31.5) / 2.0;
+          dy = (double) y - 15.5;
             double dist2 = dx*dx + dy*dy;
-          dy = y - 17.5;
-          dx = x - 32;
+          dy = (double) y - 17.5;
+          dx = (double) (x - 32);
             double dist3 = dx*dx + dy*dy;
-          if (Math.abs(dist3 - 320) <= 24 || Math.abs(dist3 - 480) <= 24) {
+          if (Math.abs(dist3 - 320.0) <= 24.0 || Math.abs(dist3 - 480.0) <= 24.0) {
             vehicleSpriteData[k] = C(
-                Math.PI * spriteIndex / 1.9,
-                dist1/256,
-                1) | 0xff000000;
-          } else if (dist2 > 256) {
+                Math.PI * (double) spriteIndex / 1.9,
+                dist1/ 256.0,
+                    1.0) | 0xff000000;
+          } else if (dist2 > 256.0) {
             vehicleSpriteData[k] = 0;
           } else {
             vehicleSpriteData[k] = C(
-                Math.PI * spriteIndex / 1.9,
-                dist1/256,
-                dist1/1024 + 1) | 0xff000000;
+                Math.PI * (double) spriteIndex / 1.9,
+                dist1/ 256.0,
+                dist1/ 1024.0 + 1.0) | 0xff000000;
           }
         }
       }
@@ -91,25 +90,25 @@ public class M extends JFrame {
       }
       for(int y = 0; y < 16; y++) {
         for(int x = 0; x < 16; x++) {
-            double dx = x - 7.5;
-            double dy = y - 7.5;
+            double dx = (double) x - 7.5;
+            double dy = (double) y - 7.5;
             double dy2 = dy / 1.5;
             double dist = dx * dx + dy * dy;
-          if (dx * dx + dy2 * dy2 < 64) {
-            dy = y - 4;
+          if (dx * dx + dy2 * dy2 < 64.0) {
+            dy = (double) (y - 4);
             vehicleSpriteData[(y << 6) | (x + 24)] = C(
-                3,
-                dist/256,
-                y > 6 && x > 3 && x < 12
-                    || y > 7
-                    || dx * dx + dy * dy < 8 ? 2 : 1) | 0xff000000;
+                    3.0,
+                dist/ 256.0,
+                    (double) (y > 6 && x > 3 && x < 12
+                            || y > 7
+                            || dx * dx + dy * dy < 8.0 ? 2 : 1)) | 0xff000000;
           }
-          if (dist < 64 || y == 0) {
+          if (dist < 64.0 || y == 0) {
             vehicleSpriteData[((16 + y) << 6) | (x + 48)] =
             vehicleSpriteData[((16 + y) << 6) | x] = C(
-                Math.PI * spriteIndex / 1.9,
-                dist/64,
-                1) | 0xff000000;            
+                Math.PI * (double) spriteIndex / 1.9,
+                dist/ 64.0,
+                    1.0) | 0xff000000;
           }
         }
       }
@@ -121,13 +120,13 @@ public class M extends JFrame {
       byte[][] raceTrack = new byte[512][512];
       for(int y = 0; y < 512; y++) {
       for(int x = 0; x < 512; x++) {
-        raceTrack[y][x] = -1;
+        raceTrack[y][x] = (byte) -1;
       }
     }
        
     for(int y = 0; y < 128; y++) {
       for(int x = 246; x < 261; x++) {
-        raceTrack[y][x] = 0;
+        raceTrack[y][x] = (byte) 0;
       }
     }
     
@@ -139,19 +138,19 @@ public class M extends JFrame {
     
     for(int y = 128; y < 512; y++) {
       for(int x = 243; x < 264; x++) {
-          double angle = y * Math.PI / 64;
-        raceTrack[y][x + (int)((8 * Math.cos(angle) + 24) * Math.sin(angle))] 
-            = 0;
+          double angle = (double) y * Math.PI / 64.0;
+        raceTrack[y][x + (int)((8.0 * Math.cos(angle) + 24.0) * Math.sin(angle))]
+            = (byte) 0;
       }
     }
     
     for(int y = 0; y < 512; y++) {
       for(int x = 0; x < 512; x++) {
-        if (raceTrack[y][x] >= 0) {
+        if ((int) raceTrack[y][x] >= 0) {
           for(int i = -1; i < 2; i++) {
             for(int j = -1; j < 2; j++) {
-              if (raceTrack[0x1FF & (i + y)][0x1FF & (j + x)] == -1) {
-                raceTrack[y][x] = 1;
+              if ((int) raceTrack[0x1FF & (i + y)][0x1FF & (j + x)] == -1) {
+                raceTrack[y][x] = (byte) 1;
                 break;
               }
             }
@@ -164,17 +163,17 @@ public class M extends JFrame {
       int[][][] bitmaps = new int[6][32][32];
       for(int y = 0; y < 32; y++) {
       for(int x = 0; x < 32; x++) {
-          double dx = 15.5 - x;
-          double dy = 15.5 - y;
+          double dx = 15.5 - (double) x;
+          double dy = 15.5 - (double) y;
           bitmaps[0][y][x] = 0xFF98A8A8;
         bitmaps[4][y][x] = 0xFF90A0A0;
         bitmaps[5][y][x] 
             = (((x >> 3) + (y >> 3)) & 1) == 0 ? 0xFF000000 : 0xFFFFFFFF;
-        bitmaps[2][y][x] = C(4.5, Math.abs(dy) / 16, 1);
+        bitmaps[2][y][x] = C(4.5, Math.abs(dy) / 16.0, 1.0);
           double dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 16) {
+          if (dist < 16.0) {
           bitmaps[3][y][x] = 0xFFFFFFFF;
-          bitmaps[1][y][x] = C(5.3, dist / 16, 1 + dist / 256);
+          bitmaps[1][y][x] = C(5.3, dist / 16.0, 1.0 + dist / 256.0);
         } else {
           bitmaps[3][y][x] = bitmaps[1][y][x] = 0xFF98A8A8;
         }
@@ -183,15 +182,15 @@ public class M extends JFrame {
 
 
       int[][][] projectionMap = new int[192][320][2];
-      final double GROUND_Y = 207;
-      final double VIEWER_Z = -128;
-      final double VIEWER_Y = 32;
+      final double GROUND_Y = 207.0;
+      final double VIEWER_Z = -128.0;
+      final double VIEWER_Y = 32.0;
       final double VIEWER_X = 159.5;
       for(int y = 0; y < 192; y++) {
       for(int x = 0; x < 320; x++) {
-          double k = (GROUND_Y - VIEWER_Y) / (48 + y - VIEWER_Y);
-        projectionMap[y][x][0] = (int)(k * (x - VIEWER_X) + VIEWER_X);
-        projectionMap[y][x][1] = (int)(VIEWER_Z * (1 - k));
+          double k = (GROUND_Y - VIEWER_Y) / ((double) (48 + y) - VIEWER_Y);
+        projectionMap[y][x][0] = (int)(k * ((double) x - VIEWER_X) + VIEWER_X);
+        projectionMap[y][x][1] = (int)(VIEWER_Z * (1.0 - k));
       }
     }
     
@@ -215,16 +214,16 @@ public class M extends JFrame {
       int paused = 1;
       int rank = 0;
       int hitWallCount = 0;
-      double sin = 0;
-      double cos = 0;
+      double sin = (double) 0;
+      double cos = (double) 0;
       int wiresBitmapIndex = 0;
       Color darkColor = new Color(0xA7000000, true);
       Color powerColor = new Color(0xFABEF1);
-      double power = 0;
+      double power = (double) 0;
       boolean playing = false;
       boolean onPowerBar = false;
       double[][] vehicleMetrics = new double[10][9];
-      double playerAngle = 0;
+      double playerAngle = (double) 0;
       int[] screenBuffer = new int[320 * 240];
       while(true) {
       do {
@@ -238,26 +237,27 @@ public class M extends JFrame {
           if (paused == 0) {
             for(int i = 0; i < 10; i++) {
               for(int j = 0; j < 9; j++) {
-                vehicleMetrics[i][j] = 0;
+                vehicleMetrics[i][j] = (double) 0;
               }
             }
             for(int i = 0; i < 4; i++) {
-              vehicleMetrics[i][0] = 7984 + i * 80;
+              vehicleMetrics[i][0] = (double) (7984 + i * 80);
             }
             for(int i = 4; i < 10; i += 3) {
-              vehicleMetrics[i][0] = 7984;
-              vehicleMetrics[i][1] = 16384 * (i - 3);
-              vehicleMetrics[i + 1][0] = 8144;
-              vehicleMetrics[i + 1][1] = vehicleMetrics[i][1] + 2048;
-              vehicleMetrics[i + 2][0] = 8144;
-              vehicleMetrics[i + 2][1] = vehicleMetrics[i][1] + 3840;
+              vehicleMetrics[i][0] = 7984.0;
+              vehicleMetrics[i][1] = (double) (16384 * (i - 3));
+              vehicleMetrics[i + 1][0] = 8144.0;
+              vehicleMetrics[i + 1][1] = vehicleMetrics[i][1] + 2048.0;
+              vehicleMetrics[i + 2][0] = 8144.0;
+              vehicleMetrics[i + 2][1] = vehicleMetrics[i][1] + 3840.0;
             }
-            power = 80;
-            playerAngle = hitWallCount = 0;
+            power = 80.0;
+            var playerAngle1 = hitWallCount = 0;
+            playerAngle = playerAngle1;
             imageGraphics.setFont(getFont().deriveFont(32f));
             onPowerBar = playing = false;
           }
-        } else if (vehicleMetrics[0][1] < 81984 && power > 0) {
+        } else if (vehicleMetrics[0][1] < 81984.0 && power > (double) 0) {
         
           
           rank = 1;
@@ -267,14 +267,14 @@ public class M extends JFrame {
               count++;
             }
           }
-          rank += count;
+          rank = (int) ((long) rank + count);
 
           
           if (hitWallCount > 0) {
             hitWallCount--;
-            power -= 1;
-            if (power < 0) {
-              power = 0;
+            power -= 1.0;
+            if (power < (double) 0) {
+              power = (double) 0;
             }
           }
 
@@ -288,11 +288,11 @@ public class M extends JFrame {
           }
           cos = Math.cos(playerAngle);
           sin = Math.sin(playerAngle);
-          vehicleMetrics[0][4] = 0;
-          vehicleMetrics[0][5] = 0;
+          vehicleMetrics[0][4] = (double) 0;
+          vehicleMetrics[0][5] = (double) 0;
           if (K[KeyEvent.VK_D]) {
             playing = true;
-            if (vehicleMetrics[0][6] < 20) {
+            if (vehicleMetrics[0][6] < 20.0) {
               vehicleMetrics[0][6] += 0.2;
             }
           } else {
@@ -303,19 +303,19 @@ public class M extends JFrame {
             
             for(int i = 1; i < 10; i++) {
               if ((i < 4 && vehicleMetrics[i][6] < 20.5) 
-                  || vehicleMetrics[i][6] < 10)  {
-                vehicleMetrics[i][6] += 0.2 + i * 0.2;
+                  || vehicleMetrics[i][6] < 10.0)  {
+                vehicleMetrics[i][6] += 0.2 + (double) i * 0.2;
               }
-                double targetZ = 11 + vehicleMetrics[i][1];
-                double targetX = 7984 + (i & 0x03) * 80;
+                double targetZ = 11.0 + vehicleMetrics[i][1];
+                double targetX = (double) (7984 + (i & 0x03) * 80);
               if (i >= 4) {
-                targetX += 32;
+                targetX += 32.0;
               }
 
-                double tz = (targetZ / 32) % 512;
-                if (tz >= 128) {
-                    double angle = tz * Math.PI / 64;
-                targetX += ((8 * Math.cos(angle) + 24) * Math.sin(angle)) * 32;
+                double tz = (targetZ / 32.0) % 512.0;
+                if (tz >= 128.0) {
+                    double angle = tz * Math.PI / 64.0;
+                targetX += ((8.0 * Math.cos(angle) + 24.0) * Math.sin(angle)) * 32.0;
               }
 
                 double vx = targetX - vehicleMetrics[i][0];
@@ -329,8 +329,8 @@ public class M extends JFrame {
 
             
             onPowerBar = false;
-            if (raceTrack[0x1FF & (((int)vehicleMetrics[0][1]) >> 5)]
-                [0x1FF & (((int)vehicleMetrics[0][0]) >> 5)] == 2) {               
+            if ((int) raceTrack[0x1FF & (((int) vehicleMetrics[0][1]) >> 5)]
+                    [0x1FF & (((int) vehicleMetrics[0][0]) >> 5)] == 2) {
               onPowerBar = true;
               for(int i = 0; i < 2; i++) {
                 powerOvalY[i] += 16;
@@ -338,7 +338,7 @@ public class M extends JFrame {
                   powerOvalY[i] = -32;
                 }
               }
-              if (power < 80) {
+              if (power < 80.0) {
                 power += 0.2; 
               }
             }
@@ -355,14 +355,14 @@ public class M extends JFrame {
               for(int i = 0; i < 10; i++) {
                 if (i != j) {
                     double normalX = (vehicleMetrics[j][0]
-                      - vehicleMetrics[i][0]) / 2;
+                      - vehicleMetrics[i][0]) / 2.0;
                     double normalZ = vehicleMetrics[j][1]
                       - vehicleMetrics[i][1];
                     double dist2 = normalX * normalX + normalZ * normalZ;
-                  if (dist2 < 1200) {
+                  if (dist2 < 1200.0) {
                       double dotProduct = normalX * vehicleMetrics[0][7]
                         + normalZ * vehicleMetrics[0][8];
-                    if (dotProduct < 0) {
+                    if (dotProduct < (double) 0) {
                         double ratio = 2.0 * dotProduct / dist2;
                       vehicleMetrics[j][7] = vehicleMetrics[j][2] 
                           = vehicleMetrics[0][7] - normalX * ratio;
@@ -372,9 +372,9 @@ public class M extends JFrame {
                       vehicleMetrics[i][2] = -vehicleMetrics[j][2];
                       vehicleMetrics[i][3] = -vehicleMetrics[j][3];
                       if (i == 0) {
-                        power -= 10;
-                        if (power < 0) {
-                          power = 0;
+                        power -= 10.0;
+                        if (power < (double) 0) {
+                          power = (double) 0;
                         }
                       }
                       break;
@@ -388,23 +388,23 @@ public class M extends JFrame {
                 int vehicleZ = ((int)vehicleMetrics[j][1]) >> 5;
               for(int z = -2; z <= 2; z++) {
                 for(int x = -2; x <= 2; x++) {
-                  if (Math.abs(raceTrack
-                      [0x1FF & (z + vehicleZ)][0x1FF & (x + vehicleX)]) == 1) {
+                  if (Math.abs((int) raceTrack
+                          [0x1FF & (z + vehicleZ)][0x1FF & (x + vehicleX)]) == 1) {
                       double normalX = vehicleMetrics[j][0]
-                        - (((x + vehicleX) << 5) + 16);
+                        - (double) (((x + vehicleX) << 5) + 16);
                       double normalZ = vehicleMetrics[j][1]
-                        - (((z + vehicleZ) << 5) + 16);
+                        - (double) (((z + vehicleZ) << 5) + 16);
                       double dist2 = normalX * normalX + normalZ * normalZ;
-                    if (dist2 < 2304) {
+                    if (dist2 < 2304.0) {
                         double dotProduct = normalX * vehicleMetrics[j][7]
                           + normalZ * vehicleMetrics[j][8];
-                      if (dotProduct < 0) {
+                      if (dotProduct < (double) 0) {
                           double ratio = 2.0 * dotProduct / dist2;
                         vehicleMetrics[j][7] = vehicleMetrics[j][2] 
                             = vehicleMetrics[0][7] - normalX * ratio;
                         vehicleMetrics[j][8] = vehicleMetrics[j][3] 
                             = vehicleMetrics[0][8] - normalZ * ratio;
-                        vehicleMetrics[j][6] /= 2;
+                        vehicleMetrics[j][6] /= 2.0;
                         if (j == 0) {
                           hitWallCount = 5;
                         }
@@ -417,7 +417,7 @@ public class M extends JFrame {
 
                 double velocityMag = vehicleMetrics[j][7] * vehicleMetrics[j][7]
                   + vehicleMetrics[j][8] * vehicleMetrics[j][8];
-              double velocityMaxMag = j == 0 ? 400 : 420;          
+              double velocityMaxMag = (double) (j == 0 ? 400 : 420);
               if (velocityMag > velocityMaxMag) {
                 velocityMaxMag = Math.sqrt(velocityMaxMag);
                 velocityMag = Math.sqrt(velocityMag);
@@ -438,13 +438,13 @@ public class M extends JFrame {
         }
         
 
-        nextFrameStart += 28571429;
+        nextFrameStart += 28571429L;
       } while(nextFrameStart < System.nanoTime());
 
 
       
-      double skyRed = 0x65;
-      double skyGreen = 0x91;
+      double skyRed = (double) 0x65;
+      double skyGreen = (double) 0x91;
       for(int y = 0, k = 0; y < 48; y++) {
           int skyColor = 0xFF000000
             | (((int)skyRed) << 16) | (((int)skyGreen) << 8) | 0xF2;
@@ -458,13 +458,13 @@ public class M extends JFrame {
       
       for(int y = 0, k = 15360; y < 192; y++) {
         for(int x = 0; x < 320; x++, k++) {
-            double X = projectionMap[y][x][0] - VIEWER_X;
-          double Z = projectionMap[y][x][1];
+            double X = (double) projectionMap[y][x][0] - VIEWER_X;
+          double Z = (double) projectionMap[y][x][1];
             int xr = (int)(X * cos - Z * sin + vehicleMetrics[0][0]);
             int zr = (int)(X * sin + Z * cos + vehicleMetrics[0][1]);
 
             int z = 0x1FF & (zr >> 5);
-          int tileIndex = raceTrack[z][0x1FF & (xr >> 5)];
+          int tileIndex = (int) raceTrack[z][0x1FF & (xr >> 5)];
           if (hitWallCount > 0 && tileIndex == 1) {
             tileIndex = 3;
           }
@@ -488,18 +488,18 @@ public class M extends JFrame {
           double X = vehicleMetrics[i][0] - vehicleMetrics[0][0];
           double Z = vehicleMetrics[i][1] - vehicleMetrics[0][1];
         vehicleMetrics[i][4] = X * cos + Z * sin;
-        vehicleMetrics[i][5] = (int)(Z * cos - X * sin);
+        vehicleMetrics[i][5] = (double) (int) (Z * cos - X * sin);
       }
       for(int z = 1200; z > -127; z--) {
         for(int i = 0; i < 10; i++) {
-          if (z == vehicleMetrics[i][5]) {
-              double k = VIEWER_Z / (VIEWER_Z - z);
+          if ((double) z == vehicleMetrics[i][5]) {
+              double k = VIEWER_Z / (VIEWER_Z - (double) z);
               double upperLeftX
-                = k * (vehicleMetrics[i][4] - 32) + VIEWER_X;
+                = k * (vehicleMetrics[i][4] - 32.0) + VIEWER_X;
               double upperLeftY
-                = k * (GROUND_Y - 32 - VIEWER_Y) + VIEWER_Y;
+                = k * (GROUND_Y - 32.0 - VIEWER_Y) + VIEWER_Y;
               double lowerRightX
-                = k * (vehicleMetrics[i][4] + 32) + VIEWER_X;
+                = k * (vehicleMetrics[i][4] + 32.0) + VIEWER_X;
               double lowerRightY
                 = k * (GROUND_Y - VIEWER_Y) + VIEWER_Y;            
             imageGraphics.drawImage(vehicleSprites[i], 
@@ -511,7 +511,7 @@ public class M extends JFrame {
       }
       
       
-      imageGraphics.setColor(power < 20 && (wiresBitmapIndex & 8) == 0 
+      imageGraphics.setColor(power < 20.0 && (wiresBitmapIndex & 8) == 0
             ? Color.WHITE : powerColor);
       imageGraphics.fillRect(224, 20, (int)power, 10);
       imageGraphics.setColor(Color.WHITE);
@@ -526,7 +526,7 @@ public class M extends JFrame {
       }
             
       
-      if (power <= 0 || (vehicleMetrics[0][1] >= 81984 && rank > 3)) {
+      if (power <= (double) 0 || (vehicleMetrics[0][1] >= 81984.0 && rank > 3)) {
 
           imageGraphics.setFont(largeFont);
           String failString = "FAIL";
@@ -536,7 +536,7 @@ public class M extends JFrame {
           imageGraphics.fillRect(x, 65, width + 5, 90);
         imageGraphics.setColor(Color.RED);
         imageGraphics.drawString(failString, x, 145);
-      } else if (vehicleMetrics[0][1] >= 81984) {
+      } else if (vehicleMetrics[0][1] >= 81984.0) {
 
           String rankString = Integer.toString(rank);
         imageGraphics.setFont(largeFont);
@@ -562,9 +562,9 @@ public class M extends JFrame {
 
 
           long remaining = nextFrameStart - System.nanoTime();
-      if (remaining > 0) {
+      if (remaining > 0L) {
         try {
-          Thread.sleep(remaining / 1000000);
+          Thread.sleep(remaining / 1000000L);
         } catch(Throwable t) {
         }
       }
@@ -573,12 +573,12 @@ public class M extends JFrame {
 
   public static int C(double angle, double light, double dark) {
     return (D(angle, light, dark) << 16)
-        | (D(angle + 2 * Math.PI / 3, light, dark) << 8)
-        | (D(angle - 2 * Math.PI / 3, light, dark));
+        | (D(angle + 2.0 * Math.PI / 3.0, light, dark) << 8)
+        | (D(angle - 2.0 * Math.PI / 3.0, light, dark));
   }
 
   public static int D(double angle, double light, double dark) {
-    return (int)(255 * Math.pow((Math.cos(angle) + 1) / 2, light) / dark);
+    return (int)(255.0 * Math.pow((Math.cos(angle) + 1.0) / 2.0, light) / dark);
   }
 
   @Override

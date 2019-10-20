@@ -85,7 +85,7 @@ public class RLDemo extends javax.swing.JFrame {
     static final int updatePeriodMS = 0;
     private int numIterationsPerLoop = 1;
     private final ApproxParameters approxParameters = new ApproxParameters(0.01, 0.1);
-    private final RLParameters rLParameters = new RLParameters(0.01, 0.9, 0.9, 0);
+    private final RLParameters rLParameters = new RLParameters(0.01, 0.9, 0.9, (double) 0);
     private int numPhysicsIterations = 0;
     private final AgentMenu agentMenu = new AgentMenu("", 1);
     private final DomainMenu domainMenu = new DomainMenu();
@@ -135,7 +135,7 @@ public class RLDemo extends javax.swing.JFrame {
                     if (agent instanceof RLAgent) {
                         double[] d = ((RLAgent)agent).getStateNormalized();
                         int numParam = d.length;
-                        int cw = (int) Math.ceil(Math.sqrt(numParam));
+                        int cw = (int) Math.ceil(Math.sqrt((double) numParam));
                         int ch = numParam / cw;
 
                         parameterChart.draw(agent.getFunction());

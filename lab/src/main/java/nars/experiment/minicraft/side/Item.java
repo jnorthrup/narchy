@@ -20,7 +20,7 @@ public class Item extends Entity implements Cloneable {
     public final Template template;
 
     public Item(String ref, int size, int id, String name, int[][] template, int templateCount) {
-        super(ref, true, 0, 0, size, size);
+        super(ref, true, (float) 0, (float) 0, size, size);
         this.template = new Template(template, templateCount);
         this.item_id = id;
         this.name = name;

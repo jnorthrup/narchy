@@ -43,7 +43,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
 
         shapeColor = new float[] { 0.5f, 0.5f, 0.5f, 0.9f };
         this.shape = newShape();
-        scale(1,1,1);
+        scale(1.0F, 1.0F, 1.0F);
 
         
 

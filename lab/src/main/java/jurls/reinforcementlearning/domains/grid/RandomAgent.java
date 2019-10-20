@@ -8,8 +8,8 @@ public class RandomAgent implements Agent {
 
     @Override
     public int step(double reward) {
-        Arrays.fill(action, 0);
-        action[(int)(Math.random()*action.length)] = 1.0;
+        Arrays.fill(action, (double) 0);
+        action[(int)(Math.random()* (double) action.length)] = 1.0;
         return 0;
     }
 

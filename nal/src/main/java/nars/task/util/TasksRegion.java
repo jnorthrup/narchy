@@ -44,7 +44,7 @@ public final class TasksRegion extends Longerval implements TaskRegion {
     }
 
     public static int freqI(float freq) {
-        return Util.toInt(freq, hashDiscretenessCoarse);
+        return Util.toInt(freq, (int) hashDiscretenessCoarse);
     }
 
     TasksRegion(long start, long end, int freqIMin, int freqIMax, int confIMin, int confIMax) {
@@ -54,7 +54,7 @@ public final class TasksRegion extends Longerval implements TaskRegion {
     }
 
     private static float freqF(int h) {
-        return Util.toFloat(freqI(h), hashDiscretenessCoarse);
+        return Util.toFloat(freqI(h), (int) hashDiscretenessCoarse);
     }
     private static float confF(int c) {
         return Util.toFloat(confI(c), hashDiscretenessFine);

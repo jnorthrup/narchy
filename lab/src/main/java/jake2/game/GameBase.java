@@ -133,7 +133,7 @@ public class GameBase {
             float overbounce) {
 
         int blocked = 0;
-        if (normal[2] > 0)
+        if (normal[2] > (float) 0)
             blocked |= 1; 
         if (normal[2] == 0.0f)
             blocked |= 2;
@@ -144,7 +144,7 @@ public class GameBase {
             float change = normal[i] * backoff;
             out[i] = in[i] - change;
             if (out[i] > -STOP_EPSILON && out[i] < STOP_EPSILON)
-                out[i] = 0;
+                out[i] = (float) 0;
         }
 
         return blocked;
@@ -205,7 +205,7 @@ public class GameBase {
         else
             from.i++;
 
-        for (float[] eorg = {0, 0, 0}; from.i < num_edicts; from.i++) {
+        for (float[] eorg = {(float) 0, (float) 0, (float) 0}; from.i < num_edicts; from.i++) {
             from.o = g_edicts[from.i];
             if (!from.o.inuse)
                 continue;
@@ -257,16 +257,16 @@ public class GameBase {
             return null;
         }
 
-        return choice[Lib.rand() % num_choices];
+        return choice[(int) Lib.rand() % num_choices];
     }
 
-    public static final float[] VEC_UP = { 0, -1, 0 };
+    public static final float[] VEC_UP = {(float) 0, -1.0F, (float) 0};
 
-    public static final float[] MOVEDIR_UP = { 0, 0, 1 };
+    public static final float[] MOVEDIR_UP = {(float) 0, (float) 0, 1.0F};
 
-    public static final float[] VEC_DOWN = { 0, -2, 0 };
+    public static final float[] VEC_DOWN = {(float) 0, -2.0F, (float) 0};
 
-    public static final float[] MOVEDIR_DOWN = { 0, 0, -1 };
+    public static final float[] MOVEDIR_DOWN = {(float) 0, (float) 0, -1.0F};
 
     public static void G_SetMovedir(float[] angles, float[] movedir) {
         if (Math3D.VectorEquals(angles, VEC_UP)) {
@@ -364,8 +364,8 @@ public class GameBase {
     }
 
     public static void ClearBounds(float[] mins, float[] maxs) {
-        mins[0] = mins[1] = mins[2] = 99999;
-        maxs[0] = maxs[1] = maxs[2] = -99999;
+        mins[0] = mins[1] = mins[2] = 99999.0F;
+        maxs[0] = maxs[1] = maxs[2] = -99999.0F;
     }
 
     public static void AddPointToBounds(float[] v, float[] mins, float[] maxs) {
@@ -405,7 +405,7 @@ public class GameBase {
     public static void ClientEndServerFrames() {
 
 
-        for (int i = 0; i < maxclients.value; i++) {
+        for (int i = 0; (float) i < maxclients.value; i++) {
             edict_t ent = g_edicts[1 + i];
             if (!ent.inuse || null == ent.client)
                 continue;
@@ -510,27 +510,27 @@ public class GameBase {
      */
     public static void CheckDMRules() {
 
-        if (level.intermissiontime != 0)
+        if (level.intermissiontime != (float) 0)
             return;
 
-        if (0 == deathmatch.value)
+        if ((float) 0 == deathmatch.value)
             return;
 
-        if (timelimit.value != 0) {
-            if (level.time >= timelimit.value * 60) {
+        if (timelimit.value != (float) 0) {
+            if (level.time >= timelimit.value * 60.0F) {
                 game_import_t.bprintf(Defines.PRINT_HIGH, "Timelimit hit.\n");
                 EndDMLevel();
                 return;
             }
         }
 
-        if (fraglimit.value != 0) {
-            for (int i = 0; i < maxclients.value; i++) {
+        if (fraglimit.value != (float) 0) {
+            for (int i = 0; (float) i < maxclients.value; i++) {
                 gclient_t cl = game.clients[i];
                 if (!g_edicts[i + 1].inuse)
                     continue;
 
-                if (cl.resp.score >= fraglimit.value) {
+                if ((float) cl.resp.score >= fraglimit.value) {
                     game_import_t.bprintf(Defines.PRINT_HIGH, "Fraglimit hit.\n");
                     EndDMLevel();
                     return;
@@ -548,11 +548,11 @@ public class GameBase {
         game_import_t.AddCommandString(command);
         level.changemap = null;
         level.exitintermission = false;
-        level.intermissiontime = 0;
+        level.intermissiontime = (float) 0;
         ClientEndServerFrames();
 
         
-        for (int i = 0; i < maxclients.value; i++) {
+        for (int i = 0; (float) i < maxclients.value; i++) {
             edict_t ent = g_edicts[1 + i];
             if (!ent.inuse)
                 continue;
@@ -569,7 +569,7 @@ public class GameBase {
     public static void G_RunFrame() {
 
         level.framenum++;
-        level.time = level.framenum * Defines.FRAMETIME;
+        level.time = (float) level.framenum * Defines.FRAMETIME;
 
         
         GameAI.AI_SetSightClient();
@@ -605,7 +605,7 @@ public class GameBase {
                 }
             }
 
-            if (i > 0 && i <= maxclients.value) {
+            if (i > 0 && (float) i <= maxclients.value) {
                 PlayerClient.ClientBeginServerFrame(ent);
                 continue;
             }

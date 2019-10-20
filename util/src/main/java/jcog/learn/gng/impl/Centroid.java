@@ -5,7 +5,6 @@ import jcog.data.atomic.AtomicCycle;
 import org.apache.commons.math3.linear.ArrayRealVector;
 
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 import static jcog.Texts.n4;
 
@@ -55,7 +54,7 @@ public class Centroid extends ArrayRealVector {
         double[] b = maxErrorNeighbour.getDataRef();
         double[] ab = getDataRef();
         for (int i = 0; i < ab.length; i++) {
-            ab[i] = (a[i] + b[i]) / 2;
+            ab[i] = (a[i] + b[i]) / 2.0;
         }
     }
 
@@ -177,7 +176,7 @@ public class Centroid extends ArrayRealVector {
         if (d[0]!=d[0]) {
             //inactive, assign the value as-is
             System.arraycopy(x, 0, d, 0, x.length);
-            return this.localDistanceSq = 0;
+            return this.localDistanceSq = (double) 0;
         } else {
             return (this.localDistanceSq = dist.distance(d, x));
         }

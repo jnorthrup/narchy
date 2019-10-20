@@ -2,7 +2,6 @@ package jcog.data.iterator;
 
 import java.util.Iterator;
 import java.util.function.IntFunction;
-import java.util.stream.IntStream;
 
 /**
  * Iterates over Cartesian product for an array of Iterables, 

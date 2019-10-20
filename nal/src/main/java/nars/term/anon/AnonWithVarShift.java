@@ -50,8 +50,8 @@ public class AnonWithVarShift extends CachedAnon {
                 }
                 if (shift != 0) {
                     NormalizedVariable v = ((NormalizedVariable) x);
-                    int newID = v.id() + shift;
-                    assert (newID < Byte.MAX_VALUE - 3): "shifted normalized variable ID out of range: " + newID; //to be safe
+                    int newID = (int) v.id() + shift;
+                    assert (newID < (int) Byte.MAX_VALUE - 3): "shifted normalized variable ID out of range: " + newID; //to be safe
                     x = v.normalizedVariable((byte) newID);
                 }
             }
@@ -137,13 +137,13 @@ public class AnonWithVarShift extends CachedAnon {
                 byte serial = ((NormalizedVariable) s).id();
                 switch (s.op()) {
                     case VAR_DEP:
-                        depShiftMax = Math.max(depShiftMax, serial);
+                        depShiftMax = Math.max(depShiftMax, (int) serial);
                         break;
                     case VAR_INDEP:
-                        indepShiftMax = Math.max(indepShiftMax, serial);
+                        indepShiftMax = Math.max(indepShiftMax, (int) serial);
                         break;
                     case VAR_QUERY:
-                        queryShiftMax = Math.max(queryShiftMax, serial);
+                        queryShiftMax = Math.max(queryShiftMax, (int) serial);
                         break;
                     default:
                         throw new UnsupportedOperationException();

@@ -137,8 +137,8 @@ public enum Unifiable { ;
 
             //TODO
             //undecided
-            return x.opID() == CONJ.id ? false : !conj.eventsOR((when, what) ->
-                    Terms.possiblyUnifiable(what, x, false, Variable), 0,
+            return x.opID() == (int) CONJ.id ? false : !conj.eventsOR((when, what) ->
+                    Terms.possiblyUnifiable(what, x, false, Variable), 0L,
                 true, conj.dt() == XTERNAL
             );
 

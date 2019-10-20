@@ -41,21 +41,21 @@ public class GameMisc {
 
         self.solid = Defines.SOLID_TRIGGER;
         self.touch = path_corner_touch;
-        Math3D.VectorSet(self.mins, -8, -8, -8);
-        Math3D.VectorSet(self.maxs, 8, 8, 8);
+        Math3D.VectorSet(self.mins, -8.0F, -8.0F, -8.0F);
+        Math3D.VectorSet(self.maxs, 8.0F, 8.0F, 8.0F);
         self.svflags |= Defines.SVF_NOCLIENT;
         game_import_t.linkentity(self);
     }
 
     public static void SP_point_combat(edict_t self) {
-        if (GameBase.deathmatch.value != 0) {
+        if (GameBase.deathmatch.value != (float) 0) {
             GameUtil.G_FreeEdict(self);
             return;
         }
         self.solid = Defines.SOLID_TRIGGER;
         self.touch = point_combat_touch;
-        Math3D.VectorSet(self.mins, -8, -8, -16);
-        Math3D.VectorSet(self.maxs, 8, 8, 16);
+        Math3D.VectorSet(self.mins, -8.0F, -8.0F, -16.0F);
+        Math3D.VectorSet(self.maxs, 8.0F, 8.0F, 16.0F);
         self.svflags = Defines.SVF_NOCLIENT;
         game_import_t.linkentity(self);
     }
@@ -66,8 +66,8 @@ public class GameMisc {
         ent.movetype = Defines.MOVETYPE_NONE;
         ent.solid = Defines.SOLID_BBOX;
         ent.s.renderfx = Defines.RF_FRAMELERP;
-        Math3D.VectorSet(ent.mins, -16, -16, -24);
-        Math3D.VectorSet(ent.maxs, 16, 16, 32);
+        Math3D.VectorSet(ent.mins, -16.0F, -16.0F, -24.0F);
+        Math3D.VectorSet(ent.maxs, 16.0F, 16.0F, 32.0F);
         ent.s.modelindex = game_import_t
                 .modelindex("models/objects/banner/tris.md2");
         game_import_t.linkentity(ent);
@@ -94,7 +94,7 @@ public class GameMisc {
 
     public static void SP_light(edict_t self) {
         
-        if (null == self.targetname || GameBase.deathmatch.value != 0) {
+        if (null == self.targetname || GameBase.deathmatch.value != (float) 0) {
             GameUtil.G_FreeEdict(self);
             return;
         }
@@ -151,12 +151,12 @@ public class GameMisc {
     public static void SP_func_object(edict_t self) {
         game_import_t.setmodel(self, self.model);
 
-        self.mins[0] += 1;
-        self.mins[1] += 1;
-        self.mins[2] += 1;
-        self.maxs[0] -= 1;
-        self.maxs[1] -= 1;
-        self.maxs[2] -= 1;
+        self.mins[0] += 1.0F;
+        self.mins[1] += 1.0F;
+        self.mins[2] += 1.0F;
+        self.maxs[0] -= 1.0F;
+        self.maxs[1] -= 1.0F;
+        self.maxs[2] -= 1.0F;
 
         if (self.dmg == 0)
             self.dmg = 100;
@@ -165,7 +165,7 @@ public class GameMisc {
             self.solid = Defines.SOLID_BSP;
             self.movetype = Defines.MOVETYPE_PUSH;
             self.think = func_object_release;
-            self.nextthink = GameBase.level.time + 2 * Defines.FRAMETIME;
+            self.nextthink = GameBase.level.time + 2.0F * Defines.FRAMETIME;
         } else {
             self.solid = Defines.SOLID_NOT;
             self.movetype = Defines.MOVETYPE_PUSH;
@@ -184,7 +184,7 @@ public class GameMisc {
     }
 
     public static void SP_func_explosive(edict_t self) {
-        if (GameBase.deathmatch.value != 0) { 
+        if (GameBase.deathmatch.value != (float) 0) {
             GameUtil.G_FreeEdict(self);
             return;
         }
@@ -222,7 +222,7 @@ public class GameMisc {
     }
 
     public static void SP_misc_explobox(edict_t self) {
-        if (GameBase.deathmatch.value != 0) { 
+        if (GameBase.deathmatch.value != (float) 0) {
             GameUtil.G_FreeEdict(self);
             return;
         }
@@ -236,8 +236,8 @@ public class GameMisc {
 
         self.model = "models/objects/barrels/tris.md2";
         self.s.modelindex = game_import_t.modelindex(self.model);
-        Math3D.VectorSet(self.mins, -16, -16, 0);
-        Math3D.VectorSet(self.maxs, 16, 16, 40);
+        Math3D.VectorSet(self.mins, -16.0F, -16.0F, (float) 0);
+        Math3D.VectorSet(self.maxs, 16.0F, 16.0F, 40.0F);
 
         if (self.mass == 0)
             self.mass = 400;
@@ -253,7 +253,7 @@ public class GameMisc {
         self.touch = barrel_touch;
 
         self.think = M.M_droptofloor;
-        self.nextthink = GameBase.level.time + 2 * Defines.FRAMETIME;
+        self.nextthink = GameBase.level.time + 2.0F * Defines.FRAMETIME;
 
         game_import_t.linkentity(self);
     }
@@ -261,53 +261,53 @@ public class GameMisc {
     public static void SP_misc_blackhole(edict_t ent) {
         ent.movetype = Defines.MOVETYPE_NONE;
         ent.solid = Defines.SOLID_NOT;
-        Math3D.VectorSet(ent.mins, -64, -64, 0);
-        Math3D.VectorSet(ent.maxs, 64, 64, 8);
+        Math3D.VectorSet(ent.mins, -64.0F, -64.0F, (float) 0);
+        Math3D.VectorSet(ent.maxs, 64.0F, 64.0F, 8.0F);
         ent.s.modelindex = game_import_t
                 .modelindex("models/objects/black/tris.md2");
         ent.s.renderfx = Defines.RF_TRANSLUCENT;
         ent.use = misc_blackhole_use;
         ent.think = misc_blackhole_think;
-        ent.nextthink = GameBase.level.time + 2 * Defines.FRAMETIME;
+        ent.nextthink = GameBase.level.time + 2.0F * Defines.FRAMETIME;
         game_import_t.linkentity(ent);
     }
 
     public static void SP_misc_eastertank(edict_t ent) {
         ent.movetype = Defines.MOVETYPE_NONE;
         ent.solid = Defines.SOLID_BBOX;
-        Math3D.VectorSet(ent.mins, -32, -32, -16);
-        Math3D.VectorSet(ent.maxs, 32, 32, 32);
+        Math3D.VectorSet(ent.mins, -32.0F, -32.0F, -16.0F);
+        Math3D.VectorSet(ent.maxs, 32.0F, 32.0F, 32.0F);
         ent.s.modelindex = game_import_t
                 .modelindex("models/monsters/tank/tris.md2");
         ent.s.frame = 254;
         ent.think = misc_eastertank_think;
-        ent.nextthink = GameBase.level.time + 2 * Defines.FRAMETIME;
+        ent.nextthink = GameBase.level.time + 2.0F * Defines.FRAMETIME;
         game_import_t.linkentity(ent);
     }
 
     public static void SP_misc_easterchick(edict_t ent) {
         ent.movetype = Defines.MOVETYPE_NONE;
         ent.solid = Defines.SOLID_BBOX;
-        Math3D.VectorSet(ent.mins, -32, -32, 0);
-        Math3D.VectorSet(ent.maxs, 32, 32, 32);
+        Math3D.VectorSet(ent.mins, -32.0F, -32.0F, (float) 0);
+        Math3D.VectorSet(ent.maxs, 32.0F, 32.0F, 32.0F);
         ent.s.modelindex = game_import_t
                 .modelindex("models/monsters/bitch/tris.md2");
         ent.s.frame = 208;
         ent.think = misc_easterchick_think;
-        ent.nextthink = GameBase.level.time + 2 * Defines.FRAMETIME;
+        ent.nextthink = GameBase.level.time + 2.0F * Defines.FRAMETIME;
         game_import_t.linkentity(ent);
     }
 
     public static void SP_misc_easterchick2(edict_t ent) {
         ent.movetype = Defines.MOVETYPE_NONE;
         ent.solid = Defines.SOLID_BBOX;
-        Math3D.VectorSet(ent.mins, -32, -32, 0);
-        Math3D.VectorSet(ent.maxs, 32, 32, 32);
+        Math3D.VectorSet(ent.mins, -32.0F, -32.0F, (float) 0);
+        Math3D.VectorSet(ent.maxs, 32.0F, 32.0F, 32.0F);
         ent.s.modelindex = game_import_t
                 .modelindex("models/monsters/bitch/tris.md2");
         ent.s.frame = 248;
         ent.think = misc_easterchick2_think;
-        ent.nextthink = GameBase.level.time + 2 * Defines.FRAMETIME;
+        ent.nextthink = GameBase.level.time + 2.0F * Defines.FRAMETIME;
         game_import_t.linkentity(ent);
     }
 
@@ -316,8 +316,8 @@ public class GameMisc {
         self.solid = Defines.SOLID_BBOX;
         self.model = "models/monsters/commandr/tris.md2";
         self.s.modelindex = game_import_t.modelindex(self.model);
-        Math3D.VectorSet(self.mins, -32, -32, 0);
-        Math3D.VectorSet(self.maxs, 32, 32, 48);
+        Math3D.VectorSet(self.mins, -32.0F, -32.0F, (float) 0);
+        Math3D.VectorSet(self.maxs, 32.0F, 32.0F, 48.0F);
         self.use = commander_body_use;
         self.takedamage = Defines.DAMAGE_YES;
         self.flags = Defines.FL_GODMODE;
@@ -328,7 +328,7 @@ public class GameMisc {
         game_import_t.soundindex("tank/pain.wav");
 
         self.think = commander_body_drop;
-        self.nextthink = GameBase.level.time + 5 * Defines.FRAMETIME;
+        self.nextthink = GameBase.level.time + 5.0F * Defines.FRAMETIME;
     }
 
     public static void SP_misc_banner(edict_t ent) {
@@ -336,7 +336,7 @@ public class GameMisc {
         ent.solid = Defines.SOLID_NOT;
         ent.s.modelindex = game_import_t
                 .modelindex("models/objects/banner/tris.md2");
-        ent.s.frame = Lib.rand() % 16;
+        ent.s.frame = (int) Lib.rand() % 16;
         game_import_t.linkentity(ent);
 
         ent.think = misc_banner_think;
@@ -344,7 +344,7 @@ public class GameMisc {
     }
 
     public static void SP_misc_deadsoldier(edict_t ent) {
-        if (GameBase.deathmatch.value != 0) { 
+        if (GameBase.deathmatch.value != (float) 0) {
             GameUtil.G_FreeEdict(ent);
             return;
         }
@@ -368,8 +368,8 @@ public class GameMisc {
         else
             ent.s.frame = 0;
 
-        Math3D.VectorSet(ent.mins, -16, -16, 0);
-        Math3D.VectorSet(ent.maxs, 16, 16, 16);
+        Math3D.VectorSet(ent.mins, -16.0F, -16.0F, (float) 0);
+        Math3D.VectorSet(ent.maxs, 16.0F, 16.0F, 16.0F);
         ent.deadflag = Defines.DEAD_DEAD;
         ent.takedamage = Defines.DAMAGE_YES;
         ent.svflags |= Defines.SVF_MONSTER | Defines.SVF_DEADMONSTER;
@@ -387,15 +387,15 @@ public class GameMisc {
             return;
         }
 
-        if (0 == ent.speed)
-            ent.speed = 300;
+        if ((float) 0 == ent.speed)
+            ent.speed = 300.0F;
 
         ent.movetype = Defines.MOVETYPE_PUSH;
         ent.solid = Defines.SOLID_NOT;
         ent.s.modelindex = game_import_t
                 .modelindex("models/ships/viper/tris.md2");
-        Math3D.VectorSet(ent.mins, -16, -16, 0);
-        Math3D.VectorSet(ent.maxs, 16, 16, 32);
+        Math3D.VectorSet(ent.mins, -16.0F, -16.0F, (float) 0);
+        Math3D.VectorSet(ent.maxs, 16.0F, 16.0F, 32.0F);
 
         ent.think = GameFunc.func_train_find;
         ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
@@ -413,8 +413,8 @@ public class GameMisc {
     public static void SP_misc_bigviper(edict_t ent) {
         ent.movetype = Defines.MOVETYPE_NONE;
         ent.solid = Defines.SOLID_BBOX;
-        Math3D.VectorSet(ent.mins, -176, -120, -24);
-        Math3D.VectorSet(ent.maxs, 176, 120, 72);
+        Math3D.VectorSet(ent.mins, -176.0F, -120.0F, -24.0F);
+        Math3D.VectorSet(ent.maxs, 176.0F, 120.0F, 72.0F);
         ent.s.modelindex = game_import_t
                 .modelindex("models/ships/bigviper/tris.md2");
         game_import_t.linkentity(ent);
@@ -423,8 +423,8 @@ public class GameMisc {
     public static void SP_misc_viper_bomb(edict_t self) {
         self.movetype = Defines.MOVETYPE_NONE;
         self.solid = Defines.SOLID_NOT;
-        Math3D.VectorSet(self.mins, -8, -8, -8);
-        Math3D.VectorSet(self.maxs, 8, 8, 8);
+        Math3D.VectorSet(self.mins, -8.0F, -8.0F, -8.0F);
+        Math3D.VectorSet(self.maxs, 8.0F, 8.0F, 8.0F);
 
         self.s.modelindex = game_import_t
                 .modelindex("models/objects/bomb/tris.md2");
@@ -446,15 +446,15 @@ public class GameMisc {
             return;
         }
 
-        if (0 == ent.speed)
-            ent.speed = 300;
+        if ((float) 0 == ent.speed)
+            ent.speed = 300.0F;
 
         ent.movetype = Defines.MOVETYPE_PUSH;
         ent.solid = Defines.SOLID_NOT;
         ent.s.modelindex = game_import_t
                 .modelindex("models/ships/strogg1/tris.md2");
-        Math3D.VectorSet(ent.mins, -16, -16, 0);
-        Math3D.VectorSet(ent.maxs, 16, 16, 32);
+        Math3D.VectorSet(ent.mins, -16.0F, -16.0F, (float) 0);
+        Math3D.VectorSet(ent.maxs, 16.0F, 16.0F, 32.0F);
 
         ent.think = GameFunc.func_train_find;
         ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
@@ -468,8 +468,8 @@ public class GameMisc {
     public static void SP_misc_satellite_dish(edict_t ent) {
         ent.movetype = Defines.MOVETYPE_NONE;
         ent.solid = Defines.SOLID_BBOX;
-        Math3D.VectorSet(ent.mins, -64, -64, 0);
-        Math3D.VectorSet(ent.maxs, 64, 64, 128);
+        Math3D.VectorSet(ent.mins, -64.0F, -64.0F, (float) 0);
+        Math3D.VectorSet(ent.maxs, 64.0F, 64.0F, 128.0F);
         ent.s.modelindex = game_import_t
                 .modelindex("models/objects/satellite/tris.md2");
         ent.use = misc_satellite_dish_use;
@@ -511,11 +511,11 @@ public class GameMisc {
         ent.movetype = Defines.MOVETYPE_TOSS;
         ent.svflags |= Defines.SVF_MONSTER;
         ent.deadflag = Defines.DEAD_DEAD;
-        ent.avelocity[0] = Lib.random() * 200;
-        ent.avelocity[1] = Lib.random() * 200;
-        ent.avelocity[2] = Lib.random() * 200;
+        ent.avelocity[0] = Lib.random() * 200.0F;
+        ent.avelocity[1] = Lib.random() * 200.0F;
+        ent.avelocity[2] = Lib.random() * 200.0F;
         ent.think = GameUtil.G_FreeEdictA;
-        ent.nextthink = GameBase.level.time + 30;
+        ent.nextthink = GameBase.level.time + 30.0F;
         game_import_t.linkentity(ent);
     }
 
@@ -532,11 +532,11 @@ public class GameMisc {
         ent.movetype = Defines.MOVETYPE_TOSS;
         ent.svflags |= Defines.SVF_MONSTER;
         ent.deadflag = Defines.DEAD_DEAD;
-        ent.avelocity[0] = Lib.random() * 200;
-        ent.avelocity[1] = Lib.random() * 200;
-        ent.avelocity[2] = Lib.random() * 200;
+        ent.avelocity[0] = Lib.random() * 200.0F;
+        ent.avelocity[1] = Lib.random() * 200.0F;
+        ent.avelocity[2] = Lib.random() * 200.0F;
         ent.think = GameUtil.G_FreeEdictA;
-        ent.nextthink = GameBase.level.time + 30;
+        ent.nextthink = GameBase.level.time + 30.0F;
         game_import_t.linkentity(ent);
     }
 
@@ -553,11 +553,11 @@ public class GameMisc {
         ent.movetype = Defines.MOVETYPE_TOSS;
         ent.svflags |= Defines.SVF_MONSTER;
         ent.deadflag = Defines.DEAD_DEAD;
-        ent.avelocity[0] = Lib.random() * 200;
-        ent.avelocity[1] = Lib.random() * 200;
-        ent.avelocity[2] = Lib.random() * 200;
+        ent.avelocity[0] = Lib.random() * 200.0F;
+        ent.avelocity[1] = Lib.random() * 200.0F;
+        ent.avelocity[2] = Lib.random() * 200.0F;
         ent.think = GameUtil.G_FreeEdictA;
-        ent.nextthink = GameBase.level.time + 30;
+        ent.nextthink = GameBase.level.time + 30.0F;
         game_import_t.linkentity(ent);
     }
 
@@ -589,10 +589,10 @@ public class GameMisc {
         self.activator = null;
         if ((self.spawnflags & 1) != 0) {
             self.health = 0;
-            self.wait = self.count;
+            self.wait = (float) self.count;
         } else if ((self.spawnflags & 2) != 0) {
             self.health = self.count;
-            self.wait = 0;
+            self.wait = (float) 0;
         }
     }
 
@@ -653,7 +653,7 @@ public class GameMisc {
         if ((self.spawnflags & 4) != 0)
             self.use = func_clock_use;
         else
-            self.nextthink = GameBase.level.time + 1;
+            self.nextthink = GameBase.level.time + 1.0F;
     }
 
     /**
@@ -675,8 +675,8 @@ public class GameMisc {
         ent.s.sound = game_import_t.soundindex("world/amb10.wav");
         ent.solid = Defines.SOLID_BBOX;
 
-        Math3D.VectorSet(ent.mins, -32, -32, -24);
-        Math3D.VectorSet(ent.maxs, 32, 32, -16);
+        Math3D.VectorSet(ent.mins, -32.0F, -32.0F, -24.0F);
+        Math3D.VectorSet(ent.maxs, 32.0F, 32.0F, -16.0F);
         game_import_t.linkentity(ent);
 
         edict_t trig = GameUtil.G_Spawn();
@@ -685,8 +685,8 @@ public class GameMisc {
         trig.target = ent.target;
         trig.owner = ent;
         Math3D.VectorCopy(ent.s.origin, trig.s.origin);
-        Math3D.VectorSet(trig.mins, -8, -8, 8);
-        Math3D.VectorSet(trig.maxs, 8, 8, 24);
+        Math3D.VectorSet(trig.mins, -8.0F, -8.0F, 8.0F);
+        Math3D.VectorSet(trig.maxs, 8.0F, 8.0F, 24.0F);
         game_import_t.linkentity(trig);
     }
 
@@ -727,12 +727,12 @@ public class GameMisc {
     public static void ThrowGib(edict_t self, String gibname, int damage,
             int type) {
 
-        float[] size = { 0, 0, 0 };
+        float[] size = {(float) 0, (float) 0, (float) 0};
 
         edict_t gib = GameUtil.G_Spawn();
     
         Math3D.VectorScale(self.size, 0.5f, size);
-        float[] origin = {0, 0, 0};
+        float[] origin = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorAdd(self.absmin, size, origin);
         gib.s.origin[0] = origin[0] + Lib.crandom() * size[0];
         gib.s.origin[1] = origin[1] + Lib.crandom() * size[1];
@@ -755,16 +755,16 @@ public class GameMisc {
             vscale = 1.0f;
         }
 
-        float[] vd = {0, 0, 0};
+        float[] vd = {(float) 0, (float) 0, (float) 0};
         VelocityForDamage(damage, vd);
         Math3D.VectorMA(self.velocity, vscale, vd, gib.velocity);
         ClipGibVelocity(gib);
-        gib.avelocity[0] = Lib.random() * 600;
-        gib.avelocity[1] = Lib.random() * 600;
-        gib.avelocity[2] = Lib.random() * 600;
+        gib.avelocity[0] = Lib.random() * 600.0F;
+        gib.avelocity[1] = Lib.random() * 600.0F;
+        gib.avelocity[2] = Lib.random() * 600.0F;
     
         gib.think = GameUtil.G_FreeEdictA;
-        gib.nextthink = GameBase.level.time + 10 + Lib.random() * 10;
+        gib.nextthink = GameBase.level.time + 10.0F + Lib.random() * 10.0F;
     
         game_import_t.linkentity(gib);
     }
@@ -798,7 +798,7 @@ public class GameMisc {
             vscale = 1.0f;
         }
 
-        float[] vd = {0, 0, 0};
+        float[] vd = {(float) 0, (float) 0, (float) 0};
         VelocityForDamage(damage, vd);
         Math3D.VectorMA(self.velocity, vscale, vd, self.velocity);
         ClipGibVelocity(self);
@@ -806,7 +806,7 @@ public class GameMisc {
         self.avelocity[Defines.YAW] = Lib.crandom() * 600f;
     
         self.think = GameUtil.G_FreeEdictA;
-        self.nextthink = GameBase.level.time + 10 + Lib.random() * 10;
+        self.nextthink = GameBase.level.time + 10.0F + Lib.random() * 10.0F;
     
         game_import_t.linkentity(self);
     }
@@ -814,7 +814,7 @@ public class GameMisc {
     public static void ThrowClientHead(edict_t self, int damage) {
         String gibname;
     
-        if ((Lib.rand() & 1) != 0) {
+        if (((int) Lib.rand() & 1) != 0) {
             gibname = "models/objects/gibs/head2/tris.md2";
             self.s.skinnum = 1; 
         } else {
@@ -822,11 +822,11 @@ public class GameMisc {
             self.s.skinnum = 0;
         }
     
-        self.s.origin[2] += 32;
+        self.s.origin[2] += 32.0F;
         self.s.frame = 0;
         game_import_t.setmodel(self, gibname);
-        Math3D.VectorSet(self.mins, -16, -16, 0);
-        Math3D.VectorSet(self.maxs, 16, 16, 16);
+        Math3D.VectorSet(self.mins, -16.0F, -16.0F, (float) 0);
+        Math3D.VectorSet(self.maxs, 16.0F, 16.0F, 16.0F);
     
         self.takedamage = Defines.DAMAGE_NO;
         self.solid = Defines.SOLID_NOT;
@@ -835,7 +835,7 @@ public class GameMisc {
         self.flags |= Defines.FL_NO_KNOCKBACK;
     
         self.movetype = Defines.MOVETYPE_BOUNCE;
-        float[] vd = {0, 0, 0};
+        float[] vd = {(float) 0, (float) 0, (float) 0};
         VelocityForDamage(damage, vd);
         Math3D.VectorAdd(self.velocity, vd, self.velocity);
     
@@ -846,7 +846,7 @@ public class GameMisc {
             self.client.anim_end = self.s.frame;
         } else {
             self.think = null;
-            self.nextthink = 0;
+            self.nextthink = (float) 0;
         }
     
         game_import_t.linkentity(self);
@@ -858,18 +858,18 @@ public class GameMisc {
         edict_t chunk = GameUtil.G_Spawn();
         Math3D.VectorCopy(origin, chunk.s.origin);
         game_import_t.setmodel(chunk, modelname);
-        float[] v = {0, 0, 0};
-        v[0] = 100 * Lib.crandom();
-        v[1] = 100 * Lib.crandom();
-        v[2] = 100 + 100 * Lib.crandom();
+        float[] v = {(float) 0, (float) 0, (float) 0};
+        v[0] = 100.0F * Lib.crandom();
+        v[1] = 100.0F * Lib.crandom();
+        v[2] = 100.0F + 100.0F * Lib.crandom();
         Math3D.VectorMA(self.velocity, speed, v, chunk.velocity);
         chunk.movetype = Defines.MOVETYPE_BOUNCE;
         chunk.solid = Defines.SOLID_NOT;
-        chunk.avelocity[0] = Lib.random() * 600;
-        chunk.avelocity[1] = Lib.random() * 600;
-        chunk.avelocity[2] = Lib.random() * 600;
+        chunk.avelocity[0] = Lib.random() * 600.0F;
+        chunk.avelocity[1] = Lib.random() * 600.0F;
+        chunk.avelocity[2] = Lib.random() * 600.0F;
         chunk.think = GameUtil.G_FreeEdictA;
-        chunk.nextthink = GameBase.level.time + 5 + Lib.random() * 5;
+        chunk.nextthink = GameBase.level.time + 5.0F + Lib.random() * 5.0F;
         chunk.s.frame = 0;
         chunk.flags = 0;
         chunk.classname = "debris";
@@ -879,18 +879,18 @@ public class GameMisc {
     }
 
     public static void ClipGibVelocity(edict_t ent) {
-        if (ent.velocity[0] < -300)
-            ent.velocity[0] = -300;
-        else if (ent.velocity[0] > 300)
-            ent.velocity[0] = 300;
-        if (ent.velocity[1] < -300)
-            ent.velocity[1] = -300;
-        else if (ent.velocity[1] > 300)
-            ent.velocity[1] = 300;
-        if (ent.velocity[2] < 200)
-            ent.velocity[2] = 200; 
-        else if (ent.velocity[2] > 500)
-            ent.velocity[2] = 500;
+        if (ent.velocity[0] < -300.0F)
+            ent.velocity[0] = -300.0F;
+        else if (ent.velocity[0] > 300.0F)
+            ent.velocity[0] = 300.0F;
+        if (ent.velocity[1] < -300.0F)
+            ent.velocity[1] = -300.0F;
+        else if (ent.velocity[1] > 300.0F)
+            ent.velocity[1] = 300.0F;
+        if (ent.velocity[2] < 200.0F)
+            ent.velocity[2] = 200.0F;
+        else if (ent.velocity[2] > 500.0F)
+            ent.velocity[2] = 500.0F;
     }
 
     public static final EntUseAdapter Use_Areaportal = new EntUseAdapter() {
@@ -955,7 +955,7 @@ public class GameMisc {
             else
                 next = null;
 
-            float[] v = {0, 0, 0};
+            float[] v = {(float) 0, (float) 0, (float) 0};
             if ((next != null) && (next.spawnflags & 1) != 0) {
                 Math3D.VectorCopy(next.s.origin, v);
                 v[2] += next.mins[2];
@@ -967,14 +967,14 @@ public class GameMisc {
 
             other.goalentity = other.movetarget = next;
 
-            if (self.wait != 0) {
+            if (self.wait != (float) 0) {
                 other.monsterinfo.pausetime = GameBase.level.time + self.wait;
                 other.monsterinfo.stand.think(other);
                 return;
             }
 
             if (other.movetarget == null) {
-                other.monsterinfo.pausetime = GameBase.level.time + 100000000;
+                other.monsterinfo.pausetime = GameBase.level.time + 100000000.0F;
                 other.monsterinfo.stand.think(other);
             } else {
                 Math3D.VectorSubtract(other.goalentity.s.origin,
@@ -1012,7 +1012,7 @@ public class GameMisc {
                 self.target = null;
             } else if ((self.spawnflags & 1) != 0
                     && 0 == (other.flags & (Defines.FL_SWIM | Defines.FL_FLY))) {
-                other.monsterinfo.pausetime = GameBase.level.time + 100000000;
+                other.monsterinfo.pausetime = GameBase.level.time + 100000000.0F;
                 other.monsterinfo.aiflags |= Defines.AI_STAND_GROUND;
                 other.monsterinfo.stand.think(other);
             }
@@ -1131,7 +1131,7 @@ public class GameMisc {
             
             if (plane == null)
                 return;
-            if (plane.normal[2] < 1.0)
+            if ((double) plane.normal[2] < 1.0)
                 return;
             if (other.takedamage == Defines.DAMAGE_NO)
                 return;
@@ -1185,24 +1185,24 @@ public class GameMisc {
         @Override
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                         int damage, float[] point) {
-            float[] size = { 0, 0, 0 };
+            float[] size = {(float) 0, (float) 0, (float) 0};
 
 
             Math3D.VectorScale(self.size, 0.5f, size);
-            float[] origin = {0, 0, 0};
+            float[] origin = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorAdd(self.absmin, size, origin);
             Math3D.VectorCopy(origin, self.s.origin);
 
             self.takedamage = Defines.DAMAGE_NO;
 
             if (self.dmg != 0)
-                GameCombat.T_RadiusDamage(self, attacker, self.dmg, null,
-                        self.dmg + 40, Defines.MOD_EXPLOSIVE);
+                GameCombat.T_RadiusDamage(self, attacker, (float) self.dmg, null,
+                        (float) (self.dmg + 40), Defines.MOD_EXPLOSIVE);
 
             Math3D.VectorSubtract(self.s.origin, inflictor.s.origin,
                     self.velocity);
             Math3D.VectorNormalize(self.velocity);
-            Math3D.VectorScale(self.velocity, 150, self.velocity);
+            Math3D.VectorScale(self.velocity, 150.0F, self.velocity);
 
             
             Math3D.VectorScale(size, 0.5f, size);
@@ -1213,7 +1213,7 @@ public class GameMisc {
 
 
             int count;
-            float[] chunkorigin = {0, 0, 0};
+            float[] chunkorigin = {(float) 0, (float) 0, (float) 0};
             if (mass >= 100) {
                 count = mass / 100;
                 if (count > 8)
@@ -1223,7 +1223,7 @@ public class GameMisc {
                     chunkorigin[1] = origin[1] + Lib.crandom() * size[1];
                     chunkorigin[2] = origin[2] + Lib.crandom() * size[2];
                     ThrowDebris(self, "models/objects/debris1/tris.md2",
-                            1, chunkorigin);
+                            1.0F, chunkorigin);
                 }
             }
 
@@ -1235,7 +1235,7 @@ public class GameMisc {
                 chunkorigin[0] = origin[0] + Lib.crandom() * size[0];
                 chunkorigin[1] = origin[1] + Lib.crandom() * size[1];
                 chunkorigin[2] = origin[2] + Lib.crandom() * size[2];
-                ThrowDebris(self, "models/objects/debris2/tris.md2", 2,
+                ThrowDebris(self, "models/objects/debris2/tris.md2", 2.0F,
                         chunkorigin);
             }
 
@@ -1286,10 +1286,10 @@ public class GameMisc {
             if ((null == other.groundentity) || (other.groundentity == self))
                 return;
 
-            float ratio = (float) other.mass / self.mass;
-            float[] v = {0, 0, 0};
+            float ratio = (float) other.mass / (float) self.mass;
+            float[] v = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorSubtract(self.s.origin, other.s.origin, v);
-            M.M_walkmove(self, Math3D.vectoyaw(v), 20 * ratio
+            M.M_walkmove(self, Math3D.vectoyaw(v), 20.0F * ratio
                     * Defines.FRAMETIME);
         }
     };
@@ -1300,16 +1300,16 @@ public class GameMisc {
         @Override
         public boolean think(edict_t self) {
 
-            GameCombat.T_RadiusDamage(self, self.activator, self.dmg, null,
-                    self.dmg + 40, Defines.MOD_BARREL);
+            GameCombat.T_RadiusDamage(self, self.activator, (float) self.dmg, null,
+                    (float) (self.dmg + 40), Defines.MOD_BARREL);
 
-            float[] save = {0, 0, 0};
+            float[] save = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorCopy(self.s.origin, save);
             Math3D.VectorMA(self.absmin, 0.5f, self.size, self.s.origin);
 
 
-            float spd = 1.5f * self.dmg / 200.0f;
-            float[] org = {0, 0, 0};
+            float spd = 1.5f * (float) self.dmg / 200.0f;
+            float[] org = {(float) 0, (float) 0, (float) 0};
             org[0] = self.s.origin[0] + Lib.crandom() * self.size[0];
             org[1] = self.s.origin[1] + Lib.crandom() * self.size[1];
             org[2] = self.s.origin[2] + Lib.crandom() * self.size[2];
@@ -1322,7 +1322,7 @@ public class GameMisc {
                     org);
 
             
-            spd = 1.75f * self.dmg / 200.0f;
+            spd = 1.75f * (float) self.dmg / 200.0f;
             Math3D.VectorCopy(self.absmin, org);
             ThrowDebris(self, "models/objects/debris3/tris.md2", spd,
                     org);
@@ -1341,7 +1341,7 @@ public class GameMisc {
                     org);
 
             
-            spd = 2 * self.dmg / 200f;
+            spd = (float) (2 * self.dmg) / 200f;
             org[0] = self.s.origin[0] + Lib.crandom() * self.size[0];
             org[1] = self.s.origin[1] + Lib.crandom() * self.size[1];
             org[2] = self.s.origin[2] + Lib.crandom() * self.size[2];
@@ -1401,7 +1401,7 @@ public class GameMisc {
                         int damage, float[] point) {
 
             self.takedamage = Defines.DAMAGE_NO;
-            self.nextthink = GameBase.level.time + 2 * Defines.FRAMETIME;
+            self.nextthink = GameBase.level.time + 2.0F * Defines.FRAMETIME;
             self.think = barrel_explode;
             self.activator = attacker;
         }
@@ -1515,11 +1515,11 @@ public class GameMisc {
             if (++self.s.frame < 24)
                 self.nextthink = GameBase.level.time + Defines.FRAMETIME;
             else
-                self.nextthink = 0;
+                self.nextthink = (float) 0;
 
             if (self.s.frame == 22)
                 game_import_t.sound(self, Defines.CHAN_BODY, game_import_t
-                        .soundindex("tank/thud.wav"), 1, Defines.ATTN_NORM, 0);
+                        .soundindex("tank/thud.wav"), 1.0F, (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
@@ -1532,7 +1532,7 @@ public class GameMisc {
             self.think = commander_body_think;
             self.nextthink = GameBase.level.time + Defines.FRAMETIME;
             game_import_t.sound(self, Defines.CHAN_BODY, game_import_t
-                    .soundindex("tank/pain.wav"), 1, Defines.ATTN_NORM, 0);
+                    .soundindex("tank/pain.wav"), 1.0F, (float) Defines.ATTN_NORM, (float) 0);
         }
     };
 
@@ -1542,7 +1542,7 @@ public class GameMisc {
         @Override
         public boolean think(edict_t self) {
             self.movetype = Defines.MOVETYPE_TOSS;
-            self.s.origin[2] += 2;
+            self.s.origin[2] += 2.0F;
             return true;
         }
     };
@@ -1578,7 +1578,7 @@ public class GameMisc {
                 return;
 
             game_import_t.sound(self, Defines.CHAN_BODY, game_import_t
-                    .soundindex("misc/udeath.wav"), 1, Defines.ATTN_NORM, 0);
+                    .soundindex("misc/udeath.wav"), 1.0F, (float) Defines.ATTN_NORM, (float) 0);
             for (int n = 0; n < 4; n++)
                 ThrowGib(self, "models/objects/gibs/sm_meat/tris.md2",
                         damage, Defines.GIB_ORGANIC);
@@ -1619,8 +1619,8 @@ public class GameMisc {
                           csurface_t surf) {
             GameUtil.G_UseTargets(self, self.activator);
 
-            self.s.origin[2] = self.absmin[2] + 1;
-            GameCombat.T_RadiusDamage(self, self, self.dmg, null, self.dmg + 40,
+            self.s.origin[2] = self.absmin[2] + 1.0F;
+            GameCombat.T_RadiusDamage(self, self, (float) self.dmg, null, (float) (self.dmg + 40),
                     Defines.MOD_BOMB);
             BecomeExplosion2(self);
         }
@@ -1635,16 +1635,16 @@ public class GameMisc {
             self.groundentity = null;
 
             float diff = self.timestamp - GameBase.level.time;
-            if (diff < -1.0)
+            if ((double) diff < -1.0)
                 diff = -1.0f;
 
-            float[] v = {0, 0, 0};
+            float[] v = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorScale(self.moveinfo.dir, 1.0f + diff, v);
             v[2] = diff;
 
             diff = self.s.angles[2];
             Math3D.vectoangles(v, self.s.angles);
-            self.s.angles[2] = diff + 10;
+            self.s.angles[2] = diff + 10.0F;
 
             return true;
         }
@@ -1747,11 +1747,11 @@ public class GameMisc {
                 }
 
                 char c = self.message.charAt(n);
-                if (c >= '0' && c <= '9')
-                    e.s.frame = c - '0';
-                else if (c == '-')
+                if ((int) c >= (int) '0' && (int) c <= (int) '9')
+                    e.s.frame = (int) c - (int) '0';
+                else if ((int) c == (int) '-')
                     e.s.frame = 10;
-                else if (c == ':')
+                else if ((int) c == (int) ':')
                     e.s.frame = 11;
                 else
                     e.s.frame = 12;
@@ -1813,8 +1813,8 @@ public class GameMisc {
             self.enemy.message = self.message;
             self.enemy.use.use(self.enemy, self, self);
 
-            if (((self.spawnflags & 1) != 0 && (self.health > self.wait))
-                    || ((self.spawnflags & 2) != 0 && (self.health < self.wait))) {
+            if (((self.spawnflags & 1) != 0 && ((float) self.health > self.wait))
+                    || ((self.spawnflags & 2) != 0 && ((float) self.health < self.wait))) {
                 if (self.pathtarget != null) {
 
                     String savetarget = self.target;
@@ -1835,7 +1835,7 @@ public class GameMisc {
                     return true;
             }
 
-            self.nextthink = GameBase.level.time + 1;
+            self.nextthink = GameBase.level.time + 1.0F;
             return true;
 
         }
@@ -1880,12 +1880,12 @@ public class GameMisc {
 
             Math3D.VectorCopy(dest.s.origin, other.s.origin);
             Math3D.VectorCopy(dest.s.origin, other.s.old_origin);
-            other.s.origin[2] += 10;
+            other.s.origin[2] += 10.0F;
 
             
             Math3D.VectorClear(other.velocity);
-            other.client.ps.pmove.pm_time = 160 >> 3; 
-            other.client.ps.pmove.pm_flags |= pmove_t.PMF_TIME_TELEPORT;
+            other.client.ps.pmove.pm_time = (byte) (160 >> 3);
+            other.client.ps.pmove.pm_flags = (byte) ((int) other.client.ps.pmove.pm_flags | pmove_t.PMF_TIME_TELEPORT);
 
             
             self.owner.s.event = Defines.EV_PLAYER_TELEPORT;
@@ -1923,8 +1923,8 @@ public class GameMisc {
             ent.s.skinnum = 0;
             ent.solid = Defines.SOLID_BBOX;
             
-            Math3D.VectorSet(ent.mins, -32, -32, -24);
-            Math3D.VectorSet(ent.maxs, 32, 32, -16);
+            Math3D.VectorSet(ent.mins, -32.0F, -32.0F, -24.0F);
+            Math3D.VectorSet(ent.maxs, 32.0F, 32.0F, -16.0F);
             game_import_t.linkentity(ent);
             return true;
         }
@@ -1940,8 +1940,8 @@ public class GameMisc {
     
             if (self.s.frame == 10) {
                 self.think = GameUtil.G_FreeEdictA;
-                self.nextthink = GameBase.level.time + 8
-                        + Globals.rnd.nextFloat() * 10;
+                self.nextthink = GameBase.level.time + 8.0F
+                        + Globals.rnd.nextFloat() * 10.0F;
             }
             return true;
         }
@@ -1961,11 +1961,11 @@ public class GameMisc {
     
             if (plane != null) {
                 game_import_t.sound(self, Defines.CHAN_VOICE, game_import_t
-                        .soundindex("misc/fhit3.wav"), 1, Defines.ATTN_NORM, 0);
+                        .soundindex("misc/fhit3.wav"), 1.0F, (float) Defines.ATTN_NORM, (float) 0);
 
-                float[] normal_angles = {0, 0, 0};
+                float[] normal_angles = {(float) 0, (float) 0, (float) 0};
                 Math3D.vectoangles(plane.normal, normal_angles);
-                float[] right = {0, 0, 0};
+                float[] right = {(float) 0, (float) 0, (float) 0};
                 Math3D.AngleVectors(normal_angles, null, right, null);
                 Math3D.vectoangles(right, self.s.angles);
     

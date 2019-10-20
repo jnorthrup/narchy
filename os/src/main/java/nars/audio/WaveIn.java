@@ -17,7 +17,7 @@ public class WaveIn extends NARPart {
     final SignalInput in;
 
     /** updates per time unit */
-    private final FloatRange rate = new FloatRange(30, 0.5f, 120);
+    private final FloatRange rate = new FloatRange(30.0F, 0.5f, 120.0F);
 
 
     WaveIn(Term id, SignalInput in, float rate) {

@@ -7,8 +7,6 @@ package jurls.core.approximation;
 
 import org.apache.commons.math3.linear.ArrayRealVector;
 
-import java.util.Arrays;
-
 /**
  *
  * @author thorsten
@@ -37,7 +35,7 @@ public class WeightedInterpolationFunction implements ParameterizedFunction {
 
         final ArrayRealVector xs = new ArrayRealVector(numberOfInputs());
         final ArrayRealVector velocity = new ArrayRealVector(numberOfInputs());
-        double y = 0;
+        double y = (double) 0;
 
         public Point() {
             for (int i = 0; i < numberOfInputs(); ++i) {
@@ -60,7 +58,7 @@ public class WeightedInterpolationFunction implements ParameterizedFunction {
 
     private double weight(ArrayRealVector a, ArrayRealVector b) {
         double d = a.getL1Distance(b);
-        return Math.pow(1 / (1 + d), power);
+        return Math.pow(1.0 / (1.0 + d), power);
     }
 
     private void adjustBorders(double[] xs) {
@@ -85,8 +83,8 @@ public class WeightedInterpolationFunction implements ParameterizedFunction {
             sumOfWeights += weight;
         }
 
-        if (sumOfWeights == 0) {
-            sumOfWeights = 1;
+        if (sumOfWeights == (double) 0) {
+            sumOfWeights = 1.0;
         }
 
         double sum = 0.0;
@@ -145,8 +143,8 @@ public class WeightedInterpolationFunction implements ParameterizedFunction {
                 if (a != b) {
                     ArrayRealVector d = b.xs.subtract(a.xs);
                     double l = d.getL1Norm();
-                    if (l == 0) {
-                        l = 1;
+                    if (l == (double) 0) {
+                        l = 1.0;
                     }
                     double gravity = 0.00001;
                     d.mapMultiplyToSelf(gravity / l / l / l);
@@ -163,11 +161,11 @@ public class WeightedInterpolationFunction implements ParameterizedFunction {
             for (int i = 0; i < numberOfInputs(); ++i) {
                 if (p.xs.getEntry(i) > maxInput.getEntry(i)) {
                     p.xs.setEntry(i, maxInput.getEntry(i));
-                    p.velocity.setEntry(i, 0);
+                    p.velocity.setEntry(i, (double) 0);
                 }
                 if (p.xs.getEntry(i) < minInput.getEntry(i)) {
                     p.xs.setEntry(i, minInput.getEntry(i));
-                    p.velocity.setEntry(i, 0);
+                    p.velocity.setEntry(i, (double) 0);
                 }
             }
             

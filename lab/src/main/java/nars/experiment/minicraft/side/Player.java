@@ -41,21 +41,21 @@ public class Player extends LivingEntity {
                            float mouseY, World world, int tileSize) {
 
 
-        float x = .5f + (int) this.getCenterX(tileSize);
-        float y = .5f + (int) this.getCenterY(tileSize);
+        float x = .5f + (float) (int) this.getCenterX(tileSize);
+        float y = .5f + (float) (int) this.getCenterY(tileSize);
 
         handStartX = x;
         handStartY = y;
 
-        float tMax = (float) Math.ceil(armLength);
-        handEndX = -1;
-        handEndY = -1;
+        float tMax = (float) Math.ceil((double) armLength);
+        handEndX = -1.0F;
+        handEndY = -1.0F;
 
         handBuildPos.x = -1;
         handBuildPos.y = -1;
 
         float m;
-        if (x - mouseX == 0) {
+        if (x - mouseX == (float) 0) {
             m = Float.MAX_VALUE;
         } else {
             m = (y - mouseY) / (x - mouseX);
@@ -63,71 +63,71 @@ public class Player extends LivingEntity {
 
         int hitY = -1;
         int hitX = -1;
-        for (float i = 0; i <= Math.ceil(armLength) * 2; i++) {
-            for (float j = 0; j <= Math.ceil(armLength) * 2; j++) {
-                float px = (float) (x - Math.ceil(armLength) + i) - .5f;
-                float py = (float) (y - Math.ceil(armLength) + j) - .5f;
+        for (float i = (float) 0; (double) i <= Math.ceil((double) armLength) * 2.0; i++) {
+            for (float j = (float) 0; (double) j <= Math.ceil((double) armLength) * 2.0; j++) {
+                float px = (float) ((double) x - Math.ceil((double) armLength) + (double) i) - .5f;
+                float py = (float) ((double) y - Math.ceil((double) armLength) + (double) j) - .5f;
                 if (!world.isBreakable((int) px, (int) py)) {
                     continue;
                 }
 
-                float down = -1;
-                float left = -1;
-                float up = -1;
-                float right = -1;
+                float down = -1.0F;
+                float left = -1.0F;
+                float up = -1.0F;
+                float right = -1.0F;
 
                 if ((x >= px && x >= mouseX) &&
                         (y >= py && y >= mouseY)) {
-                    right = findIntersection(x, y, m, px + 1, py, px + 1, py + 1);
-                    down = findIntersection(x, y, m, px, py + 1, px + 1, py + 1);
+                    right = findIntersection(x, y, m, px + 1.0F, py, px + 1.0F, py + 1.0F);
+                    down = findIntersection(x, y, m, px, py + 1.0F, px + 1.0F, py + 1.0F);
                 } else if ((x - .5f <= px && x <= mouseX) &&
                         (y - .5f >= py && y >= mouseY)) {
-                    left = findIntersection(x, y, m, px, py, px, py + 1);
-                    down = findIntersection(x, y, m, px, py + 1, px + 1, py + 1);
+                    left = findIntersection(x, y, m, px, py, px, py + 1.0F);
+                    down = findIntersection(x, y, m, px, py + 1.0F, px + 1.0F, py + 1.0F);
                 } else if ((x >= px && x >= mouseX) &&
-                        (y - 1 < py && y <= mouseY)) {
-                    right = findIntersection(x, y, m, px + 1, py, px + 1, py + 1);
-                    up = findIntersection(x, y, m, px, py, px + 1, py);
+                        (y - 1.0F < py && y <= mouseY)) {
+                    right = findIntersection(x, y, m, px + 1.0F, py, px + 1.0F, py + 1.0F);
+                    up = findIntersection(x, y, m, px, py, px + 1.0F, py);
                 } else if ((x - .5f <= px && x <= mouseX) &&
                         (y - .5f <= py && y <= mouseY)) {
-                    left = findIntersection(x, y, m, px, py, px, py + 1);
-                    up = findIntersection(x, y, m, px, py, px + 1, py);
+                    left = findIntersection(x, y, m, px, py, px, py + 1.0F);
+                    up = findIntersection(x, y, m, px, py, px + 1.0F, py);
                 } else {
                     continue;
                 }
 
-                if (down != -1 || left != -1 || up != -1 || right != -1) {
+                if (down != -1.0F || left != -1.0F || up != -1.0F || right != -1.0F) {
 
 
-                    float newTMax = (float) Math.sqrt(Math.pow(Math.abs(x) - Math.abs(px), 2)
-                            + Math.pow(Math.abs(y) - Math.abs(py), 2));
+                    float newTMax = (float) Math.sqrt(Math.pow((double) (Math.abs(x) - Math.abs(px)), 2.0)
+                            + Math.pow((double) (Math.abs(y) - Math.abs(py)), 2.0));
                     if (newTMax >= tMax) {
                         continue;
                     }
 
-                    if (up != -1) {
+                    if (up != -1.0F) {
                         handEndX = up;
-                        float upY = py - 1;
+                        float upY = py - 1.0F;
                         handEndY = upY;
                         handBuildPos.x = (int) px;
                         handBuildPos.y = (int) py - 1;
                     }
-                    if (down != -1) {
+                    if (down != -1.0F) {
                         handEndX = down;
-                        float downY = py + 1;
+                        float downY = py + 1.0F;
                         handEndY = downY;
                         handBuildPos.x = (int) px;
                         handBuildPos.y = (int) py + 1;
                     }
-                    if (left != -1) {
+                    if (left != -1.0F) {
                         float leftX = px;
                         handEndX = leftX;
                         handEndY = left;
                         handBuildPos.x = (int) px - 1;
                         handBuildPos.y = (int) py;
                     }
-                    if (right != -1) {
-                        float rightX = px + 1;
+                    if (right != -1.0F) {
+                        float rightX = px + 1.0F;
                         handEndX = rightX;
                         handEndY = right;
                         handBuildPos.x = (int) px + 1;
@@ -153,7 +153,7 @@ public class Player extends LivingEntity {
         if (StockMethods.onScreen) {
             int frame = (int) x % 4;
             if (facingRight) {
-                if (frame == 0 || frame == 2 || dx <= 0) {
+                if (frame == 0 || frame == 2 || dx <= (float) 0) {
                     sprite.draw(g, pos.x, pos.y, widthPX, heightPX);
                 } else if (frame == 1) {
                     rightWalkSprite.draw(g, pos.x, pos.y, widthPX, heightPX);
@@ -161,7 +161,7 @@ public class Player extends LivingEntity {
                     leftWalkSprite.draw(g, pos.x, pos.y, widthPX, heightPX);
                 }
             } else {
-                if (frame == 0 || frame == 2 || dx >= 0) {
+                if (frame == 0 || frame == 2 || dx >= (float) 0) {
                     sprite.draw(g, pos.x + widthPX, pos.y, -widthPX, heightPX);
                 } else if (frame == 1) {
                     rightWalkSprite.draw(g, pos.x + widthPX, pos.y, -widthPX, heightPX);

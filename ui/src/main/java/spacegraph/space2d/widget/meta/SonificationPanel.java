@@ -22,10 +22,10 @@ abstract public class SonificationPanel extends Gridding {
 			stopAudio();
 			return false;
 		} else {
-			sound(buf, readRate);
+			sound(buf, (float) readRate);
 
 			framesRead++;
-			sonifyButton.color.set(0, 0.2f + 0.05f * (framesRead/4 % 8), 0, 0.75f);
+			sonifyButton.color.set((float) 0, 0.2f + 0.05f * (float) (framesRead / 4 % 8), (float) 0, 0.75f);
 			return true;
 		}
 	};
@@ -48,13 +48,13 @@ abstract public class SonificationPanel extends Gridding {
 	abstract protected void sound(float[] buf, float readRate);
 
 	protected void startAudio() {
-		sonifyButton.color.set(0, 0.25f, 0, 0.75f);
+		sonifyButton.color.set((float) 0, 0.25f, (float) 0, 0.75f);
 		sound = Audio.the().play(soundProducer);
 		logger.info("{} sonify START {}", this, sound);
 	}
 
 	protected void stopAudio() {
-		sonifyButton.color.set(0.1f, 0f, 0, 0.75f);
+		sonifyButton.color.set(0.1f, 0f, (float) 0, 0.75f);
 		if (sound != null) {
 			sound.stop();
 			logger.info("{} sonify STOP {}", this, sound);

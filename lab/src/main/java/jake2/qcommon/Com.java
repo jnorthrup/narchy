@@ -38,7 +38,6 @@ import jake2.util.Vargs;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.stream.IntStream;
 
 /**
  * Com
@@ -126,7 +125,7 @@ public final class Com
 		    if (index < length) {
 		        return data[index];
 		    }
-		    return 0;			
+		    return (char) 0;
 		}
 
 		public char nextchar()
@@ -136,7 +135,7 @@ public final class Com
 		    if (index < length) {
 		        return data[index];
 		    }
-		    return 0;
+		    return (char) 0;
 		}
 		
 		public char prevchar() {
@@ -145,7 +144,7 @@ public final class Com
 				index--;
 				return data[index];
 			}
-			return 0;					
+			return (char) 0;
 		}
 
 		public boolean isEof()
@@ -159,24 +158,24 @@ public final class Com
 
 		public char skipwhites()
 		{
-			char c = 0;
-			while ( index < length && ((c= data[index]) <= ' ') && c != 0)
+			char c = (char) 0;
+			while ( index < length && ((int) (c = data[index]) <= (int) ' ') && (int) c != 0)
 				index++;
 			return c;
 		}
 
 		public char skipwhitestoeol()
 		{
-			char c = 0;
-			while ( index < length &&((c= data[index]) <= ' ') && c != '\n' && c != 0)
+			char c = (char) 0;
+			while ( index < length &&((int) (c = data[index]) <= (int) ' ') && (int) c != (int) '\n' && (int) c != 0)
 				index++;
 			return c;
 		}
 
 		public char skiptoeol()
 		{
-			char c = 0;
-			while ( index < length &&(c= data[index]) != '\n' && c != 0)
+			char c = (char) 0;
+			while ( index < length && (int) (c = data[index]) != (int) '\n' && (int) c != 0)
 				index++;
 			return c;
 		}
@@ -200,8 +199,8 @@ public final class Com
 			}
 
 			
-			if (hlp.getchar() == '/') {
-				if (hlp.nextchar() == '/') {
+			if ((int) hlp.getchar() == (int) '/') {
+				if ((int) hlp.nextchar() == (int) '/') {
 					hlp.skiptoeol();
 					
 					continue;
@@ -216,12 +215,12 @@ public final class Com
 
         int len = 0;
         int c;
-        if (hlp.getchar() == '\"') {
+        if ((int) hlp.getchar() == (int) '\"') {
 			hlp.nextchar();
 			while (true) {
-				c = hlp.getchar();
+				c = (int) hlp.getchar();
 				hlp.nextchar();
-				if (c == '\"' || c == 0) {
+				if (c == (int) '\"' || c == 0) {
 					return new String(com_token, 0, len);
 				}
 				if (len < Defines.MAX_TOKEN_CHARS) {
@@ -232,13 +231,13 @@ public final class Com
 		}
 
 		
-		c = hlp.getchar();
+		c = (int) hlp.getchar();
 		do {
 			if (len < Defines.MAX_TOKEN_CHARS) {
 				com_token[len] = (char) c;
 				len++;
 			}
-			c = hlp.nextchar();
+			c = (int) hlp.nextchar();
 		} while (c > 32);
 
 		if (len == Defines.MAX_TOKEN_CHARS) {
@@ -337,7 +336,7 @@ public final class Com
 
 	public static void DPrintf(String fmt, Vargs vargs)
 	{
-		if (Globals.developer == null || Globals.developer.value == 0)
+		if (Globals.developer == null || Globals.developer.value == (float) 0)
 			return; 
 		_debugContext = debugContext;
 		Printf(fmt, vargs);
@@ -365,13 +364,13 @@ public final class Com
 		Sys.ConsoleOutput(msg);
 
 		
-		if (Globals.logfile_active != null && Globals.logfile_active.value != 0)
+		if (Globals.logfile_active != null && Globals.logfile_active.value != (float) 0)
 		{
 
             if (Globals.logfile == null)
 			{
                 String name = FS.Gamedir() + "/qconsole.log";
-                if (Globals.logfile_active.value > 2)
+                if (Globals.logfile_active.value > 2.0F)
 					try
 					{
 						Globals.logfile = new RandomAccessFile(name, "rw");
@@ -403,7 +402,7 @@ public final class Com
 					
 					e.printStackTrace();
 				}
-			if (Globals.logfile_active.value > 1); 
+			if (Globals.logfile_active.value > 1.0F);
 			
 		}
 	}
@@ -477,7 +476,7 @@ public final class Com
 	}
 
 	public static String StripExtension(String string) {
-        int i = string.lastIndexOf('.');
+        int i = string.lastIndexOf((int) '.');
 		if (i < 0)
 			return string;
 		return string.substring(0, i);
@@ -678,10 +677,10 @@ public final class Com
             (byte) 0x10, (byte) 0x39, (byte) 0x4f, (byte) 0xdd, (byte) 0xe4,
             (byte) 0xb6, (byte) 0x19, (byte) 0x27, (byte) 0xfb, (byte) 0xb8,
             (byte) 0xf5, (byte) 0x32, (byte) 0x73, (byte) 0xe5, (byte) 0xcb,
-            (byte) 0x32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0 };
+            (byte) 0x32, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0,
+            (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0,
+            (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0,
+            (byte) 0, (byte) 0};
 	
 	static final byte[] chkb = new byte [60 + 4];
 	
@@ -710,7 +709,7 @@ public final class Com
 
 		int x = 0;
 		for (int n = 0; n < length; n++) {
-			int i = chkb[n] & 0xFF;
+			int i = (int) chkb[n] & 0xFF;
 			x += i;
 		}
 

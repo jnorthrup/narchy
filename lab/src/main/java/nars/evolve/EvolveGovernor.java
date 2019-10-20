@@ -67,7 +67,7 @@ public class EvolveGovernor {
 			.build();
 
         EvolutionResult<ProgramGene<Double>, Double> result = engine.stream()
-			.limit(Limits.byFixedGeneration(100))
+			.limit(Limits.byFixedGeneration(100L))
 			.collect(EvolutionResult.toBestEvolutionResult());
 
         ProgramGene<Double> program = result.getBestPhenotype()
@@ -123,12 +123,12 @@ public class EvolveGovernor {
                 Double[] govParm = new Double[2];
 				n.onDur(() -> {
 					for (How a : d.program.branch) {
-						govParm[0] = Math.abs((double) a.getClass().hashCode()) / Integer.MAX_VALUE;
+						govParm[0] = Math.abs((double) a.getClass().hashCode()) / (double) Integer.MAX_VALUE;
 						govParm[1] = (double) a.why.value;
 //						govParm[2] = (double) a.why.pri;
                         Double pp = (Double) ((ProgramGene) g).eval(govParm);
                         float p = pp.floatValue(); //<-
-						if (!Float.isFinite(p)) p = 0;
+						if (!Float.isFinite(p)) p = (float) 0;
 						p = Util.clamp(p, 0.1f, 1f);
 						a.why.pri(p);
 					}

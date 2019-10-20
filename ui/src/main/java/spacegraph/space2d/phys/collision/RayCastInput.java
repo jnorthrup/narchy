@@ -38,7 +38,7 @@ public class RayCastInput {
     public RayCastInput() {
         p1 = new v2();
         p2 = new v2();
-        maxFraction = 0;
+        maxFraction = (float) 0;
     }
 
     public void set(RayCastInput rci) {

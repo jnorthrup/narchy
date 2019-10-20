@@ -23,15 +23,15 @@ public class ItemEntity extends Entity {
 
     public ItemEntity(Item item, int x, int y) {
         this.item = item;
-        xx = this.x = x;
-        yy = this.y = y;
+        xx =   this.x = x;
+        yy =   this.y = y;
         xr = 3;
         yr = 3;
 
-        zz = 2;
+        zz = 2.0;
         xa = random.nextGaussian() * 0.3;
         ya = random.nextGaussian() * 0.2;
-        za = random.nextFloat() * 0.7 + 1;
+        za = (double) random.nextFloat() * 0.7 + 1.0;
 
         lifeTime = 60 * 10 + random.nextInt(60);
     }
@@ -46,8 +46,8 @@ public class ItemEntity extends Entity {
         xx += xa;
         yy += ya;
         zz += za;
-        if (zz < 0) {
-            zz = 0;
+        if (zz < (double) 0) {
+            zz = (double) 0;
             za *= -0.5;
             xa *= 0.6;
             ya *= 0.6;
@@ -62,8 +62,8 @@ public class ItemEntity extends Entity {
         move(nx - x, ny - y);
         int gotx = x - ox;
         int goty = y - oy;
-        xx += gotx - expectedx;
-        yy += goty - expectedy;
+        xx = xx + (double) gotx - expectedx;
+        yy = yy + (double) goty - expectedy;
 
         if (hurtTime > 0) hurtTime--;
     }

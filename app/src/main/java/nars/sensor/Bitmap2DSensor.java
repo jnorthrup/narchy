@@ -136,7 +136,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         for (int i = 0; i < m; i++) {
             Term xy;
             char levelPrefix =
-                    (char) ('a' + (m - 1 - i));
+                    (char) ((int) 'a' + (m - 1 - i));
 
 
             if (i >= sx && i >= sy) {

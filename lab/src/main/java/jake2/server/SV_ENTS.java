@@ -28,7 +28,6 @@ import jake2.qcommon.*;
 import jake2.util.Math3D;
 
 import java.io.IOException;
-import java.util.stream.IntStream;
 
 public class SV_ENTS {
 
@@ -95,7 +94,7 @@ public class SV_ENTS {
                 
                 
                 MSG.WriteDeltaEntity(oldent, newent, msg, false,
-                        newent.number <= SV_MAIN.maxclients.value);
+                        (float) newent.number <= SV_MAIN.maxclients.value);
                 oldindex++;
                 newindex++;
                 continue;
@@ -156,28 +155,28 @@ public class SV_ENTS {
         if (ps.pmove.pm_type != ops.pmove.pm_type)
             pflags |= Defines.PS_M_TYPE;
 
-        if (ps.pmove.origin[0] != ops.pmove.origin[0]
-                || ps.pmove.origin[1] != ops.pmove.origin[1]
-                || ps.pmove.origin[2] != ops.pmove.origin[2])
+        if ((int) ps.pmove.origin[0] != (int) ops.pmove.origin[0]
+                || (int) ps.pmove.origin[1] != (int) ops.pmove.origin[1]
+                || (int) ps.pmove.origin[2] != (int) ops.pmove.origin[2])
             pflags |= Defines.PS_M_ORIGIN;
 
-        if (ps.pmove.velocity[0] != ops.pmove.velocity[0]
-                || ps.pmove.velocity[1] != ops.pmove.velocity[1]
-                || ps.pmove.velocity[2] != ops.pmove.velocity[2])
+        if ((int) ps.pmove.velocity[0] != (int) ops.pmove.velocity[0]
+                || (int) ps.pmove.velocity[1] != (int) ops.pmove.velocity[1]
+                || (int) ps.pmove.velocity[2] != (int) ops.pmove.velocity[2])
             pflags |= Defines.PS_M_VELOCITY;
 
-        if (ps.pmove.pm_time != ops.pmove.pm_time)
+        if ((int) ps.pmove.pm_time != (int) ops.pmove.pm_time)
             pflags |= Defines.PS_M_TIME;
 
-        if (ps.pmove.pm_flags != ops.pmove.pm_flags)
+        if ((int) ps.pmove.pm_flags != (int) ops.pmove.pm_flags)
             pflags |= Defines.PS_M_FLAGS;
 
-        if (ps.pmove.gravity != ops.pmove.gravity)
+        if ((int) ps.pmove.gravity != (int) ops.pmove.gravity)
             pflags |= Defines.PS_M_GRAVITY;
 
-        if (ps.pmove.delta_angles[0] != ops.pmove.delta_angles[0]
-                || ps.pmove.delta_angles[1] != ops.pmove.delta_angles[1]
-                || ps.pmove.delta_angles[2] != ops.pmove.delta_angles[2])
+        if ((int) ps.pmove.delta_angles[0] != (int) ops.pmove.delta_angles[0]
+                || (int) ps.pmove.delta_angles[1] != (int) ops.pmove.delta_angles[1]
+                || (int) ps.pmove.delta_angles[2] != (int) ops.pmove.delta_angles[2])
             pflags |= Defines.PS_M_DELTA_ANGLES;
 
         if (ps.viewoffset[0] != ops.viewoffset[0]
@@ -219,37 +218,37 @@ public class SV_ENTS {
             MSG.WriteByte(msg, ps.pmove.pm_type);
 
         if ((pflags & Defines.PS_M_ORIGIN) != 0) {
-            MSG.WriteShort(msg, ps.pmove.origin[0]);
-            MSG.WriteShort(msg, ps.pmove.origin[1]);
-            MSG.WriteShort(msg, ps.pmove.origin[2]);
+            MSG.WriteShort(msg, (int) ps.pmove.origin[0]);
+            MSG.WriteShort(msg, (int) ps.pmove.origin[1]);
+            MSG.WriteShort(msg, (int) ps.pmove.origin[2]);
         }
 
         if ((pflags & Defines.PS_M_VELOCITY) != 0) {
-            MSG.WriteShort(msg, ps.pmove.velocity[0]);
-            MSG.WriteShort(msg, ps.pmove.velocity[1]);
-            MSG.WriteShort(msg, ps.pmove.velocity[2]);
+            MSG.WriteShort(msg, (int) ps.pmove.velocity[0]);
+            MSG.WriteShort(msg, (int) ps.pmove.velocity[1]);
+            MSG.WriteShort(msg, (int) ps.pmove.velocity[2]);
         }
 
         if ((pflags & Defines.PS_M_TIME) != 0)
-            MSG.WriteByte(msg, ps.pmove.pm_time);
+            MSG.WriteByte(msg, (int) ps.pmove.pm_time);
 
         if ((pflags & Defines.PS_M_FLAGS) != 0)
-            MSG.WriteByte(msg, ps.pmove.pm_flags);
+            MSG.WriteByte(msg, (int) ps.pmove.pm_flags);
 
         if ((pflags & Defines.PS_M_GRAVITY) != 0)
-            MSG.WriteShort(msg, ps.pmove.gravity);
+            MSG.WriteShort(msg, (int) ps.pmove.gravity);
 
         if ((pflags & Defines.PS_M_DELTA_ANGLES) != 0) {
-            MSG.WriteShort(msg, ps.pmove.delta_angles[0]);
-            MSG.WriteShort(msg, ps.pmove.delta_angles[1]);
-            MSG.WriteShort(msg, ps.pmove.delta_angles[2]);
+            MSG.WriteShort(msg, (int) ps.pmove.delta_angles[0]);
+            MSG.WriteShort(msg, (int) ps.pmove.delta_angles[1]);
+            MSG.WriteShort(msg, (int) ps.pmove.delta_angles[2]);
         }
 
         
         if ((pflags & Defines.PS_VIEWOFFSET) != 0) {
-            MSG.WriteChar(msg, ps.viewoffset[0] * 4);
-            MSG.WriteChar(msg, ps.viewoffset[1] * 4);
-            MSG.WriteChar(msg, ps.viewoffset[2] * 4);
+            MSG.WriteChar(msg, ps.viewoffset[0] * 4.0F);
+            MSG.WriteChar(msg, ps.viewoffset[1] * 4.0F);
+            MSG.WriteChar(msg, ps.viewoffset[2] * 4.0F);
         }
 
         if ((pflags & Defines.PS_VIEWANGLES) != 0) {
@@ -259,9 +258,9 @@ public class SV_ENTS {
         }
 
         if ((pflags & Defines.PS_KICKANGLES) != 0) {
-            MSG.WriteChar(msg, ps.kick_angles[0] * 4);
-            MSG.WriteChar(msg, ps.kick_angles[1] * 4);
-            MSG.WriteChar(msg, ps.kick_angles[2] * 4);
+            MSG.WriteChar(msg, ps.kick_angles[0] * 4.0F);
+            MSG.WriteChar(msg, ps.kick_angles[1] * 4.0F);
+            MSG.WriteChar(msg, ps.kick_angles[2] * 4.0F);
         }
 
         if ((pflags & Defines.PS_WEAPONINDEX) != 0) {
@@ -270,19 +269,19 @@ public class SV_ENTS {
 
         if ((pflags & Defines.PS_WEAPONFRAME) != 0) {
             MSG.WriteByte(msg, ps.gunframe);
-            MSG.WriteChar(msg, ps.gunoffset[0] * 4);
-            MSG.WriteChar(msg, ps.gunoffset[1] * 4);
-            MSG.WriteChar(msg, ps.gunoffset[2] * 4);
-            MSG.WriteChar(msg, ps.gunangles[0] * 4);
-            MSG.WriteChar(msg, ps.gunangles[1] * 4);
-            MSG.WriteChar(msg, ps.gunangles[2] * 4);
+            MSG.WriteChar(msg, ps.gunoffset[0] * 4.0F);
+            MSG.WriteChar(msg, ps.gunoffset[1] * 4.0F);
+            MSG.WriteChar(msg, ps.gunoffset[2] * 4.0F);
+            MSG.WriteChar(msg, ps.gunangles[0] * 4.0F);
+            MSG.WriteChar(msg, ps.gunangles[1] * 4.0F);
+            MSG.WriteChar(msg, ps.gunangles[2] * 4.0F);
         }
 
         if ((pflags & Defines.PS_BLEND) != 0) {
-            MSG.WriteByte(msg, ps.blend[0] * 255);
-            MSG.WriteByte(msg, ps.blend[1] * 255);
-            MSG.WriteByte(msg, ps.blend[2] * 255);
-            MSG.WriteByte(msg, ps.blend[3] * 255);
+            MSG.WriteByte(msg, ps.blend[0] * 255.0F);
+            MSG.WriteByte(msg, ps.blend[1] * 255.0F);
+            MSG.WriteByte(msg, ps.blend[2] * 255.0F);
+            MSG.WriteByte(msg, ps.blend[3] * 255.0F);
         }
         if ((pflags & Defines.PS_FOV) != 0)
             MSG.WriteByte(msg, ps.fov);
@@ -293,7 +292,7 @@ public class SV_ENTS {
         int bound = Defines.MAX_STATS;
         int statbits = 0;
         for (int i1 = 0; i1 < bound; i1++) {
-            if (ps.stats[i1] != ops.stats[i1]) {
+            if ((int) ps.stats[i1] != (int) ops.stats[i1]) {
                 int i2 = 1 << i1;
                 statbits = statbits | i2;
             }
@@ -301,7 +300,7 @@ public class SV_ENTS {
         MSG.WriteLong(msg, statbits);
         for (int i = 0; i < Defines.MAX_STATS; i++)
             if ((statbits & (1 << i)) != 0)
-                MSG.WriteShort(msg, ps.stats[i]);
+                MSG.WriteShort(msg, (int) ps.stats[i]);
     }
 
     /**
@@ -351,11 +350,11 @@ public class SV_ENTS {
      */
     public static void SV_FatPVS(float[] org) {
         int i;
-        float[] mins = { 0, 0, 0 }, maxs = { 0, 0, 0 };
+        float[] mins = {(float) 0, (float) 0, (float) 0}, maxs = {(float) 0, (float) 0, (float) 0};
 
         for (i = 0; i < 3; i++) {
-            mins[i] = org[i] - 8;
-            maxs[i] = org[i] + 8;
+            mins[i] = org[i] - 8.0F;
+            maxs[i] = org[i] + 8.0F;
         }
 
         int[] leafs = new int[64];
@@ -386,10 +385,10 @@ public class SV_ENTS {
 
             int k = 0;
             for (j = 0; j < longs; j++) {
-                SV_ENTS.fatpvs[k] |= src[k++];
-                SV_ENTS.fatpvs[k] |= src[k++];
-                SV_ENTS.fatpvs[k] |= src[k++];
-                SV_ENTS.fatpvs[k] |= src[k++];
+                SV_ENTS.fatpvs[k] = (byte) ((int) SV_ENTS.fatpvs[k] | (int) src[k++]);
+                SV_ENTS.fatpvs[k] = (byte) ((int) SV_ENTS.fatpvs[k] | (int) src[k++]);
+                SV_ENTS.fatpvs[k] = (byte) ((int) SV_ENTS.fatpvs[k] | (int) src[k++]);
+                SV_ENTS.fatpvs[k] = (byte) ((int) SV_ENTS.fatpvs[k] | (int) src[k++]);
             }
         }
     }
@@ -410,10 +409,10 @@ public class SV_ENTS {
         frame.senttime = SV_INIT.svs.realtime;
 
 
-        float[] org = {0, 0, 0};
+        float[] org = {(float) 0, (float) 0, (float) 0};
         int i;
         for (i = 0; i < 3; i++)
-            org[i] = clent.client.ps.pmove.origin[i] * 0.125f
+            org[i] = (float) clent.client.ps.pmove.origin[i] * 0.125f
                     + clent.client.ps.viewoffset[i];
 
         int leafnum = CM.CM_PointLeafnum(org);
@@ -460,7 +459,7 @@ public class SV_ENTS {
                 int l;
                 if ((ent.s.renderfx & Defines.RF_BEAM) != 0) {
                     l = ent.clusternums[0];
-                    if (0 == (clientphs[l >> 3] & (1 << (l & 7))))
+                    if (0 == ((int) clientphs[l >> 3] & (1 << (l & 7))))
                         continue;
                 } else {
 
@@ -480,7 +479,7 @@ public class SV_ENTS {
                     } else { 
                         for (i = 0; i < ent.num_clusters; i++) {
                             l = ent.clusternums[i];
-                            if ((bitvector[l >> 3] & (1 << (l & 7))) != 0)
+                            if (((int) bitvector[l >> 3] & (1 << (l & 7))) != 0)
                                 break;
                         }
                         if (i == ent.num_clusters)
@@ -489,11 +488,11 @@ public class SV_ENTS {
 
                     if (ent.s.modelindex == 0) { 
                                                  
-                        float[] delta = { 0, 0, 0 };
+                        float[] delta = {(float) 0, (float) 0, (float) 0};
 
                         Math3D.VectorSubtract(org, ent.s.origin, delta);
                         float len = Math3D.VectorLength(delta);
-                        if (len > 400)
+                        if (len > 400.0F)
                             continue;
                     }
                 }

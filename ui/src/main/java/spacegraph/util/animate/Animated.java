@@ -7,7 +7,7 @@ package spacegraph.util.animate;
     boolean animate(float dt);
 
     default boolean animate(int dtMS) {
-        return animate(dtMS/1000f);
+        return animate((float) dtMS /1000f);
     }
 
 }

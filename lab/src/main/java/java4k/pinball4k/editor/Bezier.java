@@ -31,24 +31,24 @@ public class Bezier extends LevelObject {
 	@Override
     public void draw(Graphics2D g, LevelPanel levelPanel) {
 		g.setColor(Color.WHITE);
-		float x0 = p.x;
-		float y0 = p.y;
-		float x1 = p2.x;
-		float y1 = p2.y;
-		float x2 = p3.x;
-		float y2 = p3.y;
+		float x0 = (float) p.x;
+		float y0 = (float) p.y;
+		float x1 = (float) p2.x;
+		float y1 = (float) p2.y;
+		float x2 = (float) p3.x;
+		float y2 = (float) p3.y;
 
 
         float prevx = x0;
         float prevy = y0;
 		for (int i = 1; i<=subdivs; i++) {
-            float t = i / (float) (subdivs);
+            float t = (float) i / (float) (subdivs);
             float t2 = t*t;
-            float tinv = 1-t;
+            float tinv = 1.0F -t;
             float tinv2 = tinv*tinv;
 
-            float x = tinv2 * x0 + 2*t*tinv*x1 + t2*x2;
-            float y = tinv2 * y0 + 2*t*tinv*y1 + t2*y2;
+            float x = tinv2 * x0 + 2.0F *t*tinv*x1 + t2*x2;
+            float y = tinv2 * y0 + 2.0F *t*tinv*y1 + t2*y2;
 			g.drawLine((int) prevx, (int) prevy, (int) x, (int) y);
 			prevx = x;
 			prevy = y;
@@ -57,11 +57,11 @@ public class Bezier extends LevelObject {
 	
 	public Point2D.Float interpolate(float t) {
         float t2 = t*t;
-        float tinv = 1-t;
+        float tinv = 1.0F -t;
         float tinv2 = tinv*tinv;
 
-        float x = tinv2 * p.x + 2*t*tinv*p2.x + t2*p3.x;
-        float y = tinv2 * p.y + 2*t*tinv*p2.y + t2*p3.y;
+        float x = tinv2 * (float) p.x + 2.0F *t*tinv* (float) p2.x + t2* (float) p3.x;
+        float y = tinv2 * (float) p.y + 2.0F *t*tinv* (float) p2.y + t2* (float) p3.y;
 		return new Point2D.Float(x, y);
 	}
 	

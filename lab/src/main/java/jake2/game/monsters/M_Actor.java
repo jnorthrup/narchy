@@ -1007,9 +1007,9 @@ public class M_Actor {
             self.monsterinfo.currentmove = actor_move_stand;
 
             
-            if (GameBase.level.time < 1.0)
+            if ((double) GameBase.level.time < 1.0)
                 self.s.frame = self.monsterinfo.currentmove.firstframe
-                        + (Lib.rand() % (self.monsterinfo.currentmove.lastframe
+                        + ((int) Lib.rand() % (self.monsterinfo.currentmove.lastframe
                                 - self.monsterinfo.currentmove.firstframe + 1));
             return true;
         }
@@ -1061,17 +1061,17 @@ public class M_Actor {
             FRAME_stand140, actor_frames_stand, null);
 
     static final mframe_t[] actor_frames_walk = {
-            new mframe_t(GameAI.ai_walk, 0, null),
-            new mframe_t(GameAI.ai_walk, 6, null),
-            new mframe_t(GameAI.ai_walk, 10, null),
-            new mframe_t(GameAI.ai_walk, 3, null),
-            new mframe_t(GameAI.ai_walk, 2, null),
-            new mframe_t(GameAI.ai_walk, 7, null),
-            new mframe_t(GameAI.ai_walk, 10, null),
-            new mframe_t(GameAI.ai_walk, 1, null),
-            new mframe_t(GameAI.ai_walk, 4, null),
-            new mframe_t(GameAI.ai_walk, 0, null),
-            new mframe_t(GameAI.ai_walk, 0, null) };
+            new mframe_t(GameAI.ai_walk, (float) 0, null),
+            new mframe_t(GameAI.ai_walk, 6.0F, null),
+            new mframe_t(GameAI.ai_walk, 10.0F, null),
+            new mframe_t(GameAI.ai_walk, 3.0F, null),
+            new mframe_t(GameAI.ai_walk, 2.0F, null),
+            new mframe_t(GameAI.ai_walk, 7.0F, null),
+            new mframe_t(GameAI.ai_walk, 10.0F, null),
+            new mframe_t(GameAI.ai_walk, 1.0F, null),
+            new mframe_t(GameAI.ai_walk, 4.0F, null),
+            new mframe_t(GameAI.ai_walk, (float) 0, null),
+            new mframe_t(GameAI.ai_walk, (float) 0, null) };
 
     static final mmove_t actor_move_walk = new mmove_t(FRAME_walk01, FRAME_walk08,
             actor_frames_walk, null);
@@ -1087,18 +1087,18 @@ public class M_Actor {
     };
 
     static final mframe_t[] actor_frames_run = {
-            new mframe_t(GameAI.ai_run, 4, null),
-            new mframe_t(GameAI.ai_run, 15, null),
-            new mframe_t(GameAI.ai_run, 15, null),
-            new mframe_t(GameAI.ai_run, 8, null),
-            new mframe_t(GameAI.ai_run, 20, null),
-            new mframe_t(GameAI.ai_run, 15, null),
-            new mframe_t(GameAI.ai_run, 8, null),
-            new mframe_t(GameAI.ai_run, 17, null),
-            new mframe_t(GameAI.ai_run, 12, null),
-            new mframe_t(GameAI.ai_run, -2, null),
-            new mframe_t(GameAI.ai_run, -2, null),
-            new mframe_t(GameAI.ai_run, -1, null) };
+            new mframe_t(GameAI.ai_run, 4.0F, null),
+            new mframe_t(GameAI.ai_run, 15.0F, null),
+            new mframe_t(GameAI.ai_run, 15.0F, null),
+            new mframe_t(GameAI.ai_run, 8.0F, null),
+            new mframe_t(GameAI.ai_run, 20.0F, null),
+            new mframe_t(GameAI.ai_run, 15.0F, null),
+            new mframe_t(GameAI.ai_run, 8.0F, null),
+            new mframe_t(GameAI.ai_run, 17.0F, null),
+            new mframe_t(GameAI.ai_run, 12.0F, null),
+            new mframe_t(GameAI.ai_run, -2.0F, null),
+            new mframe_t(GameAI.ai_run, -2.0F, null),
+            new mframe_t(GameAI.ai_run, -1.0F, null) };
 
     static final mmove_t actor_move_run = new mmove_t(FRAME_run02, FRAME_run07,
             actor_frames_run, null);
@@ -1129,66 +1129,66 @@ public class M_Actor {
     };
 
     static final mframe_t[] actor_frames_pain1 = {
-            new mframe_t(GameAI.ai_move, -5, null),
-            new mframe_t(GameAI.ai_move, 4, null),
-            new mframe_t(GameAI.ai_move, 1, null) };
+            new mframe_t(GameAI.ai_move, -5.0F, null),
+            new mframe_t(GameAI.ai_move, 4.0F, null),
+            new mframe_t(GameAI.ai_move, 1.0F, null) };
 
     static final mmove_t actor_move_pain1 = new mmove_t(FRAME_pain101, FRAME_pain103,
             actor_frames_pain1, actor_run);
 
     static final mframe_t[] actor_frames_pain2 = {
-            new mframe_t(GameAI.ai_move, -4, null),
-            new mframe_t(GameAI.ai_move, 4, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, -4.0F, null),
+            new mframe_t(GameAI.ai_move, 4.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t actor_move_pain2 = new mmove_t(FRAME_pain201, FRAME_pain203,
             actor_frames_pain2, actor_run);
 
     static final mframe_t[] actor_frames_pain3 = {
-            new mframe_t(GameAI.ai_move, -1, null),
-            new mframe_t(GameAI.ai_move, 1, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, -1.0F, null),
+            new mframe_t(GameAI.ai_move, 1.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t actor_move_pain3 = new mmove_t(FRAME_pain301, FRAME_pain303,
             actor_frames_pain3, actor_run);
 
     static final mframe_t[] actor_frames_flipoff = {
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null) };
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null) };
 
     static final mmove_t actor_move_flipoff = new mmove_t(FRAME_flip01, FRAME_flip14,
             actor_frames_flipoff, actor_run);
 
     static final mframe_t[] actor_frames_taunt = {
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null),
-            new mframe_t(GameAI.ai_turn, 0, null) };
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null),
+            new mframe_t(GameAI.ai_turn, (float) 0, null) };
 
     static final mmove_t actor_move_taunt = new mmove_t(FRAME_taunt01, FRAME_taunt17,
             actor_frames_taunt, actor_run);
@@ -1208,12 +1208,12 @@ public class M_Actor {
             if (GameBase.level.time < self.pain_debounce_time)
                 return;
 
-            self.pain_debounce_time = GameBase.level.time + 3;
+            self.pain_debounce_time = GameBase.level.time + 3.0F;
             
             
 
-            if ((other.client != null) && (Lib.random() < 0.4)) {
-                float[] v = {0, 0, 0};
+            if ((other.client != null) && ((double) Lib.random() < 0.4)) {
+                float[] v = {(float) 0, (float) 0, (float) 0};
 
                 Math3D.VectorSubtract(other.s.origin, self.s.origin, v);
                 self.ideal_yaw = Math3D.vectoyaw(v);
@@ -1226,11 +1226,11 @@ public class M_Actor {
                 String name = actor_names[(self.index) % MAX_ACTOR_NAMES];
 
                 game_import_t.cprintf(other, Defines.PRINT_CHAT, name + ": "
-                        + messages[Lib.rand() % 3] + "!\n");
+                        + messages[(int) Lib.rand() % 3] + "!\n");
                 return;
             }
 
-            int n = Lib.rand() % 3;
+            int n = (int) Lib.rand() % 3;
             switch (n) {
                 case 0:
                     self.monsterinfo.currentmove = actor_move_pain1;
@@ -1250,42 +1250,42 @@ public class M_Actor {
         public String getID() { return "actor_dead";}
         @Override
         public boolean think(edict_t self) {
-            Math3D.VectorSet(self.mins, -16, -16, -24);
-            Math3D.VectorSet(self.maxs, 16, 16, -8);
+            Math3D.VectorSet(self.mins, -16.0F, -16.0F, -24.0F);
+            Math3D.VectorSet(self.maxs, 16.0F, 16.0F, -8.0F);
             self.movetype = Defines.MOVETYPE_TOSS;
             self.svflags |= Defines.SVF_DEADMONSTER;
-            self.nextthink = 0;
+            self.nextthink = (float) 0;
             game_import_t.linkentity(self);
             return true;
         }
     };
 
     static final mframe_t[] actor_frames_death1 = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, -13, null),
-            new mframe_t(GameAI.ai_move, 14, null),
-            new mframe_t(GameAI.ai_move, 3, null),
-            new mframe_t(GameAI.ai_move, -2, null),
-            new mframe_t(GameAI.ai_move, 1, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, -13.0F, null),
+            new mframe_t(GameAI.ai_move, 14.0F, null),
+            new mframe_t(GameAI.ai_move, 3.0F, null),
+            new mframe_t(GameAI.ai_move, -2.0F, null),
+            new mframe_t(GameAI.ai_move, 1.0F, null) };
 
     static final mmove_t actor_move_death1 = new mmove_t(FRAME_death101,
             FRAME_death107, actor_frames_death1, actor_dead);
 
     static final mframe_t[] actor_frames_death2 = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 7, null),
-            new mframe_t(GameAI.ai_move, -6, null),
-            new mframe_t(GameAI.ai_move, -5, null),
-            new mframe_t(GameAI.ai_move, 1, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, -1, null),
-            new mframe_t(GameAI.ai_move, -2, null),
-            new mframe_t(GameAI.ai_move, -1, null),
-            new mframe_t(GameAI.ai_move, -9, null),
-            new mframe_t(GameAI.ai_move, -13, null),
-            new mframe_t(GameAI.ai_move, -13, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, 7.0F, null),
+            new mframe_t(GameAI.ai_move, -6.0F, null),
+            new mframe_t(GameAI.ai_move, -5.0F, null),
+            new mframe_t(GameAI.ai_move, 1.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, -1.0F, null),
+            new mframe_t(GameAI.ai_move, -2.0F, null),
+            new mframe_t(GameAI.ai_move, -1.0F, null),
+            new mframe_t(GameAI.ai_move, -9.0F, null),
+            new mframe_t(GameAI.ai_move, -13.0F, null),
+            new mframe_t(GameAI.ai_move, -13.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t actor_move_death2 = new mmove_t(FRAME_death201,
             FRAME_death213, actor_frames_death2, actor_dead);
@@ -1323,7 +1323,7 @@ public class M_Actor {
             self.deadflag = Defines.DEAD_DEAD;
             self.takedamage = Defines.DAMAGE_YES;
 
-            n = Lib.rand() % 2;
+            n = (int) Lib.rand() % 2;
             if (n == 0)
                 self.monsterinfo.currentmove = actor_move_death1;
             else
@@ -1348,10 +1348,10 @@ public class M_Actor {
     };
 
     static final mframe_t[] actor_frames_attack = {
-            new mframe_t(GameAI.ai_charge, -2, actor_fire),
-            new mframe_t(GameAI.ai_charge, -2, null),
-            new mframe_t(GameAI.ai_charge, 3, null),
-            new mframe_t(GameAI.ai_charge, 2, null) };
+            new mframe_t(GameAI.ai_charge, -2.0F, actor_fire),
+            new mframe_t(GameAI.ai_charge, -2.0F, null),
+            new mframe_t(GameAI.ai_charge, 3.0F, null),
+            new mframe_t(GameAI.ai_charge, 2.0F, null) };
 
     static final mmove_t actor_move_attack = new mmove_t(FRAME_attak01,
             FRAME_attak04, actor_frames_attack, actor_run);
@@ -1363,8 +1363,8 @@ public class M_Actor {
         public boolean think(edict_t self) {
 
             self.monsterinfo.currentmove = actor_move_attack;
-            int n = (Lib.rand() & 15) + 3 + 7;
-            self.monsterinfo.pausetime = GameBase.level.time + n
+            int n = ((int) Lib.rand() & 15) + 3 + 7;
+            self.monsterinfo.pausetime = GameBase.level.time + (float) n
                     * Defines.FRAMETIME;
 
             return true;
@@ -1386,12 +1386,12 @@ public class M_Actor {
                                 + self.target + " at "
                                 + Lib.vtos(self.s.origin) + '\n');
                 self.target = null;
-                self.monsterinfo.pausetime = 100000000;
+                self.monsterinfo.pausetime = 100000000.0F;
                 self.monsterinfo.stand.think(self);
                 return;
             }
 
-            float[] v = {0, 0, 0};
+            float[] v = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorSubtract(self.goalentity.s.origin, self.s.origin, v);
             self.ideal_yaw = self.s.angles[Defines.YAW] = Math3D.vectoyaw(v);
             self.monsterinfo.walk.think(self);
@@ -1449,8 +1449,8 @@ public class M_Actor {
                     other.groundentity = null;
                     other.velocity[2] = self.movedir[2];
                     game_import_t.sound(other, Defines.CHAN_VOICE, game_import_t
-                            .soundindex("player/male/jump1.wav"), 1,
-                            Defines.ATTN_NORM, 0);
+                            .soundindex("player/male/jump1.wav"), 1.0F,
+                            (float) Defines.ATTN_NORM, (float) 0);
                 }
             }
 
@@ -1486,10 +1486,10 @@ public class M_Actor {
                 other.goalentity = other.movetarget;
 
             if (null == other.movetarget && null == other.enemy) {
-                other.monsterinfo.pausetime = GameBase.level.time + 100000000;
+                other.monsterinfo.pausetime = GameBase.level.time + 100000000.0F;
                 other.monsterinfo.stand.think(other);
             } else if (other.movetarget == other.goalentity) {
-                float[] v = {0, 0, 0};
+                float[] v = {(float) 0, (float) 0, (float) 0};
                 Math3D.VectorSubtract(other.movetarget.s.origin,
                         other.s.origin, v);
                 other.ideal_yaw = Math3D.vectoyaw(v);
@@ -1499,25 +1499,25 @@ public class M_Actor {
 
     static void actorMachineGun(edict_t self) {
 
-        float[] forward = {0, 0, 0};
-        float[] right = {0, 0, 0};
+        float[] forward = {(float) 0, (float) 0, (float) 0};
+        float[] right = {(float) 0, (float) 0, (float) 0};
 
         Math3D.AngleVectors(self.s.angles, forward, right, null);
 
-        float[] start = {0, 0, 0};
+        float[] start = {(float) 0, (float) 0, (float) 0};
         Math3D.G_ProjectSource(self.s.origin,
                 M_Flash.monster_flash_offset[Defines.MZ2_ACTOR_MACHINEGUN_1],
                 forward, right, start);
 
         if (self.enemy != null) {
-            float[] target = {0, 0, 0};
+            float[] target = {(float) 0, (float) 0, (float) 0};
             if (self.enemy.health > 0) {
                 Math3D.VectorMA(self.enemy.s.origin, -0.2f,
                         self.enemy.velocity, target);
-                target[2] += self.enemy.viewheight;
+                target[2] = target[2] + (float) self.enemy.viewheight;
             } else {
                 Math3D.VectorCopy(self.enemy.absmin, target);
-                target[2] += (self.enemy.size[2] / 2);
+                target[2] += (self.enemy.size[2] / 2.0F);
             }
             Math3D.VectorSubtract(target, start, forward);
             Math3D.VectorNormalize(forward);
@@ -1534,7 +1534,7 @@ public class M_Actor {
      */
 
     public static void SP_misc_actor(edict_t self) {
-        if (GameBase.deathmatch.value != 0) {
+        if (GameBase.deathmatch.value != (float) 0) {
             GameUtil.G_FreeEdict(self);
             return;
         }
@@ -1556,8 +1556,8 @@ public class M_Actor {
         self.movetype = Defines.MOVETYPE_STEP;
         self.solid = Defines.SOLID_BBOX;
         self.s.modelindex = game_import_t.modelindex("players/male/tris.md2");
-        Math3D.VectorSet(self.mins, -16, -16, -24);
-        Math3D.VectorSet(self.maxs, 16, 16, 32);
+        Math3D.VectorSet(self.mins, -16.0F, -16.0F, -24.0F);
+        Math3D.VectorSet(self.maxs, 16.0F, 16.0F, 32.0F);
 
         if (0 == self.health)
             self.health = 100;
@@ -1594,19 +1594,19 @@ public class M_Actor {
 
         self.solid = Defines.SOLID_TRIGGER;
         self.touch = target_actor_touch;
-        Math3D.VectorSet(self.mins, -8, -8, -8);
-        Math3D.VectorSet(self.maxs, 8, 8, 8);
+        Math3D.VectorSet(self.mins, -8.0F, -8.0F, -8.0F);
+        Math3D.VectorSet(self.maxs, 8.0F, 8.0F, 8.0F);
         self.svflags = Defines.SVF_NOCLIENT;
 
         if ((self.spawnflags & 1) != 0) {
-            if (0 == self.speed)
-                self.speed = 200;
+            if ((float) 0 == self.speed)
+                self.speed = 200.0F;
             if (0 == GameBase.st.height)
                 GameBase.st.height = 200;
-            if (self.s.angles[Defines.YAW] == 0)
-                self.s.angles[Defines.YAW] = 360;
+            if (self.s.angles[Defines.YAW] == (float) 0)
+                self.s.angles[Defines.YAW] = 360.0F;
             GameBase.G_SetMovedir(self.s.angles, self.movedir);
-            self.movedir[2] = GameBase.st.height;
+            self.movedir[2] = (float) GameBase.st.height;
         }
 
         game_import_t.linkentity(self);

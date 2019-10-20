@@ -123,8 +123,8 @@ public class InterpolatingMicrosphere {
         if (dimension == 1) {
             if ((size != 2) || (rand != null))
                 throw new RuntimeException("there are only 2 possible unit vectors in 1D");
-            addNormal(new float[]{-1});
-            addNormal(new float[]{+1});
+            addNormal(new float[]{-1.0F});
+            addNormal(new float[]{(float) +1});
         } else {
 
             throw new UnsupportedOperationException("TODO support float[] conversion from UnitSphereRandomVectorGenerator.nextVector()");
@@ -244,7 +244,7 @@ public class InterpolatingMicrosphere {
             }
         }
         if (zero)
-            return 0;
+            return (float) 0;
 
         double rdwarf = 3.834E-20D;
         double rgiant = 1.304E19D;
@@ -253,11 +253,11 @@ public class InterpolatingMicrosphere {
         double s3 = 0.0D;
         double x1max = 0.0D;
         double x3max = 0.0D;
-        double floatn = v.length;
+        double floatn = (double) v.length;
         double agiant = rgiant / floatn;
 
         for (int norm = 0; norm < v.length; ++norm) {
-            double xabs = Math.abs(v[norm]);
+            double xabs = (double) Math.abs(v[norm]);
             if (xabs >= rdwarf && xabs <= agiant) {
                 s2 += xabs * xabs;
             } else {
@@ -306,20 +306,20 @@ public class InterpolatingMicrosphere {
             float[] diff = ebeSubtract(new float[] { X[0] }, targetPoint);
             /** effective (minimum) radius of one point, an interval within which distance is zero (co-tangent) */
             float pointRadius = 0f;
-            float distance = Math.max(0, safeNorm(epsilon, diff) - pointRadius);
+            float distance = Math.max((float) 0, safeNorm(epsilon, diff) - pointRadius);
 
-            @Nullable float[] sampleDirection = distance!=0 ? diff : null;
+            @Nullable float[] sampleDirection = distance!= (float) 0 ? diff : null;
             float evidence = X[2];
-            int vectors = distance!=0  ? this.size : 1;
+            int vectors = distance!= (float) 0 ? this.size : 1;
 
             for (int j = 0; j < vectors; j++) {
 
                 float[] n = microsphere.get(j);
                 float cos = (sampleDirection != null) ? cosAngleNormalized(n, sampleDirection) : 1f;
 
-                if (cos > 0) {
+                if (cos > (float) 0) {
                     float illumination = cos * focus.focus(distance, evidence);
-                    if (illumination > 0) {
+                    if (illumination > (float) 0) {
                         float[] d = microsphereData.get(j);
                         d[0] += illumination;
                         d[1] += illumination * X[1] /* 0...1.0 */;
@@ -331,16 +331,16 @@ public class InterpolatingMicrosphere {
     }
 
     protected static float pow(float x, float y) {
-        if (y == 0) {
-            return 1;
-        } else if (y == -1) {
+        if (y == (float) 0) {
+            return 1.0F;
+        } else if (y == -1.0F) {
             return 1.0f / x;
         } else if (y == -0.5f) {
-            return 1f / (float)Math.sqrt(-0.5f);
-        } else if (y == -2) {
+            return 1f / (float)Math.sqrt(-0.5);
+        } else if (y == -2.0F) {
             return 1.0f / (x * x);
         } else {
-            return (float) Math.pow(x, y);
+            return (float) Math.pow((double) x, (double) y);
         }
     }
 
@@ -378,7 +378,7 @@ public class InterpolatingMicrosphere {
 
         int size = this.size;
 
-        float weightedValue = 0, illumination = 0;
+        float weightedValue = (float) 0, illumination = (float) 0;
 
         for (int i = 0; i < size; i++) {
             float[] fd = microsphereData.get(i);
@@ -400,7 +400,7 @@ public class InterpolatingMicrosphere {
         if (x.length == 1) {
             @NotNull float x0 = x[0];
             @NotNull float y0 = y[0];
-            return (x0 > 0 && y0 > 0) || (x0 < 0 && y0 < 0) ? 1.0f : -1.0f;
+            return (x0 > (float) 0 && y0 > (float) 0) || (x0 < (float) 0 && y0 < (float) 0) ? 1.0f : -1.0f;
         } else
             return cosAngle(x, y);
     }
@@ -425,7 +425,7 @@ public class InterpolatingMicrosphere {
 
         d[1] = sampleValue;
 
-        d[3] = sampleNum; /* winner */
+        d[3] = (float) sampleNum; /* winner */
     }
 
 
@@ -443,8 +443,8 @@ public class InterpolatingMicrosphere {
     private void clear() {
         for (int i = 0; i < size; i++) {
             float[] d = microsphereData.get(i);
-            d[0] = d[1] = d[2] = 0;
-            d[3] = -1; 
+            d[0] = d[1] = d[2] = (float) 0;
+            d[3] = -1.0F;
         }
     }
 

@@ -50,8 +50,8 @@ public class SARSAUpdateProcedure implements UpdateProcedure {
         }
 
         double l = Utils.length(deltas);
-        if (l < 1) {
-            l = 1;
+        if (l < 1.0) {
+            l = 1.0;
         }
 
         for (int i = 0; i < deltas.length; ++i) {

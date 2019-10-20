@@ -16,8 +16,8 @@ public class SineWave extends KarplusStrongString {
         setMaxVolume(0.4);
         pluckDelta = .9998;
         releaseDelta = .9;
-        filterIn = 0;
-        filterOut = 0;
+        filterIn = (double) 0;
+        filterOut = (double) 0;
     }
 
     public void pluck() {
@@ -25,7 +25,7 @@ public class SineWave extends KarplusStrongString {
         clear();
         int capacity = buffer.capacity();
         for (int i = 0; i < capacity; i++) {
-            buffer.enqueue((Math.sin(i * 2 * Math.PI / capacity)) * getMaxVolume());
+            buffer.enqueue((Math.sin((double) i * 2.0 * Math.PI / (double) capacity)) * getMaxVolume());
         }
     }
 

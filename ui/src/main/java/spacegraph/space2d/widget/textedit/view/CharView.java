@@ -15,7 +15,7 @@ import spacegraph.video.Tex;
   }
 
   public static float width() {
-    return 1; //textureProvider.getWidth(String.valueOf(bufferChar.getChar()));
+    return 1.0F; //textureProvider.getWidth(String.valueOf(bufferChar.getChar()));
   }
 
   @Override
@@ -33,13 +33,13 @@ import spacegraph.video.Tex;
     gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
 
     gl.glBegin(GL2.GL_POLYGON);
-    gl.glTexCoord2f(0, 1);
+    gl.glTexCoord2f((float) 0, 1.0F);
     gl.glVertex2d(-0.5, -0.5);
-    gl.glTexCoord2f(0, 0);
+    gl.glTexCoord2f((float) 0, (float) 0);
     gl.glVertex2d(-0.5, 0.5);
-    gl.glTexCoord2f(1, 0);
+    gl.glTexCoord2f(1.0F, (float) 0);
     gl.glVertex2d(0.5, 0.5);
-    gl.glTexCoord2f(1, 1);
+    gl.glTexCoord2f(1.0F, 1.0F);
     gl.glVertex2d(0.5, -0.5);
     gl.glEnd();
 

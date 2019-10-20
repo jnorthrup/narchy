@@ -84,7 +84,7 @@ public class Brain extends LearnerAndActor {
                             previousAction
                     );
 
-                    behaviourLearner.learn(nextState, new double[]{nextAction});
+                    behaviourLearner.learn(nextState, new double[]{(double) nextAction});
                 }
             }
         }.start();

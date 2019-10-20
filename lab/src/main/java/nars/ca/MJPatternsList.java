@@ -63,7 +63,7 @@ public class MJPatternsList extends Dialog implements ActionListener {
                 String sBff = ((String) vLines.elementAt(i)).trim();
                 if ((!sBff.isEmpty())
 						&& !((String) vLines.elementAt(i)).startsWith("//")) {
-					if (sBff.length() > 0 && sBff.charAt(0) == '#') // next family of rules
+					if (sBff.length() > 0 && (int) sBff.charAt(0) == (int) '#') // next family of rules
 					{
 						iGame = MJRules.GetGameIndex(sBff.substring(1));
 					} else // next pattern

@@ -170,7 +170,7 @@ public abstract class AbstractAgent {
 
             long pauseLength = getPauseLength();
             
-            if (pauseLength > 0) {
+            if (pauseLength > 0L) {
                 pause(pauseLength);
             }
 

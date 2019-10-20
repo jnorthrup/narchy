@@ -160,7 +160,7 @@ public class PitchProcessor {
                 pitchInHertz = sampleRate / betterTau;
             } else{
                 // no pitch found
-                pitchInHertz = -1;
+                pitchInHertz = -1.0F;
             }
 
             result.setPitch(pitchInHertz);
@@ -175,7 +175,7 @@ public class PitchProcessor {
         private void difference(float[] audioBuffer) {
             int tau;
             for (tau = 0; tau < yinBuffer.length; tau++) {
-                yinBuffer[tau] = 0;
+                yinBuffer[tau] = (float) 0;
             }
             for (tau = 1; tau < yinBuffer.length; tau++) {
                 for (int index = 0; index < yinBuffer.length; index++) {
@@ -193,11 +193,11 @@ public class PitchProcessor {
          * </code>
          */
         private void cumulativeMeanNormalizedDifference() {
-            yinBuffer[0] = 1;
-            float runningSum = 0;
+            yinBuffer[0] = 1.0F;
+            float runningSum = (float) 0;
             for (int tau = 1; tau < yinBuffer.length; tau++) {
                 runningSum += yinBuffer[tau];
-                yinBuffer[tau] *= tau / runningSum;
+                yinBuffer[tau] *= (float) tau / runningSum;
             }
         }
 
@@ -211,7 +211,7 @@ public class PitchProcessor {
             // first two positions in yinBuffer are always 1
             // So start at the third (index 2)
             for (tau = 2; tau < yinBuffer.length; tau++) {
-                if (yinBuffer[tau] < threshold) {
+                if ((double) yinBuffer[tau] < threshold) {
                     while (tau + 1 < yinBuffer.length && yinBuffer[tau + 1] < yinBuffer[tau]) {
                         tau++;
                     }
@@ -224,16 +224,16 @@ public class PitchProcessor {
                     //
                     // Since we want the periodicity and and not aperiodicity:
                     // periodicity = 1 - aperiodicity
-                    result.setProbability(1 - yinBuffer[tau]);
+                    result.setProbability(1.0F - yinBuffer[tau]);
                     break;
                 }
             }
 
 
             // if no pitch found, tau => -1
-            if (tau == yinBuffer.length || yinBuffer[tau] >= threshold) {
+            if (tau == yinBuffer.length || (double) yinBuffer[tau] >= threshold) {
                 tau = -1;
-                result.setProbability(0);
+                result.setProbability((float) 0);
                 result.setPitched(false);
             } else {
                 result.setPitched(true);
@@ -270,15 +270,15 @@ public class PitchProcessor {
             float betterTau;
             if (x0 == tauEstimate) {
                 if (yinBuffer[tauEstimate] <= yinBuffer[x2]) {
-                    betterTau = tauEstimate;
+                    betterTau = (float) tauEstimate;
                 } else {
-                    betterTau = x2;
+                    betterTau = (float) x2;
                 }
             } else if (x2 == tauEstimate) {
                 if (yinBuffer[tauEstimate] <= yinBuffer[x0]) {
-                    betterTau = tauEstimate;
+                    betterTau = (float) tauEstimate;
                 } else {
-                    betterTau = x0;
+                    betterTau = (float) x0;
                 }
             } else {
                 float s0 = yinBuffer[x0];
@@ -286,7 +286,7 @@ public class PitchProcessor {
                 float s2 = yinBuffer[x2];
                 // fixed AUBIO implementation, thanks to Karl Helgason:
                 // (2.0f * s1 - s2 - s0) was incorrectly multiplied with -1
-                betterTau = tauEstimate + (s2 - s0) / (2 * (2 * s1 - s2 - s0));
+                betterTau = (float) tauEstimate + (s2 - s0) / (2.0F * (2.0F * s1 - s2 - s0));
             }
             return betterTau;
         }

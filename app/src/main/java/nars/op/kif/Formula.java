@@ -27,8 +27,6 @@ import com.google.common.collect.Sets;
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /** ************************************************************
  * Handle operations on an individual formula.  This includes
@@ -355,19 +353,19 @@ public class Formula implements Comparable, Serializable {
                 while (i < len) {
                     ch = input.charAt(i);
                     if (!insideQuote) {
-                        if (ch == '(')
+                        if ((int) ch == (int) '(')
                             pLevel++;
-                        else if (ch == ')')
+                        else if ((int) ch == (int) ')')
                             pLevel--;
-                        else if (quoteChars.contains(ch) && (prev != '\\')) {
+                        else if (quoteChars.contains(ch) && ((int) prev != (int) '\\')) {
                             insideQuote = true;
                             quoteCharInForce = ch;
                             qLevel++;
                         }
                     }
                     else if (quoteChars.contains(ch)
-                            && (ch == quoteCharInForce)
-                            && (prev != '\\')) {
+                            && ((int) ch == (int) quoteCharInForce)
+                            && ((int) prev != (int) '\\')) {
                         insideQuote = false;
                         quoteCharInForce = '0';
                         qLevel--;
@@ -415,11 +413,11 @@ public class Formula implements Comparable, Serializable {
                 while (i < end) {
                     ch = input.charAt(i);
                     if (!insideQuote) {
-                        if (ch == '(') {
+                        if ((int) ch == (int) '(') {
                             sb.append('(');
                             level++;
                         }
-                        else if (ch == ')') {
+                        else if ((int) ch == (int) ')') {
                             sb.append(')');
                             level--;
                             if (level <= 0)
@@ -429,7 +427,7 @@ public class Formula implements Comparable, Serializable {
                             if (sb.length() > 0)
                                 break;
                         }
-                        else if (quoteChars.contains(ch) && (prev != '\\')) {
+                        else if (quoteChars.contains(ch) && ((int) prev != (int) '\\')) {
                             sb.append(ch);
                             insideQuote = true;
                             quoteCharInForce = ch;
@@ -438,8 +436,8 @@ public class Formula implements Comparable, Serializable {
                             sb.append(ch);
                     }
                     else if (quoteChars.contains(ch)
-                            && (ch == quoteCharInForce)
-                            && (prev != '\\')) {
+                            && ((int) ch == (int) quoteCharInForce)
+                            && ((int) prev != (int) '\\')) {
                         sb.append(ch);
                         insideQuote = false;
                         quoteCharInForce = '0';
@@ -483,11 +481,11 @@ public class Formula implements Comparable, Serializable {
                 while (i < end) {
                     ch = input.charAt(i);
                     if (!insideQuote) {
-                        if (ch == '(') {
+                        if ((int) ch == (int) '(') {
                             carCount++;
                             level++;
                         }
-                        else if (ch == ')') {
+                        else if ((int) ch == (int) ')') {
                             carCount++;
                             level--;
                             if (level <= 0)
@@ -497,7 +495,7 @@ public class Formula implements Comparable, Serializable {
                             if (carCount > 0)
                                 break;
                         }
-                        else if (quoteChars.contains(ch) && (prev != '\\')) {
+                        else if (quoteChars.contains(ch) && ((int) prev != (int) '\\')) {
                             carCount++;
                             insideQuote = true;
                             quoteCharInForce = ch;
@@ -506,8 +504,8 @@ public class Formula implements Comparable, Serializable {
                             carCount++;
                     }
                     else if (quoteChars.contains(ch)
-                            && (ch == quoteCharInForce)
-                            && (prev != '\\')) {
+                            && ((int) ch == (int) quoteCharInForce)
+                            && ((int) prev != (int) '\\')) {
                         carCount++;
                         insideQuote = false;
                         quoteCharInForce = '0';
@@ -691,7 +689,7 @@ public class Formula implements Comparable, Serializable {
         f.theFormula = f.theFormula.trim();
         if (!f.atom())
             f.theFormula = f.theFormula.substring(1,f.theFormula.length()-1);
-        int lastParen = theFormula.lastIndexOf(')');
+        int lastParen = theFormula.lastIndexOf((int) ')');
         String sep = "";
         if (lastParen > 1)
             sep = " ";
@@ -1489,10 +1487,10 @@ public class Formula implements Comparable, Serializable {
      */
     public ArrayList<String> argumentsToArrayList(int start) {
 
-        if (theFormula.indexOf('(',1) != -1) {
+        if (theFormula.indexOf((int) '(',1) != -1) {
             ArrayList<String> erList = complexArgumentsToArrayList(0);
             for (String s : erList) {
-                if (s.indexOf('(') != -1 && !StringUtil.quoted(s)) {
+                if (s.indexOf((int) '(') != -1 && !StringUtil.quoted(s)) {
                     String err = "Error in Formula.argumentsToArrayList() complex formula: " + this;
                     errors.add(err);
                     System.out.println(err);
@@ -2302,9 +2300,9 @@ public class Formula implements Comparable, Serializable {
             return (!form.contains("?") && !form.contains("@"));
         boolean inQuote = false;
         for (int i = 0; i < form.length(); i++) {
-            if (form.charAt(i) == '"')
+            if ((int) form.charAt(i) == (int) '"')
                 inQuote = !inQuote;
-            if ((form.charAt(i) == '?' || form.charAt(i) == '@') && !inQuote)
+            if (((int) form.charAt(i) == (int) '?' || (int) form.charAt(i) == (int) '@') && !inQuote)
                 return false;
         }
         return true;
@@ -2516,13 +2514,13 @@ public class Formula implements Comparable, Serializable {
             ch = theFormula.charAt(i);
             if (inComment) {     
                 formatted.append(ch);
-                if ((i > 70) && (ch == '/')) 
+                if ((i > 70) && ((int) ch == (int) '/'))
                     formatted.append(' ');
-                if (ch == '"')
+                if ((int) ch == (int) '"')
                     inComment = false;
             }
             else {
-                if ((ch == '(')
+                if (((int) ch == (int) '(')
                         && !inQuantifier
                         && ((indentLevel != 0) || (i > 1))) {
                     if ((i > 0) && Character.isWhitespace(pch)) {
@@ -2531,16 +2529,16 @@ public class Formula implements Comparable, Serializable {
                     formatted.append(eolChars);
                     formatted.append(String.valueOf(indentChars).repeat(Math.max(0, indentLevel)));
                 }
-                if ((i == 0) && (indentLevel == 0) && (ch == '('))
+                if ((i == 0) && (indentLevel == 0) && ((int) ch == (int) '('))
                     formatted.append(ch);
                 if (!inToken && !inVariable && Character.isJavaIdentifierStart(ch)) {
-                    token = new StringBuilder(ch);
+                    token = new StringBuilder((int) ch);
                     inToken = true;
                 }
                 if (inToken && (Character.isJavaIdentifierPart(ch)
-                        || (legalTermChars.indexOf(ch) > -1)))
+                        || (legalTermChars.indexOf((int) ch) > -1)))
                     token.append(ch);
-                if (ch == '(') {
+                if ((int) ch == (int) '(') {
                     if (inQuantifier) {
                         inQuantifier = false;
                         inVarlist = true;
@@ -2549,9 +2547,9 @@ public class Formula implements Comparable, Serializable {
                     else
                         indentLevel++;
                 }
-                if (ch == '"')
+                if ((int) ch == (int) '"')
                     inComment = true;
-                if (ch == ')') {
+                if ((int) ch == (int) ')') {
                     if (!inVarlist)
                         indentLevel--;
                     else
@@ -2561,13 +2559,13 @@ public class Formula implements Comparable, Serializable {
                     inQuantifier = true;
                 if (inVariable
                         && !Character.isJavaIdentifierPart(ch)
-                        && (legalTermChars.indexOf(ch) == -1))
+                        && (legalTermChars.indexOf((int) ch) == -1))
                     inVariable = false;
-                if (varStartChars.indexOf(ch) > -1)
+                if (varStartChars.indexOf((int) ch) > -1)
                     inVariable = true;
                 if (inToken
                         && !Character.isJavaIdentifierPart(ch)
-                        && (legalTermChars.indexOf(ch) == -1)) {
+                        && (legalTermChars.indexOf((int) ch) == -1)) {
                     inToken = false;
                     if (StringUtil.isNonEmptyString(hyperlink)) {
                         formatted.append("<a href=\"");
@@ -2582,7 +2580,7 @@ public class Formula implements Comparable, Serializable {
                         formatted.append(token);
                     token = new StringBuilder();
                 }
-                if ((i > 0) && !inToken && !(Character.isWhitespace(ch) && (pch == '('))) {
+                if ((i > 0) && !inToken && !(Character.isWhitespace(ch) && ((int) pch == (int) '('))) {
                     if (Character.isWhitespace(ch)) {
                         if (!Character.isWhitespace(pch))
                             formatted.append(' ');

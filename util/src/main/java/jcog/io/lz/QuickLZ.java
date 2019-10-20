@@ -18,7 +18,7 @@ public final class QuickLZ {
 	}
 
 	static boolean headerLong(byte[] source, int offset) {
-		return ((source[offset] & 2) == 2);
+		return (((int) source[offset] & 2) == 2);
 	}
 
 	public static long sizeDecompressed(byte[] source, int offset) {
@@ -32,12 +32,12 @@ public final class QuickLZ {
 
 	private static void write_header(byte[] dst, int level, boolean compressible, int size_compressed, int size_decompressed) {
         byte b = (byte) (2 | (compressible ? 1 : 0));
-		b |= (byte) (level << 2);
-		b |= (1 << 6);
+        b = (byte) ((int) b | (int) (byte) (level << 2));
+        b = (byte) ((int) b | (1 << 6));
 		//b |= (0 << 4);
 		dst[0] = b;
-		fast_write(dst, 1, size_decompressed, 4);
-		fast_write(dst, 5, size_compressed, 4);
+		fast_write(dst, 1, (long) size_decompressed, 4);
+		fast_write(dst, 5, (long) size_compressed, 4);
 	}
 
 	public static byte[] compress(byte[] in) {
@@ -85,7 +85,7 @@ public final class QuickLZ {
         long cword_val = 0x80000000L;
         int dst = DEFAULT_HEADERLEN + CWORD_LEN;
         while (src <= last_matchstart) {
-			if ((cword_val & 1) == 1) {
+			if ((cword_val & 1L) == 1L) {
 				if (src > 3 * (in.length >> 2) && dst > src - (src >> 5)) {
 					//byte[] d2 = new byte[in.length + DEFAULT_HEADERLEN];
 					write_header(out, level, false, in.length, in.length + DEFAULT_HEADERLEN);
@@ -107,9 +107,9 @@ public final class QuickLZ {
 				cachetable[hash] = fetch;
 				hashtable[hash][0] = src;
 
-				if (cache == 0 && hash_counter[hash] != 0 && (src - o > MINOFFSET || (src == o + 1 && lits >= 3 && src > 3 && in[src] == in[src - 3] && in[src] == in[src - 2] && in[src] == in[src - 1] && in[src] == in[src + 1] && in[src] == in[src + 2]))) {
+				if (cache == 0 && (int) hash_counter[hash] != 0 && (src - o > MINOFFSET || (src == o + 1 && lits >= 3 && src > 3 && (int) in[src] == (int) in[src - 3] && (int) in[src] == (int) in[src - 2] && (int) in[src] == (int) in[src - 1] && (int) in[src] == (int) in[src + 1] && (int) in[src] == (int) in[src + 2]))) {
 					cword_val = ((cword_val >>> 1) | 0x80000000L);
-					if (in[o + 3] != in[src + 3]) {
+					if ((int) in[o + 3] != (int) in[src + 3]) {
                         int f = 3 - 2 | (hash << 4);
 						out[dst] = (byte) (f >>> 0);
 						out[dst + 1] = (byte) (f >>> 8);
@@ -120,11 +120,11 @@ public final class QuickLZ {
                         int remaining = (Math.min((in.length - UNCOMPRESSED_END - src + 1 - 1), 255));
 
 						src += 4;
-						if (in[o + src - old_src] == in[src]) {
+						if ((int) in[o + src - old_src] == (int) in[src]) {
 							src++;
-							if (in[o + src - old_src] == in[src]) {
+							if ((int) in[o + src - old_src] == (int) in[src]) {
 								src++;
-								while (in[o + (src - old_src)] == in[src] && (src - old_src) < remaining)
+								while ((int) in[o + (src - old_src)] == (int) in[src] && (src - old_src) < remaining)
 									src++;
 							}
 						}
@@ -139,7 +139,7 @@ public final class QuickLZ {
 							out[dst + 1] = (byte) (f >>> 8);
 							dst += 2;
 						} else {
-                            fast_write(out, dst, hash | (matchlen << 16), 3);
+                            fast_write(out, dst, (long) (hash | (matchlen << 16)), 3);
 							dst += 3;
 						}
 					}
@@ -147,12 +147,12 @@ public final class QuickLZ {
 					fetch = fast_read_int(in, src, 3);
 				} else {
 					lits++;
-					hash_counter[hash] = 1;
+					hash_counter[hash] = (byte) 1;
 					out[dst] = in[src];
-                    cword_val >>>= 1;
+                    cword_val >>>= 1L;
 					src++;
 					dst++;
-					fetch = ((fetch >>> 8) & 0xffff) | ((in[src + 2] & 0xff) << 16);
+					fetch = ((fetch >>> 8) & 0xffff) | (((int) in[src + 2] & 0xff) << 16);
 				}
 			} else {
 				fetch = fast_read_int(in, src, 3);
@@ -166,12 +166,12 @@ public final class QuickLZ {
                 int offset2 = 0;
 
                 int[] hth = hashtable[hash];
-				for (int k = 0; k < QLZ_POINTERS_3 && (c > k || c < 0); k++) {
+				for (int k = 0; k < QLZ_POINTERS_3 && ((int) c > k || (int) c < 0); k++) {
 					o = hth[k];
-					if ((byte) fetch == in[o] && (byte) (fetch >>> 8) == in[o + 1] && (byte) (fetch >>> 16) == in[o + 2] && o < src - MINOFFSET) {
+					if ((int) (byte) fetch == (int) in[o] && (int) (byte) (fetch >>> 8) == (int) in[o + 1] && (int) (byte) (fetch >>> 16) == (int) in[o + 2] && o < src - MINOFFSET) {
                         /*, best_k = 0*/
                         int m = 3;
-                        while (in[o + m] == in[src + m] && m < remaining)
+                        while ((int) in[o + m] == (int) in[src + m] && m < remaining)
 							m++;
 						if ((m > matchlen) || (m == matchlen && o > offset2)) {
 							offset2 = o;
@@ -180,7 +180,7 @@ public final class QuickLZ {
 					}
 				}
 				o = offset2;
-				hth[c & (QLZ_POINTERS_3 - 1)] = src;
+				hth[(int) c & (QLZ_POINTERS_3 - 1)] = src;
 				c++;
 				hash_counter[hash] = c;
 
@@ -190,31 +190,31 @@ public final class QuickLZ {
 						fetch = fast_read_int(in, src + u, 3);
 						hash = ((fetch >>> 12) ^ fetch) & (HASH_VALUES - 1);
 						c = hash_counter[hash]++;
-						hashtable[hash][c & (QLZ_POINTERS_3 - 1)] = src + u;
+						hashtable[hash][(int) c & (QLZ_POINTERS_3 - 1)] = src + u;
 					}
 
 					src += matchlen;
 					cword_val = ((cword_val >>> 1) | 0x80000000L);
 
 					if (matchlen == 3 && offset <= 63) {
-						fast_write(out, dst, offset << 2, 1);
+						fast_write(out, dst, (long) (offset << 2), 1);
 						dst++;
 					} else if (matchlen == 3 && offset <= 16383) {
-						fast_write(out, dst, (offset << 2) | 1, 2);
+						fast_write(out, dst, (long) ((offset << 2) | 1), 2);
 						dst += 2;
 					} else if (matchlen <= 18 && offset <= 1023) {
-						fast_write(out, dst, ((matchlen - 3) << 2) | (offset << 6) | 2, 2);
+						fast_write(out, dst, (long) (((matchlen - 3) << 2) | (offset << 6) | 2), 2);
 						dst += 2;
 					} else if (matchlen <= 33) {
-						fast_write(out, dst, ((matchlen - 2) << 2) | (offset << 7) | 3, 3);
+						fast_write(out, dst, (long) (((matchlen - 2) << 2) | (offset << 7) | 3), 3);
 						dst += 3;
 					} else {
-						fast_write(out, dst, ((matchlen - 3) << 7) | (offset << 15) | 3, 4);
+						fast_write(out, dst, (long) (((matchlen - 3) << 7) | (offset << 15) | 3), 4);
 						dst += 4;
 					}
 				} else {
 					out[dst] = in[src];
-                    cword_val >>>= 1;
+                    cword_val >>>= 1L;
 					src++;
 					dst++;
 				}
@@ -222,7 +222,7 @@ public final class QuickLZ {
 		}
 
 		while (src <= in.length - 1) {
-			if ((cword_val & 1) == 1) {
+			if ((cword_val & 1L) == 1L) {
 				fast_write(out, cword_ptr, (cword_val >>> 1) | 0x80000000L, 4);
 				cword_ptr = dst;
 				dst += CWORD_LEN;
@@ -232,10 +232,10 @@ public final class QuickLZ {
 			out[dst] = in[src];
 			src++;
 			dst++;
-            cword_val >>>= 1;
+            cword_val >>>= 1L;
 		}
-		while ((cword_val & 1) != 1) {
-            cword_val >>>= 1;
+		while ((cword_val & 1L) != 1L) {
+            cword_val >>>= 1L;
 		}
 		fast_write(out, cword_ptr, (cword_val >>> 1) | 0x80000000L, CWORD_LEN);
 		write_header(out, level, true, in.length, dst);
@@ -244,15 +244,15 @@ public final class QuickLZ {
 	}
 
 	static long fast_read_long(byte[] a, int i, int numbytes) {
-		long l = 0;
+		long l = 0L;
 		for (int j = 0; j < numbytes; j++)
-			l |= ((a[i++] & 0xffL) << j * 8);
+			l |= (((long) a[i++] & 0xffL) << j * 8);
 		return l;
 	}
     static int fast_read_int(byte[] a, int i, int numbytes) {
         int l = 0;
         for (int j = 0; j < numbytes; j++)
-            l |= ((a[i++] & 0xffL) << j * 8);
+            l = (int) ((long) l | (((long) a[i++] & 0xffL) << j * 8));
         return l;
     }
 
@@ -273,12 +273,12 @@ public final class QuickLZ {
         //byte[] hash_counter = new byte[4096];
 
         byte first = in[offset];
-        int level = (first >>> 2) & 0x3;
+        int level = ((int) first >>> 2) & 0x3;
 
 		if (level != 1 && level != 3)
 			throw new RuntimeException("Java version only supports level 1 and 3");
 
-		if ((first & 1) != 1) {
+		if (((int) first & 1) != 1) {
             byte[] d2 = new byte[size];
 			System.arraycopy(in, initSrc, d2, 0, size);
 			return d2;
@@ -289,11 +289,11 @@ public final class QuickLZ {
         //new int[hashtable_size];
         int[] hashtable = null;
         byte[] out = new byte[size];
-        long cword_val = 1;
+        long cword_val = 1L;
         int dst = 0;
         int src = initSrc;
         for (int fetch = 0; ; ) {
-			if (cword_val == 1) {
+			if (cword_val == 1L) {
 				cword_val = fast_read_long(in, src, 4);
 				src += 4;
 				if (dst <= last_matchstart) {
@@ -301,9 +301,9 @@ public final class QuickLZ {
 				}
 			}
 
-			if ((cword_val & 1) == 1) {
+			if ((cword_val & 1L) == 1L) {
 
-                cword_val >>>= 1;
+                cword_val >>>= 1L;
 
                 int offset2;
                 int matchlen;
@@ -314,7 +314,7 @@ public final class QuickLZ {
 						matchlen = (fetch & 0xf) + 2;
 						src += 2;
 					} else {
-						matchlen = in[src + 2] & 0xff;
+						matchlen = (int) in[src + 2] & 0xff;
 						src += 3;
 					}
 				} else {
@@ -361,7 +361,7 @@ public final class QuickLZ {
                             last_hashed++;
                             hashtable[((fetch >>> 12) ^ fetch) & (HASH_VALUES - 1)] = last_hashed;
                             //hash_counter[hash] = 1;
-                            fetch = fetch >>> 8 & 0xffff | (out[last_hashed + 3] & 0xff) << 16;
+                            fetch = fetch >>> 8 & 0xffff | ((int) out[last_hashed + 3] & 0xff) << 16;
                         } while (last_hashed < dst - matchlen);
                     }
 					toFetch = 3;
@@ -373,7 +373,7 @@ public final class QuickLZ {
 			} else {
 				if (dst <= last_matchstart) {
 					out[dst++] = in[src++];
-                    cword_val >>>= 1;
+                    cword_val >>>= 1L;
 
 					if (level == 1 && (last_hashed < dst-3)) {
                         if (hashtable == null)
@@ -386,20 +386,20 @@ public final class QuickLZ {
 						} while (last_hashed < dst - 3);
 					}
 
-					fetch = fetch >> 8 & 0xffff | (in[src + 2] & 0xff) << 16;
+					fetch = fetch >> 8 & 0xffff | ((int) in[src + 2] & 0xff) << 16;
 
 					if (level!=1)
-                        fetch |= (in[src + 3] & 0xff) << 24;
+                        fetch |= ((int) in[src + 3] & 0xff) << 24;
 
 				} else {
 					while (dst <= size - 1) {
-						if (cword_val == 1) {
+						if (cword_val == 1L) {
 							src += CWORD_LEN;
 							cword_val = 0x80000000L;
 						}
 
 						out[dst++] = in[src++];
-                        cword_val >>>= 1;
+                        cword_val >>>= 1L;
 					}
 					return out;
 				}

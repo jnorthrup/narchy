@@ -35,9 +35,9 @@ public class ParticleGroup {
         m_strength = 1.0f;
 
         m_timestamp = -1;
-        m_mass = 0;
-        m_inertia = 0;
-        m_angularVelocity = 0;
+        m_mass = (float) 0;
+        m_inertia = (float) 0;
+        m_angularVelocity = (float) 0;
         m_transform.setIdentity();
 
         m_destroyAutomatically = true;
@@ -114,7 +114,7 @@ public class ParticleGroup {
     public void updateStatistics() {
         if (m_timestamp != m_system.m_timestamp) {
             float m = m_system.getParticleMass();
-            m_mass = 0;
+            m_mass = (float) 0;
             m_center.setZero();
             m_linearVelocity.setZero();
             for (int i = m_firstIndex; i < m_lastIndex; i++) {
@@ -126,14 +126,14 @@ public class ParticleGroup {
                 m_linearVelocity.x += m * vel.x;
                 m_linearVelocity.y += m * vel.y;
             }
-            if (m_mass > 0) {
-                m_center.x *= 1 / m_mass;
-                m_center.y *= 1 / m_mass;
-                m_linearVelocity.x *= 1 / m_mass;
-                m_linearVelocity.y *= 1 / m_mass;
+            if (m_mass > (float) 0) {
+                m_center.x *= 1.0F / m_mass;
+                m_center.y *= 1.0F / m_mass;
+                m_linearVelocity.x *= 1.0F / m_mass;
+                m_linearVelocity.y *= 1.0F / m_mass;
             }
-            m_inertia = 0;
-            m_angularVelocity = 0;
+            m_inertia = (float) 0;
+            m_angularVelocity = (float) 0;
             for (int i = m_firstIndex; i < m_lastIndex; i++) {
                 v2 pos = m_system.m_positionBuffer.data[i];
                 v2 vel = m_system.m_velocityBuffer.data[i];
@@ -144,8 +144,8 @@ public class ParticleGroup {
                 m_inertia += m * (px * px + py * py);
                 m_angularVelocity += m * (px * vy - py * vx);
             }
-            if (m_inertia > 0) {
-                m_angularVelocity *= 1 / m_inertia;
+            if (m_inertia > (float) 0) {
+                m_angularVelocity *= 1.0F / m_inertia;
             }
             m_timestamp = m_system.m_timestamp;
         }

@@ -5,7 +5,6 @@ import jcog.data.list.FasterList;
 import nars.term.Term;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 /** this assumes < 127 unique elements */
@@ -63,7 +62,7 @@ public class ByteAnonMap {
     /** get: accepts in range 1..Byte.MAX_VALUE (does not accept 0) */
     public final Term interned(byte id) {
         //assert(id > 0);
-        return idToTerm.get(id-1);
+        return idToTerm.get((int) id -1);
     }
 
     /** use when you're sure that you are only going to read from this afterward */

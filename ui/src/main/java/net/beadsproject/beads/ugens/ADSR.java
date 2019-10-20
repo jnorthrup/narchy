@@ -35,12 +35,12 @@ public class ADSR extends UGen {
      */
     private ADSR(AudioContext context, int inouts, float... adsr) {
         super(context, inouts, inouts);
-        env = new Envelope(context, 0);
+        env = new Envelope(context, (float) 0);
         gain = new Gain(context, inouts, env);
         for (int i = 0; i < adsr.length - 1; i += 2) {
             env.add(adsr[i], adsr[i + 1]);
         }
-        env.add(0, adsr[adsr.length - 1], new KillTrigger(this));
+        env.add((float) 0, adsr[adsr.length - 1], new KillTrigger(this));
     }
 
     @Override

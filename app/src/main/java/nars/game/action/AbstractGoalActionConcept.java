@@ -80,7 +80,7 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
     @Override
     public double dexterity() {
         Truth t = actionDex;
-        return t != null ? w2cSafeDouble(t.evi()) : 0;
+        return t != null ? w2cSafeDouble(t.evi()) : (double) 0;
     }
 
     @Override
@@ -113,9 +113,9 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
             return null;
 
         int limit = componentsMax;
-        int tries = (int)Math.ceil(limit * NAL.ANSWER_TRYING);
+        int tries = (int)Math.ceil((double) (limit * NAL.ANSWER_TRYING));
 
-        long s = g.start+shift, e = g.end+shift;
+        long s = g.start+ (long) shift, e = g.end+ (long) shift;
         Answer a = Answer.taskStrength(true, limit, s, e, term, null, g.x.nar);
 
         a.clear(tries).time(s, e).dur(g.dur);
@@ -134,7 +134,7 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
 
         When<What> wLoop = g.nowLoop, wPercept = g.nowPercept;
 
-        int perceptShift = (int) ((wLoop.end - wLoop.start) * NAL.ACTION_DESIRE_SHIFT_DUR); //half dur
+        int perceptShift = (int) ((float) (wLoop.end - wLoop.start) * NAL.ACTION_DESIRE_SHIFT_DUR); //half dur
 
         @Nullable Truth nextFeedback = updateAction(
                 this.beliefTruth = truth(truth(true, limitBelief, wLoop, perceptShift), wPercept, perceptShift),
@@ -153,7 +153,7 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
     private  @Nullable
     static Truth truth(@Nullable TruthProjection t, When when, int shift) {
         return t!=null ?
-            t.truth(when.start + shift, when.end + shift, NAL.truth.EVI_MIN,
+            t.truth(when.start + (long) shift, when.end + (long) shift, NAL.truth.EVI_MIN,
             false, false, null) :
             null;
     }
@@ -172,7 +172,7 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
         if (c!=null && Truth.stronger(c, nextActionDex)==c)
             w.x.accept(new TemporalTask(term, GOAL, c, w.x.nar.time(), w.start, w.end, new long[] { w.x.nar.time.nextStamp() }).pri(pri.pri()));
 
-        actionCoh = gt != null ? gt.coherency() : 0;
+        actionCoh = gt != null ? gt.coherency() : (double) 0;
 
 
 //        Truth actionCuri = curiosity.curiosity(this);

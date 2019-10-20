@@ -14,7 +14,6 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.EMPTY_LIST;
 

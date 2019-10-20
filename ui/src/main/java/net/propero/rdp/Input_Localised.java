@@ -71,7 +71,7 @@ public class Input_Localised extends Input {
     public void clearKeys() {
         super.clearKeys();
         if (lastKeyEvent != null && lastKeyEvent.isAltGraphDown())
-            sendScancode(getTime(), RDP_KEYRELEASE,
+            sendScancode((long) getTime(), RDP_KEYRELEASE,
                     0x38 | KeyCode.SCANCODE_EXTENDED); 
     }
 
@@ -79,7 +79,7 @@ public class Input_Localised extends Input {
     public void setKeys() {
         super.setKeys();
         if (lastKeyEvent != null && lastKeyEvent.isAltGraphDown())
-            sendScancode(getTime(), RDP_KEYPRESS,
+            sendScancode((long) getTime(), RDP_KEYPRESS,
                     0x38 | KeyCode.SCANCODE_EXTENDED); 
     }
 
@@ -103,22 +103,22 @@ public class Input_Localised extends Input {
             if (tk.getLockingKeyState(KeyEvent.VK_CAPS_LOCK) != capsLockOn) {
                 capsLockOn = !capsLockOn;
                 logger.debug("CAPS LOCK toggle");
-                sendScancode(getTime(), RDP_KEYPRESS, 0x3a);
-                sendScancode(getTime(), RDP_KEYRELEASE, 0x3a);
+                sendScancode((long) getTime(), RDP_KEYPRESS, 0x3a);
+                sendScancode((long) getTime(), RDP_KEYRELEASE, 0x3a);
 
             }
             if (tk.getLockingKeyState(KeyEvent.VK_NUM_LOCK) != numLockOn) {
                 numLockOn = !numLockOn;
                 logger.debug("NUM LOCK toggle");
-                sendScancode(getTime(), RDP_KEYPRESS, 0x45);
-                sendScancode(getTime(), RDP_KEYRELEASE, 0x45);
+                sendScancode((long) getTime(), RDP_KEYPRESS, 0x45);
+                sendScancode((long) getTime(), RDP_KEYRELEASE, 0x45);
 
             }
             if (tk.getLockingKeyState(KeyEvent.VK_SCROLL_LOCK) != scrollLockOn) {
                 scrollLockOn = !scrollLockOn;
                 logger.debug("SCROLL LOCK toggle");
-                sendScancode(getTime(), RDP_KEYPRESS, 0x46);
-                sendScancode(getTime(), RDP_KEYRELEASE, 0x46);
+                sendScancode((long) getTime(), RDP_KEYPRESS, 0x46);
+                sendScancode((long) getTime(), RDP_KEYRELEASE, 0x46);
             }
         } catch (Exception e) {
             Options.useLockingKeyState = false;

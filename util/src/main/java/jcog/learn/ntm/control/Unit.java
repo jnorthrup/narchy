@@ -12,7 +12,7 @@ public class Unit {
 
     public Unit(double value) {
         this.value = value;
-        this.grad = 0;
+        this.grad = (double) 0;
     }
 
     public String toString() {

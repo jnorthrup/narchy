@@ -32,7 +32,7 @@ public class WhitespaceState extends TokenizerState {
 	 * @return a state for ignoring whitespace
 	 */
 	public WhitespaceState() {
-		setWhitespaceChars(0, ' ', true);
+		setWhitespaceChars(0, (int) ' ', true);
 	}
 
 	public void enableWhitespaceTokens() {

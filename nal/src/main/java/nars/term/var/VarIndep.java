@@ -87,7 +87,7 @@ public final class VarIndep extends NormalizedVariable {
 
 
         byte nStatements = (byte) statements.size();
-        ByteByteHashMap count = new ByteByteHashMap(nStatements);
+        ByteByteHashMap count = new ByteByteHashMap((int) nStatements);
         nextPath: for (List<ByteList> varPaths : indepVarPaths) {
 
             if (!count.isEmpty())
@@ -96,21 +96,21 @@ public final class VarIndep extends NormalizedVariable {
             for (ByteList p : varPaths) {
                 if (rootIsStatement) {
                     byte branch = p.get(0);
-                    if (Util.branchOr((byte) -1, count, branch) == 0b11)
+                    if ((int) Util.branchOr((byte) -1, count, branch) == 0b11)
                         continue nextPath;
                 }
 
                 int pSize = p.size();
 
                 nextStatement:
-                for (byte k = 0; k < nStatements; k++) {
-                    ByteList statement = statements.get(k);
+                for (byte k = (byte) 0; (int) k < (int) nStatements; k++) {
+                    ByteList statement = statements.get((int) k);
                     int statementPathLength = statement.size();
                     if (statementPathLength > pSize)
                         break;
 
                     for (int i = 0; i < statementPathLength; i++) {
-                        if (p.get(i) != statement.get(i))
+                        if ((int) p.get(i) != (int) statement.get(i))
                             break nextStatement;
                     }
 
@@ -118,7 +118,7 @@ public final class VarIndep extends NormalizedVariable {
                     //assert (lastBranch == 0 || lastBranch == 1) : lastBranch + " for path " + p + " while validating target: " + t;
 
 
-                    if (Util.branchOr(k, count, lastBranch) == 0b11)
+                    if ((int) Util.branchOr(k, count, lastBranch) == 0b11)
                         continue nextPath;
                 }
             }

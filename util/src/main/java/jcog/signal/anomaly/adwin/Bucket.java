@@ -28,6 +28,6 @@ class Bucket {
     }
 
     public double mean() {
-        return total / numElements;
+        return total / (double) numElements;
     }
 }

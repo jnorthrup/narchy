@@ -44,7 +44,7 @@ public class StreamReplay {
                 if((srcIter.characteristics() & Spliterator.SIZED) == 0)
                     mem = new FasterList<>(); // Unknown size!!!
                 else {
-                    if(estimateSize > Integer.MAX_VALUE)
+                    if(estimateSize > (long) Integer.MAX_VALUE)
                         throw new IllegalStateException("Replay unsupported for estimated size bigger than Integer.MAX_VALUE!");
                     mem = new FasterList<>((int) estimateSize);
                 }
@@ -155,7 +155,7 @@ public class StreamReplay {
             }
 
             public long estimateSize() {
-                return (getFence() - index);
+                return (long) (getFence() - index);
             }
 
             public int characteristics() {

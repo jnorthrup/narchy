@@ -116,7 +116,7 @@ public class Mat22 implements Serializable {
      */
     public final void set(float angle) {
 
-        float c = (float) Math.cos(angle), s = (float) Math.sin(angle);
+        float c = (float) Math.cos((double) angle), s = (float) Math.sin((double) angle);
         ex.x = c;
         ey.x = -s;
         ex.y = s;
@@ -149,7 +149,7 @@ public class Mat22 implements Serializable {
      * @return
      */
     public final float getAngle() {
-        return (float) Math.atan2(ex.y, ex.x);
+        return (float) Math.atan2((double) ex.y, (double) ex.x);
     }
 
     /**
@@ -534,8 +534,8 @@ public class Mat22 implements Serializable {
     public static Mat22 createRotationalTransform(float angle) {
         Mat22 mat = new Mat22();
 
-        float c = (float) Math.cos(angle);
-        float s = (float) Math.sin(angle);
+        float c = (float) Math.cos((double) angle);
+        float s = (float) Math.sin((double) angle);
         mat.ex.x = c;
         mat.ey.x = -s;
         mat.ex.y = s;
@@ -545,8 +545,8 @@ public class Mat22 implements Serializable {
 
     public static void createRotationalTransform(float angle, Mat22 out) {
 
-        float c = (float) Math.cos(angle);
-        float s = (float) Math.sin(angle);
+        float c = (float) Math.cos((double) angle);
+        float s = (float) Math.sin((double) angle);
         out.ex.x = c;
         out.ey.x = -s;
         out.ex.y = s;

@@ -43,8 +43,8 @@ public abstract class NormalizedVariable extends IntrinAtomic implements Variabl
     static {
         for (Op o: new Op[]{VAR_PATTERN, Op.VAR_QUERY, VAR_DEP, VAR_INDEP}) {
             int t = opToVarIndex(o);
-            for (byte i = 1; i < NAL.term.MAX_INTERNED_VARS; i++)
-                varCache[t][i] = vNew(o, i);
+            for (byte i = (byte) 1; (int) i < NAL.term.MAX_INTERNED_VARS; i++)
+                varCache[t][(int) i] = vNew(o, i);
         }
     }
 
@@ -61,7 +61,7 @@ public abstract class NormalizedVariable extends IntrinAtomic implements Variabl
     }
 
     private static int opToVarIndex(/*@NotNull*/ byte oid) {
-        return oid - VAR_PATTERN.id /* lowest, most specific */;
+        return (int) oid - (int) VAR_PATTERN.id /* lowest, most specific */;
 //        //TODO verify this is consistent with the variable's natural ordering
 //        switch (o) {
 //            case VAR_DEP:
@@ -83,7 +83,7 @@ public abstract class NormalizedVariable extends IntrinAtomic implements Variabl
 
     NormalizedVariable(/*@NotNull*/ Op type, byte num) {
         super(type, num);
-        assert num > 0;
+        assert (int) num > 0;
 
         this.bytes = new byte[] { type.id, num };
         this.varType = type.id;
@@ -130,9 +130,9 @@ public abstract class NormalizedVariable extends IntrinAtomic implements Variabl
 
     public static NormalizedVariable the(/*@NotNull*/ byte op, byte id) {
         //assert(id > 0);
-        return id < NAL.term.MAX_INTERNED_VARS ?
-            varCache[NormalizedVariable.opToVarIndex(op)][id] :
-            vNew(Op.the(op), id);
+        return (int) id < NAL.term.MAX_INTERNED_VARS ?
+            varCache[NormalizedVariable.opToVarIndex(op)][(int) id] :
+            vNew(Op.the((int) op), id);
     }
 
     @Override
@@ -146,7 +146,7 @@ public abstract class NormalizedVariable extends IntrinAtomic implements Variabl
 
 
     public @Nullable NormalizedVariable normalizedVariable(byte vid) {
-        return id() == vid ? this : NormalizedVariable.the((byte)opID(), vid);
+        return (int) id() == (int) vid ? this : NormalizedVariable.the((byte)opID(), vid);
     }
 
 
@@ -155,7 +155,7 @@ public abstract class NormalizedVariable extends IntrinAtomic implements Variabl
 
     @Override
     public String toString() {
-        return op().ch + Integer.toString(id());
+        return op().ch + Integer.toString((int) id());
     }
 
 

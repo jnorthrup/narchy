@@ -15,7 +15,7 @@ public class PathSurface extends PaintSurface {
 
     public final Path2D path;
 
-    float lineWidth = 8;
+    float lineWidth = 8.0F;
     float r = 0.5f;
     float g = 0.5f;
     float b = 0.5f;

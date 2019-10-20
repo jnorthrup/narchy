@@ -135,7 +135,7 @@ class Polygon {
         int i;
         for (i = 0; i < numContours; ++i) {
             for (j = 0; j < numVerticesInContours[i]; ++j) {
-                _points.put(nextNumber, new Pointbase(nextNumber, vertices[nextNumber - 1].x, vertices[nextNumber - 1].y, Poly2TriUtils.INPUT));
+                _points.put(nextNumber, new Pointbase(nextNumber, (double) vertices[nextNumber - 1].x, (double) vertices[nextNumber - 1].y, Poly2TriUtils.INPUT));
                 ++nextNumber;
             }
         }
@@ -339,9 +339,9 @@ class Polygon {
                         new double[]{pnext.x, pnext.y});
 
                 if ((pprev.compareTo(p) > 0) && (pnext.compareTo(p) > 0))
-                    p.type = (area > 0) ? Poly2TriUtils.END : Poly2TriUtils.MERGE;
+                    p.type = (area > (double) 0) ? Poly2TriUtils.END : Poly2TriUtils.MERGE;
                 if ((pprev.compareTo(p) < 0) && (pnext.compareTo(p) < 0))
-                    p.type = (area > 0) ? Poly2TriUtils.START : Poly2TriUtils.SPLIT;
+                    p.type = (area > (double) 0) ? Poly2TriUtils.START : Poly2TriUtils.SPLIT;
             }
 
             
@@ -714,22 +714,22 @@ class Polygon {
 
                 Linebase iEdge = getEdge(it);
 
-                double[] A = {0, 0};
+                double[] A = {(double) 0, (double) 0};
                 A[0] = edge.endPoint(0).x;
                 A[1] = edge.endPoint(0).y;
-                double[] B = {0, 0};
+                double[] B = {(double) 0, (double) 0};
                 B[0] = edge.endPoint(1).x;
                 B[1] = edge.endPoint(1).y;
 
                 if (!edge.endPoint(1).equals(iEdge.endPoint(0))) iEdge.reverse();
-                double[] C = {0, 0};
+                double[] C = {(double) 0, (double) 0};
                 C[0] = iEdge.endPoint(1).x;
                 C[1] = iEdge.endPoint(1).y;
 
                 double area = Poly2TriUtils.orient2d(A, B, C);
                 double cosb = angleCosb(A, B, C);
 
-                if (area > 0 && max < cosb) {
+                if (area > (double) 0 && max < cosb) {
                     nexte_ccw = it;
                     max = cosb;
                 } else if (min > cosb) {
@@ -832,7 +832,7 @@ class Polygon {
 
         for (int i = 0; i < 2; i++) spoint.push(qvertex.poll());
 
-        double[] pa = {0, 0}, pb = {0, 0}, pc = {0, 0};
+        double[] pa = {(double) 0, (double) 0}, pb = {(double) 0, (double) 0}, pc = {(double) 0, (double) 0};
         int[] v;
 
         
@@ -885,7 +885,7 @@ class Polygon {
                     double area = Poly2TriUtils.orient2d(pa, pb, pc);
                     boolean left = stack1Point.left;
 
-                    if ((area > 0 && left) || (area < 0 && !left)) {
+                    if ((area > (double) 0 && left) || (area < (double) 0 && !left)) {
                         v = new int[]{
                                 (topQueuePoint.id - 1),
                                 (stack2Point.id - 1),

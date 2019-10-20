@@ -6,7 +6,6 @@ import nars.experiment.minicraft.top.item.resource.Resource;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 public class Inventory {
     public List<Item> items = new ArrayList<>();

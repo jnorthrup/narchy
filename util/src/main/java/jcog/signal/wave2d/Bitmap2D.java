@@ -7,9 +7,9 @@ import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction
 public interface Bitmap2D extends Tensor {
 
     static int encodeRGB8b(float r, float g, float b) {
-        return (Math.round(r * 255) << 16) |
-                (Math.round(g * 255) << 8) |
-                (Math.round(b * 255));
+        return (Math.round(r * 255.0F) << 16) |
+                (Math.round(g * 255.0F) << 8) |
+                (Math.round(b * 255.0F));
     }
 
     @Override
@@ -97,7 +97,7 @@ public interface Bitmap2D extends Tensor {
                 float left = x > 0 ? Bitmap2D.this.brightness(x-1, y) : c;
                 float down = y < height()-1 ? Bitmap2D.this.brightness(x, y+1) : c;
                 float right = x < width()-1 ? Bitmap2D.this.brightness(x+1, y) : c;
-                return (c*8 + up + left + down + right)/12;
+                return (c* 8.0F + up + left + down + right)/ 12.0F;
             }
         };
     }
@@ -140,19 +140,19 @@ public interface Bitmap2D extends Tensor {
 
 
     static float decode8bRed(int p) {
-        return iDecode8bRed(p) / 256f;
+        return (float) iDecode8bRed(p) / 256f;
     }
 
     static float decode8bGreen(int p) {
-        return iDecode8bGreen(p) / 256f;
+        return (float) iDecode8bGreen(p) / 256f;
     }
 
     static float decode8bBlue(int p) {
-        return iDecode8bBlue(p) / 256f;
+        return (float) iDecode8bBlue(p) / 256f;
     }
 
     static float decode8bAlpha(int p) {
-        return iDecode8bAlpha(p) / 256f;
+        return (float) iDecode8bAlpha(p) / 256f;
     }
     static int iDecode8bRed(int p) {
         return ((p & 0x00ff0000) >> 16);

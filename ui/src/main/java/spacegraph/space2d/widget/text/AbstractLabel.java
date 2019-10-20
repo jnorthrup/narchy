@@ -8,7 +8,7 @@ public abstract class AbstractLabel extends EmptyContainer {
     protected volatile String text;
 
     public final Color4f fgColor = new Color4f(1f, 1f, 1f, 1f);
-    public final Color4f bgColor = new Color4f(0,0,0,0 /* alpha zero */);
+    public final Color4f bgColor = new Color4f((float) 0, (float) 0, (float) 0, (float) 0 /* alpha zero */);
 
     /** default character visual aspect ratio */
     public static final float characterAspectRatio = 1.8f;

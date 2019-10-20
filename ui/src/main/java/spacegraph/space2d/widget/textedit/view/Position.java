@@ -1,9 +1,9 @@
 package spacegraph.space2d.widget.textedit.view;
 
 public class Position {
-  private SmoothValue x = new SmoothValue(0);
-  private SmoothValue y = new SmoothValue(0);
-  private SmoothValue z = new SmoothValue(0);
+  private SmoothValue x = new SmoothValue((double) 0);
+  private SmoothValue y = new SmoothValue((double) 0);
+  private SmoothValue z = new SmoothValue((double) 0);
 
   public boolean isAnimated() {
     return x.isAnimated() && y.isAnimated() && z.isAnimated();

@@ -92,9 +92,9 @@ public class SphereSphereCollisionAlgorithm extends CollisionAlgorithm {
 		}
 
 
-        v3 normalOnSurfaceB = new v3(1, 0, 0);
+        v3 normalOnSurfaceB = new v3(1.0F, (float) 0, (float) 0);
 
-        float len = (float) Math.sqrt(lenSq);
+        float len = (float) Math.sqrt((double) lenSq);
 
         if (len > BulletGlobals.FLT_EPSILON) {
 			normalOnSurfaceB.scale(1f / len, diff);

@@ -64,7 +64,7 @@ public class AttentionUI {
 
 	public static GraphEdit2D graphGraph(NAR n) {
         GraphEdit2D g = new GraphEdit2D();
-		g.resize(800, 800);
+		g.resize(800.0F, 800.0F);
 		//g.windoSizeMinRel(0.02f, 0.02f);
 
 		Exe.runLater(() -> {
@@ -115,7 +115,7 @@ public class AttentionUI {
 
 
 
-		return DurSurface.get(g, n, g::update).every(4);
+		return DurSurface.get(g, n, g::update).every(4.0F);
 	}
 
 	public static Graph2D objectGraph(Graph2D.Graph2DRenderer<Object> renderer) {
@@ -136,9 +136,9 @@ public class AttentionUI {
 				@Override
 				protected void size(MutableRectFloat m, float a) {
                     float q = m.node.pri;
-                    float s = (float) (Math.sqrt((Math.max(0, q))));
+                    float s = (float) (Math.sqrt((double) (Math.max((float) 0, q))));
 					//w = Util.clamp(s * a, 2, 32);
-                    float w = 10 + 2 + s * a;
+                    float w = 10.0F + 2.0F + s * a;
 					m.size(w, w);
 				}
 			});
@@ -284,7 +284,7 @@ public class AttentionUI {
 			float next = Float.NaN;
 
 			public WhatPri(What p) {
-				super(p.pri(), 0, 1);
+				super(p.pri(), (float) 0, 1.0F);
 				this.p = p;
 				on((n) -> next = n);
 			}

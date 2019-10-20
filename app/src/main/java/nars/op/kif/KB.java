@@ -69,9 +69,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * ***************************************************************** Contains
@@ -1087,7 +1084,7 @@ public class KB implements Serializable {
                     + "search target is null, or an empty string");
             errors.add(msg);
         }
-        if (term.length() > 1 && term.charAt(0) == '"' && term.charAt(term.length() - 1) == '"') {
+        if (term.length() > 1 && (int) term.charAt(0) == (int) '"' && (int) term.charAt(term.length() - 1) == (int) '"') {
             msg = ("Error in KB.ask(), Strings are not indexed.  No results for " + term);
             errors.add(msg);
         }
@@ -2977,7 +2974,7 @@ public class KB implements Serializable {
             while ((start < sb.length()) && ((i = sb.indexOf("&%", start)) != -1)) {
                 sb.delete(i, (i + 2));
                 j = i;
-                while ((j < sb.length()) && !Character.isWhitespace(sb.charAt(j)) && sb.charAt(j) != '"')
+                while ((j < sb.length()) && !Character.isWhitespace(sb.charAt(j)) && (int) sb.charAt(j) != (int) '"')
                     j++;
                 while (j > i) {
                     term = sb.substring(i, j);

@@ -91,8 +91,8 @@ public class ProtoWidget extends Bordering {
         add("int", IntPort::new, "Value");
         add("float", FloatPort::new, "Value");
         add("text", TextPort::new, "Value"); //single or multi-line toggleable
-        add("float[-1..1]", ()->new FloatRangePort(0.5f, -1, 1f), "Value");
-        add("float[0..1]", ()->new FloatRangePort(0.5f, 0, 1f), "Value");
+        add("float[-1..1]", ()->new FloatRangePort(0.5f, -1.0F, 1f), "Value");
+        add("float[0..1]", ()->new FloatRangePort(0.5f, (float) 0, 1f), "Value");
         add("f(x)", TODO, "Value");
         add("f(x,y)", TODO, "Value");
         add("v2", ()->new XYSlider().chip(), "Value"); //2D vector (0..1.0 x 0..1.0)
@@ -115,7 +115,7 @@ public class ProtoWidget extends Bordering {
             //TODO optimize with a special Tensor impl
             if (signal >= 0 && signal < range) {
                 float[] x = new float[range];
-                x[signal] = 1;
+                x[signal] = 1.0F;
                 return new ArrayTensor(x);
             } else {
                 return null;

@@ -21,7 +21,7 @@ public abstract class LiveSTM extends AbstractTraining {
     DescriptiveStatistics errorHistory = new DescriptiveStatistics();
 
     public LiveSTM(int inputs, int outputs, int cellBlocks) {
-        this(new XorShift128PlusRandom(1), inputs, outputs, cellBlocks);
+        this(new XorShift128PlusRandom(1L), inputs, outputs, cellBlocks);
     }
 
     public LiveSTM(Random random, int inputs, int outputs, int cellBlocks) {
@@ -49,7 +49,7 @@ public abstract class LiveSTM extends AbstractTraining {
 
             inter.predicted = agent.predict(inter.actual);
 
-            dist = Float.NaN;
+            dist = (double) Float.NaN;
 
         } else {
 
@@ -71,7 +71,7 @@ public abstract class LiveSTM extends AbstractTraining {
 
         }
 
-        if (inter.forget > 0)
+        if (inter.forget > (float) 0)
             agent.forget(inter.forget);
 
         errorHistory.addValue(dist);

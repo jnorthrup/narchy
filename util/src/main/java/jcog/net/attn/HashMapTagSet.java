@@ -45,7 +45,7 @@ public class HashMapTagSet implements TagSet, Serializable {
     }
 
     public void add(float priDividedAmong, String... tags) {
-        float each = priDividedAmong / tags.length;
+        float each = priDividedAmong / (float) tags.length;
         for (String t : tags)
             add(t, each);
     }
@@ -123,7 +123,7 @@ public class HashMapTagSet implements TagSet, Serializable {
     public float pri(String tag) {
         Float f = data.get(tag);
         if (f == null)
-            return 0;
+            return (float) 0;
         return f;
     }
 

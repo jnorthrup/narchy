@@ -32,10 +32,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.lang.System.arraycopy;
@@ -50,7 +48,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
 
     protected RBranch(int cap) {
         super(new RNode[cap]);
-        this.size = 0; this.bounds = null;
+        this.size = (short) 0; this.bounds = null;
 	}
     protected RBranch(int cap, RNode<X>[] data) {
         super(data.length == cap ? data : Arrays.copyOf(data, cap)); //TODO assert all data are unique; cache hash?
@@ -92,7 +90,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
      */
     private void addChild(RInsertion<X> x) {
         RNode<X> n = x.model.newLeaf().insert(x);
-        data[this.size++] = n;
+        data[(int) this.size++] = n;
         HyperRegion b = this.bounds;
         HyperRegion nb = n.bounds();
         this.bounds = b==null ? nb : Util.maybeEqual(b, b.mbr(nb));
@@ -120,7 +118,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
         RNode<X>[] data = this.data;
         if (x.maybeContainedBy(bounds)) {
 
-            int s = this.size;
+            int s = (int) this.size;
             boolean merged = false;
             for (int i = 0; i < s; i++) {
                 RNode<X> ci = data[i];
@@ -150,7 +148,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
 
 
         int l = data.length;
-        if (size < l) {
+        if ((int) size < l) {
 
             addChild(x);
 
@@ -170,9 +168,9 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
             //inline
 
             RNode bl;
-            if (!(nextBest instanceof RLeaf) && size < l && nextBest.size() == 2) {
+            if (!(nextBest instanceof RLeaf) && (int) size < l && nextBest.size() == 2) {
                 RNode[] bc = ((RBranch<X>) nextBest).data;
-                data[size++] = bc[1];
+                data[(int) size++] = bc[1];
                 bl = bc[0];
             } else {
                 bl = nextBest;
@@ -188,7 +186,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
     @Override
     public RNode<X> remove(X x, HyperRegion xBounds, Spatialization<X> model, int[] removed) {
 
-        int nsize = this.size;
+        int nsize = (int) this.size;
         if (nsize > 1 && !bounds.contains(xBounds))
             return this; //not here
 
@@ -210,14 +208,14 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
                         case 1:
                             //return the only remaining item
                             RNode<X> only = firstNonNull();
-                            size = 0;
+                            size = (short) 0;
                             return only;
                         default:
 
                             //sort nulls to end
-                            if (i < size) {
-                                arraycopy(data, i + 1, data, i, size - i);
-                                data[size] = null;
+                            if (i < (int) size) {
+                                arraycopy(data, i + 1, data, i, (int) size - i);
+                                data[(int) size] = null;
                             }
                             break;
                     }
@@ -254,10 +252,10 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
             if (x == null) break;
             if (!(x instanceof RLeaf)) continue;
             short ls = ((RLeaf<X>) x).size;
-            childItems += ls;
+            childItems = childItems + (int) ls;
             leafs++;
         }
-        if (childItems <=1 || leafs <= 1 || (childItems > (leafs - 1) * model.max)) {
+        if (childItems <=1 || leafs <= 1 || (childItems > (leafs - 1) * (int) model.max)) {
             return null;
         }
 
@@ -279,7 +277,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
                 break;
             case 1:
                 target = firstNonNull();
-                size = 0;
+                size = (short) 0;
                 break;
             default:
                 ArrayUtil.sortNullsToEnd(data);
@@ -354,13 +352,13 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
     public RNode<X> replace(X OLD, HyperRegion oldBounds, X NEW, Spatialization<X> model) {
 
         short s = this.size;
-        if (s > 0 && oldBounds.intersects(bounds)) {
+        if ((int) s > 0 && oldBounds.intersects(bounds)) {
             boolean found = false;
 
             RNode<X>[] cc = this.data;
             HyperRegion region = null;
 
-            for (int i = 0; i < s; i++) {
+            for (int i = 0; i < (int) s; i++) {
                 if (!found && oldBounds.intersects(cc[i].bounds())) {
                     cc[i] = cc[i].replace(OLD, oldBounds, NEW, model);
                     found = true;
@@ -377,18 +375,18 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
 
     private int chooseLeaf(HyperRegion tRect) {
         RNode<X>[] cc = this.data;
-        if (size > 0) {
+        if ((int) size > 0) {
             int bestNode = -1;
 
             double leastEnlargement = Double.POSITIVE_INFINITY;
             double leastPerimeter = Double.POSITIVE_INFINITY;
 
             short s = this.size;
-            for (int i = 0; i < s; i++) {
+            for (int i = 0; i < (int) s; i++) {
                 HyperRegion cir = cc[i].bounds();
                 HyperRegion childMbr = tRect.mbr(cir);
                 double nodeEnlargement =
-                        (cir != childMbr ? childMbr.cost() - (cir.cost() /* + tCost*/) : 0);
+                        (cir != childMbr ? childMbr.cost() - (cir.cost() /* + tCost*/) : (double) 0);
 
                 int dc = Double.compare(nodeEnlargement, leastEnlargement);
                 if (nodeEnlargement < leastEnlargement) {
@@ -467,7 +465,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
     public boolean ANDlocal(Predicate<RNode<X>> p) {
         RNode<X>[] n = this.data;
         short s = this.size;
-        for (int i = 0; i < s; i++) {
+        for (int i = 0; i < (int) s; i++) {
             if (!p.test(n[i])) {
                 return false;
             }
@@ -477,7 +475,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
     public boolean ORlocal(Predicate<RNode<X>> p) {
         RNode<X>[] n = this.data;
         short s = this.size;
-        for (int i = 0; i < s; i++) {
+        for (int i = 0; i < (int) s; i++) {
             if (p.test(n[i])) {
                 return true;
             }
@@ -491,7 +489,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
     public boolean containing(HyperRegion rect, Predicate<X> t, Spatialization<X> model) {
         HyperRegion b = this.bounds;
         if (b != null && rect.intersects(b)) {
-            int s = size;
+            int s = (int) size;
             //                if (d == null)
             //                    continue;
             /*else */
@@ -510,7 +508,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
     public boolean intersectingNodes(HyperRegion rect, Predicate<RNode<X>> t, Spatialization<X> model) {
         HyperRegion b = this.bounds;
         if (b != null && rect.intersects(b) && t.test(this)) {
-            int s = size;
+            int s = (int) size;
             for (int i = 0; i < s; i++) {
                 if (!data[i].intersectingNodes(rect, t, model)) {
                     return false;
@@ -525,7 +523,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
     public boolean intersecting(HyperRegion rect, Predicate<X> t, Spatialization<X> model) {
         HyperRegion b = this.bounds;
         if (b != null && rect.intersects(b)) {
-            int s = size;
+            int s = (int) size;
             for (int i = 0; i < s; i++) {
                 if (!data[i].intersecting(rect, t, model)) {
                     return false;
@@ -555,14 +553,14 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
 
     @Override
     public void collectStats(Stats stats, int depth) {
-        for (int i = 0; i < size; i++)
+        for (int i = 0; i < (int) size; i++)
             data[i].collectStats(stats, depth + 1);
         stats.countBranchAtDepth(depth);
     }
 
     @Override
     public RNode<X> instrument() {
-        for (int i = 0; i < size; i++)
+        for (int i = 0; i < (int) size; i++)
             data[i] = data[i].instrument();
         return new CounterRNode(this);
     }

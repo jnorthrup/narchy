@@ -3,9 +3,9 @@ package spacegraph.space2d.widget.textedit.view;
 import com.jogamp.opengl.GL2;
 
 public class Scale {
-  private SmoothValue x = new SmoothValue(1);
-  private SmoothValue y = new SmoothValue(1);
-  private SmoothValue z = new SmoothValue(1);
+  private SmoothValue x = new SmoothValue(1.0);
+  private SmoothValue y = new SmoothValue(1.0);
+  private SmoothValue z = new SmoothValue(1.0);
 
   public SmoothValue getX() {
     return x;
@@ -51,7 +51,7 @@ public class Scale {
       double _x = x.value();
       double _y = y.value();
       double _z = z.value();
-    if (_x == 1 && _y == 1 && _z == 1) {
+    if (_x == 1.0 && _y == 1.0 && _z == 1.0) {
       return;
     }
     gl.glScaled(_x, _y, _z);

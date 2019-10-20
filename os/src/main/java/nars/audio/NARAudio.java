@@ -61,7 +61,7 @@ public class NARAudio extends WaveIn {
 
         AudioSource audio = AudioSource.all().get(0); //HACK
         SignalInput i = new SignalInput();
-        i.set(audio, 1/30f);
+        i.set(audio, 1.0F /30f);
 
         audio.start();
 

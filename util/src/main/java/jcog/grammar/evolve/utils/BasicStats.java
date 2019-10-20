@@ -26,10 +26,10 @@ import static jcog.Texts.n4;
 public final class BasicStats {
 
     
-    public long fp = 0;
-    public transient long fn = 0;
-    public long tp = 0;
-    public transient long tn = 0;
+    public long fp = 0L;
+    public transient long fn = 0L;
+    public long tp = 0L;
+    public transient long tn = 0L;
 
     @Override
     public String toString() {
@@ -39,23 +39,23 @@ public final class BasicStats {
     }
 
     public double accuracy() {
-        return ((double) (tp + tn)) / (tp + tn + fp + fn);
+        return ((double) (tp + tn)) / (double) (tp + tn + fp + fn);
     }
 
     public double precision() {
-        return ((double) tp) / (tp + fp);
+        return ((double) tp) / (double) (tp + fp);
     }
 
     public double recall() {
-        return ((double) tp) / (tp + fn);
+        return ((double) tp) / (double) (tp + fn);
     }
     
     public double fpr(){
-        return ((double) fp) / (tn + fp);
+        return ((double) fp) / (double) (tn + fp);
     }
     
     public double fnr(){
-        return ((double) fn) / (tp + fn);
+        return ((double) fn) / (double) (tp + fn);
     }
 
     /**
@@ -65,15 +65,15 @@ public final class BasicStats {
      * @return
      */
     public double recall(int positives) {
-        return ((double) tp) / (positives);
+        return ((double) tp) / (double) (positives);
     }
 
     public double trueNegativeRate() {
-        return ((double) tn) / (tn + fn);
+        return ((double) tn) / (double) (tn + fn);
     }
 
     public double specificity() {
-        return ((double) tn) / (tn + fp);
+        return ((double) tn) / (double) (tn + fp);
     }
 
     /**
@@ -83,13 +83,13 @@ public final class BasicStats {
      * @return
      */
     public double specificity(int negatives) {
-        return ((double) tn) / (negatives);
+        return ((double) tn) / (double) (negatives);
     }
 
     public double fMeasure() {
         double precision = this.precision();
         double recall = this.recall();
-        return 2 * (precision * recall) / (precision + recall);
+        return 2.0 * (precision * recall) / (precision + recall);
     }
 
     public BasicStats add(BasicStats stats) {

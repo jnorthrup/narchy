@@ -43,12 +43,12 @@ public class Ellipse extends Vec2D implements Shape2D {
     protected float focus;
 
     public Ellipse() {
-        this(0, 0, 1);
+        this((float) 0, (float) 0, 1.0F);
 
     }
 
     public Ellipse(float rx, float ry) {
-        this(0, 0, rx, ry);
+        this((float) 0, (float) 0, rx, ry);
     }
 
     public Ellipse(float x, float y, float r) {
@@ -71,7 +71,7 @@ public class Ellipse extends Vec2D implements Shape2D {
 
     public boolean containsPoint(ReadonlyVec2D p) {
         Vec2D[] foci = getFoci();
-        return p.distanceTo(foci[0]) + p.distanceTo(foci[1]) < 2 * MathUtils
+        return p.distanceTo(foci[0]) + p.distanceTo(foci[1]) < 2.0F * MathUtils
                 .max(radius.x, radius.y);
     }
 
@@ -113,7 +113,7 @@ public class Ellipse extends Vec2D implements Shape2D {
         // wikipedia solution:
         // return (float) (MathUtils.PI * (3 * (radius.x + radius.y) - Math
         // .sqrt((3 * radius.x + radius.y) * (radius.x + 3 * radius.y))));
-        return (float) Math.sqrt(0.5 * radius.magSquared()) * MathUtils.TWO_PI;
+        return (float) Math.sqrt(0.5 * (double) radius.magSquared()) * MathUtils.TWO_PI;
     }
 
     public List<Line2D> getEdges() {
@@ -126,11 +126,11 @@ public class Ellipse extends Vec2D implements Shape2D {
     public Vec2D[] getFoci() {
         Vec2D[] foci = new Vec2D[2];
         if (radius.x > radius.y) {
-            foci[0] = sub(focus, 0);
-            foci[1] = add(focus, 0);
+            foci[0] = sub(focus, (float) 0);
+            foci[1] = add(focus, (float) 0);
         } else {
-            foci[0] = sub(0, focus);
-            foci[1] = add(0, focus);
+            foci[0] = sub((float) 0, focus);
+            foci[1] = add((float) 0, focus);
         }
         return foci;
     }
@@ -193,9 +193,9 @@ public class Ellipse extends Vec2D implements Shape2D {
      */
     public Polygon2D toPolygon2D(int res) {
         Polygon2D poly = new Polygon2D();
-        float step = MathUtils.TWO_PI / res;
+        float step = MathUtils.TWO_PI / (float) res;
         for (int i = 0; i < res; i++) {
-            poly.add(Vec2D.fromTheta(i * step).scaleSelf(radius).addSelf(this));
+            poly.add(Vec2D.fromTheta((float) i * step).scaleSelf(radius).addSelf(this));
         }
         return poly;
     }

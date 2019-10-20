@@ -272,7 +272,7 @@ public class MarkovChain<T> {
          * @return the node that was learned
          */
         public Chain<T> learn(Chain<T> n, float strength) {
-            NLink<Chain<T>> e = edges.computeIfAbsent(n, nn -> new NLink<>(nn, 0));
+            NLink<Chain<T>> e = edges.computeIfAbsent(n, nn -> new NLink<>(nn, (float) 0));
             e.priAdd(strength);
             return e.get();
         }
@@ -324,7 +324,7 @@ public class MarkovChain<T> {
                 return edges.iterator().next();
 
             
-            float totalScore = 0;
+            float totalScore = (float) 0;
             for (NLink e : edges)
                 totalScore += e.pri();
 
@@ -335,10 +335,10 @@ public class MarkovChain<T> {
             for (NLink e : edges) {
                 float dw = e.pri();
 
-                if (r >= current && r < current + dw)
+                if (r >= (float) current && r < (float) current + dw)
                     return e;
 
-                current += dw;
+                current = (int) ((float) current + dw);
             }
 
             return edges.iterator().next();

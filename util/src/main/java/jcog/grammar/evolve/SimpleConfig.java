@@ -78,7 +78,7 @@ public class SimpleConfig {
                 MultithreadStrategy.THREADS_KEY, String.valueOf(numberThreads)
         );
 
-        int terminationGenerations = (int)(termination * configuration.getEvolutionParameters().getGenerations() / 100.0);
+        int terminationGenerations = (int)(termination * (double) configuration.getEvolutionParameters().getGenerations() / 100.0);
         if(termination==100.0){
             configuration.getStrategyParameters().put("terminationCriteria","false");  
         } else {
@@ -99,7 +99,7 @@ public class SimpleConfig {
         if(isStriped){
             Logger.getLogger(this.getClass().getName()).info("Enabled striping.");
             datasetContainer.setDataSetsStriped(true);
-            double STRIPING_DEFAULT_MARGIN_SIZE = 5;
+            double STRIPING_DEFAULT_MARGIN_SIZE = 5.0;
             datasetContainer.setDatasetStripeMarginSize(STRIPING_DEFAULT_MARGIN_SIZE);
             datasetContainer.setProposedNormalDatasetInterval(100);
         }

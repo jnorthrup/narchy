@@ -19,8 +19,8 @@ public class MutableHyperRectDouble extends HyperRectDouble {
     }
 
     public HyperRectDouble zero() {
-        Arrays.fill(min.coord, 0);
-        Arrays.fill(max.coord, 0);
+        Arrays.fill(min.coord, (double) 0);
+        Arrays.fill(max.coord, (double) 0);
         return this;
     }
 
@@ -87,8 +87,8 @@ public class MutableHyperRectDouble extends HyperRectDouble {
         int dim = dim();
 
         for (int i = 0; i < dim; i++) {
-            min.coord[i] = Util.lerp(rate, min.coord[i], h.min.coord[i]);
-            max.coord[i] = Util.lerp(rate, max.coord[i], h.max.coord[i]);
+            min.coord[i] = Util.lerp((double) rate, min.coord[i], h.min.coord[i]);
+            max.coord[i] = Util.lerp((double) rate, max.coord[i], h.max.coord[i]);
         }
 
         return this;

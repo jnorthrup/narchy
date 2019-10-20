@@ -118,7 +118,7 @@ public class RopeJoint extends Joint {
             m_u.setZero();
             m_mass = 0.0f;
             m_impulse = 0.0f;
-            length = 0;
+            length = (float) 0;
             return;
         }
 

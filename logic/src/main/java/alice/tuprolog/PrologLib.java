@@ -25,7 +25,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
 
 import static alice.tuprolog.PrologPrim.FUNCTOR;
 
@@ -199,7 +198,7 @@ public abstract class PrologLib implements Serializable {
                         continue;
                 }
 
-                int index = name.lastIndexOf('_');
+                int index = name.lastIndexOf((int) '_');
                 if (index != -1) {
                     try {
                         int arity = Integer.parseInt(name.substring(index + 1));

@@ -10,7 +10,7 @@ import java.util.function.Function;
 public class Spatialization<X> {
 
     public static final double EPSILON =
-            Math.pow(Float.MIN_NORMAL, 1f/4); //E-10
+            Math.pow((double) Float.MIN_NORMAL, (double) (1f / 4.0F)); //E-10
             //Math.pow(Float.MIN_NORMAL, 1f/3); //E-15?
             //Math.pow(Float.MIN_NORMAL, 1/2); //E-19
             //Float.MIN_NORMAL; //E-38
@@ -36,19 +36,19 @@ public class Spatialization<X> {
     }
 
     @Deprecated public final RLeaf<X> newLeaf() {
-        return newLeaf(max);
+        return newLeaf((int) max);
     }
     public RLeaf<X> newLeaf(int capacity) {
         return new RLeaf<>(capacity);
     }
 
     public RBranch<X> newBranch() {
-        return new RBranch(max);
+        return new RBranch((int) max);
 
     }
     @SafeVarargs
     public final RBranch<X> newBranch(RNode<X>... l) {
-        return new RBranch<>(max, l);
+        return new RBranch<>((int) max, l);
     }
 
     public RNode<X> split(X x, RLeaf<X> leaf) {

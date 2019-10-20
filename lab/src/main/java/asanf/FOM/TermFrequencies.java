@@ -43,7 +43,7 @@ public class TermFrequencies<E> extends DTMatrix<E> implements Iterable<E> {
 		if(finalValues)
 			return false;
 
-		add(term, 1);
+		add(term, 1.0);
 		
 		return true;
 
@@ -61,7 +61,7 @@ public class TermFrequencies<E> extends DTMatrix<E> implements Iterable<E> {
 		if(finalValues)
 			return false;
 
-		add(firstTerm, secondTerm, 1);
+		add(firstTerm, secondTerm, 1.0);
 		return true;
 	}
 
@@ -74,7 +74,7 @@ public class TermFrequencies<E> extends DTMatrix<E> implements Iterable<E> {
 		if(finalValues)
 			return false;
 
-		normalizeBy(totWindows);
+		normalizeBy((double) totWindows);
 		finalValues = true;
 		return true;
 	}
@@ -100,7 +100,7 @@ public class TermFrequencies<E> extends DTMatrix<E> implements Iterable<E> {
 	public double getFrequency(E term){
 		
 		if(!finalValues)
-			return -2;
+			return -2.0;
 		return getValue(term);
 	}
 
@@ -115,7 +115,7 @@ public class TermFrequencies<E> extends DTMatrix<E> implements Iterable<E> {
 	public double getFrequency(E firstTerm, E secondTerm){
 		
 		if(!finalValues)
-			return -2;
+			return -2.0;
 		return getValue(firstTerm, secondTerm);
 	}
 	

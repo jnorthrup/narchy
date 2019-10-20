@@ -158,7 +158,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
             //TODO if both subject and predicate are CONJ
 
             Term s = ii.sub(0);
-            if (s instanceof Compound && s.opID() == Op.CONJ.id) {
+            if (s instanceof Compound && s.opID() == (int) Op.CONJ.id) {
                 //if (s.subterms().AND(z -> validDynamicSubterm.test(INH.the(z, p)))) {
 //                    switch (so) {
 //                        case CONJ:
@@ -170,7 +170,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
             }
 
             Term p = ii.sub(1);
-            if (p instanceof Compound && p.opID() == Op.CONJ.id) {
+            if (p instanceof Compound && p.opID() == (int) Op.CONJ.id) {
                 //if (p.subterms().AND(z -> validDynamicSubterm.test(INH.the(s, z)))) {
 //                    switch (po) {
 //                        case CONJ:

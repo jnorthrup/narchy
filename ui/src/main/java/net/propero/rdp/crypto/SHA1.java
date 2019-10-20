@@ -100,10 +100,10 @@ public final class SHA1 extends BlockMessageDigest implements Cloneable {
                                  int dstOffset, int length) {
         while (length-- > 0) {
             
-            dst[dstOffset++] = (src[srcOffset++] << 24)
-                    | ((src[srcOffset++] & 0xFF) << 16)
-                    | ((src[srcOffset++] & 0xFF) << 8)
-                    | (src[srcOffset++] & 0xFF);
+            dst[dstOffset++] = ((int) src[srcOffset++] << 24)
+                    | (((int) src[srcOffset++] & 0xFF) << 16)
+                    | (((int) src[srcOffset++] & 0xFF) << 8)
+                    | ((int) src[srcOffset++] & 0xFF);
         }
     }
 
@@ -188,7 +188,7 @@ public final class SHA1 extends BlockMessageDigest implements Cloneable {
 
         if (pos > DATA_LENGTH - 8) {
             while (pos < DATA_LENGTH)
-                tmp[pos++] = 0;
+                tmp[pos++] = (byte) 0;
 
             byte2int(tmp, 0, data, 0, DATA_LENGTH / 4);
             transform(data);
@@ -196,7 +196,7 @@ public final class SHA1 extends BlockMessageDigest implements Cloneable {
         }
 
         while (pos < DATA_LENGTH - 8)
-            tmp[pos++] = 0;
+            tmp[pos++] = (byte) 0;
 
         byte2int(tmp, 0, data, 0, (DATA_LENGTH / 4) - 2);
 

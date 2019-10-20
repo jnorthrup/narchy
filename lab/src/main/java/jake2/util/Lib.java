@@ -53,7 +53,7 @@ public class Lib {
 	
 	/** Like in  libc. */
 	public static short rand() {
-		return (short)Globals.rnd.nextInt(Short.MAX_VALUE+1);
+		return (short)Globals.rnd.nextInt((int) Short.MAX_VALUE +1);
 	}
 	
 	/** Like in libc. */
@@ -79,11 +79,11 @@ public class Lib {
 	/** Like in libc. */
 	public static float atof(String in) {
 		if (in == null || in.length() == 0)
-			return 0;
+			return (float) 0;
 		try {
 			return Float.parseFloat(in);
 		} catch (Exception e) {
-			return 0;
+			return (float) 0;
 		}
 	}
 	
@@ -108,7 +108,7 @@ public class Lib {
 	
 	/** Converts a string to a vector. Needs improvement. */
 	public static float[] atov(String v) {
-		float[] res = { 0, 0, 0 };
+		float[] res = {(float) 0, (float) 0, (float) 0};
         String[] strres = v.split(" ");
 		for (int n = 0; n < 3 && n < strres.length; n++)
 		{
@@ -120,7 +120,7 @@ public class Lib {
 	/** Like in libc. */
 	public static int strlen(char[] in) {
 		for (int i = 0; i < in.length; i++)
-			if (in[i] == 0)
+			if ((int) in[i] == 0)
 				return i;
 		return in.length;
 	}
@@ -128,7 +128,7 @@ public class Lib {
 	/** Like in libc. */
 	public static int strlen(byte[] in) {
 		for (int i = 0; i < in.length; i++)
-			if (in[i] == 0)
+			if ((int) in[i] == 0)
 				return i;
 		return in.length;
 	}
@@ -158,7 +158,7 @@ public class Lib {
 					result.append(address).append(": ");
 				}
 			}
-			int v = data1[i];
+			int v = (int) data1[i];
 	
 			result.append(hex2(v));
 			result.append(' ');
@@ -248,7 +248,7 @@ public class Lib {
 	
 	/** Returns the right part of the string from the last occruence of c. */
 	public static String rightFrom(String in, char c) {
-        int pos = in.lastIndexOf(c);
+        int pos = in.lastIndexOf((int) c);
 		if (pos == -1)
 			return "";
 		else if (pos < in.length())
@@ -258,7 +258,7 @@ public class Lib {
 	
 	/** Returns the left part of the string from the last occruence of c. */
 	public static String leftFrom(String in, char c) {
-        int pos = in.lastIndexOf(c);
+        int pos = in.lastIndexOf((int) c);
 		if (pos == -1)
 			return "";
 		else if (pos < in.length())
@@ -291,7 +291,7 @@ public class Lib {
 	
 	/** Converts an 4 bytes java int representation to an int. */
 	public static int getInt(byte[] b) {
-		return (b[0] & 0xff) | ((b[1] & 0xff) << 8) | ((b[2] & 0xff) << 16) | ((b[3] & 0xff) << 24);
+		return ((int) b[0] & 0xff) | (((int) b[1] & 0xff) << 8) | (((int) b[2] & 0xff) << 16) | (((int) b[3] & 0xff) << 24);
 	}
 	
 	/** Duplicates a float array. */
@@ -324,7 +324,7 @@ public class Lib {
 	
 	/** Helper method that savely handles the null termination of old C String data. */
 	public static String CtoJava(String old) {
-        int index = old.indexOf('\0');
+        int index = old.indexOf((int) '\0');
 	    if (index == 0) return "";
 	    return (index > 0) ? old.substring(0, index) : old; 
 	}
@@ -336,9 +336,9 @@ public class Lib {
 
 	/** Helper method that savely handles the null termination of old C String data. */
 	public static String CtoJava(byte[] old, int offset, int maxLenght) {
-		if (old.length == 0 || old[0] == 0) return "";
+		if (old.length == 0 || (int) old[0] == 0) return "";
 	    int i;
-	    for (i = offset; (i - offset) < maxLenght && old[i] != 0; i++);
+	    for (i = offset; (i - offset) < maxLenght && (int) old[i] != 0; i++);
 		return new String(old, offset, i - offset);
 	}
 	

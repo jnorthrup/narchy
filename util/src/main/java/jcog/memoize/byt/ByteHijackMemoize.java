@@ -59,7 +59,7 @@ public class ByteHijackMemoize<X extends ByteKeyExternal,Y> extends HijackMemoiz
     }
 
     private static float valueBase(ByteKey x) {
-        return 1;
+        return 1.0F;
         //return 1/((1+x.length()));
         //return (float) (1 /(Math.log(1+x.length())));
         //return 1 /((1+sqr(x.length())));

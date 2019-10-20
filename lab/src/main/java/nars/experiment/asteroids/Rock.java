@@ -19,7 +19,7 @@ public class Rock extends VectorSprite {
     double b;
 
     public Rock() {
-        size = 4;
+        size = 4.0;
         initializeAsteroid();
     }
 
@@ -28,21 +28,21 @@ public class Rock extends VectorSprite {
         initializeAsteroid();
         xposition = x;
         yposition = y;
-        xspeed = x2 + ((Math.random() - 0.5) * 2);
-        yspeed = y2 + ((Math.random() - 0.5) * 2);
+        xspeed = x2 + ((Math.random() - 0.5) * 2.0);
+        yspeed = y2 + ((Math.random() - 0.5) * 2.0);
     }
 
     public void initializeAsteroid() {
-        c = (int) (Math.random() * 12 * size);
-        d = (int) (Math.random() * 12 * size);
-        e = (int) (Math.random() * 12 * size);
-        f = (int) (Math.random() * 12 * size);
-        g = (int) (Math.random() * 12 * size);
-        h = (int) (Math.random() * 12 * size);
-        i = (int) (Math.random() * 12 * size);
-        j = (int) (Math.random() * 12 * size);
-        k = (int) (Math.random() * 12 * size);
-        l = (int) (Math.random() * 12 * size);
+        c = (int) (Math.random() * 12.0 * size);
+        d = (int) (Math.random() * 12.0 * size);
+        e = (int) (Math.random() * 12.0 * size);
+        f = (int) (Math.random() * 12.0 * size);
+        g = (int) (Math.random() * 12.0 * size);
+        h = (int) (Math.random() * 12.0 * size);
+        i = (int) (Math.random() * 12.0 * size);
+        j = (int) (Math.random() * 12.0 * size);
+        k = (int) (Math.random() * 12.0 * size);
+        l = (int) (Math.random() * 12.0 * size);
 
         shape = new Polygon();
         shape.addPoint(c, i);
@@ -58,24 +58,24 @@ public class Rock extends VectorSprite {
         drawShape.addPoint(-h, n);
         drawShape.addPoint(0, m);
 
-        health = 3 * (size - 2);
+        health = 3.0 * (size - 2.0);
 
-        xposition = 450;
-        yposition = 300;
+        xposition = 450.0;
+        yposition = 300.0;
 
-        a = Math.random() * 2;
-        b = Math.random() * 2 * Math.PI;
+        a = Math.random() * 2.0;
+        b = Math.random() * 2.0 * Math.PI;
 
         xspeed = Math.cos(b) * a;
         yspeed = Math.sin(b) * a;
 
-        a = Math.random() * 400 + 100;
-        b = Math.random() * 2 * Math.PI;
+        a = Math.random() * 400.0 + 100.0;
+        b = Math.random() * 2.0 * Math.PI;
 
-        xposition = Math.cos(b) * a + 450;
-        yposition = Math.sin(b) * a + 300;
+        xposition = Math.cos(b) * a + 450.0;
+        yposition = Math.sin(b) * a + 300.0;
 
-        ROTATION = (Math.random() - 0.5) / 5;
+        ROTATION = (Math.random() - 0.5) / 5.0;
     }
 
     @Override

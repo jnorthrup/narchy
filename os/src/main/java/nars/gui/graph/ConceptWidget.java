@@ -88,14 +88,14 @@ public class ConceptWidget extends SpaceWidget<Concept> {
 
         public static void each(ConceptWidget cw) {
             float p = cw.pri;
-            p = (p == p) ? p : 0;
+            p = (p == p) ? p : (float) 0;
 
 
-            float nodeScale = (float) (minSize + Math.sqrt(p) * maxSize);
+            float nodeScale = (float) ((double) minSize + Math.sqrt((double) p) * (double) maxSize);
             cw.scale(nodeScale, nodeScale, nodeScale);
 
 
-            Draw.hsb(cw.shapeColor, (cw.id.op().ordinal() / 16f), 0.75f + 0.25f * p, 0.75f, 0.9f);
+            Draw.hsb(cw.shapeColor, ((float) cw.id.op().ordinal() / 16f), 0.75f + 0.25f * p, 0.75f, 0.9f);
         }
 
 

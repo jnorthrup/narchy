@@ -278,13 +278,13 @@ public class AxisAngle4f implements java.io.Serializable, Cloneable {
         float mag = qx + qy + qz * qz;
 
         if (mag > EPS) {
-            mag = (float)Math.sqrt(mag);
+            mag = (float)Math.sqrt((double) mag);
 
             x = qx / mag;
             y = qy / mag;
             z = qz / mag;
 
-            this.angle = angle ? 2.0f * (float) (Math.atan2(mag, q1.getW())) : 0;
+            this.angle = angle ? 2.0f * (float) (Math.atan2((double) mag, (double) q1.getW())) : (float) 0;
         } else {
             x = 0.0f;
             y = 1.0f;
@@ -503,16 +503,16 @@ public class AxisAngle4f implements java.io.Serializable, Cloneable {
     public boolean epsilonEquals(AxisAngle4f a1, float epsilon) {
 
         float diff = x - a1.x;
-        if ((diff < 0 ? -diff : diff) > epsilon) return false;
+        if ((diff < (float) 0 ? -diff : diff) > epsilon) return false;
 
         diff = y - a1.y;
-        if ((diff < 0 ? -diff : diff) > epsilon) return false;
+        if ((diff < (float) 0 ? -diff : diff) > epsilon) return false;
 
         diff = z - a1.z;
-        if ((diff < 0 ? -diff : diff) > epsilon) return false;
+        if ((diff < (float) 0 ? -diff : diff) > epsilon) return false;
 
         diff = angle - a1.angle;
-        return (diff < 0 ? -diff : diff) <= epsilon;
+        return (diff < (float) 0 ? -diff : diff) <= epsilon;
 
     }
 
@@ -528,10 +528,10 @@ public class AxisAngle4f implements java.io.Serializable, Cloneable {
      */
     public int hashCode() {
         long bits = 1L;
-        bits = 31L * bits + VecMathUtil.floatToIntBits(x);
-        bits = 31L * bits + VecMathUtil.floatToIntBits(y);
-        bits = 31L * bits + VecMathUtil.floatToIntBits(z);
-        bits = 31L * bits + VecMathUtil.floatToIntBits(angle);
+        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(x);
+        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(y);
+        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(z);
+        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(angle);
         return (int) (bits ^ (bits >> 32));
     }
 

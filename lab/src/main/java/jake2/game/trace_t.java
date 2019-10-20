@@ -30,7 +30,7 @@ public class trace_t {
 	public boolean allsolid; 
 	public boolean startsolid; 
 	public float fraction; 
-	public final float[] endpos = { 0, 0, 0 }; 
+	public final float[] endpos = {(float) 0, (float) 0, (float) 0};
 	
 	public final cplane_t plane = new cplane_t(); 
 	
@@ -53,7 +53,7 @@ public class trace_t {
 	public void clear() {
 		allsolid = false;
 		startsolid = false;
-		fraction = 0;
+		fraction = (float) 0;
 		Math3D.VectorClear(endpos);
 		plane.clear();
 		surface = null;

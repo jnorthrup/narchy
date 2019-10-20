@@ -29,7 +29,7 @@ public class HistogramSonification extends Gridding {
 //        for (int i = 0; i < sample.length; i++)
 //            sample[i] = (float) Math.sin((i*0.2)/(2*Math.PI)); //TODO tune
 
-        Random rng = new XoRoShiRo128PlusRandom(1);
+        Random rng = new XoRoShiRo128PlusRandom(1L);
 
         this.g = Util.map(d.length, Granulize[]::new, i ->
             new Granulize(SampleLoader.load("/tmp/guitar.wav"), 0.25f, 1f, rng)
@@ -41,10 +41,10 @@ public class HistogramSonification extends Gridding {
     static float freq(int bin) {
         //TODO scale select
         int shift = 1;
-        float note = bin*4; //
+        float note = (float) (bin * 4); //
 
-        double exponent = (shift+note) / 12.0;
-        return (float) (Math.pow(2, exponent) * 140.0f)/440f;
+        double exponent = (double) ((float) shift + note) / 12.0;
+        return (float) (Math.pow(2.0, exponent) * 140.0)/440f;
     }
 
     @Override
@@ -57,9 +57,9 @@ public class HistogramSonification extends Gridding {
             float f = freq(i);
             if (s instanceof Granulize) {
                 Granulize g = (Granulize)s;
-                g.pitchFactor.set(1 * f);
-                g.stretchFactor.set(1 * f);
-                g.amp(0);
+                g.pitchFactor.set(1.0F * f);
+                g.stretchFactor.set(1.0F * f);
+                g.amp((float) 0);
             } else if (s instanceof SineWave) {
 
             } else
@@ -102,9 +102,9 @@ public class HistogramSonification extends Gridding {
         SoundProducer.Amplifiable[] g1 = this.g;
         for (int i = 0, n = g1.length; i < n; i++) {
             float d = this.d[i];
-            if (!Float.isFinite(d)) d = 0;
+            if (!Float.isFinite(d)) d = (float) 0;
             d = Util.unitize(d);
-            d = (float) Math.log(1+8*d); //dB log scale, nearly maxes at 1
+            d = (float) Math.log((double) (1 + 8.0F * d)); //dB log scale, nearly maxes at 1
             g1[i].amp(d );
         }
 

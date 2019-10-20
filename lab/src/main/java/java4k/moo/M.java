@@ -8,7 +8,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferStrategy;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class M extends GamePanel {
 	MouseEvent click;
@@ -18,11 +17,11 @@ public class M extends GamePanel {
 
 	static String n(int p) {
 		return new String(new char[] {
-			(char) ('A' + (p + 5) % 7),
+			(char) ((int) 'A' + (p + 5) % 7),
 			new char[] {'u','e','y','o','i'}[(p + 2) % 5],
-			(char) ('k' + (p / 3) % 4),
+			(char) ((int) 'k' + (p / 3) % 4),
 			new char[] {'u','e','i','o','a'}[(p / 2 + 1) % 5],
-			(char) ('p' + (p / 2) % 9)
+			(char) ((int) 'p' + (p / 2) % 9)
 		}) + new String[] { " I", " II", " III", " IV", " V", " VI" }[(p / 4 + 3) % 6];
 	}
 
@@ -673,7 +672,7 @@ public class M extends GamePanel {
 		e_f_pos[0] = -1;
 
 		game: while (true) {
-			try { Thread.sleep(50); } catch (Exception ex) {}
+			try { Thread.sleep(50L); } catch (Exception ex) {}
 
             Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,

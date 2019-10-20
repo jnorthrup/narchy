@@ -1,7 +1,6 @@
 package jcog.learn.ntm.control;
 
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 /**
  * Created by me on 7/18/15.
@@ -17,8 +16,8 @@ public class UVector {
     }
 
     public void clear() {
-        Arrays.fill(value, 0);
-        Arrays.fill(grad, 0);
+        Arrays.fill(value, (double) 0);
+        Arrays.fill(grad, (double) 0);
     }
 
     public int size() {
@@ -63,7 +62,7 @@ public class UVector {
     }
 
     public void clearGrad() {
-        Arrays.fill(grad, 0);
+        Arrays.fill(grad, (double) 0);
     }
 
     public void setDelta(double[] target) {

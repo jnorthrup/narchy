@@ -89,10 +89,10 @@ public class Body2D extends Transform {
     /**
      * angular velocity
      */
-    public float velAngular = 0;
+    public float velAngular = (float) 0;
 
     public final v2 force = new v2();
-    public float torque = 0;
+    public float torque = (float) 0;
 
     public final Dynamics2D W;
 
@@ -163,7 +163,7 @@ public class Body2D extends Transform {
         this.set(bd.angle);
         angleNext = bd.angle;
 
-        sweep.localCenter.set(0, 0);
+        sweep.localCenter.set((float) 0, (float) 0);
         sweep.c0.set(pos);
         sweep.c.set(pos);
         sweep.a0 = bd.angle;
@@ -756,7 +756,7 @@ public class Body2D extends Transform {
         m_invMass = 0.0f;
         m_I = 0.0f;
         m_invI = 0.0f;
-        sweep.localCenter.set(0, 0);
+        sweep.localCenter.set((float) 0, (float) 0);
 
         MassData massData = pmd;
         for (Fixture f = fixtures; f != null; f = f.next) {
@@ -779,7 +779,7 @@ public class Body2D extends Transform {
 
 
         v2 localCenter = new v2();
-        localCenter.set(0, 0);
+        localCenter.set((float) 0, (float) 0);
         v2 temp = new v2();
         for (Fixture f = fixtures; f != null; f = f.next) {
             if (f.density == 0.0f) {
@@ -1229,8 +1229,8 @@ public class Body2D extends Transform {
         float a = sweep.a0;
 
         Rot r = xf1;
-        float rs = r.s = (float) Math.sin(a);
-        float rc = r.c = (float) Math.cos(a);
+        float rs = r.s = (float) Math.sin((double) a);
+        float rc = r.c = (float) Math.cos((double) a);
 
         float sx = sweep.localCenter.x, sy = sweep.localCenter.y;
         v2 p = xf1.pos;
@@ -1248,8 +1248,8 @@ public class Body2D extends Transform {
 
 
         Rot q = this;
-        q.s = (float) Math.sin(sweep.a);
-        q.c = (float) Math.cos(sweep.a);
+        q.s = (float) Math.sin((double) sweep.a);
+        q.c = (float) Math.cos((double) sweep.a);
         v2 v = sweep.localCenter;
         pos.x = sweep.c.x - q.c * v.x + q.s * v.y;
         pos.y = sweep.c.y - q.s * v.x - q.c * v.y;
@@ -1280,7 +1280,7 @@ public class Body2D extends Transform {
         this.set(sweep.a);
 
         Rot.mulToOutUnsafe(this, sweep.localCenter, pos);
-        pos.scaled(-1).added(sweep.c);
+        pos.scaled(-1.0F).added(sweep.c);
     }
 
     /**

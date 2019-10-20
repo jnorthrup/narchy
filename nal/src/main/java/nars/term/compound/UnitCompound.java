@@ -92,7 +92,7 @@ public abstract class UnitCompound implements SameSubtermsCompound {
     public Term dt(int nextDT, TermBuilder builder) {
         if (nextDT == XTERNAL) {
             //only case it's allowed
-            assert(opID()==CONJ.id);
+            assert(opID()== (int) CONJ.id);
             return builder.newCompound(CONJ, XTERNAL, sub());
         }
         assert(nextDT == DTERNAL);
@@ -109,7 +109,7 @@ public abstract class UnitCompound implements SameSubtermsCompound {
         if (end == start)
             return this;
         byte a = path[start];
-        if (a!=0)
+        if ((int) a !=0)
             return null;
         Term s = sub();
         return ((end - start) == 1) ? s : s.subPath(start + 1, end, path);
@@ -154,7 +154,7 @@ public abstract class UnitCompound implements SameSubtermsCompound {
 
     @Override
     public final float voluplexity() {
-        return sub().voluplexity()+1;
+        return sub().voluplexity()+ 1.0F;
     }
 
     @Override

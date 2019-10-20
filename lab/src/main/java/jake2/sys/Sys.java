@@ -25,7 +25,6 @@
  */
 package jake2.sys;
 
-import jake2.Defines;
 import jake2.Globals;
 import jake2.client.CL;
 import jake2.qcommon.Com;
@@ -61,7 +60,7 @@ public final class Sys {
     
     public static File[] FindAll(String path, int musthave, int canthave) {
 
-        int index = path.lastIndexOf('/');
+        int index = path.lastIndexOf((int) '/');
 
         if (index != -1) {
             findbase = path.substring(0, index);
@@ -235,7 +234,7 @@ public final class Sys {
     }
 
     public static void ConsoleOutput(String msg) {
-        if (Globals.nostdout != null && Globals.nostdout.value != 0)
+        if (Globals.nostdout != null && Globals.nostdout.value != (float) 0)
             return;
 
         System.out.print(msg);

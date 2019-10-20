@@ -16,7 +16,7 @@ import net.beadsproject.beads.core.UGen;
  */
 public class Mult extends UGen {
 
-    private float multiplier = 1;
+    private float multiplier = 1.0F;
     private UGen multiplierUGen;
 
     /**

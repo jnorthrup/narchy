@@ -84,7 +84,7 @@ public class CL_ents {
 
         int number;
         if ((total & Defines.U_NUMBER16) != 0)
-			number = MSG.ReadShort(Globals.net_message);
+			number = (int) MSG.ReadShort(Globals.net_message);
 		else
 			number = MSG.ReadByte(Globals.net_message);
 
@@ -118,7 +118,7 @@ public class CL_ents {
 		if ((bits & Defines.U_FRAME8) != 0)
 			to.frame = MSG.ReadByte(Globals.net_message);
 		if ((bits & Defines.U_FRAME16) != 0)
-			to.frame = MSG.ReadShort(Globals.net_message);
+			to.frame = (int) MSG.ReadShort(Globals.net_message);
 
 		if ((bits & Defines.U_SKIN8) != 0 && (bits & Defines.U_SKIN16) != 0) 
 																			 
@@ -128,21 +128,21 @@ public class CL_ents {
 		else if ((bits & Defines.U_SKIN8) != 0)
 			to.skinnum = MSG.ReadByte(Globals.net_message);
 		else if ((bits & Defines.U_SKIN16) != 0)
-			to.skinnum = MSG.ReadShort(Globals.net_message);
+			to.skinnum = (int) MSG.ReadShort(Globals.net_message);
 
 		if ((bits & (Defines.U_EFFECTS8 | Defines.U_EFFECTS16)) == (Defines.U_EFFECTS8 | Defines.U_EFFECTS16))
 			to.effects = MSG.ReadLong(Globals.net_message);
 		else if ((bits & Defines.U_EFFECTS8) != 0)
 			to.effects = MSG.ReadByte(Globals.net_message);
 		else if ((bits & Defines.U_EFFECTS16) != 0)
-			to.effects = MSG.ReadShort(Globals.net_message);
+			to.effects = (int) MSG.ReadShort(Globals.net_message);
 
 		if ((bits & (Defines.U_RENDERFX8 | Defines.U_RENDERFX16)) == (Defines.U_RENDERFX8 | Defines.U_RENDERFX16))
 			to.renderfx = MSG.ReadLong(Globals.net_message);
 		else if ((bits & Defines.U_RENDERFX8) != 0)
 			to.renderfx = MSG.ReadByte(Globals.net_message);
 		else if ((bits & Defines.U_RENDERFX16) != 0)
-			to.renderfx = MSG.ReadShort(Globals.net_message);
+			to.renderfx = (int) MSG.ReadShort(Globals.net_message);
 
 		if ((bits & Defines.U_ORIGIN1) != 0)
 			to.origin[0] = MSG.ReadCoord(Globals.net_message);
@@ -170,7 +170,7 @@ public class CL_ents {
 			to.event = 0;
 
 		if ((bits & Defines.U_SOLID) != 0)
-			to.solid = MSG.ReadShort(Globals.net_message);
+			to.solid = (int) MSG.ReadShort(Globals.net_message);
 	}
 
 	/*
@@ -192,8 +192,8 @@ public class CL_ents {
 		
 		if (state.modelindex != ent.current.modelindex || state.modelindex2 != ent.current.modelindex2
 				|| state.modelindex3 != ent.current.modelindex3 || state.modelindex4 != ent.current.modelindex4
-				|| Math.abs(state.origin[0] - ent.current.origin[0]) > 512 || Math.abs(state.origin[1] - ent.current.origin[1]) > 512
-				|| Math.abs(state.origin[2] - ent.current.origin[2]) > 512 || state.event == Defines.EV_PLAYER_TELEPORT
+				|| Math.abs(state.origin[0] - ent.current.origin[0]) > 512.0F || Math.abs(state.origin[1] - ent.current.origin[1]) > 512.0F
+				|| Math.abs(state.origin[2] - ent.current.origin[2]) > 512.0F || state.event == Defines.EV_PLAYER_TELEPORT
 				|| state.event == Defines.EV_OTHER_TELEPORT) {
 			ent.serverframe = -99;
 		}
@@ -271,7 +271,7 @@ public class CL_ents {
 
 			while (oldnum < newnum) { 
 									  
-				if (Globals.cl_shownet.value == 3)
+				if (Globals.cl_shownet.value == 3.0F)
 					Com.Printf("   unchanged: " + oldnum + '\n');
 				DeltaEntity(newframe, oldnum, oldstate, 0);
 
@@ -288,7 +288,7 @@ public class CL_ents {
 			if ((bits & Defines.U_REMOVE) != 0) { 
 												  
 												  
-				if (Globals.cl_shownet.value == 3)
+				if (Globals.cl_shownet.value == 3.0F)
 					Com.Printf("   remove: " + newnum + '\n');
 				if (oldnum != newnum)
 					Com.Printf("U_REMOVE: oldnum != newnum\n");
@@ -305,7 +305,7 @@ public class CL_ents {
 			}
 
 			if (oldnum == newnum) { 
-				if (Globals.cl_shownet.value == 3)
+				if (Globals.cl_shownet.value == 3.0F)
 					Com.Printf("   delta: " + newnum + '\n');
 				DeltaEntity(newframe, newnum, oldstate, bits);
 
@@ -321,7 +321,7 @@ public class CL_ents {
 			}
 
 			if (oldnum > newnum) { 
-				if (Globals.cl_shownet.value == 3)
+				if (Globals.cl_shownet.value == 3.0F)
 					Com.Printf("   baseline: " + newnum + '\n');
 				DeltaEntity(newframe, newnum, Globals.cl_entities[newnum].baseline, bits);
 				continue;
@@ -332,7 +332,7 @@ public class CL_ents {
 		
 		while (oldnum != 99999) { 
 								  
-			if (Globals.cl_shownet.value == 3)
+			if (Globals.cl_shownet.value == 3.0F)
 				Com.Printf("   unchanged: " + oldnum + '\n');
 			DeltaEntity(newframe, oldnum, oldstate, 0);
 
@@ -361,7 +361,7 @@ public class CL_ents {
 			
 			state.clear();
 
-        int flags = MSG.ReadShort(Globals.net_message);
+        int flags = (int) MSG.ReadShort(Globals.net_message);
 
 		
 		
@@ -404,9 +404,9 @@ public class CL_ents {
 		
 		
 		if ((flags & Defines.PS_VIEWOFFSET) != 0) {
-			state.viewoffset[0] = MSG.ReadChar(Globals.net_message) * 0.25f;
-			state.viewoffset[1] = MSG.ReadChar(Globals.net_message) * 0.25f;
-			state.viewoffset[2] = MSG.ReadChar(Globals.net_message) * 0.25f;
+			state.viewoffset[0] = (float) MSG.ReadChar(Globals.net_message) * 0.25f;
+			state.viewoffset[1] = (float) MSG.ReadChar(Globals.net_message) * 0.25f;
+			state.viewoffset[2] = (float) MSG.ReadChar(Globals.net_message) * 0.25f;
 		}
 
 		if ((flags & Defines.PS_VIEWANGLES) != 0) {
@@ -417,9 +417,9 @@ public class CL_ents {
 
 		if ((flags & Defines.PS_KICKANGLES) != 0) {
 
-			state.kick_angles[0] = MSG.ReadChar(Globals.net_message) * 0.25f;
-			state.kick_angles[1] = MSG.ReadChar(Globals.net_message) * 0.25f;
-			state.kick_angles[2] = MSG.ReadChar(Globals.net_message) * 0.25f;
+			state.kick_angles[0] = (float) MSG.ReadChar(Globals.net_message) * 0.25f;
+			state.kick_angles[1] = (float) MSG.ReadChar(Globals.net_message) * 0.25f;
+			state.kick_angles[2] = (float) MSG.ReadChar(Globals.net_message) * 0.25f;
 
 		}
 
@@ -429,23 +429,23 @@ public class CL_ents {
 
 		if ((flags & Defines.PS_WEAPONFRAME) != 0) {
 			state.gunframe = MSG.ReadByte(Globals.net_message);
-			state.gunoffset[0] = MSG.ReadChar(Globals.net_message) * 0.25f;
-			state.gunoffset[1] = MSG.ReadChar(Globals.net_message) * 0.25f;
-			state.gunoffset[2] = MSG.ReadChar(Globals.net_message) * 0.25f;
-			state.gunangles[0] = MSG.ReadChar(Globals.net_message) * 0.25f;
-			state.gunangles[1] = MSG.ReadChar(Globals.net_message) * 0.25f;
-			state.gunangles[2] = MSG.ReadChar(Globals.net_message) * 0.25f;
+			state.gunoffset[0] = (float) MSG.ReadChar(Globals.net_message) * 0.25f;
+			state.gunoffset[1] = (float) MSG.ReadChar(Globals.net_message) * 0.25f;
+			state.gunoffset[2] = (float) MSG.ReadChar(Globals.net_message) * 0.25f;
+			state.gunangles[0] = (float) MSG.ReadChar(Globals.net_message) * 0.25f;
+			state.gunangles[1] = (float) MSG.ReadChar(Globals.net_message) * 0.25f;
+			state.gunangles[2] = (float) MSG.ReadChar(Globals.net_message) * 0.25f;
 		}
 
 		if ((flags & Defines.PS_BLEND) != 0) {
-			state.blend[0] = MSG.ReadByte(Globals.net_message) / 255.0f;
-			state.blend[1] = MSG.ReadByte(Globals.net_message) / 255.0f;
-			state.blend[2] = MSG.ReadByte(Globals.net_message) / 255.0f;
-			state.blend[3] = MSG.ReadByte(Globals.net_message) / 255.0f;
+			state.blend[0] = (float) MSG.ReadByte(Globals.net_message) / 255.0f;
+			state.blend[1] = (float) MSG.ReadByte(Globals.net_message) / 255.0f;
+			state.blend[2] = (float) MSG.ReadByte(Globals.net_message) / 255.0f;
+			state.blend[3] = (float) MSG.ReadByte(Globals.net_message) / 255.0f;
 		}
 
 		if ((flags & Defines.PS_FOV) != 0)
-			state.fov = MSG.ReadByte(Globals.net_message);
+			state.fov = (float) MSG.ReadByte(Globals.net_message);
 
 		if ((flags & Defines.PS_RDFLAGS) != 0)
 			state.rdflags = MSG.ReadByte(Globals.net_message);
@@ -492,7 +492,7 @@ public class CL_ents {
 		if (Globals.cls.serverProtocol != 26)
 			Globals.cl.surpressCount = MSG.ReadByte(Globals.net_message);
 
-		if (Globals.cl_shownet.value == 3)
+		if (Globals.cl_shownet.value == 3.0F)
 			Com.Printf("   frame:" + Globals.cl.frame.serverframe + "  delta:" + Globals.cl.frame.deltaframe + '\n');
 
 
@@ -553,9 +553,9 @@ public class CL_ents {
 				Globals.cls.state = Defines.ca_active;
 				Globals.cl.force_refdef = true;
 
-				Globals.cl.predicted_origin[0] = Globals.cl.frame.playerstate.pmove.origin[0] * 0.125f;
-				Globals.cl.predicted_origin[1] = Globals.cl.frame.playerstate.pmove.origin[1] * 0.125f;
-				Globals.cl.predicted_origin[2] = Globals.cl.frame.playerstate.pmove.origin[2] * 0.125f;
+				Globals.cl.predicted_origin[0] = (float) Globals.cl.frame.playerstate.pmove.origin[0] * 0.125f;
+				Globals.cl.predicted_origin[1] = (float) Globals.cl.frame.playerstate.pmove.origin[1] * 0.125f;
+				Globals.cl.predicted_origin[2] = (float) Globals.cl.frame.playerstate.pmove.origin[2] * 0.125f;
 
 				Math3D.VectorCopy(Globals.cl.frame.playerstate.viewangles, Globals.cl.predicted_angles);
 				if (Globals.cls.disable_servercount != Globals.cl.servercount && Globals.cl.refresh_prepped)
@@ -587,7 +587,7 @@ public class CL_ents {
 	static void AddPacketEntities(frame_t frame) {
 
 
-        float autorotate = Math3D.anglemod(Globals.cl.time / 10f);
+        float autorotate = Math3D.anglemod((float) Globals.cl.time / 10f);
 
 
         int autoanim = 2 * Globals.cl.time / 1000;
@@ -715,21 +715,21 @@ public class CL_ents {
 			
 			if ((effects & Defines.EF_ROTATE) != 0) { 
 													  
-				ent.angles[0] = 0;
+				ent.angles[0] = (float) 0;
 				ent.angles[1] = autorotate;
-				ent.angles[2] = 0;
+				ent.angles[2] = (float) 0;
 			}
 			
 			else if ((effects & Defines.EF_SPINNINGLIGHTS) != 0) {
-				ent.angles[0] = 0;
-				ent.angles[1] = Math3D.anglemod(Globals.cl.time / 2f) + s1.angles[1];
-				ent.angles[2] = 180;
-                float[] forward = { 0, 0, 0 };
+				ent.angles[0] = (float) 0;
+				ent.angles[1] = Math3D.anglemod((float) Globals.cl.time / 2f) + s1.angles[1];
+				ent.angles[2] = 180.0F;
+                float[] forward = {(float) 0, (float) 0, (float) 0};
 
                 Math3D.AngleVectors(ent.angles, forward, null, null);
-                float[] start = {0, 0, 0};
-                Math3D.VectorMA(ent.origin, 64, forward, start);
-                V.AddLight(start, 100, 1, 0, 0);
+                float[] start = {(float) 0, (float) 0, (float) 0};
+                Math3D.VectorMA(ent.origin, 64.0F, forward, start);
+                V.AddLight(start, 100.0F, 1.0F, (float) 0, (float) 0);
             } else {
 
                 for (i = 0; i < 3; i++) {
@@ -744,13 +744,13 @@ public class CL_ents {
 				
 
 				if ((effects & Defines.EF_FLAG1) != 0)
-					V.AddLight(ent.origin, 225, 1.0f, 0.1f, 0.1f);
+					V.AddLight(ent.origin, 225.0F, 1.0f, 0.1f, 0.1f);
 				else if ((effects & Defines.EF_FLAG2) != 0)
-					V.AddLight(ent.origin, 225, 0.1f, 0.1f, 1.0f);
+					V.AddLight(ent.origin, 225.0F, 0.1f, 0.1f, 1.0f);
 				else if ((effects & Defines.EF_TAGTRAIL) != 0) 
-					V.AddLight(ent.origin, 225, 1.0f, 1.0f, 0.0f); 
+					V.AddLight(ent.origin, 225.0F, 1.0f, 1.0f, 0.0f);
 				else if ((effects & Defines.EF_TRACKERTRAIL) != 0) 
-					V.AddLight(ent.origin, 225, -1.0f, -1.0f, -1.0f); 
+					V.AddLight(ent.origin, 225.0F, -1.0f, -1.0f, -1.0f);
 
 				continue;
 			}
@@ -834,14 +834,14 @@ public class CL_ents {
 			ent.skin = null; 
 			ent.skinnum = 0;
 			ent.flags = 0;
-			ent.alpha = 0;
+			ent.alpha = (float) 0;
 
 			
 			if (s1.modelindex2 != 0) {
 				if (s1.modelindex2 == 255) { 
 					ci = Globals.cl.clientinfo[s1.skinnum & 0xff];
 					i = (s1.skinnum >> 8); 
-					if (0 == Globals.cl_vwep.value || i > Defines.MAX_CLIENTWEAPONMODELS - 1)
+					if ((float) 0 == Globals.cl_vwep.value || i > Defines.MAX_CLIENTWEAPONMODELS - 1)
 						i = 0;
 					ent.model = ci.weaponmodel[i];
 					if (null == ent.model) {
@@ -867,7 +867,7 @@ public class CL_ents {
 
 				
 				ent.flags = 0;
-				ent.alpha = 0;
+				ent.alpha = (float) 0;
 				
 			}
 			if (s1.modelindex3 != 0) {
@@ -892,7 +892,7 @@ public class CL_ents {
 			if ((effects & ~Defines.EF_ROTATE) != 0) {
 				if ((effects & Defines.EF_ROCKET) != 0) {
 					CL_fx.RocketTrail(cent.lerp_origin, ent.origin, cent);
-					V.AddLight(ent.origin, 200, 1, 1, 0);
+					V.AddLight(ent.origin, 200.0F, 1.0F, 1.0F, (float) 0);
 				}
 				
 				
@@ -904,19 +904,19 @@ public class CL_ents {
 															 
 					{
 						CL_newfx.BlasterTrail2(cent.lerp_origin, ent.origin);
-						V.AddLight(ent.origin, 200, 0, 1, 0);
+						V.AddLight(ent.origin, 200.0F, (float) 0, 1.0F, (float) 0);
 					} else {
 						CL_fx.BlasterTrail(cent.lerp_origin, ent.origin);
-						V.AddLight(ent.origin, 200, 1, 1, 0);
+						V.AddLight(ent.origin, 200.0F, 1.0F, 1.0F, (float) 0);
 					}
 					
 				} else if ((effects & Defines.EF_HYPERBLASTER) != 0) {
 					if ((effects & Defines.EF_TRACKER) != 0) 
 															 
-						V.AddLight(ent.origin, 200, 0, 1, 0); 
+						V.AddLight(ent.origin, 200.0F, (float) 0, 1.0F, (float) 0);
 					else
 						
-						V.AddLight(ent.origin, 200, 1, 1, 0);
+						V.AddLight(ent.origin, 200.0F, 1.0F, 1.0F, (float) 0);
 				} else if ((effects & Defines.EF_GIB) != 0) {
 					CL_fx.DiminishingTrail(cent.lerp_origin, ent.origin, cent, effects);
 				} else if ((effects & Defines.EF_GRENADE) != 0) {
@@ -931,30 +931,30 @@ public class CL_ents {
 					} else {
 						i = bfg_lightramp[s1.frame];
 					}
-					V.AddLight(ent.origin, i, 0, 1, 0);
+					V.AddLight(ent.origin, (float) i, (float) 0, 1.0F, (float) 0);
 				}
 				
 				else if ((effects & Defines.EF_TRAP) != 0) {
-					ent.origin[2] += 32;
+					ent.origin[2] += 32.0F;
 					CL_fx.TrapParticles(ent);
 					i = (Globals.rnd.nextInt(100)) + 100;
-					V.AddLight(ent.origin, i, 1, 0.8f, 0.1f);
+					V.AddLight(ent.origin, (float) i, 1.0F, 0.8f, 0.1f);
 				} else if ((effects & Defines.EF_FLAG1) != 0) {
-					CL_fx.FlagTrail(cent.lerp_origin, ent.origin, 242);
-					V.AddLight(ent.origin, 225, 1, 0.1f, 0.1f);
+					CL_fx.FlagTrail(cent.lerp_origin, ent.origin, 242.0F);
+					V.AddLight(ent.origin, 225.0F, 1.0F, 0.1f, 0.1f);
 				} else if ((effects & Defines.EF_FLAG2) != 0) {
-					CL_fx.FlagTrail(cent.lerp_origin, ent.origin, 115);
-					V.AddLight(ent.origin, 225, 0.1f, 0.1f, 1);
+					CL_fx.FlagTrail(cent.lerp_origin, ent.origin, 115.0F);
+					V.AddLight(ent.origin, 225.0F, 0.1f, 0.1f, 1.0F);
 				}
 				
 				
 				else if ((effects & Defines.EF_TAGTRAIL) != 0) {
-					CL_newfx.TagTrail(cent.lerp_origin, ent.origin, 220);
-					V.AddLight(ent.origin, 225, 1.0f, 1.0f, 0.0f);
+					CL_newfx.TagTrail(cent.lerp_origin, ent.origin, 220.0F);
+					V.AddLight(ent.origin, 225.0F, 1.0f, 1.0f, 0.0f);
 				} else if ((effects & Defines.EF_TRACKERTRAIL) != 0) {
 					if ((effects & Defines.EF_TRACKER) != 0) {
 
-                        float intensity = (float) (50 + (500 * (Math.sin(Globals.cl.time / 500.0) + 1.0)));
+                        float intensity = (float) (50.0 + (500.0 * (Math.sin((double) Globals.cl.time / 500.0) + 1.0)));
 						
 						if (Globals.vidref_val == Defines.VIDREF_GL)
 							V.AddLight(ent.origin, intensity, -1.0f, -1.0f, -1.0f);
@@ -962,15 +962,15 @@ public class CL_ents {
 							V.AddLight(ent.origin, -1.0f * intensity, 1.0f, 1.0f, 1.0f);
 					} else {
 						CL_newfx.Tracker_Shell(cent.lerp_origin);
-						V.AddLight(ent.origin, 155, -1.0f, -1.0f, -1.0f);
+						V.AddLight(ent.origin, 155.0F, -1.0f, -1.0f, -1.0f);
 					}
 				} else if ((effects & Defines.EF_TRACKER) != 0) {
 					CL_newfx.TrackerTrail(cent.lerp_origin, ent.origin, 0);
 					
 					if (Globals.vidref_val == Defines.VIDREF_GL)
-						V.AddLight(ent.origin, 200, -1, -1, -1);
+						V.AddLight(ent.origin, 200.0F, -1.0F, -1.0F, -1.0F);
 					else
-						V.AddLight(ent.origin, -200, 1, 1, 1);
+						V.AddLight(ent.origin, -200.0F, 1.0F, 1.0F, 1.0F);
 				}
 				
 				
@@ -981,18 +981,18 @@ public class CL_ents {
 				
 				else if ((effects & Defines.EF_IONRIPPER) != 0) {
 					CL_fx.IonripperTrail(cent.lerp_origin, ent.origin);
-					V.AddLight(ent.origin, 100, 1, 0.5f, 0.5f);
+					V.AddLight(ent.origin, 100.0F, 1.0F, 0.5f, 0.5f);
 				}
 				
 				else if ((effects & Defines.EF_BLUEHYPERBLASTER) != 0) {
-					V.AddLight(ent.origin, 200, 0, 0, 1);
+					V.AddLight(ent.origin, 200.0F, (float) 0, (float) 0, 1.0F);
 				}
 				
 				else if ((effects & Defines.EF_PLASMA) != 0) {
 					if ((effects & Defines.EF_ANIM_ALLFAST) != 0) {
 						CL_fx.BlasterTrail(cent.lerp_origin, ent.origin);
 					}
-					V.AddLight(ent.origin, 130, 1, 0.5f, 0.5f);
+					V.AddLight(ent.origin, 130.0F, 1.0F, 0.5f, 0.5f);
 				}
 			}
 
@@ -1008,11 +1008,11 @@ public class CL_ents {
 	static void AddViewWeapon(player_state_t ps, player_state_t ops) {
 
 
-        if (0 == Globals.cl_gun.value)
+        if ((float) 0 == Globals.cl_gun.value)
 			return;
 
 		
-		if (ps.fov > 90)
+		if (ps.fov > 90.0F)
 			return;
 
 		
@@ -1069,15 +1069,15 @@ public class CL_ents {
         player_state_t ops = oldframe.playerstate;
 
 		
-		if (Math.abs(ops.pmove.origin[0] - ps.pmove.origin[0]) > 256 * 8
-				|| Math.abs(ops.pmove.origin[1] - ps.pmove.origin[1]) > 256 * 8
-				|| Math.abs(ops.pmove.origin[2] - ps.pmove.origin[2]) > 256 * 8)
+		if (Math.abs((int) ops.pmove.origin[0] - (int) ps.pmove.origin[0]) > 256 * 8
+				|| Math.abs((int) ops.pmove.origin[1] - (int) ps.pmove.origin[1]) > 256 * 8
+				|| Math.abs((int) ops.pmove.origin[2] - (int) ps.pmove.origin[2]) > 256 * 8)
 			ops = ps;
 
         float lerp = Globals.cl.lerpfrac;
 
 		
-		if ((Globals.cl_predict.value != 0) && 0 == (Globals.cl.frame.playerstate.pmove.pm_flags & pmove_t.PMF_NO_PREDICTION)) {
+		if ((Globals.cl_predict.value != (float) 0) && 0 == ((int) Globals.cl.frame.playerstate.pmove.pm_flags & pmove_t.PMF_NO_PREDICTION)) {
 
 
             float backlerp = 1.0f - lerp;
@@ -1089,11 +1089,11 @@ public class CL_ents {
 
             int delta = Globals.cls.realtime - Globals.cl.predicted_step_time;
 			if (delta < 100)
-				Globals.cl.refdef.vieworg[2] -= Globals.cl.predicted_step * (100 - delta) * 0.01;
+                Globals.cl.refdef.vieworg[2] = (float) ((double) Globals.cl.refdef.vieworg[2] - (double) Globals.cl.predicted_step * (double) (100 - delta) * 0.01);
 		} else { 
 			for (i = 0; i < 3; i++)
-				Globals.cl.refdef.vieworg[i] = ops.pmove.origin[i] * 0.125f + ops.viewoffset[i] + lerp
-						* (ps.pmove.origin[i] * 0.125f + ps.viewoffset[i] - (ops.pmove.origin[i] * 0.125f + ops.viewoffset[i]));
+				Globals.cl.refdef.vieworg[i] = (float) ops.pmove.origin[i] * 0.125f + ops.viewoffset[i] + lerp
+						* ((float) ps.pmove.origin[i] * 0.125f + ps.viewoffset[i] - ((float) ops.pmove.origin[i] * 0.125f + ops.viewoffset[i]));
 		}
 
 		
@@ -1134,19 +1134,19 @@ public class CL_ents {
 			return;
 
 		if (Globals.cl.time > Globals.cl.frame.servertime) {
-			if (Globals.cl_showclamp.value != 0)
+			if (Globals.cl_showclamp.value != (float) 0)
 				Com.Printf("high clamp " + (Globals.cl.time - Globals.cl.frame.servertime) + '\n');
 			Globals.cl.time = Globals.cl.frame.servertime;
 			Globals.cl.lerpfrac = 1.0f;
 		} else if (Globals.cl.time < Globals.cl.frame.servertime - 100) {
-			if (Globals.cl_showclamp.value != 0)
+			if (Globals.cl_showclamp.value != (float) 0)
 				Com.Printf("low clamp " + (Globals.cl.frame.servertime - 100 - Globals.cl.time) + '\n');
 			Globals.cl.time = Globals.cl.frame.servertime - 100;
-			Globals.cl.lerpfrac = 0;
+			Globals.cl.lerpfrac = (float) 0;
 		} else
-			Globals.cl.lerpfrac = 1.0f - (Globals.cl.frame.servertime - Globals.cl.time) * 0.01f;
+			Globals.cl.lerpfrac = 1.0f - (float) (Globals.cl.frame.servertime - Globals.cl.time) * 0.01f;
 
-		if (Globals.cl_timedemo.value != 0)
+		if (Globals.cl_timedemo.value != (float) 0)
 			Globals.cl.lerpfrac = 1.0f;
 
 		/*

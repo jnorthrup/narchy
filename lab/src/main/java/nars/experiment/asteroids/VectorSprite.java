@@ -63,8 +63,8 @@ public class VectorSprite {
         int x;
         for (int i = 0; i < shape.npoints; i++) {
 
-            x = (int) Math.round(shape.xpoints[i] * Math.cos(angle) - shape.ypoints[i] * Math.sin(angle));
-            y = (int) Math.round(shape.xpoints[i] * Math.sin(angle) + shape.ypoints[i] * Math.cos(angle));
+            x = (int) Math.round((double) shape.xpoints[i] * Math.cos(angle) - (double) shape.ypoints[i] * Math.sin(angle));
+            y = (int) Math.round((double) shape.xpoints[i] * Math.sin(angle) + (double) shape.ypoints[i] * Math.cos(angle));
 
             drawShape.xpoints[i] = x;
             drawShape.ypoints[i] = y;
@@ -82,20 +82,20 @@ public class VectorSprite {
     }
 
     private void wraparound(int w, int h) {
-        if (xposition >= w) {
-            xposition = 0;
+        if (xposition >= (double) w) {
+            xposition = (double) 0;
         }
 
-        if (xposition < 0) {
-            xposition = w - 1;
+        if (xposition < (double) 0) {
+            xposition = (double) (w - 1);
         }
 
-        if (yposition >= h) {
-            yposition = 0;
+        if (yposition >= (double) h) {
+            yposition = (double) 0;
         }
 
-        if (yposition < 0) {
-            yposition = h - 1;
+        if (yposition < (double) 0) {
+            yposition = (double) (h - 1);
         }
     }
 

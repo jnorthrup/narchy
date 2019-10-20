@@ -97,7 +97,7 @@ public class R extends Applet implements Runnable {
 
 
         long lastTime = System.nanoTime();
-		long think = 0;
+		long think = 0L;
 
 
         int[][] levelBlocks = new int[32][12];
@@ -315,11 +315,11 @@ public class R extends Applet implements Runnable {
 								level[y][x] = Integer.valueOf(LEVELS.substring(curLevel * 144 + (y-1) * 10 + (x-1), curLevel * 144 + (y-1) * 10 + x));
 								gBack.drawImage(iBackground.getSubimage(0 * 32, 3 * 32, 32, 32), (x-1) * 32, (y) * 32, null);
 								if (level[y][x] == 0) {
-									gBack.drawImage(iBackground.getSubimage((int)(Math.random() * 3) * 32, 2 * 32, 32, 32), (x-1) * 32, (y) * 32, null);
+									gBack.drawImage(iBackground.getSubimage((int)(Math.random() * 3.0) * 32, 2 * 32, 32, 32), (x-1) * 32, (y) * 32, null);
 								}
 								levelObjects[y][x] = 0;
 								if (level[y][x] == 1) {
-									gBack.drawImage(iBackground.getSubimage((int)(Math.random() * 2) * 32, 3 * 32, 32, 32), (x-1) * 32, (y) * 32, null);
+									gBack.drawImage(iBackground.getSubimage((int)(Math.random() * 2.0) * 32, 3 * 32, 32, 32), (x-1) * 32, (y) * 32, null);
 								}
 								if ((level[y][x] >= 3) && (level[y][x] <= 7)) {
 									levelObjects[y][x] = level[y][x];
@@ -518,12 +518,12 @@ public class R extends Applet implements Runnable {
 									for (x = 1; x < 11; x += 1) {
 										for (i = 0; i <= 16; i += 16) {
 											if (levelBlocks[y+i][x] < 0) {
-												levelBlocks[y+i][x] += 3f;
+                                                levelBlocks[y + i][x] = (int) ((float) levelBlocks[y + i][x] + 3f);
 												if (levelBlocks[y+i][x] >= 0) levelBlocks[y+i][x] = 0;
 												
 											}
 											if (levelBlocks[y+i][x] > 0) {
-												levelBlocks[y+i][x] -= 3f;
+                                                levelBlocks[y + i][x] = (int) ((float) levelBlocks[y + i][x] - 3f);
 												if (levelBlocks[y+i][x] <= 0) levelBlocks[y+i][x] = 0;
 											}
 											if ((levelObjects[y][x] == 2) || (level[y][x] == 2)) {
@@ -610,7 +610,7 @@ public class R extends Applet implements Runnable {
 						g.drawImage(iBackground.getSubimage(0 * 32, 1 * 32, 32, 32), (x-1) * 32, (y) * 32, null);
 					}
 					if ((levelObjects[y][x] >= 4) && (levelObjects[y][x] <= 7)) {
-						g.setTransform(AffineTransform.getRotateInstance(Math.toRadians((levelObjects[y][x] - 6) * 90), (x-1) * 32 + 16, (y) * 32 + 16));
+						g.setTransform(AffineTransform.getRotateInstance(Math.toRadians((double) ((levelObjects[y][x] - 6) * 90)), (double) ((x - 1) * 32 + 16), (double) ((y) * 32 + 16)));
 						g.drawImage(iBackground.getSubimage(3 * 32, 2 * 32, 32, 32), (x-1) * 32, (y) * 32, null);
 						g.setTransform(oldAffineTransform);
 					}
@@ -632,7 +632,7 @@ public class R extends Applet implements Runnable {
 						if (bPlayerFall) {
 							i = 1;
 						}
-						g.setTransform(AffineTransform.getRotateInstance(Math.toRadians((gravity) * 90), (x-1) * 32 + levelBlocks[y+16][x] + 16, (y) * 32 + levelBlocks[y][x] + 16));
+						g.setTransform(AffineTransform.getRotateInstance(Math.toRadians((double) ((gravity) * 90)), (double) ((x - 1) * 32 + levelBlocks[y + 16][x] + 16), (double) ((y) * 32 + levelBlocks[y][x] + 16)));
 						g.drawImage(iBackground.getSubimage(i * 32, j * 32, 32, 32), (x-1) * 32 + levelBlocks[y+16][x], (y) * 32 + levelBlocks[y][x], null);
 						g.setTransform(oldAffineTransform);
 					}
@@ -698,7 +698,7 @@ public class R extends Applet implements Runnable {
 			appletGraphics.drawImage(screen, 0, 0, null);
 
 			try {
-				Thread.sleep(10);
+				Thread.sleep(10L);
 			} catch (Exception e) { /** nicht sch�n aber selten */
 			}
 

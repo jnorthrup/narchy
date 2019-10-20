@@ -52,7 +52,7 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
     }
     
     private static boolean matchW(char character){
-        return Character.isAlphabetic(character) || Character.isDigit(character) || character == '_';
+        return Character.isAlphabetic((int) character) || Character.isDigit(character) || (int) character == (int) '_';
     }
     
     /**
@@ -178,7 +178,7 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
         for (Map.Entry<String, Double> entry : tokensCounter.entrySet()) {
             String key = entry.getKey();
             Double double1 = entry.getValue();
-            Double doublePercentange = (double1 * 100.0) / numberOfMatches;
+            Double doublePercentange = (double1 * 100.0) / (double) numberOfMatches;
             entry.setValue(doublePercentange); 
              if(doublePercentange >= threashold){
                 winnerMatchTokensLocal.put(key,doublePercentange);
@@ -222,7 +222,7 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
         for (Map.Entry<String, Double> entry : tokensCounter.entrySet()) {
             String key = entry.getKey();
             Double double1 = entry.getValue();
-            Double doublePercentange = (double1 * 100.0) / numberOfPositiveExamples;
+            Double doublePercentange = (double1 * 100.0) / (double) numberOfPositiveExamples;
             entry.setValue(doublePercentange); 
              if(doublePercentange >= threashold){
                 

@@ -30,26 +30,26 @@ public class TextEditView implements BufferListener {
         float vx = v.x, vy = v.y, vw = v.w, vh = v.h;
 
         g.glPushMatrix();
-        float dx = 0;
-        g.glTranslatef(dx, 1f - (0.5f / charsHigh) + vy, 0);
+        float dx = (float) 0;
+        g.glTranslatef(dx, 1f - (0.5f / charsHigh) + vy, (float) 0);
         g.glScalef(1f / charsWide, 1f / charsHigh, 1f);
 
-        int x1 = Math.max(0, (int) Math.floor(vx));
-        int y1 = Math.max(0, (int) Math.floor(vy));
-        int x2 = x1 + (int) Math.ceil(vw);
-        int y2 = y1 + (int) Math.ceil(vh);
+        int x1 = Math.max(0, (int) Math.floor((double) vx));
+        int y1 = Math.max(0, (int) Math.floor((double) vy));
+        int x2 = x1 + (int) Math.ceil((double) vw);
+        int y2 = y1 + (int) Math.ceil((double) vh);
 
         if (cursor) {
             updateCursor(document.cursor());
             this.cursor.draw(g);
         }
 
-        float ox = x1 - vx;
+        float ox = (float) x1 - vx;
         LineView[] ll = lines.array();
         for (int y = Math.max(0, y1); y < Math.min(ll.length, y2); y++) {
             LineView line = ll[y];
             if (line != null) {
-                line.draw(g, x1, x2, ox, y1 - y);
+                line.draw(g, x1, x2, ox, (float) (y1 - y));
             }
         }
 
@@ -68,14 +68,14 @@ public class TextEditView implements BufferListener {
         if (document.isLineStart()) {
 //            x = (float) lv.getChars().stream().mapToDouble(cv -> cv.width() / 2).findFirst()
 //                    .orElse(cursor.getWidth() / 2);
-            x = CursorView.getWidth()/2; //lv.getChars().get(0).width()/2;
+            x = CursorView.getWidth()/ 2.0F; //lv.getChars().get(0).width()/2;
         } else if (c.getCol() >= lineChars) {
-            x = lv.getWidth() + (CursorView.getWidth() / 2);
+            x = lv.getWidth() + (CursorView.getWidth() / 2.0F);
         } else {
             x = lv.getChars().get(c.getCol()).position.x;
         }
 
-        cursor.position.set(x, lv.position.y, 0);
+        cursor.position.set(x, lv.position.y, (float) 0);
     }
 
     @Override
@@ -121,10 +121,10 @@ public class TextEditView implements BufferListener {
         synchronized (lines) {
             lines.sort();
 
-            float h = 0;
+            float h = (float) 0;
             for (LineView lv : lines) {
                 lv.position.y = h;
-                h -= LineView.getHeight();
+                h = (float) ((double) h - LineView.getHeight());
             }
         }
     }

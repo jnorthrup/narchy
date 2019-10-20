@@ -69,17 +69,17 @@ public class Sketch2DBitmap extends PaintSurface implements MenuSupplier {
             v2 hitPoint = finger.posRelative(this);
             if (hitPoint.inUnit()) {
 
-                int ax = Math.round(hitPoint.x * pw);
+                int ax = Math.round(hitPoint.x * (float) pw);
 
-                int ay = Math.round((1f - hitPoint.y) * ph);
+                int ay = Math.round((1f - hitPoint.y) * (float) ph);
 
 
                 float w = this.brushWidth * this.brushWidth;
-                float a = brushAlpha * brushAlpha * 10;
-                for (int i = 0; i < a; i++) {
-                    int px = (int) (ax + rng.nextGaussian() * w);
+                float a = brushAlpha * brushAlpha * 10.0F;
+                for (int i = 0; (float) i < a; i++) {
+                    int px = (int) ((double) ax + rng.nextGaussian() * (double) w);
                     if (px >= 0 && px < pw) {
-                        int py = (int) (ay + rng.nextGaussian() * w);
+                        int py = (int) ((double) ay + rng.nextGaussian() * (double) w);
                         if (py >= 0 && py < ph) {
                             mix(pix, py * pw + px);
                         }
@@ -129,15 +129,15 @@ public class Sketch2DBitmap extends PaintSurface implements MenuSupplier {
     @Override
     public Surface menu() {
         ButtonSet<ColorToggle> colorMenu = new ButtonSet<ColorToggle>(ButtonSet.Mode.One,
-                new ColorToggle(0f, 0, 0),
-                new ColorToggle(1f, 0, 0),
-                new ColorToggle(1f, 0.5f, 0),
-                new ColorToggle(0.75f, 0.75f, 0),
-                new ColorToggle(0f, 1, 0),
-                new ColorToggle(0f, 0, 1),
-                new ColorToggle(1f, 0, 1),
+                new ColorToggle(0f, (float) 0, (float) 0),
+                new ColorToggle(1f, (float) 0, (float) 0),
+                new ColorToggle(1f, 0.5f, (float) 0),
+                new ColorToggle(0.75f, 0.75f, (float) 0),
+                new ColorToggle(0f, 1.0F, (float) 0),
+                new ColorToggle(0f, (float) 0, 1.0F),
+                new ColorToggle(1f, (float) 0, 1.0F),
                 new ColorToggle(0.5f, 0.5f, 0.5f),
-                new ColorToggle(1f, 1, 1)
+                new ColorToggle(1f, 1.0F, 1.0F)
         );
         colorMenu.on((cc, e) -> {
             if (e) {

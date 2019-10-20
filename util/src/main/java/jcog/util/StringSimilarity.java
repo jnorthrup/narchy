@@ -17,7 +17,6 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 package jcog.util;
 
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 public class StringSimilarity {
 
@@ -76,16 +75,16 @@ public class StringSimilarity {
          */
         public final double similarity(String s1, String s2) {
             int[] mtp = matches(s1, s2);
-            float m = mtp[0];
-            if (m == 0) {
-                return 0f;
+            float m = (float) mtp[0];
+            if (m == (float) 0) {
+                return 0;
             }
-            double j = ((m / s1.length() + m / s2.length() + (m - mtp[1]) / m))
-                    / THREE;
+            double j = (double) (((m / (float) s1.length() + m / (float) s2.length() + (m - (float) mtp[1]) / m))
+                    / (float) THREE);
             double jw = j;
 
             if (j > getThreshold()) {
-                jw = j + Math.min(JW_COEF, 1.0 / mtp[THREE]) * mtp[2] * (1 - j);
+                jw = j + Math.min(JW_COEF, 1.0 / (double) mtp[THREE]) * (double) mtp[2] * (1.0 - j);
             }
             return jw;
         }
@@ -116,7 +115,7 @@ public class StringSimilarity {
                 char c1 = min.charAt(mi);
                 for (int xi = Math.max(mi - range, 0),
                      xn = Math.min(mi + range + 1, max.length()); xi < xn; xi++) {
-                    if (!matchFlags[xi] && c1 == max.charAt(xi)) {
+                    if (!matchFlags[xi] && (int) c1 == (int) max.charAt(xi)) {
                         matchIndexes[mi] = xi;
                         matchFlags[xi] = true;
                         matches++;
@@ -140,14 +139,14 @@ public class StringSimilarity {
             }
             long count = 0L;
             for (int i = 0; i < ms1.length; i++) {
-                if (ms1[i] != ms2[i]) {
+                if ((int) ms1[i] != (int) ms2[i]) {
                     count++;
                 }
             }
             int transpositions = (int) count;
             int prefix = 0;
             for (int mi = 0; mi < min.length(); mi++) {
-                if (s1.charAt(mi) == s2.charAt(mi)) {
+                if ((int) s1.charAt(mi) == (int) s2.charAt(mi)) {
                     prefix++;
                 } else {
                     break;

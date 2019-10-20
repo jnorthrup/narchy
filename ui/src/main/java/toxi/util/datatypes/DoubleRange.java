@@ -100,7 +100,7 @@ public class DoubleRange {
      * @return value within the range
      */
     public final double getAt(double perc) {
-        return min + (max - min - MathUtils.EPS) * perc;
+        return min + (max - min - (double) MathUtils.EPS) * perc;
     }
 
     public double getCurrent() {
@@ -108,7 +108,7 @@ public class DoubleRange {
     }
 
     public double getMedian() {
-        return (min + max) * 0.5f;
+        return (min + max) * 0.5;
     }
 
     public double getRange() {
@@ -116,7 +116,7 @@ public class DoubleRange {
     }
 
     public boolean isValueInRange(float val) {
-        return val >= min && val <= max;
+        return (double) val >= min && (double) val <= max;
     }
 
 //    public double pickRandom() {

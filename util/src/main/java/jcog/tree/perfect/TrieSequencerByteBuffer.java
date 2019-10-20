@@ -17,7 +17,6 @@
 package jcog.tree.perfect;
 
 import java.nio.ByteBuffer;
-import java.util.stream.IntStream;
 
 /**
  * A {@link TrieSequencer} implementation where ByteBuffer is the sequence type.
@@ -32,7 +31,7 @@ public class TrieSequencerByteBuffer implements TrieSequencer<ByteBuffer>
    public int matches( ByteBuffer sequenceA, int indexA, ByteBuffer sequenceB, int indexB, int count )
    {
        for (int i = 0; i < count; i++) {
-           if (sequenceA.get(indexA + i) != sequenceB.get(indexB + i)) {
+           if ((int) sequenceA.get(indexA + i) != (int) sequenceB.get(indexB + i)) {
                return i;
            }
        }
@@ -49,7 +48,7 @@ public class TrieSequencerByteBuffer implements TrieSequencer<ByteBuffer>
    @Override
    public int hashOf( ByteBuffer sequence, int i )
    {
-      return sequence.get( i ) & 0xFF; 
+      return (int) sequence.get(i) & 0xFF;
    }
    
 }

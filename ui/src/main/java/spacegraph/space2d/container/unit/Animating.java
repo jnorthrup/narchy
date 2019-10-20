@@ -12,7 +12,7 @@ public class Animating<X extends Surface> extends UnitContainer<X> implements An
 
     private final FloatSupplier minUpdatePeriod;
     private final Consumer<X> each;
-    private float waiting = 0;
+    private float waiting = (float) 0;
     private Off animate;
 
     /** in seconds.  TODO adjustable */
@@ -47,7 +47,7 @@ public class Animating<X extends Surface> extends UnitContainer<X> implements An
     protected void stopping() {
         animate.close();
         animate = null;
-        waiting = 0;
+        waiting = (float) 0;
         super.stopping();
     }
 
@@ -55,7 +55,7 @@ public class Animating<X extends Surface> extends UnitContainer<X> implements An
     public boolean animate(float dt) {
         if (showing()) {
             waiting -= dt;
-            if (waiting < 0) {
+            if (waiting < (float) 0) {
                 boolean async = false;
                 if (async) {
                     Exe.run(this::update);

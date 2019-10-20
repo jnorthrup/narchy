@@ -471,28 +471,28 @@ public class M_Infantry {
     static int sound_idle;
 
     static final mframe_t[] infantry_frames_stand = {
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null) };
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null) };
 
     static final mmove_t infantry_move_stand = new mmove_t(FRAME_stand50,
             FRAME_stand71, infantry_frames_stand, null);
@@ -508,55 +508,55 @@ public class M_Infantry {
     };
 
     static final mframe_t[] infantry_frames_fidget = {
-            new mframe_t(GameAI.ai_stand, 1, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 1, null),
-            new mframe_t(GameAI.ai_stand, 3, null),
-            new mframe_t(GameAI.ai_stand, 6, null),
-            new mframe_t(GameAI.ai_stand, 3, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 1, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 1, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, -1, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 1, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, -2, null),
-            new mframe_t(GameAI.ai_stand, 1, null),
-            new mframe_t(GameAI.ai_stand, 1, null),
-            new mframe_t(GameAI.ai_stand, 1, null),
-            new mframe_t(GameAI.ai_stand, -1, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, -1, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, -1, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 1, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, -1, null),
-            new mframe_t(GameAI.ai_stand, -1, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, -3, null),
-            new mframe_t(GameAI.ai_stand, -2, null),
-            new mframe_t(GameAI.ai_stand, -3, null),
-            new mframe_t(GameAI.ai_stand, -3, null),
-            new mframe_t(GameAI.ai_stand, -2, null) };
+            new mframe_t(GameAI.ai_stand, 1.0F, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, 1.0F, null),
+            new mframe_t(GameAI.ai_stand, 3.0F, null),
+            new mframe_t(GameAI.ai_stand, 6.0F, null),
+            new mframe_t(GameAI.ai_stand, 3.0F, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, 1.0F, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, 1.0F, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, -1.0F, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, 1.0F, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, -2.0F, null),
+            new mframe_t(GameAI.ai_stand, 1.0F, null),
+            new mframe_t(GameAI.ai_stand, 1.0F, null),
+            new mframe_t(GameAI.ai_stand, 1.0F, null),
+            new mframe_t(GameAI.ai_stand, -1.0F, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, -1.0F, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, -1.0F, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, 1.0F, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, -1.0F, null),
+            new mframe_t(GameAI.ai_stand, -1.0F, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, -3.0F, null),
+            new mframe_t(GameAI.ai_stand, -2.0F, null),
+            new mframe_t(GameAI.ai_stand, -3.0F, null),
+            new mframe_t(GameAI.ai_stand, -3.0F, null),
+            new mframe_t(GameAI.ai_stand, -2.0F, null) };
 
     static final mmove_t infantry_move_fidget = new mmove_t(FRAME_stand01,
             FRAME_stand49, infantry_frames_fidget, infantry_stand);
@@ -567,25 +567,25 @@ public class M_Infantry {
         @Override
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = infantry_move_fidget;
-            game_import_t.sound(self, Defines.CHAN_VOICE, sound_idle, 1,
-                    Defines.ATTN_IDLE, 0);
+            game_import_t.sound(self, Defines.CHAN_VOICE, sound_idle, 1.0F,
+                    (float) Defines.ATTN_IDLE, (float) 0);
             return true;
         }
     };
 
     static final mframe_t[] infantry_frames_walk = {
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 4, null),
-            new mframe_t(GameAI.ai_walk, 4, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 4, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 6, null),
-            new mframe_t(GameAI.ai_walk, 4, null),
-            new mframe_t(GameAI.ai_walk, 4, null),
-            new mframe_t(GameAI.ai_walk, 4, null),
-            new mframe_t(GameAI.ai_walk, 4, null),
-            new mframe_t(GameAI.ai_walk, 5, null) };
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 4.0F, null),
+            new mframe_t(GameAI.ai_walk, 4.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 4.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 6.0F, null),
+            new mframe_t(GameAI.ai_walk, 4.0F, null),
+            new mframe_t(GameAI.ai_walk, 4.0F, null),
+            new mframe_t(GameAI.ai_walk, 4.0F, null),
+            new mframe_t(GameAI.ai_walk, 4.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null) };
 
     static final mmove_t infantry_move_walk = new mmove_t(FRAME_walk03, FRAME_walk14,
             infantry_frames_walk, null);
@@ -601,14 +601,14 @@ public class M_Infantry {
     };
 
     static final mframe_t[] infantry_frames_run = {
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 20, null),
-            new mframe_t(GameAI.ai_run, 5, null),
-            new mframe_t(GameAI.ai_run, 7, null),
-            new mframe_t(GameAI.ai_run, 30, null),
-            new mframe_t(GameAI.ai_run, 35, null),
-            new mframe_t(GameAI.ai_run, 2, null),
-            new mframe_t(GameAI.ai_run, 6, null) };
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, 20.0F, null),
+            new mframe_t(GameAI.ai_run, 5.0F, null),
+            new mframe_t(GameAI.ai_run, 7.0F, null),
+            new mframe_t(GameAI.ai_run, 30.0F, null),
+            new mframe_t(GameAI.ai_run, 35.0F, null),
+            new mframe_t(GameAI.ai_run, 2.0F, null),
+            new mframe_t(GameAI.ai_run, 6.0F, null) };
 
     static final mmove_t infantry_move_run = new mmove_t(FRAME_run01, FRAME_run08,
             infantry_frames_run, null);
@@ -627,31 +627,31 @@ public class M_Infantry {
     };
 
     static final mframe_t[] infantry_frames_pain1 = {
-            new mframe_t(GameAI.ai_move, -3, null),
-            new mframe_t(GameAI.ai_move, -2, null),
-            new mframe_t(GameAI.ai_move, -1, null),
-            new mframe_t(GameAI.ai_move, -2, null),
-            new mframe_t(GameAI.ai_move, -1, null),
-            new mframe_t(GameAI.ai_move, 1, null),
-            new mframe_t(GameAI.ai_move, -1, null),
-            new mframe_t(GameAI.ai_move, 1, null),
-            new mframe_t(GameAI.ai_move, 6, null),
-            new mframe_t(GameAI.ai_move, 2, null) };
+            new mframe_t(GameAI.ai_move, -3.0F, null),
+            new mframe_t(GameAI.ai_move, -2.0F, null),
+            new mframe_t(GameAI.ai_move, -1.0F, null),
+            new mframe_t(GameAI.ai_move, -2.0F, null),
+            new mframe_t(GameAI.ai_move, -1.0F, null),
+            new mframe_t(GameAI.ai_move, 1.0F, null),
+            new mframe_t(GameAI.ai_move, -1.0F, null),
+            new mframe_t(GameAI.ai_move, 1.0F, null),
+            new mframe_t(GameAI.ai_move, 6.0F, null),
+            new mframe_t(GameAI.ai_move, 2.0F, null) };
 
     static final mmove_t infantry_move_pain1 = new mmove_t(FRAME_pain101,
             FRAME_pain110, infantry_frames_pain1, infantry_run);
 
     static final mframe_t[] infantry_frames_pain2 = {
-            new mframe_t(GameAI.ai_move, -3, null),
-            new mframe_t(GameAI.ai_move, -3, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, -1, null),
-            new mframe_t(GameAI.ai_move, -2, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 2, null),
-            new mframe_t(GameAI.ai_move, 5, null),
-            new mframe_t(GameAI.ai_move, 2, null) };
+            new mframe_t(GameAI.ai_move, -3.0F, null),
+            new mframe_t(GameAI.ai_move, -3.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, -1.0F, null),
+            new mframe_t(GameAI.ai_move, -2.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, 2.0F, null),
+            new mframe_t(GameAI.ai_move, 5.0F, null),
+            new mframe_t(GameAI.ai_move, 2.0F, null) };
 
     static final mmove_t infantry_move_pain2 = new mmove_t(FRAME_pain201,
             FRAME_pain210, infantry_frames_pain2, infantry_run);
@@ -668,20 +668,20 @@ public class M_Infantry {
             if (GameBase.level.time < self.pain_debounce_time)
                 return;
 
-            self.pain_debounce_time = GameBase.level.time + 3;
+            self.pain_debounce_time = GameBase.level.time + 3.0F;
 
-            if (GameBase.skill.value == 3)
+            if (GameBase.skill.value == 3.0F)
                 return;
 
-            int n = Lib.rand() % 2;
+            int n = (int) Lib.rand() % 2;
             if (n == 0) {
                 self.monsterinfo.currentmove = infantry_move_pain1;
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
-                        Defines.ATTN_NORM, 0);
+                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1.0F,
+                        (float) Defines.ATTN_NORM, (float) 0);
             } else {
                 self.monsterinfo.currentmove = infantry_move_pain2;
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain2, 1,
-                        Defines.ATTN_NORM, 0);
+                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain2, 1.0F,
+                        (float) Defines.ATTN_NORM, (float) 0);
             }
         }
     };
@@ -699,8 +699,8 @@ public class M_Infantry {
         public String getID() { return "InfantryMachineGun"; }
         @Override
         public boolean think(edict_t self) {
-            float[] start = { 0, 0, 0 };
-            float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
+            float[] start = {(float) 0, (float) 0, (float) 0};
+            float[] forward = {(float) 0, (float) 0, (float) 0}, right = {(float) 0, (float) 0, (float) 0};
             int flash_number;
 
             if (self.s.frame == FRAME_attak111) {
@@ -711,10 +711,10 @@ public class M_Infantry {
                         right, start);
 
                 if (self.enemy != null) {
-                    float[] target = {0, 0, 0};
+                    float[] target = {(float) 0, (float) 0, (float) 0};
                     Math3D.VectorMA(self.enemy.s.origin, -0.2f,
                             self.enemy.velocity, target);
-                    target[2] += self.enemy.viewheight;
+                    target[2] = target[2] + (float) self.enemy.viewheight;
                     Math3D.VectorSubtract(target, start, forward);
                     Math3D.VectorNormalize(forward);
                 } else {
@@ -729,7 +729,7 @@ public class M_Infantry {
                         M_Flash.monster_flash_offset[flash_number], forward,
                         right, start);
 
-                float[] vec = {0, 0, 0};
+                float[] vec = {(float) 0, (float) 0, (float) 0};
                 Math3D.VectorSubtract(self.s.angles, aimangles[flash_number
                         - Defines.MZ2_INFANTRY_MACHINEGUN_2], vec);
                 Math3D.AngleVectors(vec, forward, null, null);
@@ -747,8 +747,8 @@ public class M_Infantry {
         public String getID() { return "infantry_sight"; }
         @Override
         public boolean interact(edict_t self, edict_t other) {
-            game_import_t.sound(self, Defines.CHAN_BODY, sound_sight, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_BODY, sound_sight, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
@@ -760,8 +760,8 @@ public class M_Infantry {
         public String getID() { return "infantry_dead"; }
         @Override
         public boolean think(edict_t self) {
-            Math3D.VectorSet(self.mins, -16, -16, -24);
-            Math3D.VectorSet(self.maxs, 16, 16, -8);
+            Math3D.VectorSet(self.mins, -16.0F, -16.0F, -24.0F);
+            Math3D.VectorSet(self.maxs, 16.0F, 16.0F, -8.0F);
             self.movetype = Defines.MOVETYPE_TOSS;
             self.svflags |= Defines.SVF_DEADMONSTER;
             game_import_t.linkentity(self);
@@ -772,71 +772,71 @@ public class M_Infantry {
     };
 
     static final mframe_t[] infantry_frames_death1 = {
-            new mframe_t(GameAI.ai_move, -4, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, -1, null),
-            new mframe_t(GameAI.ai_move, -4, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, -1, null),
-            new mframe_t(GameAI.ai_move, 3, null),
-            new mframe_t(GameAI.ai_move, 1, null),
-            new mframe_t(GameAI.ai_move, 1, null),
-            new mframe_t(GameAI.ai_move, -2, null),
-            new mframe_t(GameAI.ai_move, 2, null),
-            new mframe_t(GameAI.ai_move, 2, null),
-            new mframe_t(GameAI.ai_move, 9, null),
-            new mframe_t(GameAI.ai_move, 9, null),
-            new mframe_t(GameAI.ai_move, 5, null),
-            new mframe_t(GameAI.ai_move, -3, null),
-            new mframe_t(GameAI.ai_move, -3, null) };
+            new mframe_t(GameAI.ai_move, -4.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, -1.0F, null),
+            new mframe_t(GameAI.ai_move, -4.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, -1.0F, null),
+            new mframe_t(GameAI.ai_move, 3.0F, null),
+            new mframe_t(GameAI.ai_move, 1.0F, null),
+            new mframe_t(GameAI.ai_move, 1.0F, null),
+            new mframe_t(GameAI.ai_move, -2.0F, null),
+            new mframe_t(GameAI.ai_move, 2.0F, null),
+            new mframe_t(GameAI.ai_move, 2.0F, null),
+            new mframe_t(GameAI.ai_move, 9.0F, null),
+            new mframe_t(GameAI.ai_move, 9.0F, null),
+            new mframe_t(GameAI.ai_move, 5.0F, null),
+            new mframe_t(GameAI.ai_move, -3.0F, null),
+            new mframe_t(GameAI.ai_move, -3.0F, null) };
 
     static final mmove_t infantry_move_death1 = new mmove_t(FRAME_death101,
             FRAME_death120, infantry_frames_death1, infantry_dead);
 
     
     static final mframe_t[] infantry_frames_death2 = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 1, null),
-            new mframe_t(GameAI.ai_move, 5, null),
-            new mframe_t(GameAI.ai_move, -1, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 1, null),
-            new mframe_t(GameAI.ai_move, 1, null),
-            new mframe_t(GameAI.ai_move, 4, null),
-            new mframe_t(GameAI.ai_move, 3, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, -2, InfantryMachineGun),
-            new mframe_t(GameAI.ai_move, -2, InfantryMachineGun),
-            new mframe_t(GameAI.ai_move, -3, InfantryMachineGun),
-            new mframe_t(GameAI.ai_move, -1, InfantryMachineGun),
-            new mframe_t(GameAI.ai_move, -2, InfantryMachineGun),
-            new mframe_t(GameAI.ai_move, 0, InfantryMachineGun),
-            new mframe_t(GameAI.ai_move, 2, InfantryMachineGun),
-            new mframe_t(GameAI.ai_move, 2, InfantryMachineGun),
-            new mframe_t(GameAI.ai_move, 3, InfantryMachineGun),
-            new mframe_t(GameAI.ai_move, -10, InfantryMachineGun),
-            new mframe_t(GameAI.ai_move, -7, InfantryMachineGun),
-            new mframe_t(GameAI.ai_move, -8, InfantryMachineGun),
-            new mframe_t(GameAI.ai_move, -6, null),
-            new mframe_t(GameAI.ai_move, 4, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, 1.0F, null),
+            new mframe_t(GameAI.ai_move, 5.0F, null),
+            new mframe_t(GameAI.ai_move, -1.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, 1.0F, null),
+            new mframe_t(GameAI.ai_move, 1.0F, null),
+            new mframe_t(GameAI.ai_move, 4.0F, null),
+            new mframe_t(GameAI.ai_move, 3.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, -2.0F, InfantryMachineGun),
+            new mframe_t(GameAI.ai_move, -2.0F, InfantryMachineGun),
+            new mframe_t(GameAI.ai_move, -3.0F, InfantryMachineGun),
+            new mframe_t(GameAI.ai_move, -1.0F, InfantryMachineGun),
+            new mframe_t(GameAI.ai_move, -2.0F, InfantryMachineGun),
+            new mframe_t(GameAI.ai_move, (float) 0, InfantryMachineGun),
+            new mframe_t(GameAI.ai_move, 2.0F, InfantryMachineGun),
+            new mframe_t(GameAI.ai_move, 2.0F, InfantryMachineGun),
+            new mframe_t(GameAI.ai_move, 3.0F, InfantryMachineGun),
+            new mframe_t(GameAI.ai_move, -10.0F, InfantryMachineGun),
+            new mframe_t(GameAI.ai_move, -7.0F, InfantryMachineGun),
+            new mframe_t(GameAI.ai_move, -8.0F, InfantryMachineGun),
+            new mframe_t(GameAI.ai_move, -6.0F, null),
+            new mframe_t(GameAI.ai_move, 4.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t infantry_move_death2 = new mmove_t(FRAME_death201,
             FRAME_death225, infantry_frames_death2, infantry_dead);
 
     static final mframe_t[] infantry_frames_death3 = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, -6, null),
-            new mframe_t(GameAI.ai_move, -11, null),
-            new mframe_t(GameAI.ai_move, -3, null),
-            new mframe_t(GameAI.ai_move, -11, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, -6.0F, null),
+            new mframe_t(GameAI.ai_move, -11.0F, null),
+            new mframe_t(GameAI.ai_move, -3.0F, null),
+            new mframe_t(GameAI.ai_move, -11.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t infantry_move_death3 = new mmove_t(FRAME_death301,
             FRAME_death309, infantry_frames_death3, infantry_dead);
@@ -854,8 +854,8 @@ public class M_Infantry {
             if (self.health <= self.gib_health) {
                 game_import_t
                         .sound(self, Defines.CHAN_VOICE, game_import_t
-                                .soundindex("misc/udeath.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                                .soundindex("misc/udeath.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
                             damage, Defines.GIB_ORGANIC);
@@ -876,22 +876,22 @@ public class M_Infantry {
             self.deadflag = Defines.DEAD_DEAD;
             self.takedamage = Defines.DAMAGE_YES;
 
-            n = Lib.rand() % 3;
+            n = (int) Lib.rand() % 3;
             switch (n) {
                 case 0:
                     self.monsterinfo.currentmove = infantry_move_death1;
-                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_die2, 1,
-                            Defines.ATTN_NORM, 0);
+                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_die2, 1.0F,
+                            (float) Defines.ATTN_NORM, (float) 0);
                     break;
                 case 1:
                     self.monsterinfo.currentmove = infantry_move_death2;
-                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_die1, 1,
-                            Defines.ATTN_NORM, 0);
+                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_die1, 1.0F,
+                            (float) Defines.ATTN_NORM, (float) 0);
                     break;
                 default:
                     self.monsterinfo.currentmove = infantry_move_death3;
-                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_die2, 1,
-                            Defines.ATTN_NORM, 0);
+                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_die2, 1.0F,
+                            (float) Defines.ATTN_NORM, (float) 0);
                     break;
             }
         }
@@ -905,9 +905,9 @@ public class M_Infantry {
             if ((self.monsterinfo.aiflags & Defines.AI_DUCKED) != 0)
                 return true;
             self.monsterinfo.aiflags |= Defines.AI_DUCKED;
-            self.maxs[2] -= 32;
+            self.maxs[2] -= 32.0F;
             self.takedamage = Defines.DAMAGE_YES;
-            self.monsterinfo.pausetime = GameBase.level.time + 1;
+            self.monsterinfo.pausetime = GameBase.level.time + 1.0F;
             game_import_t.linkentity(self);
             return true;
         }
@@ -932,7 +932,7 @@ public class M_Infantry {
         @Override
         public boolean think(edict_t self) {
             self.monsterinfo.aiflags &= ~Defines.AI_DUCKED;
-            self.maxs[2] += 32;
+            self.maxs[2] += 32.0F;
             self.takedamage = Defines.DAMAGE_AIM;
             game_import_t.linkentity(self);
             return true;
@@ -940,11 +940,11 @@ public class M_Infantry {
     };
 
     static final mframe_t[] infantry_frames_duck = {
-            new mframe_t(GameAI.ai_move, -2, infantry_duck_down),
-            new mframe_t(GameAI.ai_move, -5, infantry_duck_hold),
-            new mframe_t(GameAI.ai_move, 3, null),
-            new mframe_t(GameAI.ai_move, 4, infantry_duck_up),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, -2.0F, infantry_duck_down),
+            new mframe_t(GameAI.ai_move, -5.0F, infantry_duck_hold),
+            new mframe_t(GameAI.ai_move, 3.0F, null),
+            new mframe_t(GameAI.ai_move, 4.0F, infantry_duck_up),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t infantry_move_duck = new mmove_t(FRAME_duck01, FRAME_duck05,
             infantry_frames_duck, infantry_run);
@@ -954,7 +954,7 @@ public class M_Infantry {
         public String getID() { return "infantry_dodge"; }
         @Override
         public void dodge(edict_t self, edict_t attacker, float eta) {
-            if (Lib.random() > 0.25)
+            if ((double) Lib.random() > 0.25)
                 return;
 
             if (null == self.enemy)
@@ -970,10 +970,10 @@ public class M_Infantry {
         @Override
         public boolean think(edict_t self) {
 
-            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_weapon_cock, 1,
-                    Defines.ATTN_NORM, 0);
-            int n = (Lib.rand() & 15) + 3 + 7;
-            self.monsterinfo.pausetime = GameBase.level.time + n
+            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_weapon_cock, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
+            int n = ((int) Lib.rand() & 15) + 3 + 7;
+            self.monsterinfo.pausetime = GameBase.level.time + (float) n
                     * Defines.FRAMETIME;
             return true;
         }
@@ -995,21 +995,21 @@ public class M_Infantry {
     };
 
     static final mframe_t[] infantry_frames_attack1 = {
-            new mframe_t(GameAI.ai_charge, 4, null),
-            new mframe_t(GameAI.ai_charge, -1, null),
-            new mframe_t(GameAI.ai_charge, -1, null),
-            new mframe_t(GameAI.ai_charge, 0, infantry_cock_gun),
-            new mframe_t(GameAI.ai_charge, -1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 2, null),
-            new mframe_t(GameAI.ai_charge, -2, null),
-            new mframe_t(GameAI.ai_charge, -3, null),
-            new mframe_t(GameAI.ai_charge, 1, infantry_fire),
-            new mframe_t(GameAI.ai_charge, 5, null),
-            new mframe_t(GameAI.ai_charge, -1, null),
-            new mframe_t(GameAI.ai_charge, -2, null),
-            new mframe_t(GameAI.ai_charge, -3, null) };
+            new mframe_t(GameAI.ai_charge, 4.0F, null),
+            new mframe_t(GameAI.ai_charge, -1.0F, null),
+            new mframe_t(GameAI.ai_charge, -1.0F, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, infantry_cock_gun),
+            new mframe_t(GameAI.ai_charge, -1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 2.0F, null),
+            new mframe_t(GameAI.ai_charge, -2.0F, null),
+            new mframe_t(GameAI.ai_charge, -3.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, infantry_fire),
+            new mframe_t(GameAI.ai_charge, 5.0F, null),
+            new mframe_t(GameAI.ai_charge, -1.0F, null),
+            new mframe_t(GameAI.ai_charge, -2.0F, null),
+            new mframe_t(GameAI.ai_charge, -3.0F, null) };
 
     static final mmove_t infantry_move_attack1 = new mmove_t(FRAME_attak101,
             FRAME_attak115, infantry_frames_attack1, infantry_run);
@@ -1020,8 +1020,8 @@ public class M_Infantry {
 
         @Override
         public boolean think(edict_t self) {
-            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_punch_swing, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_punch_swing, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
@@ -1031,25 +1031,25 @@ public class M_Infantry {
         public String getID() { return "infantry_smack"; }
         @Override
         public boolean think(edict_t self) {
-            float[] aim = { 0, 0, 0 };
+            float[] aim = {(float) 0, (float) 0, (float) 0};
 
-            Math3D.VectorSet(aim, Defines.MELEE_DISTANCE, 0, 0);
-            if (GameWeapon.fire_hit(self, aim, (5 + (Lib.rand() % 5)), 50))
+            Math3D.VectorSet(aim, (float) Defines.MELEE_DISTANCE, (float) 0, (float) 0);
+            if (GameWeapon.fire_hit(self, aim, (5 + ((int) Lib.rand() % 5)), 50))
                 game_import_t.sound(self, Defines.CHAN_WEAPON, sound_punch_hit,
-                        1, Defines.ATTN_NORM, 0);
+                        1.0F, (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
 
     static final mframe_t[] infantry_frames_attack2 = {
-            new mframe_t(GameAI.ai_charge, 3, null),
-            new mframe_t(GameAI.ai_charge, 6, null),
-            new mframe_t(GameAI.ai_charge, 0, infantry_swing),
-            new mframe_t(GameAI.ai_charge, 8, null),
-            new mframe_t(GameAI.ai_charge, 5, null),
-            new mframe_t(GameAI.ai_charge, 8, infantry_smack),
-            new mframe_t(GameAI.ai_charge, 6, null),
-            new mframe_t(GameAI.ai_charge, 3, null), };
+            new mframe_t(GameAI.ai_charge, 3.0F, null),
+            new mframe_t(GameAI.ai_charge, 6.0F, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, infantry_swing),
+            new mframe_t(GameAI.ai_charge, 8.0F, null),
+            new mframe_t(GameAI.ai_charge, 5.0F, null),
+            new mframe_t(GameAI.ai_charge, 8.0F, infantry_smack),
+            new mframe_t(GameAI.ai_charge, 6.0F, null),
+            new mframe_t(GameAI.ai_charge, 3.0F, null), };
 
     static final mmove_t infantry_move_attack2 = new mmove_t(FRAME_attak201,
             FRAME_attak208, infantry_frames_attack2, infantry_run);
@@ -1072,7 +1072,7 @@ public class M_Infantry {
      * Trigger_Spawn Sight
      */
     public static void SP_monster_infantry(edict_t self) {
-        if (GameBase.deathmatch.value != 0) {
+        if (GameBase.deathmatch.value != (float) 0) {
             GameUtil.G_FreeEdict(self);
             return;
         }
@@ -1095,8 +1095,8 @@ public class M_Infantry {
         self.solid = Defines.SOLID_BBOX;
         self.s.modelindex = game_import_t
                 .modelindex("models/monsters/infantry/tris.md2");
-        Math3D.VectorSet(self.mins, -16, -16, -24);
-        Math3D.VectorSet(self.maxs, 16, 16, 32);
+        Math3D.VectorSet(self.mins, -16.0F, -16.0F, -24.0F);
+        Math3D.VectorSet(self.maxs, 16.0F, 16.0F, 32.0F);
 
         self.health = 100;
         self.gib_health = -40;

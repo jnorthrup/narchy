@@ -43,7 +43,7 @@ public class SystemTimer {
      * @param duration The amount of time in milliseconds to sleep for
      */
     public static void sleep(long duration) {
-        if (duration <= 0) return;
+        if (duration <= 0L) return;
         Util.sleepMS(duration);
 
     }

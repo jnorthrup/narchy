@@ -102,9 +102,9 @@ public class Inventory implements java.io.Serializable {
                 if (rightClick && inventoryItems[position.x][position.y].count > 1) {
                     holding.item = inventoryItems[position.x][position.y].item;
                     holding.count = (int) Math
-                            .ceil((double) inventoryItems[position.x][position.y].count / 2);
+                            .ceil((double) inventoryItems[position.x][position.y].count / 2.0);
                     inventoryItems[position.x][position.y].count = (int) Math
-                            .floor((double) inventoryItems[position.x][position.y].count / 2);
+                            .floor((double) inventoryItems[position.x][position.y].count / 2.0);
                 } else {
                     holding.item = inventoryItems[position.x][position.y].item;
                     holding.count = inventoryItems[position.x][position.y].count;

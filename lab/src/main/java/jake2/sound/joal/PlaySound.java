@@ -61,7 +61,7 @@ public class PlaySound {
     int bufferId;
     float volume;
     float attenuation;
-    final float[] origin = {0,0,0};
+    final float[] origin = {(float) 0, (float) 0, (float) 0};
 
     
     private long beginTime;
@@ -78,7 +78,7 @@ public class PlaySound {
     private void clear() {
 		type = bufferId = entnum = entchannel = -1;
         
-        attenuation = beginTime = 0;
+        attenuation =   beginTime = 0L;
         
     }
 
@@ -101,7 +101,7 @@ public class PlaySound {
     static PlaySound nextPlayableSound() {
 
         PlaySound ps = playableList.next;
-            if (ps == playableList || ps.beginTime > Globals.cl.time)
+            if (ps == playableList || ps.beginTime > (long) Globals.cl.time)
                 return null;
             PlaySound.release(ps);
             return ps;
@@ -159,7 +159,7 @@ public class PlaySound {
             ps.bufferId = bufferId;
             ps.volume = volume;
             ps.attenuation = attenuation;
-            ps.beginTime = Globals.cl.time + (long)(timeoffset * 1000);
+            ps.beginTime = (long) Globals.cl.time + (long)(timeoffset * 1000.0F);
             PlaySound.add(ps);
         } else {
             System.err.println("PlaySounds out of Limit");

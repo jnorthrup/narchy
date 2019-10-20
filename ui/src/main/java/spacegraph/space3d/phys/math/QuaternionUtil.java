@@ -35,15 +35,15 @@ import spacegraph.util.math.Quat4f;
 public class QuaternionUtil {
 
 	public static float getAngle(Quat4f q) {
-        float s = 2f * (float) Math.acos(q.w);
+        float s = 2f * (float) Math.acos((double) q.w);
 		return s;
 	}
 	
 	public static void setRotation(Quat4f q, v3 axis, float angle) {
         float d = axis.length();
 		assert (d != 0f);
-        float s = (float) Math.sin(angle * 0.5f) / d;
-		q.set(axis.x * s, axis.y * s, axis.z * s, (float) Math.cos(angle * 0.5f));
+        float s = (float) Math.sin((double) (angle * 0.5f)) / d;
+		q.set(axis.x * s, axis.y * s, axis.z * s, (float) Math.cos((double) (angle * 0.5f)));
 	}
 	
 	
@@ -52,13 +52,13 @@ public class QuaternionUtil {
 		c.cross(v0, v1);
         float d = v0.dot(v1);
 
-		if (d < -1.0 + BulletGlobals.FLT_EPSILON) {
+		if ((double) d < -1.0 + (double) BulletGlobals.FLT_EPSILON) {
 			
 			out.set(0.0f, 1.0f, 0.0f, 0.0f);
 			return out;
 		}
 
-        float s = (float) Math.sqrt((1.0f + d) * 2.0f);
+        float s = (float) Math.sqrt((double) ((1.0f + d) * 2.0f));
         float rs = 1.0f / s;
 
 		out.set(c.x * rs, c.y * rs, c.z * rs, s * 0.5f);
@@ -102,12 +102,12 @@ public class QuaternionUtil {
         float halfYaw = yaw * 0.5f;
         float halfPitch = pitch * 0.5f;
         float halfRoll = roll * 0.5f;
-        float cosYaw = (float) Math.cos(halfYaw);
-        float sinYaw = (float) Math.sin(halfYaw);
-        float cosPitch = (float) Math.cos(halfPitch);
-        float sinPitch = (float) Math.sin(halfPitch);
-        float cosRoll = (float) Math.cos(halfRoll);
-        float sinRoll = (float) Math.sin(halfRoll);
+        float cosYaw = (float) Math.cos((double) halfYaw);
+        float sinYaw = (float) Math.sin((double) halfYaw);
+        float cosPitch = (float) Math.cos((double) halfPitch);
+        float sinPitch = (float) Math.sin((double) halfPitch);
+        float cosRoll = (float) Math.cos((double) halfRoll);
+        float sinRoll = (float) Math.sin((double) halfRoll);
 		q.x = cosRoll * sinPitch * cosYaw + sinRoll * cosPitch * sinYaw;
 		q.y = cosRoll * cosPitch * sinYaw - sinRoll * sinPitch * cosYaw;
 		q.z = sinRoll * cosPitch * cosYaw - cosRoll * sinPitch * sinYaw;

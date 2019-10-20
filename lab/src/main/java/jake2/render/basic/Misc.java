@@ -55,14 +55,14 @@ public final class Misc extends Mesh {
 	*/
 final byte[][] dottexture =
 	{
-		{0,0,0,0,0,0,0,0},
-		{0,0,1,1,0,0,0,0},
-		{0,1,1,1,1,0,0,0},
-		{0,1,1,1,1,0,0,0},
-		{0,0,1,1,0,0,0,0},
-		{0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0},
+		{(byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0},
+		{(byte) 0, (byte) 0, (byte) 1, (byte) 1, (byte) 0, (byte) 0, (byte) 0, (byte) 0},
+		{(byte) 0, (byte) 1, (byte) 1, (byte) 1, (byte) 1, (byte) 0, (byte) 0, (byte) 0},
+		{(byte) 0, (byte) 1, (byte) 1, (byte) 1, (byte) 1, (byte) 0, (byte) 0, (byte) 0},
+		{(byte) 0, (byte) 0, (byte) 1, (byte) 1, (byte) 0, (byte) 0, (byte) 0, (byte) 0},
+		{(byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0},
+		{(byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0},
+		{(byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0},
 	};
 
 	@Override
@@ -81,7 +81,7 @@ final byte[][] dottexture =
 				data[y * 32 + x * 4 + 0] = (byte)255;
 				data[y * 32 + x * 4 + 1] = (byte)255;
 				data[y * 32 + x * 4 + 2] = (byte)255;
-				data[y * 32 + x * 4 + 3] = (byte)(dottexture[x][y]*255);
+				data[y * 32 + x * 4 + 3] = (byte)((int) dottexture[x][y] *255);
 
 			}
 		}
@@ -94,9 +94,9 @@ final byte[][] dottexture =
 		{
 			for (y=0 ; y<8 ; y++)
 			{
-				data[y * 32 + x * 4 + 0] = (byte)(dottexture[x&3][y&3]*255);
-				data[y * 32 + x * 4 + 1] = 0; 
-				data[y * 32 + x * 4 + 2] = 0; 
+				data[y * 32 + x * 4 + 0] = (byte)((int) dottexture[x & 3][y & 3] *255);
+				data[y * 32 + x * 4 + 1] = (byte) 0;
+				data[y * 32 + x * 4 + 2] = (byte) 0;
 				data[y * 32 + x * 4 + 3] = (byte)255;
 			}
 		}
@@ -134,8 +134,8 @@ final byte[][] dottexture =
         int i = 0;
         int offset = sb.length() - 6;
 	    while (file.exists() && i++ < 100) {
-	        sb.setCharAt(offset, (char) ((i/10) + '0'));
-	        sb.setCharAt(offset + 1, (char) ((i%10) + '0'));
+	        sb.setCharAt(offset, (char) ((i/10) + (int) '0'));
+	        sb.setCharAt(offset + 1, (char) ((i%10) + (int) '0'));
 	        file = new File(sb.toString());
         }
 	    if (i == 100) {
@@ -147,9 +147,9 @@ final byte[][] dottexture =
             RandomAccessFile out = new RandomAccessFile(file, "rw");
             FileChannel ch = out.getChannel();
             int fileLength = TGA_HEADER_SIZE + vid.getWidth() * vid.getHeight() * 3;
-	        out.setLength(fileLength);
-            MappedByteBuffer image = ch.map(FileChannel.MapMode.READ_WRITE, 0,
-	                fileLength);
+	        out.setLength((long) fileLength);
+            MappedByteBuffer image = ch.map(FileChannel.MapMode.READ_WRITE, 0L,
+                    (long) fileLength);
 	        
 	        
 	        image.put(0, (byte) 0).put(1, (byte) 0);
@@ -227,7 +227,7 @@ final byte[][] dottexture =
 		gl.glDisable (GL_CULL_FACE);
 		gl.glDisable (GL_BLEND);
 
-		gl.glColor4f (1,1,1,1);
+		gl.glColor4f (1.0F, 1.0F, 1.0F, 1.0F);
 
 		gl.glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 		gl.glShadeModel (GL_FLAT);
@@ -236,11 +236,11 @@ final byte[][] dottexture =
 		GL_TextureAlphaMode( gl_texturealphamode.string );
 		GL_TextureSolidMode( gl_texturesolidmode.string );
 
-		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
-		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (float) gl_filter_min);
+		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (float) gl_filter_max);
 
-		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (float) GL_REPEAT);
+		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (float) GL_REPEAT);
 
 		gl.glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

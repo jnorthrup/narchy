@@ -60,7 +60,7 @@ public class TrackXY_NAR extends GameX {
 	protected TrackXY_NAR(NAR nar, TrackXY xy) {
 		super($$("trackXY"),
 			//FrameTrigger.cycles(W*H*2),
-			GameTime.durs(1),
+			GameTime.durs(1.0F),
 			//GameTime.fps(1),
 			nar
 		);
@@ -72,16 +72,16 @@ public class TrackXY_NAR extends GameX {
 		assert (sourceNumerics | targetNumerics | targetCam);
 
 		if (sourceNumerics) {
-			senseNumberBi($.inh(id, "sx"), new FloatNormalized(() -> track.cx, 0, W - 1));
+			senseNumberBi($.inh(id, "sx"), new FloatNormalized(() -> track.cx, (float) 0, (float) (W - 1)));
 			if (H > 1)
-				senseNumberBi($.inh(id, "sy"), new FloatNormalized(() -> track.cy, 0, H - 1));
+				senseNumberBi($.inh(id, "sy"), new FloatNormalized(() -> track.cy, (float) 0, (float) (H - 1)));
 		}
 
 
 		if (targetNumerics) {
-			senseNumberBi($.inh(id, "tx"), new FloatNormalized(() -> track.tx, 0, W));
+			senseNumberBi($.inh(id, "tx"), new FloatNormalized(() -> track.tx, (float) 0, (float) W));
 			if (H > 1)
-				senseNumberBi($.inh(id, "ty"), new FloatNormalized(() -> track.ty, 0, H));
+				senseNumberBi($.inh(id, "ty"), new FloatNormalized(() -> track.ty, (float) 0, (float) H));
 		}
 
 		if (targetCam) {
@@ -160,14 +160,14 @@ public class TrackXY_NAR extends GameX {
                 long now = nar.time();
                 int durMS = Math.round(dur());
 				if (track.ty < track.cy) {
-					nar().want(0.1f, $.the("down"), now, now + durMS, 1f, 0.02f);
+					nar().want(0.1f, $.the("down"), now, now + (long) durMS, 1f, 0.02f);
 				} else if (track.ty > track.cy) {
-					nar().want(0.1f, $.the("up"), now, now + durMS, 1f, 0.02f);
+					nar().want(0.1f, $.the("up"), now, now + (long) durMS, 1f, 0.02f);
 				}
 				if (track.tx < track.cx) {
-					nar().want(0.1f, $.the("left"), now, now + durMS, 1f, 0.02f);
+					nar().want(0.1f, $.the("left"), now, now + (long) durMS, 1f, 0.02f);
 				} else if (track.tx > track.cx) {
-					nar().want(0.1f, $.the("right"), now, now + durMS, 1f, 0.02f);
+					nar().want(0.1f, $.the("right"), now, now + (long) durMS, 1f, 0.02f);
 				}
 			}
 		});
@@ -180,14 +180,14 @@ public class TrackXY_NAR extends GameX {
 		//NAL.TRACE = true;
 
         GraphEdit2D g = new GraphEdit2D();
-		g.resize(800, 800);
+		g.resize(800.0F, 800.0F);
 		window(g, 1000, 1000);
 		g.windoSizeMinRel(0.02f, 0.02f);
 
         NARS nb = new NARS.DefaultNAR(0, true)
-			.time(new CycleTime().dur(dur))
+			.time(new CycleTime().dur((float) dur))
 			.index(
-				new CaffeineMemory(2 * 1024 * 10)
+				new CaffeineMemory((long) (2 * 1024 * 10))
 				//new HijackConceptIndex(4 * 1024, 4)
 			);
 
@@ -209,7 +209,7 @@ public class TrackXY_NAR extends GameX {
 
 
 		n.freqResolution.set(0.1f);
-		n.confMin.evi(0);
+		n.confMin.evi((double) 0);
 //        n.confResolution.set(0.05f);
 
 
@@ -316,7 +316,7 @@ public class TrackXY_NAR extends GameX {
 					protected void paint(GL2 gl, ReSurface reSurface) {
 						super.paint(gl, reSurface);
                         RectFloat at = cellRect(a.track.cx, a.track.cy, 0.5f, 0.5f);
-						gl.glColor4f(1, 0, 0, 0.9f);
+						gl.glColor4f(1.0F, (float) 0, (float) 0, 0.9f);
 						Draw.rect(at.move(x(), y(), 0.01f), gl);
 					}
 				}.withControls(), 0.1f, new ObjectSurface(a.track));
@@ -348,12 +348,12 @@ public class TrackXY_NAR extends GameX {
 
 
 							//if (n.concept(tt) instanceof ActionConcept)
-							long window = 5;
+							long window = 5L;
                             float dur = n.dur();
                             long now = n.time();
-							if (tt.intersects(Math.round(now - window / 2 * dur), Math.round(now + window / 2 * dur))) {
+							if (tt.intersects((long) Math.round((float) now - (float) (window / 2L) * dur), (long) Math.round((float) now + (float) (window / 2L) * dur))) {
 
-								float wantsDir = (l ? -1 : +1) * (tt.freq() < 0.5f ? -1 : +1);
+								float wantsDir = (float) ((l ? -1 : +1) * (tt.freq() < 0.5f ? -1 : +1));
                                 float needsDir = a.track.tx - a.track.cx;
 
 
@@ -383,7 +383,7 @@ public class TrackXY_NAR extends GameX {
 
 		});
 		//n.run(experimentTime);
-		n.startFPS(10);
+		n.startFPS(10.0F);
 
 
 //                g.build(a, new AutoBuilder<>(2, (context, features, obj) -> {
@@ -460,7 +460,7 @@ public class TrackXY_NAR extends GameX {
 		actionUnipolar($.inh(id, $.the("speed")), a -> {
 //            System.out.println(a);
 			//track.controlSpeed.add(Math.pow(((a-0.5)*2),3)/100f);
-            float cc = (float) Math.pow(a, 1f);
+            float cc = (float) Math.pow((double) a, 1);
 			//float c = _controlSpeed.valueOf(cc);
             float c = Util.lerp(cc, 0.01f, 0.2f);
 			track.controlSpeed.set(c);
@@ -526,14 +526,14 @@ public class TrackXY_NAR extends GameX {
 			actionTriState($.p($.the("Y"), id), (dy) -> {
                 float py = track.cy;
 				//noinspection NonAtomicOperationOnVolatileField
-				track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue() * dy, 0, track.grid.height() - 1);
+				track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue() * (float) dy, (float) 0, (float) (track.grid.height() - 1));
 				return !Util.equals(py, track.cy, 0.01f);
 			});
 		}
 
 		actionTriState($.p($.the("X"), id), (dx) -> {
             float px = track.cx;
-			track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue() * dx, 0, track.grid.width() - 1);
+			track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue() * (float) dx, (float) 0, (float) (track.grid.width() - 1));
 			return !Util.equals(px, track.cx, 0.01f);
 		});
 	}
@@ -541,12 +541,12 @@ public class TrackXY_NAR extends GameX {
 
 	private void actionPushButton() {
 
-		actionPushButton($.inh(id, "right"), movement(+1, 0));
-		actionPushButton($.inh(id, "left"), movement(-1, 0));
+		actionPushButton($.inh(id, "right"), movement((float) +1, (float) 0));
+		actionPushButton($.inh(id, "left"), movement(-1.0F, (float) 0));
 
 		if (track.grid.height() > 1) {
-			actionPushButton($.inh(id, "up"), movement(0, +1));
-			actionPushButton($.inh(id, "down"), movement(0, -1));
+			actionPushButton($.inh(id, "up"), movement((float) 0, (float) +1));
+			actionPushButton($.inh(id, "down"), movement((float) 0, -1.0F));
 		}
 	}
 
@@ -554,8 +554,8 @@ public class TrackXY_NAR extends GameX {
 		return (b) -> {
 			if (b) {
                 float speed = track.controlSpeed.floatValue();
-                float nextCX = Util.clamp(track.cx + dx * speed, 0, track.grid.width() - 1);
-                float nextCY = Util.clamp(track.cy + dy * speed, 0, track.grid.height() - 1);
+                float nextCX = Util.clamp(track.cx + dx * speed, (float) 0, (float) (track.grid.width() - 1));
+                float nextCY = Util.clamp(track.cy + dy * speed, (float) 0, (float) (track.grid.height() - 1));
 				if (track.cx != nextCX || track.cy!=nextCY) {
 					track.cx = nextCX;
 					track.cy = nextCY;
@@ -572,14 +572,14 @@ public class TrackXY_NAR extends GameX {
 			actionPushButtonMutex($.inh(id, $.the("up")), $.inh(id, $.the("down")), (b) -> {
 				if (b) {
                     float pcy = track.cy;
-					track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
+					track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue(), (float) 0, (float) (track.grid.height() - 1));
 					return track.cy != pcy;
 				} else
 					return false;
 			}, (b) -> {
 				if (b) {
                     float pcy = track.cy;
-					track.cy = Util.clamp(track.cy - track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
+					track.cy = Util.clamp(track.cy - track.controlSpeed.floatValue(), (float) 0, (float) (track.grid.height() - 1));
 					return track.cy != pcy;
 				} else
 					return false;
@@ -589,14 +589,14 @@ public class TrackXY_NAR extends GameX {
 		actionPushButtonMutex($.inh(id, $.the("left")), $.inh(id, $.the("right")), (b) -> {
 			if (b) {
                 float pcx = track.cx;
-				track.cx = Util.clamp(track.cx - track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
+				track.cx = Util.clamp(track.cx - track.controlSpeed.floatValue(), (float) 0, (float) (track.grid.width() - 1));
 				return track.cx != pcx;
 			} else
 				return false;
 		}, (b) -> {
 			if (b) {
                 float pcx = track.cx;
-				track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
+				track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue(), (float) 0, (float) (track.grid.width() - 1));
 				return track.cx != pcx;
 			} else
 				return false;

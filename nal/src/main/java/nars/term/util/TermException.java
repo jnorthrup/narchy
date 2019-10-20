@@ -38,12 +38,12 @@ public final class TermException extends SoftException {
 
     public TermException(String reason, Op op, int dt, Term... args) {
         super(reason);
-        this.op = op!=null ? op.id : -1;
+        this.op = op!=null ? op.id : (byte) -1;
         this.dt = dt;
         this.args = args;
     }
 
-    public @Nullable Op op() { return (op!=-1 ? Op.the(op) : null); }
+    public @Nullable Op op() { return ((int) op !=-1 ? Op.the((int) op) : null); }
 
     @Override
     public String getMessage() {

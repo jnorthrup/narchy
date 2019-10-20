@@ -71,7 +71,7 @@ public class NodeVis<X> extends Windo {
     }
 
     public void color(float r, float g, float b) {
-        color(r,g,b,1);
+        color(r,g,b, 1.0F);
     }
 
     public static boolean pinned() {

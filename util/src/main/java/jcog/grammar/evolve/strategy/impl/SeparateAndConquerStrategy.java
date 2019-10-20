@@ -134,7 +134,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
                 }
                 boolean allPerfect = true;
                 for (double fitness : this.rankings.first().getFitness()) {
-                    if (Math.round(fitness * 10000) != 0) {
+                    if (Math.round(fitness * 10000.0) != 0L) {
                         allPerfect = false;
                         break;
                     }

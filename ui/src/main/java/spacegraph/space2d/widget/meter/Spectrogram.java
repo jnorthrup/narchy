@@ -25,7 +25,7 @@ public class Spectrogram extends RingContainer<BitmapMatrixView> implements Bitm
     public IntToIntFunction _color;
 
     static final ToIntFunction HASHCODE = x ->
-            Draw.colorHSB(Math.abs(x.hashCode() % 1000) / 1000.0f, 0.5f, 0.5f);
+            Draw.colorHSB((float) Math.abs(x.hashCode() % 1000) / 1000.0f, 0.5f, 0.5f);
     static final IntToIntFunction BLACK = (i) -> 0;
 
     public Spectrogram(boolean leftOrDown, int T, int N) {

@@ -43,12 +43,12 @@ public class GameTrigger {
     
     
     public static void multi_trigger(edict_t ent) {
-        if (ent.nextthink != 0)
+        if (ent.nextthink != (float) 0)
             return; 
 
         GameUtil.G_UseTargets(ent, ent.activator);
 
-        if (ent.wait > 0) {
+        if (ent.wait > (float) 0) {
             ent.think = multi_wait;
             ent.nextthink = GameBase.level.time + ent.wait;
         } else { 
@@ -73,7 +73,7 @@ public class GameTrigger {
                 break;
         }
 
-        if (ent.wait == 0)
+        if (ent.wait == (float) 0)
             ent.wait = 0.2f;
 
         ent.touch = Touch_Multi;
@@ -111,7 +111,7 @@ public class GameTrigger {
         
         
         if ((ent.spawnflags & 1) != 0) {
-            float[] v = { 0, 0, 0 };
+            float[] v = {(float) 0, (float) 0, (float) 0};
 
             Math3D.VectorMA(ent.mins, 0.5f, ent.size, v);
             ent.spawnflags &= ~1;
@@ -120,7 +120,7 @@ public class GameTrigger {
                     + " at " + Lib.vtos(v) + '\n');
         }
 
-        ent.wait = -1;
+        ent.wait = -1.0F;
         SP_trigger_multiple(ent);
     }
 
@@ -156,7 +156,7 @@ public class GameTrigger {
     }
 
     public static void SP_trigger_counter(edict_t self) {
-        self.wait = -1;
+        self.wait = -1.0F;
         if (0 == self.count)
             self.count = 2;
 
@@ -190,8 +190,8 @@ public class GameTrigger {
         InitTrigger(self);
         windsound = game_import_t.soundindex("misc/windfly.wav");
         self.touch = trigger_push_touch;
-        if (0 == self.speed)
-            self.speed = 1000;
+        if ((float) 0 == self.speed)
+            self.speed = 1000.0F;
         game_import_t.linkentity(self);
     }
 
@@ -224,20 +224,20 @@ public class GameTrigger {
         }
 
         InitTrigger(self);
-        self.gravity = Lib.atoi(GameBase.st.gravity);
+        self.gravity = (float) Lib.atoi(GameBase.st.gravity);
         self.touch = trigger_gravity_touch;
     }
 
     public static void SP_trigger_monsterjump(edict_t self) {
-        if (0 == self.speed)
-            self.speed = 200;
+        if ((float) 0 == self.speed)
+            self.speed = 200.0F;
         if (0 == GameBase.st.height)
             GameBase.st.height = 200;
-        if (self.s.angles[Defines.YAW] == 0)
-            self.s.angles[Defines.YAW] = 360;
+        if (self.s.angles[Defines.YAW] == (float) 0)
+            self.s.angles[Defines.YAW] = 360.0F;
         InitTrigger(self);
         self.touch = trigger_monsterjump_touch;
-        self.movedir[2] = GameBase.st.height;
+        self.movedir[2] = (float) GameBase.st.height;
     }
 
     
@@ -247,7 +247,7 @@ public class GameTrigger {
         @Override
         public boolean think(edict_t ent) {
 
-            ent.nextthink = 0;
+            ent.nextthink = (float) 0;
             return true;
         }
     };
@@ -278,10 +278,10 @@ public class GameTrigger {
                 return;
 
             if (!Math3D.VectorEquals(self.movedir, Globals.vec3_origin)) {
-                float[] forward = { 0, 0, 0 };
+                float[] forward = {(float) 0, (float) 0, (float) 0};
 
                 Math3D.AngleVectors(other.s.angles, forward, null, null);
-                if (Math3D.DotProduct(forward, self.movedir) < 0)
+                if (Math3D.DotProduct(forward, self.movedir) < (float) 0)
                     return;
             }
 
@@ -354,14 +354,14 @@ public class GameTrigger {
                 game_import_t.centerprintf(activator, "You need the "
                         + self.item.pickup_name);
                 game_import_t.sound(activator, Defines.CHAN_AUTO,
-                		game_import_t.soundindex("misc/keytry.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                		game_import_t.soundindex("misc/keytry.wav"), 1.0F,
+                        (float) Defines.ATTN_NORM, (float) 0);
                 return;
             }
 
             game_import_t.sound(activator, Defines.CHAN_AUTO, game_import_t
-                    .soundindex("misc/keyuse.wav"), 1, Defines.ATTN_NORM, 0);
-            if (GameBase.coop.value != 0) {
+                    .soundindex("misc/keyuse.wav"), 1.0F, (float) Defines.ATTN_NORM, (float) 0);
+            if (GameBase.coop.value != (float) 0) {
                 int player;
                 edict_t ent;
 
@@ -428,8 +428,8 @@ public class GameTrigger {
                     game_import_t.centerprintf(activator, self.count
                             + " more to go...");
                     game_import_t.sound(activator, Defines.CHAN_AUTO, game_import_t
-                            .soundindex("misc/talk1.wav"), 1,
-                            Defines.ATTN_NORM, 0);
+                            .soundindex("misc/talk1.wav"), 1.0F,
+                            (float) Defines.ATTN_NORM, (float) 0);
                 }
                 return;
             }
@@ -437,7 +437,7 @@ public class GameTrigger {
             if (0 == (self.spawnflags & 1)) {
                 game_import_t.centerprintf(activator, "Sequence completed!");
                 game_import_t.sound(activator, Defines.CHAN_AUTO, game_import_t
-                        .soundindex("misc/talk1.wav"), 1, Defines.ATTN_NORM, 0);
+                        .soundindex("misc/talk1.wav"), 1.0F, (float) Defines.ATTN_NORM, (float) 0);
             }
             self.activator = activator;
             multi_trigger(self);
@@ -463,10 +463,10 @@ public class GameTrigger {
         public void touch(edict_t self, edict_t other, cplane_t plane,
                           csurface_t surf) {
             if (Lib.strcmp(other.classname, "grenade") == 0) {
-                Math3D.VectorScale(self.movedir, self.speed * 10,
+                Math3D.VectorScale(self.movedir, self.speed * 10.0F,
                         other.velocity);
             } else if (other.health > 0) {
-                Math3D.VectorScale(self.movedir, self.speed * 10,
+                Math3D.VectorScale(self.movedir, self.speed * 10.0F,
                         other.velocity);
 
                 if (other.client != null) {
@@ -475,7 +475,7 @@ public class GameTrigger {
                     if (other.fly_sound_debounce_time < GameBase.level.time) {
                         other.fly_sound_debounce_time = GameBase.level.time + 1.5f;
                         game_import_t.sound(other, Defines.CHAN_AUTO, windsound,
-                                1, Defines.ATTN_NORM, 0);
+                                1.0F, (float) Defines.ATTN_NORM, (float) 0);
                     }
                 }
             }
@@ -528,14 +528,14 @@ public class GameTrigger {
                 return;
 
             if ((self.spawnflags & 16) != 0)
-                self.timestamp = GameBase.level.time + 1;
+                self.timestamp = GameBase.level.time + 1.0F;
             else
                 self.timestamp = GameBase.level.time + Defines.FRAMETIME;
 
             if (0 == (self.spawnflags & 4)) {
                 if ((GameBase.level.framenum % 10) == 0)
                     game_import_t.sound(other, Defines.CHAN_AUTO,
-                            self.noise_index, 1, Defines.ATTN_NORM, 0);
+                            self.noise_index, 1.0F, (float) Defines.ATTN_NORM, (float) 0);
             }
 
             int dflags;

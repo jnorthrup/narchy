@@ -204,8 +204,8 @@ public class AWTSurface extends Widget implements KeyPressed {
         }
 
         v2 rp = finger.posGlobal();
-        int px = Math.round(rp.x * component.getWidth());
-        int py = Math.round((1f - rp.y) * component.getHeight());
+        int px = Math.round(rp.x * (float) component.getWidth());
+        int py = Math.round((1f - rp.y) * (float) component.getHeight());
         if (lpx == -1) {
             lpx = px;
             lpy = py;

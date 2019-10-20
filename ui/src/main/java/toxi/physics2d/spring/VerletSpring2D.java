@@ -157,9 +157,9 @@ public class VerletSpring2D {
         Vec2D delta = b.sub(a);
         // add minute offset to avoid div-by-zero errors
         float dist = delta.magnitude() + EPS;
-        float aInvMass = 1/ am;
+        float aInvMass = 1.0F / am;
 
-        float bInvMass = 1/ bm;
+        float bInvMass = 1.0F / bm;
         float normDistStrength = (dist - restLength)
                 / (dist * (aInvMass + bInvMass)) * strength;
         if (!a.isLocked && !isALocked) {

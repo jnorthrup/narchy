@@ -66,7 +66,7 @@ public class RLAgent extends AbstractAgent {
         learner = new SarsaLearner(featureMap.numFeatures(), numActions);
 
         
-        learner.setAlpha(0.01 / featureMap.numFeatures());
+        learner.setAlpha(0.01 / (double) featureMap.numFeatures());
 
         int requiredHistoryLength = FeatureMap.historyLength();
         
@@ -83,7 +83,7 @@ public class RLAgent extends AbstractAgent {
 
     @Override
     public long getPauseLength() {
-        return 0;
+        return 0L;
     }
 
     @Override
@@ -127,7 +127,7 @@ public class RLAgent extends AbstractAgent {
         }
         else {
             boolean terminal = rlData.isTerminal;
-            double reward = rlData.reward;
+            double reward = (double) rlData.reward;
 
             
             if (!terminal)

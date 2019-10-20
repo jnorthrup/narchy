@@ -96,8 +96,8 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
 
     public static v2 normalize(v2 pPixel, JoglWindow win) {
         v2 y = new v2(pPixel);
-        y.sub(win.getX(), win.getY());
-        y.scaled(1f / win.getWidth(), 1f / win.getHeight());
+        y.sub((float) win.getX(), (float) win.getY());
+        y.scaled(1f / (float) win.getWidth(), 1f / (float) win.getHeight());
         return y;
     }
 
@@ -155,11 +155,11 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
         if (nextButtonDown != null) {
             for (@Nullable short b : nextButtonDown) {
 
-                boolean pressed = (b > 0);
+                boolean pressed = ((int) b > 0);
 
-                if (!pressed) b = (short) -b;
+                if (!pressed) b = (short) -(int) b;
 
-                updateButton(b-1, pressed);
+                updateButton((int) b -1, pressed);
             }
         }
 
@@ -294,7 +294,7 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
     protected void rotationAdd(float[] next) {
         for (int i = 0; i < next.length; i++) {
             float r = next[i];
-            if (r != 0)
+            if (r != (float) 0)
                 this.rotation[i].set(r);
         }
     }
@@ -313,7 +313,7 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
 
     protected float rotation(int which, boolean take) {
         AtomicFloat r = rotation[which];
-        return take ? r.getAndSet(0) : r.get();
+        return take ? r.getAndSet((float) 0) : r.get();
     }
 
 //    /**
@@ -476,7 +476,7 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
         @Override
         protected RectFloat innerBounds() {
             JoglWindow win = ((OrthoSurfaceGraph) root()).video;
-            float sw = win.getWidth(), sh = win.getHeight();
+            float sw = (float) win.getWidth(), sh = (float) win.getHeight();
             return RectFloat.XYWH(f.posPixel, sw*0.1f, sh*0.1f);
         }
 

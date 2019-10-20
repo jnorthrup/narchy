@@ -47,7 +47,7 @@ public abstract class StreamDecoder implements Runnable {
     public String status() {
         String s = "";
 
-        int backlog = (int) ((1000 * buffer.size()) / Constants.kSamplingFrequency);
+        int backlog = (int) ((float) (1000 * buffer.size()) / Constants.kSamplingFrequency);
 
         if (backlog > 0)
             s += "Backlog: " + backlog + " mS ";

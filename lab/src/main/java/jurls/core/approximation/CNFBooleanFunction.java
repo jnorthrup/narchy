@@ -99,7 +99,7 @@ public class CNFBooleanFunction implements ParameterizedFunction {
     }
 
     private long compute(int clauseIndex) {
-        long b = 0;
+        long b = 0L;
         int[] maxTerm = cnf[clauseIndex];
 
         for (int i = 0; i < maxTerm.length; ++i) {
@@ -133,10 +133,10 @@ public class CNFBooleanFunction implements ParameterizedFunction {
         int j = 0;
 
         for (int i = 0; i < xs.length; ++i) {
-            long v = Math.round(((1l << numBitsPerVariable[i]) - 1) * xs[i]);
+            long v = Math.round((double) ((1l << numBitsPerVariable[i]) - 1L) * xs[i]);
 
             for (int k = 0; k < numBitsPerVariable[i]; ++k, ++j) {
-                if (((v >> k) & 1) == 1) {
+                if (((v >> k) & 1L) == 1L) {
                     variables[j] = ~0l;
                 } else {
                     variables[j] = 0l;
@@ -144,29 +144,29 @@ public class CNFBooleanFunction implements ParameterizedFunction {
             }
         }
 
-        return (double) compute() / (double) ((1l << numOutputBits) - 1);
+        return (double) compute() / (double) ((1l << numOutputBits) - 1L);
     }
 
     @Override
     public void learn(double[] xs, double y) {
-        long currents = Math.round(value(xs) * ((1l << numOutputBits) - 1));
-        long targets = Math.round(y * ((1l << numOutputBits) - 1));
+        long currents = Math.round(value(xs) * (double) ((1l << numOutputBits) - 1L));
+        long targets = Math.round(y * (double) ((1l << numOutputBits) - 1L));
 
         ArrayList<Integer> ps = new ArrayList<Integer>(numOutputBits);
         for (int i = 0; i < numOutputBits; ++i) {
-            boolean target = ((targets >> i) & 1) == 1;
-            boolean current = ((currents >> i) & 1) == 1;
+            boolean target = ((targets >> i) & 1L) == 1L;
+            boolean current = ((currents >> i) & 1L) == 1L;
             ps.clear();
             if (target && !current) {
                 for (int j = 0; j < intermediates.length; ++j) {
-                    if (((intermediates[j] >> i) & 1) == 0) {
+                    if (((intermediates[j] >> i) & 1L) == 0L) {
                         ps.add(j);
                     }
                 }
             } else if (!target && current) {
                 for (int j = 0; j < parameters.length; ++j) {
                     parameters[j] ^= 1l << i;
-                    if (((compute(j) >> i) & 1) == 0) {
+                    if (((compute(j) >> i) & 1L) == 0L) {
                         ps.add(j);
                     }
                     parameters[j] ^= 1l << i;

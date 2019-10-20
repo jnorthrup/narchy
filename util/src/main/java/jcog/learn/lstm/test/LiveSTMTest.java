@@ -39,10 +39,10 @@ public class LiveSTMTest {
                         
                         0.1f;
 
-                Arrays.fill(i.actual, 0);
-                i.actual[(tt/3)%4] = 1;
-                Arrays.fill(expect, 0);
-                expect[(int)Math.round(  ((Math.sin(tt)+1f)/2f)*7f ) ] = 1f;
+                Arrays.fill(i.actual, (double) 0);
+                i.actual[(tt/3)%4] = 1.0;
+                Arrays.fill(expect, (double) 0);
+                expect[(int)Math.round(  ((Math.sin((double) tt)+ 1)/ 2)* 7) ] = 1;
 
                 
                     

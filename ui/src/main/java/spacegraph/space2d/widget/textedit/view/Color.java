@@ -3,10 +3,10 @@ package spacegraph.space2d.widget.textedit.view;
 import com.jogamp.opengl.GL2;
 
 public class Color {
-  private SmoothValue red = new SmoothValue(1);
-  private SmoothValue green = new SmoothValue(1);
-  private SmoothValue blue = new SmoothValue(1);
-  private SmoothValue alpha = new SmoothValue(1);
+  private SmoothValue red = new SmoothValue(1.0);
+  private SmoothValue green = new SmoothValue(1.0);
+  private SmoothValue blue = new SmoothValue(1.0);
+  private SmoothValue alpha = new SmoothValue(1.0);
 
   public SmoothValue getRed() {
     return red;

@@ -70,7 +70,7 @@ public class OSMTest {
                 -73.9712488f, 40.7830603f
                 //-73.9712488f, 40.7830603f
                 //-73.993449f, 40.751029f
-        , 0.001f*4, 0.001f*4).widget();
+        , 0.001f* 4.0F, 0.001f* 4.0F).widget();
 
         //i.index.stats().print(System.out);
     }

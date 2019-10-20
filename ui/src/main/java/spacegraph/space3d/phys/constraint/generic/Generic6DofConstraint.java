@@ -147,21 +147,21 @@ public class Generic6DofConstraint extends TypedConstraint {
 
 		if (getMatrixElem(mat, 2) < 1.0f) {
 			if (getMatrixElem(mat, 2) > -1.0f) {
-				xyz.x = (float) Math.atan2(-getMatrixElem(mat, 5), getMatrixElem(mat, 8));
-				xyz.y = (float) Math.asin(getMatrixElem(mat, 2));
-				xyz.z = (float) Math.atan2(-getMatrixElem(mat, 1), getMatrixElem(mat, 0));
+				xyz.x = (float) Math.atan2((double) -getMatrixElem(mat, 5), (double) getMatrixElem(mat, 8));
+				xyz.y = (float) Math.asin((double) getMatrixElem(mat, 2));
+				xyz.z = (float) Math.atan2((double) -getMatrixElem(mat, 1), (double) getMatrixElem(mat, 0));
 				return true;
 			}
 			else {
 				
-				xyz.x = -(float) Math.atan2(getMatrixElem(mat, 3), getMatrixElem(mat, 4));
+				xyz.x = -(float) Math.atan2((double) getMatrixElem(mat, 3), (double) getMatrixElem(mat, 4));
 				xyz.y = -BulletGlobals.SIMD_HALF_PI;
 				xyz.z = 0.0f;
 				return false;
 			}
 		}
 		
-		xyz.x = (float) Math.atan2(getMatrixElem(mat, 3), getMatrixElem(mat, 4));
+		xyz.x = (float) Math.atan2((double) getMatrixElem(mat, 3), (double) getMatrixElem(mat, 4));
 		xyz.y = BulletGlobals.SIMD_HALF_PI;
 		xyz.z = 0.0f;
 

@@ -18,7 +18,7 @@ public enum UnitCurve implements FloatToFloatFunction {
     Sqrt {
         @Override
         public float valueOf(float x) {
-            return (float) Math.sqrt(x);
+            return (float) Math.sqrt((double) x);
         }
     }
 }

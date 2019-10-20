@@ -15,7 +15,7 @@ public final class HersheyFont {
 
     private static final HersheyFont[] fontMono;
 
-    static final int offsetR = ('R');
+    static final int offsetR = (int) ('R');
     /*int idx, verts, */
     final int leftPos;
     final int rightPos;
@@ -38,7 +38,7 @@ public final class HersheyFont {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Util.sleepMS(1);
+            Util.sleepMS(1L);
         }
         if (lines == null) {
             lines = ArrayUtil.EMPTY_STRING_ARRAY;
@@ -72,14 +72,14 @@ public final class HersheyFont {
     public static void textStart(GL2 gl, float scaleX, float scaleY, float x, float y, float z) {
 
         gl.glTranslatef(x, y, z);
-        gl.glScalef(scaleX / 20, scaleY / 20, 1);
+        gl.glScalef(scaleX / 20.0F, scaleY / 20.0F, 1.0F);
     }
 
     public static void textNext(GL2 gl, char c, float x) {
 
-        int ci = c - 32;
+        int ci = (int) c - 32;
         if (ci >= 0 && ci < fontMono.length) {
-            fontMono[ci].draw(gl, x * 20);
+            fontMono[ci].draw(gl, x * 20.0F);
         }
 
     }
@@ -93,8 +93,8 @@ public final class HersheyFont {
     HersheyFont(String hspec) {
 
 
-        leftPos = (hspec.charAt(8)) - offsetR;
-        rightPos = (hspec.charAt(9)) - offsetR;
+        leftPos = (int) (hspec.charAt(8)) - offsetR;
+        rightPos = (int) (hspec.charAt(9)) - offsetR;
 
         //        boolean penUp = true;
         ByteArrayList currentSeg = new ByteArrayList(8);
@@ -106,16 +106,16 @@ public final class HersheyFont {
 
             char ci = spec.charAt(i), cii = spec.charAt(i + 1);
 
-            if (cii == 'R' && ci == ' ') {
+            if ((int) cii == (int) 'R' && (int) ci == (int) ' ') {
 //                penUp = true;
                 segments.add(currentSeg.toArray());
                 currentSeg = new ByteArrayList(8);
                 continue;
             }
 
-            int curX = ci - offsetR;
+            int curX = (int) ci - offsetR;
             currentSeg.add((byte) curX);
-            int curY = cii - offsetR;
+            int curY = (int) cii - offsetR;
             currentSeg.add((byte) (10 - curY));
         }
         if (!currentSeg.isEmpty())
@@ -141,7 +141,7 @@ public final class HersheyFont {
         if (sl == 0)
             return;
 
-        float totalWidth = sl * scaleX;
+        float totalWidth = (float) sl * scaleX;
         switch (a) {
             case Left:
                 x += scaleX / 2f;
@@ -159,7 +159,7 @@ public final class HersheyFont {
         textStart(gl, scaleX, scaleY, x, y, z);
 
         for (int i = 0; i < sl; i++) {
-            textNext(gl, s.charAt(i), i);
+            textNext(gl, s.charAt(i), (float) i);
         }
 
         Draw.pop(gl);
@@ -171,7 +171,7 @@ public final class HersheyFont {
 
     private static void hersheyText(GL2 gl, char c, float scaleX, float scaleY, float x, float y, float z) {
 
-        int ci = c - 32;
+        int ci = (int) c - 32;
         if (ci >= 0 && (ci < fontMono.length)) {
 
             Draw.push(gl);
@@ -193,12 +193,12 @@ public final class HersheyFont {
         boolean xShifted = Math.abs(x) > Float.MIN_NORMAL;
 
         if (xShifted)
-            gl.glTranslatef(x, 0, 0);
+            gl.glTranslatef(x, (float) 0, (float) 0);
 
         draw(gl);
 
         if (xShifted)
-            gl.glTranslatef(-x, 0, 0);
+            gl.glTranslatef(-x, (float) 0, (float) 0);
     }
 
     final void draw(GL2 gl) {
@@ -215,7 +215,7 @@ public final class HersheyFont {
 
             gl.glBegin(GL.GL_LINE_STRIP);
             for (int j = 0; j < ss; )
-                gl.glVertex2i(seg[j++], seg[j++]);
+                gl.glVertex2i((int) seg[j++], (int) seg[j++]);
             gl.glEnd();
         }
 

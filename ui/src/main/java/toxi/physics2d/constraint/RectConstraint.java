@@ -60,7 +60,7 @@ public class RectConstraint implements ParticleConstraint2D {
         } else {
             if (rect.containsPoint(p)) {
                 p.set(rect.intersectsRay(
-                        intersectRay.setDirection(intersectRay.sub(p)), 0,
+                        intersectRay.setDirection(intersectRay.sub(p)), (float) 0,
                         Float.MAX_VALUE));
             }
         }

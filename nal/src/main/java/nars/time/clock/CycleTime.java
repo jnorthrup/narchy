@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /** increments time on each frame */
 public class CycleTime extends Time {
 
-    private final AtomicLong nextStamp = new AtomicLong(0);
+    private final AtomicLong nextStamp = new AtomicLong(0L);
 
     volatile long t;
     final int dt;
@@ -17,7 +17,7 @@ public class CycleTime extends Time {
 
     CycleTime(int dt, int dur) {
         this.dt = dt;
-        this.dur = dur;
+        this.dur = (float) dur;
         reset();
     }
 
@@ -38,7 +38,7 @@ public class CycleTime extends Time {
 
     @Override
     public void reset() {
-        t = 0;
+        t = 0L;
     }
 
     @Override
@@ -48,12 +48,12 @@ public class CycleTime extends Time {
 
     @Override
     public long sinceLast() {
-        return dt;
+        return (long) dt;
     }
 
     @Override
     public final void next() {
-        t += dt;
+        t = t + (long) dt;
     }
 
     @Override

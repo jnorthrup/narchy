@@ -57,7 +57,7 @@ public class CL_tent {
         int baseframe;
 
         void clear() {
-            lightcolor[0] = lightcolor[1] = lightcolor[2] = light = start = type = frames = baseframe = 0;
+            lightcolor[0] = lightcolor[1] = lightcolor[2] = light =(float)(  (int)(start =   type = frames = baseframe = 0));
             ent.clear();
         }
     }
@@ -99,7 +99,7 @@ public class CL_tent {
         final float[] end = new float[3];
 
         void clear() {
-            offset[0] = offset[1] = offset[2] = start[0] = start[1] = start[2] = end[0] = end[1] = end[2] = entity = dest_entity = endtime = 0;
+            offset[0] = offset[1] = offset[2] = start[0] = start[1] = start[2] = end[0] = end[1] = end[2] = (int) (entity = dest_entity = endtime = 0);
             model = null;
         }
     }
@@ -341,7 +341,7 @@ public class CL_tent {
         int index = 0;
 
         for (i = 0; i < MAX_EXPLOSIONS; i++)
-            if (cl_explosions[i].start < time) {
+            if (cl_explosions[i].start < (float) time) {
                 time = (int) cl_explosions[i].start;
                 index = i;
             }
@@ -360,7 +360,7 @@ public class CL_tent {
         ex.type = ex_misc;
         ex.frames = 4;
         ex.ent.flags = Defines.RF_TRANSLUCENT;
-        ex.start = Globals.cl.frame.servertime - 100;
+        ex.start = (float) (Globals.cl.frame.servertime - 100);
         ex.ent.model = cl_mod_smoke;
 
         ex = AllocExplosion();
@@ -368,7 +368,7 @@ public class CL_tent {
         ex.type = ex_flash;
         ex.ent.flags = Defines.RF_FULLBRIGHT;
         ex.frames = 2;
-        ex.start = Globals.cl.frame.servertime - 100;
+        ex.start = (float) (Globals.cl.frame.servertime - 100);
         ex.ent.model = cl_mod_flash;
     }
 
@@ -380,7 +380,7 @@ public class CL_tent {
     static int ParseBeam(model_t model) {
         float[] start = new float[3];
 
-        int ent = MSG.ReadShort(Globals.net_message);
+        int ent = (int) MSG.ReadShort(Globals.net_message);
 
         MSG.ReadPos(Globals.net_message, start);
         float[] end = new float[3];
@@ -423,7 +423,7 @@ public class CL_tent {
     static int ParseBeam2(model_t model) {
         float[] start = new float[3];
 
-        int ent = MSG.ReadShort(Globals.net_message);
+        int ent = (int) MSG.ReadShort(Globals.net_message);
 
         MSG.ReadPos(Globals.net_message, start);
         float[] end = new float[3];
@@ -470,7 +470,7 @@ public class CL_tent {
     static int ParsePlayerBeam(model_t model) {
         float[] start = new float[3];
 
-        int ent = MSG.ReadShort(Globals.net_message);
+        int ent = (int) MSG.ReadShort(Globals.net_message);
 
         MSG.ReadPos(Globals.net_message, start);
         float[] end = new float[3];
@@ -478,10 +478,10 @@ public class CL_tent {
 
         float[] offset = new float[3];
         if (model == cl_mod_heatbeam)
-            Math3D.VectorSet(offset, 2, 7, -3);
+            Math3D.VectorSet(offset, 2.0F, 7.0F, -3.0F);
         else if (model == cl_mod_monster_heatbeam) {
             model = cl_mod_heatbeam;
-            Math3D.VectorSet(offset, 0, 0, 0);
+            Math3D.VectorSet(offset, (float) 0, (float) 0, (float) 0);
         } else
             MSG.ReadPos(Globals.net_message, offset);
 
@@ -529,8 +529,8 @@ public class CL_tent {
      */
     static int ParseLightning(model_t model) {
 
-        int srcEnt = MSG.ReadShort(Globals.net_message);
-        int destEnt = MSG.ReadShort(Globals.net_message);
+        int srcEnt = (int) MSG.ReadShort(Globals.net_message);
+        int destEnt = (int) MSG.ReadShort(Globals.net_message);
 
         MSG.ReadPos(Globals.net_message, start);
         MSG.ReadPos(Globals.net_message, end);
@@ -588,7 +588,7 @@ public class CL_tent {
                 Math3D.VectorCopy(start, l[i].ent.origin);
                 Math3D.VectorCopy(end, l[i].ent.oldorigin);
                 l[i].ent.alpha = 0.30f;
-                l[i].ent.skinnum = (colors >> ((Lib.rand() % 4) * 8)) & 0xff;
+                l[i].ent.skinnum = (colors >> (((int) Lib.rand() % 4) * 8)) & 0xff;
                 l[i].ent.model = null;
                 l[i].ent.frame = 4;
                 l[i].endtime = Globals.cl.time + 100;
@@ -607,7 +607,7 @@ public class CL_tent {
         int cnt;
         int magnitude;
 
-        int id = MSG.ReadShort(Globals.net_message);
+        int id = (int) MSG.ReadShort(Globals.net_message);
                                                  
         if (id != -1) 
         {
@@ -628,7 +628,7 @@ public class CL_tent {
                 MSG.ReadDir(Globals.net_message, s[i].dir);
                 r = MSG.ReadByte(Globals.net_message);
                 s[i].color = r & 0xff;
-                s[i].magnitude = MSG.ReadShort(Globals.net_message);
+                s[i].magnitude = (int) MSG.ReadShort(Globals.net_message);
                 s[i].endtime = Globals.cl.time
                         + MSG.ReadLong(Globals.net_message);
                 s[i].think = new cl_sustain_t.ThinkAdapter() {
@@ -646,7 +646,7 @@ public class CL_tent {
                 MSG.ReadPos(Globals.net_message, pos);
                 MSG.ReadDir(Globals.net_message, dir);
                 r = MSG.ReadByte(Globals.net_message);
-                magnitude = MSG.ReadShort(Globals.net_message);
+                magnitude = (int) MSG.ReadShort(Globals.net_message);
                 magnitude = MSG.ReadLong(Globals.net_message); 
                                                                
             }
@@ -656,7 +656,7 @@ public class CL_tent {
             MSG.ReadPos(Globals.net_message, pos);
             MSG.ReadDir(Globals.net_message, dir);
             r = MSG.ReadByte(Globals.net_message);
-            magnitude = MSG.ReadShort(Globals.net_message);
+            magnitude = (int) MSG.ReadShort(Globals.net_message);
             int color = r & 0xff;
             CL_newfx.ParticleSteamEffect(pos, dir, color, cnt, magnitude);
             
@@ -668,7 +668,7 @@ public class CL_tent {
     static void ParseWidow() {
         int i;
 
-        int id = MSG.ReadShort(Globals.net_message);
+        int id = (int) MSG.ReadShort(Globals.net_message);
 
         cl_sustain_t free_sustain = null;
         cl_sustain_t[] s = cl_sustains;
@@ -738,7 +738,7 @@ public class CL_tent {
     static final int[] splash_color = { 0x00, 0xe0, 0xb0, 0x50, 0xd0, 0xe0, 0xe8 };
     
     
-    private static final float[] pos2 = {0, 0, 0};
+    private static final float[] pos2 = {(float) 0, (float) 0, (float) 0};
 
     static void ParseTEnt() {
         explosion_t ex;
@@ -771,19 +771,19 @@ public class CL_tent {
                 SmokeAndFlash(pos);
 
                 
-                cnt = Lib.rand() & 15;
+                cnt = (int) Lib.rand() & 15;
                 switch (cnt) {
                     case 1:
-                        S.StartSound(pos, 0, 0, cl_sfx_ric1, 1, Defines.ATTN_NORM,
-                                0);
+                        S.StartSound(pos, 0, 0, cl_sfx_ric1, 1.0F, (float) Defines.ATTN_NORM,
+                                (float) 0);
                         break;
                     case 2:
-                        S.StartSound(pos, 0, 0, cl_sfx_ric2, 1, Defines.ATTN_NORM,
-                                0);
+                        S.StartSound(pos, 0, 0, cl_sfx_ric2, 1.0F, (float) Defines.ATTN_NORM,
+                                (float) 0);
                         break;
                     case 3:
-                        S.StartSound(pos, 0, 0, cl_sfx_ric3, 1, Defines.ATTN_NORM,
-                                0);
+                        S.StartSound(pos, 0, 0, cl_sfx_ric3, 1.0F, (float) Defines.ATTN_NORM,
+                                (float) 0);
                         break;
                 }
             }
@@ -799,7 +799,7 @@ public class CL_tent {
             else
                 CL_fx.ParticleEffect(pos, dir, 0xb0, 40);
             
-            S.StartSound(pos, 0, 0, cl_sfx_lashit, 1, Defines.ATTN_NORM, 0);
+            S.StartSound(pos, 0, 0, cl_sfx_lashit, 1.0F, (float) Defines.ATTN_NORM, (float) 0);
             break;
 
         case Defines.TE_SHOTGUN: 
@@ -821,19 +821,19 @@ public class CL_tent {
             CL_fx.ParticleEffect(pos, dir, color, cnt);
 
             if (r == Defines.SPLASH_SPARKS) {
-                r = Lib.rand() & 3;
+                r = (int) Lib.rand() & 3;
                 switch (r) {
                     case 0:
-                        S.StartSound(pos, 0, 0, cl_sfx_spark5, 1,
-                                Defines.ATTN_STATIC, 0);
+                        S.StartSound(pos, 0, 0, cl_sfx_spark5, 1.0F,
+                                (float) Defines.ATTN_STATIC, (float) 0);
                         break;
                     case 1:
-                        S.StartSound(pos, 0, 0, cl_sfx_spark6, 1,
-                                Defines.ATTN_STATIC, 0);
+                        S.StartSound(pos, 0, 0, cl_sfx_spark6, 1.0F,
+                                (float) Defines.ATTN_STATIC, (float) 0);
                         break;
                     default:
-                        S.StartSound(pos, 0, 0, cl_sfx_spark7, 1,
-                                Defines.ATTN_STATIC, 0);
+                        S.StartSound(pos, 0, 0, cl_sfx_spark7, 1.0F,
+                                (float) Defines.ATTN_STATIC, (float) 0);
                         break;
                 }
             }
@@ -861,34 +861,34 @@ public class CL_tent {
 
             ex = AllocExplosion();
             Math3D.VectorCopy(pos, ex.ent.origin);
-            ex.ent.angles[0] = (float) (Math.acos(dir[2]) / Math.PI * 180);
+            ex.ent.angles[0] = (float) (Math.acos((double) dir[2]) / Math.PI * 180.0);
             
             if (dir[0] != 0.0f)
-                ex.ent.angles[1] = (float) (Math.atan2(dir[1], dir[0])
-                        / Math.PI * 180);
-            else if (dir[1] > 0)
-                ex.ent.angles[1] = 90;
-            else if (dir[1] < 0)
-                ex.ent.angles[1] = 270;
+                ex.ent.angles[1] = (float) (Math.atan2((double) dir[1], (double) dir[0])
+                        / Math.PI * 180.0);
+            else if (dir[1] > (float) 0)
+                ex.ent.angles[1] = 90.0F;
+            else if (dir[1] < (float) 0)
+                ex.ent.angles[1] = 270.0F;
             else
-                ex.ent.angles[1] = 0;
+                ex.ent.angles[1] = (float) 0;
 
             ex.type = ex_misc;
             ex.ent.flags = Defines.RF_FULLBRIGHT | Defines.RF_TRANSLUCENT;
-            ex.start = Globals.cl.frame.servertime - 100;
-            ex.light = 150;
-            ex.lightcolor[0] = 1;
-            ex.lightcolor[1] = 1;
+            ex.start = (float) (Globals.cl.frame.servertime - 100);
+            ex.light = 150.0F;
+            ex.lightcolor[0] = 1.0F;
+            ex.lightcolor[1] = 1.0F;
             ex.ent.model = cl_mod_explode;
             ex.frames = 4;
-            S.StartSound(pos, 0, 0, cl_sfx_lashit, 1, Defines.ATTN_NORM, 0);
+            S.StartSound(pos, 0, 0, cl_sfx_lashit, 1.0F, (float) Defines.ATTN_NORM, (float) 0);
             break;
 
         case Defines.TE_RAILTRAIL: 
             MSG.ReadPos(Globals.net_message, pos);
             MSG.ReadPos(Globals.net_message, pos2);
             CL_fx.RailTrail(pos, pos2);
-            S.StartSound(pos2, 0, 0, cl_sfx_railg, 1, Defines.ATTN_NORM, 0);
+            S.StartSound(pos2, 0, 0, cl_sfx_railg, 1.0F, (float) Defines.ATTN_NORM, (float) 0);
             break;
 
         case Defines.TE_EXPLOSION2:
@@ -900,24 +900,24 @@ public class CL_tent {
             Math3D.VectorCopy(pos, ex.ent.origin);
             ex.type = ex_poly;
             ex.ent.flags = Defines.RF_FULLBRIGHT;
-            ex.start = Globals.cl.frame.servertime - 100;
-            ex.light = 350;
+            ex.start = (float) (Globals.cl.frame.servertime - 100);
+            ex.light = 350.0F;
             ex.lightcolor[0] = 1.0f;
             ex.lightcolor[1] = 0.5f;
             ex.lightcolor[2] = 0.5f;
             ex.ent.model = cl_mod_explo4;
             ex.frames = 19;
             ex.baseframe = 30;
-            ex.ent.angles[1] = Lib.rand() % 360;
+            ex.ent.angles[1] = (float) (Lib.rand() % 360);
             CL_fx.ExplosionParticles(pos);
             if (type == Defines.TE_GRENADE_EXPLOSION_WATER)
                 S
-                        .StartSound(pos, 0, 0, cl_sfx_watrexp, 1,
-                                Defines.ATTN_NORM, 0);
+                        .StartSound(pos, 0, 0, cl_sfx_watrexp, 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
             else
                 S
-                        .StartSound(pos, 0, 0, cl_sfx_grenexp, 1,
-                                Defines.ATTN_NORM, 0);
+                        .StartSound(pos, 0, 0, cl_sfx_grenexp, 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
             break;
 
         
@@ -927,18 +927,18 @@ public class CL_tent {
             Math3D.VectorCopy(pos, ex.ent.origin);
             ex.type = ex_poly;
             ex.ent.flags = Defines.RF_FULLBRIGHT;
-            ex.start = Globals.cl.frame.servertime - 100;
-            ex.light = 350;
+            ex.start = (float) (Globals.cl.frame.servertime - 100);
+            ex.light = 350.0F;
             ex.lightcolor[0] = 1.0f;
             ex.lightcolor[1] = 0.5f;
             ex.lightcolor[2] = 0.5f;
-            ex.ent.angles[1] = Lib.rand() % 360;
+            ex.ent.angles[1] = (float) (Lib.rand() % 360);
             ex.ent.model = cl_mod_explo4;
-            if (Globals.rnd.nextFloat() < 0.5)
+            if ((double) Globals.rnd.nextFloat() < 0.5)
                 ex.baseframe = 15;
             ex.frames = 15;
             CL_fx.ExplosionParticles(pos);
-            S.StartSound(pos, 0, 0, cl_sfx_rockexp, 1, Defines.ATTN_NORM, 0);
+            S.StartSound(pos, 0, 0, cl_sfx_rockexp, 1.0F, (float) Defines.ATTN_NORM, (float) 0);
             break;
 
         case Defines.TE_EXPLOSION1:
@@ -952,17 +952,17 @@ public class CL_tent {
             Math3D.VectorCopy(pos, ex.ent.origin);
             ex.type = ex_poly;
             ex.ent.flags = Defines.RF_FULLBRIGHT;
-            ex.start = Globals.cl.frame.servertime - 100;
-            ex.light = 350;
+            ex.start = (float) (Globals.cl.frame.servertime - 100);
+            ex.light = 350.0F;
             ex.lightcolor[0] = 1.0f;
             ex.lightcolor[1] = 0.5f;
             ex.lightcolor[2] = 0.5f;
-            ex.ent.angles[1] = Lib.rand() % 360;
+            ex.ent.angles[1] = (float) (Lib.rand() % 360);
             if (type != Defines.TE_EXPLOSION1_BIG) 
                 ex.ent.model = cl_mod_explo4; 
             else
                 ex.ent.model = cl_mod_explo4_big;
-            if (Globals.rnd.nextFloat() < 0.5)
+            if ((double) Globals.rnd.nextFloat() < 0.5)
                 ex.baseframe = 15;
             ex.frames = 15;
             if ((type != Defines.TE_EXPLOSION1_BIG)
@@ -970,12 +970,12 @@ public class CL_tent {
                 CL_fx.ExplosionParticles(pos); 
             if (type == Defines.TE_ROCKET_EXPLOSION_WATER)
                 S
-                        .StartSound(pos, 0, 0, cl_sfx_watrexp, 1,
-                                Defines.ATTN_NORM, 0);
+                        .StartSound(pos, 0, 0, cl_sfx_watrexp, 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
             else
                 S
-                        .StartSound(pos, 0, 0, cl_sfx_rockexp, 1,
-                                Defines.ATTN_NORM, 0);
+                        .StartSound(pos, 0, 0, cl_sfx_rockexp, 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
             break;
 
         case Defines.TE_BFG_EXPLOSION:
@@ -984,8 +984,8 @@ public class CL_tent {
             Math3D.VectorCopy(pos, ex.ent.origin);
             ex.type = ex_poly;
             ex.ent.flags = Defines.RF_FULLBRIGHT;
-            ex.start = Globals.cl.frame.servertime - 100;
-            ex.light = 350;
+            ex.start = (float) (Globals.cl.frame.servertime - 100);
+            ex.light = 350.0F;
             ex.lightcolor[0] = 0.0f;
             ex.lightcolor[1] = 1.0f;
             ex.lightcolor[2] = 0.0f;
@@ -1018,8 +1018,8 @@ public class CL_tent {
         case Defines.TE_BOSSTPORT: 
             MSG.ReadPos(Globals.net_message, pos);
             CL_fx.BigTeleportParticles(pos);
-            S.StartSound(pos, 0, 0, S.RegisterSound("misc/bigtele.wav"), 1,
-                    Defines.ATTN_NONE, 0);
+            S.StartSound(pos, 0, 0, S.RegisterSound("misc/bigtele.wav"), 1.0F,
+                    (float) Defines.ATTN_NONE, (float) 0);
             break;
 
         case Defines.TE_GRAPPLE_CABLE:
@@ -1040,8 +1040,8 @@ public class CL_tent {
             
             
             ex.ent.flags = Defines.RF_BEAM;
-            ex.start = Globals.cl.frame.servertime - 0.1f;
-            ex.light = 100 + (Lib.rand() % 75);
+            ex.start = (float) Globals.cl.frame.servertime - 0.1f;
+            ex.light = (float) (100 + ((int) Lib.rand() % 75));
             ex.lightcolor[0] = 1.0f;
             ex.lightcolor[1] = 1.0f;
             ex.lightcolor[2] = 0.3f;
@@ -1074,23 +1074,23 @@ public class CL_tent {
 
             
             if (type == Defines.TE_BLASTER2)
-                CL_newfx.BlasterParticles2(pos, dir, 0xd0);
+                CL_newfx.BlasterParticles2(pos, dir, 0xd0L);
             else
-                CL_newfx.BlasterParticles2(pos, dir, 0x6f); 
+                CL_newfx.BlasterParticles2(pos, dir, 0x6fL);
 
             ex = AllocExplosion();
             Math3D.VectorCopy(pos, ex.ent.origin);
-            ex.ent.angles[0] = (float) (Math.acos(dir[2]) / Math.PI * 180);
+            ex.ent.angles[0] = (float) (Math.acos((double) dir[2]) / Math.PI * 180.0);
             
             if (dir[0] != 0.0f)
-                ex.ent.angles[1] = (float) (Math.atan2(dir[1], dir[0])
-                        / Math.PI * 180);
-            else if (dir[1] > 0)
-                ex.ent.angles[1] = 90;
-            else if (dir[1] < 0)
-                ex.ent.angles[1] = 270;
+                ex.ent.angles[1] = (float) (Math.atan2((double) dir[1], (double) dir[0])
+                        / Math.PI * 180.0);
+            else if (dir[1] > (float) 0)
+                ex.ent.angles[1] = 90.0F;
+            else if (dir[1] < (float) 0)
+                ex.ent.angles[1] = 270.0F;
             else
-                ex.ent.angles[1] = 0;
+                ex.ent.angles[1] = (float) 0;
 
             ex.type = ex_misc;
             ex.ent.flags = Defines.RF_FULLBRIGHT | Defines.RF_TRANSLUCENT;
@@ -1102,11 +1102,11 @@ public class CL_tent {
                 
                 ex.ent.skinnum = 2;
 
-            ex.start = Globals.cl.frame.servertime - 100;
-            ex.light = 150;
+            ex.start = (float) (Globals.cl.frame.servertime - 100);
+            ex.light = 150.0F;
             
             if (type == Defines.TE_BLASTER2)
-                ex.lightcolor[1] = 1;
+                ex.lightcolor[1] = 1.0F;
             else 
             {
                 ex.lightcolor[0] = 0.19f;
@@ -1115,13 +1115,13 @@ public class CL_tent {
             }
             ex.ent.model = cl_mod_explode;
             ex.frames = 4;
-            S.StartSound(pos, 0, 0, cl_sfx_lashit, 1, Defines.ATTN_NORM, 0);
+            S.StartSound(pos, 0, 0, cl_sfx_lashit, 1.0F, (float) Defines.ATTN_NORM, (float) 0);
             break;
 
         case Defines.TE_LIGHTNING:
             ent = ParseLightning(cl_mod_lightning);
-            S.StartSound(null, ent, Defines.CHAN_WEAPON, cl_sfx_lightning, 1,
-                    Defines.ATTN_NORM, 0);
+            S.StartSound(null, ent, Defines.CHAN_WEAPON, cl_sfx_lightning, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             break;
 
         case Defines.TE_DEBUGTRAIL:
@@ -1137,29 +1137,29 @@ public class CL_tent {
             Math3D.VectorCopy(pos, ex.ent.origin);
             ex.type = ex_poly;
             ex.ent.flags = Defines.RF_FULLBRIGHT;
-            ex.start = Globals.cl.frame.servertime - 100;
-            ex.light = 350;
+            ex.start = (float) (Globals.cl.frame.servertime - 100);
+            ex.light = 350.0F;
             ex.lightcolor[0] = 1.0f;
             ex.lightcolor[1] = 0.5f;
             ex.lightcolor[2] = 0.5f;
-            ex.ent.angles[1] = Lib.rand() % 360;
+            ex.ent.angles[1] = (float) (Lib.rand() % 360);
             ex.ent.model = cl_mod_explo4;
-            if (Globals.rnd.nextFloat() < 0.5)
+            if ((double) Globals.rnd.nextFloat() < 0.5)
                 ex.baseframe = 15;
             ex.frames = 15;
             if (type == Defines.TE_ROCKET_EXPLOSION_WATER)
                 S
-                        .StartSound(pos, 0, 0, cl_sfx_watrexp, 1,
-                                Defines.ATTN_NORM, 0);
+                        .StartSound(pos, 0, 0, cl_sfx_watrexp, 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
             else
                 S
-                        .StartSound(pos, 0, 0, cl_sfx_rockexp, 1,
-                                Defines.ATTN_NORM, 0);
+                        .StartSound(pos, 0, 0, cl_sfx_rockexp, 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
             break;
 
         case Defines.TE_FLASHLIGHT:
             MSG.ReadPos(Globals.net_message, pos);
-            ent = MSG.ReadShort(Globals.net_message);
+            ent = (int) MSG.ReadShort(Globals.net_message);
             CL_newfx.Flashlight(ent, pos);
             break;
 
@@ -1189,7 +1189,7 @@ public class CL_tent {
             magnitude = 60;
             color = r & 0xff;
             CL_newfx.ParticleSteamEffect(pos, dir, color, cnt, magnitude);
-            S.StartSound(pos, 0, 0, cl_sfx_lashit, 1, Defines.ATTN_NORM, 0);
+            S.StartSound(pos, 0, 0, cl_sfx_lashit, 1.0F, (float) Defines.ATTN_NORM, (float) 0);
             break;
 
         case Defines.TE_HEATBEAM_STEAM:
@@ -1203,7 +1203,7 @@ public class CL_tent {
             color = 0xe0;
             magnitude = 60;
             CL_newfx.ParticleSteamEffect(pos, dir, color, cnt, magnitude);
-            S.StartSound(pos, 0, 0, cl_sfx_lashit, 1, Defines.ATTN_NORM, 0);
+            S.StartSound(pos, 0, 0, cl_sfx_lashit, 1.0F, (float) Defines.ATTN_NORM, (float) 0);
             break;
 
         case Defines.TE_STEAM:
@@ -1216,7 +1216,7 @@ public class CL_tent {
             MSG.ReadPos(Globals.net_message, pos);
             MSG.ReadPos(Globals.net_message, pos2);
             CL_newfx.BubbleTrail2(pos, pos2, cnt);
-            S.StartSound(pos, 0, 0, cl_sfx_lashit, 1, Defines.ATTN_NORM, 0);
+            S.StartSound(pos, 0, 0, cl_sfx_lashit, 1.0F, (float) Defines.ATTN_NORM, (float) 0);
             break;
 
         case Defines.TE_MOREBLOOD:
@@ -1226,9 +1226,9 @@ public class CL_tent {
             break;
 
         case Defines.TE_CHAINFIST_SMOKE:
-            dir[0] = 0;
-            dir[1] = 0;
-            dir[2] = 1;
+            dir[0] = (float) 0;
+            dir[1] = (float) 0;
+            dir[2] = 1.0F;
             MSG.ReadPos(Globals.net_message, pos);
             CL_newfx.ParticleSmokeEffect(pos, dir, 0, 20, 20);
             break;
@@ -1239,14 +1239,14 @@ public class CL_tent {
             
             CL_fx.ParticleEffect(pos, dir, 0x75, 40);
             
-            S.StartSound(pos, 0, 0, cl_sfx_lashit, 1, Defines.ATTN_NORM, 0);
+            S.StartSound(pos, 0, 0, cl_sfx_lashit, 1.0F, (float) Defines.ATTN_NORM, (float) 0);
             break;
 
         case Defines.TE_TRACKER_EXPLOSION:
             MSG.ReadPos(Globals.net_message, pos);
-            CL_newfx.ColorFlash(pos, 0, 150, -1, -1, -1);
+            CL_newfx.ColorFlash(pos, 0, 150, -1.0F, -1.0F, -1.0F);
             CL_newfx.ColorExplosionParticles(pos, 0, 1);
-            S.StartSound(pos, 0, 0, cl_sfx_disrexp, 1, Defines.ATTN_NORM, 0);
+            S.StartSound(pos, 0, 0, cl_sfx_disrexp, 1.0F, (float) Defines.ATTN_NORM, (float) 0);
             break;
 
         case Defines.TE_TELEPORT_EFFECT:
@@ -1294,7 +1294,7 @@ public class CL_tent {
                                                          
             {
                 Math3D.VectorCopy(Globals.cl.refdef.vieworg, b[i].start);
-                b[i].start[2] -= 22; 
+                b[i].start[2] -= 22.0F;
             }
             Math3D.VectorAdd(b[i].start, b[i].offset, org);
 
@@ -1303,28 +1303,28 @@ public class CL_tent {
 
             float pitch;
             float yaw;
-            if (dist[1] == 0 && dist[0] == 0) {
-                yaw = 0;
-                if (dist[2] > 0)
-                    pitch = 90;
+            if (dist[1] == (float) 0 && dist[0] == (float) 0) {
+                yaw = (float) 0;
+                if (dist[2] > (float) 0)
+                    pitch = 90.0F;
                 else
-                    pitch = 270;
+                    pitch = 270.0F;
             } else {
                 
                 if (dist[0] != 0.0f)
-                    yaw = (float) (Math.atan2(dist[1], dist[0]) * 180 / Math.PI);
-                else if (dist[1] > 0)
-                    yaw = 90;
+                    yaw = (float) (Math.atan2((double) dist[1], (double) dist[0]) * 180.0 / Math.PI);
+                else if (dist[1] > (float) 0)
+                    yaw = 90.0F;
                 else
-                    yaw = 270;
-                if (yaw < 0)
-                    yaw += 360;
+                    yaw = 270.0F;
+                if (yaw < (float) 0)
+                    yaw += 360.0F;
 
-                float forward = (float) Math.sqrt(dist[0] * dist[0] + dist[1]
-                        * dist[1]);
-                pitch = (float) (Math.atan2(dist[2], forward) * -180.0 / Math.PI);
-                if (pitch < 0)
-                    pitch += 360.0;
+                float forward = (float) Math.sqrt((double) (dist[0] * dist[0] + dist[1]
+                        * dist[1]));
+                pitch = (float) (Math.atan2((double) dist[2], (double) forward) * -180.0 / Math.PI);
+                if (pitch < (float) 0)
+                    pitch = (float) ((double) pitch + 360.0);
             }
 
 
@@ -1335,12 +1335,12 @@ public class CL_tent {
             float model_length;
             if (b[i].model == cl_mod_lightning) {
                 model_length = 35.0f;
-                d -= 20.0; 
+                d = (float) ((double) d - 20.0);
             } else {
                 model_length = 30.0f;
             }
-            float steps = (float) Math.ceil(d / model_length);
-            float len = (d - model_length) / (steps - 1);
+            float steps = (float) Math.ceil((double) (d / model_length));
+            float len = (d - model_length) / (steps - 1.0F);
 
 
             if ((b[i].model == cl_mod_lightning) && (d <= model_length)) {
@@ -1355,22 +1355,22 @@ public class CL_tent {
                 ent.flags = Defines.RF_FULLBRIGHT;
                 ent.angles[0] = pitch;
                 ent.angles[1] = yaw;
-                ent.angles[2] = Lib.rand() % 360;
+                ent.angles[2] = (float) (Lib.rand() % 360);
                 V.AddEntity(ent);
                 return;
             }
-            while (d > 0) {
+            while (d > (float) 0) {
                 Math3D.VectorCopy(org, ent.origin);
                 ent.model = b[i].model;
                 if (b[i].model == cl_mod_lightning) {
                     ent.flags = Defines.RF_FULLBRIGHT;
                     ent.angles[0] = -pitch;
                     ent.angles[1] = yaw + 180.0f;
-                    ent.angles[2] = Lib.rand() % 360;
+                    ent.angles[2] = (float) (Lib.rand() % 360);
                 } else {
                     ent.angles[0] = pitch;
                     ent.angles[1] = yaw;
-                    ent.angles[2] = Lib.rand() % 360;
+                    ent.angles[2] = (float) (Lib.rand() % 360);
                 }
 
                 
@@ -1401,14 +1401,14 @@ public class CL_tent {
 
 
         if (Globals.hand != null) {
-            if (Globals.hand.value == 2)
-                hand_multiplier = 0;
-            else if (Globals.hand.value == 1)
-                hand_multiplier = -1;
+            if (Globals.hand.value == 2.0F)
+                hand_multiplier = (float) 0;
+            else if (Globals.hand.value == 1.0F)
+                hand_multiplier = -1.0F;
             else
-                hand_multiplier = 1;
+                hand_multiplier = 1.0F;
         } else {
-            hand_multiplier = 1;
+            hand_multiplier = 1.0F;
         }
 
 
@@ -1449,8 +1449,8 @@ public class CL_tent {
                     Math3D.VectorMA(org, b[i].offset[1], Globals.cl.v_forward,
                             org);
                     Math3D.VectorMA(org, b[i].offset[2], Globals.cl.v_up, org);
-                    if ((Globals.hand != null) && (Globals.hand.value == 2)) {
-                        Math3D.VectorMA(org, -1, Globals.cl.v_up, org);
+                    if ((Globals.hand != null) && (Globals.hand.value == 2.0F)) {
+                        Math3D.VectorMA(org, -1.0F, Globals.cl.v_up, org);
                     }
                     
                     Math3D.VectorCopy(Globals.cl.v_right, r);
@@ -1465,7 +1465,7 @@ public class CL_tent {
                                                              
                 {
                     Math3D.VectorCopy(Globals.cl.refdef.vieworg, b[i].start);
-                    b[i].start[2] -= 22; 
+                    b[i].start[2] -= 22.0F;
                 }
                 Math3D.VectorAdd(b[i].start, b[i].offset, org);
             }
@@ -1484,36 +1484,36 @@ public class CL_tent {
                         dist);
                 Math3D.VectorMA(dist, b[i].offset[1], f, dist);
                 Math3D.VectorMA(dist, b[i].offset[2], u, dist);
-                if ((Globals.hand != null) && (Globals.hand.value == 2)) {
-                    Math3D.VectorMA(org, -1, Globals.cl.v_up, org);
+                if ((Globals.hand != null) && (Globals.hand.value == 2.0F)) {
+                    Math3D.VectorMA(org, -1.0F, Globals.cl.v_up, org);
                 }
             }
 
 
             float pitch;
             float yaw;
-            if (dist[1] == 0 && dist[0] == 0) {
-                yaw = 0;
-                if (dist[2] > 0)
-                    pitch = 90;
+            if (dist[1] == (float) 0 && dist[0] == (float) 0) {
+                yaw = (float) 0;
+                if (dist[2] > (float) 0)
+                    pitch = 90.0F;
                 else
-                    pitch = 270;
+                    pitch = 270.0F;
             } else {
                 
                 if (dist[0] != 0.0f)
-                    yaw = (float) (Math.atan2(dist[1], dist[0]) * 180 / Math.PI);
-                else if (dist[1] > 0)
-                    yaw = 90;
+                    yaw = (float) (Math.atan2((double) dist[1], (double) dist[0]) * 180.0 / Math.PI);
+                else if (dist[1] > (float) 0)
+                    yaw = 90.0F;
                 else
-                    yaw = 270;
-                if (yaw < 0)
-                    yaw += 360;
+                    yaw = 270.0F;
+                if (yaw < (float) 0)
+                    yaw += 360.0F;
 
-                float forward = (float) Math.sqrt(dist[0] * dist[0] + dist[1]
-                        * dist[1]);
-                pitch = (float) (Math.atan2(dist[2], forward) * -180.0 / Math.PI);
-                if (pitch < 0)
-                    pitch += 360.0;
+                float forward = (float) Math.sqrt((double) (dist[0] * dist[0] + dist[1]
+                        * dist[1]));
+                pitch = (float) (Math.atan2((double) dist[2], (double) forward) * -180.0 / Math.PI);
+                if (pitch < (float) 0)
+                    pitch = (float) ((double) pitch + 360.0);
             }
 
             if (cl_mod_heatbeam != null && (b[i].model == cl_mod_heatbeam)) {
@@ -1522,7 +1522,7 @@ public class CL_tent {
                     
                     ent.angles[0] = -pitch;
                     ent.angles[1] = yaw + 180.0f;
-                    ent.angles[2] = 0;
+                    ent.angles[2] = (float) 0;
                     
                     
                     Math3D.AngleVectors(ent.angles, f, r, u);
@@ -1530,9 +1530,9 @@ public class CL_tent {
                     
                     
                     if (!Math3D.VectorEquals(b[i].offset, Globals.vec3_origin)) {
-                        Math3D.VectorMA(org, -(b[i].offset[0]) + 1, r, org);
+                        Math3D.VectorMA(org, -(b[i].offset[0]) + 1.0F, r, org);
                         Math3D.VectorMA(org, -(b[i].offset[1]), f, org);
-                        Math3D.VectorMA(org, -(b[i].offset[2]) - 10, u, org);
+                        Math3D.VectorMA(org, -(b[i].offset[2]) - 10.0F, u, org);
                     } else {
                         
                         CL_newfx.MonsterPlasma_Shell(b[i].start);
@@ -1558,12 +1558,12 @@ public class CL_tent {
                 model_length = 32.0f;
             } else if (b[i].model == cl_mod_lightning) {
                 model_length = 35.0f;
-                d -= 20.0; 
+                d = (float) ((double) d - 20.0);
             } else {
                 model_length = 30.0f;
             }
-            float steps = (float) Math.ceil(d / model_length);
-            len = (d - model_length) / (steps - 1);
+            float steps = (float) Math.ceil((double) (d / model_length));
+            len = (d - model_length) / (steps - 1.0F);
 
             
             
@@ -1582,11 +1582,11 @@ public class CL_tent {
                 ent.flags = Defines.RF_FULLBRIGHT;
                 ent.angles[0] = pitch;
                 ent.angles[1] = yaw;
-                ent.angles[2] = Lib.rand() % 360;
+                ent.angles[2] = (float) (Lib.rand() % 360);
                 V.AddEntity(ent);
                 return;
             }
-            while (d > 0) {
+            while (d > (float) 0) {
                 Math3D.VectorCopy(org, ent.origin);
                 ent.model = b[i].model;
                 if (cl_mod_heatbeam != null && (b[i].model == cl_mod_heatbeam)) {
@@ -1595,18 +1595,18 @@ public class CL_tent {
                     ent.flags = Defines.RF_FULLBRIGHT;
                     ent.angles[0] = -pitch;
                     ent.angles[1] = yaw + 180.0f;
-                    ent.angles[2] = (Globals.cl.time) % 360;
+                    ent.angles[2] = (float) ((Globals.cl.time) % 360);
                     
                     ent.frame = framenum;
                 } else if (b[i].model == cl_mod_lightning) {
                     ent.flags = Defines.RF_FULLBRIGHT;
                     ent.angles[0] = -pitch;
                     ent.angles[1] = yaw + 180.0f;
-                    ent.angles[2] = Lib.rand() % 360;
+                    ent.angles[2] = (float) (Lib.rand() % 360);
                 } else {
                     ent.angles[0] = pitch;
                     ent.angles[1] = yaw;
-                    ent.angles[2] = Lib.rand() % 360;
+                    ent.angles[2] = (float) (Lib.rand() % 360);
                 }
 
                 
@@ -1630,8 +1630,8 @@ public class CL_tent {
         for (int i = 0; i < MAX_EXPLOSIONS; i++) {
             if (ex[i].type == ex_free)
                 continue;
-            float frac = (Globals.cl.time - ex[i].start) / 100.0f;
-            int f = (int) Math.floor(frac);
+            float frac = ((float) Globals.cl.time - ex[i].start) / 100.0f;
+            int f = (int) Math.floor((double) frac);
 
             ent = ex[i].ent;
 
@@ -1645,7 +1645,7 @@ public class CL_tent {
                     ex[i].type = ex_free;
                     break;
                 }
-                ent.alpha = 1.0f - frac / (ex[i].frames - 1);
+                ent.alpha = 1.0f - frac / (float) (ex[i].frames - 1);
                 break;
             case ex_flash:
                 if (f >= 1) {

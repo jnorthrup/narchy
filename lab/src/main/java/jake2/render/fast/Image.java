@@ -142,7 +142,7 @@ public abstract class Image extends Main {
     @Override
     void GL_Bind(int texnum) {
 
-        if ((gl_nobind.value != 0) && (draw_chars != null)) {
+        if ((gl_nobind.value != (float) 0) && (draw_chars != null)) {
             
             texnum = draw_chars.texnum;
         }
@@ -445,10 +445,10 @@ public abstract class Image extends Main {
 
         qfiles.pcx_t pcx = new qfiles.pcx_t(raw);
 
-        if (pcx.manufacturer != 0x0a
-                || pcx.version != 5
-                || pcx.encoding != 1
-                || pcx.bits_per_pixel != 8
+        if ((int) pcx.manufacturer != 0x0a
+                || (int) pcx.version != 5
+                || (int) pcx.encoding != 1
+                || (int) pcx.bits_per_pixel != 8
                 || pcx.xmax >= 640
                 || pcx.ymax >= 480) {
 
@@ -471,7 +471,7 @@ public abstract class Image extends Main {
 
 
         int count = 0;
-        byte dataByte = 0;
+        byte dataByte = (byte) 0;
         int runLength = 0;
 
         byte[] pix = new byte[width * height];
@@ -480,8 +480,8 @@ public abstract class Image extends Main {
 
                 dataByte = pcx.data.get();
 
-                if ((dataByte & 0xC0) == 0xC0) {
-                    runLength = dataByte & 0x3F;
+                if (((int) dataByte & 0xC0) == 0xC0) {
+                    runLength = (int) dataByte & 0x3F;
                     dataByte = pcx.data.get();
                     
                     while (runLength-- > 0) {
@@ -545,7 +545,7 @@ public abstract class Image extends Main {
         ByteBuffer buf_p = targa_header.data;
 
         byte green, blue, alphabyte;
-        byte red = green = blue = alphabyte = 0;
+        byte red = green = blue = alphabyte = (byte) 0;
 
         int numPixels = columns * rows;
         byte[] pic = new byte[numPixels * 4];
@@ -592,7 +592,7 @@ public abstract class Image extends Main {
 
                         for (column = 0; column < columns; ) {
 
-                            int packetHeader = buf_p.get() & 0xFF;
+                            int packetHeader = (int) buf_p.get() & 0xFF;
                             int packetSize = 1 + (packetHeader & 0x7f);
 
                             int j;
@@ -732,7 +732,7 @@ public abstract class Image extends Main {
     
     static void R_FloodFillSkin(byte[] skin, int skinwidth, int skinheight) {
 
-        int fillcolor = skin[0] & 0xff;
+        int fillcolor = (int) skin[0] & 0xff;
 
         int filledcolor = -1;
 
@@ -755,14 +755,14 @@ public abstract class Image extends Main {
         }
 
         int inpt = 0;
-        fifo[inpt].x = 0;
-        fifo[inpt].y = 0;
+        fifo[inpt].x = (short) 0;
+        fifo[inpt].y = (short) 0;
         inpt = (inpt + 1) & FLOODFILL_FIFO_MASK;
 
         int outpt = 0;
         while (outpt != inpt) {
-            int x = fifo[outpt].x;
-            int y = fifo[outpt].y;
+            int x = (int) fifo[outpt].x;
+            int y = (int) fifo[outpt].y;
             int fdc = filledcolor;
 
             outpt = (outpt + 1) & FLOODFILL_FIFO_MASK;
@@ -775,13 +775,13 @@ public abstract class Image extends Main {
                 off = -1;
                 dx = -1;
                 dy = 0;
-                if (skin[pos + off] == (byte) fillcolor) {
+                if ((int) skin[pos + off] == (int) (byte) fillcolor) {
                     skin[pos + off] = (byte) 255;
                     fifo[inpt].x = (short) (x + dx);
                     fifo[inpt].y = (short) (y + dy);
                     inpt = (inpt + 1) & FLOODFILL_FIFO_MASK;
-                } else if (skin[pos + off] != (byte) 255)
-                    fdc = skin[pos + off] & 0xff;
+                } else if ((int) skin[pos + off] != (int) (byte) 255)
+                    fdc = (int) skin[pos + off] & 0xff;
             }
 
             if (x < skinwidth - 1) {
@@ -789,13 +789,13 @@ public abstract class Image extends Main {
                 off = 1;
                 dx = 1;
                 dy = 0;
-                if (skin[pos + off] == (byte) fillcolor) {
+                if ((int) skin[pos + off] == (int) (byte) fillcolor) {
                     skin[pos + off] = (byte) 255;
                     fifo[inpt].x = (short) (x + dx);
                     fifo[inpt].y = (short) (y + dy);
                     inpt = (inpt + 1) & FLOODFILL_FIFO_MASK;
-                } else if (skin[pos + off] != (byte) 255)
-                    fdc = skin[pos + off] & 0xff;
+                } else if ((int) skin[pos + off] != (int) (byte) 255)
+                    fdc = (int) skin[pos + off] & 0xff;
             }
 
             if (y > 0) {
@@ -803,13 +803,13 @@ public abstract class Image extends Main {
                 off = -skinwidth;
                 dx = 0;
                 dy = -1;
-                if (skin[pos + off] == (byte) fillcolor) {
+                if ((int) skin[pos + off] == (int) (byte) fillcolor) {
                     skin[pos + off] = (byte) 255;
                     fifo[inpt].x = (short) (x + dx);
                     fifo[inpt].y = (short) (y + dy);
                     inpt = (inpt + 1) & FLOODFILL_FIFO_MASK;
-                } else if (skin[pos + off] != (byte) 255)
-                    fdc = skin[pos + off] & 0xff;
+                } else if ((int) skin[pos + off] != (int) (byte) 255)
+                    fdc = (int) skin[pos + off] & 0xff;
             }
 
             if (y < skinheight - 1) {
@@ -817,13 +817,13 @@ public abstract class Image extends Main {
                 off = skinwidth;
                 dx = 0;
                 dy = 1;
-                if (skin[pos + off] == (byte) fillcolor) {
+                if ((int) skin[pos + off] == (int) (byte) fillcolor) {
                     skin[pos + off] = (byte) 255;
                     fifo[inpt].x = (short) (x + dx);
                     fifo[inpt].y = (short) (y + dy);
                     inpt = (inpt + 1) & FLOODFILL_FIFO_MASK;
-                } else if (skin[pos + off] != (byte) 255)
-                    fdc = skin[pos + off] & 0xff;
+                } else if ((int) skin[pos + off] != (int) (byte) 255)
+                    fdc = (int) skin[pos + off] & 0xff;
 
             }
 
@@ -862,8 +862,8 @@ public abstract class Image extends Main {
         int outp = 0;
 
         for (i = 0; i < outheight; i++) {
-            int inrow = inwidth * (int) ((i + 0.25f) * inheight / outheight);
-            int inrow2 = inwidth * (int) ((i + 0.75f) * inheight / outheight);
+            int inrow = inwidth * (int) (((float) i + 0.25f) * (float) inheight / (float) outheight);
+            int inrow2 = inwidth * (int) (((float) i + 0.75f) * (float) inheight / (float) outheight);
             frac = fracstep >> 1;
             for (int j = 0; j < outwidth; j++) {
                 int p1j = p1[j];
@@ -903,11 +903,11 @@ public abstract class Image extends Main {
                 int color = in[i];
                 int r = (color >> 0) & 0xFF;
 
-                r = gammatable[r] & 0xFF;
+                r = (int) gammatable[r] & 0xFF;
                 int g = (color >> 8) & 0xFF;
-                g = gammatable[g] & 0xFF;
+                g = (int) gammatable[g] & 0xFF;
                 int b = (color >> 16) & 0xFF;
-                b = gammatable[b] & 0xFF;
+                b = (int) gammatable[b] & 0xFF;
 
                 in[i] = (r << 0) | (g << 8) | (b << 16) | (color & 0xFF000000);
             }
@@ -918,11 +918,11 @@ public abstract class Image extends Main {
                 int color = in[i];
                 int r = (color >> 0) & 0xFF;
 
-                r = gammatable[intensitytable[r] & 0xFF] & 0xFF;
+                r = (int) gammatable[(int) intensitytable[r] & 0xFF] & 0xFF;
                 int g = (color >> 8) & 0xFF;
-                g = gammatable[intensitytable[g] & 0xFF] & 0xFF;
+                g = (int) gammatable[(int) intensitytable[g] & 0xFF] & 0xFF;
                 int b = (color >> 16) & 0xFF;
-                b = gammatable[intensitytable[b] & 0xFF] & 0xFF;
+                b = (int) gammatable[(int) intensitytable[b] & 0xFF] & 0xFF;
 
                 in[i] = (r << 0) | (g << 8) | (b << 16) | (color & 0xFF000000);
             }
@@ -1177,11 +1177,11 @@ public abstract class Image extends Main {
         }
 
         if (mipmap) {
-            gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
-            gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+            gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (float) gl_filter_min);
+            gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (float) gl_filter_max);
         } else {
-            gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_max);
-            gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+            gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (float) gl_filter_max);
+            gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (float) gl_filter_max);
         }
 
         return (samples == gl_alpha_format);
@@ -1209,27 +1209,27 @@ public abstract class Image extends Main {
         if (qglColorTableEXT && gl_ext_palettedtexture.value != 0.0f && is_sky) {
             gl.glTexImage2D(GL_TEXTURE_2D, 0, GL_COLOR_INDEX8_EXT, width, height, 0, GL_COLOR_INDEX, GL_UNSIGNED_BYTE, ByteBuffer.wrap(data));
 
-            gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_max);
-            gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+            gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (float) gl_filter_max);
+            gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (float) gl_filter_max);
 
             
             return false;
         } else {
             for (int i = 0; i < s; i++) {
-                int p = data[i] & 0xff;
+                int p = (int) data[i] & 0xff;
                 trans[i] = d_8to24table[p];
 
                 if (p == 255) { 
                     
                     
-                    if (i > width && (data[i - width] & 0xff) != 255)
-                        p = data[i - width] & 0xff;
-                    else if (i < s - width && (data[i + width] & 0xff) != 255)
-                        p = data[i + width] & 0xff;
-                    else if (i > 0 && (data[i - 1] & 0xff) != 255)
-                        p = data[i - 1] & 0xff;
-                    else if (i < s - 1 && (data[i + 1] & 0xff) != 255)
-                        p = data[i + 1] & 0xff;
+                    if (i > width && ((int) data[i - width] & 0xff) != 255)
+                        p = (int) data[i - width] & 0xff;
+                    else if (i < s - width && ((int) data[i + width] & 0xff) != 255)
+                        p = (int) data[i + width] & 0xff;
+                    else if (i > 0 && ((int) data[i - 1] & 0xff) != 255)
+                        p = (int) data[i - 1] & 0xff;
+                    else if (i < s - 1 && ((int) data[i + 1] & 0xff) != 255)
+                        p = (int) data[i + 1] & 0xff;
                     else
                         p = 0;
                     
@@ -1307,10 +1307,10 @@ public abstract class Image extends Main {
                     int[] tmp = new int[pic.length / 4];
 
                     for (i = 0; i < tmp.length; i++) {
-                        tmp[i] = ((pic[4 * i + 0] & 0xFF) << 0); 
-                        tmp[i] |= ((pic[4 * i + 1] & 0xFF) << 8); 
-                        tmp[i] |= ((pic[4 * i + 2] & 0xFF) << 16); 
-                        tmp[i] |= ((pic[4 * i + 3] & 0xFF) << 24); 
+                        tmp[i] = (((int) pic[4 * i + 0] & 0xFF) << 0);
+                        tmp[i] |= (((int) pic[4 * i + 1] & 0xFF) << 8);
+                        tmp[i] |= (((int) pic[4 * i + 2] & 0xFF) << 16);
+                        tmp[i] |= (((int) pic[4 * i + 3] & 0xFF) << 24);
                     }
 
                     image.has_alpha = GL_Upload32(tmp, width, height, (image.type != it_pic && image.type != it_sky));
@@ -1319,10 +1319,10 @@ public abstract class Image extends Main {
                 image.upload_width = upload_width; 
                 image.upload_height = upload_height;
                 image.paletted = uploaded_paletted;
-                image.sl = 0;
-                image.sh = 1;
-                image.tl = 0;
-                image.th = 1;
+                image.sl = (float) 0;
+                image.sh = 1.0F;
+                image.tl = (float) 0;
+                image.th = 1.0F;
 
                 return image;
             }
@@ -1340,11 +1340,11 @@ public abstract class Image extends Main {
             image.texnum = TEXNUM_SCRAPS + texnum;
             image.scrap = true;
             image.has_alpha = true;
-            float blockWidth = BLOCK_WIDTH;
-            image.sl = (px + 0.01f) / blockWidth;
-            image.sh = (px + image.width - 0.01f) / blockWidth;
-            image.tl = (py + 0.01f) / blockWidth;
-            image.th = (py + image.height - 0.01f) / blockWidth;
+            float blockWidth = (float) BLOCK_WIDTH;
+            image.sl = ((float) px + 0.01f) / blockWidth;
+            image.sh = ((float) (px + image.width) - 0.01f) / blockWidth;
+            image.tl = ((float) py + 0.01f) / blockWidth;
+            image.th = ((float) (py + image.height) - 0.01f) / blockWidth;
 
         } else {
             
@@ -1360,10 +1360,10 @@ public abstract class Image extends Main {
                 int[] tmp = new int[pic.length / 4];
 
                 for (i = 0; i < tmp.length; i++) {
-                    tmp[i] = ((pic[4 * i + 0] & 0xFF) << 0); 
-                    tmp[i] |= ((pic[4 * i + 1] & 0xFF) << 8); 
-                    tmp[i] |= ((pic[4 * i + 2] & 0xFF) << 16); 
-                    tmp[i] |= ((pic[4 * i + 3] & 0xFF) << 24); 
+                    tmp[i] = (((int) pic[4 * i + 0] & 0xFF) << 0);
+                    tmp[i] |= (((int) pic[4 * i + 1] & 0xFF) << 8);
+                    tmp[i] |= (((int) pic[4 * i + 2] & 0xFF) << 16);
+                    tmp[i] |= (((int) pic[4 * i + 3] & 0xFF) << 24);
                 }
 
                 image.has_alpha = GL_Upload32(tmp, width, height, (image.type != it_pic && image.type != it_sky));
@@ -1371,10 +1371,10 @@ public abstract class Image extends Main {
             image.upload_width = upload_width; 
             image.upload_height = upload_height;
             image.paletted = uploaded_paletted;
-            image.sl = 0;
-            image.sh = 1;
-            image.tl = 0;
-            image.th = 1;
+            image.sl = (float) 0;
+            image.sh = 1.0F;
+            image.tl = (float) 0;
+            image.th = 1.0F;
         }
         return image;
     }
@@ -1533,9 +1533,9 @@ public abstract class Image extends Main {
 
         int j = 0;
         for (int i = 0; i < 256; i++) {
-            int r = pal[j++] & 0xFF;
-            int g = pal[j++] & 0xFF;
-            int b = pal[j++] & 0xFF;
+            int r = (int) pal[j++] & 0xFF;
+            int g = (int) pal[j++] & 0xFF;
+            int b = (int) pal[j++] & 0xFF;
 
             d_8to24table[i] = (255 << 24) | (b << 16) | (g << 8) | (r << 0);
         }
@@ -1559,10 +1559,10 @@ public abstract class Image extends Main {
         
         intensity = Cvar.Get("intensity", "2", 0);
 
-        if (intensity.value <= 1)
+        if (intensity.value <= 1.0F)
             Cvar.Set("intensity", "1");
 
-        gl_state.inverse_intensity = 1 / intensity.value;
+        gl_state.inverse_intensity = 1.0F / intensity.value;
 
         Draw_GetPalette();
 
@@ -1583,7 +1583,7 @@ public abstract class Image extends Main {
                 gammatable[i] = (byte) i;
             } else {
 
-                int inf = (int) (255.0f * Math.pow((i + 0.5) / 255.5, g) + 0.5);
+                int inf = (int) (255.0 * Math.pow(((double) i + 0.5) / 255.5, (double) g) + 0.5);
                 if (inf < 0)
                     inf = 0;
                 if (inf > 255)
@@ -1593,7 +1593,7 @@ public abstract class Image extends Main {
         }
 
         for (i = 0; i < 256; i++) {
-            int j = (int) (i * intensity.value);
+            int j = (int) ((float) i * intensity.value);
             if (j > 255)
                 j = 255;
             intensitytable[i] = (byte) j;

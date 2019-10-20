@@ -108,9 +108,9 @@ public enum Terms {
 
 			volumes[i] = v;
 
-			volMin = Math.min(volMin, v); volMax = Math.max(volMax, v);
+			volMin = Math.min(volMin, (int) v); volMax = Math.max(volMax, (int) v);
 
-			if (allDecreasing && i > 1 && volumes[i-1] <= v)
+			if (allDecreasing && i > 1 && (int) volumes[i - 1] <= (int) v)
 				allDecreasing = false;
 		}
 		if (allDecreasing) {
@@ -131,15 +131,15 @@ public enum Terms {
 
             int n = y.length;
 			QuickSort.quickSort(0, n,
-				(a, b) -> Integer.compare(volumes[b], volumes[a]),
+				(a, b) -> Integer.compare((int) volumes[b], (int) volumes[a]),
 				(a, b) -> ArrayUtil.swapObjShort(y, volumes, a, b));
 
-			int vs = volumes[0];
+			int vs = (int) volumes[0];
 			nulls = 0;
 			//span start
             int s = 0;
 			for (int i = 1; i <= n; i++) {
-				int vi = i < n ? volumes[i] : -1;
+				int vi = (int) (i < n ? volumes[i] : (short) -1);
 				if (vi != vs) {
 					if (i - s > 1) {
 						//sort span
@@ -414,13 +414,13 @@ public enum Terms {
 
 	public static StableBloomFilter<Term> newTermBloomFilter(Random rng, int cells) {
 		return new StableBloomFilter<>(
-			cells, 2, 1f / cells, rng,
+			cells, 2, 1f / (float) cells, rng,
 			new TermHasher());
 	}
 
 	public static StableBloomFilter<Task> newTaskBloomFilter(Random rng, int cells) {
 		return new StableBloomFilter<>(
-			cells, 2, 1f / cells, rng,
+			cells, 2, 1f / (float) cells, rng,
 			new TaskHasher());
 	}
 

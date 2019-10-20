@@ -37,7 +37,6 @@ import jake2.util.Lib;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.List;
-import java.util.stream.IntStream;
 
 /**
  * Key
@@ -192,7 +191,7 @@ public class Key extends Globals {
 		keynames[K_MWHEELDOWN] = "MWHEELDOWN";
 
 		keynames[K_PAUSE] = "PAUSE";
-		keynames[';'] = "SEMICOLON"; 
+		keynames[(int) ';'] = "SEMICOLON";
 
 		keynames[0] = "NULL";
 	}
@@ -202,8 +201,8 @@ public class Key extends Globals {
 	 */
 	public static void Init() {
 		for (int i = 0; i < 32; i++) {
-			Globals.key_lines[i][0] = ']';
-			Globals.key_lines[i][1] = 0;
+			Globals.key_lines[i][0] = (byte) ']';
+			Globals.key_lines[i][1] = (byte) 0;
 		}
 		Globals.key_linepos = 1;
 
@@ -241,8 +240,8 @@ public class Key extends Globals {
 		consolekeys[K_KP_MINUS] = true;
 		consolekeys[K_KP_5] = true;
 
-		consolekeys['`'] = false;
-		consolekeys['~'] = false;
+		consolekeys[(int) '`'] = false;
+		consolekeys[(int) '~'] = false;
 
 
 
@@ -284,7 +283,7 @@ public class Key extends Globals {
 	}
 
 	public static void ClearTyping() {
-		Globals.key_lines[Globals.edit_line][1] = 0; 
+		Globals.key_lines[Globals.edit_line][1] = (byte) 0;
 		Globals.key_linepos = 1;
 	}
 
@@ -319,7 +318,7 @@ public class Key extends Globals {
 			shift_down = down;
 
 		
-		if (key == '`' || key == '~') {
+		if (key == (int) '`' || key == (int) '~') {
 			if (!down)
 				return;
 
@@ -336,7 +335,7 @@ public class Key extends Globals {
 			if (!down)
 				return;
 
-			if (Globals.cl.frame.playerstate.stats[Defines.STAT_LAYOUTS] != 0 && Globals.cls.key_dest == Defines.key_game) {
+			if ((int) Globals.cl.frame.playerstate.stats[Defines.STAT_LAYOUTS] != 0 && Globals.cls.key_dest == Defines.key_game) {
 				
 				Cbuf.AddText("cmd putaway\n");
 				return;
@@ -375,7 +374,7 @@ public class Key extends Globals {
         String kb;
         if (!down) {
 			kb = Globals.keybindings[key];
-			if (kb != null && kb.length()>0 && kb.charAt(0) == '+') {
+			if (kb != null && kb.length()>0 && (int) kb.charAt(0) == (int) '+') {
 				cmd = '-' + kb.substring(1) + ' ' + key + ' ' + time + '\n';
 				Cbuf.AddText(cmd);
 			}
@@ -397,7 +396,7 @@ public class Key extends Globals {
 			|| (Globals.cls.key_dest == Defines.key_game && (Globals.cls.state == Defines.ca_active || !consolekeys[key]))) {
 			kb = Globals.keybindings[key];
 			if (kb != null) {
-				if (kb.length()>0 && kb.charAt(0) == '+') {
+				if (kb.length()>0 && (int) kb.charAt(0) == (int) '+') {
 					
 					cmd = kb + ' ' + key + ' ' + time + '\n';
 					Cbuf.AddText(cmd);
@@ -459,7 +458,7 @@ public class Key extends Globals {
 			return -1;
 
 		if (str.length() == 1)
-			return str.charAt(0);
+			return (int) str.charAt(0);
 
         int bound = keynames.length;
 		for (int i = 0; i < bound; i++) {
@@ -518,51 +517,51 @@ public class Key extends Globals {
 
 		switch (key) {
 			case K_KP_SLASH:
-				key = '/';
+				key = (int) '/';
 				break;
 			case K_KP_MINUS:
-				key = '-';
+				key = (int) '-';
 				break;
 			case K_KP_PLUS:
-				key = '+';
+				key = (int) '+';
 				break;
 			case K_KP_HOME:
-				key = '7';
+				key = (int) '7';
 				break;
 			case K_KP_UPARROW:
-				key = '8';
+				key = (int) '8';
 				break;
 			case K_KP_PGUP:
-				key = '9';
+				key = (int) '9';
 				break;
 			case K_KP_LEFTARROW:
-				key = '4';
+				key = (int) '4';
 				break;
 			case K_KP_5:
-				key = '5';
+				key = (int) '5';
 				break;
 			case K_KP_RIGHTARROW:
-				key = '6';
+				key = (int) '6';
 				break;
 			case K_KP_END:
-				key = '1';
+				key = (int) '1';
 				break;
 			case K_KP_DOWNARROW:
-				key = '2';
+				key = (int) '2';
 				break;
 			case K_KP_PGDN:
-				key = '3';
+				key = (int) '3';
 				break;
 			case K_KP_INS:
-				key = '0';
+				key = (int) '0';
 				break;
 			case K_KP_DEL:
-				key = '.';
+				key = (int) '.';
 				break;
 		}
 
         boolean finished = false;
-		if (key == 'l') {
+		if (key == (int) 'l') {
 			if (Globals.keydown[K_CTRL]) {
 				Cbuf.AddText("clear\n");
 				finished = true;
@@ -571,7 +570,7 @@ public class Key extends Globals {
 		if (!finished) {
 			if (key == K_ENTER || key == K_KP_ENTER) {
 
-				if (Globals.key_lines[Globals.edit_line][1] == '\\' || Globals.key_lines[Globals.edit_line][1] == '/')
+				if ((int) Globals.key_lines[Globals.edit_line][1] == (int) '\\' || (int) Globals.key_lines[Globals.edit_line][1] == (int) '/')
 					Cbuf.AddText(
 							new String(Globals.key_lines[Globals.edit_line], 2, Lib.strlen(Globals.key_lines[Globals.edit_line]) - 2));
 				else
@@ -585,34 +584,34 @@ public class Key extends Globals {
 				Globals.edit_line = (Globals.edit_line + 1) & 31;
 				history_line = Globals.edit_line;
 
-				Globals.key_lines[Globals.edit_line][0] = ']';
+				Globals.key_lines[Globals.edit_line][0] = (byte) ']';
 				Globals.key_linepos = 1;
 				if (Globals.cls.state == Defines.ca_disconnected)
 					SCR.UpdateScreen();
 			} else if (key == K_TAB) {
 
 				CompleteCommand();
-			} else if ((key == K_BACKSPACE) || (key == K_LEFTARROW) || (key == K_KP_LEFTARROW) || ((key == 'h') && (Globals.keydown[K_CTRL]))) {
+			} else if ((key == K_BACKSPACE) || (key == K_LEFTARROW) || (key == K_KP_LEFTARROW) || ((key == (int) 'h') && (Globals.keydown[K_CTRL]))) {
 				if (Globals.key_linepos > 1)
 					Globals.key_linepos--;
-			} else if ((key == K_UPARROW) || (key == K_KP_UPARROW) || ((key == 'p') && Globals.keydown[K_CTRL])) {
+			} else if ((key == K_UPARROW) || (key == K_KP_UPARROW) || ((key == (int) 'p') && Globals.keydown[K_CTRL])) {
 				do {
 					history_line = (history_line - 1) & 31;
 				}
-				while (history_line != Globals.edit_line && Globals.key_lines[history_line][1] == 0);
+				while (history_line != Globals.edit_line && (int) Globals.key_lines[history_line][1] == 0);
 				if (history_line == Globals.edit_line)
 					history_line = (Globals.edit_line + 1) & 31;
 
 				System.arraycopy(Globals.key_lines[history_line], 0, Globals.key_lines[Globals.edit_line], 0, Globals.key_lines[Globals.edit_line].length);
 				Globals.key_linepos = Lib.strlen(Globals.key_lines[Globals.edit_line]);
-			} else if ((key == K_DOWNARROW) || (key == K_KP_DOWNARROW) || ((key == 'n') && Globals.keydown[K_CTRL])) {
+			} else if ((key == K_DOWNARROW) || (key == K_KP_DOWNARROW) || ((key == (int) 'n') && Globals.keydown[K_CTRL])) {
 				if (history_line != Globals.edit_line) {
 					do {
 						history_line = (history_line + 1) & 31;
 					}
-					while (history_line != Globals.edit_line && Globals.key_lines[history_line][1] == 0);
+					while (history_line != Globals.edit_line && (int) Globals.key_lines[history_line][1] == 0);
 					if (history_line == Globals.edit_line) {
-						Globals.key_lines[Globals.edit_line][0] = ']';
+						Globals.key_lines[Globals.edit_line][0] = (byte) ']';
 						Globals.key_linepos = 1;
 					} else {
 
@@ -634,7 +633,7 @@ public class Key extends Globals {
 				if (Globals.key_linepos < Defines.MAXCMDLINE - 1) {
 					Globals.key_lines[Globals.edit_line][Globals.key_linepos] = (byte) key;
 					Globals.key_linepos++;
-					Globals.key_lines[Globals.edit_line][Globals.key_linepos] = 0;
+					Globals.key_lines[Globals.edit_line][Globals.key_linepos] = (byte) 0;
 				}
 			}
 
@@ -653,11 +652,11 @@ public class Key extends Globals {
 	static void CompleteCommand() {
 
         int start = 1;
-		if (key_lines[edit_line][start] == '\\' ||  key_lines[edit_line][start] == '/')
+		if ((int) key_lines[edit_line][start] == (int) '\\' || (int) key_lines[edit_line][start] == (int) '/')
 			start++;
 
         int end = start;
-		while (key_lines[edit_line][end] != 0) end++;
+		while ((int) key_lines[edit_line][end] != 0) end++;
 
         String s = new String(key_lines[edit_line], start, end-start);
 
@@ -677,12 +676,12 @@ public class Key extends Globals {
 			s = (String)vars.get(0);
 		} else return;
 		
-		key_lines[edit_line][1] = '/';
+		key_lines[edit_line][1] = (byte) '/';
         byte[] bytes = Lib.stringToBytes(s);
 		System.arraycopy(bytes, 0, key_lines[edit_line], 2, bytes.length);
 		key_linepos = bytes.length + 2;
-		key_lines[edit_line][key_linepos++] = ' ';
-		key_lines[edit_line][key_linepos] = 0;
+		key_lines[edit_line][key_linepos++] = (byte) ' ';
+		key_lines[edit_line][key_linepos] = (byte) 0;
 
 	}
 

@@ -35,8 +35,8 @@ public class GradientFitter implements ParameterizedFunction {
         Utils.multiplySelf(gradient,e);
 
         double l = Utils.length(gradient);
-        if (l < 1) {
-            l = 1;
+        if (l < 1.0) {
+            l = 1.0;
         }
 
         double a = approxParameters.getAlpha();

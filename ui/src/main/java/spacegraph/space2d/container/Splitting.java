@@ -24,8 +24,8 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
     private float split = Float.NaN;
     private boolean vertical;
     //TODO float marginPct = ...;
-    private float minSplit = 0;
-    private float maxSplit = 1;
+    private float minSplit = (float) 0;
+    private float maxSplit = 1.0F;
 
     public Splitting() {
         this(null, 0.5f, true, null);
@@ -43,7 +43,7 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
     }
 
     public static Splitting<?, ?> column(Surface top, float v, Surface bottom) {
-        return new Splitting<>(bottom, 1 - v, true, top /* semantically reversed */);
+        return new Splitting<>(bottom, 1.0F - v, true, top /* semantically reversed */);
     }
 
     public static Splitting<?, ?> column(Surface top, Surface bottom) {
@@ -85,7 +85,7 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
 
     public Splitting<X, Y> split(float split) {
         float s = this.split;
-        if (!Util.equals(s, Spatialization.EPSILON)) {
+        if (!Util.equals((double) s, Spatialization.EPSILON)) {
             this.split = split;
             layout();
         }
@@ -124,7 +124,7 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
                 b.pos(r2);
 
                 if (r != null) {
-                    RectFloat r1 = RectFloat.XYXY(X, Ysplit - resizeMargin / 2 * h, X + w, Ysplit + resizeMargin / 2 * h);
+                    RectFloat r1 = RectFloat.XYXY(X, Ysplit - resizeMargin / 2.0F * h, X + w, Ysplit + resizeMargin / 2.0F * h);
                     r.pos(r1);
                     r.show();
                 }
@@ -138,7 +138,7 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
                 b.pos(r2);
 
                 if (r != null) {
-                    RectFloat r1 = RectFloat.XYXY(Xsplit - resizeMargin / 2 * w, Y, Xsplit + resizeMargin / 2 * w, Y + h);
+                    RectFloat r1 = RectFloat.XYXY(Xsplit - resizeMargin / 2.0F * w, Y, Xsplit + resizeMargin / 2.0F * w, Y + h);
                     r.pos(r1);
                     r.show();
                 }

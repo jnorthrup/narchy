@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static spacegraph.space2d.phys.dynamics.BodyType.DYNAMIC;
 
@@ -233,7 +231,7 @@ public class Smasher {
         for (EdgeDiagram edgeDiagram : table) {
             if (edgeDiagram.d2 == null) {
                 v2 vv = edgeDiagram.kolmicovyBod(contactPoint);
-                double newDistance = contactPoint.distanceSq(vv);
+                double newDistance = (double) contactPoint.distanceSq(vv);
                 if (newDistance <= distance[0]) {
                     distance[0] = newDistance;
                     kolmicovyBod[0] = vv;
@@ -359,7 +357,7 @@ public class Smasher {
                 contact.getWorldManifold(wm);
                 addFracture(new Fracture(f1, f2, m, contact, iml, new v2(wm.points[i])));
             } else if (f1.body.type != DYNAMIC) {
-                addFracture(new Fracture(f1, f2, m, null, 0, null));
+                addFracture(new Fracture(f1, f2, m, null, (float) 0, null));
             }
         }
 
@@ -481,7 +479,7 @@ public class Smasher {
             max = v2.max(max, v);
         }
 
-        v2 deficit = new v2(1, 1);
+        v2 deficit = new v2(1.0F, 1.0F);
         min.subbed(deficit);
         max.added(deficit);
 

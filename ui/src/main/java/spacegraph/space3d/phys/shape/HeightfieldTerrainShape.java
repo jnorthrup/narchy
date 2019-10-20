@@ -92,7 +92,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
         float minHeight = 0.0f;
 
 
-        float heightScale = maxHeight / 65535;
+        float heightScale = maxHeight / 65535.0F;
 
 		initialize(heightStickWidth, heightStickLength, heightfieldData, heightScale, minHeight, maxHeight, upAxis,
 				hdt, flipQuadEdges);
@@ -134,14 +134,14 @@ public class HeightfieldTerrainShape extends ConcaveShape
             }
             case PHY_UCHAR:
                 byte heightFieldValue = m_heightFieldDataByte[(y * m_heightStickWidth) + x];
-            val = heightFieldValue * m_heightScale;
+            val = (float) heightFieldValue * m_heightScale;
             break;
 
             case PHY_SHORT:
 
                 int index = ((y * m_heightStickWidth) + x) * 2;
-            short hfValue = 0;
-            val = hfValue * m_heightScale;
+            short hfValue = (short) 0;
+            val = (float) hfValue * m_heightScale;
             break;
         }
 
@@ -174,9 +174,9 @@ public class HeightfieldTerrainShape extends ConcaveShape
 	{
 		if (x < 0.0f)
 		{
-			return (int) (x - 0.5);
+			return (int) ((double) x - 0.5);
 		}
-		return (int) (x + 0.5);
+		return (int) ((double) x + 0.5);
 	}
 
 	private void getVertex(int x, int y, v3 vertex)
@@ -191,13 +191,13 @@ public class HeightfieldTerrainShape extends ConcaveShape
 		switch (m_upAxis)
 		{
 		case 0:
-            vertex.set(height - m_localOrigin.x, (-m_width / 2f) + x, (-m_length / 2f) + y);
+            vertex.set(height - m_localOrigin.x, (-m_width / 2f) + (float) x, (-m_length / 2f) + (float) y);
             break;
             case 1:
-            vertex.set((-m_width / 2f) + x, height - m_localOrigin.y, (-m_length / 2f) + y);
+            vertex.set((-m_width / 2f) + (float) x, height - m_localOrigin.y, (-m_length / 2f) + (float) y);
             break;
             case 2:
-            vertex.set((-m_width / 2f) + x, (-m_length / 2f) + y, height - m_localOrigin.z);
+            vertex.set((-m_width / 2f) + (float) x, (-m_length / 2f) + (float) y, height - m_localOrigin.z);
             break;
             default:
             
@@ -238,8 +238,8 @@ public class HeightfieldTerrainShape extends ConcaveShape
 		m_heightStickLength = heightStickLength;
 		m_minHeight = minHeight;
 		m_maxHeight = maxHeight;
-		m_width = (heightStickWidth - 1);
-		m_length = (heightStickLength - 1);
+		m_width = (float) (heightStickWidth - 1);
+		m_length = (float) (heightStickLength - 1);
 		m_heightScale = heightScale;
 		
 		if (heightfieldData instanceof byte[])
@@ -265,15 +265,15 @@ public class HeightfieldTerrainShape extends ConcaveShape
 		switch (m_upAxis)
 		{
 		case 0:
-            m_localAabbMin.set(m_minHeight, 0, 0);
+            m_localAabbMin.set(m_minHeight, (float) 0, (float) 0);
             m_localAabbMax.set(m_maxHeight, m_width, m_length);
             break;
             case 1:
-            m_localAabbMin.set(0, m_minHeight, 0);
+            m_localAabbMin.set((float) 0, m_minHeight, (float) 0);
             m_localAabbMax.set(m_width, m_maxHeight, m_length);
             break;
             case 2:
-            m_localAabbMin.set(0, 0, m_minHeight);
+            m_localAabbMin.set((float) 0, (float) 0, m_minHeight);
             m_localAabbMax.set(m_width, m_length, m_maxHeight);
             break;
             default:
@@ -284,7 +284,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
 
 		
 		m_localOrigin = new v3();
-		m_localOrigin.set(0, 0, 0);
+		m_localOrigin.set((float) 0, (float) 0, (float) 0);
 		VectorUtil.add(m_localOrigin, m_localAabbMin, m_localAabbMax);
 		VectorUtil.mul(m_localOrigin, m_localOrigin, 0.5f);
 

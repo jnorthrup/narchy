@@ -138,7 +138,7 @@ class RDPClientChooser {
         String server = null;
 
         if (g.getOptind() < args.length) {
-            int colonat = args[args.length - 1].indexOf(':');
+            int colonat = args[args.length - 1].indexOf((int) ':');
             if (colonat == -1) {
                 server = args[args.length - 1];
             } else {
@@ -310,7 +310,7 @@ class RDPClientChooser {
         
 
         try {
-            Thread.sleep(10000);
+            Thread.sleep(10000L);
         } catch (Exception e) {
             logger.info("Unable to wait for 10 seconds");
             return false;

@@ -34,10 +34,10 @@ public class AudioEvent {
         double var1 = 0.0D;
 
         for (float v : var0) {
-            var1 += v * v;
+            var1 = var1 + (double) v * v;
         }
 
-        var1 /= var0.length;
+        var1 = var1 / (double) var0.length;
         var1 = Math.sqrt(var1);
         return var1;
     }
@@ -49,7 +49,7 @@ public class AudioEvent {
 
         for (int var6 = 0; var6 < var5; ++var6) {
             float var7 = var4[var6];
-            var2 += var7 * var7;
+            var2 = var2 + (double) var7 * var7;
         }
 
         return var2;
@@ -84,7 +84,7 @@ public class AudioEvent {
     }
 
     public double getTimeStamp() {
-        return (float) (this.bytesProcessed / (long) this.format.getFrameSize()) / this.format.getSampleRate();
+        return (double) ((float) (this.bytesProcessed / (long) this.format.getFrameSize()) / this.format.getSampleRate());
     }
 
 //    public byte[] getByteBuffer() {
@@ -98,7 +98,7 @@ public class AudioEvent {
 //    }
 
     public double getEndTimeStamp() {
-        return (float) ((this.bytesProcessed + (long) this.bytesProcessing) / (long) this.format.getFrameSize()) / this.format.getSampleRate();
+        return (double) ((float) ((this.bytesProcessed + (long) this.bytesProcessing) / (long) this.format.getFrameSize()) / this.format.getSampleRate());
     }
 
     public long getSamplesProcessed() {
@@ -131,7 +131,7 @@ public class AudioEvent {
 
     private static double soundPressureLevel(float[] var1) {
         double var2 = Math.pow(AudioEvent.localEnergy(var1), 0.5D);
-        var2 /= var1.length;
+        var2 = var2 / (double) var1.length;
         return AudioEvent.linearToDecibel(var2);
     }
 

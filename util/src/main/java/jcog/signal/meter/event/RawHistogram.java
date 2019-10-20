@@ -39,7 +39,7 @@ public class RawHistogram {
         this.powersOf2 = powersOf2;
         this.fractionBits = fractionBits;
         sampleCount = new int[powersOf2 << fractionBits];
-        floor = Double.doubleToRawLongBits(1) >> (52 - fractionBits);
+        floor = Double.doubleToRawLongBits(1.0) >> (52 - fractionBits);
     }
 
     public void add(RawHistogram h) {
@@ -62,18 +62,18 @@ public class RawHistogram {
     }
 
     public double percentile(double fraction) {
-        long value = (long) (totalCount * (1 - fraction));
+        long value = (long) ((double) totalCount * (1.0 - fraction));
         value -= overRange;
-        if (value < 0)
+        if (value < 0L)
             return Double.POSITIVE_INFINITY;
         for (int i = sampleCount.length - 1; i >= 0; i--) {
-            value -= sampleCount[i];
-            if (value < 0) {
-                long bits = ((((i + floor) << 1) + 1) << (51 - fractionBits));
+            value = value - (long) sampleCount[i];
+            if (value < 0L) {
+                long bits = (((((long) i + floor) << 1) + 1L) << (51 - fractionBits));
                 return Double.longBitsToDouble(bits);
             }
         }
-        return 1;
+        return 1.0;
     }
 
     public double[] getPercentiles(){
@@ -83,7 +83,7 @@ public class RawHistogram {
             percentile(0.99),
             percentile(0.999),
             percentile(0.9999),
-            percentile(1)
+            percentile(1.0)
         };
     }
 
@@ -92,16 +92,16 @@ public class RawHistogram {
     }
 
     public String toMicrosFormat(DoubleFunction<Double> toMicros) {
-        if (totalCount < 1_000_000)
+        if (totalCount < 1_000_000L)
             return "50/90 99/99.9 99.99 - worst was " +
                     p(toMicros.apply(percentile(0.5))) + " / " +
                     p(toMicros.apply(percentile(0.9))) + "  " +
                     p(toMicros.apply(percentile(0.99))) + " / " +
                     p(toMicros.apply(percentile(0.999))) + "  " +
                     p(toMicros.apply(percentile(0.9999))) + " - " +
-                    p(toMicros.apply(percentile(1)));
+                    p(toMicros.apply(percentile(1.0)));
 
-        if (totalCount < 10_000_000)
+        if (totalCount < 10_000_000L)
             return "50/90 99/99.9 99.99/99.999 - worst was " +
                     p(toMicros.apply(percentile(0.5))) + " / " +
                     p(toMicros.apply(percentile(0.9))) + "  " +
@@ -109,7 +109,7 @@ public class RawHistogram {
                     p(toMicros.apply(percentile(0.999))) + "  " +
                     p(toMicros.apply(percentile(0.9999))) + " / " +
                     p(toMicros.apply(percentile(0.99999))) + " - " +
-                    p(toMicros.apply(percentile(1)));
+                    p(toMicros.apply(percentile(1.0)));
 
         return "50/90 99/99.9 99.99/99.999 99.9999/worst was " +
                 p(toMicros.apply(percentile(0.5))) + " / " +
@@ -119,11 +119,11 @@ public class RawHistogram {
                 p(toMicros.apply(percentile(0.9999))) + " / " +
                 p(toMicros.apply(percentile(0.99999))) + "  " +
                 p(toMicros.apply(percentile(0.999999))) + " / " +
-                p(toMicros.apply(percentile(1)));
+                p(toMicros.apply(percentile(1.0)));
     }
 
     public String toLongMicrosFormat(DoubleFunction<Double> toMicros) {
-        if (totalCount < 1_000_000)
+        if (totalCount < 1_000_000L)
             return "50/90 93/99 99.3/99.9 99.93/99.99 - worst was " +
                     p(toMicros.apply(percentile(0.5))) + " / " +
                     p(toMicros.apply(percentile(0.9))) + "  " +
@@ -133,9 +133,9 @@ public class RawHistogram {
                     p(toMicros.apply(percentile(0.999))) + "  " +
                     p(toMicros.apply(percentile(0.9993))) + " / " +
                     p(toMicros.apply(percentile(0.9999))) + " - " +
-                    p(toMicros.apply(percentile(1)));
+                    p(toMicros.apply(percentile(1.0)));
 
-        if (totalCount < 10_000_000)
+        if (totalCount < 10_000_000L)
             return "50/90 93/99 99.3/99.9 99.93/99.99 99.993/99.999 - worst was " +
                     p(toMicros.apply(percentile(0.5))) + " / " +
                     p(toMicros.apply(percentile(0.9))) + "  " +
@@ -147,7 +147,7 @@ public class RawHistogram {
                     p(toMicros.apply(percentile(0.9999))) + "  " +
                     p(toMicros.apply(percentile(0.99993))) + " / " +
                     p(toMicros.apply(percentile(0.99999))) + " - " +
-                    p(toMicros.apply(percentile(1)));
+                    p(toMicros.apply(percentile(1.0)));
 
         return "50/90 93/99 99.3/99.9 99.93/99.99 99.993/99.999 99.9993/99.9999 - worst was " +
                 p(toMicros.apply(percentile(0.5))) + " / " +
@@ -162,15 +162,15 @@ public class RawHistogram {
                 p(toMicros.apply(percentile(0.99999))) + "  " +
                 p(toMicros.apply(percentile(0.999993))) + " / " +
                 p(toMicros.apply(percentile(0.999999))) + " - " +
-                p(toMicros.apply(percentile(1)));
+                p(toMicros.apply(percentile(1.0)));
     }
 
     private static String p(double v) {
         return v < 0.1 ? String.format("%.3f", v) :
-                v < 1 ? String.format("%.2f", v) :
-                        v < 10 ? String.format("%.1f", v) :
-                                v < 1000 ? Long.toString(Math.round(v)) :
-                                        String.format("%,d", Math.round(v / 10) * 10);
+                v < 1.0 ? String.format("%.2f", v) :
+                        v < 10.0 ? String.format("%.1f", v) :
+                                v < 1000.0 ? Long.toString(Math.round(v)) :
+                                        String.format("%,d", Math.round(v / 10.0) * 10L);
     }
 
     public long totalCount() {
@@ -179,7 +179,7 @@ public class RawHistogram {
 
     public void reset(){
         sampleCount = new int[powersOf2 << fractionBits];
-        totalCount = overRange = 0;
+        totalCount = overRange = 0L;
     }
 
 }

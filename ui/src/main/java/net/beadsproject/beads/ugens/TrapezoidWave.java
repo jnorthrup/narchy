@@ -50,7 +50,7 @@ public class TrapezoidWave extends UGen {
      */
     public TrapezoidWave(AudioContext con) {
         super(con, 0, 1);
-        iSampleRate = 1 / con.getSampleRate();
+        iSampleRate = 1.0F / con.getSampleRate();
         calcVals();
     }
 
@@ -75,28 +75,28 @@ public class TrapezoidWave extends UGen {
             boolean doCalc = false;
             if (dutyCycleUGen != null) {
                 dutyCycle = dutyCycleUGen.getValue(0, i);
-                if (dutyCycle < 0) {
-                    dutyCycle = 0;
-                } else if (dutyCycle > 1) {
-                    dutyCycle = 1;
+                if (dutyCycle < (float) 0) {
+                    dutyCycle = (float) 0;
+                } else if (dutyCycle > 1.0F) {
+                    dutyCycle = 1.0F;
                 }
                 doCalc = true;
             }
             if (attackUGen != null) {
                 attack = attackUGen.getValue(0, i);
-                if (attack < 0) {
-                    attack = 0;
-                } else if (attack > 1) {
-                    attack = 1;
+                if (attack < (float) 0) {
+                    attack = (float) 0;
+                } else if (attack > 1.0F) {
+                    attack = 1.0F;
                 }
                 doCalc = true;
             }
             if (decayUGen != null) {
                 decay = decayUGen.getValue(0, i);
-                if (decay < 0) {
-                    decay = 0;
-                } else if (decay > 1) {
-                    decay = 1;
+                if (decay < (float) 0) {
+                    decay = (float) 0;
+                } else if (decay > 1.0F) {
+                    decay = 1.0F;
                 }
                 doCalc = true;
             }
@@ -109,57 +109,57 @@ public class TrapezoidWave extends UGen {
                 delta = freq * iSampleRate;
             }
 
-            index = (index + delta) % 1;
-            if (index < 0) {
-                index = (index + 1) % 1;
+            index = (index + delta) % 1.0F;
+            if (index < (float) 0) {
+                index = (index + 1.0F) % 1.0F;
             }
 
             if (index > c) {
-                bo[i] = 1 - cdSlope * (index - c);
+                bo[i] = 1.0F - cdSlope * (index - c);
             } else if (index > b) {
-                bo[i] = 1;
+                bo[i] = 1.0F;
             } else if (index > a) {
-                bo[i] = -1 + abSlope * (index - a);
+                bo[i] = -1.0F + abSlope * (index - a);
             } else {
-                bo[i] = -1;
+                bo[i] = -1.0F;
             }
         }
 
     }
 
     private void calcVals() {
-        a = 1 - dutyCycle;
-        if (a >= 1) {
-            a = b = c = 1;
-            abSlope = 0;
-            cdSlope = 0;
+        a = 1.0F - dutyCycle;
+        if (a >= 1.0F) {
+            a = b = c = 1.0F;
+            abSlope = (float) 0;
+            cdSlope = (float) 0;
         } else {
             float att, dec;
             float m = attack + decay;
-            if (m > 0) {
-                m = dutyCycle < .5 ? dutyCycle / m : (1 - dutyCycle) / m;
+            if (m > (float) 0) {
+                m = (double) dutyCycle < .5 ? dutyCycle / m : (1.0F - dutyCycle) / m;
 
-                if (m >= .5) {
+                if ((double) m >= .5) {
                     att = attack;
                     dec = decay;
                 } else {
-                    att = attack * 2 * m;
-                    dec = decay * 2 * m;
+                    att = attack * 2.0F * m;
+                    dec = decay * 2.0F * m;
                 }
 
             } else {
                 
-                att = 0;
-                dec = 0;
+                att = (float) 0;
+                dec = (float) 0;
             }
 
-            c = 1 - dec;
+            c = 1.0F - dec;
             b = c - dutyCycle + (att + dec) * .5f;
             a = b - att;
 
-            abSlope = a == b ? 0 : 2 / (b - a);
+            abSlope = a == b ? (float) 0 : 2.0F / (b - a);
 
-            cdSlope = c == 1 ? 0 : 2 / (1 - c);
+            cdSlope = c == 1.0F ? (float) 0 : 2.0F / (1.0F - c);
         }
     }
 
@@ -238,10 +238,10 @@ public class TrapezoidWave extends UGen {
     private TrapezoidWave setDutyCycle(float dutyCycle) {
         dutyCycleUGen = null;
         this.dutyCycle = dutyCycle;
-        if (this.dutyCycle < 0) {
-            this.dutyCycle = 0;
-        } else if (this.dutyCycle > 1) {
-            this.dutyCycle = 1;
+        if (this.dutyCycle < (float) 0) {
+            this.dutyCycle = (float) 0;
+        } else if (this.dutyCycle > 1.0F) {
+            this.dutyCycle = 1.0F;
         }
         calcVals();
         return this;
@@ -292,10 +292,10 @@ public class TrapezoidWave extends UGen {
     private TrapezoidWave setAttack(float attack) {
         attackUGen = null;
         this.attack = attack;
-        if (this.attack < 0) {
-            this.attack = 0;
-        } else if (this.attack > 1) {
-            this.attack = 1;
+        if (this.attack < (float) 0) {
+            this.attack = (float) 0;
+        } else if (this.attack > 1.0F) {
+            this.attack = 1.0F;
         }
         calcVals();
         return this;
@@ -346,10 +346,10 @@ public class TrapezoidWave extends UGen {
     private TrapezoidWave setDecay(float decay) {
         decayUGen = null;
         this.decay = decay;
-        if (decay < 0) {
-            this.decay = 0;
-        } else if (decay > 1) {
-            this.decay = 1;
+        if (decay < (float) 0) {
+            this.decay = (float) 0;
+        } else if (decay > 1.0F) {
+            this.decay = 1.0F;
         }
         calcVals();
         return this;

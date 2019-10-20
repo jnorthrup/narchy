@@ -13,7 +13,7 @@ public class OneTimedFuture<T> extends AbstractTimedCallable<T> {
 
     @Override
     public final int offset(long resolution) {
-        return (int) (offset % resolution);
+        return (int) ((long) offset % resolution);
     }
 
 }

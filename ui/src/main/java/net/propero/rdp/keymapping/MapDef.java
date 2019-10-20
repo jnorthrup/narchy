@@ -247,7 +247,7 @@ public class MapDef {
     }
 
     public boolean appliesTo(char c) {
-        return ((characterDef) && (this.keyChar == c) && !(capslockDown));
+        return ((characterDef) && ((int) this.keyChar == (int) c) && !(capslockDown));
     }
 
     /**
@@ -257,26 +257,26 @@ public class MapDef {
      * @return
      */
     protected boolean appliesToTyped(KeyEvent e) {
-        return ((characterDef) && (this.keyChar == e.getKeyChar()));
+        return ((characterDef) && ((int) this.keyChar == (int) e.getKeyChar()));
     }
 
     boolean appliesToTyped(KeyEvent e, boolean capslock) {
 
         if (Constants.OS == Constants.MAC) {
             
-            if (Options.remap_hash && (e.getKeyChar() == '�')) {
-                return ((characterDef) && (this.keyChar == '#'));
+            if (Options.remap_hash && ((int) e.getKeyChar() == (int) '�')) {
+                return ((characterDef) && ((int) this.keyChar == (int) '#'));
             }
 
             
             if (capslock && Character.isLetter(e.getKeyChar())
                     && Character.isUpperCase(e.getKeyChar()) && e.isShiftDown()) {
                 char c = Character.toLowerCase(e.getKeyChar());
-                return ((characterDef) && (this.keyChar == c));
+                return ((characterDef) && ((int) this.keyChar == (int) c));
             }
         }
 
-        return ((characterDef) && (this.keyChar == e.getKeyChar()));
+        return ((characterDef) && ((int) this.keyChar == (int) e.getKeyChar()));
     }
 
     /**

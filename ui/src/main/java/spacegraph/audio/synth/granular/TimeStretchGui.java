@@ -32,7 +32,7 @@ public class TimeStretchGui extends JPanel {
 		tempoSlider.setMajorTickSpacing(10);
 		tempoSlider.setMinorTickSpacing(1);
 		tempoSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
-		tempoSlider.addChangeListener(e -> updateStretchFactor(1.0F - (tempoSlider.getValue() - 50) / 100.0));
+		tempoSlider.addChangeListener(e -> updateStretchFactor(1.0 - (double) (tempoSlider.getValue() - 50) / 100.0));
 
 		
 

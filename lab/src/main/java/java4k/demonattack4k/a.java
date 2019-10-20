@@ -91,14 +91,14 @@ public class a extends GamePanel {
 	int score;
 	int playerX = 76;
 	int playerBulletX = 79;
-	float playerBulletY = 175;
-	float playerBulletSpeed = 4;
+	float playerBulletY = 175.0F;
+	float playerBulletSpeed = 4.0F;
 	boolean fireReleased = true;
 	int advanceSprite;
 	int extraLives = 2;
 	int extraDemons = 5;
 	int nextLevelDelay = 1;
-	float shootTimer = 1;
+	float shootTimer = 1.0F;
 	int shootCounter = 1;
 	int playerExploding;
 	int gameOver;
@@ -159,7 +159,7 @@ public class a extends GamePanel {
 			k = i < 14 ? 10 : 12;
 			sprites[i] = new BufferedImage(8, k, 2);
 			for (y = 0; y < k; y++) {
-				j = S.charAt(i * 5 + (y >> 1));
+				j = (int) S.charAt(i * 5 + (y >> 1));
 				if ((y & 1) == 1) {
 					j >>= 8;
 				}
@@ -176,16 +176,16 @@ public class a extends GamePanel {
 		for (k = 0; k < 256; k++) {
 
 			
-			random.setSeed(18 + (k << 3));
+			random.setSeed((long) (18 + (k << 3)));
 			for (i = 0; i < 8; i++) {
 				palette[i] = 0xFF;
 			}
 			for (i = 0; i < 3; i++) {
                 float offset = 6.28f * random.nextFloat();
-                float scale = 0.3f * (1 + random.nextFloat());
+                float scale = 0.3f * (1.0F + random.nextFloat());
 				for (j = 0; j < 8; j++) {
 					palette[j] <<= 8;
-					palette[j] |= (int) (180 + 75 * Math.sin(scale * j + offset));
+					palette[j] |= (int) (180.0 + 75.0 * Math.sin((double) (scale * (float) j + offset)));
 				}
 			}
 
@@ -194,7 +194,7 @@ public class a extends GamePanel {
 				for (i = 0; i < 8; i++) {
 					sprites[i + 15] = new BufferedImage(16, 48, 2);
 					for (y = 0; y < 6; y++) {
-						j = S.charAt(184 + i * 3 + (y >> 1));
+						j = (int) S.charAt(184 + i * 3 + (y >> 1));
 						if ((y & 1) == 1) {
 							j >>= 8;
 						}
@@ -214,7 +214,7 @@ public class a extends GamePanel {
 				z = i < 9 ? 16 : 8;
 				enemySprites[k][i] = new BufferedImage(z, 8, 2);
 				for (y = 0; y < 8; y++) {
-					j = S.charAt(i < 3 ? 76 + 12 * ((k >> 1) % 6) + (i << 2) + (y >> 1) : 148 + ((i - 3) << 2) + (y >> 1));
+					j = (int) S.charAt(i < 3 ? 76 + 12 * ((k >> 1) % 6) + (i << 2) + (y >> 1) : 148 + ((i - 3) << 2) + (y >> 1));
 					if ((y & 1) == 1) {
 						j >>= 8;
 					}
@@ -230,19 +230,19 @@ public class a extends GamePanel {
 		
 		for (i = 0; i < 120; i++) {
 			for (j = 0; j < 7; j++) {
-                float w = (float) Math.sin(6 * Math.PI * i / 119);
-				floorColors[i][j] = new Color(Color.HSBtoRGB((234 + j - (i << 1)) / 360f, 0.51f + 0.08f * j, 0.94f - 0.06f * j - 0.25f * w * w));
+                float w = (float) Math.sin(6.0 * Math.PI * (double) i / 119.0);
+				floorColors[i][j] = new Color(Color.HSBtoRGB((float) (234 + j - (i << 1)) / 360f, 0.51f + 0.08f * (float) j, 0.94f - 0.06f * (float) j - 0.25f * w * w));
 			}
 		}
 
 		
 		for (i = 0; i < 100; i++) {
-			extraLivesColors[i] = new Color(Color.HSBtoRGB(i / 100f, 0.46f, 0.65f + 0.35f * (float) Math.cos(0.594245f + 0.35f * i)));
+			extraLivesColors[i] = new Color(Color.HSBtoRGB((float) i / 100f, 0.46f, 0.65f + 0.35f * (float) Math.cos((double) (0.594245f + 0.35f * (float) i))));
 		}
 
 		
 		for (i = 0; i < 16; i++) {
-            float intensity = (float) Math.sin(0.196f * i);
+            float intensity = (float) Math.sin((double) (0.196f * (float) i));
 			explodingFlashColors[i] = new Color(intensity, intensity, intensity);
 		}
 
@@ -254,12 +254,12 @@ public class a extends GamePanel {
 	public void paintComponent(Graphics g) {
 
 		
-		while (nextFrameStartTime - System.nanoTime() > 0) {
+		while (nextFrameStartTime - System.nanoTime() > 0L) {
 			Thread.yield();
 		}
 
 		do {
-			nextFrameStartTime += 16666667;
+			nextFrameStartTime += 16666667L;
 
 			
 
@@ -290,18 +290,18 @@ public class a extends GamePanel {
 					score = 0;
 					playerX = 76;
 					playerBulletX = 79;
-					playerBulletY = 175;
-					playerBulletSpeed = 4;
+					playerBulletY = 175.0F;
+					playerBulletSpeed = 4.0F;
 					extraLives = 2;
 					extraDemons = 5;
 					nextLevelDelay = 1;
-					shootTimer = 1;
+					shootTimer = 1.0F;
 					shootCounter = 1;
 					playerExploding = 0;
 					gameOver = 0;
 					shooting = false;
 					shoot = false;
-					shootDelay = 0;
+					shootDelay = (float) 0;
 					noShootDelay = 0;
 					demons.clear();
 					bullets.clear();
@@ -323,18 +323,18 @@ public class a extends GamePanel {
 					level = 0;
 					playerX = 76;
 					playerBulletX = 79;
-					playerBulletY = 175;
-					playerBulletSpeed = 4;
+					playerBulletY = 175.0F;
+					playerBulletSpeed = 4.0F;
 					extraLives = 2;
 					extraDemons = 5;
 					nextLevelDelay = 1;
-					shootTimer = 1;
+					shootTimer = 1.0F;
 					shootCounter = 1;
 					playerExploding = 0;
 					gameOver = 0;
 					shooting = false;
 					shoot = false;
-					shootDelay = 0;
+					shootDelay = (float) 0;
 					noShootDelay = 0;
 					demons.clear();
 					bullets.clear();
@@ -346,7 +346,7 @@ public class a extends GamePanel {
 				if (--playerExploding == 0) {
 					playerX = 76;
 					playerBulletX = 79;
-					playerBulletY = 175;
+					playerBulletY = 175.0F;
 
 					
 					
@@ -373,14 +373,14 @@ public class a extends GamePanel {
 					}
 
 					
-					if (playerBulletY == 175) {
+					if (playerBulletY == 175.0F) {
 						playerBulletX = playerX + 3;
 						if (--demoShootDelay < 0) {
 							demoShootDelay = 15 + random.nextInt(30);
 							playerBulletY--;
 						}
-					} else if (playerBulletY < 12) {
-						playerBulletY = 175;
+					} else if (playerBulletY < 12.0F) {
+						playerBulletY = 175.0F;
 						playerBulletX = playerX + 3;
 					} else {
 						playerBulletY -= playerBulletSpeed;
@@ -394,14 +394,14 @@ public class a extends GamePanel {
 					}
 
 					
-					if (playerBulletY == 175) {
+					if (playerBulletY == 175.0F) {
 						playerBulletX = playerX + 3;
 						if (fireReleased && a[VK_SHOOT]) {
 							fireReleased = false;
 							playerBulletY--;
 						}
-					} else if (playerBulletY < 12) {
-						playerBulletY = 175;
+					} else if (playerBulletY < 12.0F) {
+						playerBulletY = 175.0F;
 						playerBulletX = playerX + 3;
 					} else {
 						playerBulletY -= playerBulletSpeed;
@@ -414,13 +414,13 @@ public class a extends GamePanel {
                 float[] bullet = bullets.get(i);
 				bullet[BULLET_Y] += bulletSpeed;
 				bullet[BULLET_ANGLE] += BULLET_DELTA_ANGLE;
-				bullet[BULLET_X] = bullet[BULLET_DEMON_X] + bullet[BULLET_OFFSET_X] + ((Math.sin(bullet[BULLET_ANGLE]) > 0.5) ? bullet[BULLET_RADIUS] : 0);
-				if (bullet[BULLET_Y] > 190) {
+				bullet[BULLET_X] = bullet[BULLET_DEMON_X] + bullet[BULLET_OFFSET_X] + ((Math.sin((double) bullet[BULLET_ANGLE]) > 0.5) ? bullet[BULLET_RADIUS] : (float) 0);
+				if (bullet[BULLET_Y] > 190.0F) {
 					bullets.remove(i);
 				}
 
 				
-				if (playerExploding == 0 && bullet[BULLET_Y] <= 185 && bullet[BULLET_Y] >= 175 && bullet[BULLET_X] >= playerX && bullet[BULLET_X] <= playerX + 7) {
+				if (playerExploding == 0 && bullet[BULLET_Y] <= 185.0F && bullet[BULLET_Y] >= 175.0F && bullet[BULLET_X] >= (float) playerX && bullet[BULLET_X] <= (float) (playerX + 7)) {
 					bullets.remove(i);
 					playerExploding = 63;
 				}
@@ -430,19 +430,19 @@ public class a extends GamePanel {
 			shoot = false;
 			if (noShootDelay > 0) {
 				noShootDelay--;
-			} else if (playerExploding == 0 && --shootTimer <= 0) {
+			} else if (playerExploding == 0 && --shootTimer <= (float) 0) {
 				if (shooting) {
 					shoot = true;
 					if (--shootCounter == 0) {
 						shooting = false;
 						shootTimer = shootDelay;
 					} else {
-						shootTimer += (lasers ? 2 : 8) / bulletSpeed;
+						shootTimer += (float) (lasers ? 2 : 8) / bulletSpeed;
 					}
 				} else {
 					shooting = true;
 					shootCounter = (lasers ? 6 : 3) + (level < 10 ? (level >> 1) : 5) + random.nextInt(lasers ? 6 : 3);
-					shootTimer = 1;
+					shootTimer = 1.0F;
 				}
 			}
 
@@ -456,14 +456,14 @@ public class a extends GamePanel {
 					if (level == 84) {
 						gameOver = 1;
 					}
-					demonSpeed = (level <= 11) ? 0.4f + 0.2f * level / 11 : 0.6f + 0.2f * (level - 11) / 72;
-					shootDelay = level > 30 ? 30 : 60 - level;
-					bulletSpeed = level > 11 ? 3f : 1.5f + 1.5f * level / 11;
+					demonSpeed = (level <= 11) ? 0.4f + 0.2f * (float) level / 11.0F : 0.6f + 0.2f * (float) (level - 11) / 72.0F;
+					shootDelay = (float) (level > 30 ? 30 : 60 - level);
+					bulletSpeed = level > 11 ? 3f : 1.5f + 1.5f * (float) level / 11.0F;
 
 					lasers = ((level >> 1) & 1) == 1;
-					playerBulletSpeed = 4 + 4f * level / 11;
-					if (playerBulletSpeed > 8) {
-						playerBulletSpeed = 8;
+					playerBulletSpeed = 4.0F + 4f * (float) level / 11.0F;
+					if (playerBulletSpeed > 8.0F) {
+						playerBulletSpeed = 8.0F;
 					}
 
 					extraDemons = 5;
@@ -477,17 +477,17 @@ public class a extends GamePanel {
 
                         float[] demon = new float[32];
 						demons.add(demon);
-						demon[DEMON_X] = -32;
-						demon[DEMON_X2] = 160;
-						demon[DEMON_Y] = 40 + (i << 5);
-						demon[DEMON_ROW] = i;
-						demon[DEMON_SPRITE] = i;
-						demon[DEMON_PERCENT_Y] = 1;
-						demon[DEMON_PERCENT_X] = 0;
-						demon[DEMON_FORMING] = 1;
-						demon[DEMON_DELTA_X] = (j + 32) * DEMON_REFORM_SPEED;
-						demon[DEMON_DELTA_X2] = (j - 160) * DEMON_REFORM_SPEED;
-						demon[DEMON_HIDDEN] = 30 + 50 * (2 - i);
+						demon[DEMON_X] = -32.0F;
+						demon[DEMON_X2] = 160.0F;
+						demon[DEMON_Y] = (float) (40 + (i << 5));
+						demon[DEMON_ROW] = (float) i;
+						demon[DEMON_SPRITE] = (float) i;
+						demon[DEMON_PERCENT_Y] = 1.0F;
+						demon[DEMON_PERCENT_X] = (float) 0;
+						demon[DEMON_FORMING] = 1.0F;
+						demon[DEMON_DELTA_X] = (float) (j + 32) * DEMON_REFORM_SPEED;
+						demon[DEMON_DELTA_X2] = (float) (j - 160) * DEMON_REFORM_SPEED;
+						demon[DEMON_HIDDEN] = (float) (30 + 50 * (2 - i));
 
 						demonsInRows[i].add(demon);
 					}
@@ -501,14 +501,14 @@ public class a extends GamePanel {
 					
 					if (demonsInRows[2].size() == 1) {
                         float[] demon = demonsInRows[2].get(0);
-						if (demon[DEMON_BIRD] == 1 && demon[DEMON_DIVING] == 0 && demonsInRows[3].size() == 0) {
+						if (demon[DEMON_BIRD] == 1.0F && demon[DEMON_DIVING] == (float) 0 && demonsInRows[3].size() == 0) {
 							demonsInRows[2].remove(0);
 							demonsInRows[3].add(demon);
 							demon[DEMON_DIVING_Y] = demon[DEMON_Y];
-							demon[DEMON_DIVING] = 1;
-							demon[DEMON_PERCENT_X] = 0;
-							demon[DEMON_DELTA_X] = demon[DEMON_X] < playerX ? -demonSpeed : demonSpeed;
-							demon[DEMON_ROW] = 3;
+							demon[DEMON_DIVING] = 1.0F;
+							demon[DEMON_PERCENT_X] = (float) 0;
+							demon[DEMON_DELTA_X] = demon[DEMON_X] < (float) playerX ? -demonSpeed : demonSpeed;
+							demon[DEMON_ROW] = 3.0F;
 						}
 					}
 
@@ -536,17 +536,17 @@ public class a extends GamePanel {
 							j = 16 + random.nextInt(96);
                             float[] demon = new float[32];
 							demons.add(demon);
-							demon[DEMON_X] = -32;
-							demon[DEMON_X2] = 160;
-							demon[DEMON_Y] = 40 + (i << 5);
-							demon[DEMON_PERCENT_Y] = 1;
-							demon[DEMON_PERCENT_X] = 0;
-							demon[DEMON_FORMING] = 1;
-							demon[DEMON_DELTA_X] = (j + 32) * DEMON_REFORM_SPEED;
-							demon[DEMON_DELTA_X2] = (j - 160) * DEMON_REFORM_SPEED;
-							demon[DEMON_HIDDEN] = 30;
-							demon[DEMON_EXPLODING] = 0;
-							demon[DEMON_ROW] = i;
+							demon[DEMON_X] = -32.0F;
+							demon[DEMON_X2] = 160.0F;
+							demon[DEMON_Y] = (float) (40 + (i << 5));
+							demon[DEMON_PERCENT_Y] = 1.0F;
+							demon[DEMON_PERCENT_X] = (float) 0;
+							demon[DEMON_FORMING] = 1.0F;
+							demon[DEMON_DELTA_X] = (float) (j + 32) * DEMON_REFORM_SPEED;
+							demon[DEMON_DELTA_X2] = (float) (j - 160) * DEMON_REFORM_SPEED;
+							demon[DEMON_HIDDEN] = 30.0F;
+							demon[DEMON_EXPLODING] = (float) 0;
+							demon[DEMON_ROW] = (float) i;
 
 							demonsInRows[i].add(demon);
 						}
@@ -559,42 +559,42 @@ public class a extends GamePanel {
 
 					
 					if (advanceSprite == 0) {
-						if (++demon[DEMON_SPRITE] == 4) {
-							demon[DEMON_SPRITE] = 0;
+						if (++demon[DEMON_SPRITE] == 4.0F) {
+							demon[DEMON_SPRITE] = (float) 0;
 						}
 					}
 
-					if (demon[DEMON_HIDDEN] > 0) {
+					if (demon[DEMON_HIDDEN] > (float) 0) {
 						demon[DEMON_HIDDEN]--;
-					} else if (demon[DEMON_FORMING] == 1) {
+					} else if (demon[DEMON_FORMING] == 1.0F) {
 						
 						demon[DEMON_PERCENT_X] += DEMON_REFORM_SPEED;
 						demon[DEMON_X] += demon[DEMON_DELTA_X];
 						demon[DEMON_X2] += demon[DEMON_DELTA_X2];
-						if (demon[DEMON_PERCENT_X] >= 1) {
-							demon[DEMON_FORMING] = 0;
-							demon[DEMON_X] += 8;
+						if (demon[DEMON_PERCENT_X] >= 1.0F) {
+							demon[DEMON_FORMING] = (float) 0;
+							demon[DEMON_X] += 8.0F;
 						}
-					} else if (demon[DEMON_EXPLODING] == 1) {
-						if (++demon[DEMON_DELAY] == 5) {
-							demon[DEMON_DELAY] = 0;
-							if (++demon[DEMON_EXPLODING_INDEX] == 3) {
-								if (level > 3 && demon[DEMON_BIRD] == 0) {
+					} else if (demon[DEMON_EXPLODING] == 1.0F) {
+						if (++demon[DEMON_DELAY] == 5.0F) {
+							demon[DEMON_DELAY] = (float) 0;
+							if (++demon[DEMON_EXPLODING_INDEX] == 3.0F) {
+								if (level > 3 && demon[DEMON_BIRD] == (float) 0) {
 
 									
-									demon[DEMON_BIRD] = 1;
-									demon[DEMON_EXPLODING] = 0;
-									demon[DEMON_SHOOTER] = 1;
-									demon[DEMON_PERCENT_X] = 1;
+									demon[DEMON_BIRD] = 1.0F;
+									demon[DEMON_EXPLODING] = (float) 0;
+									demon[DEMON_SHOOTER] = 1.0F;
+									demon[DEMON_PERCENT_X] = 1.0F;
 
                                     float[] bird = new float[32];
 									demons.add(bird);
-									bird[DEMON_X] = demon[DEMON_X] + 8;
+									bird[DEMON_X] = demon[DEMON_X] + 8.0F;
 									bird[DEMON_Y] = demon[DEMON_Y];
 									bird[DEMON_ROW] = demon[DEMON_ROW];
-									bird[DEMON_PERCENT_Y] = 1;
-									bird[DEMON_PERCENT_X] = 1;
-									bird[DEMON_BIRD] = 1;
+									bird[DEMON_PERCENT_Y] = 1.0F;
+									bird[DEMON_PERCENT_X] = 1.0F;
+									bird[DEMON_BIRD] = 1.0F;
 
 									demonsInRows[(int) demon[DEMON_ROW]].add(bird);
 
@@ -606,31 +606,31 @@ public class a extends GamePanel {
 						}
 					} else {
 
-						if (demon[DEMON_DIVING] == 1) {
+						if (demon[DEMON_DIVING] == 1.0F) {
 							
-							demon[DEMON_Y] = demon[DEMON_DIVING_Y] + 16 * (float) Math.sin(3.14f * demon[DEMON_PERCENT_X]);
+							demon[DEMON_Y] = demon[DEMON_DIVING_Y] + 16.0F * (float) Math.sin((double) (3.14f * demon[DEMON_PERCENT_X]));
 							demon[DEMON_DIVING_Y] += 0.25f;
 							demon[DEMON_PERCENT_X] += demonSpeed * 0.07f;
 							demon[DEMON_X] += demon[DEMON_DELTA_X];
-							if (demon[DEMON_PERCENT_X] >= 1) {
-								demon[DEMON_PERCENT_X] = 0;
-								if (demon[DEMON_DELTA_X] < 0) {
-									if (demon[DEMON_X] < playerX - 8) {
+							if (demon[DEMON_PERCENT_X] >= 1.0F) {
+								demon[DEMON_PERCENT_X] = (float) 0;
+								if (demon[DEMON_DELTA_X] < (float) 0) {
+									if (demon[DEMON_X] < (float) (playerX - 8)) {
 										demon[DEMON_DELTA_X] = demonSpeed;
 									}
 								} else {
-									if (demon[DEMON_X] > playerX + 8) {
+									if (demon[DEMON_X] > (float) (playerX + 8)) {
 										demon[DEMON_DELTA_X] = -demonSpeed;
 									}
 								}
 							}
 
 							
-							if (playerExploding == 0 && demon[DEMON_Y] >= 171 && demon[DEMON_Y] <= 185 && demon[DEMON_X] + 7 >= playerX && demon[DEMON_X] <= playerX + 7) {
+							if (playerExploding == 0 && demon[DEMON_Y] >= 171.0F && demon[DEMON_Y] <= 185.0F && demon[DEMON_X] + 7.0F >= (float) playerX && demon[DEMON_X] <= (float) (playerX + 7)) {
 								demons.remove(i);
 								demonsInRows[3].remove(0);
 								playerExploding = 63;
-							} else if (demon[DEMON_Y] > 182) {
+							} else if (demon[DEMON_Y] > 182.0F) {
 								
 								demons.remove(i);
 								demonsInRows[3].remove(0);
@@ -638,7 +638,7 @@ public class a extends GamePanel {
 
 						} else {
 
-                            boolean shooter = demon[DEMON_ROW] == 2 && (demon[DEMON_BIRD] == 0 || demon[DEMON_SHOOTER] == 1) && demonsInRows[3].size() == 0;
+                            boolean shooter = demon[DEMON_ROW] == 2.0F && (demon[DEMON_BIRD] == (float) 0 || demon[DEMON_SHOOTER] == 1.0F) && demonsInRows[3].size() == 0;
 
 							
 							if (shooting && shooter) {
@@ -650,74 +650,74 @@ public class a extends GamePanel {
                                         float[] bullet = new float[32];
 										bullets.add(bullet);
 										bullet[BULLET_DEMON_X] = demon[DEMON_X];
-										bullet[BULLET_X] = demon[DEMON_X] + (bullet[BULLET_OFFSET_X] = (lasers || demon[DEMON_BIRD] == 0 ? 4 : 0) + (lasers ? 0 : random.nextInt(3)));
-										bullet[BULLET_Y] = demon[DEMON_Y] + 8;
-										bullet[BULLET_RADIUS] = demon[DEMON_BIRD] == 1 ? 1 : lasers ? 0 : 1;
+										bullet[BULLET_X] = demon[DEMON_X] + (bullet[BULLET_OFFSET_X] = (float) ((lasers || demon[DEMON_BIRD] == (float) 0 ? 4 : 0) + (lasers ? 0 : random.nextInt(3))));
+										bullet[BULLET_Y] = demon[DEMON_Y] + 8.0F;
+										bullet[BULLET_RADIUS] = (float) (demon[DEMON_BIRD] == 1.0F ? 1 : lasers ? 0 : 1);
 
-										if (demon[DEMON_BIRD] == 0 || !lasers) {
+										if (demon[DEMON_BIRD] == (float) 0 || !lasers) {
                                             float[] bullet2 = new float[32];
 											bullets.add(bullet2);
 											bullet2[BULLET_DEMON_X] = demon[DEMON_X];
-											bullet2[BULLET_X] = demon[DEMON_X] + (bullet2[BULLET_OFFSET_X] = (demon[DEMON_BIRD] == 1 ? 0 : 4) + (lasers ? 3 : random.nextInt(3)) + 4);
-											bullet2[BULLET_Y] = demon[DEMON_Y] + 8;
-											bullet2[BULLET_RADIUS] = lasers ? 0 : 1;
+											bullet2[BULLET_X] = demon[DEMON_X] + (bullet2[BULLET_OFFSET_X] = (float) ((demon[DEMON_BIRD] == 1.0F ? 0 : 4) + (lasers ? 3 : random.nextInt(3)) + 4));
+											bullet2[BULLET_Y] = demon[DEMON_Y] + 8.0F;
+											bullet2[BULLET_RADIUS] = (float) (lasers ? 0 : 1);
 										}
 									} else {
                                         float[] bullet = new float[32];
 										bullets.add(bullet);
 										bullet[BULLET_DEMON_X] = demon[DEMON_X];
-										bullet[BULLET_X] = demon[DEMON_X] + (bullet[BULLET_OFFSET_X] = (demon[DEMON_BIRD] == 1 ? 0 : 4) + random.nextInt(8));
-										bullet[BULLET_Y] = demon[DEMON_Y] + 8;
-										bullet[BULLET_RADIUS] = lasers ? 0 : 1;
+										bullet[BULLET_X] = demon[DEMON_X] + (bullet[BULLET_OFFSET_X] = (float) ((demon[DEMON_BIRD] == 1.0F ? 0 : 4) + random.nextInt(8)));
+										bullet[BULLET_Y] = demon[DEMON_Y] + 8.0F;
+										bullet[BULLET_RADIUS] = (float) (lasers ? 0 : 1);
 									}
 								}
 
 							} else {
 
 								
-								if (demon[DEMON_PERCENT_Y] >= 1) {
-									demon[DEMON_PERCENT_Y] = 0;
-									demon[DEMON_DELTA_PERCENT_Y] = 1.57f / (30 + random.nextInt(15));
+								if (demon[DEMON_PERCENT_Y] >= 1.0F) {
+									demon[DEMON_PERCENT_Y] = (float) 0;
+									demon[DEMON_DELTA_PERCENT_Y] = 1.57f / (float) (30 + random.nextInt(15));
 									demon[DEMON_START_Y] = demon[DEMON_Y];
-									demon[DEMON_DELTA_Y] = 40 + ((int) demon[DEMON_ROW] << 5) + random.nextInt(demon[DEMON_ROW] == 2 ? 14 : 30) - demon[DEMON_Y];
-                                    float dy = demon[DEMON_DELTA_Y] < 0 ? -demon[DEMON_DELTA_Y] : demon[DEMON_DELTA_Y];
-									if (dy < 1) {
-										dy = 1;
+									demon[DEMON_DELTA_Y] = (float) (40 + ((int) demon[DEMON_ROW] << 5) + random.nextInt(demon[DEMON_ROW] == 2.0F ? 14 : 30)) - demon[DEMON_Y];
+                                    float dy = demon[DEMON_DELTA_Y] < (float) 0 ? -demon[DEMON_DELTA_Y] : demon[DEMON_DELTA_Y];
+									if (dy < 1.0F) {
+										dy = 1.0F;
 									}
 									demon[DEMON_DELTA_PERCENT_Y] = (0.9f + 0.1f * random.nextFloat()) * demonSpeed * 1.57f / dy;
 								} else {
 									demon[DEMON_PERCENT_Y] += demon[DEMON_DELTA_PERCENT_Y];
-									demon[DEMON_Y] = demon[DEMON_START_Y] + demon[DEMON_DELTA_Y] * (float) Math.sin(demon[DEMON_PERCENT_Y]);
+									demon[DEMON_Y] = demon[DEMON_START_Y] + demon[DEMON_DELTA_Y] * (float) Math.sin((double) demon[DEMON_PERCENT_Y]);
 								}
 
 								
-								if (demon[DEMON_PERCENT_X] >= 1) {
-									demon[DEMON_PERCENT_X] = 0;
+								if (demon[DEMON_PERCENT_X] >= 1.0F) {
+									demon[DEMON_PERCENT_X] = (float) 0;
 									demon[DEMON_START_X] = demon[DEMON_X];
 
 									if (random.nextInt(11) == 1) {
 										x = random.nextInt(144);
 									} else {
-										if (demon[DEMON_ROW] < 2 || (demon[DEMON_BIRD] == 1 && demon[DEMON_SHOOTER] == 0)) {
+										if (demon[DEMON_ROW] < 2.0F || (demon[DEMON_BIRD] == 1.0F && demon[DEMON_SHOOTER] == (float) 0)) {
 											
 											y = playerX + 8 + random.nextInt(136 - playerX);
 											z = random.nextInt(playerX - 8);
-											x = (demon[DEMON_X] + 4 < playerX) ? (playerX < 57) ? y : z : (playerX > 103) ? z : y;
+											x = (demon[DEMON_X] + 4.0F < (float) playerX) ? (playerX < 57) ? y : z : (playerX > 103) ? z : y;
 										} else {
 											
 											x = playerX - 28 + random.nextInt(48);
 										}
 									}
 
-									demon[DEMON_DELTA_X] = x - demon[DEMON_X];
-                                    float dx = demon[DEMON_DELTA_X] < 0 ? -demon[DEMON_DELTA_X] : demon[DEMON_DELTA_X];
-									if (dx < 1) {
-										dx = 1;
+									demon[DEMON_DELTA_X] = (float) x - demon[DEMON_X];
+                                    float dx = demon[DEMON_DELTA_X] < (float) 0 ? -demon[DEMON_DELTA_X] : demon[DEMON_DELTA_X];
+									if (dx < 1.0F) {
+										dx = 1.0F;
 									}
 									demon[DEMON_DELTA_PERCENT_X] = (0.9f + 0.1f * random.nextFloat()) * demonSpeed * 1.57f / dx;
 								} else {
 									demon[DEMON_PERCENT_X] += demon[DEMON_DELTA_PERCENT_X];
-									demon[DEMON_X] = demon[DEMON_START_X] + demon[DEMON_DELTA_X] * (float) Math.sin(demon[DEMON_PERCENT_X]);
+									demon[DEMON_X] = demon[DEMON_START_X] + demon[DEMON_DELTA_X] * (float) Math.sin((double) demon[DEMON_PERCENT_X]);
 									if (shooter && level > 7) {
 										
 										for (j = bullets.size() - 1; j >= 0; j--) {
@@ -729,13 +729,13 @@ public class a extends GamePanel {
 						}
 
 						
-						if (playerBulletY < 175 && playerBulletY <= demon[DEMON_Y] + 7 && playerBulletY + 7 >= demon[DEMON_Y]
-								&& playerBulletX >= demon[DEMON_X] + (demon[DEMON_BIRD] == 0 && tinyEnemies ? 4 : 0)
-								&& playerBulletX <= demon[DEMON_X] + (demon[DEMON_BIRD] == 1 ? 7 : (tinyEnemies ? 11 : 15))) {
-							demon[DEMON_EXPLODING] = 1;
-							demon[DEMON_EXPLODING_INDEX] = 0;
-							demon[DEMON_DELAY] = 0;
-							playerBulletY = 175;
+						if (playerBulletY < 175.0F && playerBulletY <= demon[DEMON_Y] + 7.0F && playerBulletY + 7.0F >= demon[DEMON_Y]
+								&& (float) playerBulletX >= demon[DEMON_X] + (float) (demon[DEMON_BIRD] == (float) 0 && tinyEnemies ? 4 : 0)
+								&& (float) playerBulletX <= demon[DEMON_X] + (float) (demon[DEMON_BIRD] == 1.0F ? 7 : (tinyEnemies ? 11 : 15))) {
+							demon[DEMON_EXPLODING] = 1.0F;
+							demon[DEMON_EXPLODING_INDEX] = (float) 0;
+							demon[DEMON_DELAY] = (float) 0;
+							playerBulletY = 175.0F;
 							playerBulletX = playerX + 3;
 
 							if (!demoMode) {
@@ -778,19 +778,19 @@ public class a extends GamePanel {
 			
 			for (i = demons.size() - 1; i >= 0; i--) {
                 float[] demon = demons.get(i);
-				j = (demon[DEMON_SPRITE] == 3) ? 1 : (int) demon[DEMON_SPRITE];
-				if (demon[DEMON_EXPLODING] == 1) {
-					if (demon[DEMON_BIRD] == 1) {
+				j = (demon[DEMON_SPRITE] == 3.0F) ? 1 : (int) demon[DEMON_SPRITE];
+				if (demon[DEMON_EXPLODING] == 1.0F) {
+					if (demon[DEMON_BIRD] == 1.0F) {
 						offscreenGraphics.drawImage(enemySprites[level][6 + (int) demon[DEMON_EXPLODING_INDEX]], (int) demon[DEMON_X], (int) demon[DEMON_Y], (int) demon[DEMON_X] + 8,
 								(int) demon[DEMON_Y] + 8, 0, 0, 8, 8, null);
 					} else {
 						offscreenGraphics.drawImage(enemySprites[level][(level > 3 ? 6 : 3) + (int) demon[DEMON_EXPLODING_INDEX]], (int) demon[DEMON_X], (int) demon[DEMON_Y], null);
 					}
-				} else if (demon[DEMON_FORMING] == 1) {
+				} else if (demon[DEMON_FORMING] == 1.0F) {
 					offscreenGraphics.drawImage(enemySprites[level][j + 3], (int) demon[DEMON_X], (int) demon[DEMON_Y], (int) demon[DEMON_X] + 32, (int) demon[DEMON_Y] + 8, 0, 0, 8, 8, null);
 					offscreenGraphics.drawImage(enemySprites[level][j + 3], (int) demon[DEMON_X2], (int) demon[DEMON_Y], (int) demon[DEMON_X2] + 32, (int) demon[DEMON_Y] + 8, 7, 0, 15, 8, null);
 				} else {
-					offscreenGraphics.drawImage(enemySprites[level][demon[DEMON_BIRD] == 1 ? 9 + j : j], (int) demon[DEMON_X], (int) demon[DEMON_Y], null);
+					offscreenGraphics.drawImage(enemySprites[level][demon[DEMON_BIRD] == 1.0F ? 9 + j : j], (int) demon[DEMON_X], (int) demon[DEMON_Y], null);
 				}
 			}
 

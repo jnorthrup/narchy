@@ -54,18 +54,18 @@ public class ReSurface extends SurfaceCamera {
 
     /** ortho restart */
     public ReSurface start(GL2 gl, float pw, float ph, float dtS, float fps) {
-        assert(pw >= 1 && ph >= 1);
+        assert(pw >= 1.0F && ph >= 1.0F);
 
-        this.frameDTideal = (float) (1.0/ Math.max(1.0E-9, fps));
+        this.frameDTideal = (float) (1.0/ Math.max(1.0E-9, (double) fps));
         this.gl = gl;
         this.pw = pw;
         this.ph = ph;
 
         this.frameDT = dtS;
         //this.frameDTms = Util.max(1, Math.round(1000 * frameDT));
-        this.load.next( Math.max(0, dtS - frameDTideal) / frameDTideal );
+        this.load.next( Math.max((float) 0, dtS - frameDTideal) / frameDTideal );
 
-        set(pw/2, ph/2, 1, 1);
+        set(pw/ 2.0F, ph/ 2.0F, 1.0F, 1.0F);
 
         this.frameNS = System.nanoTime();
 
@@ -98,7 +98,7 @@ public class ReSurface extends SurfaceCamera {
 //        return RectFloat.XYXY(x1, y1, x2, y2);
 //    }
     public RectFloat pixelVisible() {
-        return RectFloat.XYXY(0, 0, pw, ph);
+        return RectFloat.XYXY((float) 0, (float) 0, pw, ph);
     }
 
     public final boolean visibleByCamera(RectFloat r) {
@@ -111,7 +111,7 @@ public class ReSurface extends SurfaceCamera {
         return v;
     }
     public final boolean visibleByPixels(RectFloat r) {
-        return visP(r, minVisibilityPixelPct) > 0;
+        return visP(r, minVisibilityPixelPct) > (float) 0;
     }
 
     public final float visP(RectFloat bounds, float minPixelsToBeVisible) {
@@ -120,10 +120,10 @@ public class ReSurface extends SurfaceCamera {
 //        System.out.println(scaleX + " " + w + " " + pw);
         float p = bounds.w * psw;
         if (p < minPixelsToBeVisible)
-            return 0;
+            return (float) 0;
         float q = bounds.h * psh;
         if (q < minPixelsToBeVisible)
-            return 0;
+            return (float) 0;
 
         return Math.min(p, q);
     }
@@ -144,7 +144,7 @@ public class ReSurface extends SurfaceCamera {
     public void push(Zoomed.Camera cam, v2 scale) {
         SurfaceCamera prev = clone();
         stack.add(prev);
-        set(cam, prev.scaleX!=1 || prev.scaleY!=1 ?
+        set(cam, prev.scaleX!= 1.0F || prev.scaleY!= 1.0F ?
             scale.scaleClone(prev.scaleX, prev.scaleY) :
             scale);
     }

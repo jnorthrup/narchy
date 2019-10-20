@@ -22,7 +22,7 @@ public class FloatAveraged implements FloatToFloatFunction {
     }
 
     public FloatAveraged(float alpha, boolean lowOrHighPass) {
-        this(new FloatRange(alpha, 0, 1f), lowOrHighPass);
+        this(new FloatRange(alpha, (float) 0, 1f), lowOrHighPass);
     }
 
     public FloatAveraged(FloatRange alpha, boolean lowOrHighPass) {

@@ -30,7 +30,7 @@ public class FixedDelayTimedFuture<T> extends AbstractTimedCallable<T> {
         this.resolution = resolution;
         this.wheels = wheels;
         this.rescheduleCallback = rescheduleCallback;
-        this.phase = Math.max(1, Util.longToInt((1 + (periodNS / (resolution * wheels))) % resolution));
+        this.phase = Math.max(1, Util.longToInt((1L + (periodNS / (resolution * (long) wheels))) % resolution));
         reset();
     }
 
@@ -51,8 +51,8 @@ public class FixedDelayTimedFuture<T> extends AbstractTimedCallable<T> {
     }
 
     @Deprecated private int roundsPeriod() {
-        return (int) Math.min(Integer.MAX_VALUE-1,
-                Math.round((((double)periodNS)/(resolution * wheels)))
+        return (int) Math.min((long) (Integer.MAX_VALUE - 1),
+                Math.round((((double)periodNS)/ (double) (resolution * (long) wheels)))
         );
     }
 
@@ -68,6 +68,6 @@ public class FixedDelayTimedFuture<T> extends AbstractTimedCallable<T> {
 
 
     public void setPeriodMS(int nextPeriodMS) {
-        periodNS = nextPeriodMS * 1_000_000L;
+        periodNS = (long) nextPeriodMS * 1_000_000L;
     }
 }

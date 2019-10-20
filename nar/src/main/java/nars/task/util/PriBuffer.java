@@ -59,7 +59,7 @@ public abstract class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 	 * estimate current utilization: size/capacity (as a value between 0 and 100%)
 	 */
 	public final float load() {
-		return ((float) size()) / capacity();
+		return ((float) size()) / (float) capacity();
 	}
 
 	//TODO
@@ -134,8 +134,8 @@ public abstract class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 	 */
 	public static class MapTaskBuffer<X extends Task> extends SyncPriBuffer<X> {
 
-		final AtomicLong hit = new AtomicLong(0);
-		final AtomicLong miss = new AtomicLong(0);
+		final AtomicLong hit = new AtomicLong(0L);
+		final AtomicLong miss = new AtomicLong(0L);
 
 		private final Map<X, X> tasks;
 
@@ -229,7 +229,7 @@ public abstract class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 		 * input rate
 		 * tasks per cycle
 		 */
-		public final FloatRange valve = new FloatRange(0.5f, 0, 1);
+		public final FloatRange valve = new FloatRange(0.5f, (float) 0, 1.0F);
 
 		private transient long prev = Long.MIN_VALUE;
 		/**
@@ -338,7 +338,7 @@ public abstract class PriBuffer<T extends Prioritizable> implements Consumer<T> 
                 int cc = target.concurrency();
                 int toRun = cc - pending.getOpaque();
 				if (toRun >= 0) {
-                    int n = Math.min(s, batchSize((((float) toRun) / cc) * dt / nar.dur()));
+                    int n = Math.min(s, batchSize((((float) toRun) / (float) cc) * (float) dt / nar.dur()));
 					if (n > 0) {
 						//TODO target.input(tasks, n, target.concurrency());
 
@@ -349,7 +349,7 @@ public abstract class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 						} else {
 							//batch
                             int remain = n;
-                            int nEach = (int) Math.ceil(((float) remain) / toRun);
+                            int nEach = (int) Math.ceil((double) (((float) remain) / (float) toRun));
 
 
 							for (int i = 0; i < toRun && remain > 0; i++) {
@@ -374,7 +374,7 @@ public abstract class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 		 * TODO abstract
 		 */
 		protected int batchSize(float durs) {
-			return (int) Math.ceil(Math.min(durs, 1f) * capacity() * valve.floatValue());
+			return (int) Math.ceil((double) (Math.min(durs, 1f) * (float) capacity() * valve.floatValue()));
 
 			//rateControl.apply(tasks.size(), tasks.capacity());
 

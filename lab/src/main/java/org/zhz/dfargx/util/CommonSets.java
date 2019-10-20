@@ -13,13 +13,13 @@ public enum CommonSets {
 
     static {
         List<Character> chList = new ArrayList<>();
-        for (char i = 'a'; i <= 'z'; i++) {
+        for (char i = 'a'; (int) i <= (int) 'z'; i++) {
             chList.add(i);
         }
-        for (char i = 'A'; i <= 'Z'; i++) {
+        for (char i = 'A'; (int) i <= (int) 'Z'; i++) {
             chList.add(i);
         }
-        for (char i = '0'; i <= '9'; i++) {
+        for (char i = '0'; (int) i <= (int) '9'; i++) {
             chList.add(i);
         }
         chList.add('_');
@@ -73,7 +73,7 @@ public enum CommonSets {
     public static char[] complementarySet(char[] set) {
         boolean[] book = emptyBook();
         for (char b : set) {
-            book[b] = true;
+            book[(int) b] = true;
         }
         return bookToSet(book, false);
     }
@@ -81,7 +81,7 @@ public enum CommonSets {
     public static char[] minimum(char[] set) {
         boolean[] book = emptyBook();
         for (char b : set) {
-            book[b] = true;
+            book[(int) b] = true;
         }
         return bookToSet(book, true);
     }
@@ -91,12 +91,12 @@ public enum CommonSets {
         char c0 = token.charAt(0);
         int len = token.length();
         if (len == 1) {
-            if (c0 == '.') {
+            if ((int) c0 == (int) '.') {
                 result = DOT_L;
             } else {
                 result = Collections.singletonList(c0);
             }
-        } else if (len != 2 || c0 != '\\') {
+        } else if (len != 2 || (int) c0 != (int) '\\') {
             throw new InvalidSyntaxException("Unrecognized token: " + token);
         } else {
             switch (token.charAt(1)) {
@@ -145,8 +145,8 @@ public enum CommonSets {
     private static char[] bookToSet(boolean[] book, boolean persistedFlag) {
         char[] newSet = new char[ENCODING_LENGTH];
         int i = 0;
-        for (char j = 0; j < book.length; j++) {
-            if (book[j] == persistedFlag) {
+        for (char j = (char) 0; (int) j < book.length; j++) {
+            if (book[(int) j] == persistedFlag) {
                 newSet[i++] = j;
             }
         }

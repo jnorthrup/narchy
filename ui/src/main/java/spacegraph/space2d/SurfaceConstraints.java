@@ -12,7 +12,7 @@ public class SurfaceConstraints {
     final ContinuousConstraintSolver constraints = new ContinuousConstraintSolver();
 
     public void scale(DoubleVar target, float scale, DoubleVar source) {
-        constraints.add(C.equals(target, C.multiply(source, scale)));
+        constraints.add(C.equals(target, C.multiply(source, (double) scale)));
     }
 
     public void scale(Surface target, v2 scale, Surface source) {
@@ -21,20 +21,20 @@ public class SurfaceConstraints {
                     @Override
                     public void save() {
                     }
-                }, scale.x)));
+                }, (double) scale.x)));
         constraints.add(C.equals(new SurfaceVar(target, SurfaceFeature.H),
                 C.multiply(new SurfaceVar(source,SurfaceFeature.H) {
                     @Override
                     public void save() {
                     }
-                }, scale.y)));
+                }, (double) scale.y)));
     }
 
     public enum SurfaceFeature {
         W {
             @Override
             double get(Surface s) {
-                return s.w();
+                return (double) s.w();
             }
 
             @Override
@@ -45,7 +45,7 @@ public class SurfaceConstraints {
         H {
             @Override
             double get(Surface s) {
-                return s.h();
+                return (double) s.h();
             }
 
             @Override

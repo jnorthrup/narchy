@@ -11,7 +11,6 @@ import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.SortedSet;
-import java.util.stream.IntStream;
 
 import static nars.Op.FRAG;
 import static nars.time.Tense.DTERNAL;
@@ -91,9 +90,9 @@ public final class Fragment extends LightCompound {
         } else {
             Term[] t = new Term[ll - except.length];
             int j = 0;
-            for (byte i = 0; i < ll; i++) {
-                if (ArrayUtil.indexOf(except, i)==-1)
-                    t[j++] = matched.sub(i);
+            for (byte i = (byte) 0; (int) i < ll; i++) {
+                if (ArrayUtil.indexOf(except, (int) i)==-1)
+                    t[j++] = matched.sub((int) i);
             }
             //assert(j == t.length);
             return fragment(t);

@@ -32,8 +32,8 @@ public class Windo extends MutableUnitContainer {
 
 
     private boolean fixed = false;
-    private final FingerResize resize = new FingerResizeSurface(this, DRAG_BUTTON);
-    private final Dragging move = new FingerMoveSurface(this, DRAG_BUTTON);
+    private final FingerResize resize = new FingerResizeSurface(this, (int) DRAG_BUTTON);
+    private final Dragging move = new FingerMoveSurface(this, (int) DRAG_BUTTON);
     private v2 _posGlobal = null;
 
     public Windo() {
@@ -48,7 +48,7 @@ public class Windo extends MutableUnitContainer {
     public Surface finger(Finger finger) {
 
 
-        boolean canDrag = finger.pressed(DRAG_BUTTON);
+        boolean canDrag = finger.pressed((int) DRAG_BUTTON);
 
         Dragging current = this.dragMode;
         boolean unDrag = (current != null && !current.active());
@@ -129,27 +129,27 @@ public class Windo extends MutableUnitContainer {
             switch (p) {
                 case RESIZE_N:
                     colorDragIndicator(gl);
-                    Draw.quad2d(gl, pmx, pmy, W / 2, H - resizeBorder,
-                            W / 2 + resizeBorder / 2, H,
-                            W / 2 - resizeBorder / 2, H);
+                    Draw.quad2d(gl, pmx, pmy, W / 2.0F, H - resizeBorder,
+                            W / 2.0F + resizeBorder / 2.0F, H,
+                            W / 2.0F - resizeBorder / 2.0F, H);
                     break;
                 case RESIZE_S:
                     colorDragIndicator(gl);
-                    Draw.quad2d(gl, pmx, pmy, W / 2, resizeBorder,
-                            W / 2 + resizeBorder / 2, 0,
-                            W / 2 - resizeBorder / 2, 0);
+                    Draw.quad2d(gl, pmx, pmy, W / 2.0F, resizeBorder,
+                            W / 2.0F + resizeBorder / 2.0F, (float) 0,
+                            W / 2.0F - resizeBorder / 2.0F, (float) 0);
                     break;
                 case RESIZE_E:
                     colorDragIndicator(gl);
-                    Draw.quad2d(gl, pmx, pmy, W - resizeBorder, H / 2,
-                            W, H / 2 + resizeBorder / 2,
-                            W, H / 2 - resizeBorder / 2);
+                    Draw.quad2d(gl, pmx, pmy, W - resizeBorder, H / 2.0F,
+                            W, H / 2.0F + resizeBorder / 2.0F,
+                            W, H / 2.0F - resizeBorder / 2.0F);
                     break;
                 case RESIZE_W:
                     colorDragIndicator(gl);
-                    Draw.quad2d(gl, pmx, pmy, resizeBorder, H / 2,
-                            0, H / 2 + resizeBorder / 2,
-                            0, H / 2 - resizeBorder / 2);
+                    Draw.quad2d(gl, pmx, pmy, resizeBorder, H / 2.0F,
+                            (float) 0, H / 2.0F + resizeBorder / 2.0F,
+                            (float) 0, H / 2.0F - resizeBorder / 2.0F);
                     break;
                 case RESIZE_NE:
                     colorDragIndicator(gl);
@@ -157,11 +157,11 @@ public class Windo extends MutableUnitContainer {
                     break;
                 case RESIZE_SE:
                     colorDragIndicator(gl);
-                    Draw.quad2d(gl, pmx, pmy, W, W - resizeBorder, W, 0, W - resizeBorder, 0);
+                    Draw.quad2d(gl, pmx, pmy, W, W - resizeBorder, W, (float) 0, W - resizeBorder, (float) 0);
                     break;
                 case RESIZE_SW:
                     colorDragIndicator(gl);
-                    Draw.quad2d(gl, pmx, pmy, 0, resizeBorder, 0, 0, resizeBorder, 0);
+                    Draw.quad2d(gl, pmx, pmy, (float) 0, resizeBorder, (float) 0, (float) 0, resizeBorder, (float) 0);
                     break;
             }
             gl.glPopMatrix();
@@ -202,7 +202,7 @@ public class Windo extends MutableUnitContainer {
     public Windo sizeRel(float pctX, float pctY) {
 //        EditGraph2D p = parentOrSelf(EditGraph2D.class);
 //        return p != null ? (Windo) resize(p.w() * pctX, p.h() * pctY) : null;
-        return posRel(0, 0, pctX, pctY);
+        return posRel((float) 0, (float) 0, pctX, pctY);
     }
 
     public Windo posRel(float cx, float cy, float pctX, float pctY) {

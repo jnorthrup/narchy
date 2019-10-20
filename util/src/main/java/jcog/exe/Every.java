@@ -34,7 +34,7 @@ public class Every {
     public void next() {
         long now = System.currentTimeMillis();
         long delta = now - last;
-        if (delta > periodMS.intValue()) {
+        if (delta > (long) periodMS.intValue()) {
             last = now;
             each.accept(delta);
         }

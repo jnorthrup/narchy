@@ -32,7 +32,6 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static com.jcraft.jcterm.Terminal.SFTP;
 import static com.jcraft.jcterm.Terminal.SHELL;
@@ -131,17 +130,17 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                     if (_host == null) {
                         break;
                     }
-                    String _user = _host.substring(0, _host.indexOf('@'));
-                    _host = _host.substring(_host.indexOf('@') + 1);
+                    String _user = _host.substring(0, _host.indexOf((int) '@'));
+                    _host = _host.substring(_host.indexOf((int) '@') + 1);
                     if (_host.isEmpty()) {
                         continue;
                     }
-                    if (_host.indexOf(':') != -1) {
+                    if (_host.indexOf((int) ':') != -1) {
                         try {
-                            port = Integer.parseInt(_host.substring(_host.indexOf(':') + 1));
+                            port = Integer.parseInt(_host.substring(_host.indexOf((int) ':') + 1));
                         } catch (Exception eee) {
                         }
-                        _host = _host.substring(0, _host.indexOf(':'));
+                        _host = _host.substring(0, _host.indexOf((int) ':'));
                     }
                     user1 = _user;
                     host1 = _host;
@@ -422,8 +421,8 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                 }
 
                 try {
-                    foo = proxy.substring(0, proxy.indexOf(':'));
-                    bar = Integer.parseInt(proxy.substring(proxy.indexOf(':') + 1));
+                    foo = proxy.substring(0, proxy.indexOf((int) ':'));
+                    bar = Integer.parseInt(proxy.substring(proxy.indexOf((int) ':') + 1));
                     if (foo != null) {
                         setProxyHttp(foo, bar);
                     }
@@ -445,8 +444,8 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                 }
 
                 try {
-                    foo = proxy.substring(0, proxy.indexOf(':'));
-                    bar = Integer.parseInt(proxy.substring(proxy.indexOf(':') + 1));
+                    foo = proxy.substring(0, proxy.indexOf((int) ':'));
+                    bar = Integer.parseInt(proxy.substring(proxy.indexOf((int) ':') + 1));
                     if (foo != null) {
                         setProxySOCKS5(foo, bar);
                     }
@@ -459,8 +458,8 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                         "XDisplay name (hostname:0)", (xhost == null) ? "" : (xhost + ':' + xport));
                 try {
                     if (display != null) {
-                        xhost = display.substring(0, display.indexOf(':'));
-                        xport = Integer.parseInt(display.substring(display.indexOf(':') + 1));
+                        xhost = display.substring(0, display.indexOf((int) ':'));
+                        xport = Integer.parseInt(display.substring(display.indexOf((int) ':') + 1));
                         xforwarding = true;
                     }
                 } catch (Exception ee) {
@@ -509,10 +508,10 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                     String foo = JOptionPane.showInputDialog(this, title, "");
                     if (foo == null)
                         return;
-                    int port1 = Integer.parseInt(foo.substring(0, foo.indexOf(':')));
-                    foo = foo.substring(foo.indexOf(':') + 1);
-                    String host = foo.substring(0, foo.indexOf(':'));
-                    int port2 = Integer.parseInt(foo.substring(foo.indexOf(':') + 1));
+                    int port1 = Integer.parseInt(foo.substring(0, foo.indexOf((int) ':')));
+                    foo = foo.substring(foo.indexOf((int) ':') + 1);
+                    String host = foo.substring(0, foo.indexOf((int) ':'));
+                    int port2 = Integer.parseInt(foo.substring(foo.indexOf((int) ':') + 1));
 
                     if ("Local Port...".equals(action)) {
                         setPortForwardingL(port1, host, port2);
@@ -747,7 +746,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
     class MyUserInfo implements UserInfo, UIKeyboardInteractive {
         final String passphrase = null;
         final JTextField pword = new JPasswordField(20);
-        final GridBagConstraints gbc = new GridBagConstraints(0, 0, 1, 1, 1, 1,
+        final GridBagConstraints gbc = new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0,
                 GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(0, 0,
                 0, 0), 0, 0);
         String passwd = null;
@@ -820,12 +819,12 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
             for (int i = 0; i < prompt.length; i++) {
                 gbc.fill = GridBagConstraints.NONE;
                 gbc.gridx = 0;
-                gbc.weightx = 1;
+                gbc.weightx = 1.0;
                 panel.add(new JLabel(prompt[i]), gbc);
 
                 gbc.gridx = 1;
                 gbc.fill = GridBagConstraints.HORIZONTAL;
-                gbc.weighty = 1;
+                gbc.weighty = 1.0;
                 if (echo[i]) {
                     texts[i] = new JTextField(20);
                 } else {

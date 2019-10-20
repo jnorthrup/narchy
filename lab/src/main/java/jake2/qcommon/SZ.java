@@ -94,7 +94,7 @@ public final class SZ {
 	
 		if (buf.cursize != 0) {
 	
-			if (buf.data[buf.cursize - 1] != 0) {
+			if ((int) buf.data[buf.cursize - 1] != 0) {
 				
 				System.arraycopy(str, 0, buf.data, GetSpace(buf, length+1), length);
 			} else {
@@ -106,6 +106,6 @@ public final class SZ {
 			System.arraycopy(str, 0, buf.data, GetSpace(buf, length), length);
 		
 		
-		buf.data[buf.cursize - 1]=0;
+		buf.data[buf.cursize - 1]= (byte) 0;
 	}
 }

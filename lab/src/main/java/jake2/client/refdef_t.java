@@ -30,9 +30,9 @@ public class refdef_t {
     public int height;
 	public float		fov_x;
     public float fov_y;
-    public float[] vieworg = {0, 0, 0};
-    public float[] viewangles = {0, 0, 0};
-    public float[] blend = {0, 0, 0, 0};
+    public float[] vieworg = {(float) 0, (float) 0, (float) 0};
+    public float[] viewangles = {(float) 0, (float) 0, (float) 0};
+    public float[] blend = {(float) 0, (float) 0, (float) 0, (float) 0};
 	public float		time;				
 	public int		rdflags;
 

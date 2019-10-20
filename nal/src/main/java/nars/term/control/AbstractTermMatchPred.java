@@ -15,7 +15,7 @@ public abstract class AbstractTermMatchPred<X> extends AbstractPred<X> {
     }
 
     public static float cost(int pathLen) {
-        return pathLen * 0.01f;
+        return (float) pathLen * 0.01f;
     }
 
 

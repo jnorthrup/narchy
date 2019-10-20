@@ -69,7 +69,7 @@ public class TrackerTest extends VideoSurface {
             }
 
             // Track the object across each video frame and display the results
-            long previous = 0;
+            long previous = 0L;
             //while( video.hasNext() ) {
             //frame = video.next();
 
@@ -97,15 +97,15 @@ public class TrackerTest extends VideoSurface {
         boolean reset ;
         if ((reset=finger.pressedNow(2)) || finger.pressedNow(0)) {
             v2 p = finger.posRelative(innerBounds());
-            p.scaled(frame.width,frame.height);
+            p.scaled((float) frame.width, (float) frame.height);
             float ch = 0.15f;
             float cw = 0.15f;
-            float x = p.x, y = p.y, w = frame.width*cw, h = frame.height*ch;
+            float x = p.x, y = p.y, w = (float) frame.width *cw, h = (float) frame.height *ch;
             Quadrilateral_F64 location = new Quadrilateral_F64();
-            location.setA(new Point2D_F64(x-w/2, y-h/2));
-            location.setB(new Point2D_F64(x+w/2, y-h/2));
-            location.setC(new Point2D_F64(x+w/2, y+h/2));
-            location.setD(new Point2D_F64(x-w/2, y+h/2));
+            location.setA(new Point2D_F64((double) (x - w / 2.0F), (double) (y - h / 2.0F)));
+            location.setB(new Point2D_F64((double) (x + w / 2.0F), (double) (y - h / 2.0F)));
+            location.setC(new Point2D_F64((double) (x + w / 2.0F), (double) (y + h / 2.0F)));
+            location.setD(new Point2D_F64((double) (x - w / 2.0F), (double) (y + h / 2.0F)));
             if (reset)
                 tracker.initialize(frame, location);
 
@@ -121,8 +121,8 @@ public class TrackerTest extends VideoSurface {
         Quadrilateral_F64 _l = location;
         if (_l != null) {
             if (tracking) {
-                float w = frame.width;
-                float h = frame.height;
+                float w = (float) frame.width;
+                float h = (float) frame.height;
                 r.on((g) -> {
                     RectFloat i = innerBounds();
                     Quadrilateral_F64 l = location;
@@ -130,8 +130,8 @@ public class TrackerTest extends VideoSurface {
                     v2 b = i.normalize(new v2((float) l.b.x / w, (float) (l.b.y) / h));
                     v2 c = i.normalize(new v2((float) l.c.x / w, (float) (l.c.y) / h));
                     v2 d = i.normalize(new v2((float) l.d.x / w, (float) (l.d.y) / h));
-                    g.glLineWidth(4);
-                    g.glColor3f(1, 1, 1);
+                    g.glLineWidth(4.0F);
+                    g.glColor3f(1.0F, 1.0F, 1.0F);
                     Draw.line(a.x, a.y, b.x, b.y, g);
                     Draw.line(b.x, b.y, c.x, c.y, g);
                     Draw.line(c.x, c.y, d.x, d.y, g);

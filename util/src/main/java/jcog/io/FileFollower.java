@@ -269,9 +269,9 @@ public class FileFollower {
 
                 try (FileInputStream fis = new FileInputStream(file_)) {
                     try (Reader r = Channels.newReader(fis.getChannel(), encoding_.newDecoder(), bufferSize_)) {
-                        long lastActivityTime = 0;
+                        long lastActivityTime = 0L;
                         int numBytesRead = -1;
-                        if (fileSize > bufferSize_) {
+                        if (fileSize > (long) bufferSize_) {
                             // on lit rapidement le debut
                             if (forceReadBegin_) {
                                 forceReadBegin_ = false;
@@ -289,13 +289,13 @@ public class FileFollower {
                                 isBeginRead_ = true;
                             } else {
                                 // Skip to the end of the file.
-                                fis.skip(fileSize - bufferSize_);
+                                fis.skip(fileSize - (long) bufferSize_);
                                 isBeginRead_ = false;
                                 print("!!! " + getBundle().getString("message.file.begin.skip"));
                                 print(lineSeparator);
                             }
                         }
-                        boolean isFileEmpty = (fileSize == 0);
+                        boolean isFileEmpty = (fileSize == 0L);
                         while (continueRunning_ && !needsRestart_) {
                             numBytesRead = r.read(byteArray, 0, byteArray.length);
 
@@ -311,7 +311,7 @@ public class FileFollower {
                                 if (needsRestart_) {
                                     // on retente
                                     try {
-                                        Thread.sleep(latency_);
+                                        Thread.sleep((long) latency_);
                                     } catch (InterruptedException e) {
                                         Thread.currentThread().interrupt();
                                         // Interrupt may be thrown manually by stop()
@@ -329,7 +329,7 @@ public class FileFollower {
                             boolean noDataLeft = (numBytesRead < byteArray.length);
                             if (noDataLeft && !needsRestart_) {
                                 try {
-                                    Thread.sleep(latency_);
+                                    Thread.sleep((long) latency_);
                                 } catch (InterruptedException e) {
                                     // Interrupt may be thrown manually by stop()
                                 }

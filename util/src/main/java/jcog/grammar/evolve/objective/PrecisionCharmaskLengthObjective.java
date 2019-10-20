@@ -64,7 +64,7 @@ public class PrecisionCharmaskLengthObjective implements Objective {
             evaluate = evaluator.evaluate(individual, context);
             StringBuilder builder = new StringBuilder();
             individual.describe(builder);
-            fitnessLenght = builder.length();
+            fitnessLenght = (double) builder.length();
         } catch (TreeEvaluationException ex) {
             Logger.getLogger(PrecisionCharmaskLengthObjective.class.getName()).log(Level.SEVERE, null, ex);
             Arrays.fill(fitness, Double.POSITIVE_INFINITY);
@@ -88,21 +88,21 @@ public class PrecisionCharmaskLengthObjective implements Objective {
             List<Bounds> annotatedMask = new ArrayList<>(expectedMatchMask);
             annotatedMask.addAll(expectedUnmatchMask);
 
-            stats.tp = countIdenticalRanges(result, expectedMatchMask);
-            stats.fp = Bounds.countRangesThatCollideZone(result, annotatedMask) -  stats.tp;
-            statsChars.tp = intersection(result, expectedMatchMask);
-            statsChars.fp = intersection(result, expectedUnmatchMask);
+            stats.tp = (long) countIdenticalRanges(result, expectedMatchMask);
+            stats.fp = (long) Bounds.countRangesThatCollideZone(result, annotatedMask) -  stats.tp;
+            statsChars.tp = (long) intersection(result, expectedMatchMask);
+            statsChars.fp = (long) intersection(result, expectedUnmatchMask);
 
             statsOverall.add(stats);
             statsCharsOverall.add(statsChars);
             i++;
         }
 
-        statsCharsOverall.tn = dataSetView.getNumberUnmatchedChars() - statsCharsOverall.fp;
-        statsCharsOverall.fn = dataSetView.getNumberMatchedChars() - statsCharsOverall.tp;
+        statsCharsOverall.tn = (long) dataSetView.getNumberUnmatchedChars() - statsCharsOverall.fp;
+        statsCharsOverall.fn = (long) dataSetView.getNumberMatchedChars() - statsCharsOverall.tp;
 
         fitness[1] = (statsCharsOverall.fpr() + statsCharsOverall.fnr()) * 100.0;
-        fitness[0] = 1 - statsOverall.precision();
+        fitness[0] = 1.0 - statsOverall.precision();
         fitness[2] = fitnessLenght;
 
         return fitness;

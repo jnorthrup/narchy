@@ -172,8 +172,8 @@ public class HashedOverlappingPairCache extends OverlappingPairCache {
 			return overlapFilterCallback.needBroadphaseCollision(proxy0, proxy1);
 		}
 
-		boolean collides = (proxy0.collisionFilterGroup & proxy1.collisionFilterMask) != 0;
-		collides = collides && (proxy1.collisionFilterGroup & proxy0.collisionFilterMask) != 0;
+		boolean collides = ((int) proxy0.collisionFilterGroup & (int) proxy1.collisionFilterMask) != 0;
+		collides = collides && ((int) proxy1.collisionFilterGroup & (int) proxy0.collisionFilterMask) != 0;
 
 		return collides;
 	}

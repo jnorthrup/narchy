@@ -24,7 +24,7 @@ public enum AutoTranscodeTensor { ;
         float noise = 0.0005f;
 
         public AutoEncodeTensor(Tensor input, int outputs) {
-            this(input, new Autoencoder(input.volume(), outputs, new XoRoShiRo128PlusRandom(1)));
+            this(input, new Autoencoder(input.volume(), outputs, new XoRoShiRo128PlusRandom(1L)));
         }
 
         public AutoEncodeTensor(Tensor input, Autoencoder ae) {
@@ -43,15 +43,15 @@ public enum AutoTranscodeTensor { ;
 
                 //setAt(a.train(dii, learnRate, 0));
                 /** TODO FloatRange */
-                double learnRate = 0.01f;
-                ae.put(ii, (float) learnRate, 0, 0, true);
+                double learnRate = 0.01;
+                ae.put(ii, (float) learnRate, (float) 0, (float) 0, true);
                 set(ae.y);
 
-                if (noise > 0) {
+                if (noise > (float) 0) {
                     float max = Float.NEGATIVE_INFINITY;
                     float min = Float.POSITIVE_INFINITY;
                     for (int i = 0; i < data.length; i++) {
-                        double v = (data[i] += (((ae.rng.nextFloat()) - 0.5f) * 2f) * noise);
+                        double v = (double) (data[i] += (((ae.rng.nextFloat()) - 0.5f) * 2f) * noise);
                         max = Math.max((float) v, max);
                         min = Math.min((float) v, min);
                     }

@@ -29,7 +29,7 @@ public class ShiftedAddressing
 
         shiftWeight = Sigmoid.getValue(_shift.value);
         double maxShift = ((2.0 * shiftWeight) - 1.0);
-        double cellCountDbl = cells;
+        double cellCountDbl = (double) cells;
         double convolutionDbl = (maxShift + cellCountDbl) % cellCountDbl;
         simj = 1.0 - (convolutionDbl - Math.floor(convolutionDbl));
 

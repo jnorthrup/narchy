@@ -229,7 +229,7 @@ public class a extends JFrame {
 	static final boolean USE_BULLSEYE_TEXT     	= true; 	
 	static final boolean USE_MULTIPLIER_TEXT   	= true;		
 		
-	static final float ANGLE_SCALE = (2 * (float) Math.PI) / 127;
+	static final float ANGLE_SCALE = (2.0F * (float) Math.PI) / 127.0F;
 	
 	static final int FONT_ITALIC_BOLD = 3;
 	static final int LINE_COLOR = 0xaaaa66;
@@ -306,7 +306,7 @@ public class a extends JFrame {
 	static final int MAX_SPEED = 3;
 	static final float GRAVITY = 0.00077f;
 	static final float FRICTION = 0.999985f;
-	static final float FLIPPER_SPEED = (PI * 2 / 400f);
+	static final float FLIPPER_SPEED = (PI * 2.0F / 400f);
 	static final int LAUNCH_SPEED = -2;
 	static final int LAUNCH_DIV = 512;
 	static final float BUMPER_ADD = 0.25f;						
@@ -428,14 +428,14 @@ public class a extends JFrame {
         int numGroups = 0;
         int[] groupData = null;
         float[] floatData = new float[MAX_OBJ_COUNT];
-        float flipperAngleVel = 0;
+        float flipperAngleVel = (float) 0;
         int flipperUpDelta = 0;
-        float flipperAngle = 0;
-        float ballVelx = 0;
-        float ballVely = 0;
-        float ballx = 0;
-        float bally = 0;
-        long lastFrame = 0;
+        float flipperAngle = (float) 0;
+        float ballVelx = (float) 0;
+        float ballVely = (float) 0;
+        float ballx = (float) 0;
+        float bally = (float) 0;
+        long lastFrame = 0L;
         do {
 
             int bonus = 0;
@@ -496,8 +496,8 @@ public class a extends JFrame {
 					
 					while (flippers-- > 0) {
 						intData[objCountOff + ID_TYPE] = FLIPPER;
-						floatData[objCountOff + FD_FLIPPER_MIN_ANGLE] = dataIn.readUnsignedByte() * ANGLE_SCALE;
-						floatData[objCountOff + FD_FLIPPER_MAX_ANGLE] = dataIn.readUnsignedByte() * ANGLE_SCALE;
+						floatData[objCountOff + FD_FLIPPER_MIN_ANGLE] = (float) dataIn.readUnsignedByte() * ANGLE_SCALE;
+						floatData[objCountOff + FD_FLIPPER_MAX_ANGLE] = (float) dataIn.readUnsignedByte() * ANGLE_SCALE;
 						intData[objCountOff + ID_FLIPPER_ANGLE_DIR] = (dataIn.readUnsignedByte() - 1);
 						objCountOff += STRIDE;
 					}
@@ -551,8 +551,8 @@ public class a extends JFrame {
 					state = PLAYING;
 					tilt = false;
 					extraBallTarget = 1000;
-					ballx = intData[behaviourObjMap[BEHAVIOUR_START] * STRIDE + ID_X];
-					bally = intData[behaviourObjMap[BEHAVIOUR_START] * STRIDE + ID_Y];
+					ballx = (float) intData[behaviourObjMap[BEHAVIOUR_START] * STRIDE + ID_X];
+					bally = (float) intData[behaviourObjMap[BEHAVIOUR_START] * STRIDE + ID_Y];
 				} else if (state == PLAYING) {
 					
 					pushed = !tilt && k[VK_TILT];
@@ -569,10 +569,10 @@ public class a extends JFrame {
 					
 					
 					
-					ballVelx = Math.min( MAX_SPEED, ballVelx * FRICTION);
-					ballVely = Math.min( MAX_SPEED, ballVely * FRICTION + GRAVITY);
-					ballVelx = Math.max(-MAX_SPEED, ballVelx);
-					ballVely = Math.max(-MAX_SPEED, ballVely);
+					ballVelx = Math.min((float) MAX_SPEED, ballVelx * FRICTION);
+					ballVely = Math.min((float) MAX_SPEED, ballVely * FRICTION + GRAVITY);
+					ballVelx = Math.max((float) -MAX_SPEED, ballVelx);
+					ballVely = Math.max((float) -MAX_SPEED, ballVely);
 					
 					ballx += ballVelx;
 					bally += ballVely;
@@ -580,8 +580,8 @@ public class a extends JFrame {
 					
 					
 					
-					float closestx = 0;
-					float closesty = 0;
+					float closestx = (float) 0;
+					float closesty = (float) 0;
 
 
                     boolean foundCollision = false;
@@ -590,7 +590,7 @@ public class a extends JFrame {
                     int collisionObjIdx = 0;
 					
 					
-					float closestDistance = 0;
+					float closestDistance = (float) 0;
 
 					
 					for (int objIdx = 0; objIdx < objCount; objIdx++) {
@@ -602,9 +602,9 @@ public class a extends JFrame {
                         int liney2 		 = intData[objIdx * STRIDE + ID_Y2];
 						
 						
-						float tempProjectedx = 0;
-						float tempProjectedy = 0;
-						float dist = 0;
+						float tempProjectedx = (float) 0;
+						float tempProjectedy = (float) 0;
+						float dist = (float) 0;
                         boolean intersected = false;
 					
 						switch (intData[objIdx * STRIDE + ID_TYPE]) {
@@ -613,15 +613,15 @@ public class a extends JFrame {
 							flipperUpDelta 	= intData[objIdx * STRIDE + ID_FLIPPER_ANGLE_DIR];
 							flipperAngle 	= floatData[objIdx * STRIDE + FD_FLIPPER_ANGLE];
 							flipperAngleVel = floatData[objIdx * STRIDE];
-                            float newAngle = flipperAngle -	(!tilt && k[flipperUpDelta < 0 ? VK_LEFT : VK_RIGHT]
-											? -flipperUpDelta 
-											: flipperUpDelta) * FLIPPER_SPEED;
+                            float newAngle = flipperAngle - (float) (!tilt && k[flipperUpDelta < 0 ? VK_LEFT : VK_RIGHT]
+                                    ? -flipperUpDelta
+                                    : flipperUpDelta) * FLIPPER_SPEED;
 							newAngle = Math.max(floatData[objIdx * STRIDE + FD_FLIPPER_MIN_ANGLE], 
 									   Math.min(floatData[objIdx * STRIDE + FD_FLIPPER_MAX_ANGLE], 
 									   newAngle));
 							floatData[objIdx * STRIDE] = newAngle - flipperAngle;
-							linex2 = (int) (objx + Math.cos(newAngle) * flipperLength);
-							liney2 = (int) (objy + Math.sin(newAngle) * flipperLength);
+							linex2 = (int) ((double) objx + Math.cos((double) newAngle) * (double) flipperLength);
+							liney2 = (int) ((double) objy + Math.sin((double) newAngle) * (double) flipperLength);
 
 							intData[objIdx * STRIDE + ID_X2] = linex2;
 							intData[objIdx * STRIDE + ID_Y2] = liney2;
@@ -631,28 +631,28 @@ public class a extends JFrame {
 							
 						case LINE:
 
-                            float rrr = (ballx-objx) * (linex2-objx) + (bally-objy) * (liney2-objy);
-                            float len = length(linex2-objx, liney2-objy);
+                            float rrr = (ballx- (float) objx) * (float) (linex2 - objx) + (bally- (float) objy) * (float) (liney2 - objy);
+                            float len = length((float) (linex2 - objx), (float) (liney2 - objy));
                             float t = rrr / len / len;
-							if (t >= 0 && t <= 1) {
-								tempProjectedx = objx + (t * (linex2-objx));
-								tempProjectedy = objy + (t * (liney2-objy));
+							if (t >= (float) 0 && t <= 1.0F) {
+								tempProjectedx = (float) objx + (t * (float) (linex2 - objx));
+								tempProjectedy = (float) objy + (t * (float) (liney2 - objy));
 								
 								dist = length(ballx-tempProjectedx, bally-tempProjectedy);
-								intersected = (dist <= BALL_RADIUS);
+								intersected = (dist <= (float) BALL_RADIUS);
 							} else {
 								
-								dist = length(ballx-objx, bally-objy);
-                                float distance2 = length(ballx-linex2, bally-liney2);
-								if (dist < BALL_RADIUS) {
+								dist = length(ballx- (float) objx, bally- (float) objy);
+                                float distance2 = length(ballx- (float) linex2, bally- (float) liney2);
+								if (dist < (float) BALL_RADIUS) {
 									intersected = true;
-									tempProjectedx = objx;
-									tempProjectedy = objy;
+									tempProjectedx = (float) objx;
+									tempProjectedy = (float) objy;
 								}
-								if (distance2 < BALL_RADIUS && distance2 < dist) {
+								if (distance2 < (float) BALL_RADIUS && distance2 < dist) {
 									intersected = true;
-									tempProjectedx = linex2;
-									tempProjectedy = liney2;
+									tempProjectedx = (float) linex2;
+									tempProjectedy = (float) liney2;
 									dist = distance2;
 								}
 							}
@@ -660,27 +660,27 @@ public class a extends JFrame {
 
 						case SIRCLE:
 
-                            float dx = ballx - objx;
-                            float dy = bally - objy;
-							dist = length(dx, dy) - linex2;
-							if (dist < BALL_RADIUS) {
+                            float dx = ballx - (float) objx;
+                            float dy = bally - (float) objy;
+							dist = length(dx, dy) - (float) linex2;
+							if (dist < (float) BALL_RADIUS) {
 								intersected = true;
-								tempProjectedx = objx + (dx / length(dx, dy) * linex2);
-								tempProjectedy = objy + (dy / length(dx, dy) * linex2);
+								tempProjectedx = (float) objx + (dx / length(dx, dy) * (float) linex2);
+								tempProjectedy = (float) objy + (dy / length(dx, dy) * (float) linex2);
 							}
 							break;
 						}
 						
 						if (intersected) {
-							float nDotBall = 0;
+							float nDotBall = (float) 0;
 							
 							
 							if (USE_GETES) {
 								if ((objFlags & GATE_MASK) != 0) {
 									
 									
-									nDotBall = (ballx-objx) * -(liney2-objy) + (bally-objy) * (linex2-objx);
-									if (nDotBall > 0) {
+									nDotBall = (ballx- (float) objx) * (float) -(liney2 - objy) + (bally- (float) objy) * (float) (linex2 - objx);
+									if (nDotBall > (float) 0) {
 										
 										intData[objIdx * STRIDE] &= (0xff ^ COLLIDABLE_MASK);
 									}
@@ -688,7 +688,7 @@ public class a extends JFrame {
 							}
 						
 							
-							if ((nDotBall <= 0) 
+							if ((nDotBall <= (float) 0)
 									&& (objFlags & COLLIDABLE_MASK) != 0 
 									&& (!foundCollision || dist < closestDistance)) {
 								closestDistance = dist;
@@ -718,8 +718,8 @@ public class a extends JFrame {
 
 										if (blinkData[START_IDX] != 0) {
 											blinkData[START_IDX] = 0;
-											ballx = intData[behaviourObjMap[BEHAVIOUR_START] * STRIDE + ID_X];
-											bally = intData[behaviourObjMap[BEHAVIOUR_START] * STRIDE + ID_Y];
+											ballx = (float) intData[behaviourObjMap[BEHAVIOUR_START] * STRIDE + ID_X];
+											bally = (float) intData[behaviourObjMap[BEHAVIOUR_START] * STRIDE + ID_Y];
 											foundCollision = false;
 											tilt = false;
 										} else {
@@ -732,7 +732,7 @@ public class a extends JFrame {
 								}
 								if (objBehaviour == BEHAVIOUR_START) {
 									
-									ballVely = LAUNCH_SPEED - ((frameIdx & 0xff) / (float) LAUNCH_DIV);
+									ballVely = (float) LAUNCH_SPEED - ((float) (frameIdx & 0xff) / (float) LAUNCH_DIV);
 									
 									
 									flashFrameIdx = frameIdx+FLASH_FRAME_IDX;
@@ -795,7 +795,7 @@ public class a extends JFrame {
 										|| objBehaviour == BEHAVIOUR_LEFT_OUTER_LANE)
 										&& objFlags != 0) {
 									intData[objIdx * STRIDE] = 0;
-									ballVely = KICKER_VEL;
+									ballVely = (float) KICKER_VEL;
 									bonus += BONUS_KICKER;
 								}
 							}
@@ -814,16 +814,16 @@ public class a extends JFrame {
 					
 					
 					if (foundCollision) {
-						float objVelx = 0;
-						float objVely = 0;
+						float objVelx = (float) 0;
+						float objVely = (float) 0;
 
 						
 						if (intData[collisionObjIdx * STRIDE + ID_TYPE] == FLIPPER) {
-                            float dx = closestx - intData[collisionObjIdx * STRIDE + ID_X];
-                            float dy = closesty - intData[collisionObjIdx * STRIDE + ID_Y];
+                            float dx = closestx - (float) intData[collisionObjIdx * STRIDE + ID_X];
+                            float dy = closesty - (float) intData[collisionObjIdx * STRIDE + ID_Y];
                             float absVel = floatData[collisionObjIdx * STRIDE] * length(dx, dy);
 							
-							if (length(dx, dy) != 0) {
+							if (length(dx, dy) != (float) 0) {
 								objVely = absVel *  dx / length(dx, dy);
 								objVelx = absVel * -dy / length(dx, dy); 
 							}
@@ -834,8 +834,8 @@ public class a extends JFrame {
                         float normaly = (bally - closesty) / length(ballx - closestx, bally - closesty);
 						
 						
-						ballx = closestx + normalx * BALL_RADIUS;
-						bally = closesty + normaly * BALL_RADIUS;
+						ballx = closestx + normalx * (float) BALL_RADIUS;
+						bally = closesty + normaly * (float) BALL_RADIUS;
 
 
                         float impactSpeed = ((intData[collisionObjIdx * STRIDE] & BUMPER_MASK) == 0 || tilt)
@@ -848,7 +848,7 @@ public class a extends JFrame {
 						
 						if (!pushedBall && pushed && frameIdx < pushTime) {
 							pushedBall = true;
-							ballVelx += normalx/PUSH_DIV_X;
+							ballVelx += normalx/ (float) PUSH_DIV_X;
 							ballVely += normaly/PUSH_DIV_Y;
 						}
 					}
@@ -952,10 +952,10 @@ public class a extends JFrame {
 			} 
 			
 			
-			if (bally + levely < 200) {
+			if (bally + (float) levely < 200.0F) {
 				levely = Math.min(0, 200-(int)bally);
 			}
-			if (bally + levely > 400) {
+			if (bally + (float) levely > 400.0F) {
 				levely = -(int) bally + 400;
 			}
 			
@@ -1239,7 +1239,7 @@ public class a extends JFrame {
 		    frameIdx++;
 
 		    
-	    	while (System.nanoTime() < lastFrame + 16000000) {
+	    	while (System.nanoTime() < lastFrame + 16000000L) {
 	    		Thread.yield();
 	    	}
 	    	lastFrame = System.nanoTime();
@@ -1275,7 +1275,7 @@ public class a extends JFrame {
 	 * Calculates the length of the (x, y) vector.
 	 */
 	private static final float length(float x, float y) {
-		return (float) Math.sqrt(y*y+x*x);
+		return (float) Math.sqrt((double) (y * y + x * x));
 	}	
 
 	/**

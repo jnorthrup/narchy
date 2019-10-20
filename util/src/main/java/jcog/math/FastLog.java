@@ -49,11 +49,11 @@ public class FastLog {
         for (int i = 0; i < tabSize; i++) {
             
             
-            data[i] = (float) (log2(i << q) - 150);
+            data[i] = (float) (log2((double) (i << q)) - 150.0);
         }
     }
 
-    static final double LN2 = Math.log(2);
+    static final double LN2 = Math.log(2.0);
 
     static double log2(double val) {
         return Math.log(val) / LN2;
@@ -66,11 +66,11 @@ public class FastLog {
      * @return log(x)
      */
     public float log(float x) {
-        assert (x > 0);
+        assert (x > (float) 0);
         int raw = Float.floatToIntBits(x);
         int exp = (raw >> 23) & 0xFF;
         int mant = (raw & 0x7FFFFF);
-        return (exp + data[exp == 0 ?
+        return ((float) exp + data[exp == 0 ?
                 (mant >> qM1) :
                 ((mant | 0x800000) >> q)]) * korr;
     }

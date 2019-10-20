@@ -310,7 +310,7 @@ public class MutableFloat extends NumberX implements FloatSupplier {
      */
     @Override
     public final double doubleValue() {
-        return value;
+        return (double) value;
     }
 
     

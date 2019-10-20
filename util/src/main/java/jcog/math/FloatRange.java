@@ -26,7 +26,7 @@ public class FloatRange extends MutableFloat /*AtomicFloat*/ {
     }
 
     public static FloatRange unit(float initialValue) {
-        return new FloatRange(initialValue, 0, 1);
+        return new FloatRange(initialValue, (float) 0, 1.0F);
     }
 
     public static FloatRange unit(FloatSupplier initialValue) {

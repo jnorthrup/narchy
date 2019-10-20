@@ -42,10 +42,10 @@ public class HistogramChart extends PaintSurface {
 
         int N = data.length;
         float max = data[Util.argmax(data)];
-        if (max == 0)
+        if (max == (float) 0)
             return;
 
-        float x = 0;
+        float x = (float) 0;
 
         float ra = dark.x;
         float ga = dark.y;
@@ -54,14 +54,14 @@ public class HistogramChart extends PaintSurface {
         float gb = light.y;
         float bb = light.z;
 
-        float dx = 1f / N;
+        float dx = 1f / (float) N;
         for (int i = 0; i < N; i++) {
 
             float v = data[i] / max;
 
             gl.glColor3f(Util.lerpSafe(v, ra, rb), Util.lerpSafe(v, ga, gb), Util.lerpSafe(v, ba, bb));
 
-            Draw.rect(x, 0, dx, v, gl);
+            Draw.rect(x, (float) 0, dx, v, gl);
 
             x += dx;
         }

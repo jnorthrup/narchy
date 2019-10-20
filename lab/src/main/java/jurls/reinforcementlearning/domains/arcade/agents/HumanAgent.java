@@ -45,8 +45,8 @@ public class HumanAgent extends AbstractAgent {
     protected long lastFrameTime;
     protected long lastWaitTime;
     protected static final int framesPerSecond = 60;
-    protected long millisFraction = 0;
-    protected long timeError = 0;
+    protected long millisFraction = 0L;
+    protected long timeError = 0L;
 
     /** Variables to display relevant RL information */
     protected int rewardDisplayCounter = 0;
@@ -93,18 +93,18 @@ public class HumanAgent extends AbstractAgent {
     public long getPauseLength() {
 
 
-        long deltaRemainder = 1000 % framesPerSecond;
+        long deltaRemainder = (long) (1000 % framesPerSecond);
         millisFraction += deltaRemainder;
 
 
-        long targetDelta = 1000 / framesPerSecond;
-        while (millisFraction > framesPerSecond) {
-            targetDelta += 1;
-            millisFraction -= framesPerSecond;
+        long targetDelta = (long) (1000 / framesPerSecond);
+        while (millisFraction > (long) framesPerSecond) {
+            targetDelta += 1L;
+            millisFraction = millisFraction - (long) framesPerSecond;
         }
 
         long time = System.currentTimeMillis();
-        if (lastFrameTime == 0) {
+        if (lastFrameTime == 0L) {
             timeError += targetDelta;
         }
         else {
@@ -115,14 +115,14 @@ public class HumanAgent extends AbstractAgent {
 
         lastFrameTime = time;
 
-        if (timeError > 0) {
+        if (timeError > 0L) {
             lastWaitTime = timeError;
-            timeError = 0;
+            timeError = 0L;
             return lastWaitTime;
         }
         else { 
-            lastWaitTime = 0;
-            return 0;
+            lastWaitTime = 0L;
+            return 0L;
         }
     }
 

@@ -40,63 +40,63 @@ public class GameChase {
             ChaseNext(ent);
             if (ent.client.chase_target == old) {
                 ent.client.chase_target = null;
-                ent.client.ps.pmove.pm_flags &= ~pmove_t.PMF_NO_PREDICTION;
+                ent.client.ps.pmove.pm_flags = (byte) ((int) ent.client.ps.pmove.pm_flags & ~pmove_t.PMF_NO_PREDICTION);
                 return;
             }
         }
 
         edict_t targ = ent.client.chase_target;
 
-        float[] ownerv = {0, 0, 0};
+        float[] ownerv = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorCopy(targ.s.origin, ownerv);
-        float[] oldgoal = {0, 0, 0};
+        float[] oldgoal = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorCopy(ent.s.origin, oldgoal);
-    
-        ownerv[2] += targ.viewheight;
 
-        float[] angles = {0, 0, 0};
+        ownerv[2] = ownerv[2] + (float) targ.viewheight;
+
+        float[] angles = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorCopy(targ.client.v_angle, angles);
-        if (angles[Defines.PITCH] > 56)
-            angles[Defines.PITCH] = 56;
-        float[] right = {0, 0, 0};
-        float[] forward = {0, 0, 0};
+        if (angles[Defines.PITCH] > 56.0F)
+            angles[Defines.PITCH] = 56.0F;
+        float[] right = {(float) 0, (float) 0, (float) 0};
+        float[] forward = {(float) 0, (float) 0, (float) 0};
         Math3D.AngleVectors(angles, forward, right, null);
         Math3D.VectorNormalize(forward);
-        float[] o = {0, 0, 0};
-        Math3D.VectorMA(ownerv, -30, forward, o);
+        float[] o = {(float) 0, (float) 0, (float) 0};
+        Math3D.VectorMA(ownerv, -30.0F, forward, o);
     
-        if (o[2] < targ.s.origin[2] + 20)
-            o[2] = targ.s.origin[2] + 20;
+        if (o[2] < targ.s.origin[2] + 20.0F)
+            o[2] = targ.s.origin[2] + 20.0F;
     
         
         if (targ.groundentity == null)
-            o[2] += 16;
+            o[2] += 16.0F;
 
         trace_t trace = game_import_t.trace(ownerv, Globals.vec3_origin,
                 Globals.vec3_origin, o, targ, Defines.MASK_SOLID);
 
-        float[] goal = {0, 0, 0};
+        float[] goal = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorCopy(trace.endpos, goal);
     
-        Math3D.VectorMA(goal, 2, forward, goal);
+        Math3D.VectorMA(goal, 2.0F, forward, goal);
     
         
         Math3D.VectorCopy(goal, o);
-        o[2] += 6;
+        o[2] += 6.0F;
         trace = game_import_t.trace(goal, Globals.vec3_origin,
                 Globals.vec3_origin, o, targ, Defines.MASK_SOLID);
-        if (trace.fraction < 1) {
+        if (trace.fraction < 1.0F) {
             Math3D.VectorCopy(trace.endpos, goal);
-            goal[2] -= 6;
+            goal[2] -= 6.0F;
         }
     
         Math3D.VectorCopy(goal, o);
-        o[2] -= 6;
+        o[2] -= 6.0F;
         trace = game_import_t.trace(goal, Globals.vec3_origin,
                 Globals.vec3_origin, o, targ, Defines.MASK_SOLID);
-        if (trace.fraction < 1) {
+        if (trace.fraction < 1.0F) {
             Math3D.VectorCopy(trace.endpos, goal);
-            goal[2] += 6;
+            goal[2] += 6.0F;
         }
     
         if (targ.deadflag != 0)
@@ -111,8 +111,8 @@ public class GameChase {
                             - ent.client.resp.cmd_angles[i]);
     
         if (targ.deadflag != 0) {
-            ent.client.ps.viewangles[Defines.ROLL] = 40;
-            ent.client.ps.viewangles[Defines.PITCH] = -15;
+            ent.client.ps.viewangles[Defines.ROLL] = 40.0F;
+            ent.client.ps.viewangles[Defines.PITCH] = -15.0F;
             ent.client.ps.viewangles[Defines.YAW] = targ.client.killer_yaw;
         } else {
             Math3D.VectorCopy(targ.client.v_angle, ent.client.ps.viewangles);
@@ -120,7 +120,7 @@ public class GameChase {
         }
     
         ent.viewheight = 0;
-        ent.client.ps.pmove.pm_flags |= pmove_t.PMF_NO_PREDICTION;
+        ent.client.ps.pmove.pm_flags = (byte) ((int) ent.client.ps.pmove.pm_flags | pmove_t.PMF_NO_PREDICTION);
         SV_WORLD.SV_LinkEdict(ent);
     }
 
@@ -133,7 +133,7 @@ public class GameChase {
         edict_t e;
         do {
             i++;
-            if (i > GameBase.maxclients.value)
+            if ((float) i > GameBase.maxclients.value)
                 i = 1;
             e = GameBase.g_edicts[i];
     
@@ -171,7 +171,7 @@ public class GameChase {
 
     public static void GetChaseTarget(edict_t ent) {
 
-        for (int i = 1; i <= GameBase.maxclients.value; i++) {
+        for (int i = 1; (float) i <= GameBase.maxclients.value; i++) {
             edict_t other = GameBase.g_edicts[i];
             if (other.inuse && !other.client.resp.spectator) {
                 ent.client.chase_target = other;

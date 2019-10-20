@@ -5,7 +5,6 @@ import jcog.learn.ntm.control.Unit;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 /** TODO extend UVector for 'read' */
 public class ReadData  {

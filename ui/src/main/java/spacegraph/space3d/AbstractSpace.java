@@ -63,7 +63,7 @@ public abstract class AbstractSpace<X>  {
     public void update(SpaceGraph3D<X> s, long dtMS) {
 
         List<SpaceTransform<X>> ll = this.transforms;
-        for (SpaceTransform<X> aLl : ll) aLl.update(s, dtMS);
+        for (SpaceTransform<X> aLl : ll) aLl.update(s, (float) dtMS);
 
     }
 

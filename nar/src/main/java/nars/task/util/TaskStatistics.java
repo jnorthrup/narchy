@@ -74,7 +74,7 @@ public class TaskStatistics extends NARPart implements Consumer<Task> {
         volume.addValue(t.volume());
         rootOp.addValue(t.op());
         clazz.addValue(t.getClass().toString());
-        punc.addValue(t.punc());
+        punc.addValue((int) t.punc());
         eviLength.addValue(t.stamp().length);
 
         if (t.isBeliefOrGoal()) {

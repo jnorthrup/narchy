@@ -81,7 +81,7 @@ public class ConnectFour {
 
         public void clear() {
             Arrays.fill(board, (byte) 0);
-            utility = -1;
+            utility = -1.0;
             moveCount.set(rng.nextBoolean() ? 0 : 1);
             invalidCount = winPositions1 = winPositions2 = 0;
         }
@@ -91,7 +91,7 @@ public class ConnectFour {
         }
 
         int get(int row, int col) {
-            return board[row * cols + col] & 3;
+            return (int) board[row * cols + col] & 3;
         }
 
         protected int moving() {
@@ -127,7 +127,7 @@ public class ConnectFour {
                         utility = 0.0;
                 }
                 set(row, col, playerNum);
-                if (utility == -1)
+                if (utility == -1.0)
                     analyzeWinPositions(row, col);
                 return true;
             } else {
@@ -157,7 +157,7 @@ public class ConnectFour {
         }
 
         boolean isWinPositionFor(int row, int col, int playerNum) {
-            return (board[row * cols + col] & playerNum * 4) > 0;
+            return ((int) board[row * cols + col] & playerNum * 4) > 0;
         }
 
         private void setWinPositionFor(int row, int col, int playerNum) {
@@ -173,7 +173,7 @@ public class ConnectFour {
                 default:
                     throw new IllegalArgumentException("Wrong player number.");
             }
-            board[row * cols + col] |= playerNum * 4;
+            board[row * cols + col] = (byte) ((int) board[row * cols + col] | playerNum * 4);
         }
 
         /**
@@ -233,16 +233,16 @@ public class ConnectFour {
 
 
         public boolean isTerminal() {
-            return utility() != -1;
+            return utility() != -1.0;
         }
 
 
         private double getUtility(String player) {
             ConnectFourState state = this;
             double result = state.utility();
-            if (result != -1) {
+            if (result != -1.0) {
                 if (Objects.equals(player, players[1]))
-                    result = 1 - result;
+                    result = 1.0 - result;
             } else {
                 throw new IllegalArgumentException("State is not terminal.");
             }
@@ -307,9 +307,9 @@ public class ConnectFour {
                 synchronized (game) {
 
                     if (isTerminal()) {
-                        if (game.getUtility(ConnectFourState.players[0]) == 1) {
+                        if (game.getUtility(ConnectFourState.players[0]) == 1.0) {
                             return 1;
-                        } else if (game.getUtility(ConnectFourState.players[1]) == 1) {
+                        } else if (game.getUtility(ConnectFourState.players[1]) == 1.0) {
                             return 2;
                         }
                     }
@@ -439,7 +439,7 @@ public class ConnectFour {
             } else {
                 String winner = null;
                 for (int i = 0; i < 2; i++)
-                    if (game.getUtility(ConnectFourState.players[i]) == 1) {
+                    if (game.getUtility(ConnectFourState.players[i]) == 1.0) {
                         winner = ConnectFourState.players[i];
                         won = i;
                     }

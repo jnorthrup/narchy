@@ -65,8 +65,8 @@ public class CliffWalking extends AbstractAgentTest {
         for (int y = 1; y < shapeY-1; y++)
             cliff[shapeX-1][y] = true;
 
-        float epReward = 0;
-        float reward = 0;
+        float epReward = (float) 0;
+        float reward = (float) 0;
 
         int goals = 0, deaths = 0;
         float[] map = new float[shapeX * shapeY];
@@ -74,8 +74,8 @@ public class CliffWalking extends AbstractAgentTest {
         FloatArrayList episodeReward = new FloatArrayList(2 * cycles/(shapeX*shapeY));
         for (int i = 0; i < cycles; i++) {
 
-            Arrays.fill(map, 0);
-            map[index(x,y)] = 1;
+            Arrays.fill(map, (float) 0);
+            map[index(x,y)] = 1.0F;
 //                for (int mx = 0; mx < shapeX; mx++) {
 //                    for (int my = 0; my < shapeY; my++) {
 //                        map[index(mx, my)] =
@@ -104,12 +104,12 @@ public class CliffWalking extends AbstractAgentTest {
 
             boolean restart = false;
             if (cliff[x][y]) {
-                reward = -1;
+                reward = -1.0F;
                 deaths++;
                 restart = true;
             } else if (x == gx && y == gy){
                 reward =
-                        0;
+                        (float) 0;
                         //+1;
                 goals++;
                 restart = true;
@@ -121,7 +121,7 @@ public class CliffWalking extends AbstractAgentTest {
 
             if (restart) {
                 episodeReward.add(epReward);
-                epReward = 0;
+                epReward = (float) 0;
                 x = sx; y = sy;
             }
         }

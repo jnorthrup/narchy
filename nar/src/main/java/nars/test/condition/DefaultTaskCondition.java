@@ -36,7 +36,7 @@ public class DefaultTaskCondition extends TaskCondition {
 			throw new RuntimeException("freqMax < freqMin");
 		if (confMax < confMin) throw new RuntimeException("confMax < confMin");
 
-		if (creationEnd - creationStart < 1)
+		if (creationEnd - creationStart < 1L)
 			throw new RuntimeException("cycleEnd must be after cycleStart by at least 1 cycle");
 
 		this.nar = n;
@@ -107,9 +107,9 @@ public class DefaultTaskCondition extends TaskCondition {
 	public boolean matches(@Nullable Task t) {
 
         byte punc = this.punc;
-		if (t.punc() == punc) {
+		if ((int) t.punc() == (int) punc) {
 			if (occurrenceTimeMatches(t) && creationTimeMatches()) {
-				if (((punc != Op.BELIEF) && (punc != Op.GOAL)) || truthMatches(t)) {
+				if ((((int) punc != (int) Op.BELIEF) && ((int) punc != (int) Op.GOAL)) || truthMatches(t)) {
                     Term tt = t.term();
 					if (tt.equals(this.term)) {
 						firstMatch = t;
@@ -156,15 +156,15 @@ public class DefaultTaskCondition extends TaskCondition {
 
         float worstDiff = -worstDiffNeg;
 
-		float difference = 0;
-		if (task.punc() != punc)
-			difference += 1000;
+		float difference = (float) 0;
+		if ((int) task.punc() != (int) punc)
+			difference += 1000.0F;
 		if (difference >= worstDiff)
 			return NaN;
 
         Term tterm = task.term();
 		difference +=
-			100 * termDistance(tterm, term, worstDiff);
+                100.0F * termDistance(tterm, term, worstDiff);
 		if (difference >= worstDiff)
 			return NaN;
 
@@ -173,7 +173,7 @@ public class DefaultTaskCondition extends TaskCondition {
             float freqDiff = Math.min(
 				Math.abs(f - freqMin),
 				Math.abs(f - freqMax));
-			difference += 10 * freqDiff;
+			difference += 10.0F * freqDiff;
 			if (difference >= worstDiff)
 				return NaN;
 
@@ -181,12 +181,12 @@ public class DefaultTaskCondition extends TaskCondition {
             float confDiff = Math.min(
 				Math.abs(c - confMin),
 				Math.abs(c - confMax));
-			difference += 1 * confDiff;
+			difference += 1.0F * confDiff;
 			if (difference >= worstDiff)
 				return NaN;
 		}
 
-		difference += 0.5f * (Math.abs(task.hashCode()) / (Integer.MAX_VALUE * 2.0f)); //HACK differentiate by hashcode
+		difference += 0.5f * ((float) Math.abs(task.hashCode()) / ((float) Integer.MAX_VALUE * 2.0f)); //HACK differentiate by hashcode
 
 		return -difference;
 

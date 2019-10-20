@@ -142,7 +142,7 @@ public final class Qcommon extends Globals {
 			
 			if (!Cbuf.AddLateCommands()) {
 				
-			      if (Globals.dedicated.value == 0)
+			      if (Globals.dedicated.value == (float) 0)
 			          Cbuf.AddText ("d1\n");
 			      else
 			          Cbuf.AddText ("dedicated_start\n");
@@ -216,7 +216,7 @@ public final class Qcommon extends Globals {
 			if (Globals.fixedtime.value != 0.0f) {
 				msec= (int) Globals.fixedtime.value;
 			} else if (Globals.timescale.value != 0.0f) {
-				msec *= Globals.timescale.value;
+                msec = (int) ((float) msec * Globals.timescale.value);
 				if (msec < 1)
 					msec= 1;
 			}
@@ -240,7 +240,7 @@ public final class Qcommon extends Globals {
 				time_before= Timer.Milliseconds();
 			
 			Com.debugContext = "SV:";
-			SV_MAIN.SV_Frame(msec);
+			SV_MAIN.SV_Frame((long) msec);
 
             int time_between = 0;
             if (Globals.host_speeds.value != 0.0f)

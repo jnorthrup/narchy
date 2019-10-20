@@ -20,7 +20,6 @@ import com.google.common.collect.FluentIterable;
 
 import java.io.PrintStream;
 import java.util.Collections;
-import java.util.stream.IntStream;
 
 /** Encapsulates the specifics of writing to a particular kind of terminal.
  *  https:
@@ -212,7 +211,7 @@ public final class Ansi {
     }
 
     
-    if (text.charAt(0) != '\t') {
+    if ((int) text.charAt(0) != (int) '\t') {
       return color + text + RESET;
     }
 
@@ -228,7 +227,7 @@ public final class Ansi {
   private static int indexOfFirstNonTab(String s) {
     int bound = s.length();
     for (int i = 1; i < bound; i++) {
-      if (s.charAt(i) != '\t') {
+      if ((int) s.charAt(i) != (int) '\t') {
         return i;
       }
     }

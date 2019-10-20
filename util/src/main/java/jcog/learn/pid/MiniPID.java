@@ -16,29 +16,29 @@ import jcog.math.FloatRange;
 public class MiniPID {
 
 
-    public final FloatRange P = new FloatRange(0.5f, 0, +1);
-    public final FloatRange I = new FloatRange(0.5f, 0, +1);
-    public final FloatRange D = new FloatRange(0.5f, 0, +1);
-    public final FloatRange F = new FloatRange(0, 0, 100);
+    public final FloatRange P = new FloatRange(0.5f, (float) 0, (float) +1);
+    public final FloatRange I = new FloatRange(0.5f, (float) 0, (float) +1);
+    public final FloatRange D = new FloatRange(0.5f, (float) 0, (float) +1);
+    public final FloatRange F = new FloatRange((float) 0, (float) 0, 100.0F);
 
-    private double maxIOutput = 0;
-    private double errMax = 0;
-    private double errSum = 0;
+    private double maxIOutput = (double) 0;
+    private double errMax = (double) 0;
+    private double errSum = (double) 0;
 
-    private double outMax = 0;
-    private double outMin = 0;
+    private double outMax = (double) 0;
+    private double outMin = (double) 0;
 
-    private double setpoint = 0;
-    private double setpointRange = 0;
+    private double setpoint = (double) 0;
+    private double setpointRange = (double) 0;
 
     private double actual = Double.NaN;
 
     private boolean reversed = false;
 
-    private double outRampRate = 0;
-    private double out = 0;
+    private double outRampRate = (double) 0;
+    private double out = (double) 0;
 
-    private double outMomentum = 0;
+    private double outMomentum = (double) 0;
 
 
 
@@ -122,10 +122,10 @@ public class MiniPID {
      */
     private void i(double i) {
         float I = this.I.floatValue();
-        if (I != 0) {
-            errSum = errSum * I / i;
+        if (I != (float) 0) {
+            errSum = errSum * (double) I / i;
         }
-        if (maxIOutput != 0) {
+        if (maxIOutput != (double) 0) {
             errMax = maxIOutput / i;
         }
         this.I.set(i);
@@ -208,7 +208,7 @@ public class MiniPID {
 
 
         maxIOutput = maximum;
-        if (i() != 0) {
+        if (i() != (double) 0) {
             errMax = maxIOutput / i();
         }
     }
@@ -238,7 +238,7 @@ public class MiniPID {
         outMin = minimum;
 
 
-        if (maxIOutput == 0 || maxIOutput > (maximum - minimum)) {
+        if (maxIOutput == (double) 0 || maxIOutput > (maximum - minimum)) {
             setMaxIOutput(maximum - minimum);
         }
         return this;
@@ -315,7 +315,7 @@ public class MiniPID {
      */
     public double out(double actual) {
 
-        if (setpointRange != 0) {
+        if (setpointRange != (double) 0) {
             setpoint = Util.clamp(setpoint, actual - setpointRange, actual + setpointRange);
         }
 
@@ -341,7 +341,7 @@ public class MiniPID {
 
 
         double Ioutput = i() * errSum;
-        if (maxIOutput != 0) {
+        if (maxIOutput != (double) 0) {
             Ioutput = Util.clamp(Ioutput, -maxIOutput, maxIOutput);
         }
 
@@ -353,9 +353,9 @@ public class MiniPID {
             errSum = error;
 
 
-        } else if (outRampRate != 0 && !isInclusive(output, out - outRampRate, out + outRampRate)) {
+        } else if (outRampRate != (double) 0 && !isInclusive(output, out - outRampRate, out + outRampRate)) {
             errSum = error;
-        } else if (maxIOutput != 0) {
+        } else if (maxIOutput != (double) 0) {
             double min = -errMax;
             errSum = Util.clamp(errSum + error, min, errMax);
 
@@ -365,14 +365,14 @@ public class MiniPID {
         }
 
 
-        if (outRampRate != 0) {
+        if (outRampRate != (double) 0) {
             output = Util.clamp(output, out - outRampRate, out + outRampRate);
         }
         if (!Util.equals(outMin, outMax)) {
             output = Util.clamp(output, outMin, outMax);
         }
-        if (outMomentum != 0) {
-            output = out * outMomentum + output * (1 - outMomentum);
+        if (outMomentum != (double) 0) {
+            output = out * outMomentum + output * (1.0 - outMomentum);
         }
 
 
@@ -388,7 +388,7 @@ public class MiniPID {
      */
     public void reset() {
         actual = Double.NaN;
-        errSum = 0;
+        errSum = (double) 0;
     }
 
     /**
@@ -430,7 +430,7 @@ public class MiniPID {
      * @param output valid between [0..1), meaning [current output only.. historical output only)
      */
     public void setOutMomentum(double strength) {
-        if (strength == 0 || isInclusive(strength, 0, 1)) {
+        if (strength == (double) 0 || isInclusive(strength, (double) 0, 1.0)) {
             outMomentum = strength;
         }
     }
@@ -441,15 +441,15 @@ public class MiniPID {
      */
     private void checkSigns() {
         if (reversed) {
-            if (p() > 0) p(p() * -1);
-            if (i() > 0) i(i() * -1);
-            if (d() > 0) d(d() * -1);
-            if (f() > 0) f(f() * -1);
+            if (p() > (double) 0) p(p() * -1.0);
+            if (i() > (double) 0) i(i() * -1.0);
+            if (d() > (double) 0) d(d() * -1.0);
+            if (f() > (double) 0) f(f() * -1.0);
         } else {
-            if (p() < 0) p(p() * -1);
-            if (i() < 0) i(i() * -1);
-            if (d() < 0) d(d() * -1);
-            if (f() < 0) f(f() * -1);
+            if (p() < (double) 0) p(p() * -1.0);
+            if (i() < (double) 0) i(i() * -1.0);
+            if (d() < (double) 0) d(d() * -1.0);
+            if (f() < (double) 0) f(f() * -1.0);
         }
     }
 

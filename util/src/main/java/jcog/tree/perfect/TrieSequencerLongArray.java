@@ -17,8 +17,6 @@
 package jcog.tree.perfect;
 
 
-import java.util.stream.IntStream;
-
 /**
  * A {@link TrieSequencer} implementation where long[] is the sequence type.
  *

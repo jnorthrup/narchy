@@ -41,8 +41,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static java.lang.Character.isDigit;
 import static nars.Op.*;
@@ -263,14 +261,14 @@ public enum $ { ;
             case 1:
                 char c0 = name.charAt(0);
                 if (isDigit(c0))
-                    return $.v(type, (byte) (c0 - '0'));
+                    return $.v(type, (byte) ((int) c0 - (int) '0'));
                 break;
             case 2:
                 char d0 = name.charAt(0);
                 if (isDigit(d0)) {
                     char d1 = name.charAt(1);
                     if (isDigit(d1))
-                        return $.v(type, (byte) ((d0 - '0') * 10 + (d1 - '0')));
+                        return $.v(type, (byte) (((int) d0 - (int) '0') * 10 + ((int) d1 - (int) '0')));
                 }
                 break;
         }
@@ -447,11 +445,11 @@ public enum $ { ;
     }
 
     public static MutableTruth tt(float f, float c) {
-        return new MutableTruth(f, c2wSafe(c));
+        return new MutableTruth(f, (double) c2wSafe(c));
     }
 
     public static PreciseTruth t(float f, float c) {
-        return PreciseTruth.byConf(f, c);
+        return PreciseTruth.byConf(f, (double) c);
     }
     public static PreciseTruth t(float f, double c) {
         return PreciseTruth.byConf(f, c);
@@ -481,7 +479,7 @@ public enum $ { ;
         int l = i.length;
         List<Atomic> list = new ArrayList<>();
         for (int j = 0; j < l; j++) {
-            Atomic the = the(i[j]);
+            Atomic the = the((int) i[j]);
             list.add(the);
         }
         return list.toArray(new Term[0]);
@@ -507,20 +505,20 @@ public enum $ { ;
         if (x != x)
             throw new TODO("NaN");
 
-        int rx = (int) Util.round(x, 1);
-        return Util.equals(rx, x) ? IdempotInt.the(rx) : the(new Fraction(x));
+        int rx = (int) Util.round(x, 1.0F);
+        return Util.equals((float) rx, x) ? IdempotInt.the(rx) : the(new Fraction((double) x));
     }
 
     public static Term the(double x) {
         if (x != x)
             throw new TODO("NaN");
-        int rx = (int) Util.round(x, 1);
-        return Util.equals(rx, x, Double.MIN_NORMAL) ? IdempotInt.the(rx) : the(new Fraction(x));
+        int rx = (int) Util.round(x, 1.0);
+        return Util.equals((double) rx, x, Double.MIN_NORMAL) ? IdempotInt.the(rx) : the(new Fraction(x));
     }
 
     public static double doubleValue(Term x) {
         if (x.op() == INT) {
-            return ((IdempotInt) x).i;
+            return (double) ((IdempotInt) x).i;
         } else if (x.op() == ATOM) {
             return Double.parseDouble($.unquote(x));
         } else {
@@ -570,12 +568,12 @@ public enum $ { ;
         } else if (n instanceof Float) {
             float d = n.floatValue();
             int id = (int) d;
-            result = d == d && Util.equals(d, id) ? IdempotInt.the(id) : Atomic.the(n.toString());
+            result = d == d && Util.equals(d, (float) id) ? IdempotInt.the(id) : Atomic.the(n.toString());
 
         } else {
             double d = n.doubleValue();
             int id = (int) d;
-            result = d == d && Util.equals(d, id) ? IdempotInt.the(id) : Atomic.the(n.toString());
+            result = d == d && Util.equals(d, (double) id) ? IdempotInt.the(id) : Atomic.the(n.toString());
 
         }
         return result;
@@ -600,7 +598,7 @@ public enum $ { ;
         assert(x >= 0);
         x %= maxValue; //auto-wraparound
 
-        int decimals = (int) Math.ceil(Math.log(maxValue)/Math.log(radix));
+        int decimals = (int) Math.ceil(Math.log((double) maxValue)/Math.log((double) radix));
         int[] y = new int[decimals];
         int X = -x;
         int yi = 0;

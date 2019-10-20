@@ -18,8 +18,8 @@ import static jcog.math.v3.v;
  */
 public class ForceDirected3D implements spacegraph.space3d.phys.constraint.BroadConstraint {
 
-    public final FloatRange expand = new FloatRange(1f, 0, 32f);
-    public final FloatRange condense = new FloatRange(1f, 0, 3f);
+    public final FloatRange expand = new FloatRange(1f, (float) 0, 32f);
+    public final FloatRange condense = new FloatRange(1f, (float) 0, 3f);
     private final int iterations;
 
     private final v3 boundsMin;
@@ -28,10 +28,10 @@ public class ForceDirected3D implements spacegraph.space3d.phys.constraint.Broad
 
 
     ForceDirected3D() {
-        float r = 100;
+        float r = 100.0F;
         boundsMin = v(-r, -r, -r);
         boundsMax = v(+r, +r, +r);
-        maxRepelDist = r * 2;
+        maxRepelDist = r * 2.0F;
         iterations = 1;
     }
 
@@ -53,12 +53,12 @@ public class ForceDirected3D implements spacegraph.space3d.phys.constraint.Broad
         delta.normalize();
 
 
-        float len = (float) Math.sqrt(lenSq);
+        float len = (float) Math.sqrt((double) lenSq);
         delta.scaled(Math.min(len, len * speed));
 
         ((Body3D) x).velAdd(delta);
 
-        delta.scaled(-1);
+        delta.scaled(-1.0F);
         ((Body3D) y).velAdd(delta);
 
     }
@@ -78,11 +78,11 @@ public class ForceDirected3D implements spacegraph.space3d.phys.constraint.Broad
         float len = delta.normalize();
         len -= (xp.radius() + yp.radius());
         if (len < Float.MIN_NORMAL)
-            len = 0;
+            len = (float) 0;
         else if (len >= maxDist)
             return;
 
-        float s = speed / (1 + (len * len));
+        float s = speed / (1.0F + (len * len));
 
         v3 v = v(delta.x * s, delta.y * s, delta.z * s);
         ((Body3D) x).velAdd(v);
@@ -104,25 +104,25 @@ public class ForceDirected3D implements spacegraph.space3d.phys.constraint.Broad
             objects.stream().map(c -> ((Spatial) c.data())).filter(Objects::nonNull).forEach(x -> x.stabilize(boundsMin, boundsMax));
 
 
-            int clusters = (int) Math.ceil(/*Math.log*/(((float) n) / 32));
+            int clusters = (int) Math.ceil(/*Math.log*/(double) (((float) n) / 32.0F));
             if (clusters % 2 == 0)
                 clusters++;
 
-            b.forEach((int) Math.ceil((float) n / clusters), objects, this::batch);
+            b.forEach((int) Math.ceil((double) ((float) n / (float) clusters)), objects, this::batch);
 
 
             boolean center = true;
             if (center) {
-                float cx = 0, cy = 0, cz = 0;
+                float cx = (float) 0, cy = (float) 0, cz = (float) 0;
                 for (int i = 0, objectsSize = n; i < objectsSize; i++) {
                     v3 c = objects.get(i).transform;
                     cx += c.x;
                     cy += c.y;
                     cz += c.z;
                 }
-                cx /= -n;
-                cy /= -n;
-                cz /= -n;
+                cx = cx / (float) -n;
+                cy = cy / (float) -n;
+                cz = cz / (float) -n;
 
                 v3 correction = v3.v(cx, cy, cz);
                 /**

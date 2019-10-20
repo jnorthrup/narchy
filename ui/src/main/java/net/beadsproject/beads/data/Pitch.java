@@ -23,7 +23,7 @@ public abstract class Pitch {
      * @return the resulting MIDI note number.
      */
     private static float ftom(float frequency) {
-        return Math.max(0f, (float) Math.log(frequency / 440.0f) / LOG2 * 12f + 69f);
+        return Math.max(0f, (float) Math.log((double) (frequency / 440.0f)) / LOG2 * 12f + 69f);
     }
 
     /**
@@ -33,7 +33,7 @@ public abstract class Pitch {
      * @return the resulting frequency.
      */
     public static float mtof(float midi) {
-        return 440.0f * (float) Math.pow(2.0f, (midi - 69f) / 12.0f);
+        return 440.0f * (float) Math.pow(2.0, (double) ((midi - 69f) / 12.0f));
     }
 
     /**
@@ -72,7 +72,7 @@ public abstract class Pitch {
     }
 
     public static float forceFrequencyToScale(float freq, int[] scale) {
-        return mtof(forceToScale((int) ftom(freq), scale));
+        return mtof((float) forceToScale((int) ftom(freq), scale));
     }
 
     /**

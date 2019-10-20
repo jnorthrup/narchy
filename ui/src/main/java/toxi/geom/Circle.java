@@ -81,8 +81,8 @@ public class Circle extends Ellipse {
             if (MathUtils.abs(aSlope - bSlope) > 0.0000001f) {
                 float x = (aSlope * bSlope * (p1.y - p3.y) + bSlope
                         * (p1.x + p2.x) - aSlope * (p2.x + p3.x))
-                        / (2 * (bSlope - aSlope));
-                float y = -(x - (p1.x + p2.x) / 2) / aSlope + (p1.y + p2.y) / 2;
+                        / (2.0F * (bSlope - aSlope));
+                float y = -(x - (p1.x + p2.x) / 2.0F) / aSlope + (p1.y + p2.y) / 2.0F;
                 Vec2D centroid = new Vec2D(x, y);
                 float radius = centroid.distanceTo(p1);
                 circle = new Circle(centroid, radius);
@@ -96,19 +96,19 @@ public class Circle extends Ellipse {
         for (Vec2D v : vertices) {
             origin.addSelf(v);
         }
-        origin.scaleSelf(1f / vertices.size());
-        float maxD = 0;
+        origin.scaleSelf(1f / (float) vertices.size());
+        float maxD = (float) 0;
         for (Vec2D v : vertices) {
             float d = origin.distanceToSquared(v);
             if (d > maxD) {
                 maxD = d;
             }
         }
-        return new Circle(origin, (float) Math.sqrt(maxD));
+        return new Circle(origin, (float) Math.sqrt((double) maxD));
     }
 
     public Circle() {
-        this(new Vec2D(), 1);
+        this(new Vec2D(), 1.0F);
     }
 
     public Circle(Circle c) {
@@ -116,7 +116,7 @@ public class Circle extends Ellipse {
     }
 
     public Circle(float radius) {
-        this(0, 0, radius);
+        this((float) 0, (float) 0, radius);
     }
 
     public Circle(float x, float y, float radius) {
@@ -164,9 +164,9 @@ public class Circle extends Ellipse {
         float r2 = c.radius.x;
         if (d <= r1 + r2 && d >= Math.abs(r1 - r2)) {
             float a = (r1 * r1 - r2 * r2 + d * d) / (2.0f * d);
-            d = 1 / d;
+            d = 1.0F / d;
             Vec2D p = add(delta.scale(a * d));
-            float h = (float) Math.sqrt(r1 * r1 - a * a);
+            float h = (float) Math.sqrt((double) (r1 * r1 - a * a));
             delta.perpendicular().scaleSelf(h * d);
             Vec2D i1 = p.add(delta);
             Vec2D i2 = p.sub(delta);

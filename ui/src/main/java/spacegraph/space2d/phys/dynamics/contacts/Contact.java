@@ -129,11 +129,11 @@ public abstract class Contact {
         m_nodeB.next = null;
         m_nodeB.other = null;
 
-        m_toiCount = 0;
+        m_toiCount = (float) 0;
         m_friction = Contact.mixFriction(fA.friction, fB.friction);
         m_restitution = Contact.mixRestitution(fA.restitution, fB.restitution);
 
-        m_tangentSpeed = 0;
+        m_tangentSpeed = (float) 0;
     }
 
     /**
@@ -339,7 +339,7 @@ public abstract class Contact {
      * @return
      */
     private static float mixFriction(float friction1, float friction2) {
-        return (float) Math.sqrt(friction1 * friction2);
+        return (float) Math.sqrt((double) (friction1 * friction2));
     }
 
     /**

@@ -22,7 +22,7 @@ package net.beadsproject.beads.ugens;
  * @beads.category filter
  */
 class BiquadCustomCoeffCalculator {
-    public float a0 = 1;
+    public float a0 = 1.0F;
     public float a1;
     public float a2;
     public float b0;
@@ -50,7 +50,7 @@ class BiquadCustomCoeffCalculator {
      * Constructor with default sampling frequency of 44100.
      */
     BiquadCustomCoeffCalculator() {
-        setSamplingFrequency(44100);
+        setSamplingFrequency(44100.0F);
     }
 
     /**
@@ -60,7 +60,7 @@ class BiquadCustomCoeffCalculator {
      */
     private void setSamplingFrequency(float sf) {
         sampFreq = sf;
-        two_pi_over_sf = (float) (Math.PI * 2 / sf);
+        two_pi_over_sf = (float) (Math.PI * 2.0 / (double) sf);
     }
 
     /**

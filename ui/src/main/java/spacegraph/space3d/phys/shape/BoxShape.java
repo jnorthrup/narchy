@@ -144,9 +144,9 @@ public class BoxShape extends SimpleBoxShape {
 	public void getVertex(int i, v3 vtx) {
         v3 halfExtents = getHalfExtentsWithoutMargin(new v3());
 
-		vtx.set(halfExtents.x * (1 - (i & 1)) - halfExtents.x * (i & 1),
-				halfExtents.y * (1 - ((i & 2) >> 1)) - halfExtents.y * ((i & 2) >> 1),
-				halfExtents.z * (1 - ((i & 4) >> 2)) - halfExtents.z * ((i & 4) >> 2));
+		vtx.set(halfExtents.x * (float) (1 - (i & 1)) - halfExtents.x * (float) (i & 1),
+				halfExtents.y * (float) (1 - ((i & 2) >> 1)) - halfExtents.y * (float) ((i & 2) >> 1),
+				halfExtents.z * (float) (1 - ((i & 4) >> 2)) - halfExtents.z * (float) ((i & 4) >> 2));
 	}
 	
 	@Override

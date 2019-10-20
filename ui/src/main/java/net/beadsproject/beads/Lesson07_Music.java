@@ -32,40 +32,40 @@ class Lesson07_Music {
                             Clock c = (Clock) message;
                             if (c.isBeat()) {
 
-                                if (random(1) < 0.5) return;
-                                pitch = Pitch.forceToScale((int) random(12), Pitch.dorian);
-                                float freq = Pitch.mtof(pitch + (int) random(5) * 12 + 32);
+                                if ((double) random(1.0) < 0.5) return;
+                                pitch = Pitch.forceToScale((int) random(12.0), Pitch.dorian);
+                                float freq = Pitch.mtof((float) (pitch + (int) random(5.0) * 12 + 32));
                                 WavePlayer wp = new WavePlayer(ac, freq, WaveFactory.SINE);
-                                Gain g = new Gain(ac, 1, new Envelope(ac, 0));
+                                Gain g = new Gain(ac, 1, new Envelope(ac, (float) 0));
                                 g.in(wp);
                                 ac.out.in(g);
-                                ((Envelope) g.getGainUGen()).add(0.1f, random(200));
-                                ((Envelope) g.getGainUGen()).add(0, random(7000), g.die());
+                                ((Envelope) g.getGainUGen()).add(0.1f, random(200.0));
+                                ((Envelope) g.getGainUGen()).add((float) 0, random(7000.0), g.die());
                             }
-                            if (c.getCount() % 4 == 0) {
+                            if (c.getCount() % 4L == 0L) {
 
                                 int pitchAlt = pitch;
-                                if (random(1) < 0.2)
-                                    pitchAlt = Pitch.forceToScale((int) random(12), Pitch.dorian) + (int) random(2) * 12;
-                                float freq = Pitch.mtof(pitchAlt + 32);
+                                if ((double) random(1.0) < 0.2)
+                                    pitchAlt = Pitch.forceToScale((int) random(12.0), Pitch.dorian) + (int) random(2.0) * 12;
+                                float freq = Pitch.mtof((float) (pitchAlt + 32));
                                 WavePlayer wp = new WavePlayer(ac, freq, WaveFactory.SQUARE);
-                                Gain g = new Gain(ac, 1, new Envelope(ac, 0));
+                                Gain g = new Gain(ac, 1, new Envelope(ac, (float) 0));
                                 g.in(wp);
-                                Panner p = new Panner(ac, random(1));
+                                Panner p = new Panner(ac, random(1.0));
                                 p.in(g);
                                 ac.out.in(p);
                                 Envelope gain = (Envelope) g.getGainUGen();
-                                gain.add(random(0.1), random(50));
-                                ((Envelope) g.getGainUGen()).add(0, random(400), p.die());
+                                gain.add(random(0.1), random(50.0));
+                                ((Envelope) g.getGainUGen()).add((float) 0, random(400.0), p.die());
                             }
-                            if (c.getCount() % 4 == 0) {
+                            if (c.getCount() % 4L == 0L) {
                                 Noise n = new Noise(ac);
                                 Gain g = new Gain(ac, 1, new Envelope(ac, 0.05f));
                                 g.in(n);
                                 Panner p = new Panner(ac, random(0.5) + 0.5f);
                                 p.in(g);
                                 ac.out.in(p);
-                                ((Envelope) g.getGainUGen()).add(0, random(100), p.die());
+                                ((Envelope) g.getGainUGen()).add((float) 0, random(100.0), p.die());
                             }
                         }
                     }

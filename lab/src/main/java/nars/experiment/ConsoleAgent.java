@@ -105,15 +105,15 @@ public class ConsoleAgent extends GameX {
                 $.inh(id, "is"),
                 R.W(), R.H(), alphabet) {
 
-            final FloatRange moveThresh = new FloatRange(0.51f, 0, 1f);
-            final FloatRange writeThresh = new FloatRange(0.51f, 0, 1f);
+            final FloatRange moveThresh = new FloatRange(0.51f, (float) 0, 1f);
+            final FloatRange writeThresh = new FloatRange(0.51f, (float) 0, 1f);
 
             {
 
                 Term id = ConsoleAgent.this.id;
 
                 GoalActionConcept[] lr = actionPushButtonMutex($.inh(id, "left"), $.inh(id, "right"), this::Left, this::Right, moveThresh::floatValue);
-                PreciseTruth OFF = $.t(0, nar.confDefault(BELIEF));
+                PreciseTruth OFF = $.t((float) 0, nar.confDefault(BELIEF));
                 lr[0].goalDefault(OFF, nar);
                 lr[1].goalDefault(OFF, nar);
 
@@ -128,9 +128,9 @@ public class ConsoleAgent extends GameX {
                     GoalActionConcept cc = actionUnipolar(C, (x) -> {
                         if (x > writeThresh.floatValue()) {
                             if (write(c))
-                                return 1;
+                                return 1.0F;
                         }
-                        return 0;
+                        return (float) 0;
                     });
                     cc.goalDefault(OFF, nar);
                 }
@@ -167,11 +167,11 @@ public class ConsoleAgent extends GameX {
         int total = 0, equal = 0;
         for (int j = 0; j < a[0].length; j++) {
             for (int i = 0; i < a.length; i++) {
-                equal += (a[i][j] == b[i][j]) ? 1 : 0;
+                equal += ((int) a[i][j] == (int) b[i][j]) ? 1 : 0;
                 total++;
             }
         }
-        return (equal) / ((float) total);
+        return (float) (equal) / ((float) total);
     }
 
     private class TestConsole extends VectorTextGrid implements KeyPressed {
@@ -210,7 +210,7 @@ public class ConsoleAgent extends GameX {
                         int yy = y;
 
                         //HACK
-                        Signal cm = charMatrix[x][y][i] = sense(xya, () -> chars[xx][yy] == a);
+                        Signal cm = charMatrix[x][y][i] = sense(xya, () -> (int) chars[xx][yy] == (int) a);
                         //nar.control.input(((ScalarSignal)(cm).pri, xy);
 
                     }
@@ -284,7 +284,7 @@ public class ConsoleAgent extends GameX {
             int cx = this.c[0];
             int cy = this.c[1];
             char prev = chars[cx][cy];
-            if (prev!=value) {
+            if ((int) prev != (int) value) {
                 chars[cx][cy] = value;
                 return true;
             }

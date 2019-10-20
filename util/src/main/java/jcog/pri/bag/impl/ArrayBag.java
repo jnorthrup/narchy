@@ -46,7 +46,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             return s;
         else {
             //return (int) (thresh + Math.sqrt((s - thresh)));
-            return (int)(thresh - 1 + Math.log(1 + s - thresh) * HISTOGRAM_RESOLUTION_FACTOR);
+            return (int)((double) (thresh - 1) + Math.log((double) (1 + s - thresh)) * (double) HISTOGRAM_RESOLUTION_FACTOR);
         }
     }
 
@@ -192,9 +192,9 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             from = 0;
             to = s;
         } else {
-            int toSort = (int) Math.ceil(c * s);
+            int toSort = (int) Math.ceil((double) (c * (float) s));
             float f = ThreadLocalRandom.current().nextFloat();
-            int center = (int) (Util.sqr(f) * (s - toSort) + toSort / 2); //sqr adds curve to focus on the highest priority subsection
+            int center = (int) (Util.sqr(f) * (float) (s - toSort) + (float) (toSort / 2)); //sqr adds curve to focus on the highest priority subsection
             from = Math.max(center - toSort / 2, 0);
             to = Math.min(center + toSort / 2, s);
         }
@@ -224,7 +224,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             hist = null; //disabled
         }
 
-        float m = 0;
+        float m = (float) 0;
         boolean sorted = true;
         float above = Float.POSITIVE_INFINITY;
         for (int i = 0; i < s; ) {
@@ -251,7 +251,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
                     }
 
                     if (sorted) {
-                        if (p - above >= ScalarValue.EPSILON / 2) {
+                        if (p - above >= ScalarValue.EPSILON / 2.0F) {
                             sorted = false;
                         } else {
                             above = p;
@@ -428,7 +428,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
      */
     private void tryRecommit(Random rng, int size) {
         if (size > 0) {
-            if (size==1 || (rngFloat(rng) < 1f / size)) {
+            if (size==1 || (rngFloat(rng) < 1f / (float) size)) {
                 //if (!lock.isWriteLocked()) {
                     commit(null);
                 //}
@@ -465,9 +465,9 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         if (i < a.length) {
             Y v = (Y) a[i];
             if (v!=null)
-                return priElse(v, 0);
+                return priElse(v, (float) 0);
         }
-        return (i == 0 ? 0 : 1);
+        return (float) (i == 0 ? 0 : 1);
     }
 
     private int sampleNextLinearNormalized(Random rng, int start, int end) {
@@ -487,14 +487,14 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             return sampleNextLinearNormalized(rng, size);
 
         float max = priSafe(0), min = priSafe(size-1);
-        if (max - min < 1f/(size*size))
+        if (max - min < 1f/ (float) (size * size))
             return sampleNextLinearNormalized(rng, size); //HACK elide recompute pri
 
         int mii = size / 2;
         float mid = priSafe(mii);
 
 
-        float skew = (mid - (max-min)/2)/(max-min);
+        float skew = (mid - (max-min)/ 2.0F)/(max-min);
         if (rng.nextFloat() > skew) {
             return sampleNextLinearNormalized(rng, 0, mii);
         } else {
@@ -629,7 +629,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     private void samplePopRemove(Y y, int suspectedPosition, boolean strong, boolean stop, Random rng) {
 
         long l = strong ? lock.writeLock() : lock.tryWriteLock();
-        if (l == 0)
+        if (l == 0L)
             return;
 
         try {
@@ -705,7 +705,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             Y y;
             if (existing == x) {
                 //exact same instance
-                if (l != 0)
+                if (l != 0L)
                     lock.unlock(l);
                 y = x;
             } else {
@@ -814,8 +814,8 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         //incoming.delete();
 
         if (overflow != null) {
-            float over = Math.max(0, incomingPri - delta);
-            if (over > 0)
+            float over = Math.max((float) 0, incomingPri - delta);
+            if (over > (float) 0)
                 overflow.add(over);
         }
 
@@ -885,7 +885,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     }
 
     private void removed(Y y) {
-        massAdd(-priElse(y, 0));
+        massAdd(-priElse(y, (float) 0));
         onRemove(y);
     }
 
@@ -978,7 +978,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
 
         long l = block ? lock.writeLock() : lock.tryWriteLock();
-        if (l != 0) {
+        if (l != 0L) {
             try {
                 int toRemove = Math.min(n, size());
                 if (toRemove > 0) {
@@ -1011,7 +1011,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     @Override
     public float priMax() {
         Y x = table.items.first();
-        return x != null ? priElse(x, 0) : 0;
+        return x != null ? priElse(x, (float) 0) : (float) 0;
     }
 
 //    /**
@@ -1032,7 +1032,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     @Override
     public float priMin() {
         Y x = table.items.last();
-        return x != null ? priElse(x, 0) : 0;
+        return x != null ? priElse(x, (float) 0) : (float) 0;
     }
 
     public Iterator<Y> iterator() {

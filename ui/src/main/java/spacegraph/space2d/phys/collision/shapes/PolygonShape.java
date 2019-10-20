@@ -31,8 +31,6 @@ import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.common.Transform;
 
-import java.util.stream.IntStream;
-
 /**
  * A convex polygon shape. Polygons have a maximum number of vertices equal to _maxPolygonVertices.
  * In most cases you should not need many vertices for a convex polygon.
@@ -78,11 +76,11 @@ public class PolygonShape extends Shape {
         vertices = 0;
         vertex = new v2[maxVertices];
         for (int i = 0; i < vertex.length; i++) {
-            vertex[i] = new v2(0, 0);
+            vertex[i] = new v2((float) 0, (float) 0);
         }
         normals = new v2[maxVertices];
         for (int i = 0; i < normals.length; i++) {
-            normals[i] = new v2(0, 0);
+            normals[i] = new v2((float) 0, (float) 0);
         }
         setSkinRadius(Settings.polygonRadius);
         centroid.setZero();
@@ -229,8 +227,8 @@ public class PolygonShape extends Shape {
         PolygonShape p = new PolygonShape(n);
         p.vertices = n;
         for (int i = 0; i < n; i++) {
-            double theta = i / (float) n * 2 * Math.PI;
-            p.vertex[i].set((float) (r * Math.cos(theta)), ((float) (r * Math.sin(theta))));
+            double theta = (double) (i / (float) n) * 2.0 * Math.PI;
+            p.vertex[i].set((float) ((double) r * Math.cos(theta)), ((float) ((double) r * Math.sin(theta))));
         }
         p.centroid.setZero();
         p.set(p.vertex, n);
@@ -280,12 +278,12 @@ public class PolygonShape extends Shape {
         normals[2].set(0.0f, 1.0f);
         normals[3].set(-1.0f, 0.0f);
 
-        v2 center = new v2((x1 + x2) / 2, (y1 + y2) / 2);
+        v2 center = new v2((x1 + x2) / 2.0F, (y1 + y2) / 2.0F);
         centroid.set(center);
 
         Transform xf = poolt1;
         xf.pos.set(center);
-        xf.set(0);
+        xf.set((float) 0);
 
 
         for (int i = 0; i < vertices; ++i) {
@@ -409,7 +407,7 @@ public class PolygonShape extends Shape {
         }
 
         float distance;
-        if (maxDistance > 0) {
+        if (maxDistance > (float) 0) {
             float minDistanceX = normalForMaxDistanceX;
             float minDistanceY = normalForMaxDistanceY;
             float minDistance2 = maxDistance * maxDistance;
@@ -424,7 +422,7 @@ public class PolygonShape extends Shape {
                     minDistance2 = distance2;
                 }
             }
-            distance = (float) Math.sqrt(minDistance2);
+            distance = (float) Math.sqrt((double) minDistance2);
             normalOut.x = xfqc * minDistanceX - xfqs * minDistanceY;
             normalOut.y = xfqs * minDistanceX + xfqc * minDistanceY;
             normalOut.normalize();
@@ -458,7 +456,7 @@ public class PolygonShape extends Shape {
         float dx = p2x - p1x;
         float dy = p2y - p1y;
 
-        float lower = 0, upper = input.maxFraction;
+        float lower = (float) 0, upper = input.maxFraction;
 
         int index = -1;
 
@@ -566,7 +564,7 @@ public class PolygonShape extends Shape {
         for (int i = 0; i < vertices; ++i) {
             s.added(vertex[i]);
         }
-        s.scaled(1.0f / vertices);
+        s.scaled(1.0f / (float) vertices);
 
         final float k_inv3 = 1.0f / 3.0f;
 

@@ -39,7 +39,7 @@ public class TransformUtil {
 	private static final float ANGULAR_MOTION_THRESHOLD = 0.5f* BulletGlobals.SIMD_HALF_PI;
 	
 	private static float recipSqrt(float x) {
-		return (float)(1.0 / Math.sqrt(x));  /* reciprocal square root */
+		return (float)(1.0 / Math.sqrt((double) x));  /* reciprocal square root */
 	}
 
 	public static void planeSpace1(v3 n, v3 p, v3 q) {
@@ -50,7 +50,7 @@ public class TransformUtil {
 
             float a = ny * ny + nz * nz;
             float k = recipSqrt(a);
-			p.set(0, -nz * k, ny * k);
+			p.set((float) 0, -nz * k, ny * k);
 			
 			q.set(a * k, -nx * p.z, nx * p.y);
 		}
@@ -58,7 +58,7 @@ public class TransformUtil {
 
             float a = nx * nx + ny * ny;
             float k = recipSqrt(a);
-			p.set(-ny * k, nx * k, 0);
+			p.set(-ny * k, nx * k, (float) 0);
 			
 			q.set(-nz * p.y, nz * p.x, a * k);
 		}
@@ -83,9 +83,9 @@ public class TransformUtil {
 		}
 		else {
 			
-			axis.scale((float) Math.sin(0.5 * fAngle * timeStep) / fAngle, angvel);
+			axis.scale((float) Math.sin(0.5 * (double) fAngle * (double) timeStep) / fAngle, angvel);
 		}
-        Quat4f dorn = new Quat4f(axis.x, axis.y, axis.z, (float) Math.cos(0.5 * fAngle * timeStep));
+        Quat4f dorn = new Quat4f(axis.x, axis.y, axis.z, (float) Math.cos(0.5 * (double) fAngle * (double) timeStep));
         Quat4f orn0 = curTrans.getRotation(new Quat4f());
 
         Quat4f predictedOrn = new Quat4f();
@@ -131,7 +131,7 @@ public class TransformUtil {
 		if (lenSq < BulletGlobals.FLT_EPSILON * BulletGlobals.FLT_EPSILON) {
 			axis.set(1f, 0f, 0f);
 		} else {
-			axis.scaled(1f / (float) Math.sqrt(lenSq));
+			axis.scaled(1f / (float) Math.sqrt((double) lenSq));
 		}
 	}
 	

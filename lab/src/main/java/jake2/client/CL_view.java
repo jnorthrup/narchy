@@ -83,12 +83,12 @@ public class CL_view {
             if (name.length() > 37)
                 name = name.substring(0, 36);
 
-            if (name.charAt(0) != '*')
+            if ((int) name.charAt(0) != (int) '*')
                 Com.Printf(name + '\r');
 
             SCR.UpdateScreen();
             Sys.SendKeyEvents(); 
-            if (name.charAt(0) == '#') {
+            if ((int) name.charAt(0) == (int) '#') {
                 
                 if (num_cl_weaponmodels < Defines.MAX_CLIENTWEAPONMODELS) {
                     cl_weaponmodels[num_cl_weaponmodels] = Globals.cl.configstrings[Defines.CS_MODELS
@@ -99,14 +99,14 @@ public class CL_view {
                 Globals.cl.model_draw[i] = Globals.re
                         .RegisterModel(Globals.cl.configstrings[Defines.CS_MODELS
                                 + i]);
-                if (name.charAt(0) == '*')
+                if ((int) name.charAt(0) == (int) '*')
                     Globals.cl.model_clip[i] = CM
                             .InlineModel(Globals.cl.configstrings[Defines.CS_MODELS
                                     + i]);
                 else
                     Globals.cl.model_clip[i] = null;
             }
-            if (name.charAt(0) != '*')
+            if ((int) name.charAt(0) != (int) '*')
                 Com.Printf("                                     \r");
         }
 
@@ -167,10 +167,10 @@ public class CL_view {
 
         int i;
         for (i = 0; i < Globals.cls.netchan.dropped; i++)
-            SCR.DebugGraph(30, 0x40);
+            SCR.DebugGraph(30.0F, 0x40);
 
         for (i = 0; i < Globals.cl.surpressCount; i++)
-            SCR.DebugGraph(30, 0xdf);
+            SCR.DebugGraph(30.0F, 0xdf);
 
 
         int in = Globals.cls.netchan.incoming_acknowledged
@@ -179,6 +179,6 @@ public class CL_view {
         ping /= 30;
         if (ping > 30)
             ping = 30;
-        SCR.DebugGraph(ping, 0xd0);
+        SCR.DebugGraph((float) ping, 0xd0);
     }
 }

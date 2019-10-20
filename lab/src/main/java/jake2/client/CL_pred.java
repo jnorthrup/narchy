@@ -34,8 +34,6 @@ import jake2.qcommon.PMove;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
-import java.util.stream.IntStream;
-
 /**
  * CL_pred
  */
@@ -47,7 +45,7 @@ public class CL_pred {
     static void CheckPredictionError() {
 
         if (Globals.cl_predict.value == 0.0f
-                || (Globals.cl.frame.playerstate.pmove.pm_flags & pmove_t.PMF_NO_PREDICTION) != 0)
+                || ((int) Globals.cl.frame.playerstate.pmove.pm_flags & pmove_t.PMF_NO_PREDICTION) != 0)
             return;
 
 
@@ -93,7 +91,7 @@ public class CL_pred {
 
             
             for (int i = 0; i < 3; i++)
-                Globals.cl.prediction_error[i] = delta[i] * 0.125f;
+                Globals.cl.prediction_error[i] = (float) delta[i] * 0.125f;
         }
     }
 
@@ -131,10 +129,10 @@ public class CL_pred {
                 int zd = 8 * ((ent.solid >>> 5) & 31);
                 int zu = 8 * ((ent.solid >>> 10) & 63) - 32;
 
-                bmins[0] = bmins[1] = -x;
-                bmaxs[0] = bmaxs[1] = x;
-                bmins[2] = -zd;
-                bmaxs[2] = zu;
+                bmins[0] = bmins[1] = (float) -x;
+                bmaxs[0] = bmaxs[1] = (float) x;
+                bmins[2] = (float) -zd;
+                bmaxs[2] = (float) zu;
 
                 headnode = CM.HeadnodeForBox(bmins, bmaxs);
                 angles = Globals.vec3_origin; 
@@ -224,12 +222,12 @@ public class CL_pred {
             return;
 
         if (Globals.cl_predict.value == 0.0f
-                || (Globals.cl.frame.playerstate.pmove.pm_flags & pmove_t.PMF_NO_PREDICTION) != 0) {
+                || ((int) Globals.cl.frame.playerstate.pmove.pm_flags & pmove_t.PMF_NO_PREDICTION) != 0) {
             
             for (int i = 0; i < 3; i++) {
                 Globals.cl.predicted_angles[i] = Globals.cl.viewangles[i]
                         + Math3D
-                                .SHORT2ANGLE(Globals.cl.frame.playerstate.pmove.delta_angles[i]);
+                                .SHORT2ANGLE((int) Globals.cl.frame.playerstate.pmove.delta_angles[i]);
             }
             return;
         }
@@ -284,18 +282,18 @@ public class CL_pred {
         }
 
         int oldframe = (ack - 2) & (Defines.CMD_BACKUP - 1);
-        int oldz = Globals.cl.predicted_origins[oldframe][2];
-        int step = pm.s.origin[2] - oldz;
+        int oldz = (int) Globals.cl.predicted_origins[oldframe][2];
+        int step = (int) pm.s.origin[2] - oldz;
         if (step > 63 && step < 160
-                && (pm.s.pm_flags & pmove_t.PMF_ON_GROUND) != 0) {
-            Globals.cl.predicted_step = step * 0.125f;
-            Globals.cl.predicted_step_time = (int) (Globals.cls.realtime - Globals.cls.frametime * 500);
+                && ((int) pm.s.pm_flags & pmove_t.PMF_ON_GROUND) != 0) {
+            Globals.cl.predicted_step = (float) step * 0.125f;
+            Globals.cl.predicted_step_time = (int) ((float) Globals.cls.realtime - Globals.cls.frametime * 500.0F);
         }
 
         
-        Globals.cl.predicted_origin[0] = pm.s.origin[0] * 0.125f;
-        Globals.cl.predicted_origin[1] = pm.s.origin[1] * 0.125f;
-        Globals.cl.predicted_origin[2] = pm.s.origin[2] * 0.125f;
+        Globals.cl.predicted_origin[0] = (float) pm.s.origin[0] * 0.125f;
+        Globals.cl.predicted_origin[1] = (float) pm.s.origin[1] * 0.125f;
+        Globals.cl.predicted_origin[2] = (float) pm.s.origin[2] * 0.125f;
 
         Math3D.VectorCopy(pm.viewangles, Globals.cl.predicted_angles);
     }

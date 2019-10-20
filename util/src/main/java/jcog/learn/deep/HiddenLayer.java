@@ -3,7 +3,6 @@ package jcog.learn.deep;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.function.DoubleFunction;
-import java.util.stream.IntStream;
 
 import static jcog.learn.deep.utils.binomial;
 import static jcog.learn.deep.utils.uniform;
@@ -21,12 +20,12 @@ public class HiddenLayer {
         this.n_in = n_in;
         this.n_out = n_out;
 
-        if (rng == null) this.rng = new Random(1234);
+        if (rng == null) this.rng = new Random(1234L);
         else this.rng = rng;
 
         if (W == null) {
             this.W = new double[n_out][n_in];
-            double a = 1.0 / this.n_in;
+            double a = 1.0 / (double) this.n_in;
 
             for(int i = 0; i<n_out; i++) {
                 for(int j = 0; j<n_in; j++) {
@@ -81,7 +80,7 @@ public class HiddenLayer {
         int prev_n_out = prev_layer_dy.length;
 
         for(int i = 0; i<prev_n_in; i++) {
-            dy[i] = 0;
+            dy[i] = (double) 0;
             for(int j = 0; j<prev_n_out; j++) {
                 dy[i] += prev_layer_dy[j] * prev_layer_W[j][i];
             }

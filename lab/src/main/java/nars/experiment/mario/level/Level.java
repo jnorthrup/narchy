@@ -61,12 +61,12 @@ public class Level {
 
     public static Level load(DataInputStream dis) throws IOException {
         long header = dis.readLong();
-        if (header != Level.FILE_HEADER) throw new IOException("Bad level header");
+        if (header != (long) Level.FILE_HEADER) throw new IOException("Bad level header");
         @SuppressWarnings("unused")
         int version = dis.read() & 0xff;
 
-        int width = dis.readShort() & 0xffff;
-        int height = dis.readShort() & 0xffff;
+        int width = (int) dis.readShort() & 0xffff;
+        int height = (int) dis.readShort() & 0xffff;
         Level level = new Level(width, height);
         level.map = new byte[width][height];
         level.data = new byte[width][height];
@@ -78,11 +78,11 @@ public class Level {
     }
 
     public void save(DataOutputStream dos) throws IOException {
-        dos.writeLong(Level.FILE_HEADER);
-        dos.write((byte) 0);
+        dos.writeLong((long) Level.FILE_HEADER);
+        dos.write((int) (byte) 0);
 
-        dos.writeShort((short) width);
-        dos.writeShort((short) height);
+        dos.writeShort((int) (short) width);
+        dos.writeShort((int) (short) height);
 
         for (int i = 0; i < width; i++) {
             dos.write(map[i]);
@@ -93,7 +93,7 @@ public class Level {
     public void tick() {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                if (data[x][y] > 0) data[x][y]--;
+                if ((int) data[x][y] > 0) data[x][y]--;
             }
         }
     }
@@ -108,7 +108,7 @@ public class Level {
 
     public byte getBlock(int x, int y) {
         if (x < 0) x = 0;
-        if (y < 0) return 0;
+        if (y < 0) return (byte) 0;
         if (x >= width) x = width - 1;
         if (y >= height) y = height - 1;
         return map[x][y];
@@ -132,9 +132,9 @@ public class Level {
 
     public boolean isBlocking(int x, int y, float xa, float ya) {
         byte block = getBlock(x, y);
-        boolean blocking = ((TILE_BEHAVIORS[block & 0xff]) & BIT_BLOCK_ALL) > 0;
-        blocking |= (ya > 0) && ((TILE_BEHAVIORS[block & 0xff]) & BIT_BLOCK_UPPER) > 0;
-        blocking |= (ya < 0) && ((TILE_BEHAVIORS[block & 0xff]) & BIT_BLOCK_LOWER) > 0;
+        boolean blocking = ((int) (TILE_BEHAVIORS[(int) block & 0xff]) & BIT_BLOCK_ALL) > 0;
+        blocking |= (ya > (float) 0) && ((int) (TILE_BEHAVIORS[(int) block & 0xff]) & BIT_BLOCK_UPPER) > 0;
+        blocking |= (ya < (float) 0) && ((int) (TILE_BEHAVIORS[(int) block & 0xff]) & BIT_BLOCK_LOWER) > 0;
 
         return blocking;
     }

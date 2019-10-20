@@ -14,8 +14,8 @@ abstract class Entity {
 
     public Entity(Maze maze, int x, int y) {
 
-        this.x = x;
-        this.y = y;
+        this.x = (double) x;
+        this.y = (double) y;
         speed = 0.1;
         lead = 0.1;
         dir = Direction.right;
@@ -27,20 +27,20 @@ abstract class Entity {
 
         move(dir, speed);
 
-        if (dir == Direction.left && x <= -1) x = maze.width;
-        if (dir == Direction.right && x >= maze.width) x = -1;
-        if (dir == Direction.up && y <= -1) y = maze.height;
-        if (dir == Direction.down && y >= maze.height) y = -1;
+        if (dir == Direction.left && x <= -1.0) x = (double) maze.width;
+        if (dir == Direction.right && x >= (double) maze.width) x = -1.0;
+        if (dir == Direction.up && y <= -1.0) y = (double) maze.height;
+        if (dir == Direction.down && y >= (double) maze.height) y = -1.0;
 
         if (this.dir == Direction.up || this.dir == Direction.down) {
 
-            if (Math.round(x) > x) {
+            if ((double) Math.round(x) > x) {
 
                 x += 0.1;
 
             }
 
-            if (Math.round(x) < x) {
+            if ((double) Math.round(x) < x) {
 
                 x -= 0.1;
 
@@ -50,13 +50,13 @@ abstract class Entity {
 
         if (this.dir == Direction.left || this.dir == Direction.right) {
 
-            if (Math.round(y) > y) {
+            if ((double) Math.round(y) > y) {
 
                 y += 0.1;
 
             }
 
-            if (Math.round(y) < y) {
+            if ((double) Math.round(y) < y) {
 
                 y -= 0.1;
 
@@ -74,7 +74,7 @@ abstract class Entity {
 
             case up:
 
-                if (y < 1 - dist) {
+                if (y < 1.0 - dist) {
 
                     y -= dist;
                     break;
@@ -95,7 +95,7 @@ abstract class Entity {
 
             case down:
 
-                if (y > maze.height - 2 + dist) {
+                if (y > (double) (maze.height - 2) + dist) {
 
                     y += dist;
                     break;
@@ -116,7 +116,7 @@ abstract class Entity {
 
             case left:
 
-                if (x < 1 - dist) {
+                if (x < 1.0 - dist) {
 
                     x -= dist;
                     break;
@@ -137,7 +137,7 @@ abstract class Entity {
 
             case right:
 
-                if (x > maze.width - 2 + dist) {
+                if (x > (double) (maze.width - 2) + dist) {
 
                     x += dist;
                     break;

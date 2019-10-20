@@ -24,7 +24,7 @@ public class Credit extends /*DoubleAdder*/ AtomicFloat {
      * should be ok for single thread modes */
     public final void commit() {
         //float next = (float) sumThenReset();
-        this.current = getAndSet(0);
+        this.current = getAndSet((float) 0);
 
 //        DoubleAdder t = this.total;
 //        if (t !=null)

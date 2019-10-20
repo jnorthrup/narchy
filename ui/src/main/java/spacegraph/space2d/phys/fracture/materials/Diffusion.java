@@ -15,7 +15,7 @@ import java.util.Random;
  * @author Marek Benovic
  */
 public class Diffusion extends Material {
-    private final Random r = new XoRoShiRo128PlusRandom(1);
+    private final Random r = new XoRoShiRo128PlusRandom(1L);
 
     @Override
     public v2[] focee(v2 startPoint, v2 vektor) {
@@ -23,17 +23,17 @@ public class Diffusion extends Material {
 
         float ln = vektor.length();
         Transform t = new Transform();
-        t.set(startPoint, 0);
+        t.set(startPoint, (float) 0);
         t.c = vektor.y / ln;
         t.s = vektor.x / ln;
 
         final int count = 128;
         v2[] va = new v2[count];
-        double c = 4;
+        double c = 4.0;
         for (int i = 1; i <= count; i++) {
 
-            double a = r.nextFloat() * 2 * Math.PI;
-            double d = -Math.log(r.nextFloat()) * m_shattering;
+            double a = (double) r.nextFloat() * 2.0 * Math.PI;
+            double d = -Math.log((double) r.nextFloat()) * (double) m_shattering;
 
             double x = Math.sin(a) * d;
             double y = Math.cos(a) * d * c;

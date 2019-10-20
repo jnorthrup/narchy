@@ -74,7 +74,7 @@ public abstract class LivingEntity extends Entity {
             }
         }
         super.updatePosition(world, tileSize);
-        if (this.dy == 0) {
+        if (this.dy == (float) 0) {
             jumping = false;
         }
         if (this.isInWater(world, tileSize)) {
@@ -98,13 +98,13 @@ public abstract class LivingEntity extends Entity {
         if (slow) {
             moveDirection = -.2f;
         } else {
-            moveDirection = -1;
+            moveDirection = -1.0F;
         }
     }
 
     public void stopLeft() {
-        if (moveDirection < 0) {
-            moveDirection = 0;
+        if (moveDirection < (float) 0) {
+            moveDirection = (float) 0;
         }
     }
 
@@ -113,13 +113,13 @@ public abstract class LivingEntity extends Entity {
         if (slow) {
             moveDirection = .2f;
         } else {
-            moveDirection = 1;
+            moveDirection = 1.0F;
         }
     }
 
     public void stopRight() {
-        if (moveDirection > 0) {
-            moveDirection = 0;
+        if (moveDirection > (float) 0) {
+            moveDirection = (float) 0;
         }
     }
 
@@ -133,16 +133,16 @@ public abstract class LivingEntity extends Entity {
 
     public static float findIntersection(float rayOx, float rayOy, float m, float p1x, float p1y,
                                          float p2x, float p2y) {
-        float freeVar = -1;
+        float freeVar = -1.0F;
         if (p1x == p2x) {
             freeVar = -m * (rayOx - p1x) + rayOy;
             if ((freeVar < p1y && freeVar < p2y) || (freeVar > p1y && freeVar > p2y)) {
-                return -1;
+                return -1.0F;
             }
         } else if (p1y == p2y) {
             freeVar = -(rayOy - p1y) / m + rayOx;
             if ((freeVar < p1x && freeVar < p2x) || (freeVar > p1x && freeVar > p2x)) {
-                return -1;
+                return -1.0F;
             }
         } else {
             System.err.println("Find intersection -- bad arguments");

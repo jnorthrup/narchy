@@ -84,7 +84,7 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
                             int ttlStart = a.ttl;
                             assert (ttlStart > 0);
                             int ttlFair = Math.max(1,
-                                (int)Math.ceil(((float)ttlStart) / N)
+                                (int)Math.ceil((double) (((float) ttlStart) / (float) N))
                                 //ttlStart
                             );
                             int[] ne = nonEmpty.toIntArray();

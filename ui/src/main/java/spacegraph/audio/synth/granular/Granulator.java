@@ -12,14 +12,14 @@ class Granulator {
 		this.sourceBuffer = sourceBuffer;
 		grainSizeSamples = Math.round(sampleRate * grainSizeSecs);
 
-		window = new HanningWindow(Math.round(grainSizeSamples * windowSizeFactor));
+		window = new HanningWindow(Math.round((float) grainSizeSamples * windowSizeFactor));
 		
 	}
 
 	boolean hasMoreSamples(long[] grain, long now) {
         long length = grain[1];
         long showTime = grain[2];
-		return now < showTime + length + window.getSize();
+		return now < showTime + length + (long) window.getSize();
 	}
 
 	float sample(long[] grain, long now) {
@@ -31,7 +31,7 @@ class Granulator {
         long offset = now - showTime;
 
         long startIndex = grain[0];
-        int sourceIndex = (int) ((startIndex + offset + sb.length));
+        int sourceIndex = (int) ((startIndex + offset + (long) sb.length));
 		while (sourceIndex < 0)
 			sourceIndex += sb.length;
 		sourceIndex %= sb.length;
@@ -49,9 +49,9 @@ class Granulator {
 		if (grain == null)
 			grain = new long[3];
         int ws = window.getSize();
-		grain[0] = (startIndex + ws) % sourceBuffer.length;
-		grain[1] = grainSizeSamples;
-		grain[2] = Math.round(fadeInTime + ws);
+		grain[0] = (long) ((startIndex + ws) % sourceBuffer.length);
+		grain[1] = (long) grainSizeSamples;
+		grain[2] = (long) Math.round(fadeInTime + (float) ws);
 		return grain;
 	}
 

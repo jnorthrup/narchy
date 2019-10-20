@@ -257,9 +257,9 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
                 i = x;
             }
         }
-        long x = i;
-        x <<= 32;
-        x |= j;
+        long x = (long) i;
+        x <<= 32L;
+        x = x | (long) j;
         return x;
     }
 

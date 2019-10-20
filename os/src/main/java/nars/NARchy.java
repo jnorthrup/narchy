@@ -28,7 +28,7 @@ public class NARchy extends NARS {
 
                 .exe(new WorkerExec(threads))
 
-                .time(new RealTime.MS(false ).durFPS(10f))
+                .time(new RealTime.MS(false ).durFPS(10))
                 
                 .get();
 
@@ -65,7 +65,7 @@ public class NARchy extends NARS {
             }
 
             InterNAR i = new InterNAR(nar);
-            i.fps(2);
+            i.fps(2.0F);
 
 
         });

@@ -194,7 +194,7 @@ public class GameSpawn {
             game_import_t.configstring(Defines.CS_CDTRACK, String.valueOf(ent.sounds));
             game_import_t.configstring(Defines.CS_MAXCLIENTS, String.valueOf((int) (GameBase.maxclients.value)));
             
-            if (GameBase.deathmatch.value != 0)
+            if (GameBase.deathmatch.value != (float) 0)
                 game_import_t.configstring(Defines.CS_STATUSBAR, "" + dm_statusbar);
             else
                 game_import_t.configstring(Defines.CS_STATUSBAR, "" + single_statusbar);
@@ -339,9 +339,9 @@ public class GameSpawn {
 
         for (int i = 0; i < l; i++) {
             char c = string.charAt(i);
-            if (c == '\\' && i < l - 1) {
+            if ((int) c == (int) '\\' && i < l - 1) {
                 c = string.charAt(++i);
-                if (c == 'n')
+                if ((int) c == (int) 'n')
                     newb.append('\n');
                 else
                     newb.append('\\');
@@ -403,7 +403,7 @@ public class GameSpawn {
             init = true;
             
             
-            if (keyname.charAt(0) == '_')
+            if ((int) keyname.charAt(0) == (int) '_')
                 continue;
 
             ED_ParseField(keyname.toLowerCase(), com_token, ent);
@@ -474,12 +474,12 @@ public class GameSpawn {
         
         Com.dprintln("SpawnEntities(), mapname=" + mapname);
 
-        float skill_level = (float) Math.floor(GameBase.skill.value);
+        float skill_level = (float) Math.floor((double) GameBase.skill.value);
 
-        if (skill_level < 0)
-            skill_level = 0;
-        if (skill_level > 3)
-            skill_level = 3;
+        if (skill_level < (float) 0)
+            skill_level = (float) 0;
+        if (skill_level > 3.0F)
+            skill_level = 3.0F;
         if (GameBase.skill.value != skill_level)
             game_import_t.cvar_forceset("skill", String.valueOf(skill_level));
 
@@ -530,7 +530,7 @@ public class GameSpawn {
             
             
             if (ent != GameBase.g_edicts[0]) {
-                if (GameBase.deathmatch.value != 0) {
+                if (GameBase.deathmatch.value != (float) 0) {
                     if ((ent.spawnflags & Defines.SPAWNFLAG_NOT_DEATHMATCH) != 0) {
                         
                         Com.DPrintf("->inhibited.\n");
@@ -543,9 +543,9 @@ public class GameSpawn {
                          * ((coop.value) && (ent.spawnflags &
                          * SPAWNFLAG_NOT_COOP)) ||
                          */
-                    ((GameBase.skill.value == 0) && (ent.spawnflags & Defines.SPAWNFLAG_NOT_EASY) != 0)
-                            || ((GameBase.skill.value == 1) && (ent.spawnflags & Defines.SPAWNFLAG_NOT_MEDIUM) != 0)
-                            || (((GameBase.skill.value == 2) || (GameBase.skill.value == 3)) && (ent.spawnflags & Defines.SPAWNFLAG_NOT_HARD) != 0)) {
+                    ((GameBase.skill.value == (float) 0) && (ent.spawnflags & Defines.SPAWNFLAG_NOT_EASY) != 0)
+                            || ((GameBase.skill.value == 1.0F) && (ent.spawnflags & Defines.SPAWNFLAG_NOT_MEDIUM) != 0)
+                            || (((GameBase.skill.value == 2.0F) || (GameBase.skill.value == 3.0F)) && (ent.spawnflags & Defines.SPAWNFLAG_NOT_HARD) != 0)) {
                         
                         Com.DPrintf("->inhibited.\n");
                         GameUtil.G_FreeEdict(ent);

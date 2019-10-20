@@ -62,12 +62,12 @@ class AdwinHisto {
 
     public void add(double element) {
 
-        Bucket newBucket = new Bucket(element, 0, 1);
+        Bucket newBucket = new Bucket(element, (double) 0, 1);
         head.addBucket(newBucket);
         numBuckets++;
         numElements++;
         if (numElements > 1) {
-            variance += (numElements - 1) * Math.pow(element - sum / (numElements - 1), 2) / numElements;
+            variance += (double) (numElements - 1) * Math.pow(element - sum / (double) (numElements - 1), 2.0) / (double) numElements;
         }
         sum += element;
         compress();
@@ -101,7 +101,7 @@ class AdwinHisto {
         assert firstBucket.size() == secondBucket.size();
         int elementsPerBucket = firstBucket.size();
         double newTotal = firstBucket.sum() + secondBucket.sum();
-        double varianceIncrease = Math.pow(firstBucket.sum() - secondBucket.sum(), 2) / (2 * elementsPerBucket);
+        double varianceIncrease = Math.pow(firstBucket.sum() - secondBucket.sum(), 2.0) / (double) (2 * elementsPerBucket);
         double newVariance = firstBucket.variance() + secondBucket.variance() + varianceIncrease;
         return new Bucket(newTotal, newVariance, 2 * elementsPerBucket);
     }
@@ -125,7 +125,7 @@ class AdwinHisto {
                 numElements -= bs;
                 numBuckets--;
                 sum -= bucket.sum();
-                variance -= bucket.variance() + bs * numElements * Math.pow(bucket.mean() - sum / numElements, 2) / (bs + numElements);
+                variance -= bucket.variance() + (double) bs * (double) numElements * Math.pow(bucket.mean() - sum / (double) numElements, 2.0) / (double) (bs + numElements);
             }
         }
     }
@@ -200,6 +200,6 @@ class AdwinHisto {
     }
 
     public double mean() {
-        return sum()/size();
+        return sum()/ (double) size();
     }
 }

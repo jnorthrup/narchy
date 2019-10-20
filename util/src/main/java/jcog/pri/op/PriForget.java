@@ -53,8 +53,8 @@ public enum PriForget { ;
 
             //Util.unitize(pressure * temperature / mass);
 
-            if (factor > cap * ScalarValue.EPSILON) {
-                return new PriMult<>(1-decayRate);
+            if (factor > (float) cap * ScalarValue.EPSILON) {
+                return new PriMult<>(1.0F -decayRate);
             }
         }
         return null;
@@ -62,15 +62,15 @@ public enum PriForget { ;
 
     public static @Nullable Consumer forgetIdeal(double rate, double idealPri, int size, int cap, double pressure, double mass) {
         double excess = pressure +
-                Math.max(0,
-                    mass - (cap /*size*/ * idealPri)
+                Math.max((double) 0,
+                    mass - ((double) cap /*size*/ * idealPri)
                 )
         ;
         double eachMustForgetPct =
                 rate * (excess / (mass+excess));
 
-            if (eachMustForgetPct >= ScalarValue.EPSILON) {
-                return new PriMult<>((float)Util.unitize(1-eachMustForgetPct));
+            if (eachMustForgetPct >= (double) ScalarValue.EPSILON) {
+                return new PriMult<>((float)Util.unitize(1.0 -eachMustForgetPct));
             }
 
         return null;

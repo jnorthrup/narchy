@@ -37,7 +37,7 @@ public class Panner extends UGen implements DataBeadReceiver {
      * @param con The audio context.
      */
     public Panner(AudioContext con) {
-        this(con, 0);
+        this(con, (float) 0);
     }
 
     /**
@@ -82,18 +82,18 @@ public class Panner extends UGen implements DataBeadReceiver {
 
             for (int currsample = 0; currsample < bufferSize; currsample++) {
 
-                if ((pos = posUGen.getValue(0, currsample)) >= 1) {
-                    p1 = 0;
-                    p2 = 1;
-                } else if (pos <= -1) {
-                    p1 = 1;
-                    p2 = 0;
+                if ((pos = posUGen.getValue(0, currsample)) >= 1.0F) {
+                    p1 = (float) 0;
+                    p2 = 1.0F;
+                } else if (pos <= -1.0F) {
+                    p1 = 1.0F;
+                    p2 = (float) 0;
                 } else {
                     int n1;
-                    float f = (pos + 1) * .5f * rootSize;
-                    f -= (n1 = (int) Math.floor(f));
-                    p2 = ROOTS[n1] * (1 - f) + ROOTS[n1 + 1] * f;
-                    p1 = ROOTS[rootSize - n1] * (1 - f)
+                    float f = (pos + 1.0F) * .5f * (float) rootSize;
+                    f = f - (float) (n1 = (int) Math.floor((double) f));
+                    p2 = ROOTS[n1] * (1.0F - f) + ROOTS[n1 + 1] * f;
+                    p1 = ROOTS[rootSize - n1] * (1.0F - f)
                             + ROOTS[rootSize - (n1 + 1)] * f;
                 }
 
@@ -112,9 +112,9 @@ public class Panner extends UGen implements DataBeadReceiver {
     private static float[] buildRoots(int rs) {
         float[] roots = new float[rs + 2];
         for (int i = 0; i < rs + 1; i++) {
-            roots[i] = (float) Math.sqrt((float) i / rs);
+            roots[i] = (float) Math.sqrt((double) ((float) i / (float) rs));
         }
-        roots[rs + 1] = 1;
+        roots[rs + 1] = 1.0F;
         return roots;
     }
 
@@ -134,18 +134,18 @@ public class Panner extends UGen implements DataBeadReceiver {
      * @return This Panner instance.
      */
     private Panner setPos(float pos) {
-        if ((this.pos = pos) >= 1) {
-            p1 = 0;
-            p2 = 1;
-        } else if (pos <= -1) {
-            p1 = 1;
-            p2 = 0;
+        if ((this.pos = pos) >= 1.0F) {
+            p1 = (float) 0;
+            p2 = 1.0F;
+        } else if (pos <= -1.0F) {
+            p1 = 1.0F;
+            p2 = (float) 0;
         } else {
             int n1;
-            float f = (pos + 1) * .5f * rootSize;
-            f -= (n1 = (int) Math.floor(f));
-            p2 = ROOTS[n1] * (1 - f) + ROOTS[n1 + 1] * f;
-            p1 = ROOTS[rootSize - n1] * (1 - f) + ROOTS[rootSize - (n1 + 1)]
+            float f = (pos + 1.0F) * .5f * (float) rootSize;
+            f = f - (float) (n1 = (int) Math.floor((double) f));
+            p2 = ROOTS[n1] * (1.0F - f) + ROOTS[n1 + 1] * f;
+            p1 = ROOTS[rootSize - n1] * (1.0F - f) + ROOTS[rootSize - (n1 + 1)]
                     * f;
         }
         isPosStatic = true;

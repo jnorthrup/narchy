@@ -18,7 +18,7 @@ import java.awt.*;
     @Deprecated
     protected static class TextCharacter {
 
-        static final float[] WHITE = { 1, 1, 1};
+        static final float[] WHITE = {1.0F, 1.0F, 1.0F};
 
         public char c;
         public float[] fgColor;
@@ -65,7 +65,7 @@ import java.awt.*;
         gl.glPushMatrix();
 
 
-        gl.glScalef(1f / (cols), 1f / (rows), 1f);
+        gl.glScalef(1f / (float) (cols), 1f / (float) (rows), 1f);
 
         
         
@@ -89,7 +89,7 @@ import java.awt.*;
             HersheyFont.textStart(gl,
                     charScaleX, charScaleY,
                     
-                    0.5f, (rows - 1 - row),
+                    0.5f, (float) (rows - 1 - row),
                     dz);
 
 
@@ -101,7 +101,7 @@ import java.awt.*;
 
                 if (setBackgroundColor(gl, c, col, row)) {
                     Draw.rect(gl,
-                            Math.round((col - 0.5f) * 20 / charScaleX), 0,
+                            Math.round(((float) col - 0.5f) * 20.0F / charScaleX), 0,
                             Math.round(20f / charScaleX), 24
                     );
                 }
@@ -110,13 +110,13 @@ import java.awt.*;
                 char cc = visible(c.c);
 
 
-                if (cc != 0) {
+                if ((int) cc != 0) {
 
 
                     float[] fg = c.fgColor;
                     gl.glColor4f(fg[0], fg[1], fg[2], fgAlpha);
 
-                    HersheyFont.textNext(gl, cc, col / charScaleX);
+                    HersheyFont.textNext(gl, cc, (float) col / charScaleX);
 
                 }
             }
@@ -130,14 +130,14 @@ import java.awt.*;
         int cury = cursor[1];
 
 
-        float p = (1f + (float) Math.sin(t / 100.0)) * 0.5f;
+        float p = (1f + (float) Math.sin((double) t / 100.0)) * 0.5f;
         gl.glColor4f(1f, 0.7f, 0f, 0.4f + p * 0.4f);
 
         float m = (p);
         Draw.rect(gl,
-                (curx) + m / 2f,
-                (rows - 1 - cury),
-                1 - m, (1 - m)
+                (float) (curx) + m / 2f,
+                (float) (rows - 1 - cury),
+                1.0F - m, (1.0F - m)
                 , -dz
         );
 
@@ -161,7 +161,7 @@ import java.awt.*;
 
         switch (cc) {
             case ' ':
-                return 0;
+                return (char) 0;
             case 9474:
                 cc = '|';
                 break;

@@ -15,7 +15,7 @@ public class VideoSurface extends AspectAlign {
     }
 
     public VideoSurface(VideoSource in, Tex tex) {
-        super(tex.view(), 1);
+        super(tex.view(), 1.0F);
         this.tex = tex;
         this.in = in;
     }

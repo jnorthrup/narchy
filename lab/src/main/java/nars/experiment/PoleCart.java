@@ -62,14 +62,14 @@ public class PoleCart extends GameX {
 	private final AtomicBoolean drawFinished = new AtomicBoolean(true);
 
 
-	static final float fps = 25;
-	private float speed = 1;
+	static final float fps = 25.0F;
+	private float speed = 1.0F;
 
 	public static void main(String[] arg) {
         int instances = 1;
         int threadsEach = 4;
 		for (int i = 0; i < instances; i++)
-			Companion.runRTNet(threadsEach, fps * 2, 8, n -> {
+			Companion.runRTNet(threadsEach, fps * 2.0F, 8.0F, n -> {
                 PoleCart p = new PoleCart(
 						instances > 1 ?
 							$.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()) :
@@ -85,7 +85,7 @@ public class PoleCart extends GameX {
 						new BeliefPredict(
 							predicting,
 							8,
-							Math.round(6 * n.dur()),
+							Math.round(6.0F * n.dur()),
 							3,
 							new LivePredictor.LSTMPredictor(0.1f, 1),
 							//new LivePredictor.MLPPredictor(0.01f),
@@ -109,17 +109,17 @@ public class PoleCart extends GameX {
 							}
 						}).setFPS(1f);
 						n.onDur(() -> {
-							double dur = n.dur() * 3;
+							double dur = (double) (n.dur() * 3.0F);
                             long now = n.time();
 							for (Concept a : p.actions()) {
 								LongToObjectFunction<Truth> dd = a.meta("impiler");
 								if (dd != null) {
 									for (int pp = 1; pp < 4; pp++) {
-                                        long w = Math.round(now + (2 + pp) * dur);
+                                        long w = Math.round((double) now + (double) (2 + pp) * dur);
                                         Truth x = dd.apply(w);
 										if (x != null) {
 											//System.out.println(a.term() + "\t" + x);
-											n.want(n.priDefault(GOAL), a.term(), Math.round(w - dur), w, x.freq(), x.conf()); //HACK
+											n.want(n.priDefault(GOAL), a.term(), Math.round((double) w - dur), w, x.freq(), x.conf()); //HACK
 										}
 									}
 								}
@@ -163,16 +163,16 @@ public class PoleCart extends GameX {
 
 	static final float posMin = -2f;
 	static final float posMax = +2f;
-	float velMax = 10;
+	float velMax = 10.0F;
 	boolean manualOverride;
 
 
 	static final double cartMass = 1.;
 	static final double poleMass = 0.1;
-	static final double poleLength = 1f;
+	static final double poleLength = 1;
 	static final double gravity = 9.8;
 	static final double forceMag =
-		10;
+            10.0;
 	//100.;
 	//200;
 	public final FloatRange tau = new FloatRange(
@@ -181,7 +181,7 @@ public class PoleCart extends GameX {
 	);
 	static final double fricCart = 0.00005;
 	static final double fricPole =
-		0.01f;
+            0.01;
 	static final double totalMass = cartMass + poleMass;
 	static final double halfPole = 0.5 * poleLength;
 	static final double poleMassLength = poleLength * poleMass;
@@ -211,7 +211,7 @@ public class PoleCart extends GameX {
 		posDot = 0.;
 		angle = 0.2;
 		angleDot = 0.;
-		action = 0;
+		action = (double) 0;
 
 
 		/**
@@ -222,15 +222,15 @@ public class PoleCart extends GameX {
 		 */
 
 
-		x = senseNumberBi($.p("x", id), () -> (float) (pos - posMin) / (posMax - posMin));
+		x = senseNumberBi($.p("x", id), () -> (float) (pos - (double) posMin) / (posMax - posMin));
 		xVel = senseNumberBi($.p(id, $.the("d"), $.the("x")),
 			new FloatNormalized(() -> (float) posDot)
 		);
 
 		angX = senseNumberTri($.p(id, $.the("ang"), $.the("x")),
-			() -> (float) (0.5f + 0.5f * Math.sin(angle)));
+			() -> (float) (0.5 + 0.5 * Math.sin(angle)));
 		angY = senseNumberTri($.p(id, $.the("ang"), $.the("y")),
-			() -> (float) (0.5f + 0.5f * Math.cos(angle)));
+			() -> (float) (0.5 + 0.5 * Math.cos(angle)));
 
 
 		angVel = senseNumberBi($.p(id, $.the("d"), $.the("ang")),
@@ -244,13 +244,13 @@ public class PoleCart extends GameX {
 
 		if (speedControl) {
 			actionUnipolar($.inh(id, "S"), s -> {
-				speed = Util.sqr(s * 2);
+				speed = Util.sqr(s * 2.0F);
 			});
 		}
 
 
 		panel = new JPanel(new BorderLayout()) {
-			public final Stroke stroke = new BasicStroke(4);
+			public final Stroke stroke = new BasicStroke(4.0F);
 
 			@Override
 			public void paint(Graphics g) {
@@ -273,12 +273,12 @@ public class PoleCart extends GameX {
 
 
                 float clearRate = 0.5f;
-				offGraphics.setColor(new Color(0, 0, 0, clearRate));
+				offGraphics.setColor(new Color((float) 0, (float) 0, (float) 0, clearRate));
 				offGraphics.fillRect(0, 0, d.width, d.height);
 
 
 				double[] xs = {-2.5, 2.5, 2.5, 2.3, 2.3, -2.3, -2.3, -2.5};
-				double[] ys = {-0.4, -0.4, 0., 0., -0.2, -0.2, 0, 0};
+				double[] ys = {-0.4, -0.4, 0., 0., -0.2, -0.2, (double) 0, (double) 0};
                 int[] pixxs = new int[8];
                 int[] pixys = new int[8];
 				for (int i = 0; i < 8; i++) {
@@ -292,18 +292,18 @@ public class PoleCart extends GameX {
 
                 Color cartColor = Color.ORANGE;
 				offGraphics.setColor(cartColor);
-				offGraphics.fillRect(pixX(d, pos - 0.2), pixY(d, 0), pixDX(d, 0.4), pixDY(d, -0.2));
+				offGraphics.fillRect(pixX(d, pos - 0.2), pixY(d, (double) 0), pixDX(d, 0.4), pixDY(d, -0.2));
 
 				((Graphics2D) offGraphics).setStroke(stroke);
 
 
-				offGraphics.drawLine(pixX(d, pos), pixY(d, 0),
+				offGraphics.drawLine(pixX(d, pos), pixY(d, (double) 0),
 					pixX(d, pos + Math.sin(angle) * poleLength),
 					pixY(d, poleLength * Math.cos(angle)));
 
 
-				if (action != 0) {
-                    int signAction = action > 0 ? 1 : action < 0 ? -1 : 0;
+				if (action != (double) 0) {
+                    int signAction = action > (double) 0 ? 1 : action < (double) 0 ? -1 : 0;
                     int tipx = pixX(d, pos + 0.2 *
 						//signAction
 						action
@@ -334,25 +334,25 @@ public class PoleCart extends GameX {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyChar() == 'o') {
+				if ((int) e.getKeyChar() == (int) 'o') {
 					manualOverride = !manualOverride;
 					System.out.println("manualOverride=" + manualOverride);
 				}
 				if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-					actionLeft = +1;
-					actionRight = 0;
+					actionLeft = (double) +1;
+					actionRight = (double) 0;
 				} else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-					actionRight = +1;
-					actionLeft = 0;
-				} else if (e.getKeyChar() == ' ') {
-					actionLeft = actionRight = 0;
+					actionRight = (double) +1;
+					actionLeft = (double) 0;
+				} else if ((int) e.getKeyChar() == (int) ' ') {
+					actionLeft = actionRight = (double) 0;
 
 				}
 			}
 		});
 
 
-        Reward r = rewardNormalized("balanced", -1, +1, this::update);
+        Reward r = rewardNormalized("balanced", -1.0F, (float) +1, this::update);
 
 		Exe.runLater(() ->
 			window(NARui.beliefCharts(nar, sensors.stream()
@@ -367,8 +367,8 @@ public class PoleCart extends GameX {
             float a =
 				x * SPEED;
 			//(x * x * x) * SPEED;
-			actionLeft = a < 0 ? -a : 0;
-			actionRight = a > 0 ? a : 0;
+			actionLeft = (double) (a < (float) 0 ? -a : (float) 0);
+			actionRight = (double) (a > (float) 0 ? a : (float) 0);
 			return x;
 		});
 	}
@@ -383,19 +383,19 @@ public class PoleCart extends GameX {
 			//$.funcImg("mx", id, $.the(-1))
 			$.inh(id, "L"), a -> {
 				if (!manualOverride) {
-					actionLeft = a > 0.5f ? power((a - 0.5f) * 2) : 0;
+					actionLeft = (double) (a > 0.5f ? power((a - 0.5f) * 2.0F) : (float) 0);
 					//action = Util.clampBi((float) (action + a * a));
 				}
-				return a > 0.5f ? a : 0;
+				return a > 0.5f ? a : (float) 0;
 			});
         GoalActionConcept R = actionUnipolar(
 			//$.funcImg("mx", id, $.the(+1))
 			$.inh(id, "R"), a -> {
 				if (!manualOverride) {
-					actionRight = a > 0.5f ? power((a - 0.5f) * 2) : 0;
+					actionRight = (double) (a > 0.5f ? power((a - 0.5f) * 2.0F) : (float) 0);
 					//action = Util.clampBi((float) (action - a * a));
 				}
-				return a > 0.5f ? a : 0;
+				return a > 0.5f ? a : (float) 0;
 			});
 
 	}
@@ -410,7 +410,7 @@ public class PoleCart extends GameX {
         double cosangle = Math.cos(angle);
         double angleDotSq = angleDot * angleDot;
         double common = (force + poleMassLength * angleDotSq * sinangle
-			- fricCart * (posDot < 0 ? -1 : 0)) / totalMass;
+			- fricCart * (double) (posDot < (double) 0 ? -1 : 0)) / totalMass;
 
         double angleDDot = (gravity * sinangle - cosangle * common
 			- fricPole * angleDot / poleMassLength) /
@@ -419,26 +419,26 @@ public class PoleCart extends GameX {
 
 
         float tau = this.tau.floatValue();
-		pos += posDot * tau;
+		pos += posDot * (double) tau;
 
 
-		if (pos >= posMax || pos <= posMin) {
+		if (pos >= (double) posMax || pos <= (double) posMin) {
 
-			pos = Util.clamp((float) pos, posMin, posMax);
+			pos = (double) Util.clamp((float) pos, posMin, posMax);
 
 
-			posDot = -1f /* restitution */ * posDot;
+			posDot = -1 /* restitution */ * posDot;
 
 
 		}
 
         double posDDot = common - poleMassLength * angleDDot * cosangle /
 				totalMass;
-		posDot += posDDot * tau;
-		posDot = Math.min(+velMax, Math.max(-velMax, posDot));
+		posDot += posDDot * (double) tau;
+		posDot = Math.min((double) +velMax, Math.max((double) -velMax, posDot));
 
-		angle += angleDot * tau;
-		angleDot += angleDDot * tau;
+		angle += angleDot * (double) tau;
+		angleDot += angleDDot * (double) tau;
 
 		/**TODO
 		 **/
@@ -457,20 +457,20 @@ public class PoleCart extends GameX {
 
 
 	static int pixX(Dimension d, double v) {
-		return (int) Math.round((v + 2.5) / 5.0 * d.width);
+		return (int) Math.round((v + 2.5) / 5.0 * (double) d.width);
 	}
 
 
 	static int pixDX(Dimension d, double v) {
-		return (int) Math.round(v / 5.0 * d.width);
+		return (int) Math.round(v / 5.0 * (double) d.width);
 	}
 
 	static int pixY(Dimension d, double v) {
-		return (int) Math.round(d.height - (v + 0.5f) / 2.0 * d.height);
+		return (int) Math.round((double) d.height - (v + 0.5) / 2.0 * (double) d.height);
 	}
 
 	public static int pixDY(Dimension d, double v) {
-		return (int) Math.round(-v / 2.0 * d.height);
+		return (int) Math.round(-v / 2.0 * (double) d.height);
 	}
 
 	void resetPole() {

@@ -88,7 +88,7 @@ public enum DynamicImplConjTruth {
 //                    innerDT = 0; //eternal/immediate component
 //                } else
                 long d = s - start;
-				innerDT = Tense.occToDT(subjOrPred ? decRange - d : d) + superDT;
+				innerDT = Tense.occToDT(subjOrPred ? (long) decRange - d : d) + superDT;
 			}
 
             Term i = subjOrPred ?

@@ -88,7 +88,7 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
                 return dfs(roots, search); //optimization (no queue needed)
             default:
                 return bfs(roots, new ArrayDeque<>(
-                    2 * (int)Math.ceil(Math.log(c)) /* estimate */), search);
+                    2 * (int)Math.ceil(Math.log((double) c)) /* estimate */), search);
         }
     }
 

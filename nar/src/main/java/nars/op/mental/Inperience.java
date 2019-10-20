@@ -46,7 +46,7 @@ public class Inperience extends TaskTransformAction {
     private static final int VOL_SAFETY_MARGIN = 4;
     static final boolean PROPAGATE_ETERNAL = false;
 
-    public final FloatRange priFactor = new FloatRange(0.1f, 0, 2f);
+    public final FloatRange priFactor = new FloatRange(0.1f, (float) 0, 2f);
 
 
     public Inperience() {
@@ -142,7 +142,7 @@ public class Inperience extends TaskTransformAction {
             Term r = reifyBeliefOrGoal(t, self);
             if ((r = validReification(r, volMax)) != null) {
                 Truth tt = t.truth();
-                u = new InperienceTask(r, $.t(1,
+                u = new InperienceTask(r, $.t(1.0F,
                     Math.max(d.confMin,
                         tt.conf() * tt.polarity()
 //                        (tt.isNegative() ?
@@ -154,7 +154,7 @@ public class Inperience extends TaskTransformAction {
             Term r = reifyQuestion(t.term(), t.punc(), self);
             if ((r = validReification(r, volMax)) != null) {
                 float beliefConfDefault = d.nar.confDefault(BELIEF);
-                u = new InperienceTask(r, $.t(1,
+                u = new InperienceTask(r, $.t(1.0F,
                     Math.max(d.confMin, beliefConfDefault * t.priElseZero())
                 ), t, s, e);
             }

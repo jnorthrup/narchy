@@ -30,7 +30,7 @@ import static jcog.math.v3.v;
 public abstract class JoglDisplay extends SpaceGraph {
 
     /** field of view, in degrees */
-    public float fov = 45;
+    public float fov = 45.0F;
 
     /**
      * the hardware input/output implementation
@@ -43,7 +43,7 @@ public abstract class JoglDisplay extends SpaceGraph {
 
 
     public float zNear = 0.5f;
-    public float zFar = 1000;
+    public float zFar = 1000.0F;
 
     protected int debug;
     public double top;
@@ -55,10 +55,10 @@ public abstract class JoglDisplay extends SpaceGraph {
         video = new MyJoglWindow();
 
         float cameraSpeed = 100f;
-        video.onUpdate(camPos = new v3Anim(0, 0, 5, cameraSpeed));
+        video.onUpdate(camPos = new v3Anim((float) 0, (float) 0, 5.0F, cameraSpeed));
         float cameraRotateSpeed = cameraSpeed;
-        video.onUpdate(camFwd = new v3Anim(0, 0, -1, cameraRotateSpeed));
-        video.onUpdate(camUp = new v3Anim(0, 1, 0, cameraRotateSpeed));
+        video.onUpdate(camFwd = new v3Anim((float) 0, (float) 0, -1.0F, cameraRotateSpeed));
+        video.onUpdate(camUp = new v3Anim((float) 0, 1.0F, (float) 0, cameraRotateSpeed));
     }
 
     protected void setVisible(boolean visible) {
@@ -70,7 +70,7 @@ public abstract class JoglDisplay extends SpaceGraph {
         gl.glDepthFunc(GL_LEQUAL);
 
         gl.glClearColor(0.0f, 0.0f, 0.0f, 0f);
-        gl.glClearDepth(1f);
+        gl.glClearDepth(1);
     }
 
     private static void initBlend(GL gl) {
@@ -148,16 +148,16 @@ public abstract class JoglDisplay extends SpaceGraph {
 
 
 
-        top = zNear * Math.tan(fov * Math.PI / 360.0);
+        top = (double) zNear * Math.tan((double) fov * Math.PI / 360.0);
         bottom = -top;
 
-        left = bottom * aspect;
-        right = top * aspect;
+        left = bottom * (double) aspect;
+        right = top * (double) aspect;
 
 //            xmin += -(2 * gl_state.camera_separation) / zNear;
 //            xmax += -(2 * gl_state.camera_separation) / zNear;
 
-        gl.glFrustum(left, right, bottom, top, zNear, zFar);
+        gl.glFrustum(left, right, bottom, top, (double) zNear, (double) zFar);
 
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glLoadIdentity();
@@ -349,7 +349,7 @@ public abstract class JoglDisplay extends SpaceGraph {
     public void render(float dtS, GL2 gl) {
         clear(gl);
 
-        renderVolume(dtS, gl, ((float)video.getWidth())/video.getHeight());
+        renderVolume(dtS, gl, ((float)video.getWidth())/ (float) video.getHeight());
 
         renderOrthos(dtS);
     }

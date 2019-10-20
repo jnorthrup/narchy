@@ -87,13 +87,13 @@ public abstract class JoglDummyDriver extends DummyGL implements GLDriver {
         
         beginFrame(0.0f);
         glViewport(0, 0, newtWin.window.getWidth(), newtWin.window.getHeight());
-        glClearColor(0, 0, 0, 0);
+        glClearColor((float) 0, (float) 0, (float) 0, (float) 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         endFrame();
         
         beginFrame(0.0f);
         glViewport(0, 0, newtWin.window.getWidth(), newtWin.window.getHeight());
-        glClearColor(0, 0, 0, 0);
+        glClearColor((float) 0, (float) 0, (float) 0, (float) 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         endFrame();
         return true;

@@ -293,7 +293,7 @@ public class MutableInt extends Number  {
      */
     @Override
     public long longValue() {
-        return value;
+        return (long) value;
     }
 
     /**
@@ -303,7 +303,7 @@ public class MutableInt extends Number  {
      */
     @Override
     public float floatValue() {
-        return value;
+        return (float) value;
     }
 
     /**
@@ -313,7 +313,7 @@ public class MutableInt extends Number  {
      */
     @Override
     public double doubleValue() {
-        return value;
+        return (double) value;
     }
 
 

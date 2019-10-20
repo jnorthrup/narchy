@@ -137,7 +137,7 @@ public class WebCam extends VideoSource implements WebcamListener {
 
     static class ChannelView extends Gridding {
         public final VideoSource cam;
-        public final RGB mix = new RGB(-1, +1);
+        public final RGB mix = new RGB(-1.0F, (float) +1);
         final RGBToMonoBitmap2D mixed = new RGBToMonoBitmap2D(mix);
         private volatile Tensor current = null;
 

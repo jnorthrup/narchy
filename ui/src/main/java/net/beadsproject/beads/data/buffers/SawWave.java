@@ -22,7 +22,7 @@ public class SawWave extends WaveFactory {
         int size = bufferSize;
         ArrayTensor b = new ArrayTensor(size);
         for (int i = 0; i < bufferSize; i++) {
-            b.data[i] = (float) i / bufferSize * 2.0f - 1.0f;
+            b.data[i] = (float) i / (float) bufferSize * 2.0f - 1.0f;
         }
         return b;
     }

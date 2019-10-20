@@ -26,7 +26,7 @@ public class TaskListView extends AbstractTaskView<Task> {
         Color4f color = l.fgColor;
         float linkPri = t.pri();
 		color.x = linkPri;
-		color.y = 1 - linkPri;
+		color.y = 1.0F - linkPri;
 		color.z = tt.priElseZero();
 		return l;
 	}

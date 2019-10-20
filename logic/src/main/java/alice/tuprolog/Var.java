@@ -74,7 +74,7 @@ public class Var extends Term {
         name = null;
         completeName = "";
         link = null;
-        timestamp = 0;
+        timestamp = 0L;
     }
 
 
@@ -115,7 +115,7 @@ public class Var extends Term {
                 int extra = idExecCtx < BinTxt.maxBase ? 1 : 2;
                 StringBuilder c = new StringBuilder(1 + extra /* estimate */);
                 c.append('_');
-                BinTxt.append(c, count, BinTxt.maxBase);
+                BinTxt.append(c, (long) count, BinTxt.maxBase);
                 this.completeName = c.toString();
                 break;
             }
@@ -138,7 +138,7 @@ public class Var extends Term {
                 }
                 c.append('_');
                 //c.append(Integer.toString(idExecCtx, Character.MAX_RADIX));
-                BinTxt.append(c, idExecCtx, BinTxt.maxBase);
+                BinTxt.append(c, (long) idExecCtx, BinTxt.maxBase);
                 this.completeName = c.toString();
                 break;
             }
@@ -524,7 +524,7 @@ public class Var extends Term {
 
     public final String hashString() {
         //return Integer.toString(hashCode(), Character.MAX_RADIX);
-        return BinTxt.toString(hashCode(), 63);
+        return BinTxt.toString((long) hashCode(), 63);
     }
 
 

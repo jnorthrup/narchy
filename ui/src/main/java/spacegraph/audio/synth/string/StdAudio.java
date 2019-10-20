@@ -45,7 +45,7 @@ final class StdAudio {
 
     private static final int BYTES_PER_SAMPLE = 2;                // 16-bit audio
     private static final int BITS_PER_SAMPLE = 16;                // 16-bit audio
-    private static final double MAX_16_BIT = Short.MAX_VALUE;     // 32,767
+    private static final double MAX_16_BIT = (double) Short.MAX_VALUE;     // 32,767
     private static final int SAMPLE_BUFFER_SIZE = 4096;
 
 
@@ -66,7 +66,7 @@ final class StdAudio {
     private static void init() {
         try {
             // 44,100 samples per second, 16-bit audio, mono, signed PCM, little Endian
-            AudioFormat format = new AudioFormat(SAMPLE_RATE, BITS_PER_SAMPLE, 1, true, false);
+            AudioFormat format = new AudioFormat((float) SAMPLE_RATE, BITS_PER_SAMPLE, 1, true, false);
             DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
 
             line = (SourceDataLine) AudioSystem.getLine(info);
@@ -111,7 +111,7 @@ final class StdAudio {
         // convert to bytes
         short s = (short) (MAX_16_BIT * sample);
         buffer[bufferSize++] = (byte) s;
-        buffer[bufferSize++] = (byte) (s >> 8);   // little Endian
+        buffer[bufferSize++] = (byte) ((int) s >> 8);   // little Endian
 
         // send to sound card if buffer is full        
         if (bufferSize >= buffer.length) {
@@ -148,7 +148,7 @@ final class StdAudio {
         int count = 0;
         int bound = N / 2;
         for (int i = 0; i < bound; i++) {
-            double v = ((short) (((data[2 * i + 1] & 0xFF) << 8) + (data[2 * i] & 0xFF))) / MAX_16_BIT;
+            double v = (double) ((short) ((((int) data[2 * i + 1] & 0xFF) << 8) + ((int) data[2 * i] & 0xFF))) / MAX_16_BIT;
             if (d.length == count) d = Arrays.copyOf(d, count * 2);
             d[count++] = v;
         }
@@ -238,10 +238,10 @@ final class StdAudio {
 
         // assumes 44,100 samples per second
         // use 16-bit audio, mono, signed PCM, little Endian
-        AudioFormat format = new AudioFormat(SAMPLE_RATE, 16, 1, true, false);
+        AudioFormat format = new AudioFormat((float) SAMPLE_RATE, 16, 1, true, false);
         byte[] data = new byte[2 * samples.length];
         for (int i = 0; i < samples.length; i++) {
-            int temp = (short) (samples[i] * MAX_16_BIT);
+            int temp = (int) (short) (samples[i] * MAX_16_BIT);
             data[2 * i] = (byte) temp;
             data[2 * i + 1] = (byte) (temp >> 8);
         }
@@ -249,7 +249,7 @@ final class StdAudio {
         // now save the file
         try {
             ByteArrayInputStream bais = new ByteArrayInputStream(data);
-            AudioInputStream ais = new AudioInputStream(bais, format, samples.length);
+            AudioInputStream ais = new AudioInputStream(bais, format, (long) samples.length);
             if (filename.endsWith(".wav") || filename.endsWith(".WAV")) {
                 AudioSystem.write(ais, AudioFileFormat.Type.WAVE, new File(filename));
             } else if (filename.endsWith(".au") || filename.endsWith(".AU")) {
@@ -271,11 +271,11 @@ final class StdAudio {
     // create a note (sine wave) of the given frequency (Hz), for the given
     // duration (seconds) scaled to the given volume (amplitude)
     private static double[] note(double hz, double duration, double amplitude) {
-        int N = (int) (StdAudio.SAMPLE_RATE * duration);
+        int N = (int) ((double) StdAudio.SAMPLE_RATE * duration);
         double[] a = new double[N + 1];
-        double f = 2 * Math.PI * hz / StdAudio.SAMPLE_RATE;
+        double f = 2.0 * Math.PI * hz / (double) StdAudio.SAMPLE_RATE;
         for (int i = 0; i <= N; i++)
-            a[i] = amplitude * Math.sin(i * f);
+            a[i] = amplitude * Math.sin((double) i * f);
         return a;
     }
 

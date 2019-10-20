@@ -69,10 +69,10 @@ public class CRC
         int ndx= 0;
 
 		while (count-- > 0)
-			crc= (short) ((crc << 8) ^ crctable[0xff & ((crc >> 8) ^ start[ndx++])]);
+			crc= (short) (((int) crc << 8) ^ crctable[0xff & (((int) crc >> 8) ^ (int) start[ndx++])]);
 
 		
-		return crc & 0xFFFF;
+		return (int) crc & 0xFFFF;
 	}
 
 	public static void main(String[] args)
@@ -104,7 +104,7 @@ public class CRC
 				System.out.println("crc:" + (CRC_Block(data, 21) & 0xffff));
 				System.out.println("----");
 				for (int n = 0; n < 5; n++)
-					System.out.println("seq:" + (Com.BlockSequenceCRCByte( data,0, 21,n*10) & 0xff));
+					System.out.println("seq:" + ((int) Com.BlockSequenceCRCByte(data, 0, 21, n * 10) & 0xff));
 				
 	}
 	

@@ -38,8 +38,8 @@ import static nars.truth.func.TruthFunctions.c2w;
  */
 public class BeliefPredict extends NARPart {
 
-    public final FloatRange conf = new FloatRange(0.5f, 0, 1f);
-    public final FloatRange confFadeFactor = new FloatRange(0.9f, 0, 1f);
+    public final FloatRange conf = new FloatRange(0.5f, (float) 0, 1f);
+    public final FloatRange confFadeFactor = new FloatRange(0.9f, (float) 0, 1f);
 
     //final List<ITask> currentPredictions = new FasterList<>();
     private final CauseChannel<Task> predict;
@@ -120,9 +120,9 @@ public class BeliefPredict extends NARPart {
         double[] p = null;
         for (int i = 0; i < projections + 1; i++) {
 
-            p = (i == 0) ? predictor.next(now-sampleDur) : predictor.project(p);
+            p = (i == 0) ? predictor.next(now- (long) sampleDur) : predictor.project(p);
 
-            believe(now + (i ) * sampleDur, p, c, nextPred);
+            believe(now + (long) ((i) * sampleDur), p, c, nextPred);
 
             c *= fade;
         }
@@ -148,7 +148,7 @@ public class BeliefPredict extends NARPart {
         float evi = c2w(conf );
 
         //long eShared = nar.evidence()[0];
-        long[] se = Tense.dither(new long[] { when, when+sampleDur }, nar);
+        long[] se = Tense.dither(new long[] { when, when+ (long) sampleDur}, nar);
 //        long start = Tense.dither(when , nar);
 //        long end = Tense.dither(when+sampleDur, nar);
 
@@ -160,7 +160,7 @@ public class BeliefPredict extends NARPart {
 
             float f = (float)Util.unitize(f0);
 
-            PreciseTruth t = Truth.theDithered(f, evi, nar);
+            PreciseTruth t = Truth.theDithered(f, (double) evi, nar);
             if (t == null)
                 continue;
 
@@ -176,7 +176,7 @@ public class BeliefPredict extends NARPart {
     LongToFloatFunction freqSupplier(Termed c, NAR nar) {
         return (when) -> {
             long start = (when);
-            long end = (when + sampleDur);
+            long end = (when + (long) sampleDur);
             //System.out.println("<- " + start + " " + end);
             @Nullable Truth t = nar.truth(c, BELIEF, start, end); //TODO filter predictions (PredictionTask's) from being used in this calculation
             if (t == null)

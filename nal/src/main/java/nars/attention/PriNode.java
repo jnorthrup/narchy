@@ -22,7 +22,7 @@ public class PriNode implements Prioritized {
     protected Merge input = Merge.Plus;
 
     /** internal priority storage variable */
-    public final UnitPri pri = new UnitPri(0);
+    public final UnitPri pri = new UnitPri((float) 0);
 
     public PriNode(Object id) {
         this.id = $.identity(id);
@@ -42,17 +42,17 @@ public class PriNode implements Prioritized {
     public enum Merge {
         Plus {
             @Override public double merge(Iterable<? extends Node<PriNode, Object>> in) {
-                return reduce(in, 0, Double::sum);
+                return reduce(in, (double) 0, Double::sum);
             }
         },
         And {
             @Override public double merge(Iterable<? extends Node<PriNode, Object>> in) {
-                return reduce(in, 1, (p, c) -> p * c);
+                return reduce(in, 1.0, (p, c) -> p * c);
             }
         },
         Or {
             @Override public double merge(Iterable<? extends Node<PriNode, Object>> in) {
-                return reduce(in, 0, Util::or);
+                return reduce(in, (double) 0, Util::or);
             }
         }
         ;
@@ -63,7 +63,7 @@ public class PriNode implements Prioritized {
                 PriNode nn = n.id();
                 float np = nn.pri();
                 if (np == np)
-                    accum = f.applyAsDouble(accum, np);
+                    accum = f.applyAsDouble(accum, (double) np);
             }
             return accum;
         }
@@ -85,7 +85,7 @@ public class PriNode implements Prioritized {
         float p = node.edgeCount(true, false) > 0 ?
             (float) input.merge(node.nodes(true, false))
             :
-            0;
+                (float) 0;
 
         this.pri.pri( in(p) );
     }

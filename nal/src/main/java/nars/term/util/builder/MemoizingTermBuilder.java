@@ -38,7 +38,7 @@ public class MemoizingTermBuilder extends InterningTermBuilder {
 //            throw new WTF();
 
 		//new LighterCompound(PROD, x, NORMALIZE)));
-		return varOffset == 0 && internable(x) ? normalize.apply(new InternedCompoundTransform(x)) : super.normalize(x, varOffset);
+		return (int) varOffset == 0 && internable(x) ? normalize.apply(new InternedCompoundTransform(x)) : super.normalize(x, varOffset);
 
     }
 

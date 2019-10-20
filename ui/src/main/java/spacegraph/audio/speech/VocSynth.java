@@ -43,11 +43,11 @@ public class VocSynth extends Canvas implements MouseListener, MouseMotionListen
 		for (int i = 0; i < tlength; i++)
 		// draw all tubes of vocal tract
 		{
-			g.drawLine(i * w / tlength, h / 2 - (int) (tract[i] * h / 2), (i + 1) * w / tlength, h / 2 - (int) (tract[i] * h / 2));
-			g.drawLine(i * w / tlength, h / 2 + (int) (tract[i] * h / 2), (i + 1) * w / tlength, h / 2 + (int) (tract[i] * h / 2));
+			g.drawLine(i * w / tlength, h / 2 - (int) (tract[i] * (double) h / 2.0), (i + 1) * w / tlength, h / 2 - (int) (tract[i] * (double) h / 2.0));
+			g.drawLine(i * w / tlength, h / 2 + (int) (tract[i] * (double) h / 2.0), (i + 1) * w / tlength, h / 2 + (int) (tract[i] * (double) h / 2.0));
 			if (i < tlength - 1) {
-				g.drawLine((i + 1) * w / tlength, h / 2 - (int) (tract[i] * h / 2), (i + 1) * w / tlength, h / 2 - (int) (tract[i + 1] * h / 2));
-				g.drawLine((i + 1) * w / tlength, h / 2 + (int) (tract[i] * h / 2), (i + 1) * w / tlength, h / 2 + (int) (tract[i + 1] * h / 2));
+				g.drawLine((i + 1) * w / tlength, h / 2 - (int) (tract[i] * (double) h / 2.0), (i + 1) * w / tlength, h / 2 - (int) (tract[i + 1] * (double) h / 2.0));
+				g.drawLine((i + 1) * w / tlength, h / 2 + (int) (tract[i] * (double) h / 2.0), (i + 1) * w / tlength, h / 2 + (int) (tract[i + 1] * (double) h / 2.0));
 			}
 		}
 	}
@@ -61,9 +61,9 @@ public class VocSynth extends Canvas implements MouseListener, MouseMotionListen
         int x = e.getX();
         int y = e.getY();
 		if (y > h / 2) {
-			tract[x * tlength / w] = (y * 2.0 - h) / h;
+			tract[x * tlength / w] = ((double) y * 2.0 - (double) h) / (double) h;
 		} else {
-			tract[x * tlength / w] = (h - 2.0 * y) / h;
+			tract[x * tlength / w] = ((double) h - 2.0 * (double) y) / (double) h;
 		}
 		repaint(x - w / tlength - 1, 0, w * 2 / tlength + 1, h - 1);
 //		parent.calcresponse();
@@ -91,9 +91,9 @@ public class VocSynth extends Canvas implements MouseListener, MouseMotionListen
 		if (y < 1) y = 1;
 		if (y > h - 2) y = h - 2;
 		if (y > h / 2) {
-			tract[x * tlength / w] = (y * 2.0 - h) / h;
+			tract[x * tlength / w] = ((double) y * 2.0 - (double) h) / (double) h;
 		} else {
-			tract[x * tlength / w] = (h - 2.0 * y) / h;
+			tract[x * tlength / w] = ((double) h - 2.0 * (double) y) / (double) h;
 		}
 		repaint(x - w / tlength - 1, 0, w * 2 / tlength + 1, h - 1);
 //		parent.calcresponse();
@@ -149,7 +149,7 @@ class WaveDraw extends Canvas
 		g.setColor(Color.black);
 		//end of frame
 		for (int i = 0; i < len - 1; i++) {
-			g.drawLine((i * w) / len, h / 2 - (int) (buf[i] * h / 2), ((i + 1) * w) / len, h / 2 - (int) (buf[i + 1] * h / 2));
+			g.drawLine((i * w) / len, h / 2 - (int) (buf[i] * (double) h / 2.0), ((i + 1) * w) / len, h / 2 - (int) (buf[i + 1] * (double) h / 2.0));
 		}
 	}
 }
@@ -352,11 +352,11 @@ class VocSynthApplet extends Applet implements ActionListener {
 		if (voiced) {
 			for (int i = 0; i < length / 4; i++)            // Slope
 			{
-				inpwave[i] = -1.0 + i * 4.0 / length;
+				inpwave[i] = -1.0 + (double) i * 4.0 / (double) length;
 			}
 			for (int i = length / 4; i < 3 * length / 4; i++)    // Half circle
 			{
-				inpwave[i] = 4.0 * Math.sqrt(length * length / 16.0 - (i - length / 2.0) * (i - length / 2.0)) / length;
+				inpwave[i] = 4.0 * Math.sqrt((double) (length * length) / 16.0 - ((double) i - (double) length / 2.0) * ((double) i - (double) length / 2.0)) / (double) length;
 			}
 			for (int i = 3 * length / 4; i < length; i++)        // Closed Glottis
 			{
@@ -382,11 +382,11 @@ class VocSynthApplet extends Applet implements ActionListener {
         double[] go = new double[tlength + 1];    //to glottis output of reflection
 		for (int i = 0; i <= tlength; i++) //clear all the values
 		{
-			r[i] = 0;
-			li[i] = 0;
-			lo[i] = 0;
-			gi[i] = 0;
-			go[i] = 0;
+			r[i] = (double) 0;
+			li[i] = (double) 0;
+			lo[i] = (double) 0;
+			gi[i] = (double) 0;
+			go[i] = (double) 0;
 		}
 		r[0] = 1.0; //Zgl=0
 		for (int i = 1; i < tlength; i++) {    // r=(A2-A1)/(A2+A1);
@@ -401,9 +401,9 @@ class VocSynthApplet extends Applet implements ActionListener {
 				//Calculate all reflections
 				for (int i = tlength; i >= 0; i--) {
 					//to lips
-					lo[i] = (1 + r[i]) * li[i] + r[i] * gi[i];
+					lo[i] = (1.0 + r[i]) * li[i] + r[i] * gi[i];
 					//to glottis
-					go[i] = (1 - r[i]) * gi[i] - r[i] * li[i];
+					go[i] = (1.0 - r[i]) * gi[i] - r[i] * li[i];
 					//To glottis without delay!
 					if (i > 1) {
 						gi[i - 1] = go[i];
@@ -422,18 +422,18 @@ class VocSynthApplet extends Applet implements ActionListener {
 		outwave[length - 1] -= dif * 0.4;
 		// Normalize to 0.9 amplitude to prevent clipping
         boolean seen = false;
-        double best = 0;
+        double best = (double) 0;
         int bound = length;
         for (int i1 = 0; i1 < bound; i1++) {
             double abs = Math.abs(outwave[i1]);
-            if (abs >= 0) {
+            if (abs >= (double) 0) {
                 if (!seen || Double.compare(abs, best) > 0) {
                     seen = true;
                     best = abs;
                 }
             }
         }
-        double max = seen ? best : 0;
+        double max = seen ? best : (double) 0;
         for (int i = 0; i < length; i++) {
 			outwave[i] = outwave[i] * 0.9 / max;
 		}
@@ -537,14 +537,14 @@ class VocSynthApplet extends Applet implements ActionListener {
                 wpan.inw.repaint();
                 preset("EH");
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(500L);
                 } catch (InterruptedException ex) {
                 }
                 generateglwave(true);
                 wpan.inw.repaint();
                 preset("EH");
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(500L);
                 } catch (InterruptedException ex) {
                 }
                 preset("OH");

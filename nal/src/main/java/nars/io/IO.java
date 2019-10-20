@@ -95,7 +95,7 @@ public enum IO {
 
 
     public static byte opAndEncoding(byte op, byte encoding) {
-        return (byte) (op | (encoding << 5));
+        return (byte) ((int) op | ((int) encoding << 5));
     }
 
     public static byte opAndEncoding(Op op, byte encoding) {
@@ -103,7 +103,7 @@ public enum IO {
     }
 
     static byte encoding(byte opByte) {
-        return (byte) ((opByte & 0b11100000) >> 5);
+        return (byte) (((int) opByte & 0b11100000) >> 5);
     }
 
 

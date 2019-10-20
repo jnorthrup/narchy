@@ -82,10 +82,10 @@ class DynamicImplTruth extends AbstractDynamicTruth {
 
                 //stretch the match range
                 if (sdt > 0)
-                    end = start + sdt;
+                    end = start + (long) sdt;
                 else {
                     end = start;
-                    start += sdt;
+                    start = start + (long) sdt;
                 }
             }
         }
@@ -103,7 +103,7 @@ class DynamicImplTruth extends AbstractDynamicTruth {
 //                     break;
 //                 }
 //                 case 1: {
-            long mid = (start + end) / 2;
+            long mid = (start + end) / 2L;
             if (start <= end) {
                 as = start;
                 ae = mid;
@@ -142,7 +142,7 @@ class DynamicImplTruth extends AbstractDynamicTruth {
     @Override
     public Term reconstruct(Compound superterm, long start, long end, DynTaskify d) {
         Task subj = d.get(0), pred = d.get(1);
-        int dt = (subj.isEternal() || pred.isEternal()) ? 0 : Tense.occToDT(pred.start() - subj.start() - subj.term().eventRange());
+        int dt = (subj.isEternal() || pred.isEternal()) ? 0 : Tense.occToDT(pred.start() - subj.start() - (long) subj.term().eventRange());
         return IMPL.the(dt,
                 subj.term().negIf(!d.componentPolarity.get(0)), pred.term());
     }

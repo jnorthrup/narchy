@@ -1,7 +1,6 @@
 package jcog.learn.deep;
 
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class RBM {
     private final double[] ph_mean;
@@ -33,7 +32,7 @@ public class RBM {
 
         h = new double[n_hidden];
 
-        if (rng == null) this.rng = new Random(1234);
+        if (rng == null) this.rng = new Random(1234L);
         else this.rng = rng;
 
         if (W == null) {
@@ -51,14 +50,14 @@ public class RBM {
 
         if (hbias == null) {
             this.hbias = new double[this.n_hidden];
-            for (int i = 0; i < this.n_hidden; i++) this.hbias[i] = 0;
+            for (int i = 0; i < this.n_hidden; i++) this.hbias[i] = (double) 0;
         } else {
             this.hbias = hbias;
         }
 
         if (vbias == null) {
             this.vbias = new double[this.n_visible];
-            for (int i = 0; i < this.n_visible; i++) this.vbias[i] = 0;
+            for (int i = 0; i < this.n_visible; i++) this.vbias[i] = (double) 0;
         } else {
             this.vbias = vbias;
         }
@@ -94,14 +93,14 @@ public class RBM {
     public void sample_h_given_v(double[] v0_sample, double[] mean, double[] sample) {
         for (int i = 0; i < n_hidden; i++) {
             mean[i] = propup(v0_sample, W[i], hbias[i]);
-            sample[i] = (int) utils.binomial(1, mean[i], rng);
+            sample[i] = (double) (int) utils.binomial(1, mean[i], rng);
         }
     }
 
     public void sample_v_given_h(double[] h0_sample, double[] mean, double[] sample) {
         for (int i = 0; i < n_visible; i++) {
             mean[i] = propdown(h0_sample, i, vbias[i]);
-            sample[i] = (int) utils.binomial(1, mean[i], rng);
+            sample[i] = (double) (int) utils.binomial(1, mean[i], rng);
         }
     }
 

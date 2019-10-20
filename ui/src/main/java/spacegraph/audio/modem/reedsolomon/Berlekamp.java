@@ -302,7 +302,7 @@ public class Berlekamp implements Settings {
                             + Integer.toHexString(err) + " at loc "
                             + (csize - i));
 
-                codeword[csize - i - 1] ^= err;
+                codeword[csize - i - 1] = (byte) ((int) codeword[csize - i - 1] ^ err);
             }
             return (1);
         } else {

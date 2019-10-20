@@ -16,7 +16,7 @@ public class PlotChip extends TypedPort<Number> {
         set(plot);
 
         on(x ->{
-            nextValue = x.floatValue();
+            nextValue = (double) x.floatValue();
             if (nextValue==nextValue)
                 plot.commit();
         });

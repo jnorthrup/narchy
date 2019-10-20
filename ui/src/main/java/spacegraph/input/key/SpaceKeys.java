@@ -90,7 +90,7 @@ public class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
 
     private boolean setKey(short c, boolean state) {
         if ((state ? keyPressed : keyReleased).containsKey(c)) {
-            queue.push(state ? c : (short)-c);
+            queue.push(state ? c : (short)-(int) c);
             return true;
         }
         return false;

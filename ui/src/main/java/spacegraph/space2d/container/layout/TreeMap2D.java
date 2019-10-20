@@ -90,7 +90,7 @@ public class TreeMap2D<X> extends DynamicLayout2D<X> {
         float rowSize = areaSum(start, end);
         float rowRatio = rowSize / total;
        // assert(rowRatio==rowRatio): start + ".." + end + ": " + rowSize + " " + total;
-        float offset = 0;
+        float offset = (float) 0;
 
         for (int i = start; i <= end; i++) {
             MutableRectFloat x = this.nodes.get(i);
@@ -132,7 +132,7 @@ public class TreeMap2D<X> extends DynamicLayout2D<X> {
 
 
     float areaSum(int start, int end) {
-        float sum = 0;
+        float sum = (float) 0;
         for (int i = start; i <= end; i++)
             sum += nodes.get(i).node.pri;
         return sum;

@@ -19,7 +19,7 @@ public class MeanFilter extends WaveFactory {
     public ArrayTensor get(int bufferSize) {
         int size = bufferSize;
         ArrayTensor b = new ArrayTensor(size);
-        Arrays.fill(b.data, 1.f / bufferSize);
+        Arrays.fill(b.data, 1.f / (float) bufferSize);
         return b;
     }
 

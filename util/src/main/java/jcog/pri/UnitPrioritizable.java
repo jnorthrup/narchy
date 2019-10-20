@@ -9,13 +9,13 @@ public interface UnitPrioritizable extends Prioritizable {
     default float priAddOverflow(float inc /* float upperLimit=1 */) {
 
         if (inc <= EPSILON)
-            return 0;
+            return (float) 0;
 
-        float[] beforeAfter = priDelta((x, y)-> ((x!=x) ? 0 : x) + y, inc);
+        float[] beforeAfter = priDelta((x, y)-> ((x!=x) ? (float) 0 : x) + y, inc);
 
         float after = beforeAfter[1];
         float before = beforeAfter[0];
         float delta = (before != before) ? after : (after - before);
-        return Math.max(0, inc - delta); //should be >= 0
+        return Math.max((float) 0, inc - delta); //should be >= 0
     }
 }

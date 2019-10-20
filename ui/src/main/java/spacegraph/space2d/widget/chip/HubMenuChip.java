@@ -18,7 +18,7 @@ public class HubMenuChip extends Bordering {
         super(the);
         this.menu = items;
 
-        resize(100,100); //temporar
+        resize(100.0F, 100.0F); //temporar
     }
 
     @Override
@@ -30,7 +30,7 @@ public class HubMenuChip extends Bordering {
             String name = entry.getKey();
             Supplier<Surface> i = entry.getValue();
             ExpandingChip ii = new ExpandingChip(name, i);
-            ContainerSurface iii = g.add(ii).posRel(bounds, 1, 1, 0.1f, 0.1f); //TODO radial layout
+            ContainerSurface iii = g.add(ii).posRel(bounds, 1.0F, 1.0F, 0.1f, 0.1f); //TODO radial layout
 
             Exe.runLater(() -> g.addWire(new Wire(HubMenuChip.this, ii)));
 

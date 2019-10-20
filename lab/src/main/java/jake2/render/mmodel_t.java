@@ -25,9 +25,9 @@ package jake2.render;
 
 public class mmodel_t
 {
-	public final float[] mins = { 0, 0, 0 };
-	public final float[] maxs = { 0, 0, 0 };
-	public final float[] origin = { 0, 0, 0 }; 
+	public final float[] mins = {(float) 0, (float) 0, (float) 0};
+	public final float[] maxs = {(float) 0, (float) 0, (float) 0};
+	public final float[] origin = {(float) 0, (float) 0, (float) 0};
 	public float radius;
 	public int headnode;
 	public static final int visleafs = 0;

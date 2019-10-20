@@ -32,7 +32,7 @@ public class arpeggiator_01 {
 
             @Override
             public float floatValueOf(float[] anObject) {
-                return frequency * (1 + tick);
+                return frequency * (float) (1 + tick);
             }
 
             @Override
@@ -71,8 +71,8 @@ public class arpeggiator_01 {
          *  MIDI pitch number to frequency conversion equation from
          *  http:
          */
-        double exponent = (midiPitch - 69.0) / 12.0;
-        return (float) (Math.pow(2, exponent) * 440.0f);
+        double exponent = ((double) midiPitch - 69.0) / 12.0;
+        return (float) (Math.pow(2.0, exponent) * 440.0);
     }
 
     private void keyDown(int midiPitch) {

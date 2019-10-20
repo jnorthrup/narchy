@@ -39,7 +39,7 @@ public class medge_t {
 
     public medge_t(ByteBuffer b) {
         int[] v = this.v;
-        v[0] = b.getShort() & 0xFFFF;
-        v[1] = b.getShort() & 0xFFFF;
+        v[0] = (int) b.getShort() & 0xFFFF;
+        v[1] = (int) b.getShort() & 0xFFFF;
     }
 }

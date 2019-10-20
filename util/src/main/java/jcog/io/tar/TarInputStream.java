@@ -35,8 +35,8 @@ public class TarInputStream extends FilterInputStream {
 
 	public TarInputStream(InputStream in) {
 		super(in);
-		currentFileSize = 0;
-		bytesRead = 0;
+		currentFileSize = 0L;
+		bytesRead = 0L;
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class TarInputStream extends FilterInputStream {
         int res = this.read(buf, 0, 1);
 
 		if (res != -1) {
-			return 0xFF & buf[0];
+			return 0xFF & (int) buf[0];
 		}
 
 		return res;
@@ -92,7 +92,7 @@ public class TarInputStream extends FilterInputStream {
             long currentEntrySize = currentEntry.getSize();
 			if (currentFileSize == currentEntrySize) {
 				return -1;
-			} else if ((currentEntrySize - currentFileSize) < len) {
+			} else if ((currentEntrySize - currentFileSize) < (long) len) {
 				len = (int) (currentEntrySize - currentFileSize);
 			}
 		}
@@ -101,10 +101,10 @@ public class TarInputStream extends FilterInputStream {
 
 		if (br != -1) {
 			if (currentEntry != null) {
-				currentFileSize += br;
+                currentFileSize = currentFileSize + (long) br;
 			}
 
-			bytesRead += br;
+            bytesRead = bytesRead + (long) br;
 		}
 
 		return br;
@@ -113,7 +113,7 @@ public class TarInputStream extends FilterInputStream {
 	@Override
 	public byte[] readAllBytes() throws IOException {
         long eSize = currentEntry.getSize();
-		if (eSize > Integer.MAX_VALUE)
+		if (eSize > (long) Integer.MAX_VALUE)
 			throw new UnsupportedOperationException();
         byte[] b = new byte[(int)eSize];
         int len = read(b, 0, b.length);
@@ -150,7 +150,7 @@ public class TarInputStream extends FilterInputStream {
 
         boolean eof = true;
 		for (byte b : header) {
-			if (b != 0) {
+			if ((int) b != 0) {
 				eof = false;
 				break;
 			}
@@ -182,11 +182,11 @@ public class TarInputStream extends FilterInputStream {
             long currentEntrySize = currentEntry.getSize();
 			if (currentEntrySize > currentFileSize) {
 				
-				long bs = 0;
+				long bs = 0L;
 				while (bs < currentEntrySize - currentFileSize) {
                     long res = skip(currentEntrySize - currentFileSize - bs);
 
-					if (res == 0 && currentEntrySize - currentFileSize > 0) {
+					if (res == 0L && currentEntrySize - currentFileSize > 0L) {
 						
 						throw new IOException("Possible tar file corruption");
 					}
@@ -210,13 +210,13 @@ public class TarInputStream extends FilterInputStream {
 	 * @throws IOException
 	 */
 	private void skipPad() throws IOException {
-		if (bytesRead > 0) {
-            int extra = (int) (bytesRead % TarConstants.DATA_BLOCK);
+		if (bytesRead > 0L) {
+            int extra = (int) (bytesRead % (long) TarConstants.DATA_BLOCK);
 
 			if (extra > 0) {
-				long bs = 0;
-				while (bs < TarConstants.DATA_BLOCK - extra) {
-                    long res = skip(TarConstants.DATA_BLOCK - extra - bs);
+				long bs = 0L;
+				while (bs < (long) (TarConstants.DATA_BLOCK - extra)) {
+                    long res = skip((long) TarConstants.DATA_BLOCK - (long) extra - bs);
 					bs += res;
 				}
 			}
@@ -239,19 +239,19 @@ public class TarInputStream extends FilterInputStream {
 			return bs;
 		}
 
-		if (n <= 0) {
-			return 0;
+		if (n <= 0L) {
+			return 0L;
 		}
 
         long left = n;
         byte[] sBuff = new byte[SKIP_BUFFER_SIZE];
 
-		while (left > 0) {
-            int res = read(sBuff, 0, (int) (left < SKIP_BUFFER_SIZE ? left : SKIP_BUFFER_SIZE));
+		while (left > 0L) {
+            int res = read(sBuff, 0, (int) (left < (long) SKIP_BUFFER_SIZE ? left : (long) SKIP_BUFFER_SIZE));
 			if (res < 0) {
 				break;
 			}
-			left -= res;
+            left = left - (long) res;
 		}
 
 		return n - left;

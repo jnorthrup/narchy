@@ -196,20 +196,20 @@ public final class JOALSoundImpl implements Sound {
 		if (sfx == null)
 			return;
 			
-		if (sfx.name.charAt(0) == '*')
+		if ((int) sfx.name.charAt(0) == (int) '*')
 			sfx = RegisterSexedSound(Globals.cl_entities[entnum].current, sfx.name);
 		
 		if (LoadSound(sfx) == null)
 			return; 
 
-		if (attenuation != Defines.ATTN_STATIC)
+		if (attenuation != (float) Defines.ATTN_STATIC)
 			attenuation *= 0.5f;
 
 		PlaySound.allocate(origin, entnum, entchannel, buffers[sfx.bufferId], fvol, attenuation, timeofs);
 	}
 
-	private final float[] listenerOrigin = {0, 0, 0};
-	private final float[] listenerOrientation = {0, 0, 0, 0, 0, 0};
+	private final float[] listenerOrigin = {(float) 0, (float) 0, (float) 0};
+	private final float[] listenerOrientation = {(float) 0, (float) 0, (float) 0, (float) 0, (float) 0, (float) 0};
 	private final IntBuffer eaxEnv = Lib.newIntBuffer(1);
 	private int currentEnv = -1;
 
@@ -261,7 +261,7 @@ public final class JOALSoundImpl implements Sound {
     public void StopAllSounds() {
 		
 		if (al!=null)
-			al.alListenerf(ALConstants.AL_GAIN, 0);
+			al.alListenerf(ALConstants.AL_GAIN, (float) 0);
 	    PlaySound.reset();
 	    Channel.reset();
 	}
@@ -336,12 +336,12 @@ public final class JOALSoundImpl implements Sound {
         String model = null;
         int n = Defines.CS_PLAYERSKINS + ent.number - 1;
 		if (Globals.cl.configstrings[n] != null) {
-            int p = Globals.cl.configstrings[n].indexOf('\\');
+            int p = Globals.cl.configstrings[n].indexOf((int) '\\');
 			if (p >= 0) {
 				p++;
 				model = Globals.cl.configstrings[n].substring(p);
 				
-				p = model.indexOf('/');
+				p = model.indexOf((int) '/');
 				if (p > 0)
 					model = model.substring(0, p);
 			}
@@ -485,7 +485,7 @@ public final class JOALSoundImpl implements Sound {
 			Com.Printf("S_StartLocalSound: can't cache " + sound + '\n');
 			return;
 		}
-		StartSound(null, Globals.cl.playernum + 1, 0, sfx, 1, 1, 0.0f);		
+		StartSound(null, Globals.cl.playernum + 1, 0, sfx, 1.0F, 1.0F, 0.0f);
 	}
 
     private final ShortBuffer streamBuffer = sfxDataBuffer.slice().order(ByteOrder.BIG_ENDIAN).asShortBuffer();
@@ -508,7 +508,7 @@ public final class JOALSoundImpl implements Sound {
         if (format == ALConstants.AL_FORMAT_MONO8) {
             ShortBuffer sampleData = streamBuffer;
             for (int i = 0; i < samples; i++) {
-                int value = (data.get(i) & 0xFF) - 128;
+                int value = ((int) data.get(i) & 0xFF) - 128;
                 sampleData.put(i, (short) value);
             }
             format = ALConstants.AL_FORMAT_MONO16;
@@ -536,7 +536,7 @@ public final class JOALSoundImpl implements Sound {
         int i = 1;
         while (i < Cmd.Argc()) {
             String name = Cmd.Argv(i);
-            if (name.indexOf('.') == -1)
+            if (name.indexOf((int) '.') == -1)
 				name += ".wav";
 
 			RegisterSound(name);
@@ -562,7 +562,7 @@ public final class JOALSoundImpl implements Sound {
 					Com.Printf(" ");
 				Com.Printf("(%2db) %6i : %s\n", new Vargs(3).add(sc.width * 8).add(size).add(sfx.name));
 			} else {
-				if (sfx.name.charAt(0) == '*')
+				if ((int) sfx.name.charAt(0) == (int) '*')
 					Com.Printf("  placeholder : " + sfx.name + '\n');
 				else
 					Com.Printf("  not loaded  : " + sfx.name + '\n');

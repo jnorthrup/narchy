@@ -3,7 +3,7 @@ package jcog.math;
 public class FloatPolarNormalizer extends FloatNormalizer {
 
     public FloatPolarNormalizer() {
-        this(Float.MIN_NORMAL*2);
+        this(Float.MIN_NORMAL* 2.0F);
     }
 
     public FloatPolarNormalizer(float radius) {

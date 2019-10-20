@@ -12,8 +12,6 @@ import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
-import static java.util.stream.Collectors.toList;
-
 
 public class VersionMap<X, Y> implements Map<X, Y>, Function<X,Versioned<Y>> {
 

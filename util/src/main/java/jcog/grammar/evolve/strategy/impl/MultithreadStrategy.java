@@ -67,7 +67,7 @@ public class MultithreadStrategy extends AbstractExecutionStrategy {
             RunStrategy job = strategyClass.newInstance();
             Configuration jobConf = new Configuration(configuration);
             jobConf.setJobId(i);
-            jobConf.setInitialSeed(initialSeed + i);
+            jobConf.setInitialSeed(initialSeed + (long) i);
             job.setup(jobConf, listenerFactory.getNewListener());
             completionService.submit(job);
         }

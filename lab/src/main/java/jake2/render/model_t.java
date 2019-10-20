@@ -46,16 +46,16 @@ public class model_t implements Cloneable {
 	
 	
 	
-	public float[] mins = { 0, 0, 0 };
-    public float[] maxs = { 0, 0, 0 };
+	public float[] mins = {(float) 0, (float) 0, (float) 0};
+    public float[] maxs = {(float) 0, (float) 0, (float) 0};
 	public float radius;
 
 	
 	
 	
 	public boolean clipbox;
-    public float[] clipmins = {0, 0, 0};
-    public float[] clipmaxs = {0, 0, 0};
+    public float[] clipmins = {(float) 0, (float) 0, (float) 0};
+    public float[] clipmaxs = {(float) 0, (float) 0, (float) 0};
 
 	
 	
@@ -122,7 +122,7 @@ public class model_t implements Cloneable {
 		
 		Math3D.VectorClear(mins);
 		Math3D.VectorClear(maxs);
-		radius = 0;
+		radius = (float) 0;
 
 		
 		

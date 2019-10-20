@@ -29,31 +29,31 @@ public abstract class Entity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            double hs = sideLength / 2;
+            double hs = sideLength / 2.0;
             faces = new Ray3[]{
                 new Ray3(
-                    position.add(new vv3(-hs, 0, 0)),
-                    new vv3(-1, 0, 0)
+                    position.add(new vv3(-hs, (double) 0, (double) 0)),
+                    new vv3(-1.0, (double) 0, (double) 0)
                 ),
                 new Ray3(
-                    position.add(new vv3(hs, 0, 0)),
-                    new vv3(1, 0, 0)
+                    position.add(new vv3(hs, (double) 0, (double) 0)),
+                    new vv3(1.0, (double) 0, (double) 0)
                 ),
                 new Ray3(
-                    position.add(new vv3(0, -hs, 0)),
-                    new vv3(0, -1, 0)
+                    position.add(new vv3((double) 0, -hs, (double) 0)),
+                    new vv3((double) 0, -1.0, (double) 0)
                 ),
                 new Ray3(
-                    position.add(new vv3(0, hs, 0)),
-                    new vv3(0, 1, 0)
+                    position.add(new vv3((double) 0, hs, (double) 0)),
+                    new vv3((double) 0, 1.0, (double) 0)
                 ),
                 new Ray3(
-                    position.add(new vv3(0, 0, -hs)),
-                    new vv3(0, 0, -1)
+                    position.add(new vv3((double) 0, (double) 0, -hs)),
+                    new vv3((double) 0, (double) 0, -1.0)
                 ),
                 new Ray3(
-                    position.add(new vv3(0, 0, hs)),
-                    new vv3(0, 0, 1)
+                    position.add(new vv3((double) 0, (double) 0, hs)),
+                    new vv3((double) 0, (double) 0, 1.0)
                 )
             };
         }
@@ -61,12 +61,12 @@ public abstract class Entity {
         @Override
         public Ray3 collide(Ray3 ray) {
             Ray3 closestNormal = null;
-            double distanceSquared = 0;
+            double distanceSquared = (double) 0;
             for (Ray3 face : faces) {
                 vv3 faceNormal = face.direction;
                 double distance = ray.position.minus(face.position).dot(faceNormal);
-                if (distance < 0) {
-                    faceNormal = faceNormal.scale(-1);
+                if (distance < (double) 0) {
+                    faceNormal = faceNormal.scale(-1.0);
                     distance = -distance;
                 }
                 Ray3 normal = new Ray3(
@@ -79,7 +79,7 @@ public abstract class Entity {
                     continue;
                 }
                 vv3 fp = normal.position.minus(face.position);
-                double hs = sideLength / 2;
+                double hs = sideLength / 2.0;
                 if (Math.abs(fp.x) > hs || Math.abs(fp.y) > hs || Math.abs(fp.z) > hs) {
                     continue;
                 }
@@ -132,9 +132,9 @@ public abstract class Entity {
                 return null;
 
             vv3 intersection;
-            if (distance1 > 0 && distance2 <= Scene.Epsilon) {
+            if (distance1 > (double) 0 && distance2 <= Scene.Epsilon) {
                 intersection = intersection1;
-            } else if (distance2 > 0 && distance1 <= Scene.Epsilon) {
+            } else if (distance2 > (double) 0 && distance1 <= Scene.Epsilon) {
                 intersection = intersection2;
             } else if (distance1 < distance2) {
                 intersection = intersection1;

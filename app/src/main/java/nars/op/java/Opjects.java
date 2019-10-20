@@ -108,7 +108,7 @@ public class Opjects extends DefaultTermizer {
      * determines evidence weighting for reporting assumed feedback assumptions
      */
     float doubtEviFactor = 0.75f;
-    float uninvokeEviFactor = 1;
+    float uninvokeEviFactor = 1.0F;
     float doubtFreq = 0.5f;
     float uninvokeFreq = 1f - invokeFreq;
 
@@ -117,8 +117,8 @@ public class Opjects extends DefaultTermizer {
     /**
      * cached; updated at most each duration
      */
-    private float beliefEvi = 0;
-    private float beliefPri = 0;
+    private float beliefEvi = (float) 0;
+    private float beliefPri = (float) 0;
     private float invokeEvi;
 
     /**
@@ -273,8 +273,8 @@ public class Opjects extends DefaultTermizer {
 
             long now = nar.time();
             float dur = nar.dur();
-            long start = round(now - dur / 2);
-            long end = round(now + dur / 2);
+            long start = (long) round((float) now - dur / 2.0F);
+            long end = (long) round((float) now + dur / 2.0F);
 
             float f = beliefFreq;
 
@@ -319,7 +319,7 @@ public class Opjects extends DefaultTermizer {
 //                            end, uninvokeFreq,
 //                            uninvokeEvi
 //                    ), nar);
-                    NALTask.the(nt, BELIEF, PreciseTruth.byEvi(invokeFreq, invokeEvi), start, start, end, nar.evidence());
+                    NALTask.the(nt, BELIEF, PreciseTruth.byEvi(invokeFreq, (double) invokeEvi), start, start, end, nar.evidence());
             //if (NAL.DEBUG) {
             //}
             //feedback.setCyclic(true); //prevent immediate structural transforms
@@ -332,7 +332,7 @@ public class Opjects extends DefaultTermizer {
             Term nt = nextTerm;
             if (nt.op() == NEG) {
                 nt = nt.unneg();
-                freq = 1 - freq;
+                freq = 1.0F - freq;
             }
 
             Task value =
@@ -344,7 +344,7 @@ public class Opjects extends DefaultTermizer {
 //                            doubtEvi
 //                    ),
 //                    nar);
-                    NALTask.the(nt, BELIEF, PreciseTruth.byEvi(freq, beliefEvi), start, start, end, nar.evidence());
+                    NALTask.the(nt, BELIEF, PreciseTruth.byEvi(freq, (double) beliefEvi), start, start, end, nar.evidence());
 
 
             value.priMax(beliefPri);

@@ -16,7 +16,7 @@ import static nars.truth.func.TruthFunctions.w2cSafeDouble;
 public class DefaultDerivePri implements DerivePri {
 
     public final FloatRange questionGain = new FloatRange(
-        1
+            1.0F
         //Util.PHI_min_1f
         , 0f, 2f);
 
@@ -48,8 +48,8 @@ public class DefaultDerivePri implements DerivePri {
             factorPolarity(t.freq()) :
             questionGain.floatValue() * factor; /* ^2 */
 
-        factor *= //factorEviAbsolute(t,d);
-                  factorMaintainRangeAndAvgEvi(t,d);
+        //factorEviAbsolute(t,d);
+        factor = (float) ((double) factor * factorMaintainRangeAndAvgEvi(t, d));
 
         final float y = postAmp(t, d.parentPri(), factor);
         return y;
@@ -63,11 +63,11 @@ public class DefaultDerivePri implements DerivePri {
     float factorComplexityAbsolute(final Task t, final Derivation d) {
         final int max = d.termVolMax + 1;
 
-        final float weight = Math.min(1, t.voluplexity() / max);
+        final float weight = Math.min(1.0F, t.voluplexity() / (float) max);
         //float parentWeight = Math.min(1, ((d.parentVoluplexitySum / 2)/*avg*/) / max);
         //float f = (1f - Util.lerp(parentWeight,weight,parentWeight * weight));
         //return Util.lerp(simplicityImportance.floatValue(), 1f, f);
-        return Util.lerp(simplicityImportance.floatValue(), 1f, 1-weight);
+        return Util.lerp(simplicityImportance.floatValue(), 1f, 1.0F -weight);
     }
 //
 //    float factorComplexityRelative2(Task t, Derivation d) {
@@ -81,15 +81,15 @@ public class DefaultDerivePri implements DerivePri {
 
         final float pCompl =
                 d.single ?
-                    d.taskTerm.volume()
+                        (float) d.taskTerm.volume()
                     :
-                    ((float) (d.taskTerm.volume() + d.beliefTerm.volume())) / 2; //average
+                    ((float) (d.taskTerm.volume() + d.beliefTerm.volume())) / 2.0F; //average
 
         final int dCompl = t.volume();
 
         final float basePenalty = 0.5f; //if derivation is simpler, this is the maximum complexity increase seen
-        float f = 1 - (basePenalty + Math.max(0, dCompl - pCompl)) / (basePenalty + dCompl);
-        f = (float) Math.pow(f, simplicityExponent);
+        float f = 1.0F - (basePenalty + Math.max((float) 0, (float) dCompl - pCompl)) / (basePenalty + (float) dCompl);
+        f = (float) Math.pow((double) f, (double) simplicityExponent);
 
 //        float f =
 //                //pCompl / (pCompl + dCompl);
@@ -112,7 +112,7 @@ public class DefaultDerivePri implements DerivePri {
 
         //conf integrated
         final double y = t.isBeliefOrGoal() ? t.truth().confDouble() * rangeRatio : rangeRatio * rangeRatio;
-        return (float) Util.lerp(eviImportance.floatValue(), 1f, y);
+        return (float) Util.lerp((double) eviImportance.floatValue(), 1, y);
     }
 
     private static double rangeRatio(final Task t, final Derivation d) {
@@ -130,7 +130,7 @@ public class DefaultDerivePri implements DerivePri {
             taskBeliefRange = TIMELESS;
         }
 
-        return Util.unitize( t.rangeIfNotEternalElse(taskBeliefRange) / ((double)taskBeliefRange) );
+        return Util.unitize((double) t.rangeIfNotEternalElse(taskBeliefRange) / ((double)taskBeliefRange) );
     }
 
 
@@ -148,18 +148,18 @@ public class DefaultDerivePri implements DerivePri {
         else {
             final double cDerived = w2cSafeDouble(eDerived);
             final double cParent = w2cSafeDouble(eParent);
-            final float eRatio = (float) (1 - ((cParent - cDerived) / cParent));
+            final float eRatio = (float) (1.0 - ((cParent - cDerived) / cParent));
             //double f = (float) (1 - ((eParent - eDerived) / eParent));
 
             Util.assertUnitized(eRatio);
-            return Util.lerp(eviImportance.floatValue(), 1f, eRatio  * rangeRatio);
+            return Util.lerp((double) eviImportance.floatValue(), 1, (double) eRatio * rangeRatio);
         }
     }
 
 
     @Override public float prePri(final Derivation d) {
 
-        return 1;
+        return 1.0F;
 
 //        if (d.isBeliefOrGoal()) {
 //            //TODO include time range as factor since it's average evi

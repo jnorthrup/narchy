@@ -4,7 +4,7 @@ import static nars.time.Tense.*;
 
 public final class TimeSpan {
 
-    public static final TimeSpan TS_ZERO = new TimeSpan(0);
+    public static final TimeSpan TS_ZERO = new TimeSpan(0L);
     public static final TimeSpan TS_ETERNAL = new TimeSpan(ETERNAL);
 
     public final long dt;
@@ -15,12 +15,12 @@ public final class TimeSpan {
 
     public static TimeSpan the(long dt) {
 
-        if (dt == 0) {
+        if (dt == 0L) {
             return TS_ZERO;
         } else if (dt == ETERNAL) {
             return TS_ETERNAL;
         } else {
-            assert (dt != TIMELESS && dt!= XTERNAL && dt!=DTERNAL): "bad timespan"; //TEMPORARY
+            assert (dt != TIMELESS && dt!= (long) XTERNAL && dt!= (long) DTERNAL): "bad timespan"; //TEMPORARY
             //assert (dt != XTERNAL) : probably meant to use TIMELESS";
             //assert (dt != DTERNAL) : "probably meant to use ETERNAL";
             return new TimeSpan(dt);
@@ -39,6 +39,6 @@ public final class TimeSpan {
 
     @Override
     public String toString() {
-        return (dt == ETERNAL ? "E" : (dt >= 0 ? ("+" + dt) : ("-" + (-dt))));
+        return (dt == ETERNAL ? "E" : (dt >= 0L ? ("+" + dt) : ("-" + (-dt))));
     }
 }

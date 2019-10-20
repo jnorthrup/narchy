@@ -19,7 +19,7 @@ public class LevelRenderer {
     @SuppressWarnings("unused")
     private final Random random =
             //new Random();
-            new XoRoShiRo128PlusRandom(1);
+            new XoRoShiRo128PlusRandom(1L);
 
     public boolean renderBehaviors =
             false;
@@ -75,8 +75,8 @@ public class LevelRenderer {
         int yTileEnd = (y0 + yCam + h) / 16;
         for (int x = xTileStart; x <= xTileEnd; x++) {
             for (int y = yTileStart; y <= yTileEnd; y++) {
-                int b = level.getBlock(x, y) & 0xff;
-                if (((Level.TILE_BEHAVIORS[b]) & Level.BIT_ANIMATED) == 0) {
+                int b = (int) level.getBlock(x, y) & 0xff;
+                if (((int) (Level.TILE_BEHAVIORS[b]) & Level.BIT_ANIMATED) == 0) {
                     g.drawImage(Art.level[b % 16][b / 16], (x << 4) - xCam, (y << 4) - yCam, null);
                 }
             }
@@ -90,20 +90,20 @@ public class LevelRenderer {
             for (int y = yCam / 16; y <= (yCam + height) / 16; y++) {
                 byte b = level.getBlock(x, y);
 
-                if (((Level.TILE_BEHAVIORS[b & 0xff]) & Level.BIT_ANIMATED) != 0) {
+                if (((int) (Level.TILE_BEHAVIORS[(int) b & 0xff]) & Level.BIT_ANIMATED) != 0) {
                     int animTime = (tick / 3) % 4;
 
-                    if ((b % 16) / 4 == 0 && b / 16 == 1) {
+                    if (((int) b % 16) / 4 == 0 && (int) b / 16 == 1) {
                         animTime = (tick / 2 + (x + y) / 8) % 20;
                         if (animTime > 3) animTime = 0;
                     }
-                    if ((b % 16) / 4 == 3 && b / 16 == 0) {
+                    if (((int) b % 16) / 4 == 3 && (int) b / 16 == 0) {
                         animTime = 2;
                     }
                     int yo = 0;
-                    if (x >= 0 && y >= 0 && x < level.width && y < level.height) yo = level.data[x][y];
-                    if (yo > 0) yo = (int) (Math.sin((yo - alpha) / 4.0f * Math.PI) * 8);
-                    g.drawImage(Art.level[(b % 16) / 4 * 4 + animTime][b / 16], (x << 4) - xCam, (y << 4) - yCam - yo, null);
+                    if (x >= 0 && y >= 0 && x < level.width && y < level.height) yo = (int) level.data[x][y];
+                    if (yo > 0) yo = (int) (Math.sin((double) (((float) yo - alpha) / 4.0f) * Math.PI) * 8.0);
+                    g.drawImage(Art.level[((int) b % 16) / 4 * 4 + animTime][(int) b / 16], (x << 4) - xCam, (y << 4) - yCam - yo, null);
                 }
                 /*                else if (b == Level.TILE_BONUS)
                  {
@@ -115,38 +115,38 @@ public class LevelRenderer {
                  }*/
 
                 if (renderBehaviors) {
-                    if (((Level.TILE_BEHAVIORS[b & 0xff]) & Level.BIT_BLOCK_UPPER) > 0) {
+                    if (((int) (Level.TILE_BEHAVIORS[(int) b & 0xff]) & Level.BIT_BLOCK_UPPER) > 0) {
                         g.setColor(Color.RED);
                         g.fillRect((x << 4) - xCam, (y << 4) - yCam, 16, 2);
                     }
-                    if (((Level.TILE_BEHAVIORS[b & 0xff]) & Level.BIT_BLOCK_ALL) > 0) {
+                    if (((int) (Level.TILE_BEHAVIORS[(int) b & 0xff]) & Level.BIT_BLOCK_ALL) > 0) {
                         g.setColor(Color.RED);
                         g.fillRect((x << 4) - xCam, (y << 4) - yCam, 16, 2);
                         g.fillRect((x << 4) - xCam, (y << 4) - yCam + 14, 16, 2);
                         g.fillRect((x << 4) - xCam, (y << 4) - yCam, 2, 16);
                         g.fillRect((x << 4) - xCam + 14, (y << 4) - yCam, 2, 16);
                     }
-                    if (((Level.TILE_BEHAVIORS[b & 0xff]) & Level.BIT_BLOCK_LOWER) > 0) {
+                    if (((int) (Level.TILE_BEHAVIORS[(int) b & 0xff]) & Level.BIT_BLOCK_LOWER) > 0) {
                         g.setColor(Color.RED);
                         g.fillRect((x << 4) - xCam, (y << 4) - yCam + 14, 16, 2);
                     }
-                    if (((Level.TILE_BEHAVIORS[b & 0xff]) & Level.BIT_SPECIAL) > 0) {
+                    if (((int) (Level.TILE_BEHAVIORS[(int) b & 0xff]) & Level.BIT_SPECIAL) > 0) {
                         g.setColor(Color.PINK);
                         g.fillRect((x << 4) - xCam + 2 + 4, (y << 4) - yCam + 2 + 4, 4, 4);
                     }
-                    if (((Level.TILE_BEHAVIORS[b & 0xff]) & Level.BIT_BUMPABLE) > 0) {
+                    if (((int) (Level.TILE_BEHAVIORS[(int) b & 0xff]) & Level.BIT_BUMPABLE) > 0) {
                         g.setColor(Color.BLUE);
                         g.fillRect((x << 4) - xCam + 2, (y << 4) - yCam + 2, 4, 4);
                     }
-                    if (((Level.TILE_BEHAVIORS[b & 0xff]) & Level.BIT_BREAKABLE) > 0) {
+                    if (((int) (Level.TILE_BEHAVIORS[(int) b & 0xff]) & Level.BIT_BREAKABLE) > 0) {
                         g.setColor(Color.GREEN);
                         g.fillRect((x << 4) - xCam + 2 + 4, (y << 4) - yCam + 2, 4, 4);
                     }
-                    if (((Level.TILE_BEHAVIORS[b & 0xff]) & Level.BIT_PICKUPABLE) > 0) {
+                    if (((int) (Level.TILE_BEHAVIORS[(int) b & 0xff]) & Level.BIT_PICKUPABLE) > 0) {
                         g.setColor(Color.YELLOW);
                         g.fillRect((x << 4) - xCam + 2, (y << 4) - yCam + 2 + 4, 4, 4);
                     }
-                    if (((Level.TILE_BEHAVIORS[b & 0xff]) & Level.BIT_ANIMATED) > 0) {
+                    if (((int) (Level.TILE_BEHAVIORS[(int) b & 0xff]) & Level.BIT_ANIMATED) > 0) {
                     }
                 }
 
@@ -166,7 +166,7 @@ public class LevelRenderer {
         for (int y = level.yExit - 8; y < level.yExit; y++) {
             g.drawImage(Art.level[12][y == level.yExit - 8 ? 4 : 5], (level.xExit << 4) - xCam - 16, (y << 4) - yCam, null);
         }
-        int yh = level.yExit * 16 - (int) ((Math.sin((tick + alpha) / 20) * 0.5 + 0.5) * 7 * 16) - 8;
+        int yh = level.yExit * 16 - (int) ((Math.sin((double) (((float) tick + alpha) / 20.0F)) * 0.5 + 0.5) * 7.0 * 16.0) - 8;
         if (bar) {
             g.drawImage(Art.level[12][3], (level.xExit << 4) - xCam - 16, yh - yCam, null);
             g.drawImage(Art.level[13][3], (level.xExit << 4) - xCam, yh - yCam, null);

@@ -6,7 +6,6 @@ import jcog.math.FloatRange;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 public class VideoEqualizer extends VideoTransform {
 
@@ -21,7 +20,7 @@ public class VideoEqualizer extends VideoTransform {
     private final int[] chistogram = new int[256];
     private final float[] arr = new float[256];
 
-    public final FloatRange momentum = new FloatRange(0.99f, 0, 1f);
+    public final FloatRange momentum = new FloatRange(0.99f, (float) 0, 1f);
 
     /**
      * https://www.codeproject.com/Tips/1172662/Histogram-Equalisation-in-Java
@@ -45,7 +44,7 @@ public class VideoEqualizer extends VideoTransform {
         for (int i = 0; i < 256; i++) {
             int c = (i > 0 ? chistogram[i - 1] : 0) + histogram[i];
             chistogram[i] = c;
-            arr[i] = Util.lerp(momentum, ((chistogram[i] * 255f) / totpix), arr[i]);
+            arr[i] = Util.lerp(momentum, (((float) chistogram[i] * 255f) / (float) totpix), arr[i]);
         }
 
         if (out == null || out.getWidth() != W || out.getHeight()!=H) {

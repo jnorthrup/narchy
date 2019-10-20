@@ -36,7 +36,7 @@ public class MutableRectFloat<X> extends v2 {
     }
 
     private MutableRectFloat setXYXY(float x1, float y1, float x2, float y2) {
-        this.x = (x1+x2)/2; this.y = (y1+y2)/2;
+        this.x = (x1+x2)/ 2.0F; this.y = (y1+y2)/ 2.0F;
         return size(
             (x2-x1), (y2-y1)
         );
@@ -49,8 +49,8 @@ public class MutableRectFloat<X> extends v2 {
     }
 
     public final MutableRectFloat setX0Y0WH(float x, float y, float w, float h) {
-        this.cxPrev = this.x = x + w / 2;
-        this.cyPrev = this.y = y + h / 2;
+        this.cxPrev = this.x = x + w / 2.0F;
+        this.cyPrev = this.y = y + h / 2.0F;
         return size(w, h);
     }
 
@@ -70,8 +70,8 @@ public class MutableRectFloat<X> extends v2 {
     }
 
     public float radius() {
-        float ww = w/2, hh = h/2;
-        return (float) Math.sqrt((ww * ww) + (hh * hh));
+        float ww = w/ 2.0F, hh = h/ 2.0F;
+        return (float) Math.sqrt((double) ((ww * ww) + (hh * hh)));
     }
 
     public MutableRectFloat pos(float x, float y) {
@@ -136,7 +136,7 @@ public class MutableRectFloat<X> extends v2 {
             node.mover = null;
             node = null;
         }
-        this.cxPrev = this.cyPrev = 0;
+        this.cxPrev = this.cyPrev = (float) 0;
         set(RectFloat.Unit);
     }
 
@@ -145,8 +145,8 @@ public class MutableRectFloat<X> extends v2 {
      */
     public void clamp(RectFloat bounds) {
         if ((x != x) || (y != y)) randomize(bounds);
-        x = Util.clampSafe(x, bounds.left() + w / 2, bounds.right() - w / 2);
-        y = Util.clampSafe(y, bounds.bottom() + h / 2, bounds.top() - h / 2);
+        x = Util.clampSafe(x, bounds.left() + w / 2.0F, bounds.right() - w / 2.0F);
+        y = Util.clampSafe(y, bounds.bottom() + h / 2.0F, bounds.top() - h / 2.0F);
     }
 
     private static void randomize(RectFloat bounds) {
@@ -212,19 +212,19 @@ public class MutableRectFloat<X> extends v2 {
     }
 
     public final float left() {
-        return x - w / 2;
+        return x - w / 2.0F;
     }
 
     public final float right() {
-        return x + w / 2;
+        return x + w / 2.0F;
     }
 
     public final float top() {
-        return y + h / 2;
+        return y + h / 2.0F;
     }
 
     public final float bottom() {
-        return y - h / 2;
+        return y - h / 2.0F;
     }
 
 

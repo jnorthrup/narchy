@@ -133,7 +133,7 @@ public class AwtEventsHandler {
                 case '7':
                 case '8':
                 case '9':
-                    game.player.setHotbarItem(e.getKeyChar() - '1');
+                    game.player.setHotbarItem((int) e.getKeyChar() - (int) '1');
                     break;
                 case '0':
                     game.player.setHotbarItem(9);

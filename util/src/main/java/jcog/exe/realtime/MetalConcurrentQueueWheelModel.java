@@ -3,7 +3,6 @@ package jcog.exe.realtime;
 import jcog.Util;
 import jcog.data.list.MetalConcurrentQueue;
 
-import java.util.Arrays;
 import java.util.function.ToIntFunction;
 
 import static jcog.exe.realtime.TimedFuture.*;

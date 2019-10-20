@@ -79,7 +79,7 @@ public abstract class Model extends Surf {
 
             cplane_t plane = node.plane;
             float d = Math3D.DotProduct(p, plane.normal) - plane.dist;
-            if (d > 0)
+            if (d > (float) 0)
 				node = node.children[0];
 			else
 				node = node.children[1];
@@ -116,17 +116,17 @@ public abstract class Model extends Surf {
         int inp = offset;
         do
 		{
-			if (in[inp] != 0)
+			if ((int) in[inp] != 0)
 			{
 				out[outp++] = in[inp++];
 				continue;
 			}
 
-            int c = in[inp + 1] & 0xFF;
+            int c = (int) in[inp + 1] & 0xFF;
             inp += 2;
 			while (c != 0)
 			{
-				out[outp++] = 0;
+				out[outp++] = (byte) 0;
 				c--;
 			}
 		} while (outp < row);
@@ -206,7 +206,7 @@ public abstract class Model extends Surf {
 
 
         int i;
-        if (name.charAt(0) == '*')
+        if ((int) name.charAt(0) == (int) '*')
 		{
 			i = Integer.parseInt(name.substring(1));
 			if (i < 1 || r_worldmodel == null || i >= r_worldmodel.numsubmodels)
@@ -390,7 +390,7 @@ public abstract class Model extends Surf {
 	*/
 	static float RadiusFromBounds(float[] mins, float[] maxs)
 	{
-		float[] corner = {0, 0, 0};
+		float[] corner = {(float) 0, (float) 0, (float) 0};
 
 		for (int i = 0; i<3 ; i++)
 		{
@@ -427,8 +427,8 @@ public abstract class Model extends Surf {
             out[i] = new mmodel_t();
 			for (int j = 0; j<3 ; j++)
 			{	
-				out[i].mins[j] = in.mins[j] - 1;
-				out[i].maxs[j] = in.maxs[j] + 1;
+				out[i].mins[j] = in.mins[j] - 1.0F;
+				out[i].maxs[j] = in.maxs[j] + 1.0F;
 				out[i].origin[j] = in.origin[j];
 			}
 			out[i].radius = RadiusFromBounds(out[i].mins, out[i].maxs);
@@ -527,11 +527,11 @@ public abstract class Model extends Surf {
 	*/
 	void CalcSurfaceExtents(msurface_t s)
 	{
-		float[] mins = {0, 0};
+		float[] mins = {(float) 0, (float) 0};
 
-        mins[0] = mins[1] = 999999;
-        float[] maxs = {0, 0};
-        maxs[0] = maxs[1] = -99999;
+        mins[0] = mins[1] = 999999.0F;
+        float[] maxs = {(float) 0, (float) 0};
+        maxs[0] = maxs[1] = -99999.0F;
 
         mtexinfo_t tex = s.texinfo;
 	
@@ -561,8 +561,8 @@ public abstract class Model extends Surf {
         int[] bmins = {0, 0};
         for (int i = 0; i<2 ; i++)
 		{	
-			bmins[i] = (int)Math.floor(mins[i]/16);
-			bmaxs[i] = (int)Math.ceil(maxs[i]/16);
+			bmins[i] = (int)Math.floor((double) (mins[i] / 16.0F));
+			bmaxs[i] = (int)Math.ceil((double) (maxs[i] / 16.0F));
 
 			s.texturemins[i] = (short)(bmins[i] * 16);
 			s.extents[i] = (short)((bmaxs[i] - bmins[i]) * 16);
@@ -600,18 +600,18 @@ public abstract class Model extends Surf {
             qfiles.dface_t in = new qfiles.dface_t(bb);
             out[surfnum] = new msurface_t();
 			out[surfnum].firstedge = in.firstedge;
-			out[surfnum].numedges = in.numedges;		
+			out[surfnum].numedges = (int) in.numedges;
 			out[surfnum].flags = 0;
 			out[surfnum].polys = null;
 
             int planenum = in.planenum;
-            int side = in.side;
+            int side = (int) in.side;
             if (side != 0)
 				out[surfnum].flags |= Defines.SURF_PLANEBACK;			
 
 			out[surfnum].plane = loadmodel.planes[planenum];
 
-            int ti = in.texinfo;
+            int ti = (int) in.texinfo;
             if (ti < 0 || ti >= loadmodel.numtexinfo)
 				Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: bad texinfo number");
 
@@ -642,8 +642,8 @@ public abstract class Model extends Surf {
 				out[surfnum].flags |= Defines.SURF_DRAWTURB;
 				for (i=0 ; i<2 ; i++)
 				{
-					out[surfnum].extents[i] = 16384;
-					out[surfnum].texturemins[i] = -8192;
+					out[surfnum].extents[i] = (short) 16384;
+					out[surfnum].texturemins[i] = (short) -8192;
 				}
 				GL_SubdivideSurface(out[surfnum]);	
 			}
@@ -705,8 +705,8 @@ public abstract class Model extends Surf {
             int j;
             for (j=0 ; j<3 ; j++)
 			{
-				out[i].mins[j] = in.mins[j];
-				out[i].maxs[j] = in.maxs[j];
+				out[i].mins[j] = (float) in.mins[j];
+				out[i].maxs[j] = (float) in.maxs[j];
 			}
 
             int p = in.planenum;
@@ -756,14 +756,14 @@ public abstract class Model extends Surf {
             out[i] = new mleaf_t();
 			for (int j = 0; j<3 ; j++)
 			{
-				out[i].mins[j] = in.mins[j];
-				out[i].maxs[j] = in.maxs[j];
+				out[i].mins[j] = (float) in.mins[j];
+				out[i].maxs[j] = (float) in.maxs[j];
 
 			}
 
 			out[i].contents = in.contents;
-			out[i].cluster = in.cluster;
-			out[i].area = in.area;
+			out[i].cluster = (int) in.cluster;
+			out[i].area = (int) in.area;
 
 			out[i].setMarkSurface(in.firstleafface, loadmodel.marksurfaces);
 			out[i].nummarksurfaces = in.numleaffaces;
@@ -793,7 +793,7 @@ public abstract class Model extends Surf {
 
 		for (int i = 0; i<count ; i++)
 		{
-            int j = bb.getShort();
+            int j = (int) bb.getShort();
             if (j < 0 ||  j >= loadmodel.numsurfaces)
 				Com.Error(Defines.ERR_DROP, "Mod_ParseMarksurfaces: bad surface number");
 
@@ -858,7 +858,7 @@ public abstract class Model extends Surf {
 			for (int j = 0; j<3 ; j++)
 			{
 				out[i].normal[j] = in.normal[j];
-				if (out[i].normal[j] < 0)
+				if (out[i].normal[j] < (float) 0)
 					bits |= (1<<j);
 			}
 
@@ -1025,12 +1025,12 @@ public abstract class Model extends Surf {
 		
 		mod.extradata = pheader;
 			
-		mod.mins[0] = -32;
-		mod.mins[1] = -32;
-		mod.mins[2] = -32;
-		mod.maxs[0] = 32;
-		mod.maxs[1] = 32;
-		mod.maxs[2] = 32;
+		mod.mins[0] = -32.0F;
+		mod.mins[1] = -32.0F;
+		mod.mins[2] = -32.0F;
+		mod.maxs[0] = 32.0F;
+		mod.maxs[1] = 32.0F;
+		mod.maxs[2] = 32.0F;
 	}
 
 	/*

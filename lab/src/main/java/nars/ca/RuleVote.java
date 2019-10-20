@@ -42,7 +42,7 @@ public class RuleVote {
 			for (int i = 0; i < sTok.length(); i++) {
                 char cChar = sTok.charAt(i);
                 if (Character.isDigit(cChar)) {
-                    int iCharVal = cChar - '0';
+                    int iCharVal = (int) cChar - (int) '0';
                     if ((iCharVal >= 0) && (iCharVal <= 9)) {
 						RulesSB[iCharVal] = true;
 					}
@@ -101,31 +101,31 @@ public class RuleVote {
 				lurd[3] = (j < sizY - 1) ? j + 1 : (isWrap) ? 0 : sizY;
                 short bOldVal = crrState[i][j];
                 int iCnt = 0;
-                if (crrState[lurd[0]][lurd[1]] != 0)
+                if ((int) crrState[lurd[0]][lurd[1]] != 0)
 					++iCnt;
-				if (crrState[i][lurd[1]] != 0)
+				if ((int) crrState[i][lurd[1]] != 0)
 					++iCnt;
-				if (crrState[lurd[2]][lurd[1]] != 0)
+				if ((int) crrState[lurd[2]][lurd[1]] != 0)
 					++iCnt;
-				if (crrState[lurd[0]][j] != 0)
+				if ((int) crrState[lurd[0]][j] != 0)
 					++iCnt;
-				if (crrState[i][j] != 0)
+				if ((int) crrState[i][j] != 0)
 					++iCnt;
-				if (crrState[lurd[2]][j] != 0)
+				if ((int) crrState[lurd[2]][j] != 0)
 					++iCnt;
-				if (crrState[lurd[0]][lurd[3]] != 0)
+				if ((int) crrState[lurd[0]][lurd[3]] != 0)
 					++iCnt;
-				if (crrState[i][lurd[3]] != 0)
+				if ((int) crrState[i][lurd[3]] != 0)
 					++iCnt;
-				if (crrState[lurd[2]][lurd[3]] != 0)
+				if ((int) crrState[lurd[2]][lurd[3]] != 0)
 					++iCnt;
 
 
                 short bNewVal = bOldVal;
-                if (bOldVal == 0)
+                if ((int) bOldVal == 0)
 				{
 					if (RulesSB[iCnt]) 
-						bNewVal = ColoringMethod == 1 ? 1 : (short) (mjb.Cycle
+						bNewVal = ColoringMethod == 1 ? (short) 1 : (short) (mjb.Cycle
 								% (mjb.StatesCount - 1) + 1);
 				} else 
 				{
@@ -133,16 +133,16 @@ public class RuleVote {
 					{
 						if (ColoringMethod == 1) 
 						{
-							bNewVal = (short) (bOldVal < mjb.StatesCount - 1 ? bOldVal + 1 : mjb.StatesCount - 1);
+							bNewVal = (short) ((int) bOldVal < mjb.StatesCount - 1 ? (int) bOldVal + 1 : mjb.StatesCount - 1);
 						} else {
 							
 						}
 					} else
-						bNewVal = 0; 
+						bNewVal = (short) 0;
 				}
 
 				tmpState[i][j] = bNewVal;
-				if (bNewVal != bOldVal) {
+				if ((int) bNewVal != (int) bOldVal) {
 					modCnt++; 
 				}
 			} 

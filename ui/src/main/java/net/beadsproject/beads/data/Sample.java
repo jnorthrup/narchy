@@ -126,7 +126,7 @@ public class Sample {
         next = new float[nChannels];
         nFrames = (long) msToSamples(length);
         theSampleData = new float[nChannels][(int) nFrames];
-        length = 1000f * nFrames / this.sampleRate;
+        length = (double) (1000f * (float) nFrames / this.sampleRate);
     }
 
     /**
@@ -195,7 +195,7 @@ public class Sample {
      * @param frameData
      */
     private void getFrame(int frame, float[] frameData) {
-        if (frame < 0 || frame >= nFrames) {
+        if (frame < 0 || (long) frame >= nFrames) {
             return;
         }
         for (int i = 0; i < nChannels; i++) {
@@ -226,16 +226,16 @@ public class Sample {
     public void getFrameLinear(double posInMS, float[] result) {
         double frame = msToSamples(posInMS);
         int frame_floor = (int) Math.floor(frame);
-        if (frame_floor > 0 && frame_floor < nFrames) {
-            if (frame_floor == nFrames - 1) {
+        if (frame_floor > 0 && (long) frame_floor < nFrames) {
+            if ((long) frame_floor == nFrames - 1L) {
                 getFrame(frame_floor, result);
             } else 
             {
                 getFrame(frame_floor, current);
                 getFrame(frame_floor + 1, next);
-                double frame_frac = frame - frame_floor;
+                double frame_frac = frame - (double) frame_floor;
                 for (int i = 0; i < nChannels; i++) {
-                    result[i] = (float) ((1 - frame_frac) * current[i] + frame_frac * next[i]);
+                    result[i] = (float) ((1.0 - frame_frac) * (double) current[i] + frame_frac * (double) next[i]);
                 }
             }
         } else {
@@ -256,9 +256,9 @@ public class Sample {
         double frame = msToSamples(posInMS);
         for (int i = 0; i < nChannels; i++) {
             int realCurrentSample = (int) Math.floor(frame);
-            float fractionOffset = (float) (frame - realCurrentSample);
+            float fractionOffset = (float) (frame - (double) realCurrentSample);
 
-            if (realCurrentSample >= 0 && realCurrentSample < (nFrames - 1)) {
+            if (realCurrentSample >= 0 && (long) realCurrentSample < (nFrames - 1L)) {
                 realCurrentSample--;
                 float ym1;
                 if (realCurrentSample < 0) {
@@ -271,13 +271,13 @@ public class Sample {
                 }
                 getFrame(realCurrentSample++, current);
                 float y0 = current[i];
-                if (realCurrentSample >= nFrames) {
+                if ((long) realCurrentSample >= nFrames) {
                     getFrame((int) nFrames - 1, current);
                 } else {
                     getFrame(realCurrentSample++, current);
                 }
                 float y1 = current[i];
-                if (realCurrentSample >= nFrames) {
+                if ((long) realCurrentSample >= nFrames) {
                     getFrame((int) nFrames - 1, current);
                 } else {
                     getFrame(realCurrentSample++, current);
@@ -309,10 +309,10 @@ public class Sample {
      * @param frameData
      */
     public void getFrames(int frame, float[][] frameData) {
-        if (frame >= nFrames) {
+        if ((long) frame >= nFrames) {
             return;
         }
-        int numFloats = Math.min(frameData[0].length, (int) (nFrames - frame));
+        int numFloats = Math.min(frameData[0].length, (int) (nFrames - (long) frame));
         for (int i = 0; i < nChannels; i++) {
             System.arraycopy(theSampleData[i], frame, frameData[i], 0, numFloats);
         }
@@ -353,7 +353,7 @@ public class Sample {
      * @param frameData The frames to write.
      */
     public void putFrames(int frame, float[][] frameData) {
-        int numFrames = Math.min(frameData[0].length, (int) (nFrames - frame));
+        int numFrames = Math.min(frameData[0].length, (int) (nFrames - (long) frame));
         if (frame < 0) {
             return;
         }
@@ -380,7 +380,7 @@ public class Sample {
             return;
         }
         
-        numFrames = Math.min(numFrames, (int) (nFrames - frame));
+        numFrames = Math.min(numFrames, (int) (nFrames - (long) frame));
         for (int i = 0; i < nChannels; i++) {
             System.arraycopy(frameData[i], offset, theSampleData[i], frame,
                     numFrames);
@@ -477,7 +477,7 @@ public class Sample {
      * @return the time in samples.
      */
     public double msToSamples(double msTime) {
-        return msTime * this.sampleRate / 1000.0f;
+        return msTime * (double) this.sampleRate / 1000.0;
     }
 
     /**
@@ -487,7 +487,7 @@ public class Sample {
      * @return the time in milliseconds.
      */
     public double samplesToMs(double sampleTime) {
-        return sampleTime / this.sampleRate * 1000.0f;
+        return sampleTime / (double) this.sampleRate * 1000.0;
     }
 
     /*
@@ -567,7 +567,7 @@ public class Sample {
      * @return
      */
     public double getLength() {
-        return 1000f * this.nFrames / this.sampleRate;
+        return (double) (1000f * (float) this.nFrames / this.sampleRate);
     }
 
     /**
@@ -601,7 +601,7 @@ public class Sample {
         }
         this.sampleRate = audioFileReader.getSampleAudioFormat().sampleRate;
         this.nChannels = theSampleData.length;
-        this.nFrames = theSampleData[0].length;
+        this.nFrames = (long) theSampleData[0].length;
         this.current = new float[nChannels];
         this.next = new float[nChannels];
     }

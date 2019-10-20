@@ -24,7 +24,7 @@ public abstract class SequenceLearner {
     protected final int vectorSize;
     protected static final int statisticsWindow = 16;
     static final int seed = 1;
-    protected final Random rand = new XorShift128PlusRandom(seed);
+    protected final Random rand = new XorShift128PlusRandom((long) seed);
     private final BPTTTeacher teacher;
     protected double[] errors = new double[statisticsWindow];
     protected double[] times = new double[statisticsWindow];
@@ -96,7 +96,7 @@ public abstract class SequenceLearner {
             double[] actual = machines[t].getOutput();
 
 
-            double rowLoss = 0;
+            double rowLoss = (double) 0;
             for (int i = 0; i < ideal.length; i++) {
 
                 double expected = ideal[i];
@@ -123,7 +123,7 @@ public abstract class SequenceLearner {
             double[] actual = machines[t].getOutput();
 
 
-            double rowLoss = 0;
+            double rowLoss = (double) 0;
             for (int i = 0; i < knownOutputT.length; i++) {
 
                 double expected = knownOutputT[i];
@@ -160,12 +160,12 @@ public abstract class SequenceLearner {
 
 
         double error = calculateLogLoss(sequence.ideal, output);
-        double averageError = error / (
+        double averageError = error / (double) (
                 sequence.ideal.length * sequence.ideal[0].length);
 
 
         popPush(errors, averageError);
-        popPush(times, trainTimeNS);
+        popPush(times, (double) trainTimeNS);
 
         onTrained(i, sequence, output, trainTimeNS, averageError);
 

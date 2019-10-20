@@ -14,7 +14,6 @@ import jurls.core.utils.Utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.IntStream;
 
 /**
  *
@@ -39,11 +38,11 @@ public class RLAgent extends LearnerAndActor {
     private final double[] normalizedState;
     private double rewardMin = Double.POSITIVE_INFINITY;
     private double rewardMax = Double.NEGATIVE_INFINITY;
-    private double factor1 = 0;
-    private double factor2 = 0;
-    private double rSum = 0;
-    private double epsilon = 0;
-    private static final double factor1ComponentDivisor = 1000;
+    private double factor1 = (double) 0;
+    private double factor2 = (double) 0;
+    private double rSum = (double) 0;
+    private double epsilon = (double) 0;
+    private static final double factor1ComponentDivisor = 1000.0;
 
     public RLAgent(
             ParameterizedFunctionGenerator parameterizedFunctionGenerator,
@@ -109,8 +108,8 @@ public class RLAgent extends LearnerAndActor {
                 sum += v;
             }
             return sum;
-        }).map(sum2 -> 1 / (1 + sum2 * factor1ComponentDivisor)).sum();
-        nextFactor1 /= memory.length;
+        }).map(sum2 -> 1.0 / (1.0 + sum2 * factor1ComponentDivisor)).sum();
+        nextFactor1 = nextFactor1 / (double) memory.length;
 
         if (reward > rewardMax) {
             rewardMax = reward;
@@ -123,10 +122,10 @@ public class RLAgent extends LearnerAndActor {
         }
         double r = (reward - rewardMin) / (rewardMax - rewardMin);
         rSum = r + rSum * rLParameters.getGamma();
-        double referenceQ = 1 / (1 - rLParameters.getGamma());
+        double referenceQ = 1.0 / (1.0 - rLParameters.getGamma());
 
         factor1 = nextFactor1;
-        factor2 = 1 - rSum / referenceQ;
+        factor2 = 1.0 - rSum / referenceQ;
 
         epsilon = rLParameters.getEpsilon() * factor1 * factor2;
 

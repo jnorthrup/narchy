@@ -39,7 +39,7 @@ public class DQN2 extends Agent {
     private final double[] targetFuture;
 
     public DQN2(int inputs, int actions) {
-        this(inputs, actions, new XoRoShiRo128PlusRandom(1));
+        this(inputs, actions, new XoRoShiRo128PlusRandom(1L));
     }
 
     public DQN2( int inputs, int actions, Random rng ) {
@@ -125,7 +125,7 @@ public class DQN2 extends Agent {
             //predict the future discounted reward
             float target =
                     //reward;
-                    (float) ((reward) + learnConfig.getGamma() *
+                    (float) ((double) (reward) + learnConfig.getGamma() *
                             //Util.max(rewardPrediction));
                             Util.max(rewardPrediction)-Util.min(rewardPrediction));
 
@@ -133,13 +133,13 @@ public class DQN2 extends Agent {
             //make the agent to approximately map
             //the current state to future discounted reward
 
-            Arrays.fill(targetFuture, 0);
+            Arrays.fill(targetFuture, (double) 0);
             //System.arraycopy(rewardPrediction, 0, targetFuture, 0, actions);
 
             targetFuture[lastAction] =
                     //Util.clamp((float) (rewardPrediction[lastAction] - target), -1, +1);
                     //(float) (rewardPrediction[lastAction] - target);
-                    target;
+                    (double) target;
 
             valuePredict.learn(Util.toDouble(lastState), targetFuture);
 

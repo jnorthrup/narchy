@@ -100,24 +100,24 @@ public abstract class IIRFilter extends UGen {
     private static IIRFilterAnalysis analyzeFilter(float[] bs, float[] as,
                                                    float freq, float samplingFreq) {
 
-        double w = -2 * freq * Math.PI / samplingFreq;
+        double w = -2.0 * (double) freq * Math.PI / (double) samplingFreq;
 
-        double nr = 0, ni = 0;
+        double nr = (double) 0, ni = (double) 0;
 
         if (bs.length > 0) {
-            nr = bs[0];
+            nr = (double) bs[0];
             for (int i = 1; i < bs.length; i++) {
-                nr += bs[i] * Math.cos(w * i);
-                ni += bs[i] * Math.sin(w * i);
+                nr += (double) bs[i] * Math.cos(w * (double) i);
+                ni += (double) bs[i] * Math.sin(w * (double) i);
             }
         }
-        double di = 0;
-        double dr = 1;
+        double di = (double) 0;
+        double dr = 1.0;
         if (as.length > 0) {
-            dr = as[0];
+            dr = (double) as[0];
             for (int i = 1; i < as.length; i++) {
-                dr += as[i] * Math.cos(w * i);
-                di += as[i] * Math.sin(w * i);
+                dr += (double) as[i] * Math.cos(w * (double) i);
+                di += (double) as[i] * Math.sin(w * (double) i);
             }
         }
 
@@ -127,7 +127,7 @@ public abstract class IIRFilter extends UGen {
 
         ret.amplitudeResponse = Math.sqrt((nr * nr + ni * ni) / md2);
         ret.phaseResponse = (Math.atan2(ni, nr) - Math.atan2(di, dr));
-        ret.phaseDelay = (ret.phaseResponse / Math.PI / -2.0 / freq);
+        ret.phaseDelay = (ret.phaseResponse / Math.PI / -2.0 / (double) freq);
 
         ret.frReal = (nr * dr + ni * di) / md2;
         ret.frImag = (ni * dr - nr * di) / md2;

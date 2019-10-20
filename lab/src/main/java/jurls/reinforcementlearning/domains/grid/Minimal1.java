@@ -31,7 +31,7 @@ public class Minimal1 implements World {
     public double step(double[] action, double[] sensor) {
         sensor[0] = Math.sin(  ((double)time) * frequency/3.14159)*0.5 + 0.5;
         if (sensor[0] > 0.75) sensor[0] = 1.0;
-        if (sensor[0] < 0.25) sensor[0] = 0;
+        if (sensor[0] < 0.25) sensor[0] = (double) 0;
         time++;
         return (1.0 - Math.abs(action[0] - sensor[0])) - 0.5;
     }

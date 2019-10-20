@@ -177,10 +177,10 @@ public class Impiler {
             ImpilerDeduction x = new ImpilerDeduction(what.nar);
 
             List<Task> result = x.get(target, task.isEternal() ? what.time() : task.start(), forward);
-            if (result.isEmpty()) res = 0;
+            if (result.isEmpty()) res = (float) 0;
             else {
                 what.acceptAll(result);
-                res = 1;
+                res = 1.0F;
             }
 
 
@@ -201,7 +201,7 @@ public class Impiler {
 
         protected static float leak(Task t, What what) {
             _impile(t, what.nar);
-            return 1;
+            return 1.0F;
         }
 
 

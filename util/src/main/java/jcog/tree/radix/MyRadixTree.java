@@ -131,7 +131,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         int minLength = Math.min(first.length(), second.length());
 
         for (int i = 0; i < minLength; ++i) {
-            if (first.at(i) != second.at(i)) {
+            if ((int) first.at(i) != (int) second.at(i)) {
                 return first.subSequence(0, i);
             }
         }
@@ -160,7 +160,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
             Node x = a[i];
             if (x == null)
                 break;
-            if (x.getIncomingEdgeFirstCharacter() == key)
+            if ((int) x.getIncomingEdgeFirstCharacter() == (int) key)
                 return i;
         }
         return -1;
@@ -171,7 +171,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         int low = 0;
         while (low <= high) {
             int midIndex = (low + high) >>> 1;
-            int cmp = a[midIndex].getIncomingEdgeFirstCharacter() - key;
+            int cmp = (int) a[midIndex].getIncomingEdgeFirstCharacter() - (int) key;
 
             if (cmp < 0) low = midIndex + 1;
             else if (cmp > 0) high = midIndex - 1;
@@ -1165,7 +1165,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
             charsMatchedInNodeFound = 0;
             AbstractBytes currentNodeEdgeCharacters = currentNode.getIncomingEdge();
             for (int i = 0, numEdgeChars = currentNodeEdgeCharacters.length(); i < numEdgeChars && charsMatched < keyLength; i++) {
-                if (currentNodeEdgeCharacters.at(i) != key.at(charsMatched)) {
+                if ((int) currentNodeEdgeCharacters.at(i) != (int) key.at(charsMatched)) {
                     break outer_loop;
                 }
                 charsMatched++;

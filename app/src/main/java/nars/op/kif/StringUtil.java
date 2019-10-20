@@ -360,8 +360,8 @@ public class StringUtil {
             int lasti = (sb.length() - 1);
             for (int count = 0; ((count < n)
                     && (lasti > 0)
-                    && (sb.charAt(0) == c)
-                    && (sb.charAt(lasti) == c)); count++) {
+                    && ((int) sb.charAt(0) == (int) c)
+                    && ((int) sb.charAt(lasti) == (int) c)); count++) {
                 sb.deleteCharAt(lasti);
                 sb.deleteCharAt(0);
                 lasti = (sb.length() - 1);
@@ -382,8 +382,8 @@ public class StringUtil {
             int lasti = (sb.length() - 1);
             for (int count = 0; ((count < n)
                     && (lasti > 0)
-                    && (sb.charAt(0) == c)
-                    && (sb.charAt(lasti) == c)); count++) {
+                    && ((int) sb.charAt(0) == (int) c)
+                    && ((int) sb.charAt(lasti) == (int) c)); count++) {
                 sb.deleteCharAt(lasti);
                 sb.deleteCharAt(0);
                 lasti = (sb.length() - 1);
@@ -404,8 +404,8 @@ public class StringUtil {
             int lasti = (sb.length() - 1);
             for (int count = 0; ((count < n)
                     && (lasti > 0)
-                    && (sb.charAt(0) == c1)
-                    && (sb.charAt(lasti) == c2)); count++) {
+                    && ((int) sb.charAt(0) == (int) c1)
+                    && ((int) sb.charAt(lasti) == (int) c2)); count++) {
                 sb.deleteCharAt(lasti);
                 sb.deleteCharAt(0);
                 lasti = (sb.length() - 1);
@@ -547,16 +547,16 @@ public class StringUtil {
         s = s.trim();
         if (s.length() < 1)
             return s;
-        if (s.length() > 1 && s.charAt(0) == '"' && s.charAt(s.length() - 1) == '"')
+        if (s.length() > 1 && (int) s.charAt(0) == (int) '"' && (int) s.charAt(s.length() - 1) == (int) '"')
             s = s.substring(1, s.length() - 1);
-        if (s.charAt(0) != '?' &&
+        if ((int) s.charAt(0) != (int) '?' &&
                 (!Character.isJavaIdentifierStart(s.charAt(0)) ||
-                        s.charAt(0) > 122))
+                        (int) s.charAt(0) > 122))
             s = 'S' + s.substring(1);
         int i = 1;
         while (i < s.length()) {
             if (!Character.isJavaIdentifierPart(s.charAt(i)) ||
-                    s.charAt(i) > 122)
+                    (int) s.charAt(i) > 122)
                 s = s.substring(0, i) + '-' + s.substring(i + 1);
             i++;
         }
@@ -582,7 +582,7 @@ public class StringUtil {
         while (i < s.length()) {
             if (!Character.isLetter(s.charAt(i)) &&
                     !Character.isDigit(s.charAt(i)) &&
-                    s.charAt(i) != '_')
+                    (int) s.charAt(i) != (int) '_')
                 s = s.substring(0, i) + '_' + s.substring(i + 1);
             i++;
         }
@@ -604,7 +604,7 @@ public class StringUtil {
             char ch = 'x';
             for (int i = 0; i < str.length(); i++) {
                 ch = str.charAt(i);
-                if ((ch == '"') && (prevCh != '\\')) {
+                if (((int) ch == (int) '"') && ((int) prevCh != (int) '\\')) {
                     sb.append('\\');
                 }
                 sb.append(ch);
@@ -630,7 +630,7 @@ public class StringUtil {
             char ch = 'x';
             for (int i = 0; i < str.length(); i++) {
                 ch = str.charAt(i);
-                if ((ch == '\\') && (prevCh != '\\')) {
+                if (((int) ch == (int) '\\') && ((int) prevCh != (int) '\\')) {
                     sb.append('\\');
                 }
                 sb.append(ch);
@@ -656,7 +656,7 @@ public class StringUtil {
             int strlen = str.length();
             for (int i = 0; i < strlen; i++) {
                 ch = str.charAt(i);
-                if ((ch == '"') && (prevCh == '\\')) {
+                if (((int) ch == (int) '"') && ((int) prevCh == (int) '\\')) {
                     sb.deleteCharAt(sb.length() - 1);
                 }
                 sb.append(ch);
@@ -683,7 +683,7 @@ public class StringUtil {
             int strlen = str.length();
             for (int i = 0; i < strlen; i++) {
                 ch = str.charAt(i);
-                if ((ch == '\\') && (prevCh == '\\')) {
+                if (((int) ch == (int) '\\') && ((int) prevCh == (int) '\\')) {
                     sb.deleteCharAt(sb.length() - 1);
                 }
                 sb.append(ch);
@@ -710,7 +710,7 @@ public class StringUtil {
             int strlen = str.length();
             for (int i = 0; i < strlen; i++) {
                 ch = str.charAt(i);
-                if ((ch == '"') && (prevCh == '\\')) {
+                if (((int) ch == (int) '"') && ((int) prevCh == (int) '\\')) {
                     sb.deleteCharAt(sb.length() - 1);
                     int prevI = (i - 2);
                     if (prevI > -1) {
@@ -744,7 +744,7 @@ public class StringUtil {
             int strlen = newstr.length();
             for (int i = 0; i < strlen; i++) {
                 ch = newstr.charAt(i);
-                if (ch != '"') {
+                if ((int) ch != (int) '"') {
                     sb.append(ch);
                 }
             }
@@ -768,7 +768,7 @@ public class StringUtil {
             char ch = 'x';
             for (int i = 0; i < str.length(); i++) {
                 ch = str.charAt(i);
-                if ((ch == '"') && (prevCh == '"')) {
+                if (((int) ch == (int) '"') && ((int) prevCh == (int) '"')) {
                     sb.setCharAt(sb.length() - 1, '\\');
                 }
                 sb.append(ch);
@@ -799,7 +799,7 @@ public class StringUtil {
         StringBuilder sb = new StringBuilder();
         boolean under = false;
         for (int i = 0; i < str.length(); i++) {
-            if (str.charAt(i) == '_')
+            if ((int) str.charAt(i) == (int) '_')
                 under = true;
             else {
                 if (under || i == 0)
@@ -993,8 +993,8 @@ public class StringUtil {
                 if (ilen > 2) {
                     char fc = input.charAt(0);
                     char lc = input.charAt(ilen - 1);
-                    ans = (((fc == '"') && (lc == '"'))
-                            || ((fc == '\'') && (lc == '\'')) || (fc == '`'));
+                    ans = ((((int) fc == (int) '"') && ((int) lc == (int) '"'))
+                            || (((int) fc == (int) '\'') && ((int) lc == (int) '\'')) || ((int) fc == (int) '`'));
                 }
             }
         }
@@ -1016,7 +1016,7 @@ public class StringUtil {
         try {
             if (isNonEmptyString(input)
                     && !isQuotedString(input)
-                    && (input.charAt(0) != quoteChar)) {
+                    && ((int) input.charAt(0) != (int) quoteChar)) {
                 ans = quoteChar + input + quoteChar;
             }
         }
@@ -1272,9 +1272,9 @@ public class StringUtil {
     public static boolean quoted(String input) {
 
         String trimmed = input.trim();
-        if (trimmed.charAt(0) == '\'' && trimmed.charAt(trimmed.length()-1) == '\'')
+        if ((int) trimmed.charAt(0) == (int) '\'' && (int) trimmed.charAt(trimmed.length() - 1) == (int) '\'')
             return true;
-        return trimmed.charAt(0) == '\"' && trimmed.charAt(trimmed.length() - 1) == '\"';
+        return (int) trimmed.charAt(0) == (int) '\"' && (int) trimmed.charAt(trimmed.length() - 1) == (int) '\"';
     }
 
     /****************************************************************
@@ -1344,7 +1344,7 @@ public class StringUtil {
         File result = f;
         try {
             String canonicalPath = result.getCanonicalPath();
-            int lidx = canonicalPath.lastIndexOf('.');
+            int lidx = canonicalPath.lastIndexOf((int) '.');
             String suff = "";
             String base = canonicalPath;
             if (lidx != -1) {
@@ -1451,8 +1451,8 @@ public class StringUtil {
             else
                 result.append("r_");
         for (int i = 1; i < input.length(); i++) {
-            if (input.charAt(i) != ' ') {
-                if (Character.isJavaIdentifierPart(input.charAt(i)) && input.charAt(i) != '$')
+            if ((int) input.charAt(i) != (int) ' ') {
+                if (Character.isJavaIdentifierPart(input.charAt(i)) && (int) input.charAt(i) != (int) '$')
                     result.append(input.charAt(i));
                 else
                     result.append('x');
@@ -1478,9 +1478,9 @@ public class StringUtil {
 
         int parenLevel = 1;
         for (int i = pIndex + 1; i < st.length(); i++) {
-            if (st.charAt(i) == '(')
+            if ((int) st.charAt(i) == (int) '(')
                 parenLevel++;
-            if (st.charAt(i) == ')') {
+            if ((int) st.charAt(i) == (int) ')') {
                 parenLevel--;
                 if (parenLevel == 0)
                     return i;

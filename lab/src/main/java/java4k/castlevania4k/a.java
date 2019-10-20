@@ -29,7 +29,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class a extends GamePanel {
 
@@ -151,10 +150,10 @@ public class a extends GamePanel {
 	int gameState = GAME_STATE_ENTRY;
 	int counter;
 	int playerX = 208;
-	float playerFx = playerX;
+	float playerFx = (float) playerX;
 	float playerVy;
 	int playerY = GROUND_Y;
-	float playerFy = playerY;
+	float playerFy = (float) playerY;
 	int playerWalkIndex;
 	int playerWhipping;
 	int playerPower = 16;
@@ -217,13 +216,13 @@ public class a extends GamePanel {
 		
 		for (z = 0; z < 256; z++) {
 			for (i = k = 0; i < SPRITES; i++) {
-				j = S.charAt(k++);
+				j = (int) S.charAt(k++);
                 int width = j >> 8;
                 int height = j & 0xFF;
 				alphaSprites[z][i] = new BufferedImage(width, height, 2);
 				for (y = 0; y < height; y++) {
                     if (width != 8 || (y & 1) == 0) {
-						j = S.charAt(k++);
+						j = (int) S.charAt(k++);
 					}
                     int[] pixels = new int[16];
                     for (x = 0; x < width; x++) {
@@ -244,12 +243,12 @@ public class a extends GamePanel {
 	public void paintComponent(Graphics g) {
 
 		
-		if (nextFrameStartTime - System.nanoTime() > 0) {
+		if (nextFrameStartTime - System.nanoTime() > 0L) {
 			return;
 		}
 
 		do {
-			nextFrameStartTime += 16666667;
+			nextFrameStartTime += 16666667L;
 
 			
 
@@ -288,14 +287,14 @@ public class a extends GamePanel {
 
 
                                     queue.add(head);
-                                    head[OBJ_X] = draculaX;
-                                    head[OBJ_Y] = 128;
-                                    head[OBJ_X1] = draculaReversed ? -2 : -6;
-                                    head[OBJ_Y1] = -10;
-                                    head[OBJ_X2] = head[OBJ_X1] + 8;
-                                    head[OBJ_SPRITE] = SPRITE_NONE;
-                                    head[OBJ_COLLIDES] = 1;
-                                    head[OBJ_TYPE] = TYPE_DRACULA_HEAD;
+                                    head[OBJ_X] = (float) draculaX;
+                                    head[OBJ_Y] = 128.0F;
+                                    head[OBJ_X1] = (float) (draculaReversed ? -2 : -6);
+                                    head[OBJ_Y1] = -10.0F;
+                                    head[OBJ_X2] = head[OBJ_X1] + 8.0F;
+                                    head[OBJ_SPRITE] = (float) SPRITE_NONE;
+                                    head[OBJ_COLLIDES] = 1.0F;
+                                    head[OBJ_TYPE] = (float) TYPE_DRACULA_HEAD;
                                 }
                             }
                             break;
@@ -309,20 +308,20 @@ public class a extends GamePanel {
                                 if (draculaPower >= 22 || (draculaPower > 10 && draculaPower < 16) || (draculaPower < 6)) {
                                     float[] fireball = new float[32];
                                     queue.add(fireball);
-                                    fireball[OBJ_X] = draculaX;
-                                    fireball[OBJ_Y] = 156 + (random.nextInt(2) << 3);
-                                    fireball[OBJ_DX] = -3;
-                                    fireball[OBJ_COLLIDES] = 1;
-                                    fireball[OBJ_X1] = -4;
-                                    fireball[OBJ_Y1] = 0;
-                                    fireball[OBJ_X2] = 3;
-                                    fireball[OBJ_Y2] = 5;
-                                    fireball[OBJ_SPRITE] = SPRITE_FIREBALL;
-                                    fireball[OBJ_TYPE] = TYPE_FIREBALL;
+                                    fireball[OBJ_X] = (float) draculaX;
+                                    fireball[OBJ_Y] = (float) (156 + (random.nextInt(2) << 3));
+                                    fireball[OBJ_DX] = -3.0F;
+                                    fireball[OBJ_COLLIDES] = 1.0F;
+                                    fireball[OBJ_X1] = -4.0F;
+                                    fireball[OBJ_Y1] = (float) 0;
+                                    fireball[OBJ_X2] = 3.0F;
+                                    fireball[OBJ_Y2] = 5.0F;
+                                    fireball[OBJ_SPRITE] = (float) SPRITE_FIREBALL;
+                                    fireball[OBJ_TYPE] = (float) TYPE_FIREBALL;
                                     fireball[OBJ_VX] = FIREBALL_SPEED;
                                     if (draculaReversed) {
-                                        fireball[OBJ_REVERSED] = 1;
-                                        fireball[OBJ_VX] *= -1;
+                                        fireball[OBJ_REVERSED] = 1.0F;
+                                        fireball[OBJ_VX] *= -1.0F;
                                     }
                                 }
 
@@ -332,15 +331,15 @@ public class a extends GamePanel {
                                     for (i = 0; i < 2; i++) {
                                         float[] igor = new float[32];
                                         queue.add(igor);
-                                        igor[OBJ_X] = j + (i << 7);
-                                        igor[OBJ_Y] = 64;
-                                        igor[OBJ_DX] = -8;
-                                        igor[OBJ_X1] = -8;
-                                        igor[OBJ_X2] = 7;
-                                        igor[OBJ_Y2] = 15;
-                                        igor[OBJ_COLLIDES] = 1;
-                                        igor[OBJ_SPRITE] = SPRITE_IGOR_1;
-                                        igor[OBJ_TYPE] = TYPE_IGOR;
+                                        igor[OBJ_X] = (float) (j + (i << 7));
+                                        igor[OBJ_Y] = 64.0F;
+                                        igor[OBJ_DX] = -8.0F;
+                                        igor[OBJ_X1] = -8.0F;
+                                        igor[OBJ_X2] = 7.0F;
+                                        igor[OBJ_Y2] = 15.0F;
+                                        igor[OBJ_COLLIDES] = 1.0F;
+                                        igor[OBJ_SPRITE] = (float) SPRITE_IGOR_1;
+                                        igor[OBJ_TYPE] = (float) TYPE_IGOR;
                                     }
                                 } else if (draculaPower <= 10) {
 
@@ -348,13 +347,13 @@ public class a extends GamePanel {
                                     for (i = 0; i < 4; i++) {
                                         float[] brick = new float[32];
                                         queue.add(brick);
-                                        brick[OBJ_X] = (j + (i << 2)) << 4;
-                                        brick[OBJ_Y] = 32;
-                                        brick[OBJ_X2] = 15;
-                                        brick[OBJ_Y2] = 15;
-                                        brick[OBJ_COLLIDES] = 1;
-                                        brick[OBJ_SPRITE] = SPRITE_BLOCK;
-                                        brick[OBJ_TYPE] = TYPE_BRICK;
+                                        brick[OBJ_X] = (float) ((j + (i << 2)) << 4);
+                                        brick[OBJ_Y] = 32.0F;
+                                        brick[OBJ_X2] = 15.0F;
+                                        brick[OBJ_Y2] = 15.0F;
+                                        brick[OBJ_COLLIDES] = 1.0F;
+                                        brick[OBJ_SPRITE] = (float) SPRITE_BLOCK;
+                                        brick[OBJ_TYPE] = (float) TYPE_BRICK;
                                     }
                                 }
                             }
@@ -394,10 +393,10 @@ public class a extends GamePanel {
                                 if ((draculaCounter & 7) == 7) {
                                     float[] flame = new float[32];
                                     queue.add(flame);
-                                    flame[OBJ_X] = 120 + random.nextInt(12);
-                                    flame[OBJ_Y] = 128 + random.nextInt(32);
-                                    flame[OBJ_SPRITE] = SPRITE_FLAME_1;
-                                    flame[OBJ_TYPE] = TYPE_FLAME;
+                                    flame[OBJ_X] = (float) (120 + random.nextInt(12));
+                                    flame[OBJ_Y] = (float) (128 + random.nextInt(32));
+                                    flame[OBJ_SPRITE] = (float) SPRITE_FLAME_1;
+                                    flame[OBJ_TYPE] = (float) TYPE_FLAME;
                                 }
                             } else if (queue.size() - crosses.size() == 0) {
 
@@ -419,13 +418,13 @@ public class a extends GamePanel {
 				playerVy += GRAVITY;
 				playerFy += playerVy;
 				playerY = (int) playerFy;
-				if (playerFy >= GROUND_Y) {
+				if (playerFy >= (float) GROUND_Y) {
 					playerJumping = false;
-					playerFy = playerY = GROUND_Y;
+					playerFy =  playerY = GROUND_Y;
 				}
 			} else {
 				if (jumpReleased && a[VK_JUMP] && !a[VK_DOWN] && playerWhipping == 0 && playerDead == 0) {
-					playerFy = playerY - 7;
+					playerFy = (float) (playerY - 7);
 					jumpReleased = false;
 					playerJumping = true;
 					playerVy = PLAYER_JUMP_SPEED;
@@ -437,10 +436,10 @@ public class a extends GamePanel {
 					
 					gameState = GAME_STATE_ENTRY;
 					playerX = 208;
-					playerFx = playerX;
-					playerVy = 0;
+					playerFx = (float) playerX;
+					playerVy = (float) 0;
 					playerY = GROUND_Y;
-					playerFy = playerY;
+					playerFy = (float) playerY;
 					playerWalkIndex = 0;
 					playerWhipping = 0;
 					playerPower = 16;
@@ -503,24 +502,24 @@ public class a extends GamePanel {
 						queue.add(cross);
 						crosses.add(cross);
 						if (playerReversed) {
-							cross[OBJ_X] = playerX;
+							cross[OBJ_X] = (float) playerX;
 							cross[OBJ_VX] = -CROSS_SPEED;
 						} else {
-							cross[OBJ_X] = playerX + 16;
+							cross[OBJ_X] = (float) (playerX + 16);
 							cross[OBJ_VX] = CROSS_SPEED;
 						}
-						if (cross[OBJ_X] <= 20 || cross[OBJ_X] >= 234) {
-							cross[OBJ_STATE] = CROSS_STATE_REVERSED;
+						if (cross[OBJ_X] <= 20.0F || cross[OBJ_X] >= 234.0F) {
+							cross[OBJ_STATE] = (float) CROSS_STATE_REVERSED;
 						}
-						cross[OBJ_Y] = playerY + (playerKneeling ? 16 : 8);
-						cross[OBJ_DX] = -8;
-						cross[OBJ_DY] = -7;
-						cross[OBJ_COLLIDES] = 1;
-						cross[OBJ_X1] = -2;
-						cross[OBJ_Y1] = -7;
-						cross[OBJ_X2] = 2;
-						cross[OBJ_Y2] = 7;
-						cross[OBJ_SPRITE] = SPRITE_CROSS;
+						cross[OBJ_Y] = (float) (playerY + (playerKneeling ? 16 : 8));
+						cross[OBJ_DX] = -8.0F;
+						cross[OBJ_DY] = -7.0F;
+						cross[OBJ_COLLIDES] = 1.0F;
+						cross[OBJ_X1] = -2.0F;
+						cross[OBJ_Y1] = -7.0F;
+						cross[OBJ_X2] = 2.0F;
+						cross[OBJ_Y2] = 7.0F;
+						cross[OBJ_SPRITE] = (float) SPRITE_CROSS;
 					}
 				} else if (whipReleased && a[VK_WHIP]) {
 					whipReleased = false;
@@ -566,7 +565,7 @@ public class a extends GamePanel {
 
 				
 				playerX1 = playerX + 2;
-				playerY1 = playerY + (playerKneeling || playerVy < 0 ? 8 : 0);
+				playerY1 = playerY + (playerKneeling || playerVy < (float) 0 ? 8 : 0);
 				playerX2 = playerX + 13;
 				playerY2 = playerY + 30;
 
@@ -593,77 +592,77 @@ public class a extends GamePanel {
 			
 			o: for (i = queue.size() - 1; i >= 0; i--) {
                 float[] object = queue.get(i);
-				if (object[OBJ_TYPE] == TYPE_CROSS) {
+				if (object[OBJ_TYPE] == (float) TYPE_CROSS) {
 					
 					object[OBJ_ANGLE] += object[OBJ_VX] * CROSS_RATIO;
 					object[OBJ_X] += object[OBJ_VX];
-					if (object[OBJ_STATE] == CROSS_STATE_FORWARD) {
-						if ((object[OBJ_VX] < 0 && object[OBJ_X] <= 20) || (object[OBJ_VX] > 0 && object[OBJ_X] >= 234)) {
-							object[OBJ_STATE] = CROSS_STATE_REVERSING;
+					if (object[OBJ_STATE] == (float) CROSS_STATE_FORWARD) {
+						if ((object[OBJ_VX] < (float) 0 && object[OBJ_X] <= 20.0F) || (object[OBJ_VX] > (float) 0 && object[OBJ_X] >= 234.0F)) {
+							object[OBJ_STATE] = (float) CROSS_STATE_REVERSING;
 						}
-					} else if (object[OBJ_STATE] == CROSS_STATE_REVERSING) {
-						if (object[OBJ_X] <= 20) {
+					} else if (object[OBJ_STATE] == (float) CROSS_STATE_REVERSING) {
+						if (object[OBJ_X] <= 20.0F) {
 							object[OBJ_VX] += CROSS_ACCELERATION;
-						} else if (object[OBJ_X] >= 234) {
+						} else if (object[OBJ_X] >= 234.0F) {
 							object[OBJ_VX] -= CROSS_ACCELERATION;
 						} else {
-							object[OBJ_STATE] = CROSS_STATE_REVERSED;
+							object[OBJ_STATE] = (float) CROSS_STATE_REVERSED;
 						}
 					} else {
-						if (object[OBJ_X] < -16 || object[OBJ_X] > 256) {
+						if (object[OBJ_X] < -16.0F || object[OBJ_X] > 256.0F) {
 							queue.remove(i);
 							crosses.remove(object);
 							continue;
 						}
 					}
-				} else if (object[OBJ_TYPE] == TYPE_FIREBALL) {
+				} else if (object[OBJ_TYPE] == (float) TYPE_FIREBALL) {
 					object[OBJ_X] += object[OBJ_VX];
-					if (object[OBJ_X] < -8 || object[OBJ_X] > 256) {
+					if (object[OBJ_X] < -8.0F || object[OBJ_X] > 256.0F) {
 						queue.remove(i);
 						continue;
 					}
-				} else if (object[OBJ_TYPE] == TYPE_FLAME) {
+				} else if (object[OBJ_TYPE] == (float) TYPE_FLAME) {
 					if ((counter & 7) == 7) {
-						if (++object[OBJ_COUNTER] > 8) {
+						if (++object[OBJ_COUNTER] > 8.0F) {
 							queue.remove(i);
 							continue;
 						}
-						if (++object[OBJ_SPRITE] > SPRITE_FLAME_3) {
-							object[OBJ_SPRITE] = SPRITE_FLAME_1;
+						if (++object[OBJ_SPRITE] > (float) SPRITE_FLAME_3) {
+							object[OBJ_SPRITE] = (float) SPRITE_FLAME_1;
 						}
 					}
 					object[OBJ_VY] += FLAME_ACCELERATION;
 					object[OBJ_Y] += object[OBJ_VY];
 					object[OBJ_X] += object[OBJ_VX];
-				} else if (object[OBJ_TYPE] == TYPE_BRICK) {
+				} else if (object[OBJ_TYPE] == (float) TYPE_BRICK) {
 					object[OBJ_VY] += GRAVITY;
 					object[OBJ_Y] += object[OBJ_VY];
-					if (object[OBJ_Y] >= 160) {
+					if (object[OBJ_Y] >= 160.0F) {
 						
 						queue.remove(i);
                         float[] flame = new float[32];
 						queue.add(flame);
-						flame[OBJ_X] = object[OBJ_X] + 4;
-						flame[OBJ_Y] = object[OBJ_Y] - 4;
-						flame[OBJ_SPRITE] = SPRITE_FLAME_1;
-						flame[OBJ_TYPE] = TYPE_FLAME;
+						flame[OBJ_X] = object[OBJ_X] + 4.0F;
+						flame[OBJ_Y] = object[OBJ_Y] - 4.0F;
+						flame[OBJ_SPRITE] = (float) SPRITE_FLAME_1;
+						flame[OBJ_TYPE] = (float) TYPE_FLAME;
 						continue;
 					}
-				} else if (object[OBJ_TYPE] == TYPE_IGOR) {
+				} else if (object[OBJ_TYPE] == (float) TYPE_IGOR) {
 					object[OBJ_VY] += GRAVITY;
 					object[OBJ_Y] += object[OBJ_VY];
-					if (object[OBJ_Y] >= 160) {
-						object[OBJ_Y] = 160;
+					if (object[OBJ_Y] >= 160.0F) {
+						object[OBJ_Y] = 160.0F;
 					}
-					if (object[OBJ_Y] == 160) {
+					if (object[OBJ_Y] == 160.0F) {
 						if ((counter & 31) == 0) {
-							object[OBJ_SPRITE] = object[OBJ_SPRITE] == SPRITE_IGOR_1 ? SPRITE_IGOR_2 : SPRITE_IGOR_1;
+							object[OBJ_SPRITE] = (float) (object[OBJ_SPRITE] == (float) SPRITE_IGOR_1 ? SPRITE_IGOR_2 : SPRITE_IGOR_1);
 						}
-						object[OBJ_REVERSED] = object[OBJ_X] > playerX ? 1 : 0;
-						if (object[OBJ_COUNTER]-- == 0) {
-							object[OBJ_COUNTER] = 32 + random.nextInt(64);
-							object[OBJ_VY] = random.nextBoolean() ? IGOR_JUMP_SPEED_1 : IGOR_JUMP_SPEED_2;
-							object[OBJ_VX] = (object[OBJ_X] > playerX) ? -IGOR_SPEED : IGOR_SPEED;
+						object[OBJ_REVERSED] = (float) (object[OBJ_X] > (float) playerX ? 1 : 0);
+						if (object[OBJ_COUNTER]-- == (float) 0) {
+							object[OBJ_COUNTER] = (float) (32 + random.nextInt(64));
+							object[OBJ_VY] = (float) (random.nextBoolean() ? IGOR_JUMP_SPEED_1 : IGOR_JUMP_SPEED_2);
+							object[OBJ_VX] = (float) ((object[OBJ_X] > (float) playerX) ? -IGOR_SPEED : IGOR_SPEED);
 						}
 					} else {
 						object[OBJ_X] += object[OBJ_VX];
@@ -671,12 +670,12 @@ public class a extends GamePanel {
 				}
 
 				if (!playerHurt && draculaPower > 0) {
-					if (object[OBJ_COLLIDES] == 1) {
+					if (object[OBJ_COLLIDES] == 1.0F) {
 						
-						if (playerX2 >= object[OBJ_X] + object[OBJ_X1] && playerX1 <= object[OBJ_X] + object[OBJ_X2] && playerY2 >= object[OBJ_Y] + object[OBJ_Y1]
-								&& playerY1 <= object[OBJ_Y] + object[OBJ_Y2]) {
-							if (object[OBJ_TYPE] == TYPE_CROSS) {
-								if (object[OBJ_STATE] == CROSS_STATE_REVERSED) {
+						if ((float) playerX2 >= object[OBJ_X] + object[OBJ_X1] && (float) playerX1 <= object[OBJ_X] + object[OBJ_X2] && (float) playerY2 >= object[OBJ_Y] + object[OBJ_Y1]
+								&& (float) playerY1 <= object[OBJ_Y] + object[OBJ_Y2]) {
+							if (object[OBJ_TYPE] == (float) TYPE_CROSS) {
+								if (object[OBJ_STATE] == (float) CROSS_STATE_REVERSED) {
 									crosses.remove(object);
 									queue.remove(i);
 								}
@@ -684,7 +683,7 @@ public class a extends GamePanel {
 								if (playerStunned == 0) {
 									boolean b = false;
 									for (int v : new int[]{TYPE_FIREBALL, TYPE_BRICK, TYPE_IGOR}) {
-										if (object[OBJ_TYPE] == v) {
+										if (object[OBJ_TYPE] == (float) v) {
 											b = true;
 											break;
 										}
@@ -693,10 +692,10 @@ public class a extends GamePanel {
 										queue.remove(i);
                                         float[] flame = new float[32];
 										queue.add(flame);
-										flame[OBJ_X] = object[OBJ_X] + object[OBJ_X1] + ((object[OBJ_X2] - object[OBJ_X1] - 8) / 2);
-										flame[OBJ_Y] = object[OBJ_Y] + object[OBJ_Y1] + ((object[OBJ_Y2] - object[OBJ_Y1] - 24) / 2);
-										flame[OBJ_SPRITE] = SPRITE_FLAME_1;
-										flame[OBJ_TYPE] = TYPE_FLAME;
+										flame[OBJ_X] = object[OBJ_X] + object[OBJ_X1] + ((object[OBJ_X2] - object[OBJ_X1] - 8.0F) / 2.0F);
+										flame[OBJ_Y] = object[OBJ_Y] + object[OBJ_Y1] + ((object[OBJ_Y2] - object[OBJ_Y1] - 24.0F) / 2.0F);
+										flame[OBJ_SPRITE] = (float) SPRITE_FLAME_1;
+										flame[OBJ_TYPE] = (float) TYPE_FLAME;
 
 										playerPower -= 2;
 										playerHurt = true;
@@ -709,11 +708,11 @@ public class a extends GamePanel {
 						}
 
 						
-						if (playerWhipping > 0 && playerWhipping <= WHIP_EXTENDED && !playerThrowing && whipX2 >= object[OBJ_X] + object[OBJ_X1] && whipX1 <= object[OBJ_X] + object[OBJ_X2]
-								&& whipY2 >= object[OBJ_Y] + object[OBJ_Y1] && whipY1 <= object[OBJ_Y] + object[OBJ_Y2]) {
+						if (playerWhipping > 0 && playerWhipping <= WHIP_EXTENDED && !playerThrowing && (float) whipX2 >= object[OBJ_X] + object[OBJ_X1] && (float) whipX1 <= object[OBJ_X] + object[OBJ_X2]
+								&& (float) whipY2 >= object[OBJ_Y] + object[OBJ_Y1] && (float) whipY1 <= object[OBJ_Y] + object[OBJ_Y2]) {
 							boolean b = false;
 							for (int v : new int[]{TYPE_FIREBALL, TYPE_DRACULA_HEAD, TYPE_IGOR}) {
-								if (object[OBJ_TYPE] == v) {
+								if (object[OBJ_TYPE] == (float) v) {
 									b = true;
 									break;
 								}
@@ -722,11 +721,11 @@ public class a extends GamePanel {
 								queue.remove(i);
                                 float[] flame = new float[32];
 								queue.add(flame);
-								flame[OBJ_X] = object[OBJ_X] + object[OBJ_X1] + ((object[OBJ_X2] - object[OBJ_X1] - 8) / 2);
-								flame[OBJ_Y] = object[OBJ_Y] + object[OBJ_Y1] + ((object[OBJ_Y2] - object[OBJ_Y1] - 24) / 2);
-								flame[OBJ_SPRITE] = SPRITE_FLAME_1;
-								flame[OBJ_TYPE] = TYPE_FLAME;
-								if (object[OBJ_TYPE] == TYPE_DRACULA_HEAD) {
+								flame[OBJ_X] = object[OBJ_X] + object[OBJ_X1] + ((object[OBJ_X2] - object[OBJ_X1] - 8.0F) / 2.0F);
+								flame[OBJ_Y] = object[OBJ_Y] + object[OBJ_Y1] + ((object[OBJ_Y2] - object[OBJ_Y1] - 24.0F) / 2.0F);
+								flame[OBJ_SPRITE] = (float) SPRITE_FLAME_1;
+								flame[OBJ_TYPE] = (float) TYPE_FLAME;
+								if (object[OBJ_TYPE] == (float) TYPE_DRACULA_HEAD) {
 									draculaPower--;
 								}
 								continue;
@@ -736,7 +735,7 @@ public class a extends GamePanel {
 
 						boolean b = false;
 						for (int v : new int[]{TYPE_FIREBALL, TYPE_DRACULA_HEAD, TYPE_IGOR}) {
-							if (object[OBJ_TYPE] == v) {
+							if (object[OBJ_TYPE] == (float) v) {
 								b = true;
 								break;
 							}
@@ -749,11 +748,11 @@ public class a extends GamePanel {
 									queue.remove(i);
                                     float[] flame = new float[32];
 									queue.add(flame);
-									flame[OBJ_X] = object[OBJ_X] + object[OBJ_X1] + ((object[OBJ_X2] - object[OBJ_X1] - 8) / 2);
-									flame[OBJ_Y] = object[OBJ_Y] + object[OBJ_Y1] + ((object[OBJ_Y2] - object[OBJ_Y1] - 24) / 2);
-									flame[OBJ_SPRITE] = SPRITE_FLAME_1;
-									flame[OBJ_TYPE] = TYPE_FLAME;
-									if (object[OBJ_TYPE] == TYPE_DRACULA_HEAD) {
+									flame[OBJ_X] = object[OBJ_X] + object[OBJ_X1] + ((object[OBJ_X2] - object[OBJ_X1] - 8.0F) / 2.0F);
+									flame[OBJ_Y] = object[OBJ_Y] + object[OBJ_Y1] + ((object[OBJ_Y2] - object[OBJ_Y1] - 24.0F) / 2.0F);
+									flame[OBJ_SPRITE] = (float) SPRITE_FLAME_1;
+									flame[OBJ_TYPE] = (float) TYPE_FLAME;
+									if (object[OBJ_TYPE] == (float) TYPE_DRACULA_HEAD) {
 										draculaPower--;
 									}
 									continue o;
@@ -779,7 +778,7 @@ public class a extends GamePanel {
 			
 			offscreenGraphics.translate(draculaX, 128);
 			if (draculaReversed) {
-				offscreenGraphics.scale(-1, 1);
+				offscreenGraphics.scale(-1.0, 1.0);
 			}
 
 			offscreenGraphics.drawImage(sprites[SPRITE_DRACULA_2], 0, 0, null);
@@ -820,7 +819,7 @@ public class a extends GamePanel {
 		
 		offscreenGraphics.drawRect(128, 8, 31, 21);
 		offscreenGraphics.drawRect(129, 9, 29, 19);
-		offscreenGraphics.rotate(1.1f);
+		offscreenGraphics.rotate(1.1);
 		offscreenGraphics.drawImage(sprites[SPRITE_CROSS], 74, -127, null);
 		offscreenGraphics.setTransform(affineTransform);
 
@@ -850,7 +849,7 @@ public class a extends GamePanel {
 		
 		offscreenGraphics.translate(playerX + 8, playerY);
 		if (playerReversed) {
-			offscreenGraphics.scale(-1, 1);
+			offscreenGraphics.scale(-1.0, 1.0);
 		}
 
 		
@@ -865,7 +864,7 @@ public class a extends GamePanel {
 		} else if (playerHurt) {
 			offscreenGraphics.drawImage(sprites[SPRITE_PLAYER_HURT], -8, 0, null);
 		} else if (playerWhipping > 0) {
-			if (playerKneeling || (playerJumping && playerVy < 0)) {
+			if (playerKneeling || (playerJumping && playerVy < (float) 0)) {
 				offscreenGraphics.drawImage(sprites2[SPRITE_KNEELING], -8, 23, null);
 				offscreenGraphics.translate(0, 7);
 			} else {
@@ -896,7 +895,7 @@ public class a extends GamePanel {
 				offscreenGraphics.translate(0, -7);
 			}
 		} else {
-			if (playerKneeling || (playerJumping && playerVy < 0)) {
+			if (playerKneeling || (playerJumping && playerVy < (float) 0)) {
 				offscreenGraphics.drawImage(sprites2[SPRITE_BODY_1], -8, 7, null);
 				offscreenGraphics.drawImage(sprites2[SPRITE_KNEELING], -8, 23, null);
 			} else {
@@ -910,14 +909,14 @@ public class a extends GamePanel {
 		
 		for (i = 0; i < queue.size(); i++) {
             float[] object = queue.get(i);
-			if (object[OBJ_SPRITE] >= 0) {
+			if (object[OBJ_SPRITE] >= (float) 0) {
 				offscreenGraphics.translate((int) object[OBJ_X], (int) object[OBJ_Y]);
 
-				if (object[OBJ_REVERSED] == 1) {
-					offscreenGraphics.scale(-1, 1);
+				if (object[OBJ_REVERSED] == 1.0F) {
+					offscreenGraphics.scale(-1.0, 1.0);
 				}
-				if (object[OBJ_ANGLE] != 0) {
-					offscreenGraphics.rotate(object[OBJ_ANGLE]);
+				if (object[OBJ_ANGLE] != (float) 0) {
+					offscreenGraphics.rotate((double) object[OBJ_ANGLE]);
 				}
 				offscreenGraphics.drawImage(sprites[(int) object[OBJ_SPRITE]], (int) object[OBJ_DX], (int) object[OBJ_DY], null);
 				offscreenGraphics.setTransform(affineTransform);

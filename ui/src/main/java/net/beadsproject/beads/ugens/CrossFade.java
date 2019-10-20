@@ -58,8 +58,8 @@ public class CrossFade extends UGen {
             outgoing = incoming;
             incoming = target;
             if (incoming == null) incoming = new Static(context, 0f);
-            crossfadeTimeSamps = context.msToSamples(crossfadeTimeMS);
-            currentTimeSamps = 0;
+            crossfadeTimeSamps = context.msToSamples((double) crossfadeTimeMS);
+            currentTimeSamps = 0L;
         }
     }
 
@@ -91,12 +91,12 @@ public class CrossFade extends UGen {
         incoming.update();
         if (outgoing != null) outgoing.update();
         for (int j = 0; j < bufferSize; j++) {
-            if (currentTimeSamps >= crossfadeTimeSamps) {
+            if ((double) currentTimeSamps >= crossfadeTimeSamps) {
                 for (int i = 0; i < outs; i++) {
                     bufOut[i][j] = incoming.getValue(i, j);
                 }
             } else {
-                float incomingLevel = (float) (currentTimeSamps / crossfadeTimeSamps);
+                float incomingLevel = (float) ((double) currentTimeSamps / crossfadeTimeSamps);
                 float outgoingLevel = 1f - incomingLevel;
                 for (int i = 0; i < outs; i++) {
                     bufOut[i][j] = incomingLevel * incoming.getValue(i, j) +
@@ -105,7 +105,7 @@ public class CrossFade extends UGen {
                 currentTimeSamps++;
             }
         }
-        if (currentTimeSamps >= crossfadeTimeSamps && pauseAfterComplete && outgoing != null) {
+        if ((double) currentTimeSamps >= crossfadeTimeSamps && pauseAfterComplete && outgoing != null) {
             outgoing.pause(true);
             outgoing = null;
         }

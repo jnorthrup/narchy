@@ -35,20 +35,20 @@ public class TemporalConstraints<E> {
 
 
     
-    static final short bin_before = 1;
-    private static final short bin_after = 2;
-    private static final short bin_during = 4;
-    static final short bin_contains = 8;
-    static final short bin_overlaps = 16;
-    private static final short bin_overlappedby = 32;
-    static final short bin_meets = 64;
-    private static final short bin_metby = 128;
-    static final short bin_starts = 256;
-    private static final short bin_startedby = 512;
-    static final short bin_finishes = 1024;
-    private static final short bin_finishedby = 2048;
-    static final short bin_equals = 4096;
-    private static final short bin_all = (bin_before | bin_after | bin_during | bin_contains | bin_overlaps | bin_overlappedby | bin_meets | bin_metby | bin_starts | bin_startedby | bin_finishes | bin_finishedby | bin_equals);
+    static final short bin_before = (short) 1;
+    private static final short bin_after = (short) 2;
+    private static final short bin_during = (short) 4;
+    static final short bin_contains = (short) 8;
+    static final short bin_overlaps = (short) 16;
+    private static final short bin_overlappedby = (short) 32;
+    static final short bin_meets = (short) 64;
+    private static final short bin_metby = (short) 128;
+    static final short bin_starts = (short) 256;
+    private static final short bin_startedby = (short) 512;
+    static final short bin_finishes = (short) 1024;
+    private static final short bin_finishedby = (short) 2048;
+    static final short bin_equals = (short) 4096;
+    private static final short bin_all = (short) ((int) bin_before | (int) bin_after | (int) bin_during | (int) bin_contains | (int) bin_overlaps | (int) bin_overlappedby | (int) bin_meets | (int) bin_metby | (int) bin_starts | (int) bin_startedby | (int) bin_finishes | (int) bin_finishedby | (int) bin_equals);
     
     private static final String str_before = "before";
     private static final String str_after = "after";
@@ -67,41 +67,41 @@ public class TemporalConstraints<E> {
     private static final String str_equals = "equals";
     private static final short[][] transitivematrixshort = {
             
-            {bin_before, bin_all, bin_before | bin_overlaps | bin_meets | bin_during | bin_starts, bin_before, bin_before, bin_before | bin_overlaps | bin_meets | bin_during | bin_starts, bin_before, bin_before | bin_overlaps | bin_meets | bin_during | bin_starts, bin_before, bin_before, bin_before | bin_overlaps | bin_meets | bin_during | bin_starts, bin_before, bin_before},
+            {bin_before, bin_all, (short) (bin_before | (int) bin_overlaps | (int) bin_meets | (int) bin_during | (int) bin_starts), bin_before, bin_before, (short) (bin_before | (int) bin_overlaps | (int) bin_meets | (int) bin_during | (int) bin_starts), bin_before, (short) (bin_before | (int) bin_overlaps | (int) bin_meets | (int) bin_during | (int) bin_starts), bin_before, bin_before, (short) (bin_before | (int) bin_overlaps | (int) bin_meets | (int) bin_during | (int) bin_starts), bin_before, bin_before},
             
 
             
-            {bin_all, bin_after, bin_after | bin_overlappedby | bin_metby | bin_during | bin_finishes, bin_after, bin_after | bin_overlappedby | bin_metby | bin_during | bin_finishes, bin_after, bin_after | bin_overlappedby | bin_metby | bin_during | bin_finishes, bin_after, bin_after | bin_overlappedby | bin_metby | bin_during | bin_finishes, bin_after, bin_after, bin_after, bin_after},
+            {bin_all, bin_after, (short) (bin_after | (int) bin_overlappedby | (int) bin_metby | (int) bin_during | (int) bin_finishes), bin_after, (short) (bin_after | (int) bin_overlappedby | (int) bin_metby | (int) bin_during | (int) bin_finishes), bin_after, (short) (bin_after | (int) bin_overlappedby | (int) bin_metby | (int) bin_during | (int) bin_finishes), bin_after, (short) (bin_after | (int) bin_overlappedby | (int) bin_metby | (int) bin_during | (int) bin_finishes), bin_after, bin_after, bin_after, bin_after},
             
             
-            {bin_before, bin_after, bin_during, bin_all, bin_before | bin_overlaps | bin_meets | bin_during | bin_starts, bin_after | bin_overlappedby | bin_metby | bin_during | bin_finishes, bin_before, bin_after, bin_during, bin_after | bin_overlappedby | bin_metby | bin_during | bin_finishes, bin_during, bin_before | bin_overlaps | bin_meets | bin_during | bin_starts, bin_during},
+            {bin_before, bin_after, bin_during, bin_all, (short) (bin_before | (int) bin_overlaps | (int) bin_meets | (int) bin_during | (int) bin_starts), (short) (bin_after | (int) bin_overlappedby | (int) bin_metby | (int) bin_during | (int) bin_finishes), bin_before, bin_after, bin_during, (short) (bin_after | (int) bin_overlappedby | (int) bin_metby | (int) bin_during | (int) bin_finishes), bin_during, (short) (bin_before | (int) bin_overlaps | (int) bin_meets | (int) bin_during | (int) bin_starts), bin_during},
 
             
-            {bin_before | bin_overlaps | bin_meets | bin_contains | bin_finishedby, bin_after | bin_overlappedby | bin_contains | bin_metby | bin_startedby, bin_overlaps | bin_overlappedby | bin_during | bin_contains | bin_equals | bin_starts | bin_startedby | bin_finishes | bin_finishedby, bin_contains, bin_overlaps | bin_contains | bin_finishedby, bin_overlappedby | bin_contains | bin_startedby, bin_overlaps | bin_contains | bin_finishedby, bin_overlappedby | bin_contains | bin_startedby, bin_contains | bin_finishedby | bin_overlaps, bin_contains, bin_contains | bin_startedby | bin_overlappedby, bin_contains, bin_contains},
+            {(short) (bin_before | (int) bin_overlaps | (int) bin_meets | (int) bin_contains | (int) bin_finishedby), (short) (bin_after | (int) bin_overlappedby | (int) bin_contains | (int) bin_metby | (int) bin_startedby), (short) (bin_overlaps | (int) bin_overlappedby | (int) bin_during | (int) bin_contains | (int) bin_equals | (int) bin_starts | (int) bin_startedby | (int) bin_finishes | (int) bin_finishedby), bin_contains, (short) (bin_overlaps | (int) bin_contains | (int) bin_finishedby), (short) (bin_overlappedby | (int) bin_contains | (int) bin_startedby), (short) (bin_overlaps | (int) bin_contains | (int) bin_finishedby), (short) (bin_overlappedby | (int) bin_contains | (int) bin_startedby), (short) (bin_contains | (int) bin_finishedby | (int) bin_overlaps), bin_contains, (short) (bin_contains | (int) bin_startedby | (int) bin_overlappedby), bin_contains, bin_contains},
 
             
-            {bin_before, bin_after | bin_overlappedby | bin_contains | bin_metby | bin_startedby, bin_overlaps | bin_during | bin_starts, bin_before | bin_overlaps | bin_meets | bin_contains | bin_finishedby, bin_before | bin_overlaps | bin_meets, bin_overlaps | bin_overlappedby | bin_during | bin_contains | bin_equals | bin_starts | bin_startedby | bin_finishes | bin_finishedby, bin_before, bin_overlappedby | bin_contains | bin_startedby, bin_overlaps, bin_contains | bin_finishedby | bin_overlaps, bin_during | bin_starts | bin_overlaps, bin_before | bin_overlaps | bin_meets, bin_overlaps},
+            {bin_before, (short) (bin_after | (int) bin_overlappedby | (int) bin_contains | (int) bin_metby | (int) bin_startedby), (short) (bin_overlaps | (int) bin_during | (int) bin_starts), (short) (bin_before | (int) bin_overlaps | (int) bin_meets | (int) bin_contains | (int) bin_finishedby), (short) (bin_before | (int) bin_overlaps | (int) bin_meets), (short) (bin_overlaps | (int) bin_overlappedby | (int) bin_during | (int) bin_contains | (int) bin_equals | (int) bin_starts | (int) bin_startedby | (int) bin_finishes | (int) bin_finishedby), bin_before, (short) (bin_overlappedby | (int) bin_contains | (int) bin_startedby), bin_overlaps, (short) (bin_contains | (int) bin_finishedby | (int) bin_overlaps), (short) (bin_during | (int) bin_starts | (int) bin_overlaps), (short) (bin_before | (int) bin_overlaps | (int) bin_meets), bin_overlaps},
 
             
-            {bin_before | bin_overlaps | bin_meets | bin_contains | bin_finishedby, bin_after, bin_overlappedby | bin_during | bin_finishes, bin_after | bin_overlappedby | bin_metby | bin_contains | bin_startedby, bin_overlaps | bin_overlappedby | bin_during | bin_contains | bin_equals | bin_starts | bin_startedby | bin_finishes | bin_finishedby, bin_after | bin_overlappedby | bin_metby, bin_overlaps | bin_contains | bin_finishedby, bin_after, bin_overlappedby | bin_during | bin_finishes, bin_overlappedby | bin_after | bin_metby, bin_overlappedby, bin_overlappedby | bin_contains | bin_startedby, bin_overlappedby},
+            {(short) (bin_before | (int) bin_overlaps | (int) bin_meets | (int) bin_contains | (int) bin_finishedby), bin_after, (short) (bin_overlappedby | (int) bin_during | (int) bin_finishes), (short) (bin_after | (int) bin_overlappedby | (int) bin_metby | (int) bin_contains | (int) bin_startedby), (short) (bin_overlaps | (int) bin_overlappedby | (int) bin_during | (int) bin_contains | (int) bin_equals | (int) bin_starts | (int) bin_startedby | (int) bin_finishes | (int) bin_finishedby), (short) (bin_after | (int) bin_overlappedby | (int) bin_metby), (short) (bin_overlaps | (int) bin_contains | (int) bin_finishedby), bin_after, (short) (bin_overlappedby | (int) bin_during | (int) bin_finishes), (short) (bin_overlappedby | (int) bin_after | (int) bin_metby), bin_overlappedby, (short) (bin_overlappedby | (int) bin_contains | (int) bin_startedby), bin_overlappedby},
 
             
-            {bin_before, bin_after | bin_overlappedby | bin_metby | bin_contains | bin_startedby, bin_overlaps | bin_during | bin_starts, bin_before, bin_before, bin_overlaps | bin_during | bin_starts, bin_before, bin_finishes | bin_finishedby | bin_equals, bin_meets, bin_meets, bin_during | bin_starts | bin_overlaps, bin_before, bin_meets},
+            {bin_before, (short) (bin_after | (int) bin_overlappedby | (int) bin_metby | (int) bin_contains | (int) bin_startedby), (short) (bin_overlaps | (int) bin_during | (int) bin_starts), bin_before, bin_before, (short) (bin_overlaps | (int) bin_during | (int) bin_starts), bin_before, (short) (bin_finishes | (int) bin_finishedby | (int) bin_equals), bin_meets, bin_meets, (short) (bin_during | (int) bin_starts | (int) bin_overlaps), bin_before, bin_meets},
 
             
-            {bin_before | bin_overlaps | bin_meets | bin_contains | bin_finishedby, bin_after, bin_overlappedby | bin_during | bin_finishes, bin_after, bin_overlappedby | bin_during | bin_finishes, bin_after, bin_starts | bin_startedby | bin_equals, bin_after, bin_during | bin_finishes | bin_overlappedby, bin_after, bin_metby, bin_metby, bin_metby},
+            {(short) (bin_before | (int) bin_overlaps | (int) bin_meets | (int) bin_contains | (int) bin_finishedby), bin_after, (short) (bin_overlappedby | (int) bin_during | (int) bin_finishes), bin_after, (short) (bin_overlappedby | (int) bin_during | (int) bin_finishes), bin_after, (short) (bin_starts | (int) bin_startedby | (int) bin_equals), bin_after, (short) (bin_during | (int) bin_finishes | (int) bin_overlappedby), bin_after, bin_metby, bin_metby, bin_metby},
 
             
-            {bin_before, bin_after, bin_during, bin_before | bin_overlaps | bin_meets | bin_contains | bin_finishedby, bin_before | bin_overlaps | bin_meets, bin_overlappedby | bin_during | bin_finishes, bin_before, bin_metby, bin_starts, bin_starts | bin_startedby | bin_equals, bin_during, bin_before | bin_meets | bin_overlaps, bin_starts},
+            {bin_before, bin_after, bin_during, (short) (bin_before | (int) bin_overlaps | (int) bin_meets | (int) bin_contains | (int) bin_finishedby), (short) (bin_before | (int) bin_overlaps | (int) bin_meets), (short) (bin_overlappedby | (int) bin_during | (int) bin_finishes), bin_before, bin_metby, bin_starts, (short) (bin_starts | (int) bin_startedby | (int) bin_equals), bin_during, (short) (bin_before | (int) bin_meets | (int) bin_overlaps), bin_starts},
 
             
-            {bin_before | bin_overlaps | bin_meets | bin_contains | bin_finishedby, bin_after, bin_overlappedby | bin_during | bin_finishes, bin_contains, bin_overlaps | bin_contains | bin_finishedby, bin_overlappedby, bin_overlaps | bin_contains | bin_finishedby, bin_metby, bin_starts | bin_startedby | bin_equals, bin_startedby, bin_overlappedby, bin_contains, bin_startedby},
+            {(short) (bin_before | (int) bin_overlaps | (int) bin_meets | (int) bin_contains | (int) bin_finishedby), bin_after, (short) (bin_overlappedby | (int) bin_during | (int) bin_finishes), bin_contains, (short) (bin_overlaps | (int) bin_contains | (int) bin_finishedby), bin_overlappedby, (short) (bin_overlaps | (int) bin_contains | (int) bin_finishedby), bin_metby, (short) (bin_starts | (int) bin_startedby | (int) bin_equals), bin_startedby, bin_overlappedby, bin_contains, bin_startedby},
 
             
-            {bin_before, bin_after, bin_during, bin_after | bin_overlappedby | bin_metby | bin_contains | bin_startedby, bin_overlaps | bin_during | bin_starts, bin_after | bin_overlappedby | bin_metby, bin_meets, bin_after, bin_during, bin_after | bin_overlappedby | bin_metby, bin_finishes, bin_finishes | bin_finishedby | bin_equals, bin_finishes},
+            {bin_before, bin_after, bin_during, (short) (bin_after | (int) bin_overlappedby | (int) bin_metby | (int) bin_contains | (int) bin_startedby), (short) (bin_overlaps | (int) bin_during | (int) bin_starts), (short) (bin_after | (int) bin_overlappedby | (int) bin_metby), bin_meets, bin_after, bin_during, (short) (bin_after | (int) bin_overlappedby | (int) bin_metby), bin_finishes, (short) (bin_finishes | (int) bin_finishedby | (int) bin_equals), bin_finishes},
 
             
-            {bin_before, bin_after | bin_overlappedby | bin_metby | bin_contains | bin_startedby, bin_overlaps | bin_during | bin_starts, bin_contains, bin_overlaps, bin_overlappedby | bin_contains | bin_startedby, bin_meets, bin_startedby | bin_overlappedby | bin_contains, bin_overlaps, bin_contains, bin_finishes | bin_finishedby | bin_equals, bin_finishedby, bin_finishedby},
+            {bin_before, (short) (bin_after | (int) bin_overlappedby | (int) bin_metby | (int) bin_contains | (int) bin_startedby), (short) (bin_overlaps | (int) bin_during | (int) bin_starts), bin_contains, bin_overlaps, (short) (bin_overlappedby | (int) bin_contains | (int) bin_startedby), bin_meets, (short) (bin_startedby | (int) bin_overlappedby | (int) bin_contains), bin_overlaps, bin_contains, (short) (bin_finishes | (int) bin_finishedby | (int) bin_equals), bin_finishedby, bin_finishedby},
 
             
             {bin_before, bin_after, bin_during, bin_contains, bin_overlaps, bin_overlappedby, bin_meets, bin_metby, bin_starts, bin_startedby, bin_finishes, bin_finishedby, bin_equals},
@@ -303,15 +303,15 @@ public class TemporalConstraints<E> {
                 
                 short ckiij = collectConstraintsShort(cki, cij);
 
-                ckj &= ckiij;
+                ckj = (short) ((int) ckj & (int) ckiij);
                 
-                if (ckj == 0) {
+                if ((int) ckj == 0) {
                     return false;
                 }
 
 
                 short ckjtemp = cnk.get(j);
-                if ((ckj != ckjtemp && (ckjtemp & ckj) == ckj)) {
+                if (((int) ckj != (int) ckjtemp && ((int) ckjtemp & (int) ckj) == (int) ckj)) {
 
                     
                     if ((!stack.get(k).get(j))) {  
@@ -336,16 +336,16 @@ public class TemporalConstraints<E> {
                 
                 short cijjk = collectConstraintsShort(cij, cjk);
 
-                cik &= cijjk;
+                cik = (short) ((int) cik & (int) cijjk);
                 
-                if (cik == 0) {
+                if ((int) cik == 0) {
 
                     return false;
                 }
 
 
                 short ciktemp = ci.get(k);
-                if ((cik != ciktemp && (ciktemp & cik) == cik)) {
+                if (((int) cik != (int) ciktemp && ((int) ciktemp & (int) cik) == (int) cik)) {
 
                     if ((!stack.get(i).get(k))) {  
                         
@@ -387,23 +387,23 @@ public class TemporalConstraints<E> {
      */
 
     private static Short collectConstraintsShort(Short c1, Short c2) {
-        short result = 0;
+        short result = (short) 0;
         
         for (int i = 0; i < 14; i++) {
 
             short c1select = (short) (1 << i);
             
-            if ((short) (c1 & c1select) == c1select) { 
+            if ((int) (short) (c1 & (int) c1select) == (int) c1select) {
                 for (int j = 0; j < 14; j++) {
 
                     short c2select = (short) (1 << j);
                     
-                    if ((short) (c2 & c2select) == c2select) {
+                    if ((int) (short) (c2 & (int) c2select) == (int) c2select) {
 
                         short constraints = transitivematrixshort[i][j];
 
-                        result |= constraints;
-                        if ((result & bin_all) == bin_all) {
+                        result = (short) ((int) result | (int) constraints);
+                        if (((int) result & (int) bin_all) == (int) bin_all) {
                             return result; 
                         }
                     }
@@ -424,33 +424,33 @@ public class TemporalConstraints<E> {
 
     private static short inverseConstraintsShort(Short c) {
         
-        short result = 0;
+        short result = (short) 0;
         
-        if ((short) (c & bin_before) == bin_before) result |= bin_after;
+        if ((int) (short) (c & (int) bin_before) == (int) bin_before) result = (short) ((int) result | (int) bin_after);
         
-        if ((short) (c & bin_after) == bin_after) result |= bin_before;
+        if ((int) (short) (c & (int) bin_after) == (int) bin_after) result = (short) ((int) result | (int) bin_before);
         
-        if ((short) (c & bin_during) == bin_during) result |= bin_contains;
+        if ((int) (short) (c & (int) bin_during) == (int) bin_during) result = (short) ((int) result | (int) bin_contains);
         
-        if ((short) (c & bin_contains) == bin_contains) result |= bin_during;
+        if ((int) (short) (c & (int) bin_contains) == (int) bin_contains) result = (short) ((int) result | (int) bin_during);
         
-        if ((short) (c & bin_overlaps) == bin_overlaps) result |= bin_overlappedby;
+        if ((int) (short) (c & (int) bin_overlaps) == (int) bin_overlaps) result = (short) ((int) result | (int) bin_overlappedby);
         
-        if ((short) (c & bin_overlappedby) == bin_overlappedby) result |= bin_overlaps;
+        if ((int) (short) (c & (int) bin_overlappedby) == (int) bin_overlappedby) result = (short) ((int) result | (int) bin_overlaps);
         
-        if ((short) (c & bin_meets) == bin_meets) result |= bin_metby;
+        if ((int) (short) (c & (int) bin_meets) == (int) bin_meets) result = (short) ((int) result | (int) bin_metby);
         
-        if ((short) (c & bin_metby) == bin_metby) result |= bin_meets;
+        if ((int) (short) (c & (int) bin_metby) == (int) bin_metby) result = (short) ((int) result | (int) bin_meets);
         
-        if ((short) (c & bin_starts) == bin_starts) result |= bin_startedby;
+        if ((int) (short) (c & (int) bin_starts) == (int) bin_starts) result = (short) ((int) result | (int) bin_startedby);
         
-        if ((short) (c & bin_startedby) == bin_startedby) result |= bin_starts;
+        if ((int) (short) (c & (int) bin_startedby) == (int) bin_startedby) result = (short) ((int) result | (int) bin_starts);
         
-        if ((short) (c & bin_finishes) == bin_finishes) result |= bin_finishedby;
+        if ((int) (short) (c & (int) bin_finishes) == (int) bin_finishes) result = (short) ((int) result | (int) bin_finishedby);
         
-        if ((short) (c & bin_finishedby) == bin_finishedby) result |= bin_finishes;
+        if ((int) (short) (c & (int) bin_finishedby) == (int) bin_finishedby) result = (short) ((int) result | (int) bin_finishes);
         
-        if ((short) (c & bin_equals) == bin_equals) result |= bin_equals;
+        if ((int) (short) (c & (int) bin_equals) == (int) bin_equals) result = (short) ((int) result | (int) bin_equals);
 
         return result;
     }
@@ -500,31 +500,31 @@ public class TemporalConstraints<E> {
     public static ArrayList<String> getConstraintStringFromConstraintShort(short c) {
         ArrayList<String> result = new ArrayList<String>();
         
-        if ((short) (c & bin_before) == bin_before) result.add(str_before);
+        if ((int) (short) ((int) c & (int) bin_before) == (int) bin_before) result.add(str_before);
         
-        if ((short) (c & bin_after) == bin_after) result.add(str_after);
+        if ((int) (short) ((int) c & (int) bin_after) == (int) bin_after) result.add(str_after);
         
-        if ((short) (c & bin_during) == bin_during) result.add(str_during);
+        if ((int) (short) ((int) c & (int) bin_during) == (int) bin_during) result.add(str_during);
         
-        if ((short) (c & bin_contains) == bin_contains) result.add(str_contains);
+        if ((int) (short) ((int) c & (int) bin_contains) == (int) bin_contains) result.add(str_contains);
         
-        if ((short) (c & bin_overlaps) == bin_overlaps) result.add(str_overlaps);
+        if ((int) (short) ((int) c & (int) bin_overlaps) == (int) bin_overlaps) result.add(str_overlaps);
         
-        if ((short) (c & bin_overlappedby) == bin_overlappedby) result.add(str_overlappedby);
+        if ((int) (short) ((int) c & (int) bin_overlappedby) == (int) bin_overlappedby) result.add(str_overlappedby);
         
-        if ((short) (c & bin_meets) == bin_meets) result.add(str_meets);
+        if ((int) (short) ((int) c & (int) bin_meets) == (int) bin_meets) result.add(str_meets);
         
-        if ((short) (c & bin_metby) == bin_metby) result.add(str_metby);
+        if ((int) (short) ((int) c & (int) bin_metby) == (int) bin_metby) result.add(str_metby);
         
-        if ((short) (c & bin_starts) == bin_starts) result.add(str_starts);
+        if ((int) (short) ((int) c & (int) bin_starts) == (int) bin_starts) result.add(str_starts);
         
-        if ((short) (c & bin_startedby) == bin_startedby) result.add(str_startedby);
+        if ((int) (short) ((int) c & (int) bin_startedby) == (int) bin_startedby) result.add(str_startedby);
         
-        if ((short) (c & bin_finishes) == bin_finishes) result.add(str_finishes);
+        if ((int) (short) ((int) c & (int) bin_finishes) == (int) bin_finishes) result.add(str_finishes);
         
-        if ((short) (c & bin_finishedby) == bin_finishedby) result.add(str_finishedby);
+        if ((int) (short) ((int) c & (int) bin_finishedby) == (int) bin_finishedby) result.add(str_finishedby);
         
-        if ((short) (c & bin_equals) == bin_equals) result.add(str_equals);
+        if ((int) (short) ((int) c & (int) bin_equals) == (int) bin_equals) result.add(str_equals);
         return result;
     }
 

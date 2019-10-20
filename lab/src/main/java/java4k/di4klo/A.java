@@ -30,7 +30,6 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class A extends GamePanel {
 
@@ -146,9 +145,9 @@ public class A extends GamePanel {
 		for (i = 0; i < 26; i++)
 			colorChart[i] = new Color(colorTable[i]);
 		for (i = 0; i < 120; i++)
-			entityData[i] = gameData.charAt(i) - 97;
+			entityData[i] = (int) gameData.charAt(i) - 97;
 		for (i = 120; i < 140; i++)
-			spriteSize[i - 120] = gameData.charAt(i) - 97;
+			spriteSize[i - 120] = (int) gameData.charAt(i) - 97;
 
 		
 		g2d = lifeOrb.createGraphics();
@@ -176,7 +175,7 @@ public class A extends GamePanel {
 					for (g = 0; g < m / 2; g++)
 						z += 2 * (spriteSize[g * 2] * spriteSize[g * 2 + 1]);
 					for (g = z + j * h; g < z + (1 + j) * h; g++)
-						if (gameData.charAt(g + 140) == 'e')
+						if ((int) gameData.charAt(g + 140) == (int) 'e')
 							g2d.fillRect(((g - z - j * h) % spriteSize[m]) * n, ((g - z - j * h) / spriteSize[m]) * n, n, n);
 
 					boolean b = false;
@@ -218,7 +217,7 @@ public class A extends GamePanel {
 
 
         long remaining = nextFrameStart - System.nanoTime();
-		if (remaining > 0) {
+		if (remaining > 0L) {
 			return;
 		}
 
@@ -361,8 +360,8 @@ public class A extends GamePanel {
 					
 					xeAim[0] = 64 * (mem0 % 32) - 64 * (mem0 / 32) + 2037;
 					yeAim[0] = 32 * (mem0 % 32) + 32 * (mem0 / 32) + 8;
-					xe[0] = xeAim[0];
-					ye[0] = yeAim[0];
+					xe[0] = (double) xeAim[0];
+					ye[0] = (double) yeAim[0];
 					zBoard[0] = 0;
 					activity[0] = 1;
 					firingCounter[0] = 1;
@@ -403,8 +402,8 @@ public class A extends GamePanel {
 								g2d.drawImage(stairs, q, z + 15, null);
 
 							if (j > 1 && dungeonLevel != 0) { 
-								xe[j] = q + 55;
-								ye[j] = z + 23;
+								xe[j] = (double) (q + 55);
+								ye[j] = (double) (z + 23);
 								eWidth[j] = 18;
 								eHeight[j] = 16;
 								eDIndex[j] = 88;
@@ -457,15 +456,15 @@ public class A extends GamePanel {
 								spriteToDraw[n] = eDIndex[n];
 								eWidth[n] = spriteChart[eDIndex[n]].getWidth();
 								eHeight[n] = spriteChart[eDIndex[n]].getHeight();
-								xe[n] = x - eWidth[n] / 2;
-								ye[n] = y - eHeight[n] / j;
+								xe[n] = (double) (x - eWidth[n] / 2);
+								ye[n] = (double) (y - eHeight[n] / j);
 								life[n] = eType[n] + 1;
 								speed[n] = 7 + j * 3 + dungeonLevel / 2 + difficulty - eType[n];
 								firingCounter[n] = 0;
 								if (entityData[eDIndex[n] + 1] != 0)
 									firingCounter[n] = 63;
 								firingDelay[n] = 192 - 2 * (dungeonLevel + difficulty);
-								if (Math.abs(xe[n] - xe[0]) > 192 || Math.abs(ye[n] - ye[0]) > 144 || i == mem1)
+								if (Math.abs(xe[n] - xe[0]) > 192.0 || Math.abs(ye[n] - ye[0]) > 144.0 || i == mem1)
 									activity[n] = 0;
 								if (dungeonLevel == 0)
 									life[n] = 1;
@@ -513,11 +512,11 @@ public class A extends GamePanel {
 					xeAim[0] = (int) xe[0] + v / 3 - 129;
 					yeAim[0] = (int) ye[0] + w / 3 - 104;
 
-					anglee[0] = Math.atan2(yeAim[0] - ye[0], xeAim[0] - xe[0]);
+					anglee[0] = Math.atan2((double) yeAim[0] - ye[0], (double) xeAim[0] - xe[0]);
 
 					i = direction[0];
 					direction[0] = 84; 
-					if (Math.abs(anglee[0]) < Math.PI / 2)
+					if (Math.abs(anglee[0]) < Math.PI / 2.0)
 						direction[0] = 86; 
 					if (i != direction[0])
 						spriteToDraw[0] = direction[0];
@@ -571,9 +570,9 @@ public class A extends GamePanel {
 						eDIndex[j] = spriteToDraw[j] = 92 + 4 * entityData[eDIndex[n] + 1];
 						eWidth[j] = spriteChart[spriteToDraw[j]].getWidth();
 						eHeight[j] = spriteChart[spriteToDraw[j]].getHeight();
-						xe[j] = xe[n] + (eWidth[n] - eWidth[j]) / 2;
-						ye[j] = ye[n] + (eHeight[n] - eHeight[j]) / 2 + 4;
-						anglee[j] = Math.atan2(g - ye[j], h - xe[j]);
+						xe[j] = xe[n] + (double) ((eWidth[n] - eWidth[j]) / 2);
+						ye[j] = ye[n] + (double) ((eHeight[n] - eHeight[j]) / 2) + 4.0;
+						anglee[j] = Math.atan2((double) g - ye[j], (double) h - xe[j]);
 						activity[j] = 1;
 						eRectangle[j] = new Rectangle((int) xe[j], (int) ye[j] + eHeight[j] / 2, eWidth[j], eHeight[j] / 2);
 						zBoard[++zBoardLength] = j;
@@ -592,7 +591,7 @@ public class A extends GamePanel {
 						currentEntity = 1;
 
 					if (activity[currentEntity] != -1) { 
-						if (Math.abs(xe[currentEntity] - xe[0]) < 192 && Math.abs(ye[currentEntity] - ye[0]) < 144) { 
+						if (Math.abs(xe[currentEntity] - xe[0]) < 192.0 && Math.abs(ye[currentEntity] - ye[0]) < 144.0) {
 
 							if (activity[currentEntity] == 0) { 
 								activity[currentEntity] = 1;
@@ -617,11 +616,11 @@ public class A extends GamePanel {
 									if (++activity[currentEntity] == 7)
 										activity[currentEntity] = 1;
 
-								anglee[currentEntity] = Math.atan2(yeAim[currentEntity] - ye[currentEntity], xeAim[currentEntity] - xe[currentEntity]);
+								anglee[currentEntity] = Math.atan2((double) yeAim[currentEntity] - ye[currentEntity], (double) xeAim[currentEntity] - xe[currentEntity]);
 
 								j = direction[currentEntity];
 								direction[currentEntity] = eDIndex[currentEntity]; 
-								if (Math.abs(anglee[currentEntity]) < Math.PI / 2)
+								if (Math.abs(anglee[currentEntity]) < Math.PI / 2.0)
 									direction[currentEntity] += 2; 
 								if (j != direction[currentEntity])
 									spriteToDraw[currentEntity] = direction[currentEntity];
@@ -643,13 +642,13 @@ public class A extends GamePanel {
 					oldRectangle = eRectangle[n];
 					mem1 = 0;
 
-					if (Math.abs(xeAim[n] - oldxe) > 1) {
-						xe[n] += Math.cos(anglee[n]) * speed[n] / 16;
+					if (Math.abs((double) xeAim[n] - oldxe) > 1.0) {
+						xe[n] += Math.cos(anglee[n]) * (double) speed[n] / 16.0;
 						mem1 = 1;
 					}
 
-					if (Math.abs(yeAim[n] - oldye) > 1) {
-						ye[n] += Math.sin(anglee[n]) * speed[n] / 16;
+					if (Math.abs((double) yeAim[n] - oldye) > 1.0) {
+						ye[n] += Math.sin(anglee[n]) * (double) speed[n] / 16.0;
 						mem1 = 1;
 					}
 
@@ -845,7 +844,7 @@ public class A extends GamePanel {
 
 			} 
 
-			nextFrameStart += 19922944; 
+			nextFrameStart += 19922944L;
 
 		} while (nextFrameStart < System.nanoTime());
 
@@ -860,15 +859,15 @@ public class A extends GamePanel {
 		for (j = 0; j <= zBoardLength; j++) {
 			i = zBoard[j];
 			trans.setTransform(identity);
-			trans.translate((int) (xe[i] - xe[0] + 119), (int) (ye[i] - ye[0] + 80));
+			trans.translate((double) (int) (xe[i] - xe[0] + 119.0), (double) (int) (ye[i] - ye[0] + 80.0));
 			if (i > 232)
-				trans.rotate(anglee[i] + Math.PI / 2);
+				trans.rotate(anglee[i] + Math.PI / 2.0);
 			g2dScr.drawImage(spriteChart[spriteToDraw[i]], trans, this);
 		}
 
 		
-		i = (int) (29 * (1 - ((double) life[0] / 127)));
-		j = (int) (29 * (1 - ((double) playerMana / 127)));
+		i = (int) (29.0 * (1.0 - ((double) life[0] / 127.0)));
+		j = (int) (29.0 * (1.0 - ((double) playerMana / 127.0)));
 		g2dScr.drawImage(lifeOrb, 0, 163 + i, 29, 192, 0, i, 29, 29, null);
 		g2dScr.drawImage(manaOrb, 226, 163 + j, 255, 192, 0, j, 29, 29, null);
 

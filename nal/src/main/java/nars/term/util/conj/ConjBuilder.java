@@ -98,7 +98,7 @@ public interface ConjBuilder {
      * now corrupt and its result via .target() should be considered final
      */
     default boolean add(long at, Term x) {
-        if (at == DTERNAL || at == XTERNAL)//HACK TEMPORARY
+        if (at == (long) DTERNAL || at == (long) XTERNAL)//HACK TEMPORARY
             throw new WTF("probably meant ETERNAL or TIMELESS");
         if (at == TIMELESS)
             throw new WTF("invalid time");
@@ -111,7 +111,7 @@ public interface ConjBuilder {
 
         if (x instanceof Compound) {
 
-            if (x.opID() == CONJ.id)
+            if (x.opID() == (int) CONJ.id)
                 return addConjEvent(at, x);
 
         }
@@ -192,7 +192,7 @@ public interface ConjBuilder {
         if (xdt != XTERNAL) {
 
             if (at == ETERNAL && Conj.isSeq(x))
-                at = 0;
+                at = 0L;
 
             if (xdt == DTERNAL || xdt == 0 || at != ETERNAL) {
                 return x.eventsAND(this::add, at,
@@ -205,13 +205,13 @@ public interface ConjBuilder {
     }
 
     default boolean addAuto(Term t) {
-        return add(Conj.isSeq(t) ? 0 : ETERNAL, t);
+        return add(Conj.isSeq(t) ? 0L : ETERNAL, t);
     }
 
     default long shiftOrZero() {
         long s = shift();
         if (s == ETERNAL)
-            return 0;
+            return 0L;
         else {
             assert (s != TIMELESS);
             return s;

@@ -192,7 +192,7 @@ public final class RC4 {
             sBox[y] = t;
 
             int xorIndex = (sBox[x] + sBox[y]) & 0xFF;
-            out[outOffset++] = (byte) (in[inOffset++] ^ sBox[xorIndex]);
+            out[outOffset++] = (byte) ((int) in[inOffset++] ^ sBox[xorIndex]);
         }
     }
 
@@ -230,7 +230,7 @@ public final class RC4 {
         int i1 = 0, i2 = 0;
 
         for (int i = 0; i < 256; i++) {
-            i2 = ((userkey[i1] & 0xFF) + sBox[i] + i2) & 0xFF;
+            i2 = (((int) userkey[i1] & 0xFF) + sBox[i] + i2) & 0xFF;
 
             int t = sBox[i];
             sBox[i] = sBox[i2];

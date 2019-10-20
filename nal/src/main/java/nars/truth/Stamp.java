@@ -45,7 +45,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.function.IntFunction;
-import java.util.stream.IntStream;
 
 import static nars.time.Tense.ETERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -204,14 +203,14 @@ public interface Stamp {
 
 
             if (aToB <= 0.5f) {
-                int usedA = Math.max(1, (int) Math.floor(aToB * (aLen + bLen)));
+                int usedA = Math.max(1, (int) Math.floor((double) (aToB * (float) (aLen + bLen))));
                 if (usedA < aLen) {
                     if (bLen + usedA < maxLen)
                         usedA += maxLen - usedA - bLen;
                     aMin = Math.max(0, aLen - usedA);
                 }
             } else /* aToB > 0.5f */ {
-                int usedB = Math.max(1, (int) Math.floor((1f - aToB) * (aLen + bLen)));
+                int usedB = Math.max(1, (int) Math.floor((double) ((1f - aToB) * (float) (aLen + bLen))));
                 if (usedB < bLen) {
                     if (aLen + usedB < maxLen)
                         usedB += maxLen - usedB - aLen;
@@ -428,7 +427,7 @@ public interface Stamp {
         Arrays.sort(sorted);
 
 
-        long lastValue = -1;
+        long lastValue = -1L;
         int uniques = 0;
 
         for (long v : sorted) {
@@ -446,7 +445,7 @@ public interface Stamp {
         int outSize = Math.min(uniques, outputLen);
         long[] dedupAndTrimmed = new long[outSize];
         int uniques2 = 0;
-        long lastValue2 = -1;
+        long lastValue2 = -1L;
         for (long v : sorted) {
             if (lastValue2 != v)
                 dedupAndTrimmed[uniques2++] = v;
@@ -594,7 +593,7 @@ public interface Stamp {
             for (int i = 0; i < S; i++) {
                 long[] x = stamps.get(i);
 
-                int xi = --ptr[i];
+                int xi = (int) --ptr[i];
                 if (xi < 0) {
                     done++;
                     continue;
@@ -615,7 +614,7 @@ public interface Stamp {
         if (halted) {
 
             for (int i = 0, ptrLength = ptr.length; i < ptrLength; i++) {
-                int rr = ptr[i];
+                int rr = (int) ptr[i];
                 if (rr >= 0) {
                     long[] ss = stamps.get(i);
                     long count = 0L;
@@ -624,7 +623,7 @@ public interface Stamp {
                             count++;
                         }
                     }
-                    repeats += count;
+                    repeats = (int) ((long) repeats + count);
                 }
             }
         }
@@ -635,7 +634,7 @@ public interface Stamp {
 
         long[] e = l.toSortedArray();
 
-        float overlap = ((float) repeats) / totalEvidence;
+        float overlap = ((float) repeats) / (float) totalEvidence;
 
 
         return pair(e, Util.unitize(overlap));
@@ -692,7 +691,7 @@ public interface Stamp {
         int bl = b.length;
 
         if (al == 1 && bl == 1) {
-            return (a[0] == b[0]) ? 1 : 0;
+            return (float) ((a[0] == b[0]) ? 1 : 0);
         }
 
         if (al > bl) {
@@ -709,7 +708,7 @@ public interface Stamp {
         int denom = Math.min(al, bl);
         assert (denom != 0);
 
-        return Util.unitize(((float) common) / denom);
+        return Util.unitize(((float) common) / (float) denom);
     }
     private static int overlapCount(LongSet aa,  long[] b) {
         long count = 0L;

@@ -19,7 +19,7 @@ public class ContextVectors<E> extends DTMatrix<E> implements Iterable<E> {
         super(terms.size());
 
         for (E term : terms)
-            setValue(term, 1);
+            setValue(term, 1.0);
     }
 
     public void setMembership(E term, E context, double membership) {
@@ -34,7 +34,7 @@ public class ContextVectors<E> extends DTMatrix<E> implements Iterable<E> {
     public ArrayList<E> getConcepts() {
         ArrayList<E> filteredConcepts = new ArrayList<E>();
         terms.forEachKey(concept -> {
-            if (getValue(concept) >= 0)
+            if (getValue(concept) >= (double) 0)
                 filteredConcepts.add(concept);
         });
         return filteredConcepts;
@@ -63,13 +63,13 @@ public class ContextVectors<E> extends DTMatrix<E> implements Iterable<E> {
      * @param concept
      */
     public void deleteConcept(E concept) {
-        setValue(concept, -1);
+        setValue(concept, -1.0);
     }
 
     public void normalizeMemberships() {
         int i;
         ArrayList<E> concepts = getConcepts();
-        double min = 100000, max = -100000;
+        double min = 100000.0, max = -100000.0;
 
         for (E concept : concepts) {
             i = index(concept);

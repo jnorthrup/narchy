@@ -107,7 +107,7 @@ public final class Netchan extends SV_MAIN {
     public static void Netchan_Init() {
 
 
-        long port = Timer.Milliseconds() & 0xffff;
+        long port = (long) (Timer.Milliseconds() & 0xffff);
 
         showpackets = Cvar.Get("showpackets", "0", 0);
         showdrop = Cvar.Get("showdrop", "0", 0);
@@ -235,7 +235,7 @@ public final class Netchan extends SV_MAIN {
         
         NET.SendPacket(chan.sock, send.cursize, send.data, chan.remote_address);
 
-        if (showpackets.value != 0) {
+        if (showpackets.value != (float) 0) {
             if (send_reliable != 0)
                 Com.Printf(
                         "send " + send.cursize + " : s="
@@ -273,7 +273,7 @@ public final class Netchan extends SV_MAIN {
         sequence &= ~(1 << 31);
         sequence_ack &= ~(1 << 31);
 
-        if (showpackets.value != 0) {
+        if (showpackets.value != (float) 0) {
             if (reliable_message != 0)
                 Com.Printf(
                         "recv " + msg.cursize + " : s=" + sequence
@@ -291,7 +291,7 @@ public final class Netchan extends SV_MAIN {
         
         
         if (sequence <= chan.incoming_sequence) {
-            if (showdrop.value != 0)
+            if (showdrop.value != (float) 0)
                 Com.Printf(NET.AdrToString(chan.remote_address)
                         + ":Out of order packet " + sequence + " at "
                         + chan.incoming_sequence + '\n');
@@ -303,7 +303,7 @@ public final class Netchan extends SV_MAIN {
         
         chan.dropped = sequence - (chan.incoming_sequence + 1);
         if (chan.dropped > 0) {
-            if (showdrop.value != 0)
+            if (showdrop.value != (float) 0)
                 Com.Printf(NET.AdrToString(chan.remote_address) + ":Dropped "
                         + chan.dropped + " packets at " + sequence + '\n');
         }

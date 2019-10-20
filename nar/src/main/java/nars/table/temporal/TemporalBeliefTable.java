@@ -46,7 +46,7 @@ public interface TemporalBeliefTable extends BeliefTable {
         ((AbstractTask)xy).why(Why.why(tr, NAL.causeCapacity.intValue()));
 
         float priSum = Util.sum(Prioritized::priElseZero, tr);
-        float priMean = priSum/tr.length; //mean
+        float priMean = priSum/ (float) tr.length; //mean
         xy.priAdd(priMean);
 
 //        //factor in the evidence loss (and originality?) loss to reduce priority

@@ -385,7 +385,7 @@ public class Classpath {
         }
 
         public long size() {
-            return this.data.length;
+            return (long) this.data.length;
         }
     }
 

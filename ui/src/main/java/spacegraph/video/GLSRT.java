@@ -143,12 +143,12 @@ public class GLSRT {
 	}
     private static final byte[] s_cubeIndices =
         {
-            0, 3, 1, 2, 0, 1, /* front  */
-            6, 5, 4, 5, 7, 4, /* back   */
-            8, 11, 9, 10, 8, 9, /* top    */
-            15, 12, 13, 12, 14, 13, /* bottom */
-            16, 19, 17, 18, 16, 17, /* right  */
-            23, 20, 21, 20, 22, 21 /* left   */
+                (byte) 0, (byte) 3, (byte) 1, (byte) 2, (byte) 0, (byte) 1, /* front  */
+                (byte) 6, (byte) 5, (byte) 4, (byte) 5, (byte) 7, (byte) 4, /* back   */
+                (byte) 8, (byte) 11, (byte) 9, (byte) 10, (byte) 8, (byte) 9, /* top    */
+                (byte) 15, (byte) 12, (byte) 13, (byte) 12, (byte) 14, (byte) 13, /* bottom */
+                (byte) 16, (byte) 19, (byte) 17, (byte) 18, (byte) 16, (byte) 17, /* right  */
+                (byte) 23, (byte) 20, (byte) 21, (byte) 20, (byte) 22, (byte) 21 /* left   */
     };
     private final ByteBuffer cubeIndices= Buffers.newDirectByteBuffer(s_cubeIndices);
 	
@@ -191,7 +191,7 @@ public class GLSRT {
 		sphereKey.radius = radius;
         ImmModeSink vbo = sphereDisplayLists.get(sphereKey);
 		if (vbo == null) {
-			glu.gluSphere(sphere, radius, 8, 8);
+			glu.gluSphere(sphere, (double) radius, 8, 8);
             if(VBO_CACHE) {
                 vbo = sphere.replaceImmModeSink();
                 sphereDisplayLists.put(new SphereKey(sphereKey), vbo);
@@ -274,7 +274,7 @@ public class GLSRT {
 		if (vbo == null) {
 			glu.gluQuadricDrawStyle(cylinder, GLU.GLU_FILL);
 			glu.gluQuadricNormals(cylinder, GLU.GLU_SMOOTH);
-			glu.gluCylinder(cylinder, radius, radius, 2f * halfHeight, 15, 10);
+			glu.gluCylinder(cylinder, (double) radius, (double) radius, (double) (2f * halfHeight), 15, 10);
             if(VBO_CACHE) {
                 vbo = cylinder.replaceImmModeSink();
                 cylinderDisplayLists.put(new CylinderKey(cylinderKey), vbo);

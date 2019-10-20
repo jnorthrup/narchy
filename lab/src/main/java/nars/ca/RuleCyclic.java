@@ -40,11 +40,11 @@ public class RuleCyclic {
 		while (st.hasMoreTokens()) {
             String sTok = st.nextToken().toUpperCase();
 
-            if (sTok.length() > 0 && sTok.charAt(0) == 'R')
+            if (sTok.length() > 0 && (int) sTok.charAt(0) == (int) 'R')
 				iRng = Integer.valueOf(sTok.substring(1));
-			else if (sTok.length() > 0 && sTok.charAt(0) == 'T')
+			else if (sTok.length() > 0 && (int) sTok.charAt(0) == (int) 'T')
 				iThr = Integer.valueOf(sTok.substring(1));
-			else if (sTok.length() > 0 && sTok.charAt(0) == 'C')
+			else if (sTok.length() > 0 && (int) sTok.charAt(0) == (int) 'C')
 				iClo = Integer.valueOf(sTok.substring(1));
 			else if (sTok.startsWith("NM"))
 				iNgh = MJRules.NGHTYP_MOOR;
@@ -149,12 +149,12 @@ public class RuleCyclic {
                     yVector[10 + iTmp] = rowB < sizY ? rowB : rowB - sizY;
 				}
                 short bOldVal = crrState[i][j];
-                short nxtStt = bOldVal >= (iClo - 1) ? 0 : (short) (bOldVal + 1);
+                short nxtStt = (int) bOldVal >= (iClo - 1) ? (short) 0 : (short) ((int) bOldVal + 1);
 
                 short bNewVal;
-                if ((!fGH) || (bOldVal == 0)) {
+                if ((!fGH) || ((int) bOldVal == 0)) {
 					bNewVal = bOldVal; 
-					if (bNewVal >= iClo)
+					if ((int) bNewVal >= iClo)
 						bNewVal = (short) (iClo - 1);
 
                     int iCnt = 0;
@@ -162,7 +162,7 @@ public class RuleCyclic {
 						for (int ir = 10 - iRng; ir <= 10 + iRng; ir++) {
 							if ((fMoore)
 									|| ((Math.abs(ic - 10) + Math.abs(ir - 10)) <= iRng)) {
-								if (crrState[xVector[ic]][yVector[ir]] == nxtStt) {
+								if ((int) crrState[xVector[ic]][yVector[ir]] == (int) nxtStt) {
 									iCnt++;
 								}
 							}
@@ -175,7 +175,7 @@ public class RuleCyclic {
 				}
 
 				tmpState[i][j] = bNewVal;
-				if (bNewVal != bOldVal) 
+				if ((int) bNewVal != (int) bOldVal)
 				{
 					modCnt++; 
 				}

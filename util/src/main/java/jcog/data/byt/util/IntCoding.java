@@ -71,7 +71,7 @@ public enum IntCoding {;
      * @return number of bytes to be used by variable byte encoding.
      */
     public static int variableByteLengthOfUnsignedLong(long unsigned) {
-        if (unsigned == 0) {
+        if (unsigned == 0L) {
             return 1;
         }
         int bits = 64 - Long.numberOfLeadingZeros(unsigned);
@@ -147,7 +147,7 @@ public enum IntCoding {;
      */
     public static int encodeUnsignedVariableInt(int unsigned, byte[] dst, int dstOff) {
         int count = 0;
-        while ((unsigned & 0xffffff80) != 0L) {
+        while ((long) (unsigned & 0xffffff80) != 0L) {
             dst[dstOff + (count++)] = (byte) ((unsigned & 0x7f) | 0x80);
             unsigned >>>= 7;
         }
@@ -177,7 +177,7 @@ public enum IntCoding {;
             int unsigned = 0;
             int i = 0;
             int b;
-            while (((b = in.readByte() & 0xff) & 0x80) != 0) {
+            while (((b = (int) in.readByte() & 0xff) & 0x80) != 0) {
                 unsigned |= (b & 0x7f) << i;
                 i += 7;
             }
@@ -197,11 +197,11 @@ public enum IntCoding {;
         if (out instanceof DynBytes) {
             ((DynBytes)out).writeUnsignedInt(x);
         } else {
-            while ((x & 0xffffff80) != 0L) {
-                out.writeByte((byte) ((x & 0x7f) | 0x80));
+            while ((long) (x & 0xffffff80) != 0L) {
+                out.writeByte((int) (byte) ((x & 0x7f) | 0x80));
                 x >>>= 7;
             }
-            out.writeByte((byte) (x & 0x7f));
+            out.writeByte((int) (byte) (x & 0x7f));
         }
     }
 

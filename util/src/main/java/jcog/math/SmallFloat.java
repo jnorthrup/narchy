@@ -27,7 +27,7 @@ public enum SmallFloat {
     if (smallfloat <= fzero) {
       return (byte) (bits <= 0 ? 0 : 1);  
     } else if (smallfloat >= fzero + 0x100) {
-      return -1;  
+      return (byte) -1;
     } else {
       return (byte)(smallfloat - fzero);
     }
@@ -37,8 +37,8 @@ public enum SmallFloat {
   public static float byteToFloat(byte b, int numMantissaBits, int zeroExp) {
     
     
-    if (b == 0) return 0.0f;
-      int bits = (b&0xff) << (24-numMantissaBits);
+    if ((int) b == 0) return 0.0f;
+      int bits = ((int) b &0xff) << (24-numMantissaBits);
     bits += (63-zeroExp) << 24;
     return Float.intBitsToFloat(bits);
   }
@@ -62,7 +62,7 @@ public enum SmallFloat {
       return (byte) (bits <= 0 ? 0 : 1);
     }
     if (smallfloat >= ((63-15)<<3) + 0x100) {
-      return -1;
+      return (byte) -1;
     }
     return (byte)(smallfloat - ((63-15)<<3));
  }
@@ -71,8 +71,8 @@ public enum SmallFloat {
   public static float byte315ToFloat(byte b) {
     
     
-    if (b == 0) return 0.0f;
-      int bits = (b&0xff) << (24-3);
+    if ((int) b == 0) return 0.0f;
+      int bits = ((int) b &0xff) << (24-3);
     bits += (63-15) << 24;
     return Float.intBitsToFloat(bits);
   }
@@ -90,7 +90,7 @@ public enum SmallFloat {
       return (byte) (bits <= 0 ? 0 : 1);
     }
     if (smallfloat >= ((63-2)<<5) + 0x100) {
-      return -1;
+      return (byte) -1;
     }
     return (byte)(smallfloat - ((63-2)<<5));
   }
@@ -99,8 +99,8 @@ public enum SmallFloat {
   public static float byte52ToFloat(byte b) {
     
     
-    if (b == 0) return 0.0f;
-      int bits = (b&0xff) << (24-5);
+    if ((int) b == 0) return 0.0f;
+      int bits = ((int) b &0xff) << (24-5);
     bits += (63-2) << 24;
     return Float.intBitsToFloat(bits);
   }

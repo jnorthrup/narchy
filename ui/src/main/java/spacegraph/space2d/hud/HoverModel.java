@@ -42,7 +42,7 @@ public abstract class HoverModel {
         @Override
         public RectFloat pos() {
             RectFloat ss = f.globalToPixel(s.bounds);
-            return ss.scale(0.25f).move(ss.w/2, ss.h / 2);
+            return ss.scale(0.25f).move(ss.w/ 2.0F, ss.h / 2.0F);
         }
     }
 

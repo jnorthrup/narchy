@@ -194,7 +194,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
             Axiom userTh = userTheorems.get(i);
             String userProof = " " + userTh.proof + " ";
             int position0 = 1;
-            int position = userProof.indexOf(' ', position0);
+            int position = userProof.indexOf((int) ' ', position0);
             boolean validProof = true;
             while (position != -1) {
                 String userProofStepLabel = userProof.substring(position0 - 1,
@@ -202,7 +202,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                 if (!axiomLabels.contains(userProofStepLabel)
                         // 5-Jun-2002 (ndm) The condition below was added in case the
                         //   users proof contains hypotheses.
-                        && userProofStepLabel.charAt(1) != '$')
+                        && (int) userProofStepLabel.charAt(1) != (int) '$')
                 // The userProofStepLabel is surrounded by spaces, so we match
                 //     $hypnn starting at position 1, not 0
                 // future: make sure that $ is not allowed in user theorem
@@ -215,7 +215,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                     break;
                 }
                 position0 = position + 1;
-                position = userProof.indexOf(' ', position0);
+                position = userProof.indexOf((int) ' ', position0);
             }
             if (validProof) {
                 axiomVec.add(0, userTh);
@@ -2200,7 +2200,7 @@ final class DrawSymbols {
 
     private static void drawToken(String token, short type) {
         Color c = Color.black; // -1 = connective
-        if (type == (short) (-1)) {
+        if ((int) type == (int) (short) (-1)) {
             // Connective
             g.setColor(c);
             // Compose special tokens
@@ -2339,7 +2339,7 @@ final class DrawSymbols {
             //g.setFont(mm.MATH_ITALIC_FONT);
 
             // Put extra space between two variables for better appearance
-            if (lastTokenType >= 0) currentX += MetaMath.WHITE_SPACE / 2;
+            if ((int) lastTokenType >= 0) currentX += MetaMath.WHITE_SPACE / 2;
             g.drawString(token, currentX, currentY);
             currentX += fm.stringWidth(token);
 
@@ -2373,11 +2373,11 @@ final class DrawSymbols {
 
         formula += " ";
         int position0 = 0;
-        int position = formula.indexOf(' ');
+        int position = formula.indexOf((int) ' ');
         while (position != -1) {
             String token = formula.substring(position0, position);
-            if (token.charAt(0) == '$') { // Variable
-                int p2 = token.indexOf(':');
+            if ((int) token.charAt(0) == (int) '$') { // Variable
+                int p2 = token.indexOf((int) ':');
                 short varNum = (short) Integer.parseInt(token.substring(1, p2));
                 short varType = (short) Integer.parseInt(token.substring(p2 + 1));
                 drawToken(VariableName.name(varNum, varType), varType);
@@ -2385,7 +2385,7 @@ final class DrawSymbols {
                 drawToken(token, (short) (-1));
             }
             position0 = position + 1;
-            position = formula.indexOf(' ', position0);
+            position = formula.indexOf((int) ' ', position0);
         }
     }
 
@@ -2430,16 +2430,16 @@ final class PrimFormula {
 
     // Get shortest primitive formula
     static String pformula(String formula, int start) {
-        if ((short) (formula.charAt(start)) > 0) {
+        if ((int) (short) (formula.charAt(start)) > 0) {
             // It's a variable
             return formula.substring(start, start + 1);
         } else {
             // It's a connective
             short connNum = (short) (formula.charAt(start));
-            connNum = (short) (-(connNum + 1));
+            connNum = (short) (-((int) connNum + 1));
             String subformula = formula.substring(start, start + 1);
             int position = start;
-            for (int i = 0; i < MetaMath.connectiveArr[connNum].argtypes.length; i++) {
+            for (int i = 0; i < MetaMath.connectiveArr[(int) connNum].argtypes.length; i++) {
                 position = start + subformula.length();
                 subformula += pformula(formula, position);
             }
@@ -2449,19 +2449,19 @@ final class PrimFormula {
 
     // Return variable/connective types in a formula string
     static String getTypes(String formula, int start) {
-        if ((short) (formula.charAt(start)) > 0) {
+        if ((int) (short) (formula.charAt(start)) > 0) {
             // It's a variable; we don't know the type yet; default to wff
             return String.valueOf((char) 0);
         } else {
             // It's a connective
             short connNum = (short) (formula.charAt(start));
-            connNum = (short) (-(connNum + 1));
-            short typeNum = MetaMath.connectiveArr[connNum].type;
+            connNum = (short) (-((int) connNum + 1));
+            short typeNum = MetaMath.connectiveArr[(int) connNum].type;
             String typesList = String.valueOf((char) typeNum);
             int position = start;
-            for (int i = 0; i < MetaMath.connectiveArr[connNum].argtypes.length; i++) {
+            for (int i = 0; i < MetaMath.connectiveArr[(int) connNum].argtypes.length; i++) {
                 position = start + typesList.length();
-                typeNum = MetaMath.connectiveArr[connNum].argtypes[i];
+                typeNum = MetaMath.connectiveArr[(int) connNum].argtypes[i];
                 // Override the type of the first return char (could be
                 // a variable with type not yet known)
                 typesList = typesList + (char) typeNum
@@ -2484,7 +2484,7 @@ final class PrimFormula {
         } else {
             tokenSeparator = ""; // Separator character between tokens in axiom menu
         }
-        if ((short) (formula.charAt(start)) > 0) {
+        if ((int) (short) (formula.charAt(start)) > 0) {
             // It's a variable
             if (raw) {
                 return "$" + (int) formula.charAt(start) + ":"
@@ -2496,30 +2496,30 @@ final class PrimFormula {
         } else {
             // It's a connective
             short connNum = (short) (formula.charAt(start));
-            connNum = (short) (-(connNum + 1));
+            connNum = (short) (-((int) connNum + 1));
             String subformula = formula.substring(start, start + 1);
             int position = start;
-            String[] displayArgs = new String[MetaMath.connectiveArr[connNum].argtypes.length];
+            String[] displayArgs = new String[MetaMath.connectiveArr[(int) connNum].argtypes.length];
             // Collect the arguments in display notation
-            for (int i = 0; i < MetaMath.connectiveArr[connNum].argtypes.length; i++) {
+            for (int i = 0; i < MetaMath.connectiveArr[(int) connNum].argtypes.length; i++) {
                 position = start + subformula.length();
                 subformula += pformula(formula, position);
                 displayArgs[i] = subGetDisplay(formula, position, raw);
             }
-            String tmpNotation = MetaMath.connectiveArr[connNum].notation + " ";
+            String tmpNotation = MetaMath.connectiveArr[(int) connNum].notation + " ";
             String displayFormula = "";
             // Replace the arguments in the connectives display notation
             int charPosition0 = 0;
-            int charPosition = tmpNotation.indexOf(' ');
+            int charPosition = tmpNotation.indexOf((int) ' ');
             while (charPosition != -1) {
                 String token = tmpNotation.substring(charPosition0, charPosition);
-                if (token.charAt(0) == '$') { // Display template argument
+                if ((int) token.charAt(0) == (int) '$') { // Display template argument
                     short argNum = (short) Integer.parseInt(token.substring(1));
                     if (displayFormula.length() == 0) {
-                        displayFormula = displayArgs[argNum - 1];
+                        displayFormula = displayArgs[(int) argNum - 1];
                     } else {
                         displayFormula = displayFormula + tokenSeparator
-                                + displayArgs[argNum - 1];
+                                + displayArgs[(int) argNum - 1];
                     }
                 } else { // Display connective - output as is
                     if (displayFormula.length() == 0) {
@@ -2529,7 +2529,7 @@ final class PrimFormula {
                     }
                 }
                 charPosition0 = charPosition + 1;
-                charPosition = tmpNotation.indexOf(' ', charPosition0);
+                charPosition = tmpNotation.indexOf((int) ' ', charPosition0);
             }
             return displayFormula;
         }
@@ -2554,35 +2554,35 @@ final class VariableName {
     // Get name of variable - type must be 0 thru 3 (wff thru digit)
     static String name(short var, short type) {
         // wff, var, class, digit
-        if (var >= varNameVec.size()) { // extend to accomodate variable
-            varNameVec.ensureCapacity(var + 1);
-            varTypeVec.ensureCapacity(var + 1);
+        if ((int) var >= varNameVec.size()) { // extend to accomodate variable
+            varNameVec.ensureCapacity((int) var + 1);
+            varTypeVec.ensureCapacity((int) var + 1);
         }
-        if (varNameVec.size() <= (int) var || varNameVec.get(var) == null) { // hasn't been assigned yet
+        if (varNameVec.size() <= (int) var || varNameVec.get((int) var) == null) { // hasn't been assigned yet
             while (varNameVec.size() <= (int) var) {
                 varNameVec.add(null);
                 varTypeVec.add(null);
             }
             // Get name based on type and previous names
-            int v = varSoFar[type];
-            varSoFar[type]++;
+            int v = varSoFar[(int) type];
+            varSoFar[(int) type]++;
             String[] letters = {"PQRSTUWXYZ", "xyzwvutsrqpnmlkjihgfdcba",
                     "ABCDFGHJKLMN", "e"};
-            int quotient = v / letters[type].length();
-            int remainder = v % letters[type].length();
+            int quotient = v / letters[(int) type].length();
+            int remainder = v % letters[(int) type].length();
             String suffix;
             if (quotient == 0) suffix = "";
             else suffix = Integer.toString(quotient - 1);
-            varNameVec.set(var, letters[type].substring(remainder, remainder + 1) + suffix);
-            varTypeVec.set(var, (int) type);
+            varNameVec.set((int) var, letters[(int) type].substring(remainder, remainder + 1) + suffix);
+            varTypeVec.set((int) var, (int) type);
         }
-        return varNameVec.get(var);
+        return varNameVec.get((int) var);
     }
 
     // This is a handy way to find out variable's type, but should only
     // be used after getting the variable's name
     static short type(short var) {
-        return (short) (varTypeVec.get(var).intValue());
+        return (short) (varTypeVec.get((int) var).intValue());
     }
 
 } // VariableDisplay
@@ -2672,20 +2672,20 @@ class Axiom {
         englRPN += " ";
         numRPNbuf.ensureCapacity(englRPN.length() / 2);
         int position0 = 0;
-        int position = englRPN.indexOf(' ');
+        int position = englRPN.indexOf((int) ' ');
         while (position != -1) {
             String token = englRPN.substring(position0, position);
-            if (token.charAt(0) == '$') { // Variable
+            if ((int) token.charAt(0) == (int) '$') { // Variable
                 short varNum = (short) Integer.parseInt(token.substring(1));
                 numRPNbuf.append((char) varNum);
             } else { // Connective
                 int i = MetaMath.connectiveLabels.indexOf(" " + token + " ");
                 if (i == -1) System.out.println("Bug: Unknown connective " + token);
                 short connNum = (short) (MetaMath.connectiveLabelMap.charAt(i));
-                numRPNbuf.append((char) (-(connNum + 1)));
+                numRPNbuf.append((char) (-((int) connNum + 1)));
             }
             position0 = position + 1;
-            position = englRPN.indexOf(' ', position0);
+            position = englRPN.indexOf((int) ' ', position0);
         }
         return numRPNbuf.toString();
     } // englToNumStr
@@ -2727,7 +2727,7 @@ class State {
     int currentFam; // for Undo
 
     State() {  // Constructor
-        maxVar = 0;
+        maxVar = (short) 0;
         assertionVec = new ArrayList<>();
         proofVec = new ArrayList<>();
         hypothesisVec = new ArrayList<>();
@@ -2753,10 +2753,10 @@ class State {
         // Scan the axiom-list proof
         proof += " ";
         int position0 = 0;
-        int position = proof.indexOf(' ');
+        int position = proof.indexOf((int) ' ');
         while (position != -1) {
             String label = proof.substring(position0, position);
-            if (label.charAt(0) == '$') { // Hypothesis $hypnn - future: make sure
+            if ((int) label.charAt(0) == (int) '$') { // Hypothesis $hypnn - future: make sure
                 //   that $ is not allowed if user name accepted for user proofs
                 int hypNum = Integer.parseInt(label.substring(4)) - 1;
                 proofInfoState.pushAssertion(
@@ -2776,7 +2776,7 @@ class State {
                         true);  // true means unification will not delete popped hypotheses
             }
             position0 = position + 1;
-            position = proof.indexOf(' ', position0);
+            position = proof.indexOf((int) ' ', position0);
         } // end while position != -1
 
         // Sort the proof steps (they are not sorted in proofInfoState)
@@ -2784,7 +2784,7 @@ class State {
         for (int i = 0; i < stepSortMap.length; i++) {
             String labl = proofInfoState.proofVec.get(i);
             int stepNum = Integer.parseInt(labl.substring(0,
-                    labl.indexOf(' '))) - 1;
+                    labl.indexOf((int) ' '))) - 1;
             stepSortMap[stepNum] = i;
         }
         ArrayList<String> sortedAssertionVec = new ArrayList<String>();
@@ -2852,8 +2852,8 @@ class State {
         // Also, trim off any distinct pairs that aren't in assertion or hyp
         // (important, otherwise distinct var list will have garbage entries)
         // Note:  variables are numbered starting at 1, not 0.
-        short newMax = 0;
-        short[] varMap = new short[maxVar + 1];
+        short newMax = (short) 0;
+        short[] varMap = new short[(int) maxVar + 1];
         StringBuffer scanBuf;
         int i;
         int j;
@@ -2863,13 +2863,13 @@ class State {
             scanBuf = new StringBuffer(assertionVec.get(i));
             for (j = 0; j < scanBuf.length(); j++) {
                 c = (short) (scanBuf.charAt(j));
-                if (c < 0) continue; // not a variable
-                if (varMap[c] == 0) {
+                if ((int) c < 0) continue; // not a variable
+                if ((int) varMap[(int) c] == 0) {
                     // Add new variable
                     newMax++;
-                    varMap[c] = newMax;
+                    varMap[(int) c] = newMax;
                 }
-                scanBuf.setCharAt(j, (char) (varMap[c]));
+                scanBuf.setCharAt(j, (char) (varMap[(int) c]));
             }
             assertionVec.set(i, scanBuf.toString());
         }
@@ -2878,13 +2878,13 @@ class State {
             scanBuf = new StringBuffer(hypothesisVec.get(i));
             for (j = 0; j < scanBuf.length(); j++) {
                 c = (short) (scanBuf.charAt(j));
-                if (c < 0) continue; // not a variable
-                if (varMap[c] == 0) {
+                if ((int) c < 0) continue; // not a variable
+                if ((int) varMap[(int) c] == 0) {
                     // Add new variable
                     newMax++;
-                    varMap[c] = newMax;
+                    varMap[(int) c] = newMax;
                 }
-                scanBuf.setCharAt(j, (char) (varMap[c]));
+                scanBuf.setCharAt(j, (char) (varMap[(int) c]));
             }
             hypothesisVec.set(i, scanBuf.toString());
         }
@@ -2895,13 +2895,13 @@ class State {
             for (j = 0; j < scanBuf.length(); j++) {
                 if (j > 1) System.out.println("Bug #1"); // S.b. only two vars each
                 c = (short) (scanBuf.charAt(j));
-                if (varMap[c] == 0) {
+                if ((int) varMap[(int) c] == 0) {
                     // In the case of distinct variables, we want to throw away
                     // ones not yet mapped (i.e. in no assertion or hypothesis)
                     discardFlag = true;
                     break;
                 }
-                scanBuf.setCharAt(j, (char) (varMap[c]));
+                scanBuf.setCharAt(j, (char) (varMap[(int) c]));
             }
             if (!discardFlag) {
                 distinctVarVec.set(i, scanBuf.toString());
@@ -2932,7 +2932,7 @@ class Substitution {
     static String makeSubst(String formula, Substitution subst) {
         int i = -1;
         while (true) {
-            i = formula.indexOf(subst.substVar, i + 1);
+            i = formula.indexOf((int) subst.substVar, i + 1);
             if (i < 0) break;
             formula = formula.substring(0, i) + subst.substString
                     + formula.substring(i + 1);
@@ -3018,21 +3018,21 @@ final class Unification {
                 }
                 short cr = (short) (axiomHyp.charAt(i));
                 short cs = (short) (stateHyp.charAt(i));
-                if (cr == cs) continue;
+                if ((int) cr == (int) cs) continue;
                 String substStr;
                 short substVar;
-                if (cr > 0) { // Variable in axiom
+                if ((int) cr > 0) { // Variable in axiom
                     substStr = PrimFormula.pformula(stateHyp, i); // Get subformula
                     substVar = cr;
                 } else {
-                    if (cs > 0) { // Variable in state hyp
+                    if ((int) cs > 0) { // Variable in state hyp
                         substStr = PrimFormula.pformula(axiomHyp, i); // Get subformula
                         substVar = cs;
                     } else {
                         return null; // Unif not possible - connectives mismatch
                     }
                 }
-                if (substStr.indexOf((char) substVar) >= 0) {
+                if (substStr.indexOf((int) (char) substVar) >= 0) {
                     return null; // Unif not possible - substituted var in substitution
                 }
                 Substitution subst = new Substitution(substVar, substStr);
@@ -3079,7 +3079,7 @@ final class Unification {
                  i >= currentStateStackSize - axiomHypSize; i--) {
                 newProof = newProof + "," +
                         currentState.proofVec.get(i).substring(0,
-                                currentState.proofVec.get(i).indexOf(' '));
+                                currentState.proofVec.get(i).indexOf((int) ' '));
             }
         } else {
             // Format is axiom used, preceded by concatenated proofs of hypotheses
@@ -3110,10 +3110,10 @@ final class Unification {
         StringBuilder formulaBuf = new StringBuilder(axiomFormula);
         // Renumber variables
         for (int i = 0; i < formulaBuf.length(); i++) {
-            if ((short) (formulaBuf.charAt(i)) > 0) {
-                short newVar = (short) (oldMaxVar + (short) (formulaBuf.charAt(i)));
+            if ((int) (short) (formulaBuf.charAt(i)) > 0) {
+                short newVar = (short) ((int) oldMaxVar + (int) (short) (formulaBuf.charAt(i)));
                 formulaBuf.setCharAt(i, (char) newVar);
-                if (newVar > newMaxVar) newMaxVar = newVar;
+                if ((int) newVar > (int) newMaxVar) newMaxVar = newVar;
             }
         }
         return formulaBuf.toString();
@@ -3145,17 +3145,17 @@ final class Unification {
         for (i = 0; i < ilimit; i++) {
             v0 = (short) (newDistinctVarVec.get(i).charAt(0));
             v1 = (short) (newDistinctVarVec.get(i).charAt(1));
-            if (v1 == subst.substVar) {
+            if ((int) v1 == (int) subst.substVar) {
                 short vtmp = v0;
                 v0 = v1;
                 v1 = vtmp;
             }
-            if (v0 == subst.substVar) {
+            if ((int) v0 == (int) subst.substVar) {
                 // 1st var is substituted
                 for (int j = 0; j < (subst.substString).length(); j++) {
                     short vsub = (short) ((subst.substString).charAt(j));
-                    if (vsub < 0) continue; // Not a variable
-                    if (vsub == v1) {
+                    if ((int) vsub < 0) continue; // Not a variable
+                    if ((int) vsub == (int) v1) {
                         // Distinct variable conflict
                         return false;
                     }
@@ -3177,7 +3177,7 @@ final class Unification {
             for (i = 0; i < ilimit; i++) {
                 v0 = (short) (newDistinctVarVec.get(i).charAt(0));
                 v1 = (short) (newDistinctVarVec.get(i).charAt(1));
-                if (v0 > v1) {
+                if ((int) v0 > (int) v1) {
                     // Swap vars
                     dpair = String.valueOf((char) v1) + (char) v0;
                     newDistinctVarVec.set(i, dpair);

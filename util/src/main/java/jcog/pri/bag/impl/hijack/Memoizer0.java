@@ -195,7 +195,7 @@ final class Memoizer0 implements InvocationHandler {
             final int TOTAL = (int) 1.0e6;
             final String TEST_TEXT = "hello world";
             final int cacheElements = 1024;
-            final long cacheMillis = 1000; 
+            final long cacheMillis = 1000L;
             SampleInterface[] samples = {
                     new SampleSlowImpl(), 
                     (SampleInterface) Memoizer0.memoize(new SampleSlowImpl(), cacheElements, cacheMillis)

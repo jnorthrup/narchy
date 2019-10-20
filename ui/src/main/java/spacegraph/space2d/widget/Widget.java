@@ -46,7 +46,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
      * zero: neutral state, default for components
      * negative: how raised
      */
-    protected float dz = 0;
+    protected float dz = (float) 0;
 
     protected boolean focused;
 
@@ -57,7 +57,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
      * zero: neutral
      * negative: disabled, hidden, irrelevant
      */
-    protected float pri = 0;
+    protected float pri = (float) 0;
 
     public Widget() {
         this(new EmptySurface());
@@ -82,9 +82,9 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
     protected void paintIt(GL2 gl, ReSurface r) {
         //pri decay
         //////            1 - (float) Math.exp(-(((double) dt) / n.dur()) / memoryDuration.floatValue());
-        float DECAY_PERIOD = 2; //TODO use exponential decay formula
-        double decayRate = Math.exp(-(((double) r.dtS()) / DECAY_PERIOD));
-        pri *= decayRate;
+        float DECAY_PERIOD = 2.0F; //TODO use exponential decay formula
+        double decayRate = Math.exp(-(((double) r.dtS()) / (double) DECAY_PERIOD));
+        pri = (float) ((double) pri * decayRate);
         //float PRI_DECAY = 0.97f; //TODO use exponential decay formula
         //pri = Util.clamp(pri * PRI_DECAY, 0, 1f);
 
@@ -103,7 +103,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
                     //float th = Math.min(b.w, b.h) * (0.1f + 0.1f * t);
                     gl.glColor4f(0.5f + 0.5f * p, 0.55f, 0.35f, 0.75f);
                     //Draw.rectFrame(b, th, gl);
-                    float th = 3 + p;
+                    float th = 3.0F + p;
                     Draw.rectStroke(bounds, th, gl);
                 }
             });
@@ -115,7 +115,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
     protected void paintWidget(RectFloat bounds, GL2 gl) {
         float dim = 1f - (dz /* + if disabled, dim further */) / 3f;
         float bri = 0.1f * dim;
-        color.set( rgb-> Util.or(rgb,bri,pri/8), gl);
+        color.set( rgb-> Util.or(rgb,bri,pri/ 8.0F), gl);
         Draw.rect(bounds, gl);
     }
 
@@ -239,10 +239,10 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
             if (bs == null)
                 return null;
             float scale = Math.max(bs.w, bs.h);
-            double pulse = Math.cos(hoverTimeS * 6f) * 0.05f;
+            double pulse = Math.cos((double) (hoverTimeS * 6f)) * 0.05;
             float ss = (float) (
                     pulse +
-                            Util.clamp(Math.exp(-hoverTimeS*4f)*1.5f, 0.25f, 2f)) *
+                            Util.clamp(Math.exp((double) (-hoverTimeS * 4f))* 1.5, 0.25, 2)) *
                     scale;
             return RectFloat.XYWH(f.posPixel, ss, ss);
         }

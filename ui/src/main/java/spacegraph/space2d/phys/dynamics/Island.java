@@ -283,7 +283,7 @@ class Island {
                 velocities[i].y = v.y;
                 velocities[i].w = w;
             } else {
-                velocities[i].x = velocities[i].y = velocities[i].w = 0;
+                velocities[i].x = velocities[i].y = velocities[i].w = (float) 0;
             }
 
 
@@ -347,7 +347,7 @@ class Island {
 
             if (translationx * translationx + translationy * translationy > Settings.maxTranslationSquared) {
                 float ratio = Settings.maxTranslation
-                        / (float) Math.sqrt(translationx * translationx + translationy * translationy);
+                        / (float) Math.sqrt((double) (translationx * translationx + translationy * translationy));
                 v.x *= ratio;
                 v.y *= ratio;
             }
@@ -395,9 +395,9 @@ class Island {
             body.sweep.a = positions[i].a;
 
             if (body.getType()!=DYNAMIC) {
-                body.vel.x = velocities[i].x = 0;
-                body.vel.y = velocities[i].y = 0;
-                body.velAngular = velocities[i].w = 0;
+                body.vel.x = velocities[i].x = (float) 0;
+                body.vel.y = velocities[i].y = (float) 0;
+                body.velAngular = velocities[i].w = (float) 0;
             } else {
                 body.vel.x = velocities[i].x;
                 body.vel.y = velocities[i].y;
@@ -506,7 +506,7 @@ class Island {
             if (translationx * translationx + translationy * translationy > Settings.maxTranslationSquared) {
                 float ratio =
                         Settings.maxTranslation
-                                / (float) Math.sqrt(translationx * translationx + translationy * translationy);
+                                / (float) Math.sqrt((double) (translationx * translationx + translationy * translationy));
                 v.scaled(ratio);
             }
 

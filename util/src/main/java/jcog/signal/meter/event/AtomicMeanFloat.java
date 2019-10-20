@@ -23,8 +23,8 @@ public class AtomicMeanFloat extends AtomicFloat implements FloatProcedure {
     public final String id;
 
     private volatile int count = 0;
-    private volatile float sum = 0;
-    private volatile float mean = 0;
+    private volatile float sum = (float) 0;
+    private volatile float mean = (float) 0;
 
     public AtomicMeanFloat(String id) {
         super(0f);
@@ -58,12 +58,12 @@ public class AtomicMeanFloat extends AtomicFloat implements FloatProcedure {
         float mean = this.mean = (this.sum = getAndZero((v) -> {
             c[0] = count;
             count = 0;
-        })) / (c[0] > 0 ? c[0] : Float.NaN);
+        })) / (c[0] > 0 ? (float) c[0] : Float.NaN);
 
         if (mean==mean) {
-            return new float[] { mean, mean * c[0] };
+            return new float[] { mean, mean * (float) c[0]};
         } else {
-            return new float[] { Float.NaN, 0 };
+            return new float[] { Float.NaN, (float) 0};
         }
     }
 

@@ -37,7 +37,7 @@ public class a extends GamePanel {
 
 	@Override
     public void start() {
-		enableEvents(8);
+		enableEvents(8L);
 		new Thread(this).start();
 	}
 
@@ -92,7 +92,7 @@ public class a extends GamePanel {
         final int COLOR_BLUE = 2;
         int[] PALETTE = {0xFCC4A4, 0xD08050, 0x0000AD, 0xFF4F4F, 0xA8A8A8, 0x2C2C2C, 0xFCF400, 0xFFFFFF, 0xFF0000, 0x4F4F00, 0xE4DA00};
         for (i = 0; i < 8; i++) {
-			value = s.charAt(k++);
+			value = (int) s.charAt(k++);
             int width = (0x8000 & value) == 0 ? 8 : 16;
             int height = (value >> 8) & 0x7F;
             int palette0 = (value >> 4) & 0x0F;
@@ -105,7 +105,7 @@ public class a extends GamePanel {
 					if (i == 5) {
 						palette1 = y < 7 ? COLOR_WHITE : COLOR_BLUE;
 					}
-					value = s.charAt(k++);
+					value = (int) s.charAt(k++);
 					for (x = 0; x < 8; x++) {
                         int color = value & 0x03;
 						value >>= 2;
@@ -148,7 +148,7 @@ public class a extends GamePanel {
 			for (x = 0; x < 30; x++) {
 				for (i = 0; i < 4; i++) {
 					for (j = 0; j < 3; j++) {
-						textures[TEXTURE_BRICK_WALL][(y + i * 16) & 63][16 * (i & 1) + (x + j * 32) & 63] = (int) ((1f - random.nextFloat() * 0.2f) * (227 - 148 * y / 12f));
+						textures[TEXTURE_BRICK_WALL][(y + i * 16) & 63][16 * (i & 1) + (x + j * 32) & 63] = (int) ((1f - random.nextFloat() * 0.2f) * (227.0F - (float) (148 * y) / 12f));
 					}
 				}
 			}
@@ -194,9 +194,9 @@ public class a extends GamePanel {
         int playerHealth = 0;
         boolean playerHasKey = false;
         boolean playerTriggerReleased = false;
-        float playerAngle = 0;
-        float playerY = 0;
-        float playerX = 0;
+        float playerAngle = (float) 0;
+        float playerY = (float) 0;
+        float playerX = (float) 0;
         int playerWinning = 0;
         int playerDying = 0;
         int level = 0;
@@ -265,7 +265,7 @@ public class a extends GamePanel {
         while (true) {
 
 			do {
-				nextFrameStartTime += 16666667;
+				nextFrameStartTime += 16666667L;
 
 				
 
@@ -310,9 +310,9 @@ public class a extends GamePanel {
 					}
 
 					
-					playerX = 96;
-					playerY = 96;
-					playerAngle = 0;
+					playerX = 96.0F;
+					playerY = 96.0F;
+					playerAngle = (float) 0;
 					playerHasKey = false;
 					playerHealth = 64;
 					playerFiring = 0;
@@ -320,7 +320,7 @@ public class a extends GamePanel {
 					
 					k = LEVEL_OFFSETS[level];
 					for (i = 0; i < 16; i++) {
-						value = s.charAt(k++);
+						value = (int) s.charAt(k++);
 						for (j = 0; j < 16; j++) {
 							map[i][j] = value & 1;
 							value >>= 1;
@@ -328,58 +328,58 @@ public class a extends GamePanel {
 					}
 
 					
-					int count = s.charAt(k++);
+					int count = (int) s.charAt(k++);
 					for (i = 0; i < count; i++) {
-						value = s.charAt(k++);
+						value = (int) s.charAt(k++);
 						x = (value >> 4) & 0x0F;
 						y = value & 0x0F;
                         float[] object = new float[32];
 						queue.add(object);
 						objectMap[y][x].add(object);
 						map[y][x] = MAP_DOOR;
-						object[OBJ_SPRITE] = SPRITE_BLUE_DOOR;
-						object[OBJ_WIDTH] = 64;
-						object[OBJ_HEIGHT] = 64;
-						object[OBJ_X] = 32 + 64 * x;
-						object[OBJ_Y] = 32 + 64 * y;
-						object[OBJ_X2] = x;
-						object[OBJ_Y2] = y;
+						object[OBJ_SPRITE] = (float) SPRITE_BLUE_DOOR;
+						object[OBJ_WIDTH] = 64.0F;
+						object[OBJ_HEIGHT] = 64.0F;
+						object[OBJ_X] = (float) (32 + 64 * x);
+						object[OBJ_Y] = (float) (32 + 64 * y);
+						object[OBJ_X2] = (float) x;
+						object[OBJ_Y2] = (float) y;
 						value >>= 8;
                         switch (value) {
                             case SYMBOL_BLUE_HORIZONTAL_DOOR:
-                                object[OBJ_TYPE] = TYPE_HORIZONTAL_DOOR;
-                                object[OBJ_PARALLEL] = PARALLEL_X;
+                                object[OBJ_TYPE] = (float) TYPE_HORIZONTAL_DOOR;
+                                object[OBJ_PARALLEL] = (float) PARALLEL_X;
                                 break;
                             case SYMBOL_YELLOW_HORIZONTAL_DOOR:
-                                object[OBJ_TYPE] = TYPE_HORIZONTAL_DOOR;
-                                object[OBJ_PARALLEL] = PARALLEL_X;
-                                object[OBJ_SPRITE] = SPRITE_YELLOW_DOOR;
-                                object[OBJ_HITS] = 1;
+                                object[OBJ_TYPE] = (float) TYPE_HORIZONTAL_DOOR;
+                                object[OBJ_PARALLEL] = (float) PARALLEL_X;
+                                object[OBJ_SPRITE] = (float) SPRITE_YELLOW_DOOR;
+                                object[OBJ_HITS] = 1.0F;
                                 break;
                             case SYMBOL_BLUE_VERTICAL_DOOR:
-                                object[OBJ_TYPE] = TYPE_VERTICAL_DOOR;
-                                object[OBJ_PARALLEL] = PARALLEL_Y;
+                                object[OBJ_TYPE] = (float) TYPE_VERTICAL_DOOR;
+                                object[OBJ_PARALLEL] = (float) PARALLEL_Y;
                                 break;
                             case SYMBOL_YELLOW_VERTICAL_DOOR:
-                                object[OBJ_TYPE] = TYPE_VERTICAL_DOOR;
-                                object[OBJ_PARALLEL] = PARALLEL_Y;
-                                object[OBJ_SPRITE] = SPRITE_YELLOW_DOOR;
-                                object[OBJ_HITS] = 1;
+                                object[OBJ_TYPE] = (float) TYPE_VERTICAL_DOOR;
+                                object[OBJ_PARALLEL] = (float) PARALLEL_Y;
+                                object[OBJ_SPRITE] = (float) SPRITE_YELLOW_DOOR;
+                                object[OBJ_HITS] = 1.0F;
                                 break;
                             case SYMBOL_BOSS:
-                                object[OBJ_TYPE] = TYPE_MAN;
-                                object[OBJ_SPRITE] = SPRITE_BOSS;
-                                object[OBJ_HEIGHT] = 51;
-                                object[OBJ_WIDTH] = 16;
-                                object[OBJ_HITS] = 32;
-                                object[OBJ_BOSS] = 1;
+                                object[OBJ_TYPE] = (float) TYPE_MAN;
+                                object[OBJ_SPRITE] = (float) SPRITE_BOSS;
+                                object[OBJ_HEIGHT] = 51.0F;
+                                object[OBJ_WIDTH] = 16.0F;
+                                object[OBJ_HITS] = 32.0F;
+                                object[OBJ_BOSS] = 1.0F;
                                 map[y][x] = MAP_EMPTY;
                                 break;
                             default:
-                                object[OBJ_TYPE] = TYPE_KEY;
-                                object[OBJ_WIDTH] = 16;
-                                object[OBJ_HEIGHT] = 8;
-                                object[OBJ_SPRITE] = SPRITE_KEY;
+                                object[OBJ_TYPE] = (float) TYPE_KEY;
+                                object[OBJ_WIDTH] = 16.0F;
+                                object[OBJ_HEIGHT] = 8.0F;
+                                object[OBJ_SPRITE] = (float) SPRITE_KEY;
                                 map[y][x] = MAP_EMPTY;
                                 break;
                         }
@@ -393,13 +393,13 @@ public class a extends GamePanel {
 						if (map[y][x] == MAP_EMPTY && objectMap[y][x].size() == 0) {
 							k--;
                             float[] object = new float[32];
-							object[OBJ_X] = 32 + (x << 6);
-							object[OBJ_Y] = 32 + (y << 6);
-							object[OBJ_TYPE] = TYPE_MAN;
-							object[OBJ_SPRITE] = SPRITE_MAN;
-							object[OBJ_HEIGHT] = 51;
-							object[OBJ_WIDTH] = 16;
-							object[OBJ_HITS] = 5;
+							object[OBJ_X] = (float) (32 + (x << 6));
+							object[OBJ_Y] = (float) (32 + (y << 6));
+							object[OBJ_TYPE] = (float) TYPE_MAN;
+							object[OBJ_SPRITE] = (float) SPRITE_MAN;
+							object[OBJ_HEIGHT] = 51.0F;
+							object[OBJ_WIDTH] = 16.0F;
+							object[OBJ_HITS] = 5.0F;
 							queue.add(object);
 							objectMap[y][x].add(object);
 						}
@@ -413,8 +413,8 @@ public class a extends GamePanel {
 
                 float nextX = playerX;
                 float nextY = playerY;
-                float vx = (float) Math.cos(playerAngle);
-                float vy = (float) Math.sin(playerAngle);
+                float vx = (float) Math.cos((double) playerAngle);
+                float vy = (float) Math.sin((double) playerAngle);
 
 				if (playerFiring > 0) {
 					playerFiring--;
@@ -431,32 +431,32 @@ public class a extends GamePanel {
 							by += vy;
 							for (i = 0; i < objectMap[(int) by >> 6][(int) bx >> 6].size(); i++) {
                                 float[] object = objectMap[(int) by >> 6][(int) bx >> 6].get(i);
-								if (object[OBJ_TYPE] == TYPE_MAN) {
-									if (--object[OBJ_HITS] == 0) {
+								if (object[OBJ_TYPE] == (float) TYPE_MAN) {
+									if (--object[OBJ_HITS] == (float) 0) {
 
 										
-										object[OBJ_TYPE] = TYPE_DEAD_MAN;
-										object[OBJ_SPRITE] = object[OBJ_BOSS] == 1 ? SPRITE_DEAD_BOSS : SPRITE_DEAD_MAN;
-										object[OBJ_HEIGHT] = 11;
-										object[OBJ_WIDTH] = 32;
-										object[OBJ_VX] = 0;
-										object[OBJ_VY] = 0;
+										object[OBJ_TYPE] = (float) TYPE_DEAD_MAN;
+										object[OBJ_SPRITE] = (float) (object[OBJ_BOSS] == 1.0F ? SPRITE_DEAD_BOSS : SPRITE_DEAD_MAN);
+										object[OBJ_HEIGHT] = 11.0F;
+										object[OBJ_WIDTH] = 32.0F;
+										object[OBJ_VX] = (float) 0;
+										object[OBJ_VY] = (float) 0;
 
 										x = (int) object[OBJ_X] >> 6;
 										y = (int) object[OBJ_Y] >> 6;
 
-										if (object[OBJ_BOSS] == 1) {
+										if (object[OBJ_BOSS] == 1.0F) {
 											
 											playerWinning = 2;
 										} else if (random.nextInt(4) == 0 || playerHealth < 16) {
 
                                             float[] medPack = new float[32];
-											medPack[OBJ_TYPE] = TYPE_MED_PACK;
-											medPack[OBJ_SPRITE] = SPRITE_MED_PACK;
-											medPack[OBJ_HEIGHT] = 10;
-											medPack[OBJ_WIDTH] = 32;
-											medPack[OBJ_X] = (x << 6) + 32;
-											medPack[OBJ_Y] = (y << 6) + 32;
+											medPack[OBJ_TYPE] = (float) TYPE_MED_PACK;
+											medPack[OBJ_SPRITE] = (float) SPRITE_MED_PACK;
+											medPack[OBJ_HEIGHT] = 10.0F;
+											medPack[OBJ_WIDTH] = 32.0F;
+											medPack[OBJ_X] = (float) ((x << 6) + 32);
+											medPack[OBJ_Y] = (float) ((y << 6) + 32);
 											queue.add(medPack);
 											objectMap[y][x].add(medPack);
 										}
@@ -484,11 +484,11 @@ public class a extends GamePanel {
 				}
 
 
-                int testX = vx < 0 ? -5 : 5;
-                int testY = vy < 0 ? -5 : 5;
+                int testX = vx < (float) 0 ? -5 : 5;
+                int testY = vy < (float) 0 ? -5 : 5;
 
-				if (map[((int) (nextY + testY) >> 6) & 15][((int) (nextX + testX) >> 6) & 15] == 0 && map[((int) nextY >> 6) & 15][((int) (nextX + testX) >> 6) & 15] == 0
-						&& map[((int) (nextY + testY) >> 6) & 15][((int) nextX >> 6) & 15] == 0) {
+				if (map[((int) (nextY + (float) testY) >> 6) & 15][((int) (nextX + (float) testX) >> 6) & 15] == 0 && map[((int) nextY >> 6) & 15][((int) (nextX + (float) testX) >> 6) & 15] == 0
+						&& map[((int) (nextY + (float) testY) >> 6) & 15][((int) nextX >> 6) & 15] == 0) {
 					playerX = nextX;
 					playerY = nextY;
 				}
@@ -497,58 +497,58 @@ public class a extends GamePanel {
 				for (i = queue.size() - 1; i >= 0; i--) {
                     float[] object = queue.get(i);
 
-					if (object[OBJ_REMOVE] == 1) {
+					if (object[OBJ_REMOVE] == 1.0F) {
 						queue.remove(i);
 						objectMap[(int) object[OBJ_Y] >> 6][(int) object[OBJ_X] >> 6].remove(object);
 						continue;
 					}
 
-					if (object[OBJ_TYPE] == TYPE_MAN) {
+					if (object[OBJ_TYPE] == (float) TYPE_MAN) {
 
 						
-						if (object[OBJ_STATE] == MAN_STATE_PAUSED) {
-							if (--object[OBJ_TIMER2] < 0) {
-								object[OBJ_SPRITE] = object[OBJ_BOSS] == 1 ? SPRITE_BOSS : SPRITE_MAN;
+						if (object[OBJ_STATE] == (float) MAN_STATE_PAUSED) {
+							if (--object[OBJ_TIMER2] < (float) 0) {
+								object[OBJ_SPRITE] = (float) (object[OBJ_BOSS] == 1.0F ? SPRITE_BOSS : SPRITE_MAN);
 							}
-							if (--object[OBJ_TIMER] < 0) {
-								object[OBJ_TIMER] = 60 + object[OBJ_BOSS] == 1 ? random.nextInt(60) : random.nextInt(180);
-								object[OBJ_STATE] = MAN_STATE_RUNNING;
+							if (--object[OBJ_TIMER] < (float) 0) {
+								object[OBJ_TIMER] = (float) (60 + object[OBJ_BOSS] == 1.0F ? random.nextInt(60) : random.nextInt(180));
+								object[OBJ_STATE] = (float) MAN_STATE_RUNNING;
 
                                 float angle = 6.28f * random.nextFloat();
-								object[OBJ_VX] = (float) Math.cos(angle);
-								object[OBJ_VY] = (float) Math.sin(angle);
-								if (object[OBJ_BOSS] == 1) {
-									object[OBJ_VX] *= 2;
-									object[OBJ_VY] *= 2;
+								object[OBJ_VX] = (float) Math.cos((double) angle);
+								object[OBJ_VY] = (float) Math.sin((double) angle);
+								if (object[OBJ_BOSS] == 1.0F) {
+									object[OBJ_VX] *= 2.0F;
+									object[OBJ_VY] *= 2.0F;
 								}
 							}
 						} else { 
 
 							
 							if (((int) object[OBJ_TIMER] & 7) == 0) {
-								object[OBJ_FLIPPED] = object[OBJ_FLIPPED] == 1 ? 0 : 1;
+								object[OBJ_FLIPPED] = (float) (object[OBJ_FLIPPED] == 1.0F ? 0 : 1);
 							}
 
 							
-							testX = object[OBJ_VX] < 0 ? -24 : 24;
-							testY = object[OBJ_VY] < 0 ? -24 : 24;
+							testX = object[OBJ_VX] < (float) 0 ? -24 : 24;
+							testY = object[OBJ_VY] < (float) 0 ? -24 : 24;
 
-							if (map[((int) (object[OBJ_Y] + testY) >> 6) & 15][((int) (object[OBJ_X] + testX) >> 6) & 15] != 0
-									|| map[((int) (object[OBJ_Y]) >> 6) & 15][((int) (object[OBJ_X] + testX) >> 6) & 15] != 0
-									|| map[((int) (object[OBJ_Y] + testY) >> 6) & 15][((int) (object[OBJ_X]) >> 6) & 15] != 0 || --object[OBJ_TIMER] < 0) {
-								object[OBJ_STATE] = MAN_STATE_PAUSED;
-								object[OBJ_TIMER] = 30 + random.nextInt(30);
-								object[OBJ_TIMER2] = 10;
-								object[OBJ_SPRITE] = object[OBJ_BOSS] == 1 ? SPRITE_BOSS_SHOOTING : SPRITE_MAN_SHOOTING;
-								object[OBJ_VX] = 0;
-								object[OBJ_VY] = 0;
+							if (map[((int) (object[OBJ_Y] + (float) testY) >> 6) & 15][((int) (object[OBJ_X] + (float) testX) >> 6) & 15] != 0
+									|| map[((int) (object[OBJ_Y]) >> 6) & 15][((int) (object[OBJ_X] + (float) testX) >> 6) & 15] != 0
+									|| map[((int) (object[OBJ_Y] + (float) testY) >> 6) & 15][((int) (object[OBJ_X]) >> 6) & 15] != 0 || --object[OBJ_TIMER] < (float) 0) {
+								object[OBJ_STATE] = (float) MAN_STATE_PAUSED;
+								object[OBJ_TIMER] = (float) (30 + random.nextInt(30));
+								object[OBJ_TIMER2] = 10.0F;
+								object[OBJ_SPRITE] = (float) (object[OBJ_BOSS] == 1.0F ? SPRITE_BOSS_SHOOTING : SPRITE_MAN_SHOOTING);
+								object[OBJ_VX] = (float) 0;
+								object[OBJ_VY] = (float) 0;
 
 
                                 float bx = object[OBJ_X];
                                 float by = object[OBJ_Y];
                                 float dx = playerX - bx;
                                 float dy = playerY - by;
-                                float mag = (float) Math.sqrt(dx * dx + dy * dy);
+                                float mag = (float) Math.sqrt((double) (dx * dx + dy * dy));
 								dx /= mag;
 								dy /= mag;
 								while (map[(int) by >> 6][(int) bx >> 6] == 0) {
@@ -556,7 +556,7 @@ public class a extends GamePanel {
 									by += dy;
                                     float ex = playerX - bx;
                                     float ey = playerY - by;
-									if (ex * ex + ey * ey < 4096) {
+									if (ex * ex + ey * ey < 4096.0F) {
 										playerHealth -= 2;
 										if (playerHealth <= 0) {
 											playerDying = 2;
@@ -566,50 +566,50 @@ public class a extends GamePanel {
 								}
 							}
 						}
-					} else if (object[OBJ_TYPE] == TYPE_HORIZONTAL_DOOR || object[OBJ_TYPE] == TYPE_VERTICAL_DOOR) {
+					} else if (object[OBJ_TYPE] == (float) TYPE_HORIZONTAL_DOOR || object[OBJ_TYPE] == (float) TYPE_VERTICAL_DOOR) {
 
 						
-						if (object[OBJ_STATE] == DOOR_STATE_CLOSED) {
+						if (object[OBJ_STATE] == (float) DOOR_STATE_CLOSED) {
                             float dx = object[OBJ_X] - playerX;
                             float dy = object[OBJ_Y] - playerY;
-							if (dx * dx + dy * dy < 9216 && a[VK_SPACE] && (object[OBJ_HITS] == 0 || playerHasKey)) {
-								object[OBJ_STATE] = DOOR_STATE_OPENING;
-								object[OBJ_TIMER] = 16;
+							if (dx * dx + dy * dy < 9216.0F && a[VK_SPACE] && (object[OBJ_HITS] == (float) 0 || playerHasKey)) {
+								object[OBJ_STATE] = (float) DOOR_STATE_OPENING;
+								object[OBJ_TIMER] = 16.0F;
 							}
-						} else if (object[OBJ_STATE] == DOOR_STATE_OPENING) {
-							if (object[OBJ_TYPE] == TYPE_HORIZONTAL_DOOR) {
-								object[OBJ_X] -= 4;
+						} else if (object[OBJ_STATE] == (float) DOOR_STATE_OPENING) {
+							if (object[OBJ_TYPE] == (float) TYPE_HORIZONTAL_DOOR) {
+								object[OBJ_X] -= 4.0F;
 							} else {
-								object[OBJ_Y] -= 4;
+								object[OBJ_Y] -= 4.0F;
 							}
-							if (--object[OBJ_TIMER] == 0) {
-								object[OBJ_TIMER] = 180;
-								object[OBJ_STATE] = DOOR_STATE_OPENED;
+							if (--object[OBJ_TIMER] == (float) 0) {
+								object[OBJ_TIMER] = 180.0F;
+								object[OBJ_STATE] = (float) DOOR_STATE_OPENED;
 								map[(int) object[OBJ_Y2]][(int) object[OBJ_X2]] = MAP_EMPTY;
 							}
-						} else if (object[OBJ_STATE] == DOOR_STATE_OPENED) {
-							if (--object[OBJ_TIMER] <= 0 && !(((int) playerX >> 6) == object[OBJ_X2] && ((int) playerY >> 6) == object[OBJ_Y2])
+						} else if (object[OBJ_STATE] == (float) DOOR_STATE_OPENED) {
+							if (--object[OBJ_TIMER] <= (float) 0 && !((float) ((int) playerX >> 6) == object[OBJ_X2] && (float) ((int) playerY >> 6) == object[OBJ_Y2])
 									&& objectMap[(int) object[OBJ_Y2]][(int) object[OBJ_X2]].size() == 1) {
-								object[OBJ_TIMER] = 16;
-								object[OBJ_STATE] = DOOR_STATE_CLOSING;
+								object[OBJ_TIMER] = 16.0F;
+								object[OBJ_STATE] = (float) DOOR_STATE_CLOSING;
 								map[(int) object[OBJ_Y2]][(int) object[OBJ_X2]] = MAP_DOOR;
 							}
 						} else {
-							if (object[OBJ_TYPE] == TYPE_HORIZONTAL_DOOR) {
-								object[OBJ_X] += 4;
+							if (object[OBJ_TYPE] == (float) TYPE_HORIZONTAL_DOOR) {
+								object[OBJ_X] += 4.0F;
 							} else {
-								object[OBJ_Y] += 4;
+								object[OBJ_Y] += 4.0F;
 							}
-							if (--object[OBJ_TIMER] == 0) {
-								object[OBJ_STATE] = DOOR_STATE_CLOSED;
+							if (--object[OBJ_TIMER] == (float) 0) {
+								object[OBJ_STATE] = (float) DOOR_STATE_CLOSED;
 							}
 						}
-					} else if (object[OBJ_TYPE] == TYPE_MED_PACK || object[OBJ_TYPE] == TYPE_KEY) {
+					} else if (object[OBJ_TYPE] == (float) TYPE_MED_PACK || object[OBJ_TYPE] == (float) TYPE_KEY) {
                         float dx = object[OBJ_X] - playerX;
                         float dy = object[OBJ_Y] - playerY;
-						if (dx * dx + dy * dy < 1024) {
-							object[OBJ_REMOVE] = 1;
-							if (object[OBJ_TYPE] == TYPE_MED_PACK) {
+						if (dx * dx + dy * dy < 1024.0F) {
+							object[OBJ_REMOVE] = 1.0F;
+							if (object[OBJ_TYPE] == (float) TYPE_MED_PACK) {
 								playerHealth += MED_PACK_HEALTH;
 								if (playerHealth > 64) {
 									playerHealth = 64;
@@ -621,18 +621,18 @@ public class a extends GamePanel {
 					}
 
 					
-					if (object[OBJ_VX] != 0 && object[OBJ_VY] != 0) {
+					if (object[OBJ_VX] != (float) 0 && object[OBJ_VY] != (float) 0) {
 						for (y = -1; y <= 1; y++) {
 							for (x = -1; x <= 1; x++) {
-								objectMap[((int) (object[OBJ_Y] + 16 * y) >> 6) & 15][((int) (object[OBJ_X] + 16 * x) >> 6) & 15].remove(object);
+								objectMap[((int) (object[OBJ_Y] + (float) (16 * y)) >> 6) & 15][((int) (object[OBJ_X] + (float) (16 * x)) >> 6) & 15].remove(object);
 							}
 						}
 						object[OBJ_X] += object[OBJ_VX];
 						object[OBJ_Y] += object[OBJ_VY];
 						for (y = -1; y <= 1; y++) {
 							for (x = -1; x <= 1; x++) {
-								if (!objectMap[((int) (object[OBJ_Y] + 16 * y) >> 6) & 15][((int) (object[OBJ_X] + 16 * x) >> 6) & 15].contains(object)) {
-									objectMap[((int) (object[OBJ_Y] + 16 * y) >> 6) & 15][((int) (object[OBJ_X] + 16 * x) >> 6) & 15].add(object);
+								if (!objectMap[((int) (object[OBJ_Y] + (float) (16 * y)) >> 6) & 15][((int) (object[OBJ_X] + (float) (16 * x)) >> 6) & 15].contains(object)) {
+									objectMap[((int) (object[OBJ_Y] + (float) (16 * y)) >> 6) & 15][((int) (object[OBJ_X] + (float) (16 * x)) >> 6) & 15].add(object);
 								}
 							}
 						}
@@ -658,20 +658,20 @@ public class a extends GamePanel {
             int gy = ((int) playerY >> 6) & 15;
 
 			
-			float ix = (int) playerX & 63;
-			float iy = (int) playerY & 63;
+			float ix = (float) ((int) playerX & 63);
+			float iy = (float) ((int) playerY & 63);
 
 
-            float ax = (float) Math.cos(playerAngle);
-            float ay = (float) Math.sin(playerAngle);
+            float ax = (float) Math.cos((double) playerAngle);
+            float ay = (float) Math.sin((double) playerAngle);
 
 
-            float bx = playerX + 256 * ax;
-            float by = playerY + 256 * ay;
+            float bx = playerX + 256.0F * ax;
+            float by = playerY + 256.0F * ay;
 
 
-            float cx = bx - 128 * ay;
-            float cy = by + 128 * ax;
+            float cx = bx - 128.0F * ay;
+            float cy = by + 128.0F * ax;
 
 
             float ex = ay;
@@ -688,36 +688,36 @@ public class a extends GamePanel {
 				}
 
 
-                float fx = cx + i * ex - playerX;
-                float fy = cy + i * ey - playerY;
-                float mag = (float) Math.sqrt(fx * fx + fy * fy);
+                float fx = cx + (float) i * ex - playerX;
+                float fy = cy + (float) i * ey - playerY;
+                float mag = (float) Math.sqrt((double) (fx * fx + fy * fy));
 				fx /= mag;
 				fy /= mag;
 
 
-                int hx = fx > 0 ? 1 : -1;
-                int hy = fy > 0 ? 1 : -1;
+                int hx = fx > (float) 0 ? 1 : -1;
+                int hy = fy > (float) 0 ? 1 : -1;
 
 
-                float jx = 64 / fx;
-                float jy = 64 / fy;
-				if (jx < 0) {
+                float jx = 64.0F / fx;
+                float jy = 64.0F / fy;
+				if (jx < (float) 0) {
 					jx = -jx;
 				}
-				if (jy < 0) {
+				if (jy < (float) 0) {
 					jy = -jy;
 				}
 
 
-                float kx = (fx >= 0 ? 64 - ix : -ix) / fx;
-                float ky = (fy >= 0 ? 64 - iy : -iy) / fy;
+                float kx = (fx >= (float) 0 ? 64.0F - ix : -ix) / fx;
+                float ky = (fy >= (float) 0 ? 64.0F - iy : -iy) / fy;
 
 
                 int lx = gx;
                 int ly = gy;
 
 				
-				float t = 0;
+				float t = (float) 0;
 
                 boolean xHit = false;
 
@@ -730,12 +730,12 @@ public class a extends GamePanel {
 						for (k = 0; k < objects.size(); k++) {
                             float[] object = objects.get(k);
 
-							float ox = 0;
-							float oy = 0;
-							float qx = 0;
-							float qy = 0;
+							float ox = (float) 0;
+							float oy = (float) 0;
+							float qx = (float) 0;
+							float qy = (float) 0;
 
-							if (object[OBJ_PARALLEL] == PARALLEL_NOT) {
+							if (object[OBJ_PARALLEL] == (float) PARALLEL_NOT) {
 
 								
 								ox = object[OBJ_X] - 0.5f * object[OBJ_WIDTH] * ay;
@@ -744,7 +744,7 @@ public class a extends GamePanel {
 								
 								qx = object[OBJ_WIDTH] * ay;
 								qy = -object[OBJ_WIDTH] * ax;
-							} else if (object[OBJ_PARALLEL] == PARALLEL_X) {
+							} else if (object[OBJ_PARALLEL] == (float) PARALLEL_X) {
 								
 								ox = object[OBJ_X] - 0.5f * object[OBJ_WIDTH];
 								oy = object[OBJ_Y];
@@ -766,11 +766,11 @@ public class a extends GamePanel {
                             float det = fx * qy - fy * qx;
                             float S = (fx * ry - fy * rx) / det;
                             float T = (qx * ry - qy * rx) / det;
-							if (S >= 0 && S < 1 && T > 0) {
-                                int spriteX = (int) (object[OBJ_FLIPPED] == 1 ? object[OBJ_WIDTH] - object[OBJ_WIDTH] * S : object[OBJ_WIDTH] * S);
+							if (S >= (float) 0 && S < 1.0F && T > (float) 0) {
+                                int spriteX = (int) (object[OBJ_FLIPPED] == 1.0F ? object[OBJ_WIDTH] - object[OBJ_WIDTH] * S : object[OBJ_WIDTH] * S);
 
-                                float h1 = 128 + mag * (32 - object[OBJ_HEIGHT]) / T;
-                                float h2 = 128 + mag * 32 / T;
+                                float h1 = 128.0F + mag * (32.0F - object[OBJ_HEIGHT]) / T;
+                                float h2 = 128.0F + mag * 32.0F / T;
 
                                 float hs = h2 - h1;
                                 int jMin = (int) h1;
@@ -778,8 +778,8 @@ public class a extends GamePanel {
 
 								for (j = jMin; j <= jMax; j++) {
 									if (j >= 0 && j < 256 && zbuffer[i][j] > T) {
-                                        int spriteY = (int) (object[OBJ_HEIGHT] * (j - jMin) / hs);
-										if (spriteX >= 0 && spriteY >= 0 && spriteX < object[OBJ_WIDTH] && spriteY < object[OBJ_HEIGHT] && sprites[(int) object[OBJ_SPRITE]][spriteY][spriteX] >= 0) {
+                                        int spriteY = (int) (object[OBJ_HEIGHT] * (float) (j - jMin) / hs);
+										if (spriteX >= 0 && spriteY >= 0 && (float) spriteX < object[OBJ_WIDTH] && (float) spriteY < object[OBJ_HEIGHT] && sprites[(int) object[OBJ_SPRITE]][spriteY][spriteX] >= 0) {
 											pixels[(j << 8) + i] = sprites[(int) object[OBJ_SPRITE]][spriteY][spriteX];
 											zbuffer[i][j] = T;
 										}
@@ -808,15 +808,15 @@ public class a extends GamePanel {
 
 
                 int textureX = (int) (xHit ? my : mx) & 63;
-				if (xHit ? fx > 0 : fy < 0) {
+				if (xHit ? fx > (float) 0 : fy < (float) 0) {
 					textureX = 63 - textureX;
 				}
 
 
-                float halfHeight = 32 * mag / t;
+                float halfHeight = 32.0F * mag / t;
 
 				
-				float textureY = 0;
+				float textureY = (float) 0;
                 float textureVy = t / mag;
 
 
@@ -897,7 +897,7 @@ public class a extends GamePanel {
 			}
 
 			
-			while (nextFrameStartTime - System.nanoTime() > 0) {
+			while (nextFrameStartTime - System.nanoTime() > 0L) {
 				Thread.yield();
 			}
 		}
@@ -947,7 +947,7 @@ public class a extends GamePanel {
 	  frame.pack();
 	  frame.setLocationRelativeTo(null);
 	  frame.setVisible(true);
-	  Thread.sleep(250);
+	  Thread.sleep(250L);
 	  applet.start();
 	}
 }

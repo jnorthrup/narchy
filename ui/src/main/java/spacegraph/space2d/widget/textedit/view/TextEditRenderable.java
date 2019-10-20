@@ -11,7 +11,7 @@ public abstract class TextEditRenderable {
     public final v3 position = new v3();
 //    public final v3 angle = new v3();
 public final @Nullable v3 scale = null;
-    public final Color4f color = new Color4f(1,1,1,1);
+    public final Color4f color = new Color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
     public void draw(GL2 gl) {
         gl.glPushMatrix();

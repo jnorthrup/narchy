@@ -17,7 +17,7 @@ public enum TruthIntegration {
 
 
 	public static double evi(Task t) {
-		return eviAbsolute(t, t.start(), t.end(), 0, false);
+		return eviAbsolute(t, t.start(), t.end(), (float) 0, false);
 	}
 
 
@@ -35,19 +35,19 @@ public enum TruthIntegration {
 		if (qStart == qEnd) {
 			//point
 			if (tStart == ETERNAL)
-				factor = 1;
+				factor = 1.0;
 			else {
 				if (qStart == LongInterval.ETERNAL) {
 					if (!eternalize)
 						throw new WTF();
-					factor = 0; //fully eternalize
+					factor = (double) 0; //fully eternalize
 				} else
 					factor = EvidenceEvaluator.of(tStart, t.end(), dur).applyAsDouble(qStart);
 			}
 		} else {
 			//range
 			//eternal task
-			factor = tStart == ETERNAL ? qEnd - qStart + 1 : eviIntegrate(qStart, qEnd, tStart, t.end(), dur);
+			factor = tStart == ETERNAL ? (double) (qEnd - qStart + 1L) : eviIntegrate(qStart, qEnd, tStart, t.end(), dur);
 		}
 
         double e = t.evi();
@@ -55,7 +55,7 @@ public enum TruthIntegration {
 			return e * factor;
 		} else {
             double ee = TruthFunctions.eternalize(e);
-			return (ee * (qEnd - qStart + 1)) + ((e-ee) * factor);
+			return (ee * (double) (qEnd - qStart + 1L)) + ((e-ee) * factor);
 		}
 	}
 
@@ -79,13 +79,13 @@ public enum TruthIntegration {
 	 */
 	public static double eviFast(Task t, long qStart, long qEnd) {
         long tStart = t.start();
-        long qRange = qEnd - qStart + 1;
-		qRange *= 2; //expansion bubble to rank extra evidence beyond the query range while ensuring fair comprison between temporals and eternals
-		return t.evi() * (tStart == ETERNAL ?
-			qRange //qRange
-			:
-			(Math.min(qRange, 1 + t.end() - tStart))) /
-				(1.0 + Util.sqr(t.minTimeTo(qStart, qEnd)/((double)qRange)));
+        long qRange = qEnd - qStart + 1L;
+		qRange *= 2L; //expansion bubble to rank extra evidence beyond the query range while ensuring fair comprison between temporals and eternals
+		return t.evi() * (double) (tStart == ETERNAL ?
+                qRange //qRange
+                :
+                (Math.min(qRange, 1L + t.end() - tStart))) /
+				(1.0 + Util.sqr((double) t.minTimeTo(qStart, qEnd) /((double)qRange)));
 			//(Math.min(qRange, 1 + t.end() - tStart)) / (1.0 + t.minTimeTo(qStart, qEnd)));
 			//((1 + t.end() - tStart)) / (1.0 + t.meanTimeTo(qStart, qEnd)));
 			//Math.min(range, t.range()) / (1 + t.minTimeTo(qStart, qEnd)));
@@ -95,9 +95,9 @@ public enum TruthIntegration {
 	public static double eviFast(Task t, long now) {
         long s = t.start();  //assert(s!=ETERNAL);
         long e = t.end();
-        double dist = (now >= s && now <= e) ? 0 : Util.mean((double) Math.abs(now - s), Math.abs(now - e));
-        long range = 1 + e - s;
-		return range * t.evi() / (1 + dist);
+        double dist = (now >= s && now <= e) ? (double) 0 : Util.mean((double) Math.abs(now - s), (double) Math.abs(now - e));
+        long range = 1L + e - s;
+		return (double) range * t.evi() / (1.0 + dist);
 
 		//return (1+e-s) * t.evi() / (1 + Math.max(Math.abs(now - s), Math.abs(now - e))); //penalize long tasks even if they surround now evenly
 		///return t.range() * t.evi() / (1 + t.maxTimeTo(now));
@@ -124,18 +124,18 @@ public enum TruthIntegration {
 		   //question starts during and ends after task
 		   //return e.integrateN(qs, te, Math.min(te + 1, qe), (te + qe) / 2, qe);
 		   //return e.integrateN(qs, te, (te + qe) / 2, qe);
-		   return e.integrate4(qs, te, Math.min(te+1, qe), qe);
+		   return e.integrate4(qs, te, Math.min(te+ 1L, qe), qe);
 	   } else if (/*qs < ts &&*/ qe <= te) {
 		   //question starts before task and ends during task
-		   return e.integrate4(qs, Math.max(qs, ts-1), ts, qe);
+		   return e.integrate4(qs, Math.max(qs, ts- 1L), ts, qe);
 	   } else {
 //			assert(qs <= ts && qe >= te);
 
 		   //question surrounds task
 			return e.integrateN(
-			   qs, Math.max(qs, ts - 1),
+			   qs, Math.max(qs, ts - 1L),
 			   ts, te,
-			   Math.min(te + 1, qe), qe);
+			   Math.min(te + 1L, qe), qe);
 	   }
 	}
 

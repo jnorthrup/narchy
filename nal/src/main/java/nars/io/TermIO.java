@@ -59,28 +59,28 @@ public interface TermIO {
     class DefaultTermIO implements TermIO {
 
         /** lower 5 bits (bits 0..4) = base op */
-        static final byte OP_MASK = (0b00011111);
+        static final byte OP_MASK = (byte) (0b00011111);
         /** upper control flags for the op byte */
-        static final byte TEMPORAL_BIT_0 = 1 << 5;
-        static final byte TEMPORAL_BIT_1 = 1 << 6;
+        static final byte TEMPORAL_BIT_0 = (byte) (1 << 5);
+        static final byte TEMPORAL_BIT_1 = (byte) (1 << 6);
 
         //static { assert(TEMPORAL_BIT_0 == OP_MASK + 1); }
         static {
-            assert(Op.values().length < OP_MASK);
-            for (Op o : Op.values()) assert !o.temporal || (o.id != OP_MASK); /* sanity test to avoid temporal Op id appearing as SPECIAL_BYTE if the higher bits were all 1's */
+            assert(Op.values().length < (int) OP_MASK);
+            for (Op o : Op.values()) assert !o.temporal || ((int) o.id != (int) OP_MASK); /* sanity test to avoid temporal Op id appearing as SPECIAL_BYTE if the higher bits were all 1's */
         }
 
         @Override
         public Term read(DataInput in) throws IOException {
             byte opByte = in.readByte();
-            if (opByte == SPECIAL_BYTE) {
+            if ((int) opByte == (int) SPECIAL_BYTE) {
                 try {
                     return Narsese.term(in.readUTF(), false);
                 } catch (Narsese.NarseseException e) {
                     throw new IOException(e);
                 }
             }
-            Op o = Op.the(opByte & OP_MASK);
+            Op o = Op.the((int) opByte & (int) OP_MASK);
             switch (o) {
                 case VAR_DEP:
                 case VAR_INDEP:
@@ -88,7 +88,7 @@ public interface TermIO {
                 case VAR_QUERY:
                     return $.v(o, in.readByte());
                 case IMG:
-                    return in.readByte() == ((byte) '/') ? Op.ImgExt : Op.ImgInt;
+                    return (int) in.readByte() == (int) ((byte) '/') ? Op.ImgExt : Op.ImgInt;
                 case BOOL:
                     byte code = in.readByte();
                     switch (code) {
@@ -106,7 +106,7 @@ public interface TermIO {
                         case 0:
                             return Atomic.the(in.readUTF());
                         case 1:
-                            return Anom.the(in.readByte());
+                            return Anom.the((int) in.readByte());
                         case 2:
                             return AtomBytes.atomBytes(in);
                         default:
@@ -120,7 +120,7 @@ public interface TermIO {
                     return read(in).neg();
                 default: {
 
-                    int temporalFlags = (opByte & (TEMPORAL_BIT_0|TEMPORAL_BIT_1)) >> 5;
+                    int temporalFlags = ((int) opByte & ((int) TEMPORAL_BIT_0 | (int) TEMPORAL_BIT_1)) >> 5;
                     int dt;
                     switch (temporalFlags) {
                         case 0: dt = DTERNAL; break;
@@ -129,7 +129,7 @@ public interface TermIO {
                         default: /*case 3:*/ dt = IntCoding.readZigZagInt(in); break;
                     }
 
-                    int siz = in.readByte();
+                    int siz = (int) in.readByte();
 
                     assert (siz < NAL.term.SUBTERMS_MAX);
 
@@ -187,12 +187,15 @@ public interface TermIO {
             boolean dtSpecial = false;
             if (dt != DTERNAL && o.temporal) {
                 switch (dt) {
-                    case XTERNAL: opByte |= TEMPORAL_BIT_0; break;
-                    case 0: opByte |= TEMPORAL_BIT_0 | TEMPORAL_BIT_1; break;
-                    default: opByte |= TEMPORAL_BIT_0 | TEMPORAL_BIT_1; dtSpecial = true; break;
+                    case XTERNAL:
+                        opByte = (byte) ((int) opByte | (int) TEMPORAL_BIT_0); break;
+                    case 0:
+                        opByte = (byte) ((int) opByte | (int) TEMPORAL_BIT_0 | (int) TEMPORAL_BIT_1); break;
+                    default:
+                        opByte = (byte) ((int) opByte | (int) TEMPORAL_BIT_0 | (int) TEMPORAL_BIT_1); dtSpecial = true; break;
                 }
             }
-            out.writeByte(opByte);
+            out.writeByte((int) opByte);
             if (dtSpecial)
                 writeDT(dt, out);
         }
@@ -222,7 +225,7 @@ public interface TermIO {
                     int x = ttt.subMap(i);
                     if (x < 0) {
                         outNegByte(out);
-                        x = (byte) -x;
+                        x = (int) (byte) -x;
                     }
                     write(ttt.mapTerm(x), out);
                 }
@@ -231,9 +234,9 @@ public interface TermIO {
                 short[] ss = ttt.subterms;
                 out.writeByte(ss.length);
                 for (short s : ss) {
-                    if (s < 0) {
+                    if ((int) s < 0) {
                         outNegByte(out);
-                        s = (short) -s;
+                        s = (short) -(int) s;
                     }
                     write(_term(s), out);
                 }
@@ -245,7 +248,7 @@ public interface TermIO {
     }
 
     static void outNegByte(ByteArrayDataOutput out) {
-        out.writeByte(NEG.id);
+        out.writeByte((int) NEG.id);
     }
 
     /**

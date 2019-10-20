@@ -24,13 +24,13 @@ public abstract class GameTime {
     public abstract long next(long now);
 
     public final long prev(long now) {
-        return (now - Math.max(1, next(now))); //HACK
+        return (now - Math.max(1L, next(now))); //HACK
     }
 
     /** like clone, but creates a new Time instance that 'follows' another */
     public abstract GameTime chain(float periodMultiplier);
 
-    public final GameTime chain() { return chain(1); }
+    public final GameTime chain() { return chain(1.0F); }
 
     abstract public void pause(boolean pause);
 
@@ -44,7 +44,7 @@ public abstract class GameTime {
 
         public final Loop loop;
         private Game g = null;
-        private float dur = 1;
+        private float dur = 1.0F;
 
         public FPS(float fps) {
             this.initialFPS = fps;
@@ -83,10 +83,10 @@ public abstract class GameTime {
         public long next(long now) {
             RealTime t = (RealTime) g.nar.time;
 
-            double unitsPerSec = 1/t.secondsPerUnit();
-            double secondsPerFrame = 1/loop.getFPS();
+            double unitsPerSec = 1.0 /t.secondsPerUnit();
+            double secondsPerFrame = (double) (1 / loop.getFPS());
             double unitsPerFrame = unitsPerSec * secondsPerFrame;
-            this.dur = (float) Math.max(1, unitsPerFrame);
+            this.dur = (float) Math.max(1.0, unitsPerFrame);
             return now + Math.round(t.secondsToUnits(loop.periodS()));
         }
 
@@ -139,7 +139,7 @@ public abstract class GameTime {
         private final transient float durPeriod;
 
         public DurLoop loop = null;
-        private float dur = 1;
+        private float dur = 1.0F;
 
         Durs(float durPeriod) {
             this.durPeriod = durPeriod;
@@ -175,7 +175,7 @@ public abstract class GameTime {
         @Override
         public long next(long now) {
             DurLoop l = this.loop;
-            this.dur = Tense.occToDT(l.durCycles());
+            this.dur = (float) Tense.occToDT(l.durCycles());
             return now + l.durCycles();
         }
     }

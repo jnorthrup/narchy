@@ -16,10 +16,8 @@ import nars.unify.Unify;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Function;
 import java.util.function.IntPredicate;
 import java.util.function.UnaryOperator;
-import java.util.stream.IntStream;
 
 import static nars.Op.CONJ;
 import static nars.time.Tense.*;
@@ -111,7 +109,7 @@ public class Sequence extends CachedCompound.TemporalCachedCompound {
         Subterms ss = subterms();
         for (int i = 0; i < n; i++) {
             if (times.key(i, ss).equals(match)) {
-                if (!each.test(occToDT(times.value(i)))) {
+                if (!each.test(occToDT((long) times.value(i)))) {
                     return false;
                 }
             }
@@ -156,7 +154,7 @@ public class Sequence extends CachedCompound.TemporalCachedCompound {
 
     @Override
     public int eventRange() {
-        return Tense.occToDT(times.valueLast()-times.valueFirst());
+        return Tense.occToDT((long) (times.valueLast() - times.valueFirst()));
     }
 
     @Override
@@ -169,7 +167,7 @@ public class Sequence extends CachedCompound.TemporalCachedCompound {
         int n = times.size();
         Subterms ss = subterms();
         for (int i = 0; i < n; i++) {
-            long o = offset != ETERNAL ? times.value(i) + offset : ETERNAL;
+            long o = offset != ETERNAL ? (long) times.value(i) + offset : ETERNAL;
             Term x = times.key(i, ss);
             if (x instanceof Compound && (decomposeConjDTernal || decomposeXternal) && x.op()==CONJ) {
                 int xdt = x.dt();

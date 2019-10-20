@@ -38,10 +38,10 @@ public class HijackMemory extends Memory {
     public HijackMemory(int capacity, int reprobes) {
         super();
 
-        initialTask = 1f/(reprobes+1);
-        initialNode = initialTask / 2; //(non-task) node concepts less valuable
+        initialTask = 1f/ (float) (reprobes + 1);
+        initialNode = initialTask / 2.0F; //(non-task) node concepts less valuable
 
-        getBoost = (float) (1f/Math.sqrt(capacity));
+        getBoost = (float) (1 /Math.sqrt((double) capacity));
 
         this.table = new PriHijackBag<>(capacity, reprobes) {
 
@@ -94,7 +94,7 @@ public class HijackMemory extends Memory {
         //    private int dur;
         DurLoop onDur = nar.onDur(this::commit);
         int forgetPeriodDurs = 64;
-        onDur.durs(forgetPeriodDurs);
+        onDur.durs((float) forgetPeriodDurs);
     }
 
     /**

@@ -87,8 +87,8 @@ public class SensorBeliefTables extends BeliefTables {
             seriesEnd = seriesStart;
 
         int cleanMargin = cleanMarginCycles(r.what.dur());
-        long ss = seriesStart + cleanMargin;
-        long ee = seriesEnd - cleanMargin;
+        long ss = seriesStart + (long) cleanMargin;
+        long ee = seriesEnd - (long) cleanMargin;
         return ss < ee && series.absorbNonSignal(r.input, ss, ee);
     }
 
@@ -114,7 +114,7 @@ public class SensorBeliefTables extends BeliefTables {
 
         float nextPri = pri *
                     lerp((float) SensorBeliefTables.surprise(prev, next, dur),
-                            minSurprise, 1);
+                            minSurprise, 1.0F);
 
             next.pri(nextPri);
 
@@ -144,25 +144,25 @@ public class SensorBeliefTables extends BeliefTables {
 
         boolean NEW = prev == null;
         if (NEW)
-            return 1;
+            return 1.0;
 
         boolean stretched = prev == next;
         if (stretched)
-            return 0;
+            return (double) 0;
 
         float deltaFreq = Math.abs(prev.freq() - next.freq()); //TODO use a moving average or other anomaly/surprise detection
 
         long sepCycles  = Math.abs(next.start() - prev.end());
-        double deltaTime = 1 - NAL.evi(1, sepCycles, dur);
+        double deltaTime = 1.0 - NAL.evi(1.0, sepCycles, dur);
 
-        return Util.or(deltaFreq , deltaTime);
+        return Util.or((double) deltaFreq, deltaTime);
     }
 
 
     /** surPRIse */
     public float surprise() {
         Task n = current;
-        return (n!=null) ? n.priElseZero() : 0;
+        return (n!=null) ? n.priElseZero() : (float) 0;
     }
 
     public final Task current() {

@@ -31,7 +31,6 @@ import jake2.sys.Timer;
 import jake2.util.Lib;
 
 import java.io.IOException;
-import java.util.stream.IntStream;
 
 public class SV_MAIN {
 
@@ -131,11 +130,11 @@ public class SV_MAIN {
 
         String status = Cvar.Serverinfo() + '\n';
 
-        for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+        for (int i = 0; (float) i < SV_MAIN.maxclients.value; i++) {
             client_t cl = SV_INIT.svs.clients[i];
             if (cl.state == Defines.cs_connected
                     || cl.state == Defines.cs_spawned) {
-                String player = String.valueOf(cl.edict.client.ps.stats[Defines.STAT_FRAGS]) + ' ' + cl.ping + '"' + cl.name + "\"\n";
+                String player = String.valueOf((int) cl.edict.client.ps.stats[Defines.STAT_FRAGS]) + ' ' + cl.ping + '"' + cl.name + "\"\n";
 
                 int playerLength = player.length();
                 int statusLength = status.length();
@@ -172,7 +171,7 @@ public class SV_MAIN {
      */
     public static void SVC_Info() {
 
-        if (SV_MAIN.maxclients.value == 1)
+        if (SV_MAIN.maxclients.value == 1.0F)
             return;
 
         int version = Lib.atoi(Cmd.Argv(1));
@@ -182,7 +181,7 @@ public class SV_MAIN {
             string = SV_MAIN.hostname.string + ": wrong version\n";
         else {
             int count = 0;
-            for (int i = 0; i < SV_MAIN.maxclients.value; i++)
+            for (int i = 0; (float) i < SV_MAIN.maxclients.value; i++)
                 if (SV_INIT.svs.clients[i].state >= Defines.cs_connected)
                     count++;
 
@@ -226,7 +225,7 @@ public class SV_MAIN {
 
         if (i == Defines.MAX_CHALLENGES) {
             
-            SV_INIT.svs.challenges[oldest].challenge = Lib.rand() & 0x7fff;
+            SV_INIT.svs.challenges[oldest].challenge = (int) Lib.rand() & 0x7fff;
             SV_INIT.svs.challenges[oldest].adr = Globals.net_from;
             SV_INIT.svs.challenges[oldest].time = Globals.curtime;
             i = oldest;
@@ -293,7 +292,7 @@ public class SV_MAIN {
 
 
         client_t cl;
-        for (i = 0; i < SV_MAIN.maxclients.value; i++) {
+        for (i = 0; (float) i < SV_MAIN.maxclients.value; i++) {
             cl = SV_INIT.svs.clients[i];
 
             if (cl.state == Defines.cs_free)
@@ -315,7 +314,7 @@ public class SV_MAIN {
 
 
         int index = -1;
-        for (i = 0; i < SV_MAIN.maxclients.value; i++) {
+        for (i = 0; (float) i < SV_MAIN.maxclients.value; i++) {
             cl = SV_INIT.svs.clients[i];
             if (cl.state == Defines.cs_free) {
                 index = i;
@@ -489,7 +488,7 @@ public class SV_MAIN {
      */
     public static void SV_CalcPings() {
 
-        for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+        for (int i = 0; (float) i < SV_MAIN.maxclients.value; i++) {
             client_t cl = SV_INIT.svs.clients[i];
             if (cl.state != Defines.cs_spawned)
                 continue;
@@ -521,7 +520,7 @@ public class SV_MAIN {
         if ((SV_INIT.sv.framenum & 15) != 0)
             return;
 
-        for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+        for (int i = 0; (float) i < SV_MAIN.maxclients.value; i++) {
             client_t cl = SV_INIT.svs.clients[i];
             if (cl.state == Defines.cs_free)
                 continue;
@@ -542,7 +541,7 @@ public class SV_MAIN {
 
             boolean b = true;
             for (int v : new int[]{0, 1, 2, 3}) {
-                if ((Globals.net_message.data[v] != -1)) {
+                if (((int) Globals.net_message.data[v] != -1)) {
                     b = false;
                     break;
                 }
@@ -557,11 +556,11 @@ public class SV_MAIN {
             MSG.BeginReading(Globals.net_message);
             MSG.ReadLong(Globals.net_message); 
             MSG.ReadLong(Globals.net_message); 
-            qport = MSG.ReadShort(Globals.net_message) & 0xffff;
+            qport = (int) MSG.ReadShort(Globals.net_message) & 0xffff;
 
 
             int i;
-            for (i = 0; i < SV_MAIN.maxclients.value; i++) {
+            for (i = 0; (float) i < SV_MAIN.maxclients.value; i++) {
                 client_t cl = SV_INIT.svs.clients[i];
                 if (cl.state == Defines.cs_free)
                     continue;
@@ -585,7 +584,7 @@ public class SV_MAIN {
                 break;
             }
 
-            if (i != SV_MAIN.maxclients.value)
+            if ((float) i != SV_MAIN.maxclients.value)
                 continue;
         }
     }
@@ -601,10 +600,10 @@ public class SV_MAIN {
      */
     public static void SV_CheckTimeouts() {
 
-        int droppoint = (int) (SV_INIT.svs.realtime - 1000 * SV_MAIN.timeout.value);
-        int zombiepoint = (int) (SV_INIT.svs.realtime - 1000 * SV_MAIN.zombietime.value);
+        int droppoint = (int) ((float) SV_INIT.svs.realtime - 1000.0F * SV_MAIN.timeout.value);
+        int zombiepoint = (int) ((float) SV_INIT.svs.realtime - 1000.0F * SV_MAIN.zombietime.value);
 
-        for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+        for (int i = 0; (float) i < SV_MAIN.maxclients.value; i++) {
             client_t cl = SV_INIT.svs.clients[i];
 
             if (cl.lastmessage > SV_INIT.svs.realtime)
@@ -644,7 +643,7 @@ public class SV_MAIN {
      * SV_RunGameFrame.
      */
     public static void SV_RunGameFrame() {
-        if (Globals.host_speeds.value != 0)
+        if (Globals.host_speeds.value != (float) 0)
             Globals.time_before_game = Timer.Milliseconds();
 
         
@@ -655,18 +654,18 @@ public class SV_MAIN {
         SV_INIT.sv.time = SV_INIT.sv.framenum * 100;
 
         
-        if (0 == SV_MAIN.sv_paused.value || SV_MAIN.maxclients.value > 1) {
+        if ((float) 0 == SV_MAIN.sv_paused.value || SV_MAIN.maxclients.value > 1.0F) {
             GameBase.G_RunFrame();
 
             
             if (SV_INIT.sv.time < SV_INIT.svs.realtime) {
-                if (SV_MAIN.sv_showclamp.value != 0)
+                if (SV_MAIN.sv_showclamp.value != (float) 0)
                     Com.Printf("sv highclamp\n");
                 SV_INIT.svs.realtime = SV_INIT.sv.time;
             }
         }
 
-        if (Globals.host_speeds.value != 0)
+        if (Globals.host_speeds.value != (float) 0)
             Globals.time_after_game = Timer.Milliseconds();
 
     }
@@ -681,7 +680,7 @@ public class SV_MAIN {
         if (!SV_INIT.svs.initialized)
             return;
 
-        SV_INIT.svs.realtime += msec;
+        SV_INIT.svs.realtime = (int) ((long) SV_INIT.svs.realtime + msec);
 
         
         Lib.rand();
@@ -696,11 +695,11 @@ public class SV_MAIN {
         
 
         
-        if (0 == SV_MAIN.sv_timedemo.value
+        if ((float) 0 == SV_MAIN.sv_timedemo.value
                 && SV_INIT.svs.realtime < SV_INIT.sv.time) {
             
             if (SV_INIT.sv.time - SV_INIT.svs.realtime > 100) {
-                if (SV_MAIN.sv_showclamp.value != 0)
+                if (SV_MAIN.sv_showclamp.value != (float) 0)
                     Com.Printf("sv lowclamp\n");
                 SV_INIT.svs.realtime = SV_INIT.sv.time - 100;
             }
@@ -734,11 +733,11 @@ public class SV_MAIN {
     public static void Master_Heartbeat() {
 
 
-        if (Globals.dedicated == null || 0 == Globals.dedicated.value)
+        if (Globals.dedicated == null || (float) 0 == Globals.dedicated.value)
             return; 
 
         
-        if (null == SV_MAIN.public_server || 0 == SV_MAIN.public_server.value)
+        if (null == SV_MAIN.public_server || (float) 0 == SV_MAIN.public_server.value)
             return; 
 
         
@@ -770,11 +769,11 @@ public class SV_MAIN {
     public static void Master_Shutdown() {
 
 
-        if (null == Globals.dedicated || 0 == Globals.dedicated.value)
+        if (null == Globals.dedicated || (float) 0 == Globals.dedicated.value)
             return; 
 
         
-        if (null == SV_MAIN.public_server || 0 == SV_MAIN.public_server.value)
+        if (null == SV_MAIN.public_server || (float) 0 == SV_MAIN.public_server.value)
             return; 
 
         

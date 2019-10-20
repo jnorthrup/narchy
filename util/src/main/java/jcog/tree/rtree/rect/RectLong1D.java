@@ -77,25 +77,25 @@ public class RectLong1D implements HyperRegion {
     @Override
     public double coord(int dimension, boolean maxOrMin) {
         assert(dimension==0);
-        return maxOrMin ? max : min;
+        return (double) (maxOrMin ? max : min);
     }
 
 
 
     public Long1D center() {
-        return new Long1D((min + max) / 2);
+        return new Long1D((min + max) / 2L);
     }
 
     @Override
     public double center(int d) {
         assert (d == 0);
-        return (min + max) / 2.0;
+        return (double) (min + max) / 2.0;
     }
 
     @Override
     public double range(int dim) {
         assert (dim == 0);
-        return Math.abs(max - min);
+        return (double) Math.abs(max - min);
     }
 
     @Override

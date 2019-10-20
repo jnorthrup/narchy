@@ -34,9 +34,9 @@ public abstract class TaskCondition implements NARCondition, Predicate<Task> {
 	 * in range of 0..100%, 0 meaning equal
 	 */
 	public static float termDistance(Term a, Term b, float ifLessThan) {
-		if (a.equals(b)) return 0;
+		if (a.equals(b)) return (float) 0;
 
-		float dist = 0;
+		float dist = (float) 0;
 		if (a.op() != b.op()) {
 
 			dist += 0.4f;
@@ -58,7 +58,7 @@ public abstract class TaskCondition implements NARCondition, Predicate<Task> {
 			b.toString()) * 0.1f;
 
 		if (a.dt() != b.dt()) {
-			dist *= 2;
+			dist *= 2.0F;
 		}
 
 		return dist;
@@ -79,7 +79,7 @@ public abstract class TaskCondition implements NARCondition, Predicate<Task> {
 
 	@Override
 	public long getFinalCycle() {
-		return -1;
+		return -1L;
 	}
 
 	@Override

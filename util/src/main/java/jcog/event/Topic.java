@@ -6,7 +6,6 @@ import jcog.exe.Exe;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -107,7 +106,7 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
     }
 
     default Off on(long minUpdatePeriodMS, Consumer<X> o) {
-        return minUpdatePeriodMS == 0 ? on(o) :
+        return minUpdatePeriodMS == 0L ? on(o) :
                 on(System::currentTimeMillis, () -> minUpdatePeriodMS, o);
     }
 

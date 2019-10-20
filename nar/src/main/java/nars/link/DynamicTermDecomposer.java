@@ -140,7 +140,7 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
         public @Nullable Term decompose(Compound t, Random rng) {
             Term subjOrPred = subterm(t, rng);
             if (subjOrPred instanceof Compound && rng.nextBoolean()) {
-                return subjOrPred.opID() == CONJ.id ? WeightedConjEvent.decompose((Compound) subjOrPred, rng) : Weighted.decompose((Compound) subjOrPred, rng);
+                return subjOrPred.opID() == (int) CONJ.id ? WeightedConjEvent.decompose((Compound) subjOrPred, rng) : Weighted.decompose((Compound) subjOrPred, rng);
             } else {
                 return subjOrPred;
             }
@@ -162,7 +162,7 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
                     float fanoutRatio =
                             //root.volume() / (1f + root.subs());
                             //1 / (1 + ((float)root.volume())/(1+root.subs()));
-                            1 / (1 + (root.volume()-1f)/s);
+                            1.0F / (1.0F + ((float) root.volume() -1f)/ (float) s);
 
                     float w =
                             fanoutRatio;
@@ -191,7 +191,7 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
             if (subterm instanceof Variable)
                 return 0.5f;
             if (subterm instanceof Atomic)
-                return 1;
+                return 1.0F;
 
             int v =
                     subterm.unneg().volume();
@@ -200,7 +200,7 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
                     //1f / Util.sqrt(v); //inverse sqrt
                     //1f / v; //inverse
                     //1f/(v*v); //inverse_sq
-                    Util.sqrt(v);
+                    Util.sqrt((float) v);
                     //v;
                     //Util.sqr((float)v);
                     //1; //flat

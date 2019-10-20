@@ -25,7 +25,6 @@ import com.google.common.collect.Sets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class FormulaPreprocessor {
 
@@ -808,7 +807,7 @@ public class FormulaPreprocessor {
                         || (!query
                         && !Formula.isLogicalOperator(f.car())
 
-                        && (f.theFormula.indexOf('"') == -1)
+                        && (f.theFormula.indexOf((int) '"') == -1)
 
                         && f.theFormula.matches(".*\\?\\w+.*"))
 

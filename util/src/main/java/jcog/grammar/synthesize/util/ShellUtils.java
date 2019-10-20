@@ -73,7 +73,7 @@ public class ShellUtils {
             }
             return result;
         };
-        if (timeoutMillis == -1) {
+        if (timeoutMillis == -1L) {
             try {
                 return exec.call();
             } catch (Exception e) {

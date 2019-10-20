@@ -95,7 +95,7 @@ public class Curve2 {
      */
     public int indexOf(float x) {
         if (looped && (x > loopStart) && (x < loopEnd)) {
-            x = loopStart + (((x - loopStart) * loopCount) % (loopEnd - loopStart));
+            x = loopStart + (((x - loopStart) * (float) loopCount) % (loopEnd - loopStart));
         }
 
         if ((x < this.xs[0]) || (x > this.xs[size - 1])) return -1;
@@ -121,7 +121,7 @@ public class Curve2 {
      */
     public int indexOf(float x, int idxLo) {
         if (looped && (x > loopStart) && (x < loopEnd)) {
-            x = loopStart + (((x - loopStart) * loopCount) % (loopEnd - loopStart));
+            x = loopStart + (((x - loopStart) * (float) loopCount) % (loopEnd - loopStart));
         }
 
         if ((x < this.xs[0]) || (x > this.xs[size - 1])) return -1;
@@ -184,13 +184,13 @@ public class Curve2 {
     public void calc(float startX, float stopX, float[] a, int off, int len) {
         len--;
 
-        float stepX = (stopX - startX) / len;
+        float stepX = (stopX - startX) / (float) len;
         int idx = indexOf(startX);
 
         a[off] = calc(startX, idx);        
 
         for (int i = 1, j = off; i < len; i++) {
-            float x = startX + i * stepX;
+            float x = startX + (float) i * stepX;
             idx = indexOf(x, idx);
             a[++j] = calc(x, idx);
         }

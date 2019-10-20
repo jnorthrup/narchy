@@ -32,7 +32,6 @@ import java4k.GamePanel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.util.stream.IntStream;
 
 public class A extends GamePanel {
 
@@ -118,9 +117,9 @@ public class A extends GamePanel {
 		c[0] = Color.WHITE;
 		c[1] = Color.BLACK;
 
-		p[4] = -1;
-		p[0] = 10;
-		p[1] = 130;
+		p[4] = -1.0F;
+		p[0] = 10.0F;
+		p[1] = 130.0F;
 
 	}
 
@@ -147,10 +146,10 @@ public class A extends GamePanel {
 				if (!boolValues[1]) {
 					boolValues[1] = true;
 					boolValues[3] = boolValues[2] = false;
-					p[0] = 10;
-					p[1] = 130;
-					p[2] = 0;
-					p[3] = 0;
+					p[0] = 10.0F;
+					p[1] = 130.0F;
+					p[2] = (float) 0;
+					p[3] = (float) 0;
 					c[1] = Color.BLACK;
 					c[0] = Color.WHITE;
 					p[6] = 1.4f;
@@ -165,7 +164,7 @@ public class A extends GamePanel {
 			}
 			if (pressed[KeyEvent.VK_ESCAPE]) {
 				boolValues[1] = false;
-				p[3] = -1;
+				p[3] = -1.0F;
 			}
 
 			
@@ -173,42 +172,42 @@ public class A extends GamePanel {
 				
 				p[0] += p[6];
 				
-				if ((int) (p[2] % 3) == 1) {
-					p[0] -= p[6] * 2;
+				if ((int) (p[2] % 3.0F) == 1) {
+					p[0] -= p[6] * 2.0F;
 					
-					if (p[0] < 0) {
-						p[2] += 1;
-						p[0] = 10;
-						p[1] = 450;
+					if (p[0] < (float) 0) {
+						p[2] += 1.0F;
+						p[0] = 10.0F;
+						p[1] = 450.0F;
 					}
 				}
 				
-				if ((int) (p[2] % 3) == 0) {
-					if (p[0] + 30 > 640) {
-						p[2] += 1;
-						p[0] = 600;
-						p[1] = 290;
+				if ((int) (p[2] % 3.0F) == 0) {
+					if (p[0] + 30.0F > 640.0F) {
+						p[2] += 1.0F;
+						p[0] = 600.0F;
+						p[1] = 290.0F;
 					}
 				}
 				
-				if ((int) (p[2] % 3) == 2) {
-					if (p[0] + 30 > 640) {
-						p[2] += 1;
-						if (p[2] >= l.length) {
-							p[2] -= 1;
+				if ((int) (p[2] % 3.0F) == 2) {
+					if (p[0] + 30.0F > 640.0F) {
+						p[2] += 1.0F;
+						if (p[2] >= (float) l.length) {
+							p[2] -= 1.0F;
 							boolValues[1] = false;
-							if ((p[3] < p[4]) || (p[4] < 0)) {
+							if ((p[3] < p[4]) || (p[4] < (float) 0)) {
 								p[4] = p[3];
 							}
 						} else {
-							p[0] = 10;
-							p[1] = 130;
+							p[0] = 10.0F;
+							p[1] = 130.0F;
 
 							if ((int) p[2] == 18) {
 								p[6] = 2.6f;
 							}
 
-							int rand = (int) (Math.random() * rc.length);
+							int rand = (int) (Math.random() * (double) rc.length);
 							c[0] = rc[rand];
 							c[1] = new Color(255 - c[0].getRed(), 255 - c[0].getGreen(), 255 - c[0].getBlue());
 						}
@@ -225,36 +224,36 @@ public class A extends GamePanel {
 					p[5] += 0.07f;
 				}
 				
-				if (p[1] + 30 > (int) (p[2] % 3 + 1) * 160) {
-					p[1] = (int) (p[2] % 3 + 1) * 160 - 30;
-					p[5] = 0;
+				if (p[1] + 30.0F > (float) ((int) (p[2] % 3.0F + 1.0F) * 160)) {
+					p[1] = (float) ((int) (p[2] % 3.0F + 1.0F) * 160 - 30);
+					p[5] = (float) 0;
 					boolValues[2] = false;
 					boolValues[0] = false;
 				}
 
 				for (int  lev = (int) (p[2]), i = 0; i < l[lev].length; i += 4) {
-					if ((p[0] + 30 >= l[lev][i]) && (p[1] + 30 >= l[lev][i + 1]) && (p[0] <= l[lev][i] + l[lev][i + 2]) && (p[1] <= l[lev][i + 1] + l[lev][i + 3])) {
+					if ((p[0] + 30.0F >= (float) l[lev][i]) && (p[1] + 30.0F >= (float) l[lev][i + 1]) && (p[0] <= (float) (l[lev][i] + l[lev][i + 2])) && (p[1] <= (float) (l[lev][i + 1] + l[lev][i + 3]))) {
 
-						p[3] += 1;
-						ex = new float[5 * (int) (Math.random() * 15 + 20)];
+						p[3] += 1.0F;
+						ex = new float[5 * (int) (Math.random() * 15.0 + 20.0)];
 						for (int z = 0; z < ex.length; z += 5) {
-							ex[z] = p[0] + 12;
-							ex[z + 1] = p[1] + 12;
+							ex[z] = p[0] + 12.0F;
+							ex[z + 1] = p[1] + 12.0F;
 							ex[z + 2] = (float) (Math.random() * 3.0) - 1.5f;
 							ex[z + 3] = (float) (Math.random() * 3.0) - 2f;
 							ex[z + 4] = 1100000000f;
 						}
-						if ((int) (p[2] % 3) == 0) {
-							p[0] = 10;
-							p[1] = 130;
+						if ((int) (p[2] % 3.0F) == 0) {
+							p[0] = 10.0F;
+							p[1] = 130.0F;
 						}
-						if ((int) (p[2] % 3) == 2) {
-							p[0] = 10;
-							p[1] = 450;
+						if ((int) (p[2] % 3.0F) == 2) {
+							p[0] = 10.0F;
+							p[1] = 450.0F;
 						}
-						if ((int) (p[2] % 3) == 1) {
-							p[0] = 600;
-							p[1] = 290;
+						if ((int) (p[2] % 3.0F) == 1) {
+							p[0] = 600.0F;
+							p[1] = 290.0F;
 						}
 						pressed = new boolean[256];
 						boolValues[2] = false;
@@ -264,8 +263,8 @@ public class A extends GamePanel {
 			}
 			
 			if (ex != null) {
-				ex[4] -= 10000000L;
-				if (ex[4] <= 0) {
+				ex[4] -= 10000000.0F;
+				if (ex[4] <= (float) 0) {
 					ex = null;
 				} else {
 					for (int z = 0; z < ex.length; z += 5) {
@@ -293,7 +292,7 @@ public class A extends GamePanel {
 
 		offscreennGraphics.setColor(c[1]);
 		/** draw level objects */
-		int lev = (int) (p[2] / 3) * 3;
+		int lev = (int) (p[2] / 3.0F) * 3;
 		for (int i = 0; i < l[lev].length; i += 4) {
 			offscreennGraphics.fillRect(l[lev][i], l[lev][i + 1], l[lev][i + 2], l[lev][i + 3]);
 		}
@@ -309,7 +308,7 @@ public class A extends GamePanel {
 
 		/** draw player */
 		offscreennGraphics.setColor(c[1]);
-		if ((int) (p[2] % 3) == 1) {
+		if ((int) (p[2] % 3.0F) == 1) {
 			offscreennGraphics.setColor(c[0]);
 		}
 		offscreennGraphics.fillRect((int) (p[0]), (int) (p[1]), 30, 30);
@@ -326,7 +325,7 @@ public class A extends GamePanel {
 		offscreennGraphics.setFont(offscreennGraphics.getFont().deriveFont(20f).deriveFont(1));
 		String s = "ApoOne4k";
 		offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 30);
-		if (p[3] >= 0) {
+		if (p[3] >= (float) 0) {
 			offscreennGraphics.drawString("deaths: " + (int) (p[3]), 10, 30);
 		}
 		offscreennGraphics.drawString("level: " + ((int) (p[2]) + 1), 550, 30);
@@ -341,11 +340,11 @@ public class A extends GamePanel {
 			offscreennGraphics.setColor(c[0]);
 			s = "Press space to jump and to start the game";
 			offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 200);
-			if ((p[2] > 0) && (p[3] >= 0)) {
+			if ((p[2] > (float) 0) && (p[3] >= (float) 0)) {
 				s = "Congratulation you beat the game with " + (int) (p[3]) + " death";
 				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 250);
 			}
-			if (p[4] >= 0) {
+			if (p[4] >= (float) 0) {
 				s = "Your best result are " + (int) (p[4]) + " death";
 				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 285);
 			}
@@ -373,7 +372,7 @@ public class A extends GamePanel {
                     break;
                 case 8:
                     s = "You died " + (int) (p[3]) + " times? OMG";
-                    if (p[3] < 1) {
+                    if (p[3] < 1.0F) {
                         s = "Until now you are doing it right ...";
                     }
                     offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 40 + 320);

@@ -24,7 +24,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
 
 
     public ArrayHistogram() {
-        range(0,1);
+        range((float) 0, 1.0F);
     }
 
 
@@ -49,7 +49,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
 
     /** use sampleInt(rng) with this */
     public final HistogramWriter write(int lo, int hi, int bins) {
-        return write(lo, hi-0.5f, bins);
+        return write((float) lo, (float) hi -0.5f, bins);
     }
 
     /** use sample(rng) with this */
@@ -64,7 +64,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
         final float rangeDelta;
         private final float lo;
         final float[] buffer;
-        float mass = 0;
+        float mass = (float) 0;
 
         HistogramWriter(int bins, float lo, float hi) {
             this.buffer = new float[bins];
@@ -72,18 +72,18 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
             this.lo = lo;
             this.rangeDelta = hi-lo;
 
-            mass(0); //force flat sampling for other threads, while writing
+            mass((float) 0); //force flat sampling for other threads, while writing
             range(lo, hi);
         }
 
         /** TODO refine this could be more accurate in how it distributes the fraction */
         public void add(int value, float weight, int superSampling) {
             mass += weight;
-            float dw = weight / superSampling;
+            float dw = weight / (float) superSampling;
             float width = 1f; // <= 1
-            float v = value - width/2f;
-            float dv = width / (superSampling-1);
-            for (int i = 0; i < superSampling; v += (++i) * dv)  {
+            float v = (float) value - width/2f;
+            float dv = width / (float) (superSampling - 1);
+            for (int i = 0; i < superSampling; v += (float) (++i) * dv)  {
                 buffer[bin(v)] += dw;
             }
         }
@@ -127,14 +127,14 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
         float rangeMin = Math.min(rangeMax, this.lo); //incase updated while reading, maintains min <= max
         float rangeDelta = (rangeMax - rangeMin);
 
-        float mass = 0;
+        float mass = (float) 0;
         boolean flat;
         int bins = data.volume();
         if (bins < 2 || rangeDelta <= 1f) {
             flat = true;
         } else {
             mass = mass();
-            flat = (mass <= ScalarValue.EPSILON * (1+rangeDelta));
+            flat = (mass <= ScalarValue.EPSILON * (1.0F +rangeDelta));
         }
 
 
@@ -151,7 +151,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
             direction = true; //upward
         } else {
             direction = false; //downward
-            u = 1 - u;
+            u = 1.0F - u;
         }
         float m = u * mass;
 
@@ -160,7 +160,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
         for (int b = 0; b < bins;) {
             float db = data.getAt(direction ? b : (bins - 1 - b));
             if (db > m) {
-                B = b + m / db; //current bin plus fraction traversed
+                B = (float) b + m / db; //current bin plus fraction traversed
                 break;
             } else {
                 m -= db;
@@ -168,9 +168,9 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
             }
         }
 
-        float p = Math.min(bins-1, B) / (bins-1);
+        float p = Math.min((float) (bins - 1), B) / (float) (bins - 1);
 
-        return (direction ? p : 1-p) * rangeDelta + rangeMin;
+        return (direction ? p : 1.0F -p) * rangeDelta + rangeMin;
     }
 
     public final int bins() {

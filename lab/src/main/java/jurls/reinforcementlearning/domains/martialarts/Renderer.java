@@ -76,16 +76,16 @@ public class Renderer extends JComponent {
 
     public AffineTransform computePlayerTransform(Player player) {
         AffineTransform t = new AffineTransform();
-        t.translate(player.x, 0);
+        t.translate((double) player.x, (double) 0);
         if (player.mirror) {
-            t.scale(-1, 1);
+            t.scale(-1.0, 1.0);
         }
-        t.translate(-150, 0);
+        t.translate(-150.0, (double) 0);
         t.scale(
-                300.0 / (player.maxX - player.minX),
-                (double) world.height / (player.maxY - player.minY)
+                300.0 / (double) (player.maxX - player.minX),
+                (double) world.height / (double) (player.maxY - player.minY)
         );
-        t.translate(-player.minX, -player.minY);
+        t.translate((double) -player.minX, (double) -player.minY);
         return t;
     }
 

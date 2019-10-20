@@ -16,13 +16,13 @@ public abstract class InstrumentedLoop extends Loop {
      */
     public final FloatAveragedWindow dutyTime = new FloatAveragedWindow(windowLength, 0.5f, false);
     public final FloatAveragedWindow cycleTime =
-            new FloatAveragedWindow(windowLength, 1f/windowLength /* == non-exponential mean? */, false);
+            new FloatAveragedWindow(windowLength, 1f/ (float) windowLength /* == non-exponential mean? */, false);
 
     /** the current cycle time delta (nanoseconds) */
-    public long cycleTimeNS = 0;
+    public long cycleTimeNS = 0L;
 
     /** the current cycle time delta (seconds) */
-    public double cycleTimeS = 0;
+    public double cycleTimeS = (double) 0;
 
     protected volatile long last;
     protected long beforeIteration;
@@ -39,11 +39,11 @@ public abstract class InstrumentedLoop extends Loop {
         this.last = afterIteration;
 
         cycleTimeNS = afterIteration - lastIteration;
-        cycleTimeS = cycleTimeNS / 1.0E9;
+        cycleTimeS = (double) cycleTimeNS / 1.0E9;
         this.cycleTime.next((float) cycleTimeS);
 
         long dutyTimeNS = afterIteration - beforeIteration;
-        double dutyTimeS = dutyTimeNS / 1.0E9;
+        double dutyTimeS = (double) dutyTimeNS / 1.0E9;
         this.dutyTime.next((float) dutyTimeS);
     }
 

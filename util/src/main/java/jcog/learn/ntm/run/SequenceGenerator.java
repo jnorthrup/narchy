@@ -15,16 +15,16 @@ public class SequenceGenerator
         double[][] input = new double[length][vectorSize];
         double[][] output = new double[length][vectorSize];
 
-        boolean direction = rng.nextFloat() < 0.5;
+        boolean direction = (double) rng.nextFloat() < 0.5;
 
 
-        int j = (int)(rng.nextFloat() * 100);
+        int j = (int)(rng.nextFloat() * 100.0F);
         for (int i = 0; i < length; i++) {
             int index = j % vectorSize;
 
-            input[i][index] = 1;
+            input[i][index] = 1.0;
             int reflected = (vectorSize - 1) - index;
-            output[i][reflected] = 1;
+            output[i][reflected] = 1.0;
 
             if (direction)
                 j++;
@@ -43,16 +43,16 @@ public class SequenceGenerator
         double[][] output = new double[length][vectorSize];
 
 
-        int j = (int)(rng.nextFloat() * 153) % Math.max(1,vectorSize/2) + vectorSize/2;
+        int j = (int)(rng.nextFloat() * 153.0F) % Math.max(1,vectorSize/2) + vectorSize/2;
 
         for (int i = 0; i < length; i++) {
             int index = ((j)^(i)) % vectorSize;
             
 
             if (i < vectorSize/2)
-                input[i][i] = 1;
-            input[i][j] = 1;
-            output[i][index] = 1;
+                input[i][i] = 1.0;
+            input[i][j] = 1.0;
+            output[i][index] = 1.0;
 
 
         }
@@ -67,7 +67,7 @@ public class SequenceGenerator
 
             for (int j = 0; j < inputVectorSize; j++)
             {
-                data[i][j] = rng.nextInt(2);
+                data[i][j] = (double) rng.nextInt(2);
             }
         }
         int sequenceLength = (length * 2) + 2;

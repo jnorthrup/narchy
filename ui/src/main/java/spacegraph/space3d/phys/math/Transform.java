@@ -234,7 +234,7 @@ public final class Transform extends v3 {
 	}
 
 	public void setTransScale(float x, float y, float scale) {
-		set(x, y, 0);
+		set(x, y, (float) 0);
 		scaled(scale);
 	}
 

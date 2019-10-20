@@ -35,7 +35,7 @@ public class Vocalization extends NARPart {
         super();
         this.durationsPerWord = durationsPerWord;
         this.speak = speak;
-        this.energy = 0;
+        this.energy = (float) 0;
         nar.add(this);
     }
 
@@ -45,7 +45,7 @@ public class Vocalization extends NARPart {
                 nar.onDur(() -> {
                     energy = Math.min(1f, energy + 1f / (this.durationsPerWord));
                     if (energy >= 1f) {
-                        energy = 0;
+                        energy = (float) 0;
                         next();
                     }
                 }),
@@ -89,8 +89,8 @@ public class Vocalization extends NARPart {
 
         float dur = nar.dur() * durationsPerWord;
         long now = nar.time();
-        long startOfNow = now - (int) Math.ceil(dur);
-        long endOfNow = now + (int) Math.floor(dur);
+        long startOfNow = now - (long) (int) Math.ceil((double) dur);
+        long endOfNow = now + (long) (int) Math.floor((double) dur);
 
 
         FasterList<Pair<Term, Truth>> pending = new FasterList<Pair<Term, Truth>>(0);

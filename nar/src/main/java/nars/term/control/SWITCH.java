@@ -48,7 +48,7 @@ public final class SWITCH<D extends PreDerivation> extends AbstractPred<D> {
         for (Map.Entry<Op, PREDICATE<D>> entry : cases.entrySet()) {
             Op k = entry.getKey();
             PREDICATE<D> v = entry.getValue();
-            swtch[k.id] = v;
+            swtch[(int) k.id] = v;
         }
         this.taskOrBelief = taskOrBelief;
         this.cases = cases;

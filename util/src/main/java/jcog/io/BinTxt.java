@@ -44,7 +44,7 @@ public class BinTxt {
 	}
 
 	public static void append(StringBuilder target, long v, int base) {
-		if (v < 0) {
+		if (v < 0L) {
 			target.append('-');
 			v = -v;
 		}
@@ -53,10 +53,10 @@ public class BinTxt {
 	}
 
 	private static void _append(StringBuilder target, long v, int base) {
-        int r = (int) (v % base);
+        int r = (int) (v % (long) base);
 
-		if (v - r != 0)
-			append(target, (v - r) / base, base);
+		if (v - (long) r != 0L)
+			append(target, (v - (long) r) / (long) base, base);
 
 		target.append(symbols[r]);
 	}

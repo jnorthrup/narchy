@@ -47,14 +47,14 @@ public class Gradius extends GameX {
     }
 
     public Gradius(NAR nar) {
-        super($$("g"), fps(25), nar);
+        super($$("g"), fps(25.0F), nar);
 
         //TODO coordinate with fps
         g.updateMS =
                 //50; //20fps
                 //30;
                 //25; //40fps
-                20; //50fps
+                20L; //50fps
                 //10; //100fps
                 //5; //200fps
         //10;
@@ -109,8 +109,8 @@ public class Gradius extends GameX {
 //                                        subSection
                             new ScaledBitmap2D(() -> g.image, px, py)
                                     .crop(
-                                            (float) i / dx, (float) j / dy,
-                                            (float) (i + 1) / dx, (float) (j + 1) / dy))
+                                            (float) i / (float) dx, (float) j / (float) dy,
+                                            (float) (i + 1) / (float) dx, (float) (j + 1) / (float) dy))
                             .resolution(0.02f);
 
                     cams.add(c);
@@ -123,8 +123,8 @@ public class Gradius extends GameX {
 
 
 
-        float width = g.getWidth();
-        float height = g.getHeight();
+        float width = (float) g.getWidth();
+        float height = (float) g.getHeight();
         int gpsDigits = 3;
         float gpsRes = 0.05f;
         senseNumber(gpsDigits, DigitizedScalar.FuzzyNeedle, () -> g.player[OBJ_Y] / height, level -> $.p($.the(level), $.p(id, $.the("y")))
@@ -134,7 +134,7 @@ public class Gradius extends GameX {
 
 
         actionUnipolar($.inh(id,$$("speed")), (s)->{
-           g.SPEED = Util.lerp(s, 0.1f, 4);
+           g.SPEED = Util.lerp(s, 0.1f, 4.0F);
         }).resolution(0.1f);
 
 
@@ -149,13 +149,13 @@ public class Gradius extends GameX {
         initToggle();
         //initBipolar();
 
-        Reward alive = reward("alive",  1, ()->{
+        Reward alive = reward("alive", 1.0F, ()->{
             if (g.paused) return Float.NaN;
 
             if (g.playerDead > 1)
-                return 0;
+                return (float) 0;
             else
-                return +1;
+                return (float) +1;
         });
         //alive.setDefault($.t(1, nar.beliefConfDefault.floatValue()));
 
@@ -165,7 +165,7 @@ public class Gradius extends GameX {
 
             int nextScore = g.score;
 
-            float r = nextScore - lastScore;
+            float r = (float) (nextScore - lastScore);
 
             lastScore = nextScore;
 
@@ -224,7 +224,7 @@ public class Gradius extends GameX {
             } else {
                 g.keys[VK_UP] = false;
                 g.keys[VK_DOWN] = false;
-                return 0;
+                return (float) 0;
             }
 
         });

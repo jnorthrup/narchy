@@ -37,7 +37,7 @@ public class a extends GamePanel {
 
   @Override
   public void start() {
-    enableEvents(8);
+    enableEvents(8L);
     new Thread(this).start();
   }
 
@@ -119,7 +119,7 @@ public class a extends GamePanel {
         j = 0;
         width = 16;
       }
-      value = s.charAt(j++);
+      value = (int) s.charAt(j++);
         int height = value >> 8;
         int color = value & 0xFF;
       color0 = i == 12 ? 0xFF666666
@@ -134,7 +134,7 @@ public class a extends GamePanel {
       sprites[i] = new BufferedImage(width, i == 2 ? 32 : height, 2);
 
       for(y = 0; y < height; y++) {
-        value = s.charAt(j);
+        value = (int) s.charAt(j);
         if (i < 3 || i > 15) {
           j++;
         } else if ((y&1) == 1) {
@@ -172,7 +172,7 @@ public class a extends GamePanel {
       for(i = 0, j = 159; i < 6; i++) {
           int[][] map = stages[i];
       for(y = 0; y < 40; y++) {
-        value = s.charAt(j++);
+        value = (int) s.charAt(j++);
         for(x = 0; x < 8; x++, value >>= 2) {
             int m = value & 3;
           if (m == 1) {
@@ -207,7 +207,7 @@ public class a extends GamePanel {
       while(true) {
 
       do {
-        nextFrameStartTime += 16666667;
+        nextFrameStartTime += 16666667L;
 
         
 
@@ -221,14 +221,14 @@ public class a extends GamePanel {
           player = new float[]
               
               
-              { 0, 0, 3, 128, 1216, 1, 8, 12, 3.14f, 3.14f, 1, 0 };
+              {(float) 0, (float) 0, 3.0F, 128.0F, 1216.0F, 1.0F, 8.0F, 12.0F, 3.14f, 3.14f, 1.0F, (float) 0};
           queue.clear();
           queue.add(player);
         } else if (fireworks) {
           
-          queue.add(new float[] { 0, 6, 6,
-              random.nextInt(256), random.nextInt(256),
-              1, 8, 7, 0, 16, 0.1f});
+          queue.add(new float[] {(float) 0, 6.0F, 6.0F,
+                  (float) random.nextInt(256), (float) random.nextInt(256),
+                  1.0F, 8.0F, 7.0F, (float) 0, 16.0F, 0.1f});
         }
 
 
@@ -242,38 +242,38 @@ public class a extends GamePanel {
                   && random.nextInt(64) == 0 && spawnY < 64) {
                 if (random.nextInt(8) == 0) {
                   
-                  queue.add(new float[] { 0, 11, 11,
-                      x * 16 + 9, spawnY * 16 + 9,
-                      0, 4, 4, 0, 0, 1, 0, 1, 0, 0, 0 });
+                  queue.add(new float[] {(float) 0, 11.0F, 11.0F,
+                          (float) (x * 16 + 9), (float) (spawnY * 16 + 9),
+                          (float) 0, 4.0F, 4.0F, (float) 0, (float) 0, 1.0F, (float) 0, 1.0F, (float) 0, (float) 0, (float) 0});
                 } else {
                   
-                  queue.add(new float[] { 0, 3, 8,
-                      x * 16 + 9, spawnY * 16 + 9,
-                      0, 4, 7, 0, 0, 1, 0, 1, 0, 0, 0 });
+                  queue.add(new float[] {(float) 0, 3.0F, 8.0F,
+                          (float) (x * 16 + 9), (float) (spawnY * 16 + 9),
+                          (float) 0, 4.0F, 7.0F, (float) 0, (float) 0, 1.0F, (float) 0, 1.0F, (float) 0, (float) 0, (float) 0});
                 }
               }
             } else if (enemy == 2) {
               
-              queue.add(new float[] { 0, 4, 4,
-                  (x + 1) * 16, (spawnY + 1) * 16, 1, 8, 8, 0, 0, 1, 0, 1,
-                  0, 0, (x + 1) * 16, (spawnY + 1) * 16 });
+              queue.add(new float[] {(float) 0, 4.0F, 4.0F,
+                      (float) ((x + 1) * 16), (float) ((spawnY + 1) * 16), 1.0F, 8.0F, 8.0F, (float) 0, (float) 0, 1.0F, (float) 0, 1.0F,
+                      (float) 0, (float) 0, (float) ((x + 1) * 16), (float) ((spawnY + 1) * 16)});
             } else if (enemy == 3) {
               
-              queue.add(new float[] { 0, 5, 5,
-                  x * 16 + 9, spawnY * 16 + 9,
-                  1, 8, 10, 0, 0, 1, 0, 1, 0, 0, 0 });
+              queue.add(new float[] {(float) 0, 5.0F, 5.0F,
+                      (float) (x * 16 + 9), (float) (spawnY * 16 + 9),
+                      1.0F, 8.0F, 10.0F, (float) 0, (float) 0, 1.0F, (float) 0, 1.0F, (float) 0, (float) 0, (float) 0});
             } else if (enemy == 4) { 
               
-              queue.add(new float[] { 0, 10, 13,
-                  (x + 1) * 16, (spawnY + 1) * 16, 1, 8, 8, 0, 0, 1, 180, 1,
-                  0, 0, 0, 0 });
+              queue.add(new float[] {(float) 0, 10.0F, 13.0F,
+                      (float) ((x + 1) * 16), (float) ((spawnY + 1) * 16), 1.0F, 8.0F, 8.0F, (float) 0, (float) 0, 1.0F, 180.0F, 1.0F,
+                      (float) 0, (float) 0, (float) 0, (float) 0});
             } else if (spawnY > 16 && spawnY < 64
                 && (x&1) == 0 && (spawnY&1) == 0
                 && random.nextInt(20 - stageIndex * 2) == 0) {
               
-              queue.add(new float[] { 0, 9, 1,
-                  x * 16 + 16, spawnY * 16 + 16,
-                  1, 8, 8, 0, 0, 1, 0, 1, 0, 0, 0 });
+              queue.add(new float[] {(float) 0, 9.0F, 1.0F,
+                      (float) (x * 16 + 16), (float) (spawnY * 16 + 16),
+                      1.0F, 8.0F, 8.0F, (float) 0, (float) 0, 1.0F, (float) 0, 1.0F, (float) 0, (float) 0, (float) 0});
             }
           }
           spawnY--;
@@ -282,7 +282,7 @@ public class a extends GamePanel {
         
         for(i = queue.size() - 1; i >= 0; i--) {
             float[] object = queue.get(i);
-          if (object[0] != 0) {
+          if (object[0] != (float) 0) {
             queue.remove(i);
             continue;
           }
@@ -296,7 +296,7 @@ public class a extends GamePanel {
               } else if (a[0x28] && stage[((int)object[4] + 11 >> 4)]
                   [((int)object[3] >> 4)] != 1
                   && (int)object[4] < cameraY + 245) { 
-                object[9] = 0;
+                object[9] = (float) 0;
                 object[4] += 0.75f;
               } else if (a[0x25] && stage[((int)object[4] >> 4)]
                   [((int)object[3] - 12 >> 4)] != 1
@@ -309,58 +309,58 @@ public class a extends GamePanel {
                 object[9] = 4.71f;
                 object[3] += 0.75f;
               }
-              if (a[0x20] && object[11] < 1) { 
-                queue.add(new float[] { 0, 1, 7,
-                    object[3], object[4], 0, 4, 3,
-                    -2 * (float)Math.sin(object[9]),
-                    2 * (float)Math.cos(object[9]), 60, 0, 1});
-                object[11] = 1;
+              if (a[0x20] && object[11] < 1.0F) {
+                queue.add(new float[] {(float) 0, 1.0F, 7.0F,
+                    object[3], object[4], (float) 0, 4.0F, 3.0F,
+                        -2.0F * (float)Math.sin((double) object[9]),
+                        2.0F * (float)Math.cos((double) object[9]), 60.0F, (float) 0, 1.0F});
+                object[11] = 1.0F;
               }
               break;
             case 1: 
             case 2: 
               object[3] += object[8];
               object[4] += object[9];
-              if (object[10] > 2 && object[3] > 2 && object[3] < 253
-                  && object[4] < 1277 && object[4] > 0) {
+              if (object[10] > 2.0F && object[3] > 2.0F && object[3] < 253.0F
+                  && object[4] < 1277.0F && object[4] > (float) 0) {
                 object[10]--;
                 if (stage[((int)object[4] >> 4)]
                     [((int)object[3] >> 4)] == 1) {
-                  object[0] = 1;
-                  if (object[1] == 1) {
-                    player[11] = 0;
+                  object[0] = 1.0F;
+                  if (object[1] == 1.0F) {
+                    player[11] = (float) 0;
                   }
                 }
 
-                if (object[1] == 1) {
+                if (object[1] == 1.0F) {
                   
                   for(j = queue.size() - 1; j >= 0; j--) {
                       float[] obj = queue.get(j);
-                    if (obj[0] == 0) {
-                      if (object[1] == 1 && (
-                          (obj[1] == 11 && obj[2] > 0)
-                          || obj[1] == 10 || obj[1] == 9
-                          || obj[1] == 7
-                          || (obj[1] >= 3 && obj[1] <= 5))) {
+                    if (obj[0] == (float) 0) {
+                      if (object[1] == 1.0F && (
+                          (obj[1] == 11.0F && obj[2] > (float) 0)
+                          || obj[1] == 10.0F || obj[1] == 9.0F
+                          || obj[1] == 7.0F
+                          || (obj[1] >= 3.0F && obj[1] <= 5.0F))) {
                           float dx = obj[3] - object[3];
                           float dy = obj[4] - object[4];
-                        float radius = obj[1] == 3 ? (int)obj[10] * 4 + 4
-                            : (int)obj[10] * 8 + 8;
+                        float radius = (float) (obj[1] == 3.0F ? (int) obj[10] * 4 + 4
+                                : (int) obj[10] * 8 + 8);
                         if (dx * dx + dy * dy < radius * radius) {
-                          object[0] = 1;
-                          player[11] = 0;
-                          if (obj[1] != 10
-                              || (obj[11] > 15 && obj[11] < 90)) {
-                            if (--obj[12] < 1) {
+                          object[0] = 1.0F;
+                          player[11] = (float) 0;
+                          if (obj[1] != 10.0F
+                              || (obj[11] > 15.0F && obj[11] < 90.0F)) {
+                            if (--obj[12] < 1.0F) {
 
-                              if (obj[1] == 3) {
+                              if (obj[1] == 3.0F) {
                                 
-                                obj[1] = 8;
-                                obj[2] = 10;
+                                obj[1] = 8.0F;
+                                obj[2] = 10.0F;
                               } else {
-                                obj[0] = 1;
+                                obj[0] = 1.0F;
 
-                                if (obj[1] == 7) {
+                                if (obj[1] == 7.0F) {
                                   if (stageIndex < 5) {
                                     
                                     stageIndex++;
@@ -369,109 +369,109 @@ public class a extends GamePanel {
                                     playerDead = 32768;
                                   }
                                   for(int k = queue.size() - 1; k >= 0; k--) {
-                                    queue.get(k)[0] = 1;
+                                    queue.get(k)[0] = 1.0F;
                                   }
-                                  player[0] = 0;
+                                  player[0] = (float) 0;
                                   fireworks = true;
                                 }
 
                                 
-                                queue.add(new float[] { 0, 6, 6, obj[3], obj[4],
-                                    1, 8, 7, 0, 16, 0.1f});
+                                queue.add(new float[] {(float) 0, 6.0F, 6.0F, obj[3], obj[4],
+                                        1.0F, 8.0F, 7.0F, (float) 0, 16.0F, 0.1f});
                               }
                             } else {
                               
-                              queue.add(new float[] { 0, 6, 6,
-                                  object[3], object[4], 1, 8, 7, 0, 16, 0.1f});
+                              queue.add(new float[] {(float) 0, 6.0F, 6.0F,
+                                  object[3], object[4], 1.0F, 8.0F, 7.0F, (float) 0, 16.0F, 0.1f});
                             }
                           }
                         }
                       }
                     }
                   }
-                } else if (player[0] == 0) {
+                } else if (player[0] == (float) 0) {
                     float vx = player[3] - object[3];
                     float vy = player[4] - object[4];
-                  if (vx * vx + vy * vy < 128) {
-                    object[0] = 1;
-                    player[0] = 1;
+                  if (vx * vx + vy * vy < 128.0F) {
+                    object[0] = 1.0F;
+                    player[0] = 1.0F;
                     playerDead = 120;
                     
-                    queue.add(new float[] { 0, 6, 6, player[3], player[4],
-                        1, 8, 7, 0, 16, 0.1f});
+                    queue.add(new float[] {(float) 0, 6.0F, 6.0F, player[3], player[4],
+                            1.0F, 8.0F, 7.0F, (float) 0, 16.0F, 0.1f});
                   }
                 }
               } else {
-                object[0] = 1;
-                if (object[1] == 1) {
-                  player[11] = 0;
+                object[0] = 1.0F;
+                if (object[1] == 1.0F) {
+                  player[11] = (float) 0;
                 }
               }
               break;
             case 4: 
-              if (object[11] < 165) {
-                object[9] = (float)Math.atan2(player[4] - object[4],
-                    player[3] - object[3]) - 1.57f;
+              if (object[11] < 165.0F) {
+                object[9] = (float)Math.atan2((double) (player[4] - object[4]),
+                        (double) (player[3] - object[3])) - 1.57f;
                 object[3] = object[15];
                 object[4] = object[16];
               } else {
-                  float deflection = 4 * (float)Math.sin(
-                    0.209f * (object[11] - 165));
+                  float deflection = 4.0F * (float)Math.sin(
+                          (double) (0.209f * (object[11] - 165.0F)));
                 object[3] = object[15] - object[13] * deflection;
                 object[4] = object[16] - object[14] * deflection;
               }
-              if (object[11] > 0) {
+              if (object[11] > (float) 0) {
                 object[11]--;
               } else {
-                object[11] = 180;
+                object[11] = 180.0F;
                   float vx = player[3] - object[3];
                   float vy = player[4] - object[4];
-                  float mag = (float)Math.sqrt(vx * vx + vy * vy);
+                  float mag = (float)Math.sqrt((double) (vx * vx + vy * vy));
 
                 
-                queue.add(new float[] { 0, 2, 7,
-                    object[3], object[4], 0, 4, 3,
+                queue.add(new float[] {(float) 0, 2.0F, 7.0F,
+                    object[3], object[4], (float) 0, 4.0F, 3.0F,
                     object[13] = vx / mag,
-                    object[14] = vy / mag, 120, 0, 1});
+                    object[14] = vy / mag, 120.0F, (float) 0, 1.0F});
                 object[15] = object[3];
                 object[16] = object[4];
               }
               break;
             case 10: 
-              if (object[11] >= 15 && object[11] < 75) {
-                if (object[11] == 74) {
+              if (object[11] >= 15.0F && object[11] < 75.0F) {
+                if (object[11] == 74.0F) {
                   object[9] = (float)Math.atan2(
-                      player[4] - object[4],
-                      player[3] - object[3]) - 1.57f;
-                } else if (object[11] == 60) {
+                          (double) (player[4] - object[4]),
+                          (double) (player[3] - object[3])) - 1.57f;
+                } else if (object[11] == 60.0F) {
 
                     float angle = object[9] + 0.785f;
                   for(int z = 0; z < 5; z++, angle += 0.314f) {
-                    queue.add(new float[] { 0, 2, 7,
-                        object[3], object[4], 0, 4, 3,
-                        (float)Math.cos(angle),
-                        (float)Math.sin(angle), 120, 0, 1});
+                    queue.add(new float[] {(float) 0, 2.0F, 7.0F,
+                        object[3], object[4], (float) 0, 4.0F, 3.0F,
+                        (float)Math.cos((double) angle),
+                        (float)Math.sin((double) angle), 120.0F, (float) 0, 1.0F});
                   }
                 }
-                object[2] = 15;
-              } else if (object[11] < 15
-                  || (object[11] >= 75 && object[11] < 90)) {
-                object[2] = 14;
-                object[8] = 0;
-                object[9] = 0;
+                object[2] = 15.0F;
+              } else if (object[11] < 15.0F
+                  || (object[11] >= 75.0F && object[11] < 90.0F)) {
+                object[2] = 14.0F;
+                object[8] = (float) 0;
+                object[9] = (float) 0;
               } else {
-                object[8] = 0;
-                object[9] = 0;
-                object[2] = 13;
+                object[8] = (float) 0;
+                object[9] = (float) 0;
+                object[2] = 13.0F;
               }
-              if (--object[11] == 0) {
-                object[11] = 240;
+              if (--object[11] == (float) 0) {
+                object[11] = 240.0F;
               }
               break;
             case 3: 
             case 5: 
             case 7: 
-              if (object[13] < 1) {
+              if (object[13] < 1.0F) {
 
 
                   float nextX = object[3] + object[14];
@@ -490,78 +490,78 @@ public class a extends GamePanel {
                   }
                 }
 
-                if (--object[11] > 0 && (object[1] == 7 || safeMove)) {
+                if (--object[11] > (float) 0 && (object[1] == 7.0F || safeMove)) {
                   
                   object[3] = nextX;
                   object[4] = nextY;
-                  if ((object[2] == 8 || object[2] == 9)
+                  if ((object[2] == 8.0F || object[2] == 9.0F)
                      && ((int)object[11] & 7) == 0) {
                     
-                    object[2] = object[2] > 8 ? 8 : 9;
+                    object[2] = (float) (object[2] > 8.0F ? 8 : 9);
                   }
                 } else {
                   
-                  object[13] = 1;
-                  object[11] = object[1] == 7 ? 2 : 120;
+                  object[13] = 1.0F;
+                  object[11] = (float) (object[1] == 7.0F ? 2 : 120);
                     float vx = player[3] - object[3];
                     float vy = player[4] - object[4];
-                    float mag = (float)Math.sqrt(vx * vx + vy * vy);
+                    float mag = (float)Math.sqrt((double) (vx * vx + vy * vy));
                   vx /= mag;
                   vy /= mag;
                   
-                  queue.add(new float[] { 0, 2, 7,
-                      object[3], object[4], 0,
-                      4, 3, vx, vy, 120, 0, 1});
+                  queue.add(new float[] {(float) 0, 2.0F, 7.0F,
+                      object[3], object[4], (float) 0,
+                          4.0F, 3.0F, vx, vy, 120.0F, (float) 0, 1.0F});
                 }
-              } else if (--object[11] < 1) {
+              } else if (--object[11] < 1.0F) {
 
 
                   float vx = player[3] - object[3];
                   float vy = player[4] - object[4];
-                  float mag = (float)Math.sqrt(vx * vx + vy * vy);
+                  float mag = (float)Math.sqrt((double) (vx * vx + vy * vy));
                 vx /= mag;
                 vy /= mag;
 
-                object[13] = 0;
-                object[11] = object[1] == 7 ? 60 : 120;
+                object[13] = (float) 0;
+                object[11] = (float) (object[1] == 7.0F ? 60 : 120);
                 if (random.nextBoolean()) {
                   object[14] = vx * 0.5f;
                   object[15] = vy * 0.5f;
                 } else {
                   mag = 6.28f * random.nextFloat();
-                  object[14] = 0.5f * (float)Math.cos(mag);
-                  object[15] = 0.5f * (float)Math.sin(mag);
+                  object[14] = 0.5f * (float)Math.cos((double) mag);
+                  object[15] = 0.5f * (float)Math.sin((double) mag);
                 }
-                if (object[1] == 3) {
+                if (object[1] == 3.0F) {
                   object[14] *= 0.5f;
                   object[15] *= 0.5f;
-                  object[11] *= 2;
+                  object[11] *= 2.0F;
                 }
-                object[9] = (float)Math.atan2(object[15], object[14]) - 1.57f;
+                object[9] = (float)Math.atan2((double) object[15], (double) object[14]) - 1.57f;
               }
               break;
             case 6: 
               object[10] += 0.5f;
-              object[3]-=2;
-              object[4]-=2;
-              if (object[10] > 3) {
-                object[0] = 1;
+              object[3]-= 2.0F;
+              object[4]-= 2.0F;
+              if (object[10] > 3.0F) {
+                object[0] = 1.0F;
               }
               break;
             case 9: {
                 float vx = player[3] - object[3];
                 float vy = player[4] - object[4];
-                if (object[11] == 0) {
+                if (object[11] == (float) 0) {
                     float mag = vx * vx + vy * vy;
-                    if (mag < 8192) {
-                  object[9] = 128;
-                  object[11] = 128;
-                  mag = (float)Math.sqrt(mag);
+                    if (mag < 8192.0F) {
+                  object[9] = 128.0F;
+                  object[11] = 128.0F;
+                  mag = (float)Math.sqrt((double) mag);
                   object[14] = vx * 0.5f / mag;
                   object[15] = vy * 0.5f / mag;                  
                 }
               } else {
-                if (object[11] > 1) {                  
+                if (object[11] > 1.0F) {
                   object[11]--;
                   object[3] += object[14];
                   object[4] += object[15];
@@ -575,65 +575,65 @@ public class a extends GamePanel {
             case 11:
                 float vx = player[3] - object[3];
                 float vy = player[4] - object[4];
-                if (object[11]-- == 0) {
-                  object[11] = 2;
+                if (object[11]-- == (float) 0) {
+                  object[11] = 2.0F;
                     float mag = vx * vx + vy * vy;
-                    object[2] = mag > 8192 ? -1 : object[2] == 11 ? 12 : 11;
+                    object[2] = (float) (mag > 8192.0F ? -1 : object[2] == 11.0F ? 12 : 11);
                 }
                 break;
           }
 
           
-          if (object[1] == 7) {
+          if (object[1] == 7.0F) {
             if (stageIndex > 1 && --bossSpawn < 0) {
               bossSpawn = 360 + random.nextInt(512);
 
               if ((stageIndex == 5 && random.nextBoolean())
                   || stageIndex == 2 || stageIndex == 4) {
                 
-                queue.add(new float[] { 0, 5, 5,
-                    64 + random.nextInt(128), 255,
-                    1, 8, 10, 0, 0, 1, 60, 1, 0, 0, -0.5f });
+                queue.add(new float[] {(float) 0, 5.0F, 5.0F,
+                        (float) (64 + random.nextInt(128)), 255.0F,
+                        1.0F, 8.0F, 10.0F, (float) 0, (float) 0, 1.0F, 60.0F, 1.0F, (float) 0, (float) 0, -0.5f });
               } else {
                 
-                queue.add(new float[] { 0, 3, 8,
-                    64 + random.nextInt(128), 255, 0, 4, 7, 0, 0,
-                    1, 180, 1, 0, 0, -0.25f });
+                queue.add(new float[] {(float) 0, 3.0F, 8.0F,
+                        (float) (64 + random.nextInt(128)), 255.0F, (float) 0, 4.0F, 7.0F, (float) 0, (float) 0,
+                        1.0F, 180.0F, 1.0F, (float) 0, (float) 0, -0.25f });
               }
             }
           }
 
           
-          if ((object[1] >= 3 && object[1] <= 5) || object[1] == 7
-              || object[1] == 9 || object[1] == 10 || object[1] == 11) {
+          if ((object[1] >= 3.0F && object[1] <= 5.0F) || object[1] == 7.0F
+              || object[1] == 9.0F || object[1] == 10.0F || object[1] == 11.0F) {
               float vx = player[3] - object[3];
               float vy = player[4] - object[4];
             vx = vx * vx + vy * vy;
-            vy = 12 + 10 * object[10];
-            if (object[1] == 3 && vx < 64) {
+            vy = 12.0F + 10.0F * object[10];
+            if (object[1] == 3.0F && vx < 64.0F) {
               
-              object[1] = 8;
-              object[2] = 10;
-            } else if (object[1] != 3 && vx < (object[1] == 11 ? 128 :
+              object[1] = 8.0F;
+              object[2] = 10.0F;
+            } else if (object[1] != 3.0F && vx < (object[1] == 11.0F ? 128.0F :
                 vy * vy)
-                && player[0] < 1) {
+                && player[0] < 1.0F) {
               
-              player[0] = 1;
+              player[0] = 1.0F;
               playerDead = 120;
-              queue.add(new float[] { 0, 6, 6, player[3], player[4],
-                  1, 8, 7, 0, 16, 0.1f});
+              queue.add(new float[] {(float) 0, 6.0F, 6.0F, player[3], player[4],
+                      1.0F, 8.0F, 7.0F, (float) 0, 16.0F, 0.1f});
 
               
-              if (object[1] != 7) {
-                object[0] = 1;
-                queue.add(new float[] { 0, 6, 6, object[3], object[4],
-                    1, 8, 7, 0, 16, 0.1f});
+              if (object[1] != 7.0F) {
+                object[0] = 1.0F;
+                queue.add(new float[] {(float) 0, 6.0F, 6.0F, object[3], object[4],
+                        1.0F, 8.0F, 7.0F, (float) 0, 16.0F, 0.1f});
               }
             }
           }
 
           
-          if (object[5] != 0) {
+          if (object[5] != (float) 0) {
             if (Math.abs(object[8] - object[9]) > 0.1f) {
               if (object[8] < object[9]) {
                 object[8] += 0.1f;
@@ -658,18 +658,18 @@ public class a extends GamePanel {
 
             bossSpawn = 0;
               boolean b = stageIndex != 1;
-              float scale = 2 + (b ? 0.5f * stageIndex : stageIndex);
-            queue.add(new float[] { 0, 7,
-                  stageIndex == 5 ? 15 :
-                  stageIndex == 4 ? 6 :stageIndex == 3 ? 4
-                  : (b ? (stageIndex == 2 ? 1 : 5) : 8),
-                128, -96, 
-                b ? 1 : 0,
-                (b ? 8 : 4) * scale,
-                (b ? (stageIndex == 5 ? 8 : stageIndex == 4 ? 7 : 10) : 7)
-                    * scale, 0, 0,
+              float scale = 2.0F + (b ? 0.5f * (float) stageIndex : (float) stageIndex);
+            queue.add(new float[] {(float) 0, 7.0F,
+                    (float) (stageIndex == 5 ? 15 :
+                            stageIndex == 4 ? 6 : stageIndex == 3 ? 4
+                                    : (b ? (stageIndex == 2 ? 1 : 5) : 8)),
+                    128.0F, -96.0F,
+                    (float) (b ? 1 : 0),
+                    (float) (b ? 8 : 4) * scale,
+                    (float) (b ? (stageIndex == 5 ? 8 : stageIndex == 4 ? 7 : 10) : 7)
+                    * scale, (float) 0, (float) 0,
                 scale,
-                256, 5, 0, 0, 0.5f });
+                    256.0F, 5.0F, (float) 0, (float) 0, 0.5f });
           }
         }
         
@@ -701,12 +701,12 @@ public class a extends GamePanel {
       
       for(i = queue.size() - 1; i >= 0; i--) {
           float[] object = queue.get(i);
-        if (object[2] >= 0) {
+        if (object[2] >= (float) 0) {
           g.translate((int)(object[3] - object[6]),
               (int)(object[4] - object[7]) - cameraY);
-          if (object[5] != 0 || object[1] == 7) {            
-            g.rotate(object[8], object[6], object[7]);
-            g.scale(object[10], object[10]);
+          if (object[5] != (float) 0 || object[1] == 7.0F) {
+            g.rotate((double) object[8], (double) object[6], (double) object[7]);
+            g.scale((double) object[10], (double) object[10]);
           }
           g.drawImage(sprites[(int)object[2]], 0, 0, null);
           g.setTransform(defaultTransform);
@@ -728,7 +728,7 @@ public class a extends GamePanel {
       }
 
       
-      while(nextFrameStartTime - System.nanoTime() > 0) {
+      while(nextFrameStartTime - System.nanoTime() > 0L) {
         Thread.yield();
       }      
     }
@@ -767,7 +767,7 @@ public class a extends GamePanel {
     frame.pack();
     frame.setLocationRelativeTo(null);
     frame.setVisible(true);
-    Thread.sleep(250);
+    Thread.sleep(250L);
     applet.start();
   }
 }

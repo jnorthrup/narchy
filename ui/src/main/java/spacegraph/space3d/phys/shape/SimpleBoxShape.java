@@ -46,13 +46,13 @@ public class SimpleBoxShape extends PolyhedralConvexShape {
 
 
 	public SimpleBoxShape() {
-		this(1, 1, 1);
+		this(1.0F, 1.0F, 1.0F);
 	}
 
 	SimpleBoxShape(float w, float h, float d) {
 		super();
 
-		implicitShapeDimensions.set(w/2, h/2, d/2);
+		implicitShapeDimensions.set(w/ 2.0F, h/ 2.0F, d/ 2.0F);
 
 		setMargin(0f);
 
@@ -65,7 +65,7 @@ public class SimpleBoxShape extends PolyhedralConvexShape {
 	}
 
 	public void setSize(float w, float h, float d) {
-		implicitShapeDimensions.set(w/2, h/2, d/2);
+		implicitShapeDimensions.set(w/ 2.0F, h/ 2.0F, d/ 2.0F);
 		updateRadius();
 	}
 
@@ -101,7 +101,7 @@ public class SimpleBoxShape extends PolyhedralConvexShape {
         v3 halfExtents = getHalfExtentsWithoutMargin(out);
 
         float m = getMargin();
-		if (m!=0) {
+		if (m!= (float) 0) {
 			halfExtents.add(m, m, m);
 		}
 
@@ -167,7 +167,7 @@ public class SimpleBoxShape extends PolyhedralConvexShape {
 
 	@Override
 	public SimpleBoxShape setMargin(float margin) {
-		if (margin!=0)
+		if (margin!= (float) 0)
 			throw new UnsupportedOperationException();
 
 		return this;
@@ -206,7 +206,7 @@ public class SimpleBoxShape extends PolyhedralConvexShape {
 
 	@Override
 	public void getAabb(Transform t, v3 aabbMin, v3 aabbMax) {
-		AabbUtil2.transformAabb(implicitShapeDimensions, 0, t, aabbMin, aabbMax);
+		AabbUtil2.transformAabb(implicitShapeDimensions, (float) 0, t, aabbMin, aabbMax);
 	}
 
 	private v3 getHalfExtentsWithoutMargin() {
@@ -262,9 +262,9 @@ public class SimpleBoxShape extends PolyhedralConvexShape {
         float hx = halfExtents.x;
         float hy = halfExtents.y;
         float hz = halfExtents.z;
-		vtx.set(hx * (1 - (i & 1)) - hx * (i & 1),
-				hy * (1 - ((i & 2) >> 1)) - hy * ((i & 2) >> 1),
-				hz * (1 - ((i & 4) >> 2)) - hz * ((i & 4) >> 2));
+		vtx.set(hx * (float) (1 - (i & 1)) - hx * (float) (i & 1),
+				hy * (float) (1 - ((i & 2) >> 1)) - hy * (float) ((i & 2) >> 1),
+				hz * (float) (1 - ((i & 4) >> 2)) - hz * (float) ((i & 4) >> 2));
 	}
 	
 	void getPlaneEquation(Vector4f plane, int i, v3 tmp) {

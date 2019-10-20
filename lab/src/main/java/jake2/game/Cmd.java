@@ -174,8 +174,8 @@ public final class Cmd {
         int anum = (Integer) o1;
         int bnum = (Integer) o2;
 
-        int anum1 = GameBase.game.clients[anum].ps.stats[Defines.STAT_FRAGS];
-        int bnum1 = GameBase.game.clients[bnum].ps.stats[Defines.STAT_FRAGS];
+        int anum1 = (int) GameBase.game.clients[anum].ps.stats[Defines.STAT_FRAGS];
+        int bnum1 = (int) GameBase.game.clients[bnum].ps.stats[Defines.STAT_FRAGS];
 
         return Integer.compare(anum1, bnum1);
     };
@@ -197,13 +197,13 @@ public final class Cmd {
 
         boolean inquote = false;
         for (int i = 0; i < len; i++) {
-            if (scan[i] == '"')
+            if ((int) scan[i] == (int) '"')
                 inquote = !inquote;
 
             if (inquote)
                 continue; 
 
-            if (scan[i] != '$')
+            if ((int) scan[i] != (int) '$')
                 continue;
 
 
@@ -275,12 +275,12 @@ public final class Cmd {
 
             char c = ph.skipwhitestoeol();
 
-            if (c == '\n') { 
+            if ((int) c == (int) '\n') {
                 c = ph.nextchar();
                 break;
             }
 
-            if (c == 0)
+            if ((int) c == 0)
                 return;
 
             
@@ -437,7 +437,7 @@ public final class Cmd {
      */
     public static void Give_f(edict_t ent) {
 
-        if (GameBase.deathmatch.value != 0 && GameBase.sv_cheats.value == 0) {
+        if (GameBase.deathmatch.value != (float) 0 && GameBase.sv_cheats.value == (float) 0) {
             SV_GAME.PF_cprintfhigh(ent,
             	"You must run the server with '+setAt cheats 1' to enable this command.\n");
             return;
@@ -567,7 +567,7 @@ public final class Cmd {
      */
     public static void God_f(edict_t ent) {
 
-        if (GameBase.deathmatch.value != 0 && GameBase.sv_cheats.value == 0) {
+        if (GameBase.deathmatch.value != (float) 0 && GameBase.sv_cheats.value == (float) 0) {
             SV_GAME.PF_cprintfhigh(ent,
             		"You must run the server with '+setAt cheats 1' to enable this command.\n");
             return;
@@ -592,7 +592,7 @@ public final class Cmd {
      */
     public static void Notarget_f(edict_t ent) {
 
-        if (GameBase.deathmatch.value != 0 && GameBase.sv_cheats.value == 0) {
+        if (GameBase.deathmatch.value != (float) 0 && GameBase.sv_cheats.value == (float) 0) {
             SV_GAME.PF_cprintfhigh(ent, 
             	"You must run the server with '+setAt cheats 1' to enable this command.\n");
             return;
@@ -615,7 +615,7 @@ public final class Cmd {
      */
     public static void Noclip_f(edict_t ent) {
 
-        if (GameBase.deathmatch.value != 0 && GameBase.sv_cheats.value == 0) {
+        if (GameBase.deathmatch.value != (float) 0 && GameBase.sv_cheats.value == (float) 0) {
             SV_GAME.PF_cprintfhigh(ent, 
             	"You must run the server with '+setAt cheats 1' to enable this command.\n");
             return;
@@ -845,7 +845,7 @@ public final class Cmd {
         ent.client.showinventory = false;
         ent.client.showhelp = false;
 
-        if (0 == GameBase.deathmatch.value && 0 == GameBase.coop.value)
+        if ((float) 0 == GameBase.deathmatch.value && (float) 0 == GameBase.coop.value)
             return;
 
         if (ent.client.showscores) {
@@ -865,7 +865,7 @@ public final class Cmd {
      */
     public static void Help_f(edict_t ent) {
         
-        if (GameBase.deathmatch.value != 0) {
+        if (GameBase.deathmatch.value != (float) 0) {
             Score_f(ent);
             return;
         }
@@ -888,7 +888,7 @@ public final class Cmd {
      * Cmd_Kill_f
      */
     public static void Kill_f(edict_t ent) {
-        if ((GameBase.level.time - ent.client.respawn_time) < 5)
+        if ((GameBase.level.time - ent.client.respawn_time) < 5.0F)
             return;
         ent.flags &= ~Defines.FL_GODMODE;
         ent.health = 0;
@@ -914,7 +914,7 @@ public final class Cmd {
         Integer[] index = new Integer[256];
 
         int count = 0;
-        for (i = 0; i < GameBase.maxclients.value; i++) {
+        for (i = 0; (float) i < GameBase.maxclients.value; i++) {
             if (GameBase.game.clients[i].pers.connected) {
                 index[count] = i;
                 count++;
@@ -952,7 +952,7 @@ public final class Cmd {
         int i = Lib.atoi(Cmd.Argv(1));
 
         
-        if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0)
+        if (((int) ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0)
             return;
 
         if (ent.client.anim_priority > Defines.ANIM_WAVE)
@@ -1032,7 +1032,7 @@ public final class Cmd {
 
         text += "\n";
 
-        if (GameBase.flood_msgs.value != 0) {
+        if (GameBase.flood_msgs.value != (float) 0) {
             gclient_t cl = ent.client;
 
             if (GameBase.level.time < cl.flood_locktill) {
@@ -1041,10 +1041,10 @@ public final class Cmd {
                                         + " more seconds\n");
                 return;
             }
-            int i = (int) (cl.flood_whenhead - GameBase.flood_msgs.value + 1);
+            int i = (int) ((float) cl.flood_whenhead - GameBase.flood_msgs.value + 1.0F);
             if (i < 0)
                 i = (10) + i;
-            if (cl.flood_when[i] != 0
+            if (cl.flood_when[i] != (float) 0
                     && GameBase.level.time - cl.flood_when[i] < GameBase.flood_persecond.value) {
                 cl.flood_locktill = GameBase.level.time + GameBase.flood_waitdelay.value;
                 SV_GAME.PF_cprintf(ent, Defines.PRINT_CHAT,
@@ -1058,7 +1058,7 @@ public final class Cmd {
             cl.flood_when[cl.flood_whenhead] = GameBase.level.time;
         }
 
-        if (Globals.dedicated.value != 0)
+        if (Globals.dedicated.value != (float) 0)
             SV_GAME.PF_cprintf(null, Defines.PRINT_CHAT, text);
 
         for (int j = 1; j <= GameBase.game.maxclients; j++) {
@@ -1084,7 +1084,7 @@ public final class Cmd {
 
         String text = "";
 
-        for (int i = 0; i < GameBase.maxclients.value; i++) {
+        for (int i = 0; (float) i < GameBase.maxclients.value; i++) {
             edict_t e2 = GameBase.g_edicts[1 + i];
             if (!e2.inuse)
                 continue;
@@ -1111,8 +1111,8 @@ public final class Cmd {
     public static void ForwardToServer() {
 
         String cmd = Cmd.Argv(0);
-        if (Globals.cls.state <= Defines.ca_connected || cmd.charAt(0) == '-'
-                || cmd.charAt(0) == '+') {
+        if (Globals.cls.state <= Defines.ca_connected || (int) cmd.charAt(0) == (int) '-'
+                || (int) cmd.charAt(0) == (int) '+') {
             Com.Printf("Unknown command \"" + cmd + "\"\n");
             return;
         }
@@ -1168,7 +1168,7 @@ public final class Cmd {
             return;
         }
     
-        if (GameBase.level.intermissiontime != 0)
+        if (GameBase.level.intermissiontime != (float) 0)
             return;
 
         switch (cmd) {

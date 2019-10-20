@@ -54,7 +54,7 @@ public class SpecificChar extends Terminal {
 	@Override
 	public boolean qualifies(Object o) {
         Character c = (Character) o;
-		return c == character;
+		return c == (int) character;
 	}
 
 	/**

@@ -40,7 +40,7 @@ public class client_respawn_t
 	protected int score; 
 	
 	/** angles sent over in the last command. */
-	protected final float[] cmd_angles = { 0, 0, 0 };
+	protected final float[] cmd_angles = {(float) 0, (float) 0, (float) 0};
 	 
 	/** client is a spectator. */
 	protected boolean spectator; 

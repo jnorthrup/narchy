@@ -77,7 +77,7 @@ public final class NEWTKBD extends KBD
 					
 				case Jake2InputEvent.WheelMoved:
                     float dir = ((MouseEvent)event.ev).getRotation()[0];
-					if (dir > 0) {
+					if (dir > (float) 0) {
 						Do_Key_Event(Key.K_MWHEELDOWN, true);
 						Do_Key_Event(Key.K_MWHEELDOWN, false);
 					} else {
@@ -121,7 +121,7 @@ public final class NEWTKBD extends KBD
 	}
 
 	private static int XLateKeyCode(KeyEvent ev) { 
-		int code = ev.getKeyCode();
+		int code = (int) ev.getKeyCode();
         int key = 0;
 		switch(code) {
 
@@ -184,15 +184,15 @@ public final class NEWTKBD extends KBD
 			
 			case KeyEvent.VK_QUOTE:
 			case KeyEvent.VK_CIRCUMFLEX:
-			case KeyEvent.VK_BACK_QUOTE: key='`'; break;
+			case KeyEvent.VK_BACK_QUOTE: key= (int) '`'; break;
 			case KeyEvent.VK_SPACE: key = Key.K_SPACE; break;
 			
 			default:
-			    if( KeyEvent.VK_0 <= code && code <= KeyEvent.VK_9 ) {
-			        key = code - KeyEvent.VK_0 + '0';
+			    if((int) KeyEvent.VK_0 <= code && code <= (int) KeyEvent.VK_9) {
+			        key = code - (int) KeyEvent.VK_0 + (int) '0';
 			    }
-			    if( KeyEvent.VK_A <= code && code <= KeyEvent.VK_Z ) {
-			        key = code - KeyEvent.VK_A + 'a';  
+			    if((int) KeyEvent.VK_A <= code && code <= (int) KeyEvent.VK_Z) {
+			        key = code - (int) KeyEvent.VK_A + (int) 'a';
 			    }
 		}
 		if (key > 255) key = 0;

@@ -77,7 +77,7 @@ public class Audio implements Runnable {
                 //AudioSystem.getMixer(mixers[2]);
 
         try {
-            AudioFormat format = new AudioFormat(rate, 16, 2, true, false);
+            AudioFormat format = new AudioFormat((float) rate, 16, 2, true, false);
             sdl = AudioSystem.getSourceDataLine(format);
             //sdl = (SourceDataLine) AudioSystem.getMixer(null).getLine(new Line.Info(SourceDataLine.class));
 
@@ -175,7 +175,7 @@ public class Audio implements Runnable {
 
         @Override
         public float getY(float alpha) {
-            return 0 + (1.0f /*- producer.amp()*/) * distanceFactor;
+            return (float) 0 + (1.0f /*- producer.amp()*/) * distanceFactor;
         }
 
         @Override
@@ -190,7 +190,7 @@ public class Audio implements Runnable {
 //    }
 
     public <S extends SoundProducer> Sound<S> play(S p) {
-	    return play(p, 1, 1, 0);
+	    return play(p, 1.0F, 1.0F, (float) 0);
     }
 
     public <S extends SoundProducer> Sound<S> play(S p, float volume, float priority, float balance) {
@@ -206,8 +206,8 @@ public class Audio implements Runnable {
         mixer.update(alpha);
     }
 
-    private static final int max16 = Short.MAX_VALUE;
-    private static final int min16 = -Short.MAX_VALUE;
+    private static final int max16 = (int) Short.MAX_VALUE;
+    private static final int min16 = -(int) Short.MAX_VALUE;
 
     void tick() {
         
@@ -221,21 +221,21 @@ public class Audio implements Runnable {
         soundBuffer.clear();
         //soundBufferShort.clear();
 
-        float gain = max16;
+        float gain = (float) max16;
 
         byte[] ba = soundBuffer.array();
 
 
         int b = 0;
         for (int i = 0; i < bufferSize; i++) {
-            short l = ((short)Util.clampSafe(leftBuf[i] * gain, min16, max16));
+            short l = ((short)Util.clampSafe(leftBuf[i] * gain, (float) min16, (float) max16));
             //soundBufferShort.put(l);
-            ba[b++] = (byte) (l & 0x00ff);
-            ba[b++] = (byte) (l >> 8);
-            short r = ((short)Util.clampSafe(rightBuf[i] * gain, min16, max16));
+            ba[b++] = (byte) ((int) l & 0x00ff);
+            ba[b++] = (byte) ((int) l >> 8);
+            short r = ((short)Util.clampSafe(rightBuf[i] * gain, (float) min16, (float) max16));
             //soundBufferShort.put(r);
-            ba[b++] = (byte) (r & 0x00ff);
-            ba[b++] = (byte) (r >> 8);
+            ba[b++] = (byte) ((int) r & 0x00ff);
+            ba[b++] = (byte) ((int) r >> 8);
         }
 
         int bw = bufferSize * 2 * 2;
@@ -265,7 +265,7 @@ public class Audio implements Runnable {
 
             } else {
                 idle = 0;
-                clientTick(0);
+                clientTick((float) 0);
 
                 tick();
             }

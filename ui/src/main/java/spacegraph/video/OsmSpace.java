@@ -102,7 +102,7 @@ public enum OsmSpace  { ;
             float scale = viewScale;
             target[0] = (x/scale+ center.x) ;
             target[1] = (y/scale+ center.y) ;
-            target[2] = 0;
+            target[2] = (float) 0;
         }
 
         @Override
@@ -110,8 +110,8 @@ public enum OsmSpace  { ;
 
             viewScale = scale(bounds);
 
-            gl.glScalef(viewScale, viewScale, 1);
-            gl.glTranslatef(-center.x, -center.y, 0);
+            gl.glScalef(viewScale, viewScale, 1.0F);
+            gl.glTranslatef(-center.x, -center.y, (float) 0);
 
         }
 
@@ -143,15 +143,15 @@ public enum OsmSpace  { ;
 
         public final v3 camFwd = new v3();
         public final v3 camUp = new v3();
-        final v3 camPos = new v3(0,0,-10);
+        final v3 camPos = new v3((float) 0, (float) 0, -10.0F);
         final v3 rot = new v3();
 
         private final float[] mat4f = new float[16];
 
-        final FloatRange scale = new FloatRange(1/(50_000.0f), 1/250_000f, 1/10_000f);
+        final FloatRange scale = new FloatRange(1.0F /(50_000.0f), 1.0F /250_000f, 1.0F /10_000f);
 
         {
-            camPos.set(0, 0, 0);
+            camPos.set((float) 0, (float) 0, (float) 0);
         }
 
         @Override
@@ -164,7 +164,7 @@ public enum OsmSpace  { ;
         @Override
         public void project(float lon, float lat, float alt, float[] target, int offset) {
 
-            double[] d = ECEF.latlon2ecef(lat , lon , alt); //HACK
+            double[] d = ECEF.latlon2ecef((double) lat, (double) lon, (double) alt); //HACK
             target[offset++] = (float)(d[0]); //HACK
             target[offset++] = (float)(d[1]); //HACK
             target[offset]   = (float)(d[2]); //HACK
@@ -174,14 +174,14 @@ public enum OsmSpace  { ;
         public void transform(GL2 gl, RectFloat bounds) {
 
 
-            camUp.set(0, 1, 0);
-            camFwd.set(0, 0, -1);
+            camUp.set((float) 0, 1.0F, (float) 0);
+            camFwd.set((float) 0, (float) 0, -1.0F);
 
             gl.glMatrixMode(GL_PROJECTION);
             gl.glPushMatrix();
             gl.glLoadIdentity();
-            float zNear = 0.5f, zFar = 1200;
-            float tanFovV = (float) Math.tan(45 * FloatUtil.PI / 180.0f / 2f);
+            float zNear = 0.5f, zFar = 1200.0F;
+            float tanFovV = (float) Math.tan((double) (45 * FloatUtil.PI / 180.0f / 2f));
             float aspect =
                     //1;
                     //bounds.h / bounds.w;
@@ -191,10 +191,10 @@ public enum OsmSpace  { ;
             float bottom = -top;
             float left = -right;
 
-            gl.glMultMatrixf(FloatUtil.makePerspective(mat4f, 0, true, 45 * FloatUtil.PI / 180.0f, aspect, zNear, zFar), 0);
+            gl.glMultMatrixf(FloatUtil.makePerspective(mat4f, 0, true, 45.0F * FloatUtil.PI / 180.0f, aspect, zNear, zFar), 0);
 
-            Draw.glu.gluLookAt(0 - camFwd.x, 0 - camFwd.y, 0 - camFwd.z,
-                    0, 0, 0,
+            Draw.glu.gluLookAt((float) 0 - camFwd.x, (float) 0 - camFwd.y, (float) 0 - camFwd.z,
+                    (float) 0, (float) 0, (float) 0,
                     camUp.x, camUp.y, camUp.z);
 
             gl.glMatrixMode(GL_MODELVIEW);
@@ -205,8 +205,8 @@ public enum OsmSpace  { ;
 
             gl.glTranslatef(camPos.x, camPos.y, camPos.z);
 
-            gl.glRotatef(rot.x, 0, 0, 1);
-            gl.glRotatef(rot.y, 1, 0, 0);
+            gl.glRotatef(rot.x, (float) 0, (float) 0, 1.0F);
+            gl.glRotatef(rot.y, 1.0F, (float) 0, (float) 0);
 
 //            System.out.println(scale);
             float scale = this.scale.floatValue();
@@ -215,17 +215,17 @@ public enum OsmSpace  { ;
 
 
             //debug:
-            gl.glColor4f(1,1,1, 0.5f);
+            gl.glColor4f(1.0F, 1.0F, 1.0F, 0.5f);
 
             //gl.glLineWidth(2);
             //gl.glBegin(GL_LINE_STRIP );
 
-            gl.glPointSize(4);
+            gl.glPointSize(4.0F);
             gl.glBegin(GL_POINTS);
             float[] ff = new float[3];
             for (int lat = -90; lat < +90; lat+=10) {
                 for (int lon = -180; lon < +180; lon+=10) {
-                    project(lon, lat, 0, ff, 0);
+                    project((float) lon, (float) lat, (float) 0, ff, 0);
                     gl.glVertex3fv(ff, 0);
                 }
             }
@@ -257,7 +257,7 @@ public enum OsmSpace  { ;
         @Override
         public void zoom(float wheel) {
             //scale.multiply(1f + (wheel) * 0.1f);
-            camPos.z += wheel * 30;
+            camPos.z += wheel * 30.0F;
         }
 
         @Override
@@ -299,7 +299,7 @@ public enum OsmSpace  { ;
         public void addNode(OsmNode node) {
             Map<String, String> tags = node.tags;
 
-            float pointSize = 1;
+            float pointSize = 1.0F;
             float r = 0.5f, g = 0.5f, b = 0.5f, a = 1f;
             if (tags!=null && !tags.isEmpty()) {
                 String highway = tags.get("highway");
@@ -307,23 +307,23 @@ public enum OsmSpace  { ;
 
                 if ("bus_stop".equals(highway)) {
 
-                    pointSize = 3;
+                    pointSize = 3.0F;
                     r = g = b = 1f;
                     a = 0.7f;
                 } else if ("traffic_signals".equals(highway)) {
-                    pointSize = 3;
+                    pointSize = 3.0F;
                     r = g = 1f;
                     b = 0f;
                     a = 0.7f;
 
                 } else if ("tree".equals(natural) || "scrub".equals(natural)) {
-                    pointSize = 3;
+                    pointSize = 3.0F;
                     g = 1f;
                     r = b = 0f;
                     a = 0.7f;
 
                 } else {
-                    pointSize = 3;
+                    pointSize = 3.0F;
                     r = 1f;
                     g = b = 0f;
                     a = 0.7f;
@@ -618,10 +618,10 @@ public enum OsmSpace  { ;
                     vbuf.add((float) pointer[5]);
                     vbuf.add((float) pointer[6]);
                 } else {
-                    vbuf.add(1);
-                    vbuf.add(1);
-                    vbuf.add(1);
-                    vbuf.add(1);
+                    vbuf.add(1.0F);
+                    vbuf.add(1.0F);
+                    vbuf.add(1.0F);
+                    vbuf.add(1.0F);
                 }
                 //gl.glVertex3dv(pointer, 0);
 
@@ -640,10 +640,10 @@ public enum OsmSpace  { ;
                     vbuf.add(pointer[5]);
                     vbuf.add(pointer[6]);
                 } else {
-                    vbuf.add(1);
-                    vbuf.add(1);
-                    vbuf.add(1);
-                    vbuf.add(1);
+                    vbuf.add(1.0F);
+                    vbuf.add(1.0F);
+                    vbuf.add(1.0F);
+                    vbuf.add(1.0F);
                 }
 
                 //gl.glVertex3fv(pointer, 0);
@@ -674,7 +674,7 @@ public enum OsmSpace  { ;
             vertex[1] = (float) coords[1];
             vertex[2] = (float) coords[2];
             for (int cc = 3; cc < 7; cc++) {
-                float v = 0;
+                float v = (float) 0;
                 for (int dd = 0; dd < data.length; dd++) {
                     float[] d = (float[]) data[dd];
                     if (d != null) {

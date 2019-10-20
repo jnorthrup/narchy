@@ -353,8 +353,8 @@ public class Sokoban extends Applet {
 
         String tile = "# @$.&*";
         for (int i = 0; i < tile.length(); i++) {
-            BufferedImage t = (BufferedImage) (tiles[tile.charAt(i)] = new BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB));
-            Graphics g = tiles[tile.charAt(i)].getGraphics();
+            BufferedImage t = (BufferedImage) (tiles[(int) tile.charAt(i)] = new BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB));
+            Graphics g = tiles[(int) tile.charAt(i)].getGraphics();
 
             float h = (((float) i) / ((float) (tile.length() - 1)));
 
@@ -386,14 +386,14 @@ public class Sokoban extends Applet {
 
         int y = -16 + h, x = -16 + w;
         for (char aLevel : level)
-            if (aLevel == cr) {
+            if ((int) aLevel == (int) cr) {
                 x = -16 + w;
                 y += 16;
             } else {
                 x += 16;
-                if (aLevel == blank) continue;
+                if ((int) aLevel == (int) blank) continue;
 
-                g.drawImage(tiles[aLevel], x + 225, y + 225, this);
+                g.drawImage(tiles[(int) aLevel], x + 225, y + 225, this);
             }
 
 
@@ -441,7 +441,7 @@ public class Sokoban extends Applet {
                 break;
             case '+':
             case '-':
-                currlevel += e.key == '+' ? 1 : -1;
+                currlevel += e.key == (int) '+' ? 1 : -1;
                 if (currlevel < 0) currlevel = 0;
                 else if (currlevel == levels.length) currlevel = levels.length - 1;
             case 'A':
@@ -471,7 +471,7 @@ public class Sokoban extends Applet {
         lastcount = 0;
         int W = 0;
         for (char aLevel : level)
-            if (aLevel == cr) {
+            if ((int) aLevel == (int) cr) {
                 if (W > w) w = W;
                 W = 0;
                 h++;
@@ -506,8 +506,8 @@ public class Sokoban extends Applet {
     public int moveone(int pos, int x, int y, int dx, int dy) {
         if (dx != 0) return pos + dx;
         int i;
-        if (dy == -1) for (i = pos - x - 2; level[i] != cr; i--) ;
-        else for (i = pos + 1; level[i] != cr; i++) ;
+        if (dy == -1) for (i = pos - x - 2; (int) level[i] != (int) cr; i--) ;
+        else for (i = pos + 1; (int) level[i] != (int) cr; i++) ;
         return i + x + 1;
     }
 
@@ -515,14 +515,14 @@ public class Sokoban extends Applet {
         do {
             int x = 0, y = -1, savepos1 = pos1, savepos2 = pos2, savepos3 = pos3;
             for (pos1 = 0; pos1 < level.length; pos1++)
-                if (level[pos1] == cr) {
+                if ((int) level[pos1] == (int) cr) {
                     x = 0;
                     y++;
-                } else if ((level[pos1] != me) && (level[pos1] != megoal)) x++;
+                } else if (((int) level[pos1] != (int) me) && ((int) level[pos1] != (int) megoal)) x++;
                 else break;
             pos2 = moveone(pos1, x, y, dx, dy);
             int count = 0;
-            if (level[pos2] == floor || level[pos2] == goal) count = 1;
+            if ((int) level[pos2] == (int) floor || (int) level[pos2] == (int) goal) count = 1;
             else {
                 if (uc) {
                     lastcount = 1;
@@ -530,17 +530,17 @@ public class Sokoban extends Applet {
                     pos2 = savepos2;
                     break;
                 }
-                if (level[pos2] == dollar || level[pos2] == occupied) {
+                if ((int) level[pos2] == (int) dollar || (int) level[pos2] == (int) occupied) {
                     pos3 = moveone(pos2, x, y, dx, dy);
-                    if (level[pos3] == floor || level[pos3] == goal) count = 2;
+                    if ((int) level[pos3] == (int) floor || (int) level[pos3] == (int) goal) count = 2;
                 }
             }
             if (count > 0) {
-                level[pos1] = level[pos1] == me ? floor : goal;
-                level[pos2] = level[pos2] == floor || level[pos2] == dollar ? me : megoal;
+                level[pos1] = (int) level[pos1] == (int) me ? floor : goal;
+                level[pos2] = (int) level[pos2] == (int) floor || (int) level[pos2] == (int) dollar ? me : megoal;
                 move++;
                 if (count > 1) {
-                    level[pos3] = level[pos3] == floor ? dollar : occupied;
+                    level[pos3] = (int) level[pos3] == (int) floor ? dollar : occupied;
                     push++;
                 }
                 lastcount = count;
@@ -550,14 +550,14 @@ public class Sokoban extends Applet {
                 drawMove();
                 boolean b = true;
                 for (char aLevel : level)
-                    if (aLevel == dollar) {
+                    if ((int) aLevel == (int) dollar) {
                         b = false;
                         break;
                     }
                 if (b) {
 
                     try {
-                        Thread.sleep(2000);
+                        Thread.sleep(2000L);
                     } catch (InterruptedException e) {
                     }
                     newLevel(currlevel + 1);
@@ -574,13 +574,13 @@ public class Sokoban extends Applet {
 
     public void undomove() {
         if (lastcount > 0) {
-            level[pos1] = level[pos1] == floor ? me : megoal;
+            level[pos1] = (int) level[pos1] == (int) floor ? me : megoal;
             move--;
             if (lastcount > 1) {
-                level[pos2] = level[pos2] == me ? dollar : occupied;
-                level[pos3] = level[pos3] == dollar ? floor : goal;
+                level[pos2] = (int) level[pos2] == (int) me ? dollar : occupied;
+                level[pos3] = (int) level[pos3] == (int) dollar ? floor : goal;
                 push--;
-            } else level[pos2] = level[pos2] == me ? floor : goal;
+            } else level[pos2] = (int) level[pos2] == (int) me ? floor : goal;
             lastcount = 0;
             drawMove();
         }

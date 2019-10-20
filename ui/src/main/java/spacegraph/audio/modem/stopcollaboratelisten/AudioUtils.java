@@ -261,13 +261,13 @@ public class AudioUtils {
         //audioInputStream.close();
 
         //sDecoder.stop();
-        Util.sleepMS(1000);
+        Util.sleepMS(1000L);
         assertEquals("test", msg.toString());
     }
 
     public static void writeWav(File file, byte[] data, AudioFormat format) throws IllegalArgumentException, IOException {
 
-        AudioInputStream ais = new AudioInputStream(new ByteArrayInputStream(data), format, data.length);
+        AudioInputStream ais = new AudioInputStream(new ByteArrayInputStream(data), format, (long) data.length);
         AudioSystem.write(ais, AudioFileFormat.Type.WAVE, file);
         ais.close();
 
@@ -425,7 +425,7 @@ public class AudioUtils {
          * NOTE: THIS DOES NOT REMOVE BYTES FROM THE BUFFER
          */
         public synchronized byte[] read(int n, float requiredPresent) {
-            if (baos.size() < n * requiredPresent) {
+            if ((float) baos.size() < (float) n * requiredPresent) {
                 return null;
             }
             byte[] result = ArrayUtils.subarray(baos.toByteArray(), 0, n);

@@ -6,7 +6,6 @@ import jcog.util.ArrayUtil;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.stream.IntStream;
 
 /*>>>
 import org.checkerframework.checker.interning.qual.*;
@@ -223,7 +222,7 @@ public final class Intern {
 
     private static final int FACTOR = 23;
     
-    private static final double DOUBLE_FACTOR = 263;
+    private static final double DOUBLE_FACTOR = 263.0;
 
     /**
      * Hasher object which hashes and compares Doubles.
@@ -272,14 +271,14 @@ public final class Intern {
             double[] a = (double[]) o;
             
             
-            double running = 0;
+            double running = (double) 0;
             for (int i = 0; i < a.length; i++) {
                 double elt = (Double.isNaN(a[i]) ? 0.0 : a[i]);
-                running = running * FACTOR + elt * DOUBLE_FACTOR;
+                running = running * (double) FACTOR + elt * DOUBLE_FACTOR;
             }
 
             long result = Math.round(running);
-            return (int) (result % Integer.MAX_VALUE);
+            return (int) (result % (long) Integer.MAX_VALUE);
         }
     }
 
@@ -668,7 +667,7 @@ public final class Intern {
             return internedDoubleNaN;
         }
         
-        if (a == 0) {
+        if (a == (double) 0) {
             return internedDoubleZero;
         }
         WeakReference<Double> lookup = internedDoubles.get(a);

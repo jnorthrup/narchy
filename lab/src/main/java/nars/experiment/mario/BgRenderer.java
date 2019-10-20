@@ -72,7 +72,7 @@ public class BgRenderer {
         int yTileEnd = (y0 + yCam + h) / 32;
         for (int x = xTileStart; x <= xTileEnd; x++) {
             for (int y = yTileStart; y <= yTileEnd; y++) {
-                int b = level.getBlock(x, y) & 0xff;
+                int b = (int) level.getBlock(x, y) & 0xff;
                 g.drawImage(Art.bg[b % 8][b / 8], (x << 5) - xCam, (y << 5) - yCam - 16, null);
             }
         }

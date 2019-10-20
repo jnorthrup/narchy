@@ -64,12 +64,12 @@ public abstract class How extends AbstractPred<Derivation>  {
 
 	public final float pri(Derivation d) {
         float v = why.pri; //priElseZero();
-		return v >= Float.MIN_NORMAL ? v * priHeuristic(d) : 0;
+		return v >= Float.MIN_NORMAL ? v * priHeuristic(d) : (float) 0;
 	}
 
 	/** can implement derivation-dependent gating functions in subclasses here. should return a value <= 1 */
 	protected float priHeuristic(Derivation d) {
-		return 1;
+		return 1.0F;
 	}
 
 	public abstract void run(Derivation d);

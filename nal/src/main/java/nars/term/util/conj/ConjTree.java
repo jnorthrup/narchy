@@ -116,7 +116,7 @@ public class ConjTree implements ConjBuilder {
         return !(!neg.isEmpty() || (conj.hasAny(NEG) && !pos.isEmpty())) ||
                 conj.eventsAND((when, what) ->
                     what instanceof Neg ? !pos.contains(what.unneg()) : !neg.contains(what),
-            0, true, true);
+                        0L, true, true);
     }
 
     private boolean addParallelN(Term n) {
@@ -189,13 +189,13 @@ public class ConjTree implements ConjBuilder {
         //assert (nx.op() != NEG);
 
 
-        boolean xConj = nx.opID() == CONJ.id;
+        boolean xConj = nx.opID() == (int) CONJ.id;
 
         FasterList<Term> toAdd = null;
         Term nxn = null;
         for (Iterator<Term> nyi = neg.iterator(); nyi.hasNext(); ) {
             Term ny = nyi.next();
-            boolean yConj = ny.opID() == CONJ.id;
+            boolean yConj = ny.opID() == (int) CONJ.id;
             //int nys = ny.structure();
             //disj
             //                //Robbins Algebra / Huntington Reduction
@@ -263,7 +263,7 @@ public class ConjTree implements ConjBuilder {
                         nx = nx2;
                         if (nx instanceof IdempotentBool)
                             return nx;
-                        Term x = reinsertNN(nx, toAdd, 0);
+                        Term x = reinsertNN(nx, toAdd, 0L);
                         if (x != null)
                             return x;
                     }
@@ -290,7 +290,7 @@ public class ConjTree implements ConjBuilder {
 
     private @Nullable Term reinsertNN(Term nx, FasterList<Term> toAdd, long nxshift) {
         //add at shifted time
-        if (nxshift == ETERNAL || nxshift == 0) {
+        if (nxshift == ETERNAL || nxshift == 0L) {
             //continue, adding at present parallel time
         } else {
             if (!addEvent(nxshift, nx.neg()))
@@ -311,7 +311,7 @@ public class ConjTree implements ConjBuilder {
             return False; //contradiction
 
 
-        boolean xConj = x instanceof Compound && x.opID() == CONJ.id;
+        boolean xConj = x instanceof Compound && x.opID() == (int) CONJ.id;
         if (xConj && nP_or_pN) {
             for (Term yy : y)
                 if (Conj.eventOf(x, yy, -1))
@@ -520,7 +520,7 @@ public class ConjTree implements ConjBuilder {
     @Override
     public long shift() {
         if (shift == TIMELESS)
-            shift = (seq == null || seq.isEmpty()) ? (!pos.isEmpty() || !neg.isEmpty() ? ETERNAL : TIMELESS) : seq.keysView().min();
+            shift = (seq == null || seq.isEmpty()) ? (!pos.isEmpty() || !neg.isEmpty() ? ETERNAL : TIMELESS) : (long) seq.keysView().min();
         return shift;
     }
 
@@ -705,7 +705,7 @@ public class ConjTree implements ConjBuilder {
                     if (y.op()==CONJ && (y.subStructure()&CONJ.bit)!=0) {
                         //test factorization exhaustively
                         try {
-                            y.eventsAND((when, whta) -> true, 0, false, true);
+                            y.eventsAND((when, whta) -> true, 0L, false, true);
                         } catch (TermTransformException tte) {
                             if (NAL.DEBUG)
                                 throw tte;
@@ -742,7 +742,7 @@ public class ConjTree implements ConjBuilder {
             IntObjectPair<ConjTree> only = seq.keyValuesView().getOnly();
             ConjTree x = only.getTwo();
 
-            shift = seq.keySet().min();
+            shift = (long) seq.keySet().min();
 
             if (x.seq==null) {
                 //flatten point
@@ -773,7 +773,7 @@ public class ConjTree implements ConjBuilder {
                     break;
                 }
 
-                long W = wc.getOne();
+                long W = (long) wc.getOne();
                 if (!events.add(W, x) || (pp && !events.addAll(W, pos)) || (nn && !events.addAllNeg(W, neg))) {
                     terminate(False);
                     break;
@@ -844,7 +844,7 @@ public class ConjTree implements ConjBuilder {
 
     private boolean addAllAt(int at, ConjTree x) {
         if (x.seq!=null)
-            return addAt(at, x.term());
+            return addAt((long) at, x.term());
         else {
             if (!x.pos.isEmpty()) {
                 for (Term p : x.pos) {

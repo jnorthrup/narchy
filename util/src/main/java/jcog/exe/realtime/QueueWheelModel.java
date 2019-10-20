@@ -3,8 +3,6 @@ package jcog.exe.realtime;
 import jcog.TODO;
 import jcog.Util;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Queue;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;

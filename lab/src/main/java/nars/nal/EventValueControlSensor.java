@@ -21,11 +21,11 @@ public class EventValueControlSensor extends ControlSensor {
         this.adaptContrast = adaptContrast;
     }
     public EventValueControlSensor(Timed n, DoubleMeter signal, int min, int max, int quantization, int sampleWindow) {
-        super(min, max, quantization);
+        super((double) min, (double) max, quantization);
         e = new DoubleMeter("_");
         timed = n;
         logicSensor = signal;
-        adaptContrast = 0;
+        adaptContrast = (double) 0;
     }
 
     @Override

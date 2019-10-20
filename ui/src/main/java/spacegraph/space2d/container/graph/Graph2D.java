@@ -133,7 +133,7 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
             @Override
             protected void paintIt(GL2 gl, ReSurface r) {
 
-                gl.glColor4f(0,0,0, 0.9f);
+                gl.glColor4f((float) 0, (float) 0, (float) 0, 0.9f);
                 Draw.rect(bounds, gl);
 
                 super.paintIt(gl, r);

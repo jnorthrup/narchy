@@ -44,7 +44,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 
     protected BitmapTextGrid() {
         font(defaultFont());
-        fontSize(DEFAULT_FONT_SCALE);
+        fontSize((float) DEFAULT_FONT_SCALE);
     }
 
     @Override
@@ -205,7 +205,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 
     public BitmapTextGrid font(InputStream i) {
         try {
-            font(Font.createFont(Font.TRUETYPE_FONT, i).deriveFont(font.getStyle(), font.getSize()));
+            font(Font.createFont(Font.TRUETYPE_FONT, i).deriveFont(font.getStyle(), (float) font.getSize()));
         } catch (FontFormatException | IOException e) {
             e.printStackTrace();
         }
@@ -232,7 +232,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 //            Rectangle2D b = f.getStringBounds("X", ctx);
 //            this.fontWidth = (int) Math.ceil((float) b.getWidth());
 //            this.fontHeight = (int) Math.ceil((float) b.getHeight());
-            this.fontWidth = (int) Math.ceil(font.getSize() / 1.5f);
+            this.fontWidth = (int) Math.ceil((double) (font.getSize() / 1.5f));
             this.fontHeight = font.getSize();
 
 
@@ -319,7 +319,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
         g.setColor(foregroundColor);
 
         int descent = font.getSize() / 4; //estimate
-        if (c != ' ')
+        if ((int) c != (int) ' ')
             g.drawChars(new char[]{c}, 0, 1, x, y + fontHeight + 1 - descent);
 
         if (crossedOut) {

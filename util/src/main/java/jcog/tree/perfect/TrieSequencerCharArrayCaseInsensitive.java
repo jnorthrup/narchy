@@ -36,7 +36,7 @@ public class TrieSequencerCharArrayCaseInsensitive extends TrieSequencerCharArra
           char a = sequenceA[indexA + i];
           char b = sequenceB[indexB + i];
 
-         if (Character.toLowerCase( a ) != Character.toLowerCase( b ))
+         if ((int) Character.toLowerCase(a) != (int) Character.toLowerCase(b))
          {
             return i;
          }
@@ -48,7 +48,7 @@ public class TrieSequencerCharArrayCaseInsensitive extends TrieSequencerCharArra
    @Override
    public int hashOf( char[] sequence, int i )
    {
-      return Character.toLowerCase( sequence[i] );
+      return (int) Character.toLowerCase(sequence[i]);
    }
 
 }

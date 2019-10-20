@@ -81,7 +81,7 @@ public enum LongArrays {
     /**
      * The inverse of the golden ratio times 2<sup>16</sup>.
      */
-    public static final long ONEOVERPHI = 106039;
+    public static final long ONEOVERPHI = 106039L;
 
     /**
      * A static, final, empty array.
@@ -148,7 +148,7 @@ public enum LongArrays {
      */
     public static long[] grow(long[] array, int length) {
         if (length > array.length) {
-            int newLength = (int) Math.min(Math.max((ONEOVERPHI * array.length) >>> 16, length), Integer.MAX_VALUE);
+            int newLength = (int) Math.min(Math.max((ONEOVERPHI * (long) array.length) >>> 16, (long) length), (long) Integer.MAX_VALUE);
             long[] t =
                     new long[newLength];
             System.arraycopy(array, 0, t, 0, array.length);
@@ -176,7 +176,7 @@ public enum LongArrays {
      */
     public static long[] grow(long[] array, int length, int preserve) {
         if (length > array.length) {
-            int newLength = (int) Math.min(Math.max((ONEOVERPHI * array.length) >>> 16, length), Integer.MAX_VALUE);
+            int newLength = (int) Math.min(Math.max((ONEOVERPHI * (long) array.length) >>> 16, (long) length), (long) Integer.MAX_VALUE);
             long[] t =
                     new long[newLength];
             System.arraycopy(array, 0, t, 0, preserve);

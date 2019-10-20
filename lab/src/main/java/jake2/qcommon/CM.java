@@ -214,7 +214,7 @@ public class CM {
         map_noareas = Cvar.Get("map_noareas", "0", 0);
 
         if (map_name.equals(name)
-                && (clientload || 0 == Cvar.VariableValue("flushmap"))) {
+                && (clientload || (float) 0 == Cvar.VariableValue("flushmap"))) {
 
             checksum[0] = last_checksum;
 
@@ -319,8 +319,8 @@ public class CM {
             cmodel_t out = map_cmodels[i];
 
             for (int j = 0; j < 3; j++) {
-                out.mins[j] = in.mins[j] - 1;
-                out.maxs[j] = in.maxs[j] + 1;
+                out.mins[j] = in.mins[j] - 1.0F;
+                out.maxs[j] = in.maxs[j] + 1.0F;
                 out.origin[j] = in.origin[j];
             }
             out.headnode = in.headnode;
@@ -499,8 +499,8 @@ public class CM {
             cleaf_t out = map_leafs[i];
 
             out.contents = in.contents;
-            out.cluster = in.cluster;
-            out.area = in.area;
+            out.cluster = (int) in.cluster;
+            out.area = (int) in.area;
             out.firstleafbrush = (short) in.firstleafbrush;
             out.numleafbrushes = (short) in.numleafbrushes;
 
@@ -568,7 +568,7 @@ public class CM {
             for (int j = 0; j < 3; j++) {
                 out.normal[j] = in.normal[j];
 
-                if (out.normal[j] < 0)
+                if (out.normal[j] < (float) 0)
                     bits |= 1 << j;
             }
 
@@ -614,7 +614,7 @@ public class CM {
         }
 
         for (int i = 0; i < count; i++) {
-            out[i] = bb.getShort();
+            out[i] = (int) bb.getShort();
             if (debugloadmap) {
                 Com.DPrintf("|%6i|%6i|\n", new Vargs().add(i).add(out[i]));
             }
@@ -652,7 +652,7 @@ public class CM {
 
             out.plane = map_planes[num];
 
-            int j = in.texinfo;
+            int j = (int) in.texinfo;
 
             if (j >= numtexinfo)
                 Com.Error(Defines.ERR_DROP, "Bad brushside texinfo");
@@ -768,7 +768,7 @@ public class CM {
             Com.Error(Defines.ERR_DROP, "Map has too large entity lump");
 
         int x = 0;
-        for (; x < l.filelen && cmod_base[x + l.fileofs] != 0; x++);
+        for (; x < l.filelen && (int) cmod_base[x + l.fileofs] != 0; x++);
 
         map_entitystring = new String(cmod_base, l.fileofs, x).trim();
         Com.dprintln("entitystring=" + map_entitystring.length() + 
@@ -778,7 +778,7 @@ public class CM {
 
     /** Returns the model with a given id "*" + <number> */
     public static cmodel_t InlineModel(String name) {
-        if (name == null || name.charAt(0) != '*')
+        if (name == null || (int) name.charAt(0) != (int) '*')
             Com.Error(Defines.ERR_DROP, "CM_InlineModel: bad name");
 
         int num = Lib.atoi(name.substring(1));
@@ -857,7 +857,7 @@ public class CM {
         box_leaf = map_leafs[numleafs];
         box_leaf.contents = Defines.CONTENTS_MONSTER;
         box_leaf.firstleafbrush = (short) numleafbrushes;
-        box_leaf.numleafbrushes = 1;
+        box_leaf.numleafbrushes = (short) 1;
 
         map_leafbrushes[numleafbrushes] = numbrushes;
 
@@ -881,15 +881,15 @@ public class CM {
 
             cplane_t p = box_planes[i * 2];
             p.type = (byte) (i >> 1);
-            p.signbits = 0;
+            p.signbits = (byte) 0;
             Math3D.VectorClear(p.normal);
-            p.normal[i >> 1] = 1;
+            p.normal[i >> 1] = 1.0F;
 
             p = box_planes[i * 2 + 1];
             p.type = (byte) (3 + (i >> 1));
-            p.signbits = 0;
+            p.signbits = (byte) 0;
             Math3D.VectorClear(p.normal);
-            p.normal[i >> 1] = -1;
+            p.normal[i >> 1] = -1.0F;
         }
     }
 
@@ -920,11 +920,11 @@ public class CM {
             cplane_t plane = node.plane;
 
             float d;
-            if (plane.type < 3)
-                d = p[plane.type] - plane.dist;
+            if ((int) plane.type < 3)
+                d = p[(int) plane.type] - plane.dist;
             else
                 d = Math3D.DotProduct(plane.normal, p) - plane.dist;
-            if (d < 0)
+            if (d < (float) 0)
                 num = node.children[1];
             else
                 num = node.children[0];
@@ -1035,7 +1035,7 @@ public class CM {
      */
     public static int TransformedPointContents(float[] p, int headnode,
             float[] origin, float[] angles) {
-        float[] p_l = { 0, 0, 0 };
+        float[] p_l = {(float) 0, (float) 0, (float) 0};
 
 
         Math3D.VectorSubtract(p, origin, p_l);
@@ -1044,18 +1044,18 @@ public class CM {
         if (headnode != box_headnode) {
             boolean b = false;
             for (int i : new int[]{0, 1, 2}) {
-                if (angles[i] != 0) {
+                if (angles[i] != (float) 0) {
                     b = true;
                     break;
                 }
             }
             if (b) {
-                float[] up = {0, 0, 0};
-                float[] right = {0, 0, 0};
-                float[] forward = {0, 0, 0};
+                float[] up = {(float) 0, (float) 0, (float) 0};
+                float[] right = {(float) 0, (float) 0, (float) 0};
+                float[] forward = {(float) 0, (float) 0, (float) 0};
                 Math3D.AngleVectors(angles, forward, right, up);
 
-                float[] temp = {0, 0, 0};
+                float[] temp = {(float) 0, (float) 0, (float) 0};
                 Math3D.VectorCopy(p_l, temp);
                 p_l[0] = Math3D.DotProduct(temp, forward);
                 p_l[1] = -Math3D.DotProduct(temp, right);
@@ -1079,13 +1079,13 @@ public class CM {
     
     private static final float DIST_EPSILON = 0.03125f;
 
-    private static final float[] trace_start = { 0, 0, 0 };
-    private static final float[] trace_end = { 0, 0, 0 };
+    private static final float[] trace_start = {(float) 0, (float) 0, (float) 0};
+    private static final float[] trace_end = {(float) 0, (float) 0, (float) 0};
 
-    private static final float[] trace_mins = { 0, 0, 0 };
-    private static final float[] trace_maxs = { 0, 0, 0 };
+    private static final float[] trace_mins = {(float) 0, (float) 0, (float) 0};
+    private static final float[] trace_maxs = {(float) 0, (float) 0, (float) 0};
 
-    private static final float[] trace_extents = { 0, 0, 0 };
+    private static final float[] trace_extents = {(float) 0, (float) 0, (float) 0};
 
     private static trace_t trace_trace = new trace_t();
 
@@ -1109,9 +1109,9 @@ public class CM {
         cbrushside_t leadside = null;
 
         cplane_t clipplane = null;
-        float leavefrac = 1;
-        float enterfrac = -1;
-        float[] ofs = {0, 0, 0};
+        float leavefrac = 1.0F;
+        float enterfrac = -1.0F;
+        float[] ofs = {(float) 0, (float) 0, (float) 0};
         for (int i = 0; i < brush.numsides; i++) {
             cbrushside_t side = map_brushsides[brush.firstbrushside + i];
             cplane_t plane = side.plane;
@@ -1124,7 +1124,7 @@ public class CM {
 
                 
                 for (int j = 0; j < 3; j++) {
-                    if (plane.normal[j] < 0)
+                    if (plane.normal[j] < (float) 0)
                         ofs[j] = maxs[j];
                     else
                         ofs[j] = mins[j];
@@ -1138,16 +1138,16 @@ public class CM {
             float d1 = Math3D.DotProduct(p1, plane.normal) - dist;
             float d2 = Math3D.DotProduct(p2, plane.normal) - dist;
 
-            if (d2 > 0)
+            if (d2 > (float) 0)
                 getout = true; 
-            if (d1 > 0)
+            if (d1 > (float) 0)
                 startout = true;
 
             
-            if (d1 > 0 && d2 >= d1)
+            if (d1 > (float) 0 && d2 >= d1)
                 return;
 
-            if (d1 <= 0 && d2 <= 0)
+            if (d1 <= (float) 0 && d2 <= (float) 0)
                 continue;
 
 
@@ -1173,9 +1173,9 @@ public class CM {
             return;
         }
         if (enterfrac < leavefrac) {
-            if (enterfrac > -1 && enterfrac < trace.fraction) {
-                if (enterfrac < 0)
-                    enterfrac = 0;
+            if (enterfrac > -1.0F && enterfrac < trace.fraction) {
+                if (enterfrac < (float) 0)
+                    enterfrac = (float) 0;
                 trace.fraction = enterfrac;
                 
                 trace.plane.set(clipplane);
@@ -1194,14 +1194,14 @@ public class CM {
         if (brush.numsides == 0)
             return;
 
-        float[] ofs = {0, 0, 0};
+        float[] ofs = {(float) 0, (float) 0, (float) 0};
         for (int i = 0; i < brush.numsides; i++) {
             cbrushside_t side = map_brushsides[brush.firstbrushside + i];
             cplane_t plane = side.plane;
 
 
             for (int j = 0; j < 3; j++) {
-                if (plane.normal[j] < 0)
+                if (plane.normal[j] < (float) 0)
                     ofs[j] = maxs[j];
                 else
                     ofs[j] = mins[j];
@@ -1212,14 +1212,14 @@ public class CM {
             float d1 = Math3D.DotProduct(p1, plane.normal) - dist;
 
 
-            if (d1 > 0)
+            if (d1 > (float) 0)
                 return;
 
         }
 
         
         trace.startsolid = trace.allsolid = true;
-        trace.fraction = 0;
+        trace.fraction = (float) 0;
         trace.contents = brush.contents;
     }
 
@@ -1233,9 +1233,9 @@ public class CM {
             return;
 
         
-        for (int k = 0; k < leaf.numleafbrushes; k++) {
+        for (int k = 0; k < (int) leaf.numleafbrushes; k++) {
 
-            int brushnum = map_leafbrushes[leaf.firstleafbrush + k];
+            int brushnum = map_leafbrushes[(int) leaf.firstleafbrush + k];
             cbrush_t b = map_brushes[brushnum];
             if (b.checkcount == checkcount)
                 continue; 
@@ -1245,7 +1245,7 @@ public class CM {
                 continue;
             CM_ClipBoxToBrush(trace_mins, trace_maxs, trace_start, trace_end,
                     trace_trace, b);
-            if (0 == trace_trace.fraction)
+            if ((float) 0 == trace_trace.fraction)
                 return;
         }
 
@@ -1260,8 +1260,8 @@ public class CM {
         if (0 == (leaf.contents & trace_contents))
             return;
         
-        for (int k = 0; k < leaf.numleafbrushes; k++) {
-            int brushnum = map_leafbrushes[leaf.firstleafbrush + k];
+        for (int k = 0; k < (int) leaf.numleafbrushes; k++) {
+            int brushnum = map_leafbrushes[(int) leaf.firstleafbrush + k];
             cbrush_t b = map_brushes[brushnum];
             if (b.checkcount == checkcount)
                 continue; 
@@ -1271,7 +1271,7 @@ public class CM {
                 continue;
             CM_TestBoxInBrush(trace_mins, trace_maxs, trace_start, trace_trace,
                     b);
-            if (0 == trace_trace.fraction)
+            if ((float) 0 == trace_trace.fraction)
                 return;
         }
 
@@ -1299,15 +1299,15 @@ public class CM {
         float offset;
         float t2;
         float t1;
-        if (plane.type < 3) {
-            t1 = p1[plane.type] - plane.dist;
-            t2 = p2[plane.type] - plane.dist;
-            offset = trace_extents[plane.type];
+        if ((int) plane.type < 3) {
+            t1 = p1[(int) plane.type] - plane.dist;
+            t2 = p2[(int) plane.type] - plane.dist;
+            offset = trace_extents[(int) plane.type];
         } else {
             t1 = Math3D.DotProduct(plane.normal, p1) - plane.dist;
             t2 = Math3D.DotProduct(plane.normal, p2) - plane.dist;
             if (trace_ispoint)
-                offset = 0;
+                offset = (float) 0;
             else
                 offset = Math.abs(trace_extents[0] * plane.normal[0])
                         + Math.abs(trace_extents[1] * plane.normal[1])
@@ -1341,15 +1341,15 @@ public class CM {
             frac = (t1 + offset + DIST_EPSILON) * idist;
         } else {
             side = 0;
-            frac = 1;
-            frac2 = 0;
+            frac = 1.0F;
+            frac2 = (float) 0;
         }
 
         
-        if (frac < 0)
-            frac = 0;
-        if (frac > 1)
-            frac = 1;
+        if (frac < (float) 0)
+            frac = (float) 0;
+        if (frac > 1.0F)
+            frac = 1.0F;
 
         float midf = p1f + (p2f - p1f) * frac;
         float[] mid = Vec3Cache.get();
@@ -1361,10 +1361,10 @@ public class CM {
         CM_RecursiveHullCheck(node.children[side], p1f, midf, p1, mid);
 
         
-        if (frac2 < 0)
-            frac2 = 0;
-        if (frac2 > 1)
-            frac2 = 1;
+        if (frac2 < (float) 0)
+            frac2 = (float) 0;
+        if (frac2 > 1.0F)
+            frac2 = 1.0F;
 
         midf = p1f + (p2f - p1f) * frac2;
         for (i = 0; i < 3; i++)
@@ -1392,7 +1392,7 @@ public class CM {
         
         trace_trace = new trace_t();
 
-        trace_trace.fraction = 1;
+        trace_trace.fraction = 1.0F;
         trace_trace.surface = nullsurface.c;
 
         if (numnodes == 0) {
@@ -1411,16 +1411,16 @@ public class CM {
         
         if (start[0] == end[0] && start[1] == end[1] && start[2] == end[2]) {
 
-            float[] c1 = { 0, 0, 0 };
+            float[] c1 = {(float) 0, (float) 0, (float) 0};
 
             Math3D.VectorAdd(start, mins, c1);
-            float[] c2 = {0, 0, 0};
+            float[] c2 = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorAdd(start, maxs, c2);
 
             int i;
             for (i = 0; i < 3; i++) {
-                c1[i] -= 1;
-                c2[i] += 1;
+                c1[i] -= 1.0F;
+                c2[i] += 1.0F;
             }
 
             int topnode = 0;
@@ -1442,8 +1442,8 @@ public class CM {
         
         
         
-        if (mins[0] == 0 && mins[1] == 0 && mins[2] == 0 && maxs[0] == 0
-                && maxs[1] == 0 && maxs[2] == 0) {
+        if (mins[0] == (float) 0 && mins[1] == (float) 0 && mins[2] == (float) 0 && maxs[0] == (float) 0
+                && maxs[1] == (float) 0 && maxs[2] == (float) 0) {
             trace_ispoint = true;
             Math3D.VectorClear(trace_extents);
         } else {
@@ -1456,9 +1456,9 @@ public class CM {
         
         
         
-        CM_RecursiveHullCheck(headnode, 0, 1, start, end);
+        CM_RecursiveHullCheck(headnode, (float) 0, 1.0F, start, end);
 
-        if (trace_trace.fraction == 1) {
+        if (trace_trace.fraction == 1.0F) {
             Math3D.VectorCopy(end, trace_trace.endpos);
         } else {
             for (int i = 0; i < 3; i++)
@@ -1475,21 +1475,21 @@ public class CM {
     public static trace_t TransformedBoxTrace(float[] start, float[] end,
             float[] mins, float[] maxs, int headnode, int brushmask,
             float[] origin, float[] angles) {
-        float[] start_l = { 0, 0, 0 };
+        float[] start_l = {(float) 0, (float) 0, (float) 0};
 
 
         Math3D.VectorSubtract(start, origin, start_l);
-        float[] end_l = {0, 0, 0};
+        float[] end_l = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorSubtract(end, origin, end_l);
 
 
         boolean rotated = headnode != box_headnode
-                && (IntStream.of(0, 1, 2).anyMatch(i -> angles[i] != 0));
+                && (IntStream.of(0, 1, 2).anyMatch(i -> angles[i] != (float) 0));
 
-        float[] temp = {0, 0, 0};
-        float[] up = {0, 0, 0};
-        float[] right = {0, 0, 0};
-        float[] forward = {0, 0, 0};
+        float[] temp = {(float) 0, (float) 0, (float) 0};
+        float[] up = {(float) 0, (float) 0, (float) 0};
+        float[] right = {(float) 0, (float) 0, (float) 0};
+        float[] forward = {(float) 0, (float) 0, (float) 0};
         if (rotated) {
             Math3D.AngleVectors(angles, forward, right, up);
 
@@ -1507,9 +1507,9 @@ public class CM {
 
         trace_t trace = BoxTrace(start_l, end_l, mins, maxs, headnode, brushmask);
 
-        if (rotated && trace.fraction != 1.0) {
+        if (rotated && (double) trace.fraction != 1.0) {
 
-            float[] a = {0, 0, 0};
+            float[] a = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorNegate(angles, a);
             Math3D.AngleVectors(a, forward, right, up);
 
@@ -1551,19 +1551,19 @@ public class CM {
 
         int inp = offset;
         do {
-            if (in[inp] != 0) {
+            if ((int) in[inp] != 0) {
                 out[outp++] = in[inp++];
                 continue;
             }
 
-            int c = in[inp + 1] & 0xFF;
+            int c = (int) in[inp + 1] & 0xFF;
             inp += 2;
             if (outp + c > row) {
                 c = row - (outp);
                 Com.DPrintf("warning: Vis decompression overrun\n");
             }
             while (c != 0) {
-                out[outp++] = 0;
+                out[outp++] = (byte) 0;
                 c--;
             }
         } while (outp < row);
@@ -1653,7 +1653,7 @@ public class CM {
      */
 
     public static boolean CM_AreasConnected(int area1, int area2) {
-        if (map_noareas.value != 0)
+        if (map_noareas.value != (float) 0)
             return true;
 
         if (area1 > numareas || area2 > numareas)
@@ -1673,7 +1673,7 @@ public class CM {
 
         int bytes = (numareas + 7) >> 3;
 
-        if (map_noareas.value != 0) { 
+        if (map_noareas.value != (float) 0) {
             
             Arrays.fill(buffer, 0, bytes, (byte) 255);
         } else {
@@ -1681,7 +1681,7 @@ public class CM {
             int floodnum = map_areas[area].floodnum;
             for (int i = 0; i < numareas; i++) {
                 if (map_areas[i].floodnum == floodnum || area == 0)
-                    buffer[i >> 3] |= 1 << (i & 7);
+                    buffer[i >> 3] = (byte) ((int) buffer[i >> 3] | 1 << (i & 7));
             }
         }
 
@@ -1736,7 +1736,7 @@ public class CM {
                 int cluster = map_leafs[leafnum].cluster;
                 if (cluster == -1) return false;
 
-                return 0 != (visbits[cluster >>> 3] & (1 << (cluster & 7)));
+                return 0 != ((int) visbits[cluster >>> 3] & (1 << (cluster & 7)));
 
             }
 

@@ -14,7 +14,7 @@ import java.util.Random;
  * @author Marek Benovic
  */
 public class Glass extends Material {
-    private final Random r = new XoRoShiRo128PlusRandom(1);
+    private final Random r = new XoRoShiRo128PlusRandom(1L);
 
     /**
      * Konstruktor inicializujuci sklo.
@@ -27,7 +27,7 @@ public class Glass extends Material {
     @Override
     public v2[] focee(v2 startPoint, v2 vektor) {
         Transform t = new Transform();
-        t.set(startPoint, 0);
+        t.set(startPoint, (float) 0);
 
         /**
          * Pocet prvkov v jednej kruznici.
@@ -42,9 +42,9 @@ public class Glass extends Material {
             for (int c = 0; c < count; c++) {
                 int i = l * count + c;
 
-                double u = r.nextDouble() * Math.PI * 2;
-                double deficit = (r.nextDouble() - 0.5) * m_shattering / 20;
-                double r = (l + 1) * m_shattering + deficit;
+                double u = r.nextDouble() * Math.PI * 2.0;
+                double deficit = (r.nextDouble() - 0.5) * (double) m_shattering / 20.0;
+                double r = (double) ((l + 1) * m_shattering) + deficit;
 
                 double x = Math.sin(u) * r;
                 double y = Math.cos(u) * r;

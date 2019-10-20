@@ -68,7 +68,7 @@ public abstract class Spatial<X> implements Active {
 
     @Override
     public boolean active() {
-        return order >= 0 || preactive;
+        return (int) order >= 0 || preactive;
     }
 
     @Override
@@ -107,7 +107,7 @@ public abstract class Spatial<X> implements Active {
     public abstract void renderRelative(GL2 gl, Collidable body, float dtS);
 
     public void delete(Dynamics3D dyn) {
-        order = -1;
+        order = (short) -1;
         preactive = false;
     }
 

@@ -22,7 +22,7 @@ public class Int extends Terminal {
 
 	@Override
 	public List<String> randomExpansion(int maxDepth, int depth) {
-        int d = (int) Math.floor(100 * Math.random());
+        int d = (int) Math.floor(100.0 * Math.random());
 		List<String> v = new ArrayList<>();
 		v.add(Integer.toString(d));
 		return v;

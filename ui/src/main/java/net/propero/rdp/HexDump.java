@@ -79,7 +79,7 @@ enum HexDump { ;
                 if (count >= data.length) {
                     break;
                 }
-                String number = Integer.toHexString((data[count] & 0x000000ff));
+                String number = Integer.toHexString(((int) data[count] & 0x000000ff));
                 switch (number.length()) {
                     case (1):
                         number = "0" + number;

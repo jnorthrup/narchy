@@ -34,7 +34,7 @@ public class PartsTable extends Gridding implements GridModel, GridRenderer {
         super();
 
         this.context = s;
-        set(new ScrollXY<>(new DynGrid<>(this, this)).scroll(0, 0, 2, 16));
+        set(new ScrollXY<>(new DynGrid<>(this, this)).scroll((float) 0, (float) 0, 2.0F, 16.0F));
     }
 
     @Override
@@ -128,9 +128,9 @@ public class PartsTable extends Gridding implements GridModel, GridRenderer {
         @Override
         protected void paintIt(GL2 gl, ReSurface r) {
             if (part.isOff()) {
-                Draw.rectRGBA(bounds, 1, 0, 0, 0.5f, gl);
+                Draw.rectRGBA(bounds, 1.0F, (float) 0, (float) 0, 0.5f, gl);
             } else if (part.isOn()) {
-                Draw.rectRGBA(bounds, 0, 1, 0, 0.6f, gl);
+                Draw.rectRGBA(bounds, (float) 0, 1.0F, (float) 0, 0.6f, gl);
             } else {
                 //..
             }

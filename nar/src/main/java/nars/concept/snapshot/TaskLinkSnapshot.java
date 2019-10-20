@@ -29,7 +29,7 @@ public final class TaskLinkSnapshot {
 	 */
 
 	protected static int cap(int bagSize) {
-		return Math.max(4, (int) Math.ceil(1f * Math.sqrt(bagSize)) /* estimate */);
+		return Math.max(4, (int) Math.ceil(1 * Math.sqrt((double) bagSize)) /* estimate */);
 		//return bagSize;
 	}
 

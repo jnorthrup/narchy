@@ -37,11 +37,11 @@ public abstract class PlanarBitmap2D extends ArrayTensor implements Bitmap2D {
     public float brightness(int xx, int yy) {
         //TODO handle alpha channel correctly
         int planes = shape[2];
-        float sum = 0;
+        float sum = (float) 0;
         for (int p = 0; p < planes; p++) {
             sum += get(xx, yy, p);
         }
-        return sum / planes;
+        return sum / (float) planes;
     }
 
 

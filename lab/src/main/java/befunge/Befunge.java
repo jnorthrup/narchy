@@ -82,7 +82,7 @@ public enum Befunge {
                 stack.push(t2%t1);
             });
 
-            map.put('!', () -> stack.push((long) (stack.pop() == 0 ? 1 : 0)));
+            map.put('!', () -> stack.push((long) (stack.pop() == 0L ? 1 : 0)));
 
             map.put('`', () -> stack.push((long) (stack.pop() <= stack.pop() ? 1 : 0)));
 
@@ -104,19 +104,19 @@ public enum Befunge {
             });
 
             map.put('_', () -> {
-                if(stack.pop() == 0) right();
+                if(stack.pop() == 0L) right();
                 else left();
             });
 
             map.put('|', () -> {
-                if(stack.pop() == 0) down();
+                if(stack.pop() == 0L) down();
                 else up();
             });
 
             map.put('"', () -> {
                 move();
                 char c = this.board.get(y, x);
-                while(c != '"'){
+                while((int) c != (int) '"'){
                     stack.push((long) c);
                     move();
                     c = this.board.get(y, x);
@@ -158,16 +158,16 @@ public enum Befunge {
         }
 
         private void move(){
-            char WIDTH = 80;
-            x = (x+dx) % WIDTH;
-            char HEIGHT = 25;
-            y = (y+dy) % HEIGHT;
+            char WIDTH = (char) 80;
+            x = (x+dx) % (int) WIDTH;
+            char HEIGHT = (char) 25;
+            y = (y+dy) % (int) HEIGHT;
         }
 
         boolean step(){
             char c = board.get(y, x);
-            if (c == '@') return false;
-            if (Character.isDigit(c)) stack.push((long) c-'0');
+            if ((int) c == (int) '@') return false;
+            if (Character.isDigit(c)) stack.push((long) c- (long) '0');
             else map.get(c).run();
             move();
             return true;

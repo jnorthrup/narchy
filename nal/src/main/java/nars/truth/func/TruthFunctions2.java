@@ -133,7 +133,7 @@ public enum TruthFunctions2 {
             //--------------------
 
             //CLEAN POSITIVE-ONLY linear
-            bF = Math.max(0, (bF - 0.5f) * 2);
+            bF = Math.max((float) 0, (bF - 0.5f) * 2.0F);
 
             //"SOFTMAX"-like (but using polynomial) - some negative leakage/cross-over
             //bF = (float) Math.pow(bF, 5);
@@ -156,7 +156,7 @@ public enum TruthFunctions2 {
                 float gF = goal.freq();
                 float f =
                         bipolar ?
-                            Util.lerpSafe(bF, 1- gF, gF)
+                            Util.lerpSafe(bF, 1.0F - gF, gF)
                             :
                             gF
                             //Util.lerpSafe(bF, 0.5f, gF)
@@ -187,7 +187,7 @@ public enum TruthFunctions2 {
                 return null;
         }
 
-        float f = Util.lerp(bF, ((1-goal.freq()) + 0.5f)/2, goal.freq());
+        float f = Util.lerp(bF, ((1.0F -goal.freq()) + 0.5f)/ 2.0F, goal.freq());
         return tt(f, cc);
     }
 
@@ -229,7 +229,7 @@ public enum TruthFunctions2 {
         float f = t.freq();
         float fPolarization = t.polarity();
         float c = weak(fPolarization * t.conf());
-        return c >= minConf ? tt((1 - f), c) : null;
+        return c >= minConf ? tt((1.0F - f), c) : null;
     }
 
 
@@ -256,7 +256,7 @@ public enum TruthFunctions2 {
         float xf = X.freq();
 
         float cc = c * xf
-            * Math.abs(f - 0.5f)*2;
+            * Math.abs(f - 0.5f)* 2.0F;
             //f = Util.lerp(xf, 0.5f, f);
 
         if (cc < minConf) return null;
@@ -293,8 +293,8 @@ public enum TruthFunctions2 {
 //        float impFp = 2 * (impF - 0.5f);
 //        float preAlign = yFp * impFp;
 //        float preAlign = 1-Math.abs(yF - impF);
-        float dyf = (yF - 0.5f)*2;
-        float dimpl = (impF - 0.5f)*2;
+        float dyf = (yF - 0.5f)* 2.0F;
+        float dimpl = (impF - 0.5f)* 2.0F;
         //normalize to the maximum dynamic range
 //        float range = Math.max(dyf, dimpl);
 //
@@ -315,7 +315,7 @@ public enum TruthFunctions2 {
 
 
             c *= alignment; if (c < minConf)  return null;
-            f = 1;
+            f = 1.0F;
 
         }
         //mode 2:
@@ -368,13 +368,13 @@ public enum TruthFunctions2 {
      */
     static float intersectionSym(float a, float b) {
         if (a >= 0.5f) {
-            a = 2 * (a - 0.5f);
-            b = 2 * (b - 0.5f);
-            return 0.5f + (a * b) / 2;
+            a = 2.0F * (a - 0.5f);
+            b = 2.0F * (b - 0.5f);
+            return 0.5f + (a * b) / 2.0F;
         } else {
-            a = 2 * (0.5f - a);
-            b = 2 * (0.5f - b);
-            return 0.5f - (a * b) / 2;
+            a = 2.0F * (0.5f - a);
+            b = 2.0F * (0.5f - b);
+            return 0.5f - (a * b) / 2.0F;
         }
     }
 
@@ -421,12 +421,12 @@ public enum TruthFunctions2 {
         float fxy = XY.freq();
         float fy = fxy / fx;
 
-        if (fy > 1) {
-            float doubt = 1/fy;
+        if (fy > 1.0F) {
+            float doubt = 1.0F /fy;
             c *= doubt;
             if (c < minConf)
                 return null;
-            fy = 1;
+            fy = 1.0F;
         }
 
         return tt(fy, c);
@@ -449,7 +449,7 @@ public enum TruthFunctions2 {
 
         float loss = Math.abs( (f - tf) - (f - bf) );
         float lossFraction = loss / f;
-        c *= 1 - lossFraction;
+        c *= 1.0F - lossFraction;
         return c < minConf ? null : tt(f, c);
     }
 

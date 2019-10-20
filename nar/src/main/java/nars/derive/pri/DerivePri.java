@@ -25,7 +25,7 @@ public interface DerivePri {
 
     /** result punctuation factor; allows weighting probabilty according to the determined derived task punctuations of each choice */
     default float preAmp(byte conclusion) {
-        return 1; //flat
+        return 1.0F; //flat
     }
 
     /** derive action prioritization weight

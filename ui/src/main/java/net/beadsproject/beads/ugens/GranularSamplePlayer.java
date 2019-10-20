@@ -129,7 +129,7 @@ public class GranularSamplePlayer extends SamplePlayer {
         setRandomness(new Static(context, 0.0f));
         setRandomPan(new Static(context, 0.0f));
         setWindow(new CosineWindow().the());
-        msPerSample = context.samplesToMs(1f);
+        msPerSample = context.samplesToMs(1);
         loopInsideGrains = false;
     }
 
@@ -380,7 +380,7 @@ public class GranularSamplePlayer extends SamplePlayer {
     @Override
     public void start() {
         super.start();
-        timeSinceLastGrain = 0;
+        timeSinceLastGrain = (float) 0;
     }
 
     /**
@@ -390,18 +390,18 @@ public class GranularSamplePlayer extends SamplePlayer {
      * @param time the time
      */
     private void resetGrain(Grain g, int time) {
-        g.position = position + (grainSizeEnvelope.getValue(0, time) * randomnessEnvelope.getValue(0, time) * (Math.random() * 2.0 - 1.0));
-        g.age = 0f;
-        g.grainSize = grainSizeEnvelope.getValue(0, time);
+        g.position = position + ((double) grainSizeEnvelope.getValue(0, time) * (double) randomnessEnvelope.getValue(0, time) * (Math.random() * 2.0 - 1.0));
+        g.age = 0;
+        g.grainSize = (double) grainSizeEnvelope.getValue(0, time);
     }
 
     private void setGrainPan(Grain g, float panRandomness) {
         g.pan = new float[outs];
         if (outs == 2) {
-            float pan = (float) Math.random() * Math.min(1, Math.max(0, panRandomness)) * 0.5f;
-            pan = Math.random() < 0.5f ? 0.5f + pan : 0.5f - pan;
+            float pan = (float) Math.random() * Math.min(1.0F, Math.max((float) 0, panRandomness)) * 0.5f;
+            pan = Math.random() < 0.5 ? 0.5f + pan : 0.5f - pan;
             g.pan[0] = pan > 0.5f ? 1f : 2f * pan;
-            g.pan[1] = pan < 0.5f ? 1f : 2f * (1 - pan);
+            g.pan[1] = pan < 0.5f ? 1f : 2f * (1.0F - pan);
         } else {
             for (int i = 0; i < outs; i++) {
                 g.pan[i] = 1f;
@@ -427,8 +427,8 @@ public class GranularSamplePlayer extends SamplePlayer {
         if (firstGrain) {
             Grain g = new Grain();
             g.position = position;
-            g.age = grainSizeEnvelope.getValue() / 4f;
-            g.grainSize = grainSizeEnvelope.getValue(0, 0);
+            g.age = (double) (grainSizeEnvelope.getValue() / 4f);
+            g.grainSize = (double) grainSizeEnvelope.getValue(0, 0);
             grains.add(g);
             firstGrain = false;
             timeSinceLastGrain = grainIntervalEnvelope.getValue() / 2f;
@@ -507,8 +507,8 @@ public class GranularSamplePlayer extends SamplePlayer {
                 for (Grain g : grains) {
                     calculateNextGrainPosition(g);
                 }
-                
-                timeSinceLastGrain += msPerSample;
+
+                timeSinceLastGrain = (float) ((double) timeSinceLastGrain + msPerSample);
                 
                 for (Grain g : grains) {
                     if (g.age > g.grainSize) {
@@ -528,45 +528,45 @@ public class GranularSamplePlayer extends SamplePlayer {
      * @param g the Grain.
      */
     private void calculateNextGrainPosition(Grain g) {
-        int direction = rate >= 0 ? 1 : -1;
+        int direction = rate >= (float) 0 ? 1 : -1;
         g.age += msPerSample;
         if (loopInsideGrains) {
             switch (loopType) {
                 case NO_LOOP_FORWARDS:
-                    g.position += direction * positionIncrement * pitch;
+                    g.position += (double) direction * positionIncrement * (double) pitch;
                     break;
                 case NO_LOOP_BACKWARDS:
-                    g.position -= direction * positionIncrement * pitch;
+                    g.position -= (double) direction * positionIncrement * (double) pitch;
                     break;
                 case LOOP_FORWARDS:
-                    g.position += direction * positionIncrement * pitch;
-                    if (rate > 0 && g.position > Math.max(loopStart, loopEnd)) {
-                        g.position = Math.min(loopStart, loopEnd);
-                    } else if (rate < 0 && g.position < Math.min(loopStart, loopEnd)) {
-                        g.position = Math.max(loopStart, loopEnd);
+                    g.position += (double) direction * positionIncrement * (double) pitch;
+                    if (rate > (float) 0 && g.position > (double) Math.max(loopStart, loopEnd)) {
+                        g.position = (double) Math.min(loopStart, loopEnd);
+                    } else if (rate < (float) 0 && g.position < (double) Math.min(loopStart, loopEnd)) {
+                        g.position = (double) Math.max(loopStart, loopEnd);
                     }
                     break;
                 case LOOP_BACKWARDS:
-                    g.position -= direction * positionIncrement * pitch;
-                    if (rate > 0 && g.position < Math.min(loopStart, loopEnd)) {
-                        g.position = Math.max(loopStart, loopEnd);
-                    } else if (rate < 0 && g.position > Math.max(loopStart, loopEnd)) {
-                        g.position = Math.min(loopStart, loopEnd);
+                    g.position -= (double) direction * positionIncrement * (double) pitch;
+                    if (rate > (float) 0 && g.position < (double) Math.min(loopStart, loopEnd)) {
+                        g.position = (double) Math.max(loopStart, loopEnd);
+                    } else if (rate < (float) 0 && g.position > (double) Math.max(loopStart, loopEnd)) {
+                        g.position = (double) Math.min(loopStart, loopEnd);
                     }
                     break;
                 case LOOP_ALTERNATING:
-                    g.position += direction * (forwards ? positionIncrement * pitch : -positionIncrement * pitch);
-                    if (forwards ^ (rate < 0)) {
-                        if (g.position > Math.max(loopStart, loopEnd)) {
-                            g.position = 2 * Math.max(loopStart, loopEnd) - g.position;
+                    g.position += (double) direction * (forwards ? positionIncrement * (double) pitch : -positionIncrement * (double) pitch);
+                    if (forwards ^ (rate < (float) 0)) {
+                        if (g.position > (double) Math.max(loopStart, loopEnd)) {
+                            g.position = (double) (2 * Math.max(loopStart, loopEnd)) - g.position;
                         }
-                    } else if (g.position < Math.min(loopStart, loopEnd)) {
-                        g.position = 2 * Math.min(loopStart, loopEnd) - g.position;
+                    } else if (g.position < (double) Math.min(loopStart, loopEnd)) {
+                        g.position = (double) (2 * Math.min(loopStart, loopEnd)) - g.position;
                     }
                     break;
             }
         } else {
-            g.position += direction * positionIncrement * pitch;
+            g.position += (double) direction * positionIncrement * (double) pitch;
         }
     }
 

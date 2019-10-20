@@ -26,7 +26,7 @@ public class HanningWindow implements GrainWindow {
 	private static float[] buildTable(int size) {
         float[] result = new float[size];
 		for(int i = 0; i < size; i++) {
-			result[i] = (float) (0.5 * Math.cos((i / (double)size) * Math.PI) + 0.5);
+			result[i] = (float) (0.5 * Math.cos(((double) i / (double)size) * Math.PI) + 0.5);
 		}
 		return result;
 	}

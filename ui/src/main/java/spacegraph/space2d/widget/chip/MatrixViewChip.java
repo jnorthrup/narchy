@@ -39,9 +39,9 @@ public class MatrixViewChip extends Bordering {
                } else {
                    matrix = //shape.length == 2 ? new BitmapMatrixView(shape[0], shape[1]) : new BitmapMatrixView(shape[0], 1);
                            shape.length == 2 ? new BitmapMatrixView(shape[0], shape[1],
-                                   (cx, cy) -> Draw.rgbInt(x.get(cx, cy), 0, 0)) :
+                                   (cx, cy) -> Draw.rgbInt(x.get(cx, cy), (float) 0, (float) 0)) :
                                    new BitmapMatrixView(shape[0], 1,
-                                           (cx, cy) -> Draw.rgbInt(Util.tanhFast(x.get(cx))/2+0.5f, 0, 0));
+                                           (cx, cy) -> Draw.rgbInt(Util.tanhFast(x.get(cx))/ 2.0F +0.5f, (float) 0, (float) 0));
                }
                set(matrix);
                matrix.updateIfShowing();

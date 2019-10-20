@@ -58,7 +58,7 @@ public class Truthify extends AbstractPred<Derivation> {
             beliefMode = (byte) (belief.single() ? +1 : 0);
             beliefOverlap = NAL.OVERLAP_ALLOW_BELIEF || belief.allowOverlap();
         } else {
-            beliefMode = -1;
+            beliefMode = (byte) -1;
             beliefOverlap = false; //N/A
         }
 
@@ -67,7 +67,7 @@ public class Truthify extends AbstractPred<Derivation> {
             goalMode = (byte) (goal.single() ? +1 : 0);
             goalOverlap = NAL.OVERLAP_ALLOW_GOAL || goal.allowOverlap();
         } else {
-            goalMode = -1;
+            goalMode = (byte) -1;
             goalOverlap = false; //N/A
         }
 
@@ -113,10 +113,10 @@ public class Truthify extends AbstractPred<Derivation> {
         switch (punc) {
             case BELIEF:
             case GOAL:
-                single = (punc == BELIEF ? beliefMode : goalMode) == 1;
+                single = (int) ((int) punc == (int) BELIEF ? beliefMode : goalMode) == 1;
 
                 boolean overlapping = (single ? d.overlapSingle : d.overlapDouble);
-                if (overlapping && !(punc == BELIEF ? beliefOverlap : goalOverlap))
+                if (overlapping && !((int) punc == (int) BELIEF ? beliefOverlap : goalOverlap))
                     return false;
 
                 MutableTruth beliefTruth;
@@ -130,7 +130,7 @@ public class Truthify extends AbstractPred<Derivation> {
                         return false; //double but beliefTruth not defined
                 }
 
-                TruthFunction f = punc == BELIEF ? belief : goal;
+                TruthFunction f = (int) punc == (int) BELIEF ? belief : goal;
 
                 MutableTruth taskTruth = d.taskTruth;
                 if (!taskTruth.is())

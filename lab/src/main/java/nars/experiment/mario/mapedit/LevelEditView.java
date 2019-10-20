@@ -59,7 +59,7 @@ public class LevelEditView extends JComponent implements MouseListener, MouseMot
     public void paintComponent(Graphics g) {
         g.setColor(new Color(0x8090ff));
         g.fillRect(0, 0, level.width * 16, level.height * 16);
-        levelRenderer.render(g, 0, 0);
+        levelRenderer.render(g, 0, (float) 0);
         g.setColor(Color.BLACK);
         g.drawRect(xTile * 16 - 1, yTile * 16 - 1, 17, 17);
     }

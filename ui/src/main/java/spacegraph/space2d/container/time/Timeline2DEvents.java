@@ -30,7 +30,7 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
     }
 
     private Timeline2DEvents update() {
-        set(model.events((long) Math.floor(start), (long) Math.ceil(end/* - 1 ?*/)));
+        set(model.events((long) Math.floor((double) start), (long) Math.ceil((double) end/* - 1 ?*/)));
         return this;
     }
 
@@ -46,7 +46,7 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
         protected float minVisibleWidth = 0.01f;
 
         /** minimum displayed temporal width, for tasks less than this duration */
-        protected static final double minVisibleTime = 0; //0.5f;
+        protected static final double minVisibleTime = (double) 0; //0.5f;
 
 
         @Override
@@ -63,10 +63,10 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
         protected void layout(NodeVis<E> jj, Timeline2DEvents gg, Timeline2D.EventBuffer model, float minVisibleWidth, float yl, float yh) {
             long[] w = model.range(jj.id);
             long left = (w[0]), right = (w[1]);
-            if (right-left < minVisibleTime) {
-                double mid = (left + right)/2f;
-                left = Math.round(mid - minVisibleTime /2);
-                right = Math.round(mid + minVisibleTime /2);
+            if ((double) (right - left) < minVisibleTime) {
+                double mid = (double) ((left + right) / 2f);
+                left = Math.round(mid - minVisibleTime / 2.0);
+                right = Math.round(mid + minVisibleTime / 2.0);
             }
 
 
@@ -74,8 +74,8 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
             float xr = gg.x(right);
             if (xr -xl < minVisibleWidth) {
                 float xc = (xl+xr);
-                xl = xc - minVisibleWidth/2;
-                xr = xc + minVisibleWidth/2;
+                xl = xc - minVisibleWidth/ 2.0F;
+                xr = xc + minVisibleWidth/ 2.0F;
             }
             RectFloat r = RectFloat.XYXY(xl, yl, xr, yh);
             jj.pos(r);
@@ -123,7 +123,7 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
                     boolean collision = false;
                     while (rr.hasNext()) {
                         int j = rr.next();
-                        if (model.intersectLength(next.get(j).id, in.id) > 0) {
+                        if (model.intersectLength(next.get(j).id, in.id) > 0L) {
                             collision = true;
                             break;
                         }
@@ -142,12 +142,12 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
             }
 
             int nlanes = lanes.size();
-            float laneHeight = g.h() / nlanes;
+            float laneHeight = g.h() / (float) nlanes;
             float Y = g.bottom();
             float minVisibleWidth = g.w() * this.minVisibleWidth;
             for (int i = 0; i < nlanes; i++) {
-                float yl = Y + laneHeight * i;
-                float yh = Y + laneHeight * (i + 1);
+                float yl = Y + laneHeight * (float) i;
+                float yh = Y + laneHeight * (float) (i + 1);
 
                 layout(gg, model, lanes.get(i), minVisibleWidth, yl, yh);
             }

@@ -27,12 +27,12 @@ class HttpResponse {
     private boolean sendStatusAsContent = true;
     private File file;
     private RandomAccessFile raf;
-    private long fileBytesSent = 0;
+    private long fileBytesSent = 0L;
     private ByteBuffer fileBuffer;
     private boolean range = false;
-    private long rangeStart = 0;
-    private long rangeEnd = 0;
-    private long rangeLength = 0;
+    private long rangeStart = 0L;
+    private long rangeEnd = 0L;
+    private long rangeLength = 0L;
 
     
 
@@ -90,7 +90,7 @@ class HttpResponse {
             }
         }
 
-        long fileLength = 0;
+        long fileLength = 0L;
         if (sendFile) {
             sendFile = false;
 
@@ -153,26 +153,26 @@ class HttpResponse {
                         
                         if (start == null) {
                             rangeStart = fileLength - Long.parseLong(end, 10);
-                            rangeEnd = fileLength - 1;
+                            rangeEnd = fileLength - 1L;
                         }
                         
                         else if (end == null) {
                             rangeStart = Long.parseLong(start, 10);
-                            rangeEnd = fileLength - 1;
+                            rangeEnd = fileLength - 1L;
                         } else {
                             rangeStart = Long.parseLong(start, 10);
                             rangeEnd = Long.parseLong(end, 10);
                         }
 
                         if (rangeEnd > fileLength) {
-                            rangeEnd = fileLength - 1;
+                            rangeEnd = fileLength - 1L;
                         }
 
                         if (rangeEnd < rangeStart) {
                             range = false;
                         }
 
-                        rangeLength = rangeEnd - rangeStart + 1;
+                        rangeLength = rangeEnd - rangeStart + 1L;
 
                         raf.seek(rangeStart);
                     } catch (NumberFormatException | IOException ex) {
@@ -241,7 +241,7 @@ class HttpResponse {
                 headerString.append(fileLength);
                 headerString.append("\r\n");
                 headerString.append("Content-Length: ");
-                headerString.append(rangeEnd - rangeStart + 1);
+                headerString.append(rangeEnd - rangeStart + 1L);
                 headerString.append("\r\n");
             } else {
                 headerString.append("Content-Length: ");
@@ -304,12 +304,12 @@ class HttpResponse {
                 if (fileBuffer.hasRemaining()) {
                     if (range) {
                         long limit = rangeLength - fileBytesSent;
-                        if (fileBuffer.limit() > limit) {
+                        if ((long) fileBuffer.limit() > limit) {
                             fileBuffer.limit((int) limit);
                         }
                     }
 
-                    fileBytesSent += channel.write(fileBuffer);
+                    fileBytesSent = fileBytesSent + (long) channel.write(fileBuffer);
 
                     if (range && fileBytesSent >= rangeLength) {
                         raf.close();

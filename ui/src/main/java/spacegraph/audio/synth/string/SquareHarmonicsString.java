@@ -28,13 +28,13 @@ public class SquareHarmonicsString extends KarplusStrongString {
     public void tic() {
         double first = buffer.dequeue();
         double second = buffer.peek();
-        double last = (first + second) * (deltaVolume / 2);
+        double last = (first + second) * (deltaVolume / 2.0);
         buffer.enqueue(last);
     }
 
     private double getSample(int index) {
-        double position = index / buffer.capacity();
-        double sample = 0;
+        double position = (double) (index / buffer.capacity());
+        double sample = (double) 0;
         for (Map.Entry<Integer, Double> integerDoubleEntry : harmonics.entrySet()) {
             int lowHigh = lowHigh(integerDoubleEntry.getKey(), index);
             double factor = integerDoubleEntry.getValue();
@@ -48,8 +48,8 @@ public class SquareHarmonicsString extends KarplusStrongString {
     }
 
     private int lowHigh(int harmonic, int index) {
-        double position = (double) index / buffer.capacity();
-        double relPos = position * 2 * harmonic;
+        double position = (double) index / (double) buffer.capacity();
+        double relPos = position * 2.0 * (double) harmonic;
         int floored = (int) Math.round(Math.floor(relPos));
         int modded = floored % 2;
         return modded;

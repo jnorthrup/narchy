@@ -101,7 +101,7 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
 
                         float newPri = xs == ETERNAL || ys == ETERNAL ?
                             Util.or(x.priElseZero(), y.priElseZero()) :
-                            (float) ((x.priElseZero() * (double)(xe-xs) + y.priElseZero() * (ye-ys)) /  (u.end - u.start));
+                            (float) (((double) x.priElseZero() * (double)(xe-xs) + (double) (y.priElseZero() * (float) (ye - ys))) / (double) (u.end - u.start));
 
                         //use larger of the 2 stamps (subsume's smaller)
                         //long[] stamp = sc == +1 ? xStamp : yStamp; //TODO determine if this is safe

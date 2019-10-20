@@ -34,21 +34,21 @@ public class AtomicSummaryStatistics implements FloatProcedure, DoubleProcedure,
             double tmpMean = mean;
 
             double delta = v - tmpMean;
-            mean += delta / ++count;
+            mean += delta / (double) ++count;
             return ss + delta * (v - mean);
         } else {
             if (onCommit!=null) {
                 for (Consumer<AtomicSummaryStatistics> c : onCommit)
                     c.accept(this);
             }
-            count = 0;
-            mean = 0;
-            sum = 0;
+            count = 0L;
+            mean = (double) 0;
+            sum = (double) 0;
             min = Double.POSITIVE_INFINITY;
             max = Double.NEGATIVE_INFINITY;
-            return 0;
+            return (double) 0;
         }
-    }, 0);
+    }, (double) 0);
 
     /**
      * Construct an empty instance with zero count, zero sum,
@@ -61,7 +61,7 @@ public class AtomicSummaryStatistics implements FloatProcedure, DoubleProcedure,
 
     @Override
     public final void value(float each) {
-        accept(each);
+        accept((double) each);
     }
 
     @Override
@@ -214,8 +214,8 @@ public class AtomicSummaryStatistics implements FloatProcedure, DoubleProcedure,
     @Override
     public double getVariance() {
         long c = count;
-        if (c == 0) return Double.NaN;
-        return update.doubleValue() / (c);
+        if (c == 0L) return Double.NaN;
+        return update.doubleValue() / (double) (c);
     }
 
     public void on(Consumer<AtomicSummaryStatistics> o) {

@@ -228,7 +228,7 @@ public class IOLibrary extends PrologLib {
                     prolog.output(ch);
                 } else {
 
-                    outputStream.write((byte) ch.charAt(0));
+                    outputStream.write((int) (byte) ch.charAt(0));
 
 
 
@@ -325,7 +325,7 @@ public class IOLibrary extends PrologLib {
                     open_apices2 = !open_apices2;
                     break;
                 default:
-                    if (ch == '.') {
+                    if (ch == (int) '.') {
                         if (!open_apices && !open_apices2) {
                             break label;
                         }
@@ -393,7 +393,7 @@ public class IOLibrary extends PrologLib {
             prolog.output("\n");
         } else {
 
-            outputStream.write('\n');
+            outputStream.write((int) '\n');
 
 
 
@@ -457,7 +457,7 @@ public class IOLibrary extends PrologLib {
     }
 
     public boolean rand_float_1(Term t) {
-        return unify(t, new NumberTerm.Double(gen.nextFloat()));
+        return unify(t, new NumberTerm.Double((double) gen.nextFloat()));
     }
 
     public boolean rand_int_2(Term argNum, Term num) {

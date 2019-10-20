@@ -369,9 +369,9 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
             if (beliefTruth_at_Task.is()) {
                 double te = beliefTruth_at_Task.evi(), be = beliefTruth_at_Belief.evi();
                 this.beliefTruth_mean_TaskBelief.freq(
-                    (beliefTruth_at_Task.freq() * te +  beliefTruth_at_Belief.freq() * be)/(be+te)
+                    ((double) beliefTruth_at_Task.freq() * te + (double) beliefTruth_at_Belief.freq() * be)/(be+te)
                 );
-                this.beliefTruth_mean_TaskBelief.evi((be+te)/2);
+                this.beliefTruth_mean_TaskBelief.evi((be+te)/ 2.0);
             } else {
                 this.beliefTruth_mean_TaskBelief.clear();
             }
@@ -461,7 +461,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
         if (!sameTask) {
             byte p = nextTask.punc();
             this.taskTruth.set(
-                ((((this.taskPunc = p)) == BELIEF) || (p == GOAL)) ?
+                (((int) ((this.taskPunc = p)) == (int) BELIEF) || ((int) p == (int) GOAL)) ?
                     nextTask.truth() : null
             );
         }
@@ -481,11 +481,11 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
 //        if (Param.INPUT_BUFFER_PRI_BACKPRESSURE && Math.max(priDouble, priSingle) < nar.input.priMin() /* TODO cache */)
 //            return false;
 
-        this.eviSingle = task.isBeliefOrGoal() ? task.evi() : 0;
+        this.eviSingle = task.isBeliefOrGoal() ? task.evi() : (double) 0;
         this.eviDouble = eviSingle + (belief!=null ?
                             belief.evi()
                             :
-                            0);
+                (double) 0);
     }
 
     /**
@@ -534,8 +534,8 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
         dur(w.dur());
 
         range(
-            (long) (time - dur/2),
-            (long) Math.ceil(time + dur/2)
+            (long) ((float) time - dur/ 2.0F),
+            (long) Math.ceil((double) (time + dur / 2.0F))
         );
 
         ditherDT = n.dtDither();
@@ -571,20 +571,20 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     private @Nullable long[] evidenceDouble() {
         if (stampDouble == null) {
             double te, be;
-            if (taskPunc == BELIEF || taskPunc == GOAL) {
+            if ((int) taskPunc == (int) BELIEF || (int) taskPunc == (int) GOAL) {
                 te = taskTruth.evi();
                 be = beliefTruth_at_Belief.evi(); //TODO use appropriate beliefTruth projection
             } else {
-                te = _task.priElseZero();
-                be = _belief.priElseZero();
+                te = (double) _task.priElseZero();
+                be = (double) _belief.priElseZero();
             }
             if (temporal && taskStart!=ETERNAL && beliefStart!=ETERNAL) {
-                te *= _task.range();
-                be *= _belief.range();
+                te = te * (double) _task.range();
+                be = be * (double) _belief.range();
             }
 
             double tbe = te + be;
-            double tb = tbe < ScalarValue.EPSILON ? 0.5f : te / tbe;
+            double tb = tbe < (double) ScalarValue.EPSILON ? 0.5 : te / tbe;
 
             long[] e = Stamp.merge(_task.stamp(), _belief.stamp(), (float) tb, unify.random);
             if (stampDouble == null || !Arrays.equals(e, stampDouble))
@@ -657,7 +657,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
 
             How[] branch = this.deriver.program.branch;
             for (int i = 0; i < can.length; i++) {
-                if ((post[i].pri(branch[can[i]], this)) > Float.MIN_NORMAL) {
+                if ((post[i].pri(branch[(int) can[i]], this)) > Float.MIN_NORMAL) {
                     lastValid = i;
                     valid++;
                 }
@@ -688,7 +688,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
                 float[] pri = new float[valid];
                 for (int i = 0; i < valid; i++)
                     pri[i] = post[i].pri;
-                MutableRoulette.run(pri, random, wi -> 0, this::test);
+                MutableRoulette.run(pri, random, wi -> (float) 0, this::test);
 
                 //alternate roulette:
                 //  int j; do { j = Roulette.selectRoulette(valid, i -> post[i].pri, d.random);   } while (post[j].run());
@@ -746,7 +746,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     };
 
     public boolean doubt(double ratio) {
-        return Util.equals(ratio, 1f) || concTruthEvi(ratio * truth.evi());
+        return Util.equals(ratio, 1) || concTruthEvi(ratio * truth.evi());
     }
 
     private boolean concTruthEvi(double e) {
@@ -804,7 +804,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
 
     public final boolean isBeliefOrGoal() {
         byte p = this.punc;
-        return p == BELIEF || p == GOAL;
+        return (int) p == (int) BELIEF || (int) p == (int) GOAL;
     }
 
 	@Override

@@ -61,7 +61,7 @@ public class GameUtil {
 
 
         edict_t t;
-        if (ent.delay != 0) {
+        if (ent.delay != (float) 0) {
             
             t = G_Spawn();
             t.classname = "DelayedUse";
@@ -83,10 +83,10 @@ public class GameUtil {
             game_import_t.centerprintf(activator, ent.message);
             if (ent.noise_index != 0)
                 game_import_t.sound(activator, Defines.CHAN_AUTO,
-                        ent.noise_index, 1, Defines.ATTN_NORM, 0);
+                        ent.noise_index, 1.0F, (float) Defines.ATTN_NORM, (float) 0);
             else
                 game_import_t.sound(activator, Defines.CHAN_AUTO, game_import_t
-                        .soundindex("misc/talk1.wav"), 1, Defines.ATTN_NORM, 0);
+                        .soundindex("misc/talk1.wav"), 1.0F, (float) Defines.ATTN_NORM, (float) 0);
         }
 
         
@@ -157,7 +157,7 @@ public class GameUtil {
             
             
             if (!e.inuse
-                    && (e.freetime < 2 || GameBase.level.time - e.freetime > 0.5)) {
+                    && (e.freetime < 2.0F || (double) (GameBase.level.time - e.freetime) > 0.5)) {
                 e = GameBase.g_edicts[i] = new edict_t(i);
                 G_InitEdict(e, i);
                 return e;
@@ -180,7 +180,7 @@ public class GameUtil {
         game_import_t.unlinkentity(ed); 
 
         
-        if (ed.index <= (GameBase.maxclients.value + Defines.BODY_QUEUE_SIZE)) {
+        if ((float) ed.index <= (GameBase.maxclients.value + (float) Defines.BODY_QUEUE_SIZE)) {
             
             return;
         }
@@ -249,7 +249,7 @@ public class GameUtil {
 
         String value = Info.Info_ValueForKey(ent.client.pers.userinfo, "skin");
 
-        int p = value.indexOf('/');
+        int p = value.indexOf((int) '/');
 
         if (p == -1)
             return value;
@@ -278,15 +278,15 @@ public class GameUtil {
      * triggered by damage.
      */
     public static int range(edict_t self, edict_t other) {
-        float[] v = { 0, 0, 0 };
+        float[] v = {(float) 0, (float) 0, (float) 0};
 
         Math3D.VectorSubtract(self.s.origin, other.s.origin, v);
         float len = Math3D.VectorLength(v);
-        if (len < Defines.MELEE_DISTANCE)
+        if (len < (float) Defines.MELEE_DISTANCE)
             return Defines.RANGE_MELEE;
-        if (len < 500)
+        if (len < 500.0F)
             return Defines.RANGE_NEAR;
-        if (len < 1000)
+        if (len < 1000.0F)
             return Defines.RANGE_MID;
         return Defines.RANGE_FAR;
     }
@@ -299,32 +299,32 @@ public class GameUtil {
      * Returns true if the entity is in front (in sight) of self
      */
     public static boolean infront(edict_t self, edict_t other) {
-        float[] forward = { 0, 0, 0 };
+        float[] forward = {(float) 0, (float) 0, (float) 0};
 
         Math3D.AngleVectors(self.s.angles, forward, null, null);
-        float[] vec = {0, 0, 0};
+        float[] vec = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorSubtract(other.s.origin, self.s.origin, vec);
         Math3D.VectorNormalize(vec);
         float dot = Math3D.DotProduct(vec, forward);
 
-        return dot > 0.3;
+        return (double) dot > 0.3;
     }
 
     /**
      * Returns 1 if the entity is visible to self, even if not infront().
      */
     public static boolean visible(edict_t self, edict_t other) {
-        float[] spot1 = { 0, 0, 0 };
+        float[] spot1 = {(float) 0, (float) 0, (float) 0};
 
         Math3D.VectorCopy(self.s.origin, spot1);
-        spot1[2] += self.viewheight;
-        float[] spot2 = {0, 0, 0};
+        spot1[2] = spot1[2] + (float) self.viewheight;
+        float[] spot2 = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorCopy(other.s.origin, spot2);
-        spot2[2] += other.viewheight;
+        spot2[2] = spot2[2] + (float) other.viewheight;
         trace_t trace = game_import_t.trace(spot1, Globals.vec3_origin,
                 Globals.vec3_origin, spot2, self, Defines.MASK_OPAQUE);
 
-        return trace.fraction == 1.0;
+        return (double) trace.fraction == 1.0;
     }
 
     /**
@@ -431,7 +431,7 @@ public class GameUtil {
                                 } else {
                                     switch (r) {
                                         case Defines.RANGE_NEAR:
-                                            if (client.show_hostile < GameBase.level.time
+                                            if ((float) client.show_hostile < GameBase.level.time
                                                     && !infront(self, client)) {
                                                 result = false;
                                                 finished = true;
@@ -478,10 +478,10 @@ public class GameUtil {
                                     finished = true;
                                 }
                                 if (!finished) {
-                                    float[] temp = {0, 0, 0};
+                                    float[] temp = {(float) 0, (float) 0, (float) 0};
                                     Math3D.VectorSubtract(client.s.origin, self.s.origin, temp);
 
-                                    if (Math3D.VectorLength(temp) > 1000) {
+                                    if (Math3D.VectorLength(temp) > 1000.0F) {
                                         result = false;
                                         finished = true;
                                     } else {
@@ -558,7 +558,7 @@ public class GameUtil {
 
         
         self.movetarget.targetname = null;
-        self.monsterinfo.pausetime = 0;
+        self.monsterinfo.pausetime = (float) 0;
 
         
         self.monsterinfo.run.think(self);
@@ -591,14 +591,14 @@ public class GameUtil {
         @Override
         public boolean think(edict_t self) {
             if (self.owner.health > self.owner.max_health) {
-                self.nextthink = GameBase.level.time + 1;
+                self.nextthink = GameBase.level.time + 1.0F;
                 self.owner.health -= 1;
                 return false;
             }
 
             if ((self.spawnflags & Defines.DROPPED_ITEM) == 0
-                    && (GameBase.deathmatch.value != 0))
-                GameItems.SetRespawn(self, 20);
+                    && (GameBase.deathmatch.value != (float) 0))
+                GameItems.SetRespawn(self, 20.0F);
             else
                 G_FreeEdict(self);
 
@@ -616,12 +616,12 @@ public class GameUtil {
 
             if (self.enemy.health > 0) {
 
-                float[] spot1 = {0, 0, 0};
+                float[] spot1 = {(float) 0, (float) 0, (float) 0};
                 Math3D.VectorCopy(self.s.origin, spot1);
-                spot1[2] += self.viewheight;
-                float[] spot2 = {0, 0, 0};
+                spot1[2] = spot1[2] + (float) self.viewheight;
+                float[] spot2 = {(float) 0, (float) 0, (float) 0};
                 Math3D.VectorCopy(self.enemy.s.origin, spot2);
-                spot2[2] += self.enemy.viewheight;
+                spot2[2] = spot2[2] + (float) self.enemy.viewheight;
 
                 trace_t tr = game_import_t.trace(spot1, null, null, spot2, self,
                         Defines.CONTENTS_SOLID | Defines.CONTENTS_MONSTER
@@ -637,7 +637,7 @@ public class GameUtil {
             
             if (GameAI.enemy_range == Defines.RANGE_MELEE) {
                 
-                if (GameBase.skill.value == 0 && (Lib.rand() & 3) != 0)
+                if (GameBase.skill.value == (float) 0 && ((int) Lib.rand() & 3) != 0)
                     return false;
                 if (self.monsterinfo.melee != null)
                     self.monsterinfo.attack_state = Defines.AS_MELEE;
@@ -669,14 +669,14 @@ public class GameUtil {
                 return false;
             }
 
-            if (GameBase.skill.value == 0)
-                chance *= 0.5;
-            else if (GameBase.skill.value >= 2)
-                chance *= 2;
+            if (GameBase.skill.value == (float) 0)
+                chance = (float) ((double) chance * 0.5);
+            else if (GameBase.skill.value >= 2.0F)
+                chance *= 2.0F;
 
             if (Lib.random() < chance) {
                 self.monsterinfo.attack_state = Defines.AS_MISSILE;
-                self.monsterinfo.attack_finished = GameBase.level.time + 2
+                self.monsterinfo.attack_finished = GameBase.level.time + 2.0F
                         * Lib.random();
                 return true;
             }

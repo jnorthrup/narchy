@@ -25,7 +25,7 @@ public class SoftException extends RuntimeException {
     public final synchronized Throwable fillInStackTrace() {
         if (NAL.DEBUG) {
             stack = StackWalker.getInstance().walk(
-                s -> s.skip(5).limit(depth).toArray(StackWalker.StackFrame[]::new)
+                s -> s.skip(5L).limit((long) depth).toArray(StackWalker.StackFrame[]::new)
             );
         }
         return this;

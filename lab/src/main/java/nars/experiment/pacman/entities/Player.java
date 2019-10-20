@@ -16,7 +16,7 @@ public class Player extends Entity {
 
         super(maze, x, y);
 
-        this.speed = speed;
+        this.speed = (double) speed;
         this.lead = 0.4;
 
         power = 0;
@@ -32,12 +32,12 @@ public class Player extends Entity {
 
         try {
 
-            if (maze.dots[(int) (x / 2)][(int) (y / 2)]) {
+            if (maze.dots[(int) (x / 2.0)][(int) (y / 2.0)]) {
 
-                maze.dots[(int) (x / 2)][(int) (y / 2)] = false;
+                maze.dots[(int) (x / 2.0)][(int) (y / 2.0)] = false;
                 maze.dotCount--;
 
-                if (maze.isBigFood(2 * (int) (x / 2) + 1, 2 * (int) (y / 2) + 1))
+                if (maze.isBigFood(2 * (int) (x / 2.0) + 1, 2 * (int) (y / 2.0) + 1))
                     power = MAX_POWER;
 
             }
@@ -65,8 +65,8 @@ public class Player extends Entity {
     public boolean die() {
 
 
-        this.x = maze.playerStart().x;
-        this.y = maze.playerStart().y;
+        this.x = (double) maze.playerStart().x;
+        this.y = (double) maze.playerStart().y;
         this.mouthAngle = 5;
         this.dir = Direction.right;
 

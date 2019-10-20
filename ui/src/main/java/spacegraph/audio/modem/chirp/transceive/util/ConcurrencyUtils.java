@@ -94,7 +94,7 @@ final class ConcurrencyUtils {
         if (var0 < 1) {
             throw new IllegalArgumentException("x must be greater or equal 1");
         } else {
-            return (int) Math.pow(2.0D, Math.floor(Math.log(var0) / Math.log(2.0D)));
+            return (int) Math.pow(2.0D, Math.floor(Math.log((double) var0) / Math.log(2.0D)));
         }
     }
 

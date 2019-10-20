@@ -51,7 +51,7 @@ public final class TermMatch<X extends Unify> extends AbstractTermMatchPred<X> {
 
     @Override
     public boolean reduceIn(List<PREDICATE<X>> p) {
-        if (resolveCost == 0)
+        if (resolveCost == (float) 0)
             return false; //dont bother grouping root accessors
 
         TermMatch other = p.stream().filter(x -> x != this && x instanceof TermMatch).map(x -> ((TermMatch) x)).filter(t -> resolve.equals(t.resolve)).findFirst().orElse(null);

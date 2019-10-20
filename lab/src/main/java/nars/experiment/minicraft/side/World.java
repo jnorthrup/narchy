@@ -55,7 +55,7 @@ public class World implements java.io.Serializable {
         }
         this.width = width;
         this.height = height;
-        this.chunkCount = (int) Math.ceil((double) width / chunkWidth);
+        this.chunkCount = (int) Math.ceil((double) width / (double) chunkWidth);
         this.chunkNeedsUpdate = 0;
         this.random = random;
         lightingEngineSun = new LightingEngine(width, height, tiles, true);
@@ -219,12 +219,12 @@ public class World implements java.io.Serializable {
         }
         Tool tool = (Tool) item;
         if (Arrays.equals(breakType, breakWood) && tool.toolType == Tool.ToolType.Axe) {
-            return (int) (getSpeed(tool) * 20);
+            return (int) (getSpeed(tool) * 20.0);
         } else if (!Arrays.equals(breakType, breakWood) && breakType != null
                 && tool.toolType == Tool.ToolType.Pick) {
-            return (int) (getSpeed(tool) * 25);
+            return (int) (getSpeed(tool) * 25.0);
         } else if (breakType == null && tool.toolType == Tool.ToolType.Shovel) {
-            return (int) (getSpeed(tool) * 15);
+            return (int) (getSpeed(tool) * 15.0);
         } else {
             return handResult(breakType);
         }
@@ -236,13 +236,13 @@ public class World implements java.io.Serializable {
 
         switch (tool.toolPower) {
             case Wood:
-                return 3;
+                return 3.0;
             case Stone:
                 return 2.5;
             case Metal:
-                return 2;
+                return 2.0;
             default:
-                return 1;
+                return 1.0;
         }
     }
 
@@ -260,17 +260,17 @@ public class World implements java.io.Serializable {
                      float cameraX, float cameraY, int tileSize) {
 
         Int2 pos = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, screenWidth, screenHeight,
-                tileSize, 0, height / 2);
+                tileSize, (float) 0, (float) (height / 2));
         g.setColor(Color.darkGray);
         g.fillRect(pos.x, pos.y, width * tileSize, height * tileSize / 2);
 
         pos = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, screenWidth, screenHeight,
-                tileSize, 0, 0);
+                tileSize, (float) 0, (float) 0);
         g.setColor(getSkyColor());
         g.fillRect(pos.x, pos.y, width * tileSize, height * tileSize / 2 - 1);
         for (int i = 0; i < width; i++) {
-            int posX = (int) ((i - cameraX) * tileSize);
-            int posY = (int) ((height - cameraY) * tileSize);
+            int posX = (int) (((float) i - cameraX) * (float) tileSize);
+            int posY = (int) (((float) height - cameraY) * (float) tileSize);
             if (posX < 0 - tileSize || posX > screenWidth || posY < 0 - tileSize
                     || posY > screenHeight) {
                 continue;
@@ -280,14 +280,14 @@ public class World implements java.io.Serializable {
         }
 
         for (int j = height / 2; j < height; j++) {
-            int posX = (int) ((-1 - cameraX) * tileSize);
-            int posY = (int) ((j - cameraY) * tileSize);
+            int posX = (int) ((-1.0F - cameraX) * (float) tileSize);
+            int posY = (int) (((float) j - cameraY) * (float) tileSize);
             if (!(posX < 0 - tileSize || posX > screenWidth || posY < 0 - tileSize || posY > screenHeight)) {
                 Constants.tileTypes.get(TileID.ADMINITE).type.sprite.draw(g, posX, posY, tileSize,
                         tileSize);
             }
 
-            posX = (int) ((width - cameraX) * tileSize);
+            posX = (int) (((float) width - cameraX) * (float) tileSize);
             if (!(posX < 0 - tileSize || posX > screenWidth)) {
                 Constants.tileTypes.get(TileID.ADMINITE).type.sprite.draw(g, posX, posY, tileSize,
                         tileSize);
@@ -296,14 +296,14 @@ public class World implements java.io.Serializable {
 
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                int posX = Math.round(((i - cameraX) * tileSize));
-                int posY = Math.round(((j - cameraY) * tileSize));
+                int posX = Math.round((((float) i - cameraX) * (float) tileSize));
+                int posY = Math.round((((float) j - cameraY) * (float) tileSize));
                 if (posX < 0 - tileSize || posX > screenWidth || posY < 0 - tileSize
                         || posY > screenHeight) {
                     continue;
                 }
 
-                int lightIntensity = (int) (getLightValue(i, j) * 255);
+                int lightIntensity = (int) (getLightValue(i, j) * 255.0F);
                 Color tint = new Color(16, 16, 16, 255 - lightIntensity);
 
                 if (tiles[i][j].type.name != TileID.AIR) {
@@ -367,12 +367,12 @@ public class World implements java.io.Serializable {
      **/
     public float getLightValue(int x, int y) {
         if (Constants.DEBUG_VISIBILITY_ON)
-            return 1;
+            return 1.0F;
         float daylight = getDaylight();
         float lightValueSun = ((float) lightingEngineSun.getLightValue(x, y))
-                / Constants.LIGHT_VALUE_SUN * daylight;
+                / (float) Constants.LIGHT_VALUE_SUN * daylight;
         float lightValueSourceBlocks = ((float) lightingEngineSourceBlocks.getLightValue(x, y))
-                / Constants.LIGHT_VALUE_SUN;
+                / (float) Constants.LIGHT_VALUE_SUN;
         if (lightValueSun >= lightValueSourceBlocks)
             return lightValueSun;
         return lightValueSourceBlocks;
@@ -381,22 +381,22 @@ public class World implements java.io.Serializable {
     public float getDaylight() {
         float timeOfDay = getTimeOfDay();
         if (timeOfDay > .4f && timeOfDay < .6f) {
-            return 1 - StockMethods.smoothStep(.4f, .6f, timeOfDay);
-        } else if (timeOfDay > .9) {
+            return 1.0F - StockMethods.smoothStep(.4f, .6f, timeOfDay);
+        } else if ((double) timeOfDay > .9) {
             return StockMethods.smoothStep(.9f, 1.1f, timeOfDay);
-        } else if (timeOfDay < .1) {
+        } else if ((double) timeOfDay < .1) {
             return StockMethods.smoothStep(-.1f, .1f, timeOfDay);
         } else if (timeOfDay > .5f) {
-            return 0;
+            return (float) 0;
         } else {
-            return 1;
+            return 1.0F;
         }
 
     }
 
 
     public float getTimeOfDay() {
-        return ((float) (ticksAlive % dayLength)) / dayLength;
+        return ((float) (ticksAlive % (long) dayLength)) / (float) dayLength;
     }
 
     public boolean isNight() {
@@ -411,13 +411,13 @@ public class World implements java.io.Serializable {
     public Color getSkyColor() {
         float time = getTimeOfDay();
         if (time < 0.25f) {
-            return dawnSky.interpolateTo(noonSky, 4 * time);
+            return dawnSky.interpolateTo(noonSky, 4.0F * time);
         } else if (time < 0.5f) {
-            return noonSky.interpolateTo(duskSky, 4 * (time - 0.25f));
+            return noonSky.interpolateTo(duskSky, 4.0F * (time - 0.25f));
         } else if (time < 0.75f) {
-            return duskSky.interpolateTo(midnightSky, 4 * (time - 0.5f));
+            return duskSky.interpolateTo(midnightSky, 4.0F * (time - 0.5f));
         } else {
-            return midnightSky.interpolateTo(dawnSky, 4 * (time - 0.75f));
+            return midnightSky.interpolateTo(dawnSky, 4.0F * (time - 0.75f));
         }
     }
 

@@ -53,6 +53,6 @@ public class StringSynthChip extends Bordering {
         set(o);
 
 
-        set(S, new Gridding(new PushButton("x").clicked(()-> h.keyPress(10, false)),/*e, */new FloatSlider(h.amp(), 0, 8f).on(h::amp)));
+        set(S, new Gridding(new PushButton("x").clicked(()-> h.keyPress(10, false)),/*e, */new FloatSlider(h.amp(), (float) 0, 8f).on(h::amp)));
     }
 }

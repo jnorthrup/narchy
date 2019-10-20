@@ -22,16 +22,16 @@ public final class Camera extends Ray3 {
         double widthNear = size;
         double heightNear = widthNear / aspectRatio;
 
-        double widthFar = 2 * Math.tan(fov / 2 / 180 * Math.PI) + widthNear;
+        double widthFar = 2.0 * Math.tan(fov / 2.0 / 180.0 * Math.PI) + widthNear;
         double heightFar = widthFar / aspectRatio;
 
         vv3 originNear = position.
-            minus(xAxis.scale(widthNear / 2)).
-            minus(yAxis.scale(heightNear / 2));
+            minus(xAxis.scale(widthNear / 2.0)).
+            minus(yAxis.scale(heightNear / 2.0));
         vv3 originFar = direction.
                 add(position).
-            minus(xAxis.scale(widthFar / 2)).
-            minus(yAxis.scale(heightFar / 2));
+            minus(xAxis.scale(widthFar / 2.0)).
+            minus(yAxis.scale(heightFar / 2.0));
 
         vv3 pointNear = originNear.
                 add(xAxis.scale(x * widthNear)).
@@ -50,22 +50,22 @@ public final class Camera extends Ray3 {
 
     public void rotate(double dx, double dy) {
         double sin = direction.z;
-        double verticalAngle = Math.asin(sin) / Math.PI * 180;
+        double verticalAngle = Math.asin(sin) / Math.PI * 180.0;
         
-        if (verticalAngle + dy > 89) {
-            dy = 89 - verticalAngle;
-        } else if (verticalAngle + dy < -89) {
-            dy = -89 - verticalAngle;
+        if (verticalAngle + dy > 89.0) {
+            dy = 89.0 - verticalAngle;
+        } else if (verticalAngle + dy < -89.0) {
+            dy = -89.0 - verticalAngle;
         }
-        double cos = Math.sqrt(1 - sin*sin);
-        double sinSliver = Math.sin(dx / 2 / 180 * Math.PI);
-        double cosSliver = Math.cos(dx / 2 / 180 * Math.PI);
-        vv3 hRotTangent = direction.cross(Z_AXIS).normalizeThis(2 * cos * cosSliver * sinSliver);
-        vv3 hRotRadius = hRotTangent.cross(Z_AXIS).normalizeThis(2 * cos * sinSliver * sinSliver);
-        sinSliver = Math.sin(dy / 2 / 180 * Math.PI);
-        cosSliver = Math.cos(dy / 2 / 180 * Math.PI);
-        vv3 vRotTangent = direction.cross(direction.cross(Z_AXIS)).normalizeThis(-2 * cosSliver * sinSliver);
-        vv3 vRotRadius = direction.scale(2 * sinSliver * sinSliver);
+        double cos = Math.sqrt(1.0 - sin*sin);
+        double sinSliver = Math.sin(dx / 2.0 / 180.0 * Math.PI);
+        double cosSliver = Math.cos(dx / 2.0 / 180.0 * Math.PI);
+        vv3 hRotTangent = direction.cross(Z_AXIS).normalizeThis(2.0 * cos * cosSliver * sinSliver);
+        vv3 hRotRadius = hRotTangent.cross(Z_AXIS).normalizeThis(2.0 * cos * sinSliver * sinSliver);
+        sinSliver = Math.sin(dy / 2.0 / 180.0 * Math.PI);
+        cosSliver = Math.cos(dy / 2.0 / 180.0 * Math.PI);
+        vv3 vRotTangent = direction.cross(direction.cross(Z_AXIS)).normalizeThis(-2.0 * cosSliver * sinSliver);
+        vv3 vRotRadius = direction.scale(2.0 * sinSliver * sinSliver);
         direction.addThis(hRotTangent);
         direction.addThis(hRotRadius);
         direction.addThis(vRotTangent);
@@ -75,7 +75,7 @@ public final class Camera extends Ray3 {
 
     public boolean update(Input input, double CAMERA_EPSILON) {
         vv3 cameraPos = position.clone(), cameraDir = direction.clone();
-        rotate(input.getDeltaMouseX() / 2.0, -input.getDeltaMouseY() / 2.0);
+        rotate((double) input.getDeltaMouseX() / 2.0, (double) -input.getDeltaMouseY() / 2.0);
         move(input.getKeyboardVector());
 
         return !cameraPos.equals(position, CAMERA_EPSILON) || !cameraDir.equals(direction, CAMERA_EPSILON);

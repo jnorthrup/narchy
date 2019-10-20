@@ -20,9 +20,9 @@ public class FlowerEnemy extends Enemy {
         this.width = 2;
 
         yStart = y;
-        ya = -8;
+        ya = -8.0F;
 
-        this.y -= 1;
+        this.y -= 1.0F;
 
         this.layer = 0;
 
@@ -39,37 +39,37 @@ public class FlowerEnemy extends Enemy {
             if (deadTime == 0) {
                 deadTime = 1;
                 for (int i = 0; i < 8; i++) {
-                    world.addSprite(new Sparkle((int) (x + Math.random() * 16 - 8) + 4, (int) (y - Math.random() * 8) + 4, (float) (Math.random() * 2 - 1), (float) Math.random() * -1, 0, 1, 5));
+                    world.addSprite(new Sparkle((int) ((double) x + Math.random() * 16.0 - 8.0) + 4, (int) ((double) y - Math.random() * 8.0) + 4, (float) (Math.random() * 2.0 - 1.0), (float) Math.random() * -1.0F, 0, 1, 5));
                 }
                 spriteContext.removeSprite(this);
             }
 
             x += xa;
             y += ya;
-            ya *= 0.95;
-            ya += 1;
+            ya = (float) ((double) ya * 0.95);
+            ya += 1.0F;
 
             return;
         }
 
         tick++;
 
-        if (y >= yStart) {
-            y = yStart;
+        if (y >= (float) yStart) {
+            y = (float) yStart;
 
             int xd = (int) (Math.abs(world.mario.x - x));
             jumpTime++;
             if (jumpTime > 40 && xd > 24) {
-                ya = -8;
+                ya = -8.0F;
             } else {
-                ya = 0;
+                ya = (float) 0;
             }
         } else {
             jumpTime = 0;
         }
 
         y += ya;
-        ya *= 0.9;
+        ya = (float) ((double) ya * 0.9);
         ya += 0.1f;
 
         xPic = ((tick / 2) & 1) * 2 + ((tick / 6) & 1);

@@ -99,7 +99,7 @@ public class SideScrollMinicraft {
         if (!load) {
 
             world = new World(worldWidth, worldHeight, random);
-            player = new Player(true, world.spawnLocation.x, world.spawnLocation.y,
+            player = new Player(true, (float) world.spawnLocation.x, (float) world.spawnLocation.y,
                     7 * (tileSize / 8), 14 * (tileSize / 8));
             entities.add(player);
             if (Constants.DEBUG) {
@@ -143,7 +143,7 @@ public class SideScrollMinicraft {
 
         boolean gameRunning = true;
         while (gameRunning) {
-            long delta = 0;
+            long delta = 0L;
             if (delay) {
                 ticksRunning++;
 
@@ -154,7 +154,7 @@ public class SideScrollMinicraft {
 
 
             if (delay)
-                SystemTimer.sleep(lastLoopTime + 16 - SystemTimer.getTime());
+                SystemTimer.sleep(lastLoopTime + 16L - SystemTimer.getTime());
         }
     }
 
@@ -167,15 +167,15 @@ public class SideScrollMinicraft {
             drawMouse(g, screenMousePos);
             g.finishDrawing();
 
-            return 0;
+            return (float) 0;
         }
 
         int screenWidth = GraphicsHandler.getScreenWidth();
         int screenHeight = GraphicsHandler.getScreenHeight();
-        float cameraX = player.x - screenWidth / tileSize / 2;
-        float cameraY = player.y - screenHeight / tileSize / 2;
-        float worldMouseX = (cameraX * tileSize + screenMousePos.x) / tileSize;
-        float worldMouseY = (cameraY * tileSize + screenMousePos.y) / tileSize - .5f;
+        float cameraX = player.x - (float) (screenWidth / tileSize / 2);
+        float cameraY = player.y - (float) (screenHeight / tileSize / 2);
+        float worldMouseX = (cameraX * (float) tileSize + (float) screenMousePos.x) / (float) tileSize;
+        float worldMouseY = (cameraY * (float) tileSize + (float) screenMousePos.y) / (float) tileSize - .5f;
 
         world.chunkUpdate();
         world.draw(g, 0, 0, screenWidth, screenHeight, cameraX, cameraY, tileSize);
@@ -200,8 +200,8 @@ public class SideScrollMinicraft {
             int ticksNeeded = world.breakTicks(breakingPos.x, breakingPos.y, item);
 
             Int2 pos = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, tileSize,
-                    tileSize, tileSize, breakingPos.x, breakingPos.y);
-            int sprite_index = (int) (Math.min(1, (double) breakingTicks / ticksNeeded) * (breakingSprites.length - 1));
+                    tileSize, tileSize, (float) breakingPos.x, (float) breakingPos.y);
+            int sprite_index = (int) (Math.min(1.0, (double) breakingTicks / (double) ticksNeeded) * (double) (breakingSprites.length - 1));
             breakingSprites[sprite_index].draw(g, pos.x, pos.y, tileSize, tileSize);
 
             if (breakingTicks >= ticksNeeded) {
@@ -227,10 +227,10 @@ public class SideScrollMinicraft {
                 Item newItem = Constants.itemTypes.get((char) name.breaksInto);
                 if (newItem != null) {
                     newItem = newItem.clone();
-                    newItem.x = player.handBreakPos.x + random.nextFloat()
-                            * (1 - (float) newItem.widthPX / tileSize);
-                    newItem.y = player.handBreakPos.y + random.nextFloat()
-                            * (1 - (float) newItem.widthPX / tileSize);
+                    newItem.x = (float) player.handBreakPos.x + random.nextFloat()
+                            * (1.0F - (float) newItem.widthPX / (float) tileSize);
+                    newItem.y = (float) player.handBreakPos.y + random.nextFloat()
+                            * (1.0F - (float) newItem.widthPX / (float) tileSize);
                     newItem.dy = -.07f;
                     entities.add(newItem);
                 }
@@ -284,11 +284,11 @@ public class SideScrollMinicraft {
 
         if (player.handBreakPos.x != -1) {
             Int2 pos = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, tileSize,
-                    tileSize, tileSize, player.handBuildPos.x, player.handBuildPos.y);
+                    tileSize, tileSize, (float) player.handBuildPos.x, (float) player.handBuildPos.y);
             builderIcon.draw(g, pos.x, pos.y, tileSize, tileSize);
 
             pos = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, tileSize, tileSize,
-                    tileSize, player.handBreakPos.x, player.handBreakPos.y);
+                    tileSize, (float) player.handBreakPos.x, (float) player.handBreakPos.y);
             minerIcon.draw(g, pos.x, pos.y, tileSize, tileSize);
         }
 
@@ -330,7 +330,7 @@ public class SideScrollMinicraft {
         }
 
         g.finishDrawing();
-        return player.hitPoints;
+        return (float) player.hitPoints;
     }
 
     public static void drawMouse(GraphicsHandler g, Int2 pos) {
@@ -402,9 +402,9 @@ public class SideScrollMinicraft {
             }
             inventoryItem.remove(1);
             if (player.facingRight) {
-                newItem.x = player.x + 1 + random.nextFloat();
+                newItem.x = player.x + 1.0F + random.nextFloat();
             } else {
-                newItem.x = player.x - 1 - random.nextFloat();
+                newItem.x = player.x - 1.0F - random.nextFloat();
             }
             newItem.y = player.y;
             newItem.dy = -.1f;

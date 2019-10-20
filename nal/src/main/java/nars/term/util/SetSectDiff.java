@@ -113,7 +113,7 @@ public enum SetSectDiff {
                 return single(y.keysView().getOnly(), o, B);
             default:
                 TermList yyy = new TermList(s);
-                y.keyValuesView().forEachWith((e, YYY) -> YYY.addFast(e.getOne().negIf(e.getTwo() == -1)), yyy);
+                y.keyValuesView().forEachWith((e, YYY) -> YYY.addFast(e.getOne().negIf((int) e.getTwo() == -1)), yyy);
 
 //            //Filter temporal terms that resolve to the same roots
 //            if (yyy.hasAny(Temporal)) {
@@ -213,12 +213,12 @@ public enum SetSectDiff {
             if (xo != o) {
                 if (sect) {
                     byte p = (byte) (x.op() != NEG ? +1 : -1);
-                    if (p == -1) x = x.unneg();
-                    int existing = y.getIfAbsent(x, Byte.MIN_VALUE);
-                    if (existing == Byte.MIN_VALUE) {
+                    if ((int) p == -1) x = x.unneg();
+                    int existing = (int) y.getIfAbsent(x, Byte.MIN_VALUE);
+                    if (existing == (int) Byte.MIN_VALUE) {
                         y.put(x, p); //first
                     } else {
-                        if (existing == p) {
+                        if (existing == (int) p) {
                             //same exact target and polarity present
                         } else {
                             if (union) {

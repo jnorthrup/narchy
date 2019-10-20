@@ -119,7 +119,7 @@ public class Emotion implements Meter, Consumer<NAR> {
     public final float[] want = new float[MetaGoal.values().length];
     public final FloatAveragedWindow
             busyVol = new FloatAveragedWindow(history, 0.75f, 0f);
-    public final FloatAveragedWindow busyVolPriWeighted = new FloatAveragedWindow(history, 0.75f, 0);
+    public final FloatAveragedWindow busyVolPriWeighted = new FloatAveragedWindow(history, 0.75f, (float) 0);
 
     /**
      * count of errors
@@ -164,15 +164,15 @@ public class Emotion implements Meter, Consumer<NAR> {
      */
     @Override
     public void accept(NAR nar) {
-        busyVol.reset(0);
-        busyVolPriWeighted.reset(0);
+        busyVol.reset((float) 0);
+        busyVolPriWeighted.reset((float) 0);
     }
 
     @Deprecated
     public void busy(float pri, int vol) {
         //busyPri.accept(Math.round(pri * 1000));
-        busyVol.add(vol);
-        busyVolPriWeighted.add(vol * pri);
+        busyVol.add((float) vol);
+        busyVolPriWeighted.add((float) vol * pri);
     }
 
     public String summary() {

@@ -34,7 +34,7 @@ public class TrieSequencerCharSequenceCaseInsensitive<S extends CharSequence> ex
           char a = sequenceA.charAt( indexA + i );
           char b = sequenceB.charAt( indexB + i );
 
-         if (Character.toLowerCase( a ) != Character.toLowerCase( b ))
+         if ((int) Character.toLowerCase(a) != (int) Character.toLowerCase(b))
          {
             return i;
          }
@@ -46,7 +46,7 @@ public class TrieSequencerCharSequenceCaseInsensitive<S extends CharSequence> ex
    @Override
    public int hashOf( S sequence, int i )
    {
-      return Character.toLowerCase( sequence.charAt( i ) );
+      return (int) Character.toLowerCase(sequence.charAt(i));
    }
 
 }

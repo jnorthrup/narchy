@@ -291,7 +291,7 @@ class SampleManager {
      */
     public static Sample randomFromGroup(String groupName) {
         ArrayList<Sample> group = groups.get(groupName);
-        return group.get((int) (Math.random() * group.size()));
+        return group.get((int) (Math.random() * (double) group.size()));
     }
 
     /**

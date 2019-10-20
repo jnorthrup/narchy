@@ -34,22 +34,22 @@ import java.util.Random;
  */
 public final class MathUtils {
 
-    public static final float THIRD = 1f / 3;
+    public static final float THIRD = 1f / 3.0F;
 
     /**
      * Square root of 2
      */
-    public static final float SQRT2 = (float) Math.sqrt(2);
+    public static final float SQRT2 = (float) Math.sqrt(2.0);
 
     /**
      * Square root of 3
      */
-    public static final float SQRT3 = (float) Math.sqrt(3);
+    public static final float SQRT3 = (float) Math.sqrt(3.0);
 
     /**
      * Log(2)
      */
-    public static final float LOG2 = (float) Math.log(2);
+    public static final float LOG2 = (float) Math.log(2.0);
 
     /**
      * PI
@@ -64,22 +64,22 @@ public final class MathUtils {
     /**
      * PI/2
      */
-    public static final float HALF_PI = PI / 2;
+    public static final float HALF_PI = PI / 2.0F;
 
     /**
      * PI/3
      */
-    public static final float THIRD_PI = PI / 3;
+    public static final float THIRD_PI = PI / 3.0F;
 
     /**
      * PI/4
      */
-    public static final float QUARTER_PI = PI / 4;
+    public static final float QUARTER_PI = PI / 4.0F;
 
     /**
      * PI*2
      */
-    public static final float TWO_PI = PI * 2;
+    public static final float TWO_PI = PI * 2.0F;
 
     /**
      * PI*1.5
@@ -99,20 +99,20 @@ public final class MathUtils {
     /**
      * Degrees to radians conversion factor
      */
-    public static final float DEG2RAD = PI / 180;
+    public static final float DEG2RAD = PI / 180.0F;
 
     /**
      * Radians to degrees conversion factor
      */
-    public static final float RAD2DEG = 180 / PI;
+    public static final float RAD2DEG = 180.0F / PI;
 
-    private static final float SHIFT23 = 1 << 23;
+    private static final float SHIFT23 = (float) (1 << 23);
 
     private static final float INV_SHIFT23 = 1.0f / SHIFT23;
-    private static final double SIN_A = -4d / (PI * PI);
+    private static final double SIN_A = -4d / (double) (PI * PI);
 
-    private static final double SIN_B = 4d / PI;
-    private static final double SIN_P = 9d / 40;
+    private static final double SIN_B = 4d / (double) PI;
+    private static final double SIN_P = 9d / 40.0;
     /**
      * Default random number generator used by random methods of this class
      * which don't use a passed in {@link Random} instance.
@@ -124,7 +124,7 @@ public final class MathUtils {
      * @return absolute value of x
      */
     public static double abs(double x) {
-        return x < 0 ? -x : x;
+        return x < (double) 0 ? -x : x;
     }
 
     /**
@@ -132,7 +132,7 @@ public final class MathUtils {
      * @return absolute value of x
      */
     public static float abs(float x) {
-        return x < 0 ? -x : x;
+        return x < (float) 0 ? -x : x;
     }
 
     /**
@@ -171,10 +171,10 @@ public final class MathUtils {
     }
 
     public static double clipNormalized(double a) {
-        if (a < 0) {
-            return 0;
-        } else if (a > 1) {
-            return 1;
+        if (a < (double) 0) {
+            return (double) 0;
+        } else if (a > 1.0) {
+            return 1.0;
         }
         return a;
     }
@@ -187,16 +187,16 @@ public final class MathUtils {
      * @since 0012
      */
     public static float clipNormalized(float a) {
-        if (a < 0) {
-            return 0;
-        } else if (a > 1) {
-            return 1;
+        if (a < (float) 0) {
+            return (float) 0;
+        } else if (a > 1.0F) {
+            return 1.0F;
         }
         return a;
     }
 
     public static double cos(double theta) {
-        return sin(theta + HALF_PI);
+        return sin(theta + (double) HALF_PI);
     }
 
     /**
@@ -213,7 +213,7 @@ public final class MathUtils {
     }
 
     public static double degrees(double radians) {
-        return radians * RAD2DEG;
+        return radians * (double) RAD2DEG;
     }
 
     public static float degrees(float radians) {
@@ -221,8 +221,8 @@ public final class MathUtils {
     }
 
     public static double dualSign(double a, double b) {
-        double x = (a >= 0 ? a : -a);
-        return (b >= 0 ? x : -x);
+        double x = (a >= (double) 0 ? a : -a);
+        return (b >= (double) 0 ? x : -x);
     }
 
     /**
@@ -233,7 +233,7 @@ public final class MathUtils {
      * @return cosine
      */
     public static double fastCos(double x) {
-        return fastSin(x + ((x > HALF_PI) ? -THREE_HALVES_PI : HALF_PI));
+        return fastSin(x + (double) ((x > (double) HALF_PI) ? -THREE_HALVES_PI : HALF_PI));
     }
 
     /**
@@ -262,14 +262,14 @@ public final class MathUtils {
      * 
      */
     public static float fastPow(float a, float b) {
-        float x = Float.floatToRawIntBits(a);
+        float x = (float) Float.floatToRawIntBits(a);
         x *= INV_SHIFT23;
-        x -= 127;
-        float y = x - (x >= 0 ? (int) x : (int) x - 1);
+        x -= 127.0F;
+        float y = x - (float) (x >= (float) 0 ? (int) x : (int) x - 1);
         b *= x + (y - y * y) * 0.346607f;
-        y = b - (b >= 0 ? (int) b : (int) b - 1);
+        y = b - (float) (b >= (float) 0 ? (int) b : (int) b - 1);
         y = (y - y * y) * 0.33971f;
-        return Float.intBitsToFloat((int) ((b + 127 - y) * SHIFT23));
+        return Float.intBitsToFloat((int) ((b + 127.0F - y) * SHIFT23));
     }
 
     /**
@@ -298,7 +298,7 @@ public final class MathUtils {
 
     public static long floor(double x) {
         long y = (long) x;
-        if (x < 0 && x != y) {
+        if (x < (double) 0 && x != (double) y) {
             y--;
         }
         return y;
@@ -314,7 +314,7 @@ public final class MathUtils {
      */
     public static int floor(float x) {
         int y = (int) x;
-        if (x < 0 && x != y) {
+        if (x < (float) 0 && x != (float) y) {
             y--;
         }
         return y;
@@ -327,7 +327,7 @@ public final class MathUtils {
      * @return power^2 value
      */
     public static int floorPowerOf2(int x) {
-        return (int) Math.pow(2, (int) (Math.log(x) / LOG2));
+        return (int) Math.pow(2.0, (double) (int) (Math.log((double) x) / (double) LOG2));
     }
 
 //    /**
@@ -373,7 +373,7 @@ public final class MathUtils {
      */
     public static float impulse(float k, float t) {
         float h = k * t;
-        return (float) (h * Math.exp(1.0f - h));
+        return (float) ((double) h * Math.exp((double) (1.0f - h)));
     }
 
 //    public static int lcm(int p, int q) {
@@ -496,7 +496,7 @@ public final class MathUtils {
      * @return random float
      */
     public static float normalizedRandom() {
-        return RND.nextFloat() * 2 - 1;
+        return RND.nextFloat() * 2.0F - 1.0F;
     }
 
     /**
@@ -507,11 +507,11 @@ public final class MathUtils {
      * @return random float
      */
     public static float normalizedRandom(Random rnd) {
-        return rnd.nextFloat() * 2 - 1;
+        return rnd.nextFloat() * 2.0F - 1.0F;
     }
 
     public static double radians(double degrees) {
-        return degrees * DEG2RAD;
+        return degrees * (double) DEG2RAD;
     }
 
     public static float radians(float degrees) {
@@ -527,11 +527,11 @@ public final class MathUtils {
     }
 
     public static int random(int max) {
-        return (int) (RND.nextFloat() * max);
+        return (int) (RND.nextFloat() * (float) max);
     }
 
     public static int random(int min, int max) {
-        return (int) (RND.nextFloat() * (max - min)) + min;
+        return (int) (RND.nextFloat() * (float) (max - min)) + min;
     }
 
     public static double random(Random rnd, double max) {
@@ -568,12 +568,12 @@ public final class MathUtils {
     }
 
     public static double reduceAngle(double theta) {
-        theta %= TWO_PI;
-        if (abs(theta) > PI) {
-            theta -= TWO_PI;
+        theta = theta % (double) TWO_PI;
+        if (abs(theta) > (double) PI) {
+            theta = theta - (double) TWO_PI;
         }
-        if (abs(theta) > HALF_PI) {
-            theta = PI - theta;
+        if (abs(theta) > (double) HALF_PI) {
+            theta = (double) PI - theta;
         }
         return theta;
     }
@@ -608,7 +608,7 @@ public final class MathUtils {
      * @return rounded value
      */
     public static double roundTo(double val, double prec) {
-        return floor(val / prec + 0.5) * prec;
+        return (double) floor(val / prec + 0.5) * prec;
     }
 
     /**
@@ -619,7 +619,7 @@ public final class MathUtils {
      * @return rounded value
      */
     public static float roundTo(float val, float prec) {
-        return floor(val / prec + 0.5f) * prec;
+        return (float) floor(val / prec + 0.5f) * prec;
     }
 
     /**
@@ -630,7 +630,7 @@ public final class MathUtils {
      * @return rounded value
      */
     public static int roundTo(int val, int prec) {
-        return floor((float) val / prec + 0.5f) * prec;
+        return floor((float) val / (float) prec + 0.5f) * prec;
     }
 
     /**
@@ -645,11 +645,11 @@ public final class MathUtils {
     }
 
     public static int sign(double x) {
-        return x < 0 ? -1 : (x > 0 ? 1 : 0);
+        return x < (double) 0 ? -1 : (x > (double) 0 ? 1 : 0);
     }
 
     public static int sign(float x) {
-        return x < 0 ? -1 : (x > 0 ? 1 : 0);
+        return x < (float) 0 ? -1 : (x > (float) 0 ? 1 : 0);
     }
 
     public static int sign(int x) {
@@ -658,10 +658,10 @@ public final class MathUtils {
 
     public static double sin(double theta) {
         theta = reduceAngle(theta);
-        if (abs(theta) <= QUARTER_PI) {
-            return (float) fastSin(theta);
+        if (abs(theta) <= (double) QUARTER_PI) {
+            return (double) (float) fastSin(theta);
         }
-        return (float) fastCos(HALF_PI - theta);
+        return (double) (float) fastCos((double) HALF_PI - theta);
     }
 
     /**
@@ -676,9 +676,9 @@ public final class MathUtils {
     public static float sin(float theta) {
         theta = reduceAngle(theta);
         if (abs(theta) <= QUARTER_PI) {
-            return (float) fastSin(theta);
+            return (float) fastSin((double) theta);
         }
-        return (float) fastCos(HALF_PI - theta);
+        return (float) fastCos((double) (HALF_PI - theta));
     }
 
     /**
@@ -689,10 +689,10 @@ public final class MathUtils {
     @Deprecated
     public static float sqrt(float x) {
         x = fastInverseSqrt(x);
-        if (x > 0) {
+        if (x > (float) 0) {
             return 1.0f / x;
         } else {
-            return 0;
+            return (float) 0;
         }
     }
 }

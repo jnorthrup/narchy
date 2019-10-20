@@ -22,7 +22,7 @@ public class TaskOrPresentTiming implements TriFunction<What, Task, Term, long[]
             //present
             long now = what.time();
             int dur = Math.round((float) 1 * what.dur());
-            tt = new long[]{now - dur / 2, now + dur / 2};
+            tt = new long[]{now - (long) (dur / 2), now + (long) (dur / 2)};
         } else {
             //task
             tt = taskTime(task);

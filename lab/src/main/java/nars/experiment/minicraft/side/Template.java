@@ -45,14 +45,14 @@ public class Template implements java.io.Serializable {
 
                 for (int i = 0; i < matrix.length; i++) {
                     for (int j = 0; j < matrix[0].length; j++) {
-                        if (matrix[i][j] != input[x + i][y + j]) {
-                            if (input[x + i][y + j] != 0) {
+                        if ((int) matrix[i][j] != (int) input[x + i][y + j]) {
+                            if ((int) input[x + i][y + j] != 0) {
                                 return false;
                             }
-                            if (matrix[i][j] != 0 && input[x + i][y + j] == 0) {
+                            if ((int) matrix[i][j] != 0 && (int) input[x + i][y + j] == 0) {
                                 isBad = true;
                             }
-                        } else if (input[x + i][y + j] != 0 && matrix[i][j] != 0) {
+                        } else if ((int) input[x + i][y + j] != 0 && (int) matrix[i][j] != 0) {
                             isGood = true;
                         }
                     }

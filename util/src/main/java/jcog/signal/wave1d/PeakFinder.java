@@ -105,7 +105,7 @@ public class PeakFinder {
 		}
 		Arrays.sort(scratch);
         float median = scratch[scratch.length / 2];
-        float mean = sum / length;
+        float mean = sum / (float) length;
 				
 		/* shift peek array */
 		System.arraycopy(onset_peek, 1, onset_peek, 0, 3 - 1);
@@ -113,7 +113,7 @@ public class PeakFinder {
 //			onset_peek[j] = onset_peek[j+1];
 
 		/* calculate new peek value */
-		onset_peek[2] = (float) (onset_proc[win_post] - median - mean * threshold);
+		onset_peek[2] = (float) ((double) onset_proc[win_post] - (double) median - (double) mean * threshold);
 
         boolean isPeak = isPeak(1);
 		lastPeekValue = onset;
@@ -140,6 +140,6 @@ public class PeakFinder {
         float a = onset_peek[index];
 		return (	a > onset_peek[index - 1] &&
 					a > onset_peek[index + 1] &&
-					a > 0.0);
+                (double) a > 0.0);
 	}
 }

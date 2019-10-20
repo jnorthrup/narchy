@@ -51,7 +51,7 @@ public class TapOut extends UGen {
 
     private TapOut(AudioContext ac, TapIn ti) {
         super(ac, 0, 1);
-        sampsPerMS = (float) ac.msToSamples(1);
+        sampsPerMS = (float) ac.msToSamples(1.0);
         this.ti = ti;
         this.dependsOn(ti);
         setMode(NO_INTERP);
@@ -169,10 +169,10 @@ public class TapOut extends UGen {
     public TapOut setDelay(float delay) {
         this.delay = delay;
         sampDelayFloat = sampsPerMS * delay;
-        sampDelayInt = (int) (sampDelayFloat + .5);
+        sampDelayInt = (int) ((double) sampDelayFloat + .5);
         sampDelayAPInt = (int) sampDelayFloat;
-        float frac = sampDelayFloat % 1;
-        g = (1 - frac) / (1 + frac);
+        float frac = sampDelayFloat % 1.0F;
+        g = (1.0F - frac) / (1.0F + frac);
         delayUGen = null;
         return this;
     }

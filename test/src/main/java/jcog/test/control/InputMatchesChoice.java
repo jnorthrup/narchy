@@ -20,25 +20,25 @@ public class InputMatchesChoice extends AbstractAgentTest {
 
         int cycles = 500;
 
-        Random rng = new XoRoShiRo128PlusRandom(1);
+        Random rng = new XoRoShiRo128PlusRandom(1L);
         IntIntHashMap acts = new IntIntHashMap();
 
-        float nextReward = 0;
-        float rewardSum = 0;
+        float nextReward = (float) 0;
+        float rewardSum = (float) 0;
         for (int i = 0; i < cycles; i++) {
 
             boolean which = rng.nextBoolean();
 
-            int action = agent.act(nextReward, new float[]{which ? 1 : 0, which ? 0 : 1} );
+            int action = agent.act(nextReward, new float[]{(float) (which ? 1 : 0), (float) (which ? 0 : 1)} );
 
             acts.addToValue(action, 1);
 
-            nextReward = (which ? action == 1 : action == 0) ? +1 : -1;
+            nextReward = (float) ((which ? action == 1 : action == 0) ? +1 : -1);
             rewardSum += nextReward;
         }
-        float rewardMean = rewardSum / cycles;
+        float rewardMean = rewardSum / (float) cycles;
         System.out.println(agent.getClass() + " " + agent.summary() + '\n' + acts + ' ' + rewardMean);
-        assertTrue(rewardMean > 0); //should be tougher
+        assertTrue(rewardMean > (float) 0); //should be tougher
     }
 
 }

@@ -23,7 +23,7 @@ public enum PriReturn {
     Delta {
         @Override
         public float apply(float incoming, float pBefore, float pAfter) {
-            return ((pAfter==pAfter) ? pAfter : 0) - pBefore;
+            return ((pAfter==pAfter) ? pAfter : (float) 0) - pBefore;
         }
     },
 
@@ -41,7 +41,7 @@ public enum PriReturn {
         public float apply(float incoming, float pBefore, float pAfter) {
 
             if (incoming!=incoming)
-                incoming = 0;
+                incoming = (float) 0;
 
             if (pAfter != pAfter)
                 return incoming; //deleted
@@ -54,7 +54,7 @@ public enum PriReturn {
     Changed {
         @Override
         public float apply(float incoming, float pBefore, float pAfter) {
-            return pBefore!=pAfter ? 1 : 0;
+            return (float) (pBefore != pAfter ? 1 : 0);
         }
     },
 

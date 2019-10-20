@@ -35,7 +35,7 @@ import java.util.List;
 public final class SloppyMath {
 
 	  public static double abs(double x) {
-		    if (x > 0)
+		    if (x > (double) 0)
 		      return x;
 		    return -1.0 * x;
 		  }
@@ -43,7 +43,7 @@ public final class SloppyMath {
 			public static double lambert(double v, double u){
                 double x = -(Math.log(-v)+u);
                 double w = -x;
-				double diff=1;
+				double diff= 1.0;
 				while (Math.abs(diff)<1.0e-5){
                     double z = -x -Math.log(Math.abs(w));
 				  diff = z-w;
@@ -187,11 +187,11 @@ public final class SloppyMath {
     return Double.isInfinite(d) || Double.isNaN(d) || d == 0.0;
   }
   public static boolean isDangerous(float d) {
-    return Float.isInfinite(d) || Float.isNaN(d) || d == 0.0;
+    return Float.isInfinite(d) || Float.isNaN(d) || (double) d == 0.0;
   }
 
   public static boolean isGreater(double x, double y) {
-	    if (x>1) return (((x-y) / x) > -0.01);
+	    if (x> 1.0) return (((x-y) / x) > -0.01);
 	  	return ((x-y) > -0.0001);
   }
 
@@ -249,12 +249,12 @@ public final class SloppyMath {
       max = ly;
       negDiff = lx - ly;
     }
-    if (max == Double.NEGATIVE_INFINITY) {
+    if ((double) max == Double.NEGATIVE_INFINITY) {
       return Float.NEGATIVE_INFINITY;
     } else if (negDiff < -LOGTOLERANCE_F) {
       return max;
     } else {
-      return max + (float)Math.log(1.0f + Math.exp(negDiff));
+      return max + (float)Math.log(1.0 + Math.exp((double) negDiff));
     }
   }
 
@@ -292,12 +292,12 @@ public final class SloppyMath {
   }
 
   public static double logAdd(float[] logV) {
-    double maxIndex = 0;
+    double maxIndex = (double) 0;
       double max = Double.NEGATIVE_INFINITY;
     for (int i = 0; i < logV.length; i++) {
-      if (logV[i] > max) {
-        max = logV[i];
-        maxIndex = i;
+      if ((double) logV[i] > max) {
+        max = (double) logV[i];
+        maxIndex = (double) i;
       }
     }
     if (max == Double.NEGATIVE_INFINITY) return Double.NEGATIVE_INFINITY;
@@ -305,8 +305,8 @@ public final class SloppyMath {
       double threshold = max - LOGTOLERANCE;
       double sumNegativeDifferences = 0.0;
     for (int i = 0; i < logV.length; i++) {
-      if (i != maxIndex && logV[i] > threshold) {
-        sumNegativeDifferences += Math.exp(logV[i] - max);
+      if ((double) i != maxIndex && (double) logV[i] > threshold) {
+        sumNegativeDifferences += Math.exp((double) logV[i] - max);
       }
     }
     if (sumNegativeDifferences > 0.0) {
@@ -328,12 +328,12 @@ public final class SloppyMath {
   }
 
   public static double logAdd(double[] logV) {
-    double maxIndex = 0;
+    double maxIndex = (double) 0;
       double max = Double.NEGATIVE_INFINITY;
     for (int i = 0; i < logV.length; i++) {
       if (logV[i] > max) {
         max = logV[i];
-        maxIndex = i;
+        maxIndex = (double) i;
       }
     }
     if (max == Double.NEGATIVE_INFINITY) return Double.NEGATIVE_INFINITY;
@@ -341,7 +341,7 @@ public final class SloppyMath {
       double threshold = max - LOGTOLERANCE;
       double sumNegativeDifferences = 0.0;
     for (int i = 0; i < logV.length; i++) {
-      if (i != maxIndex && logV[i] > threshold) {
+      if ((double) i != maxIndex && logV[i] > threshold) {
         sumNegativeDifferences += Math.exp(logV[i] - max);
       }
     }
@@ -354,11 +354,11 @@ public final class SloppyMath {
 
   public static double logAdd(List<Double> logV) {
       double max = Double.NEGATIVE_INFINITY;
-	    double maxIndex = 0;
+	    double maxIndex = (double) 0;
 	    for (int i = 0; i < logV.size(); i++) {
 	      if (logV.get(i) > max) {
 	        max = logV.get(i);
-	        maxIndex = i;
+	        maxIndex = (double) i;
 	      }
 	    }
 	    if (max == Double.NEGATIVE_INFINITY) return Double.NEGATIVE_INFINITY;
@@ -366,7 +366,7 @@ public final class SloppyMath {
       double threshold = max - LOGTOLERANCE;
       double sumNegativeDifferences = 0.0;
 	    for (int i = 0; i < logV.size(); i++) {
-	      if (i != maxIndex && logV.get(i) > threshold) {
+	      if ((double) i != maxIndex && logV.get(i) > threshold) {
 	        sumNegativeDifferences += Math.exp(logV.get(i) - max);
 	      }
 	    }
@@ -380,11 +380,11 @@ public final class SloppyMath {
   
   public static float logAdd_Old(float[] logV) {
       float max = Float.NEGATIVE_INFINITY;
-    float maxIndex = 0;
+    float maxIndex = (float) 0;
     for (int i = 0; i < logV.length; i++) {
       if (logV[i] > max) {
         max = logV[i];
-        maxIndex = i;
+        maxIndex = (float) i;
       }
     }
     if (max == Float.NEGATIVE_INFINITY) return Float.NEGATIVE_INFINITY;
@@ -392,12 +392,12 @@ public final class SloppyMath {
       float threshold = max - LOGTOLERANCE_F;
       float sumNegativeDifferences = 0.0f;
     for (int i = 0; i < logV.length; i++) {
-      if (i != maxIndex && logV[i] > threshold) {
-        sumNegativeDifferences += Math.exp(logV[i] - max);
+      if ((float) i != maxIndex && logV[i] > threshold) {
+          sumNegativeDifferences = (float) ((double) sumNegativeDifferences + Math.exp((double) (logV[i] - max)));
       }
     }
-    if (sumNegativeDifferences > 0.0) {
-      return max + (float) Math.log(1.0f + sumNegativeDifferences);
+    if ((double) sumNegativeDifferences > 0.0) {
+      return max + (float) Math.log((double) (1.0f + sumNegativeDifferences));
     } else {
       return max;
     }
@@ -409,11 +409,11 @@ public final class SloppyMath {
   public static float logAdd(float[] logV, int lastIndex) {
   	if (lastIndex==0) return Float.NEGATIVE_INFINITY;
       float max = Float.NEGATIVE_INFINITY;
-    float maxIndex = 0;
+    float maxIndex = (float) 0;
     for (int i = 0; i < lastIndex; i++) {
       if (logV[i] > max) {
         max = logV[i];
-        maxIndex = i;
+        maxIndex = (float) i;
       }
     }
     if (max == Float.NEGATIVE_INFINITY) return Float.NEGATIVE_INFINITY;
@@ -421,8 +421,8 @@ public final class SloppyMath {
       float threshold = max - LOGTOLERANCE_F;
       double sumNegativeDifferences = 0.0;
     for (int i = 0; i < lastIndex; i++) {
-      if (i != maxIndex && logV[i] > threshold) {
-        sumNegativeDifferences += Math.exp((logV[i] - max));
+      if ((float) i != maxIndex && logV[i] > threshold) {
+        sumNegativeDifferences += Math.exp((double) (logV[i] - max));
       }
     }
     if (sumNegativeDifferences > 0.0) {
@@ -438,11 +438,11 @@ public final class SloppyMath {
   public static double logAdd(double[] logV, int lastIndex) {
   	if (lastIndex==0) return Double.NEGATIVE_INFINITY;
       double max = Double.NEGATIVE_INFINITY;
-  	double maxIndex = 0;
+  	double maxIndex = (double) 0;
     for (int i = 0; i < lastIndex; i++) {
       if (logV[i] > max) {
         max = logV[i];
-        maxIndex = i;
+        maxIndex = (double) i;
       }
     }
     if (max == Double.NEGATIVE_INFINITY) return Double.NEGATIVE_INFINITY;
@@ -450,7 +450,7 @@ public final class SloppyMath {
       double threshold = max - LOGTOLERANCE;
       double sumNegativeDifferences = 0.0;
     for (int i = 0; i < lastIndex; i++) {
-      if (i != maxIndex && logV[i] > threshold) {
+      if ((double) i != maxIndex && logV[i] > threshold) {
         sumNegativeDifferences += Math.exp((logV[i] - max));
       }
     }
@@ -468,11 +468,11 @@ public final class SloppyMath {
 	 */
   public static float addExp_Old(float[] logV) {
       float max = Float.NEGATIVE_INFINITY;
-    float maxIndex = 0;
+    float maxIndex = (float) 0;
     for (int i = 0; i < logV.length; i++) {
       if (logV[i] > max) {
         max = logV[i];
-        maxIndex = i;
+        maxIndex = (float) i;
       }
     }
     if (max == Float.NEGATIVE_INFINITY) return Float.NEGATIVE_INFINITY;
@@ -480,11 +480,11 @@ public final class SloppyMath {
       float threshold = max - LOGTOLERANCE_F;
       float sumNegativeDifferences = 0.0f;
     for (int i = 0; i < logV.length; i++) {
-      if (i != maxIndex && logV[i] > threshold) {
-        sumNegativeDifferences += Math.exp(logV[i] - max);
+      if ((float) i != maxIndex && logV[i] > threshold) {
+          sumNegativeDifferences = (float) ((double) sumNegativeDifferences + Math.exp((double) (logV[i] - max)));
       }
     }
-    return (float) Math.exp(max) * (1.0f + sumNegativeDifferences);
+    return (float) Math.exp((double) max) * (1.0f + sumNegativeDifferences);
   }
 
   /*
@@ -493,11 +493,11 @@ public final class SloppyMath {
   public static float addExp(float[] logV, int lastIndex) {
   	if (lastIndex==0) return Float.NEGATIVE_INFINITY;
       float max = Float.NEGATIVE_INFINITY;
-    float maxIndex = 0;
+    float maxIndex = (float) 0;
     for (int i = 0; i < lastIndex; i++) {
       if (logV[i] > max) {
         max = logV[i];
-        maxIndex = i;
+        maxIndex = (float) i;
       }
     }
     if (max == Float.NEGATIVE_INFINITY) return Float.NEGATIVE_INFINITY;
@@ -505,11 +505,11 @@ public final class SloppyMath {
       float threshold = max - LOGTOLERANCE_F;
       float sumNegativeDifferences = 0.0f;
     for (int i = 0; i < lastIndex; i++) {
-      if (i != maxIndex && logV[i] > threshold) {
-        sumNegativeDifferences += Math.exp(logV[i] - max);
+      if ((float) i != maxIndex && logV[i] > threshold) {
+          sumNegativeDifferences = (float) ((double) sumNegativeDifferences + Math.exp((double) (logV[i] - max)));
       }
     }
-    return (float) Math.exp(max) * (1.0f + sumNegativeDifferences);
+    return (float) Math.exp((double) max) * (1.0f + sumNegativeDifferences);
   }
   /**
 	 * Computes n choose k in an efficient way. Works with k == 0 or k == n but
@@ -568,9 +568,9 @@ public final class SloppyMath {
 	 */
   public static float intPow(float b, int e) {
     if (e == 0) {
-      return 1;
+      return 1.0F;
     }
-    float result = 1;
+    float result = 1.0F;
       float currPow = b;
     do {
       if ((e & 1) == 1) result *= currPow;
@@ -592,16 +592,16 @@ public final class SloppyMath {
 	 */
   public static double intPow(double b, int e) {
     if (e == 0) {
-      return 1;
+      return 1.0;
     }
-    float result = 1;
+    float result = 1.0F;
       double currPow = b;
     do {
-      if ((e & 1) == 1) result *= currPow;
+      if ((e & 1) == 1) result = (float) ((double) result * currPow);
         currPow *= currPow;
       e >>= 1;
     } while (e > 0);
-    return result;
+    return (double) result;
   }
 
   /**
@@ -654,10 +654,10 @@ public final class SloppyMath {
               }
           } else if (r == n - 1) {
               if (k == m) {
-                  result = (n - m) / (double) n;
+                  result = (double) (n - m) / (double) n;
                   finished = true;
               } else if (k == m - 1) {
-                  result = m / (double) n;
+                  result = (double) m / (double) n;
                   finished = true;
               } else {
                   finished = true;
@@ -665,11 +665,11 @@ public final class SloppyMath {
           } else if (m == 1) {
               switch (k) {
                   case 0:
-                      result = (n - r) / (double) n;
+                      result = (double) (n - r) / (double) n;
                       finished = true;
                       break;
                   case 1:
-                      result = r / (double) n;
+                      result = (double) r / (double) n;
                       finished = true;
                       break;
                   default:
@@ -686,8 +686,8 @@ public final class SloppyMath {
           } else if (k == 0) {
               double ans = 1.0;
               for (int m0 = 0; m0 < m; m0++) {
-                  ans *= ((n - r) - m0);
-                  ans /= (n - m0);
+                  ans = ans * (double) ((n - r) - m0);
+                  ans = ans / (double) (n - m0);
               }
               result = ans;
               finished = true;
@@ -696,18 +696,18 @@ public final class SloppyMath {
               double ans = 1.0;
               for (int nr = n - r, n0 = n; nr > (n - r) - (m - k); nr--, n0--) {
 
-                  ans *= nr;
+                  ans = ans * (double) nr;
 
-                  ans /= n0;
+                  ans = ans / (double) n0;
               }
               for (int k0 = 0; k0 < k; k0++) {
-                  ans *= (m - k0);
+                  ans = ans * (double) (m - k0);
 
-                  ans /= ((n - (m - k0)) + 1);
+                  ans = ans / (double) ((n - (m - k0)) + 1);
 
-                  ans *= (r - k0);
+                  ans = ans * (double) (r - k0);
 
-                  ans /= (k0 + 1);
+                  ans = ans / (double) (k0 + 1);
 
               }
               result = ans;
@@ -735,13 +735,13 @@ public final class SloppyMath {
     for (int m = k; m <= n; m++) {
         double nChooseM = 1.0;
       for (int r = 1; r <= m; r++) {
-        nChooseM *= (n - r) + 1;
-        nChooseM /= r;
+          nChooseM = nChooseM * (double) (n - r) + 1;
+          nChooseM = nChooseM / (double) r;
       }
       
       
       
-      total += nChooseM * Math.pow(p, m) * Math.pow(1.0 - p, n - m);
+      total += nChooseM * Math.pow(p, (double) m) * Math.pow(1.0 - p, (double) (n - m));
     }
     return total;
   }
@@ -828,8 +828,8 @@ public final class SloppyMath {
       double total = 0.0;
     for (int i = 0; i < 2; i++) {
       for (int j = 0; j < 2; j++) {
-          double exp = (double) cgr[i] * cgc[j] / n;
-        total += (cg[i][j] - exp) * (cg[i][j] - exp) / exp;
+          double exp = (double) cgr[i] * (double) cgc[j] / (double) n;
+        total += ((double) cg[i][j] - exp) * ((double) cg[i][j] - exp) / exp;
       }
     }
     return total;
@@ -838,7 +838,7 @@ public final class SloppyMath {
   public static double exp(double logX) {
     
     if (Math.abs(logX) < 0.001)
-      return 1 + logX;
+      return 1.0 + logX;
     return Math.exp(logX);
   }
 
@@ -957,24 +957,24 @@ public final class SloppyMath {
 	{
     if (val < 0.0) return Double.NaN;
 	  if (val == 0.0) return Double.NEGATIVE_INFINITY;
-        double r = val - 1;
+        double r = val - 1.0;
 		if (Math.abs(r) < 0.3)
 		{
 
 
             double rSquared = r * r;
-			return r - rSquared / 2 + rSquared * r / 3;
+			return r - rSquared / 2.0 + rSquared * r / 3.0;
 		}
-		double x = (Double.doubleToLongBits(val) >> 32);
-		return (x - 1072632447) / 1512775;
+		double x = (double) (Double.doubleToLongBits(val) >> 32);
+		return (x - 1072632447.0) / 1512775.0;
 
 	}
 
 	public static double approxExp(double val)
 	{
 
-		if (Math.abs(val) < 0.1) return 1 + val;
-        long tmp = (long) (1512775 * val + (1072693248 - 60801));
+		if (Math.abs(val) < 0.1) return 1.0 + val;
+        long tmp = (long) (1512775.0 * val + (double) (1072693248 - 60801));
 		return Double.longBitsToDouble(tmp << 32);
 
 	}
@@ -982,7 +982,7 @@ public final class SloppyMath {
 	public static double approxPow(double a, double b)
 	{
         int tmp = (int) (Double.doubleToLongBits(a) >> 32);
-        int tmp2 = (int) (b * (tmp - 1072632447) + 1072632447);
+        int tmp2 = (int) (b * (double) (tmp - 1072632447) + 1072632447.0);
 		return Double.longBitsToDouble(((long) tmp2) << 32);
 	}
 	

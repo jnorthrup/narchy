@@ -36,9 +36,9 @@ class MotorJointDef extends JointDef {
 
     public MotorJointDef() {
         super(JointType.MOTOR);
-        angularOffset = 0;
-        maxForce = 1;
-        maxTorque = 1;
+        angularOffset = (float) 0;
+        maxForce = 1.0F;
+        maxTorque = 1.0F;
         correctionFactor = 0.3f;
     }
 

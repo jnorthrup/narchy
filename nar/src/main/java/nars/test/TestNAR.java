@@ -89,7 +89,7 @@ public class TestNAR {
     }
 
     public void run() {
-        run(-1);
+        run(-1L);
     }
 
     public void run(long finalCycle) {
@@ -100,7 +100,7 @@ public class TestNAR {
     private TestNARResult _run(long finalCycle) {
 
 
-        score = 0; //Float.NEGATIVE_INFINITY;
+        score = (float) 0; //Float.NEGATIVE_INFINITY;
 
         if (requireConditions)
             assertTrue(!succeedsIfAll.isEmpty() || !failsIfAny.isEmpty(), "no conditions tested");
@@ -108,20 +108,20 @@ public class TestNAR {
 
         String id = succeedsIfAll.toString();
 
-        if (finalCycle <= 0) {
+        if (finalCycle <= 0L) {
             //infer final cycle
             for (NARCondition oc : succeedsIfAll) {
                 long oce = oc.getFinalCycle();
-                if (oce >= 0 && oce > finalCycle) finalCycle = oce + 1;
+                if (oce >= 0L && oce > finalCycle) finalCycle = oce + 1L;
             }
             for (NARCondition oc : failsIfAny) {
                 long oce = oc.getFinalCycle();
-                if (oce >= 0 && oce > finalCycle) finalCycle = oce + 1;
+                if (oce >= 0L && oce > finalCycle) finalCycle = oce + 1L;
             }
         }
 
-        score = -finalCycle; //default score
-        score = Math.min(-1, finalCycle);
+        score = (float) -finalCycle; //default score
+        score = (float) Math.min(-1L, finalCycle);
 
         StringWriter trace;
         /**
@@ -157,7 +157,7 @@ public class TestNAR {
         long endTime = nar.time();
         int runtime = Math.max(0, (int) (endTime - startTime));
 
-        assert(runtime <= finalCycle);
+        assert((long) runtime <= finalCycle);
 
         boolean success =
                 succeedsIfAll.allSatisfy(NARCondition::isTrue)
@@ -165,7 +165,7 @@ public class TestNAR {
                 !failsIfAny.anySatisfy(NARCondition::isTrue);
 
         if (success)
-            score = -runtime;
+            score = (float) -runtime;
 
         if (reportStats) {
             logger.info("{}\n", id);
@@ -225,7 +225,7 @@ public class TestNAR {
     public TestNAR input(Task... s) {
         finished = false;
         for (Task x : s) {
-            if (x.pri() == 0 || x.isDeleted())
+            if (x.pri() == (float) 0 || x.isDeleted())
                 throw new RuntimeException("input task has zero or deleted priority");
             nar.input(x);
         }
@@ -305,7 +305,7 @@ public class TestNAR {
 
 
     public TestNAR dur(int newDur) {
-        nar.time.dur(newDur);
+        nar.time.dur((float) newDur);
         return this;
     }
 
@@ -353,20 +353,20 @@ public class TestNAR {
 
     private TestNAR mustEmit(ByteTopic<Task> c, long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time, boolean must) throws Narsese.NarseseException {
         long now = time();
-        cyclesAhead = Math.round(cyclesAhead * NAL.test.TIME_MULTIPLIER);
+        cyclesAhead = (long) Math.round((float) cyclesAhead * NAL.test.TIME_MULTIPLIER);
         return mustEmit(c, now, now + cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, time, must);
     }
 
     private TestNAR mustEmit(ByteTopic<Task> c, long cycleStart, long cycleEnd, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time, boolean mustOrMustNot) throws Narsese.NarseseException {
 
 
-        if (freqMin == -1)
+        if (freqMin == -1.0F)
             freqMin = freqMax;
 
         int temporalTolerance = 0;
         int tt = temporalTolerance;
-        cycleStart -= tt;
-        cycleEnd += tt;
+        cycleStart = cycleStart - (long) tt;
+        cycleEnd = cycleEnd + (long) tt;
 
         Term term =
                 $.$(sentenceTerm);
@@ -503,7 +503,7 @@ public class TestNAR {
         return mustNotOutput(cyclesAhead, term, punc, freqMin, freqMax, confMin, confMax, (s,e)->badTimes.test(s) || (s!=e && badTimes.test(e)));
     }
     public TestNAR mustNotOutput(long cyclesAhead, String term, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate timeFilter) {
-        if (freqMin < 0 || freqMin > 1f || freqMax < 0 || freqMax > 1f || confMin < 0 || confMin > 1f || confMax < 0 || confMax > 1f || freqMin != freqMin || freqMax != freqMax)
+        if (freqMin < (float) 0 || freqMin > 1f || freqMax < (float) 0 || freqMax > 1f || confMin < (float) 0 || confMin > 1f || confMax < (float) 0 || confMax > 1f || freqMin != freqMin || freqMax != freqMax)
             throw new UnsupportedOperationException();
 
         try {
@@ -536,7 +536,7 @@ public class TestNAR {
         return mustNotOutput(cyclesAhead, term, BELIEF, freq, freq, confidence, confidence, occTimeAbsolute);
     }
     public TestNAR mustNotBelieve(long cyclesAhead, String term, LongLongPredicate occTimeAbsolute) {
-        return mustNotOutput(cyclesAhead, term, BELIEF, 0, 1, 0, 1, occTimeAbsolute);
+        return mustNotOutput(cyclesAhead, term, BELIEF, (float) 0, 1.0F, (float) 0, 1.0F, occTimeAbsolute);
     }
 
 
@@ -610,7 +610,7 @@ public class TestNAR {
 
     public TestNAR askAt(int i, String term) {
         try {
-            nar.inputAt(i, term + '?');
+            nar.inputAt((long) i, term + '?');
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }

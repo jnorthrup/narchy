@@ -86,10 +86,10 @@ public class ApproximationDemo2D extends javax.swing.JFrame {
         double[][] ys = new double[width][height];
         for (int i = 0; i < ys.length; ++i) {
             for (int j = 0; j < ys[i].length; ++j) {
-                ys[i][j] = Math.random() * 10 - 5;
+                ys[i][j] = Math.random() * 10.0 - 5.0;
             }
         }
-        f = new RenderArrayFunction2D(1, 1, Color.blue, ys);
+        f = new RenderArrayFunction2D(1.0, 1.0, Color.blue, ys);
 
         functionRenderer2D1.setRenderFunction2D(f);
         functionRenderer2D2.setRenderFunction2D(renderParameterizedFunction);
@@ -139,11 +139,11 @@ public class ApproximationDemo2D extends javax.swing.JFrame {
         functionRenderer2D1.setLayout(functionRenderer2D1Layout);
         functionRenderer2D1Layout.setHorizontalGroup(
             functionRenderer2D1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 285, Short.MAX_VALUE)
+            .addGap(0, 285, (int) Short.MAX_VALUE)
         );
         functionRenderer2D1Layout.setVerticalGroup(
             functionRenderer2D1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 327, Short.MAX_VALUE)
+            .addGap(0, 327, (int) Short.MAX_VALUE)
         );
 
         jPanel8.add(functionRenderer2D1);
@@ -157,11 +157,11 @@ public class ApproximationDemo2D extends javax.swing.JFrame {
         functionRenderer2D2.setLayout(functionRenderer2D2Layout);
         functionRenderer2D2Layout.setHorizontalGroup(
             functionRenderer2D2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 285, Short.MAX_VALUE)
+            .addGap(0, 285, (int) Short.MAX_VALUE)
         );
         functionRenderer2D2Layout.setVerticalGroup(
             functionRenderer2D2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 327, Short.MAX_VALUE)
+            .addGap(0, 327, (int) Short.MAX_VALUE)
         );
 
         jPanel9.add(functionRenderer2D2);

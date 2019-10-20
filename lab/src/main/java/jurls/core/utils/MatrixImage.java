@@ -104,9 +104,9 @@ public class MatrixImage extends JComponent {
     }
 
     public int getColorRedBlue(double value) {
-        if (value == 0) {
+        if (value == (double) 0) {
             return 255 << 24;
-        } else if (value > 0) {
+        } else if (value > (double) 0) {
             int p = 255 - (int) (255.0 * (value - minValue) / (maxValue - minValue));
             return 255 << 24 | 255 << 16 | p << 8 | p;
         } else {
@@ -117,7 +117,7 @@ public class MatrixImage extends JComponent {
     }
 
     public static int getColor(double value) {
-        return val2col(value, -1, 1);
+        return val2col(value, -1.0, 1.0);
     }
 
     @FunctionalInterface
@@ -141,14 +141,14 @@ public class MatrixImage extends JComponent {
 
     public void draw(ParameterizedFunction f) {
         int numParam = f.numberOfParameters();
-        int cw = (int) Math.ceil(Math.sqrt(numParam));
+        int cw = (int) Math.ceil(Math.sqrt((double) numParam));
         int ch = numParam / cw;
         draw((x, y) -> {
             int i = y * ch + x;
             if (i < numParam) {
                 return f.getParameter(i);
             }
-            return 0;
+            return (double) 0;
         }, cw, ch, -1.0, 1.0);
 
     }
@@ -196,7 +196,7 @@ public class MatrixImage extends JComponent {
                         }
                     }
                 }
-                return 0;
+                return (double) 0;
             }
 
         }, (m.getDimensions(true, true)), entries, minValue, maxValue);

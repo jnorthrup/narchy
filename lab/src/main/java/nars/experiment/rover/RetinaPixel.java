@@ -44,7 +44,7 @@ public class RetinaPixel extends Collisions.RayResultCallback {
         x.transform(worldTarget);
 
 
-        r = g = b = 0;
+        r = g = b = (float) 0;
         a = distanceToAlpha(rangeMax);
         worldHit.set(worldTarget);
 
@@ -54,7 +54,7 @@ public class RetinaPixel extends Collisions.RayResultCallback {
 
     public void render(GL2 gl) {
 
-        if (a > 0) {
+        if (a > (float) 0) {
             gl.glColor4f(r, g, b, a);
             gl.glLineWidth(4f);
             Draw.line(gl, worldPosition, worldTarget);
@@ -76,7 +76,7 @@ public class RetinaPixel extends Collisions.RayResultCallback {
                 a = distanceToAlpha(dist);
             }
         }
-        return 0;
+        return (float) 0;
     }
 
     float distanceToAlpha(float dist) {

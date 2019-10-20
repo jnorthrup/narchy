@@ -79,7 +79,7 @@ public class MIDITaskifier {
                 if (v > 0.55f)
                     return $.t(v, nar.confDefault(BELIEF));
                 else if (b != null && b.freq() > 0.5f)
-                    return $.t(0, nar.confDefault(BELIEF));
+                    return $.t((float) 0, nar.confDefault(BELIEF));
                 else
                     return null;
             }, nar);
@@ -92,7 +92,7 @@ public class MIDITaskifier {
 
                 float v = volume[finalI];
 
-                if (v == 0) {
+                if (v == (float) 0) {
                     volume[finalI] = Float.NaN;
                 }
 
@@ -110,7 +110,7 @@ public class MIDITaskifier {
 
 
 
-            s.listen(c, (k) -> new SineWave((float) (100 + Math.random() * 1000)));
+            s.listen(c, (k) -> new SineWave((float) (100.0 + Math.random() * 1000.0)));
 
         }
 
@@ -201,8 +201,8 @@ public class MIDITaskifier {
                 int cmd = s.getCommand();
                 switch (cmd) {
                     case ShortMessage.NOTE_OFF:
-                        if ((volume[s.getData1()] == volume[s.getData1()]) && (volume[s.getData1()] > 0))
-                            volume[s.getData1()] = 0;
+                        if ((volume[s.getData1()] == volume[s.getData1()]) && (volume[s.getData1()] > (float) 0))
+                            volume[s.getData1()] = (float) 0;
 
 
 
@@ -210,7 +210,7 @@ public class MIDITaskifier {
                         
                         break;
                     case ShortMessage.NOTE_ON:
-                        volume[s.getData1()] = 0.6f + 0.4f * s.getData2() / 128f;
+                        volume[s.getData1()] = 0.6f + 0.4f * (float) s.getData2() / 128f;
 
 
 

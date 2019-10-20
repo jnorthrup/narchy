@@ -15,7 +15,7 @@ import static java.util.Arrays.fill;
  */
 public class Autoencoder {
 
-    static final float NORMALIZATION_EPSILON = (float) Math.sqrt(ScalarValue.EPSILON);
+    static final float NORMALIZATION_EPSILON = (float) Math.sqrt((double) ScalarValue.EPSILON);
 
 
     /**
@@ -72,14 +72,14 @@ public class Autoencoder {
     }
 
     public void randomize() {
-        float a = 1f / W[0].length;
+        float a = 1f / (float) W[0].length;
         for (float[] wi : W) {
             randomize(a, wi);
         }
-        fill(hbias, 0);
-        fill(L_hbias, 0);
-        fill(vbias, 0);
-        fill(L_vbias, 0);
+        fill(hbias, (float) 0);
+        fill(L_hbias, (float) 0);
+        fill(vbias, (float) 0);
+        fill(L_vbias, (float) 0);
     }
 
     protected void randomize(float a, float[] wi) {
@@ -90,7 +90,7 @@ public class Autoencoder {
 
     /** preprocessing filter, applied to each x[]'s value */
     public static float pre(float x) {
-        return !Float.isFinite(x) ? 0 : x;
+        return !Float.isFinite(x) ? (float) 0 : x;
     }
 
     public static float post(float x) {
@@ -106,13 +106,13 @@ public class Autoencoder {
         float[] xx = this.x;
         for (int i = 0; i < ins; i++) {
             float v = pre(x[i]);
-            if ((corruptionRate > 0) && (r.nextFloat() < corruptionRate)) {
-                v = 0;
+            if ((corruptionRate > (float) 0) && (r.nextFloat() < corruptionRate)) {
+                v = (float) 0;
             }
-            if (noiseLevel > 0) {
+            if (noiseLevel > (float) 0) {
                 v +=
 
-                        (r.nextFloat() - 0.5f) * 2 * noiseLevel;
+                        (r.nextFloat() - 0.5f) * 2.0F * noiseLevel;
 
 
             }
@@ -142,10 +142,10 @@ public class Autoencoder {
 
         //float max = Float.NEGATIVE_INFINITY, min = Float.POSITIVE_INFINITY;
         for (int i = 0; i < outs; i++) {
-            double yi = hbias[i];
+            double yi = (double) hbias[i];
             if (yi!=yi) {
-                hbias[i] = 0; //corrupted hbias
-                y[i] = 0;
+                hbias[i] = (float) 0; //corrupted hbias
+                y[i] = (float) 0;
                 continue;
             }
 
@@ -154,9 +154,9 @@ public class Autoencoder {
             for (int j = 0; j < ins; j++) {
                 float wij = wi[j];
                 if (wij!=wij)
-                    wi[j] = 0; //corrupted weight
+                    wi[j] = (float) 0; //corrupted weight
                 else
-                    yi += wij * pre(x[j]);
+                    yi = yi + (double) wij * pre(x[j]);
             }
 
             //TODO tanH as modular activation functions
@@ -172,16 +172,16 @@ public class Autoencoder {
 
 
         if (normalize) {
-            float lengthSq = 0;
+            float lengthSq = (float) 0;
             for (float v : y) lengthSq += Util.sqr(v);
 
             if (lengthSq > NORMALIZATION_EPSILON) {
-                float length = (float) Math.sqrt(lengthSq);
+                float length = (float) Math.sqrt((double) lengthSq);
                 for (int i = 0; i < outs; i++)
                     y[i] /= length;
             } else {
                 for (int i = 0; i < outs; i++)
-                    y[i] = 0;
+                    y[i] = (float) 0;
             }
 
 
@@ -223,10 +223,10 @@ public class Autoencoder {
         float[] z = this.z;
 
         for (int i = 0; i < ins; ) {
-            double zi = vbias[i];
+            double zi = (double) vbias[i];
 
             for (int j = 0; j < outs; ) {
-                zi += w[j][i] * y[j++];
+                zi = zi + (double) w[j][i] * y[j++];
             }
 
             zi = sigmoid ?
@@ -282,7 +282,7 @@ public class Autoencoder {
 
         int outs = y.length;
 
-        float error = 0;
+        float error = (float) 0;
 
         float[] z = this.z;
 
@@ -302,9 +302,9 @@ public class Autoencoder {
             L_hbias[i] = 0f;
             float[] wi = W[i];
 
-            double lbi = 0f;
+            double lbi = 0;
             for (int j = 0; j < ins; j++)
-                lbi += wi[j] * L_vbias[j];
+                lbi = lbi + (double) wi[j] * L_vbias[j];
 
             L_hbias[i] += (float)lbi;
             float yi = y[i];
@@ -327,7 +327,7 @@ public class Autoencoder {
     }
 
     public float[] recode(float[] x, boolean sigmoidIn, boolean sigmoidOut) {
-        return recode(x, 0, 0, sigmoidIn, false, sigmoidOut);
+        return recode(x, (float) 0, (float) 0, sigmoidIn, false, sigmoidOut);
     }
 
     public float[] recode(float[] x, float noise, float corruption, boolean sigmoidIn, boolean normalizeIn, boolean sigmoidOut) {
@@ -339,7 +339,7 @@ public class Autoencoder {
     }
 
     public float[] reconstruct(float[] x, float[] yTmp, boolean sigmoidEnc, boolean sigmoidDec) {
-        return decode(encode(x,yTmp, 0, 0, sigmoidEnc, false), sigmoidDec);
+        return decode(encode(x,yTmp, (float) 0, (float) 0, sigmoidEnc, false), sigmoidDec);
     }
 
     /**

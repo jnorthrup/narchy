@@ -43,6 +43,6 @@ public interface ImpurityCalculator {
             boolean eqP = v.equals(positive);
             ratio[eqP ? 1 : 0]++;
         });
-        return ratio[1] / ((double)(ratio[0] + ratio[1]));
+        return (double) ratio[1] / ((double)(ratio[0] + ratio[1]));
     }
 }

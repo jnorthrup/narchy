@@ -35,7 +35,7 @@ public class C4 {
 
         public NARPlayer(int whoAmI, ConnectFour.ConnectFourState game) {
             NAR n = NARchy.core(2);
-            ((RealTime) n.time).durFPS(10f);
+            ((RealTime) n.time).durFPS(10);
 
 //            n.beliefPriDefault.set(0.5f);
 //            n.goalPriDefault.set(0.75f);
@@ -116,7 +116,7 @@ public class C4 {
                         if (tried.contains(i))
                             continue;
                         Concept d = dropConcept(i, true);
-                        Truth gd = d.goals().truth(n.time(), n.time() + n.dur(), n);
+                        Truth gd = d.goals().truth(n.time(), (float) n.time() + n.dur(), n);
 
                         if (gd != null && gd.expectation() > max) {
                             which = i;
@@ -127,7 +127,7 @@ public class C4 {
                         tried.add(which);
 
                         play.tryDrop(n, which);
-                        Util.sleepMS(50);
+                        Util.sleepMS(50L);
                     } else {
                         break;
                     }
@@ -216,14 +216,14 @@ public class C4 {
                     } catch (Narsese.NarseseException e) {
                         e.printStackTrace();
                     }
-                    Util.sleepMS(100);
+                    Util.sleepMS(100L);
                 }
 
 
                 A.play.clear();
                 B.play.clear();
             } else {
-                Util.sleepMS(50);
+                Util.sleepMS(50L);
             }
         }
 

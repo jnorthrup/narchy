@@ -176,7 +176,7 @@ public class IRCNLP extends IRC {
         //NAR n = NARS.realtime(durFPS).get();
         //new MatrixDeriver(Derivers.nal(n, 0, 8), n);
         NAR n = new NARS.DefaultNAR(8, true)
-                .time(new RealTime.MS(false).durFPS(durFPS)).get();
+                .time(new RealTime.MS(false).durFPS((double) durFPS)).get();
 
         n.freqResolution.set(0.1f);
         n.confResolution.set(0.02f);
@@ -204,7 +204,7 @@ public class IRCNLP extends IRC {
 
         IRCNLP bot = new IRCNLP(n,
 
-                "nar" + Math.round(64 * 1024 * Math.random()),
+                "nar" + Math.round(64.0 * 1024.0 * Math.random()),
                 "irc.freenode.net",
                 "#nars"
 
@@ -295,7 +295,7 @@ public class IRCNLP extends IRC {
 
         }
 
-        return 1;
+        return 1.0F;
     }
 
 }

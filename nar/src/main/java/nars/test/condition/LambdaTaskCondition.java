@@ -18,6 +18,6 @@ public class LambdaTaskCondition extends TaskCondition {
 
     /** unknown */
     @Override protected float value(Task task, float worstDiffNeg) {
-        return 0;
+        return (float) 0;
     }
 }

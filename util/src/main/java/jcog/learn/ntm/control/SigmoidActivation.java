@@ -34,7 +34,7 @@ public class SigmoidActivation implements IDifferentiableFunction
 
     @Override
     public double derivative(double y) {
-        return y * (1 - y);
+        return y * (1.0 - y);
     }
 
     @Override

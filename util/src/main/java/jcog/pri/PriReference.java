@@ -3,7 +3,6 @@ package jcog.pri;
 import jcog.Util;
 import jcog.math.FloatSupplier;
 
-import java.util.Arrays;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -14,7 +13,7 @@ public interface PriReference<X> extends Prioritizable, Supplier<X>, FloatSuppli
 
     static float[] histogram(Iterable<? extends Prioritized> pp, float[] x) {
         int bins = x.length;
-        double[] total = {0};
+        double[] total = {(double) 0};
 
         for (Prioritized y : pp) {
             if (y == null)
@@ -27,9 +26,9 @@ public interface PriReference<X> extends Prioritizable, Supplier<X>, FloatSuppli
         }
 
         double t = total[0];
-        if (t > 0) {
+        if (t > (double) 0) {
             for (int i = 0; i < bins; i++)
-                x[i] /= t;
+                x[i] = (float) ((double) x[i] / t);
         }
         return x;
     }
@@ -48,7 +47,7 @@ public interface PriReference<X> extends Prioritizable, Supplier<X>, FloatSuppli
             for (double v : e) {
                 total += v;
             }
-            if (total > 0) {
+            if (total > (double) 0) {
                 for (int i = 0, eLength = e.length; i < eLength; i++) {
                     double f = e[i];
                     e[i] /= total;

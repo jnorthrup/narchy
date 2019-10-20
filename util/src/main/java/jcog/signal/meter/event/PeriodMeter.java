@@ -71,7 +71,7 @@ public class PeriodMeter extends FunctionMeter<Double> {
     }
 
     public void hitNano(long nanos) {
-        hit(nanos / 1.0E9);
+        hit((double) nanos / 1.0E9);
     }
     public void hitNano(double nanos) {
         hit(nanos / 1.0E9);
@@ -86,7 +86,7 @@ public class PeriodMeter extends FunctionMeter<Double> {
 
     @Override
     public Double getValue(Object key, int index) {
-        if (stat.getN() == 0) return null;
+        if (stat.getN() == 0L) return null;
         switch (index) {
             case 0:
                 return f(stat.getMin());
@@ -102,7 +102,7 @@ public class PeriodMeter extends FunctionMeter<Double> {
 
     protected double f(double period) {
         if (frequency) {
-            if (period == 0) return Double.POSITIVE_INFINITY;
+            if (period == (double) 0) return Double.POSITIVE_INFINITY;
             return 1.0 / period;
         }
         return period;

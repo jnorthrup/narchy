@@ -6,12 +6,12 @@ public interface SoundSource {
 
         @Override
         public float getX(float alpha) {
-            return 0;
+            return (float) 0;
         }
 
         @Override
         public float getY(float alpha) {
-            return 0;
+            return (float) 0;
         }
     };
 

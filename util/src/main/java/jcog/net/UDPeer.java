@@ -68,7 +68,7 @@ public class UDPeer extends UDP {
     private static final int UNKNOWN_ID = Integer.MIN_VALUE;
 
 
-    private static final byte DEFAULT_PING_TTL = 2;
+    private static final byte DEFAULT_PING_TTL = (byte) 2;
     private static final byte DEFAULT_ATTN_TTL = DEFAULT_PING_TTL;
 
     public final Bag<Integer, UDProfile> them;
@@ -123,7 +123,7 @@ public class UDPeer extends UDP {
         this.rng = new XoRoShiRo128PlusRandom(System.nanoTime());
 
         int me;
-        while ((me = (int) (UUID.randomUUID().getLeastSignificantBits() & 0xffff)) == UNKNOWN_ID) ;
+        while ((me = (int) (UUID.randomUUID().getLeastSignificantBits() & 0xffffL)) == UNKNOWN_ID) ;
         this.me = me;
 
         them = new HijackBag<>(3) {
@@ -153,7 +153,7 @@ public class UDPeer extends UDP {
             @Override
             public float pri(UDPeer.UDProfile key) {
                 long latency = key.latency();
-                return 1f / (1f + Util.sqr(latency / 100f));
+                return 1f / (1f + Util.sqr((float) latency / 100f));
             }
 
             @Override
@@ -217,7 +217,7 @@ public class UDPeer extends UDP {
      */
     private int tellSome(Msg o, float pri, boolean onlyIfNotSeen) {
 
-        if (!connected() || pri <= 0) {
+        if (!connected() || pri <= (float) 0) {
 
             return 0;
         } else {
@@ -227,7 +227,7 @@ public class UDPeer extends UDP {
 
             byte[] bytes = o.arrayCompactDirect();
 
-            int[] remain = {Math.round(them.size() * pri)};
+            int[] remain = {Math.round((float) them.size() * pri)};
             them.sample(rng, (Predicate<UDProfile>) ((to) -> {
                 if (o.id() != to.id /*&& (pri >= 1 || rng.nextFloat() <= pri)*/)
                     sendRaw(bytes, to.addr);
@@ -351,7 +351,7 @@ public class UDPeer extends UDP {
     }
 
     public String name() {
-        return BinTxt.toString(me);
+        return BinTxt.toString((long) me);
     }
 
     @Override
@@ -423,7 +423,7 @@ public class UDPeer extends UDP {
 
         accept(m);
 
-        if (from == null && m.cmd()!='p') {
+        if (from == null && (int) m.cmd() != (int) 'p') {
             //ping an unknown sender
             if (them.size() < them.capacity())
                 ping(p);
@@ -450,7 +450,7 @@ public class UDPeer extends UDP {
     private RecycledSummaryStatistics latencyAvg() {
         RecycledSummaryStatistics r = new RecycledSummaryStatistics();
         for (UDProfile x : them) {
-            r.accept(x.latency());
+            r.accept((double) x.latency());
         }
         return r;
     }
@@ -501,7 +501,7 @@ public class UDPeer extends UDP {
         long latencyMS = now - sent;
 
         //if (logger.isDebugEnabled())
-        logger.info("{} pong {} from {} ({})", name(), m, connected, Texts.timeStr(1E6 * latencyMS));
+        logger.info("{} pong {} from {} ({})", name(), m, connected, Texts.timeStr(1E6 * (double) latencyMS));
 
         if (connected != null) {
             connected.onPing(latencyMS);
@@ -672,8 +672,8 @@ public class UDPeer extends UDP {
         }
 
         private void init(byte cmd, byte ttl, int id, @Nullable InetSocketAddress origin) {
-            writeByte(ttl);
-            writeByte(cmd);
+            writeByte((int) ttl);
+            writeByte((int) cmd);
             writeInt(id);
 
             if (origin != null) {
@@ -715,16 +715,16 @@ public class UDPeer extends UDP {
         }
 
         public boolean live() {
-            int ttl = ttl();
+            int ttl = (int) ttl();
             if (ttl <= 0)
                 return false;
-            return (--bytes[TTL_BYTE]) >= 0;
+            return (int) (--bytes[TTL_BYTE]) >= 0;
         }
 
         @Override
         public String toString() {
 
-            return BinTxt.toString(id()) + ' ' +
+            return BinTxt.toString((long) id()) + ' ' +
                     ((char) cmd()) + '+' + ttl() +
                     '[' + dataLength() + ']';
 
@@ -837,7 +837,7 @@ public class UDPeer extends UDP {
         public int port() {
             int firstByte = (0x000000FF & ((int) bytes[PORT_BYTE]));
             int secondByte = (0x000000FF & ((int) bytes[PORT_BYTE + 1]));
-            return (char) (firstByte << 8 | secondByte);
+            return (int) (char) (firstByte << 8 | secondByte);
 
         }
 
@@ -870,7 +870,7 @@ public class UDPeer extends UDP {
          * ping time, in ms
          * TODO find a lock-free sort of statistics class
          */
-        final Histogram pingTime = new ConcurrentHistogram(1, 16 * 1024, 0);
+        final Histogram pingTime = new ConcurrentHistogram(1L, (long) (16 * 1024), 0);
         /**
          * caches the value of the mean pingtime
          */
@@ -900,7 +900,7 @@ public class UDPeer extends UDP {
         }
 
         void onPing(long timeMS) {
-            pingTime.recordValue(Math.max(1, timeMS));
+            pingTime.recordValue(Math.max(1L, timeMS));
             latency.set(Math.round(pingTime.getMean()));
         }
 
@@ -923,7 +923,7 @@ public class UDPeer extends UDP {
 
 
         public String name() {
-            return BinTxt.toString(id);
+            return BinTxt.toString((long) id);
         }
     }
 

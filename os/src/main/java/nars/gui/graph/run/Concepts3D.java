@@ -83,7 +83,7 @@ public class Concepts3D extends DynamicConceptSpace {
 //                inputPanel
 //        ).posWindow(0, 0.8f, 0.2f, 0.6f));
 
-        float fps = 16;
+        float fps = 16.0F;
         nar.startFPS(fps);
 
     }

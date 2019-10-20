@@ -21,7 +21,6 @@ import jcog.Util;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.*;
-import java.util.stream.IntStream;
 
 /**
  * Struct class represents both compound prolog term

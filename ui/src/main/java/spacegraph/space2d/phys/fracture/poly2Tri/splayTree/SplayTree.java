@@ -7,7 +7,7 @@ public class SplayTree {
 
     public SplayTree() {
         root = null;
-        size = 0;
+        size = 0L;
     }
 
     public SplayTree(SplayTree rhs) {
@@ -18,11 +18,11 @@ public class SplayTree {
 
     void makeEmpty() {
         root = null;
-        size = 0;
+        size = 0L;
     }
 
     private boolean isEmpty() {
-        return size == 0;
+        return size == 0L;
     }
 
     long size() {

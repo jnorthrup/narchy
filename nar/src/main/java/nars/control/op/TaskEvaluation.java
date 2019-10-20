@@ -105,7 +105,7 @@ final class TaskEvaluation extends Evaluation implements Predicate<Term> {
 	private static @Nullable Task perceiveBooleanAnswer(Task x, Term y, What w) {
 
         byte punc = x.punc();
-		if (punc == QUESTION || punc == QUEST) {
+		if ((int) punc == (int) QUESTION || (int) punc == (int) QUEST) {
 			//conver to an answering belief/goal now that the absolute truth has been determined
 			//TODO decide if this makes sense for QUEST
 
@@ -126,7 +126,7 @@ final class TaskEvaluation extends Evaluation implements Predicate<Term> {
 
 			return Task.clone(x,
 				x.term(),
-				$.t(y == True ? 1 : 0, w.nar.confDefault(answerPunc)),
+				$.t((float) (y == True ? 1 : 0), w.nar.confDefault(answerPunc)),
 				answerPunc,
 				x.start(), x.end());
 

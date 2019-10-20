@@ -27,11 +27,11 @@ public class TrackXY  {
     public volatile float cx;
     public volatile float cy;
 
-    public final FloatRange controlSpeed = new FloatRange(0.05f, 0, 0.25f);
+    public final FloatRange controlSpeed = new FloatRange(0.05f, (float) 0, 0.25f);
 
-    public final FloatRange targetSpeed = new FloatRange(0.01f, 0, 0.25f);
+    public final FloatRange targetSpeed = new FloatRange(0.01f, (float) 0, 0.25f);
 
-    public final FloatRange visionContrast = new FloatRange(4f, 0, 4f);
+    public final FloatRange visionContrast = new FloatRange(4f, (float) 0, 4f);
 
     public final MutableEnum<TrackXYMode> mode = new MutableEnum<>(TrackXYMode.CircleTarget);
 
@@ -45,13 +45,13 @@ public class TrackXY  {
     }
 
     public void randomize() {
-        this.tx = random().nextInt(grid.width());
+        this.tx = (float) random().nextInt(grid.width());
         //this.sx = random().nextInt(view.width());
         if (grid.height() > 1) {
-            this.ty = random().nextInt(grid.height());
+            this.ty = (float) random().nextInt(grid.height());
             //this.sy = random().nextInt(view.height());
         } else {
-            this.ty = this.cy = 0;
+            this.ty = this.cy = (float) 0;
         }
     }
 
@@ -63,10 +63,10 @@ public class TrackXY  {
         grid.set((x, y) -> {
 
 
-            float distOther = (float) (Util.sqr((tx - x)/((double)W)) + Util.sqr((ty - y)/((double)H)));
+            float distOther = (float) (Util.sqr((double) (tx - (float) x) /((double)W)) + Util.sqr((double) (ty - (float) y) /((double)H)));
             //return distOther > visionContrast.floatValue() ? 0 : 1;
             //float distSelf = (float) Math.sqrt(Util.sqr(sx - x) + Util.sqr(sy - y));
-            return unitize(1 - distOther * Math.max(W,H) * visionContrast.floatValue());
+            return unitize(1.0F - distOther * (float) Math.max(W, H) * visionContrast.floatValue());
 //                return Util.unitize(
 //                        Math.max(1 - distOther * visionContrast,
 //                                1 - distSelf * visionContrast
@@ -77,17 +77,17 @@ public class TrackXY  {
     }
 
     public float distMax() {
-        return (float) Math.sqrt(Util.sqr(W-1f) + Util.sqr(H-1f));
+        return (float) Math.sqrt((double) (Util.sqr((float) W - 1f) + Util.sqr((float) H - 1f)));
     }
 
     /** linear distance from current to target */
     public float dist() {
-        return (float) Math.sqrt(Util.sqr(Math.max(0.5f,Math.abs(tx - cx))-0.5f) + Util.sqr(Math.max(0.5f,Math.abs(ty - cy))-0.5f));
+        return (float) Math.sqrt((double) (Util.sqr(Math.max(0.5f, Math.abs(tx - cx)) - 0.5f) + Util.sqr(Math.max(0.5f, Math.abs(ty - cy)) - 0.5f)));
     }
 
     public void control(float dcx, float dcy) {
-        cx = Util.clamp(cx + dcx, 0, W-1);
-        cy = Util.clamp(cy + dcy, 0, H-1);
+        cx = Util.clamp(cx + dcx, (float) 0, (float) (W - 1));
+        cy = Util.clamp(cy + dcy, (float) 0, (float) (H - 1));
     }
 
 
@@ -99,8 +99,8 @@ public class TrackXY  {
             @Override
             public void accept(TrackXY t) {
                 x += t.targetSpeed.floatValue();
-                t.tx = t.W / 2f;
-                t.ty = t.H / 2f;
+                t.tx = (float) t.W / 2f;
+                t.ty = (float) t.H / 2f;
             }
         },
 
@@ -109,11 +109,11 @@ public class TrackXY  {
             public void accept(TrackXY t) {
                 float targetSpeed = t.targetSpeed.floatValue();
                 float ty;
-                float tx = Util.clamp(t.tx + 2 * targetSpeed * (TrackXY.random().nextFloat() - 0.5f), 0, t.W - 1);
+                float tx = Util.clamp(t.tx + 2.0F * targetSpeed * (TrackXY.random().nextFloat() - 0.5f), (float) 0, (float) (t.W - 1));
                 if (t.H > 1) {
-                    ty = Util.clamp(t.ty + 2 * targetSpeed * (TrackXY.random().nextFloat() - 0.5f), 0, t.H - 1);
+                    ty = Util.clamp(t.ty + 2.0F * targetSpeed * (TrackXY.random().nextFloat() - 0.5f), (float) 0, (float) (t.H - 1));
                 } else {
-                    ty = 0;
+                    ty = (float) 0;
                 }
 
                 t.tx = tx;
@@ -128,12 +128,12 @@ public class TrackXY  {
             public void accept(TrackXY t) {
                 theta += t.targetSpeed.floatValue();
 
-                t.tx = (((float) Math.cos(theta) * 0.5f) + 0.5f) * (t.W - 1);
+                t.tx = (((float) Math.cos((double) theta) * 0.5f) + 0.5f) * (float) (t.W - 1);
 
                 if (t.H > 1)
-                    t.ty = (((float) Math.sin(theta) * 0.5f) + 0.5f) * (t.H - 1);
+                    t.ty = (((float) Math.sin((double) theta) * 0.5f) + 0.5f) * (float) (t.H - 1);
                 else
-                    t.ty = 0;
+                    t.ty = (float) 0;
 
             }
         }

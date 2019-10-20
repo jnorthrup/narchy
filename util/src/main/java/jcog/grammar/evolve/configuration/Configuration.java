@@ -57,7 +57,7 @@ public class Configuration {
         this.evolutionParameters.setPopulationSize(500);
         
         
-        this.initialSeed = 0;
+        this.initialSeed = 0L;
         this.jobId = 0;
         this.jobs = 4;
         this.objective = new PrecisionCharmaskLengthObjective() ;

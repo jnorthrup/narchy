@@ -110,7 +110,7 @@ public enum Arithmeticize {
             Random random = w.random();
             /** rate at which input is pre-evaluated.  TODO make FloatRange etc */
             float preEvalRate = 0.5f;
-            return Arithmeticize.apply(x, null, volMax, random.nextFloat() < (preEvalRate / x.volume()), random);
+            return Arithmeticize.apply(x, null, volMax, random.nextFloat() < (preEvalRate / (float) x.volume()), random);
         }
     }
 
@@ -227,7 +227,7 @@ public enum Arithmeticize {
 
 
                 } else{
-                    if (a != 0 && Math.abs(a) != 1 && b != 0 && Math.abs(b) != 1 && Util.equals(b / a, (float) b / a)) {
+                    if (a != 0 && Math.abs(a) != 1 && b != 0 && Math.abs(b) != 1 && Util.equals((float) (b / a), (float) b / (float) a)) {
 
 
                         maybe(eqMods, a).add(pair(
@@ -287,7 +287,7 @@ public enum Arithmeticize {
         private final Pair<Term, UnaryOperator<Term>>[] mods;
 
         BaseEqualExpressionArithmeticOp(int base, Pair<Term, UnaryOperator<Term>>[] mods) {
-            super(mods.length);
+            super((float) mods.length);
             this.base = base;
             this.mods = mods;
         }
@@ -334,7 +334,7 @@ public enum Arithmeticize {
         private final int b;
 
         CompareOp(int smaller, int bigger) {
-            super(1);
+            super(1.0F);
             //assert (a < b);
             this.a = smaller;
             this.b = bigger;

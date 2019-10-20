@@ -16,7 +16,7 @@ public final class CompoundNormalization extends VariableNormalization {
     private static final int MIN_IMAGE_VOL = 4;
 
     public CompoundNormalization(Term x, byte varOffset) {
-        super(x.vars() /* estimate */, varOffset);
+        super(x.vars() /* estimate */, (int) varOffset);
         this.root = x;
         this.imgPossible = x.volume() >= MIN_IMAGE_VOL && x.hasAll(Image.ImageBits);
     }
@@ -30,7 +30,7 @@ public final class CompoundNormalization extends VariableNormalization {
     public Term applyPosCompound(Compound x) {
         /* if x is not the root target (ie. a subterm) */
         boolean hasImg = imgPossible && x.hasAll(Image.ImageBits);
-        if (hasImg && x!=root && x.opID()==INH.id) {
+        if (hasImg && x!=root && x.opID()== (int) INH.id) {
             Compound y = (Compound) Image._imgNormalize(x);
             if (x!=y) {
                 x = y;

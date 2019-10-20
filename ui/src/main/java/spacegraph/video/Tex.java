@@ -55,7 +55,7 @@ public class Tex {
     }
 
     public final void paint(GL2 gl, RectFloat bounds, float alpha) {
-        paint(gl, bounds, -1, alpha);
+        paint(gl, bounds, -1.0F, alpha);
     }
 
     void paint(GL2 gl, RectFloat bounds, float repeatScale, float alpha) {
@@ -63,7 +63,7 @@ public class Tex {
         if (t != null)
             Draw.rectTex(gl, t,
                     bounds.x, bounds.y, bounds.w, bounds.h,
-                    0, repeatScale,
+                    (float) 0, repeatScale,
                     alpha, mipmap,
                     inverted);
     }

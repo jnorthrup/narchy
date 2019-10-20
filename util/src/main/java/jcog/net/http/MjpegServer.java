@@ -57,7 +57,7 @@ public class MjpegServer /*extends NanoHTTPD*/ {
         String feed = null;
 
 
-        int pos0 = uri.lastIndexOf('/');
+        int pos0 = uri.lastIndexOf((int) '/');
         if (pos0 != -1) {
             feed = uri.substring(pos0 + 1);
         }

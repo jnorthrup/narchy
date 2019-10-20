@@ -323,7 +323,7 @@ public final class HumanReadableDuration implements Comparable<HumanReadableDura
     @JsonValue
     public String toString() {
         String units = unit.toString().toLowerCase(Locale.ENGLISH);
-        if (count == 1) {
+        if (count == 1L) {
             units = units.substring(0, units.length() - 1);
         }
         return Long.toString(count) + ' ' + units;

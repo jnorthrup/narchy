@@ -96,13 +96,13 @@ public class GameWeapon {
 
             int mod;
             if (ent.enemy != null) {
-                float[] v = { 0, 0, 0 };
+                float[] v = {(float) 0, (float) 0, (float) 0};
 
                 Math3D.VectorAdd(ent.enemy.mins, ent.enemy.maxs, v);
                 Math3D.VectorMA(ent.enemy.s.origin, 0.5f, v, v);
                 Math3D.VectorSubtract(ent.s.origin, v, v);
-                float points = ent.dmg - 0.5f * Math3D.VectorLength(v);
-                float[] dir = {0, 0, 0};
+                float points = (float) ent.dmg - 0.5f * Math3D.VectorLength(v);
+                float[] dir = {(float) 0, (float) 0, (float) 0};
                 Math3D.VectorSubtract(ent.enemy.s.origin, ent.s.origin, dir);
                 if ((ent.spawnflags & 1) != 0)
                     mod = Defines.MOD_HANDGRENADE;
@@ -119,10 +119,10 @@ public class GameWeapon {
                 mod = Defines.MOD_HG_SPLASH;
             else
                 mod = Defines.MOD_G_SPLASH;
-            GameCombat.T_RadiusDamage(ent, ent.owner, ent.dmg, ent.enemy,
+            GameCombat.T_RadiusDamage(ent, ent.owner, (float) ent.dmg, ent.enemy,
                     ent.dmg_radius, mod);
 
-            float[] origin = {0, 0, 0};
+            float[] origin = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorMA(ent.s.origin, -0.02f, ent.velocity, origin);
             game_import_t.WriteByte(Defines.svc_temp_entity);
             if (ent.waterlevel != 0) {
@@ -161,16 +161,16 @@ public class GameWeapon {
                 if ((ent.spawnflags & 1) != 0) {
                     if (Lib.random() > 0.5f)
                         game_import_t.sound(ent, Defines.CHAN_VOICE, game_import_t
-                                .soundindex("weapons/hgrenb1a.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                                .soundindex("weapons/hgrenb1a.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
                     else
                         game_import_t.sound(ent, Defines.CHAN_VOICE, game_import_t
-                                .soundindex("weapons/hgrenb2a.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                                .soundindex("weapons/hgrenb2a.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
                 } else {
                     game_import_t.sound(ent, Defines.CHAN_VOICE, game_import_t
-                            .soundindex("weapons/grenlb1b.wav"), 1,
-                            Defines.ATTN_NORM, 0);
+                            .soundindex("weapons/grenlb1b.wav"), 1.0F,
+                            (float) Defines.ATTN_NORM, (float) 0);
                 }
                 return;
             }
@@ -205,7 +205,7 @@ public class GameWeapon {
                         Defines.PNOISE_IMPACT);
 
 
-            float[] origin = {0, 0, 0};
+            float[] origin = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorMA(ent.s.origin, -0.02f, ent.velocity, origin);
     
             if (other.takedamage != 0) {
@@ -214,21 +214,21 @@ public class GameWeapon {
                         Defines.MOD_ROCKET);
             } else {
                 
-                if (GameBase.deathmatch.value == 0 && 0 == GameBase.coop.value) {
+                if (GameBase.deathmatch.value == (float) 0 && (float) 0 == GameBase.coop.value) {
                     if ((surf != null)
                             && 0 == (surf.flags & (Defines.SURF_WARP
                                     | Defines.SURF_TRANS33
                                     | Defines.SURF_TRANS66 | Defines.SURF_FLOWING))) {
-                        int n = Lib.rand() % 5;
+                        int n = (int) Lib.rand() % 5;
                         while (n-- > 0)
                             GameMisc.ThrowDebris(ent,
-                                    "models/objects/debris2/tris.md2", 2,
+                                    "models/objects/debris2/tris.md2", 2.0F,
                                     ent.s.origin);
                     }
                 }
             }
     
-            GameCombat.T_RadiusDamage(ent, ent.owner, ent.radius_dmg, other,
+            GameCombat.T_RadiusDamage(ent, ent.owner, (float) ent.radius_dmg, other,
                     ent.dmg_radius, Defines.MOD_R_SPLASH);
     
             game_import_t.WriteByte(Defines.svc_temp_entity);
@@ -257,7 +257,7 @@ public class GameWeapon {
 
                 edict_t ent = null;
                 EdictIterator edit = null;
-                float[] v = {0, 0, 0};
+                float[] v = {(float) 0, (float) 0, (float) 0};
                 while ((edit = GameBase.findradius(edit, self.s.origin,
                         self.dmg_radius)) != null) {
                     ent = edit.o;
@@ -274,8 +274,8 @@ public class GameWeapon {
                     Math3D.VectorMA(ent.s.origin, 0.5f, v, v);
                     Math3D.VectorSubtract(self.s.origin, v, v);
                     float dist = Math3D.VectorLength(v);
-                    float points = (float) (self.radius_dmg * (1.0 - Math.sqrt(dist
-                            / self.dmg_radius)));
+                    float points = (float) ((double) self.radius_dmg * (1.0 - Math.sqrt((double) (dist
+                            / self.dmg_radius))));
                     if (ent == self.owner)
                         points *= 0.5f;
     
@@ -321,15 +321,15 @@ public class GameWeapon {
                 GameCombat.T_Damage(other, self, self.owner, self.velocity,
                         self.s.origin, plane.normal, 200, 0, 0,
                         Defines.MOD_BFG_BLAST);
-            GameCombat.T_RadiusDamage(self, self.owner, 200, other, 100,
+            GameCombat.T_RadiusDamage(self, self.owner, 200.0F, other, 100.0F,
                     Defines.MOD_BFG_BLAST);
     
             game_import_t.sound(self, Defines.CHAN_VOICE, game_import_t
-                    .soundindex("weapons/bfg__x1b.wav"), 1, Defines.ATTN_NORM,
-                    0);
+                    .soundindex("weapons/bfg__x1b.wav"), 1.0F, (float) Defines.ATTN_NORM,
+                    (float) 0);
             self.solid = Defines.SOLID_NOT;
             self.touch = null;
-            Math3D.VectorMA(self.s.origin, -1 * Defines.FRAMETIME,
+            Math3D.VectorMA(self.s.origin, -1.0F * Defines.FRAMETIME,
                     self.velocity, self.s.origin);
             Math3D.VectorClear(self.velocity);
             self.s.modelindex = game_import_t.modelindex("sprites/s_bfg3.sp2");
@@ -354,17 +354,17 @@ public class GameWeapon {
         public boolean think(edict_t self) {
             int dmg;
 
-            if (GameBase.deathmatch.value != 0)
+            if (GameBase.deathmatch.value != (float) 0)
                 dmg = 5;
             else
                 dmg = 10;
     
             EdictIterator edit = null;
-            float[] end = {0, 0, 0};
-            float[] start = {0, 0, 0};
-            float[] dir = {0, 0, 0};
-            float[] point = {0, 0, 0};
-            while ((edit = GameBase.findradius(edit, self.s.origin, 256)) != null) {
+            float[] end = {(float) 0, (float) 0, (float) 0};
+            float[] start = {(float) 0, (float) 0, (float) 0};
+            float[] dir = {(float) 0, (float) 0, (float) 0};
+            float[] point = {(float) 0, (float) 0, (float) 0};
+            while ((edit = GameBase.findradius(edit, self.s.origin, 256.0F)) != null) {
                 edict_t ent = edit.o;
 
                 if (ent == self)
@@ -388,7 +388,7 @@ public class GameWeapon {
 
                 edict_t ignore = self;
                 Math3D.VectorCopy(self.s.origin, start);
-                Math3D.VectorMA(start, 2048, dir, end);
+                Math3D.VectorMA(start, 2048.0F, dir, end);
                 trace_t tr;
                 while (true) {
                     tr = game_import_t.trace(start, null, null, end, ignore,
@@ -448,19 +448,19 @@ public class GameWeapon {
     static void check_dodge(edict_t self, float[] start, float[] dir, int speed) {
 
 
-        if (GameBase.skill.value == 0) {
-            if (Lib.random() > 0.25)
+        if (GameBase.skill.value == (float) 0) {
+            if ((double) Lib.random() > 0.25)
                 return;
         }
-        float[] end = {0, 0, 0};
-        Math3D.VectorMA(start, 8192, dir, end);
+        float[] end = {(float) 0, (float) 0, (float) 0};
+        Math3D.VectorMA(start, 8192.0F, dir, end);
         trace_t tr = game_import_t.trace(start, null, null, end, self, Defines.MASK_SHOT);
         if ((tr.ent != null) && (tr.ent.svflags & Defines.SVF_MONSTER) != 0
                 && (tr.ent.health > 0) && (null != tr.ent.monsterinfo.dodge)
                 && GameUtil.infront(tr.ent, self)) {
-            float[] v = {0, 0, 0};
+            float[] v = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorSubtract(tr.endpos, start, v);
-            float eta = (Math3D.VectorLength(v) - tr.ent.maxs[0]) / speed;
+            float eta = (Math3D.VectorLength(v) - tr.ent.maxs[0]) / (float) speed;
             tr.ent.monsterinfo.dodge.dodge(tr.ent, self, eta);
         }
     }
@@ -474,7 +474,7 @@ public class GameWeapon {
      */
     public static boolean fire_hit(edict_t self, float[] aim, int damage,
             int kick) {
-        float[] dir = { 0, 0, 0 };
+        float[] dir = {(float) 0, (float) 0, (float) 0};
     
         
         Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, dir);
@@ -489,18 +489,18 @@ public class GameWeapon {
         } else {
             
             
-            if (aim[1] < 0)
+            if (aim[1] < (float) 0)
                 aim[1] = self.enemy.mins[0];
             else
                 aim[1] = self.enemy.maxs[0];
         }
 
-        float[] point = {0, 0, 0};
+        float[] point = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorMA(self.s.origin, range, dir, point);
 
         trace_t tr = game_import_t.trace(self.s.origin, null, null, point, self,
                 Defines.MASK_SHOT);
-        if (tr.fraction < 1) {
+        if (tr.fraction < 1.0F) {
             if (0 == tr.ent.takedamage)
                 return false;
             
@@ -510,9 +510,9 @@ public class GameWeapon {
                 tr.ent = self.enemy;
         }
 
-        float[] up = {0, 0, 0};
-        float[] right = {0, 0, 0};
-        float[] forward = {0, 0, 0};
+        float[] up = {(float) 0, (float) 0, (float) 0};
+        float[] right = {(float) 0, (float) 0, (float) 0};
+        float[] forward = {(float) 0, (float) 0, (float) 0};
         Math3D.AngleVectors(self.s.angles, forward, right, up);
         Math3D.VectorMA(self.s.origin, range, forward, point);
         Math3D.VectorMA(point, aim[1], right, point);
@@ -528,12 +528,12 @@ public class GameWeapon {
             return false;
 
 
-        float[] v = {0, 0, 0};
+        float[] v = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorMA(self.enemy.absmin, 0.5f, self.enemy.size, v);
         Math3D.VectorSubtract(v, point, v);
         Math3D.VectorNormalize(v);
-        Math3D.VectorMA(self.enemy.velocity, kick, v, self.enemy.velocity);
-        if (self.enemy.velocity[2] > 0)
+        Math3D.VectorMA(self.enemy.velocity, (float) kick, v, self.enemy.velocity);
+        if (self.enemy.velocity[2] > (float) 0)
             self.enemy.groundentity = null;
         return true;
     }
@@ -548,23 +548,23 @@ public class GameWeapon {
     public static void fire_lead(edict_t self, float[] start, float[] aimdir,
             int damage, int kick, int te_impact, int hspread, int vspread,
             int mod) {
-        float[] dir = { 0, 0, 0 };
-        float[] water_start = { 0, 0, 0 };
+        float[] dir = {(float) 0, (float) 0, (float) 0};
+        float[] water_start = {(float) 0, (float) 0, (float) 0};
         boolean water = false;
 
         trace_t tr = game_import_t.trace(self.s.origin, null, null, start, self,
                 Defines.MASK_SHOT);
-        if (!(tr.fraction < 1.0)) {
+        if (!((double) tr.fraction < 1.0)) {
             Math3D.vectoangles(aimdir, dir);
-            float[] up = {0, 0, 0};
-            float[] right = {0, 0, 0};
-            float[] forward = {0, 0, 0};
+            float[] up = {(float) 0, (float) 0, (float) 0};
+            float[] right = {(float) 0, (float) 0, (float) 0};
+            float[] forward = {(float) 0, (float) 0, (float) 0};
             Math3D.AngleVectors(dir, forward, right, up);
 
-            float r = Lib.crandom() * hspread;
-            float u = Lib.crandom() * vspread;
-            float[] end = {0, 0, 0};
-            Math3D.VectorMA(start, 8192, forward, end);
+            float r = Lib.crandom() * (float) hspread;
+            float u = Lib.crandom() * (float) vspread;
+            float[] end = {(float) 0, (float) 0, (float) 0};
+            Math3D.VectorMA(start, 8192.0F, forward, end);
             Math3D.VectorMA(end, r, right, end);
             Math3D.VectorMA(end, u, up, end);
 
@@ -611,9 +611,9 @@ public class GameWeapon {
                     Math3D.VectorSubtract(end, start, dir);
                     Math3D.vectoangles(dir, dir);
                     Math3D.AngleVectors(dir, forward, right, up);
-                    r = Lib.crandom() * hspread * 2;
-                    u = Lib.crandom() * vspread * 2;
-                    Math3D.VectorMA(water_start, 8192, forward, end);
+                    r = Lib.crandom() * (float) hspread * 2.0F;
+                    u = Lib.crandom() * (float) vspread * 2.0F;
+                    Math3D.VectorMA(water_start, 8192.0F, forward, end);
                     Math3D.VectorMA(end, r, right, end);
                     Math3D.VectorMA(end, u, up, end);
                 }
@@ -626,7 +626,7 @@ public class GameWeapon {
     
         
         if (!((tr.surface != null) && 0 != (tr.surface.flags & Defines.SURF_SKY))) {
-            if (tr.fraction < 1.0) {
+            if ((double) tr.fraction < 1.0) {
                 if (tr.ent.takedamage != 0) {
                     GameCombat.T_Damage(tr.ent, self, self, aimdir, tr.endpos,
                             tr.plane.normal, damage, kick,
@@ -653,8 +653,8 @@ public class GameWeapon {
 
             Math3D.VectorSubtract(tr.endpos, water_start, dir);
             Math3D.VectorNormalize(dir);
-            float[] pos = {0, 0, 0};
-            Math3D.VectorMA(tr.endpos, -2, dir, pos);
+            float[] pos = {(float) 0, (float) 0, (float) 0};
+            Math3D.VectorMA(tr.endpos, -2.0F, dir, pos);
             if ((GameBase.gi.pointcontents.pointcontents(pos) & Defines.MASK_WATER) != 0)
                 Math3D.VectorCopy(pos, tr.endpos);
             else
@@ -724,7 +724,7 @@ public class GameWeapon {
         Math3D.VectorCopy(start, bolt.s.origin);
         Math3D.VectorCopy(start, bolt.s.old_origin);
         Math3D.vectoangles(dir, bolt.s.angles);
-        Math3D.VectorScale(dir, speed, bolt.velocity);
+        Math3D.VectorScale(dir, (float) speed, bolt.velocity);
         bolt.movetype = Defines.MOVETYPE_FLYMISSILE;
         bolt.clipmask = Defines.MASK_SHOT;
         bolt.solid = Defines.SOLID_BBOX;
@@ -736,7 +736,7 @@ public class GameWeapon {
         bolt.s.sound = game_import_t.soundindex("misc/lasfly.wav");
         bolt.owner = self;
         bolt.touch = blaster_touch;
-        bolt.nextthink = GameBase.level.time + 2;
+        bolt.nextthink = GameBase.level.time + 2.0F;
         bolt.think = GameUtil.G_FreeEdictA;
         bolt.dmg = damage;
         bolt.classname = "bolt";
@@ -749,8 +749,8 @@ public class GameWeapon {
 
         trace_t tr = game_import_t.trace(self.s.origin, null, null, bolt.s.origin, bolt,
                 Defines.MASK_SHOT);
-        if (tr.fraction < 1.0) {
-            Math3D.VectorMA(bolt.s.origin, -10, dir, bolt.s.origin);
+        if ((double) tr.fraction < 1.0) {
+            Math3D.VectorMA(bolt.s.origin, -10.0F, dir, bolt.s.origin);
             bolt.touch.touch(bolt, tr.ent, GameBase.dummyplane, null);
         }
     }
@@ -758,22 +758,22 @@ public class GameWeapon {
     public static void fire_grenade(edict_t self, float[] start,
             float[] aimdir, int damage, int speed, float timer,
             float damage_radius) {
-        float[] dir = { 0, 0, 0 };
+        float[] dir = {(float) 0, (float) 0, (float) 0};
 
         Math3D.vectoangles(aimdir, dir);
-        float[] up = {0, 0, 0};
-        float[] right = {0, 0, 0};
-        float[] forward = {0, 0, 0};
+        float[] up = {(float) 0, (float) 0, (float) 0};
+        float[] right = {(float) 0, (float) 0, (float) 0};
+        float[] forward = {(float) 0, (float) 0, (float) 0};
         Math3D.AngleVectors(dir, forward, right, up);
 
         edict_t grenade = GameUtil.G_Spawn();
         Math3D.VectorCopy(start, grenade.s.origin);
-        Math3D.VectorScale(aimdir, speed, grenade.velocity);
+        Math3D.VectorScale(aimdir, (float) speed, grenade.velocity);
         Math3D.VectorMA(grenade.velocity, 200f + Lib.crandom() * 10.0f, up,
                 grenade.velocity);
         Math3D.VectorMA(grenade.velocity, Lib.crandom() * 10.0f, right,
                 grenade.velocity);
-        Math3D.VectorSet(grenade.avelocity, 300, 300, 300);
+        Math3D.VectorSet(grenade.avelocity, 300.0F, 300.0F, 300.0F);
         grenade.movetype = Defines.MOVETYPE_BOUNCE;
         grenade.clipmask = Defines.MASK_SHOT;
         grenade.solid = Defines.SOLID_BBOX;
@@ -796,17 +796,17 @@ public class GameWeapon {
     public static void fire_grenade2(edict_t self, float[] start,
             float[] aimdir, int damage, int speed, float timer,
             float damage_radius, boolean held) {
-        float[] dir = { 0, 0, 0 };
+        float[] dir = {(float) 0, (float) 0, (float) 0};
 
         Math3D.vectoangles(aimdir, dir);
-        float[] up = {0, 0, 0};
-        float[] right = {0, 0, 0};
-        float[] forward = {0, 0, 0};
+        float[] up = {(float) 0, (float) 0, (float) 0};
+        float[] right = {(float) 0, (float) 0, (float) 0};
+        float[] forward = {(float) 0, (float) 0, (float) 0};
         Math3D.AngleVectors(dir, forward, right, up);
 
         edict_t grenade = GameUtil.G_Spawn();
         Math3D.VectorCopy(start, grenade.s.origin);
-        Math3D.VectorScale(aimdir, speed, grenade.velocity);
+        Math3D.VectorScale(aimdir, (float) speed, grenade.velocity);
         Math3D.VectorMA(grenade.velocity, 200f + Lib.crandom() * 10.0f, up,
                 grenade.velocity);
         Math3D.VectorMA(grenade.velocity, Lib.crandom() * 10.0f, right,
@@ -833,12 +833,12 @@ public class GameWeapon {
             grenade.spawnflags = 1;
         grenade.s.sound = game_import_t.soundindex("weapons/hgrenc1b.wav");
     
-        if (timer <= 0.0)
+        if ((double) timer <= 0.0)
             Grenade_Explode.think(grenade);
         else {
             game_import_t.sound(self, Defines.CHAN_WEAPON, game_import_t
-                    .soundindex("weapons/hgrent1a.wav"), 1, Defines.ATTN_NORM,
-                    0);
+                    .soundindex("weapons/hgrent1a.wav"), 1.0F, (float) Defines.ATTN_NORM,
+                    (float) 0);
             game_import_t.linkentity(grenade);
         }
     }
@@ -850,7 +850,7 @@ public class GameWeapon {
         Math3D.VectorCopy(start, rocket.s.origin);
         Math3D.VectorCopy(dir, rocket.movedir);
         Math3D.vectoangles(dir, rocket.s.angles);
-        Math3D.VectorScale(dir, speed, rocket.velocity);
+        Math3D.VectorScale(dir, (float) speed, rocket.velocity);
         rocket.movetype = Defines.MOVETYPE_FLYMISSILE;
         rocket.clipmask = Defines.MASK_SHOT;
         rocket.solid = Defines.SOLID_BBOX;
@@ -861,7 +861,7 @@ public class GameWeapon {
                 .modelindex("models/objects/rocket/tris.md2");
         rocket.owner = self;
         rocket.touch = rocket_touch;
-        rocket.nextthink = GameBase.level.time + 8000f / speed;
+        rocket.nextthink = GameBase.level.time + 8000f / (float) speed;
         rocket.think = GameUtil.G_FreeEdictA;
         rocket.dmg = damage;
         rocket.radius_dmg = radius_damage;
@@ -882,10 +882,10 @@ public class GameWeapon {
      */
     public static void fire_rail(edict_t self, float[] start, float[] aimdir,
             int damage, int kick) {
-        float[] end = { 0, 0, 0 };
+        float[] end = {(float) 0, (float) 0, (float) 0};
 
         Math3D.VectorMA(start, 8192f, aimdir, end);
-        float[] from = {0, 0, 0};
+        float[] from = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorCopy(start, from);
         edict_t ignore = self;
         boolean water = false;
@@ -943,7 +943,7 @@ public class GameWeapon {
         Math3D.VectorCopy(start, bfg.s.origin);
         Math3D.VectorCopy(dir, bfg.movedir);
         Math3D.vectoangles(dir, bfg.s.angles);
-        Math3D.VectorScale(dir, speed, bfg.velocity);
+        Math3D.VectorScale(dir, (float) speed, bfg.velocity);
         bfg.movetype = Defines.MOVETYPE_FLYMISSILE;
         bfg.clipmask = Defines.MASK_SHOT;
         bfg.solid = Defines.SOLID_BBOX;
@@ -953,7 +953,7 @@ public class GameWeapon {
         bfg.s.modelindex = game_import_t.modelindex("sprites/s_bfg1.sp2");
         bfg.owner = self;
         bfg.touch = bfg_touch;
-        bfg.nextthink = GameBase.level.time + 8000f/ speed;
+        bfg.nextthink = GameBase.level.time + 8000f/ (float) speed;
         bfg.think = GameUtil.G_FreeEdictA;
         bfg.radius_dmg = damage;
         bfg.dmg_radius = damage_radius;

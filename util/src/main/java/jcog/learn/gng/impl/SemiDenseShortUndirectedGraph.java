@@ -16,11 +16,11 @@ public class SemiDenseShortUndirectedGraph implements ShortUndirectedGraph {
 
     
     public SemiDenseShortUndirectedGraph(short V) {
-        this.V = V;
+        this.V = (int) V;
         
-        adj = new MyShortIntHashMap[V];
+        adj = new MyShortIntHashMap[(int) V];
 
-        for (int i = 0; i < V; i++) {
+        for (int i = 0; i < (int) V; i++) {
             adj[i] = new MyShortIntHashMap(0);
         }
 
@@ -54,23 +54,23 @@ public class SemiDenseShortUndirectedGraph implements ShortUndirectedGraph {
     @Override
     public void setEdge(short first, short second, int value) {
         MyShortIntHashMap[] e = this.adj;
-        e[first].put(second, value);
-        e[second].put(first, value);
+        e[(int) first].put(second, value);
+        e[(int) second].put(first, value);
     }
 
     public int getEdge(short first, short second) {
-        return adj[first].get(second);
+        return adj[(int) first].get(second);
     }
 
     @Override
     public void addToEdges(short i, int d) {
-        adj[i].addToValues(d); 
+        adj[(int) i].addToValues(d);
     }
 
     public void addToEdge(short first, short second, int deltaValue) {
         MyShortIntHashMap[] e = this.adj;
-        e[first].addToValue(second, deltaValue);
-        e[second].addToValue(first, deltaValue);
+        e[(int) first].addToValue(second, deltaValue);
+        e[(int) second].addToValue(first, deltaValue);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class SemiDenseShortUndirectedGraph implements ShortUndirectedGraph {
         MyShortIntHashMap[] e = this.adj;
         for (int i = 0, eLength = e.length; i < eLength; i++) {
             MyShortIntHashMap ii = e[i];
-            if (i == v) ii.clear();
+            if (i == (int) v) ii.clear();
             else ii.remove(v);
         }
     }
@@ -86,8 +86,8 @@ public class SemiDenseShortUndirectedGraph implements ShortUndirectedGraph {
     @Override
     public void removeEdge(short first, short second) {
         MyShortIntHashMap[] e = this.adj;
-        e[first].remove(second);
-        e[second].remove(first);
+        e[(int) first].remove(second);
+        e[(int) second].remove(first);
     }
 
 
@@ -101,11 +101,11 @@ public class SemiDenseShortUndirectedGraph implements ShortUndirectedGraph {
 
     @Override
     public void edgesOf(short vertex, ShortIntProcedure eachKeyValue) {
-        adj[vertex].forEachKeyValue(eachKeyValue);
+        adj[(int) vertex].forEachKeyValue(eachKeyValue);
     }
     @Override
     public void edgesOf(short vertex, ShortProcedure eachKey) {
-        adj[vertex].forEachKey(eachKey);
+        adj[(int) vertex].forEachKey(eachKey);
     }
 
 

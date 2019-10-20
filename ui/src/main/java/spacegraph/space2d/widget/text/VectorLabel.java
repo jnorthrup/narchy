@@ -37,11 +37,11 @@ public class VectorLabel extends AbstractLabel {
 
         int len = text.length();
         if (len == 0) {
-            textScaleX = textScaleY = 0;
+            textScaleX = textScaleY = (float) 0;
             return;
         }
 
-        this.textScaleX = 1f / len;
+        this.textScaleX = 1f / (float) len;
 //        this.textScaleY = charAspect;
 
         float tw = w(), th = h();
@@ -54,7 +54,7 @@ public class VectorLabel extends AbstractLabel {
 //        }
 
         if (textScaleY > 1f) {
-            textScaleX = 1f / (len * textScaleY);
+            textScaleX = 1f / ((float) len * textScaleY);
             textScaleY = 1f;
         }
 
@@ -66,10 +66,10 @@ public class VectorLabel extends AbstractLabel {
         float p = r.visP(bounds.scale(textScaleX, textScaleY), MIN_PIXELS_TO_BE_VISIBLE);
 
         LabelRenderer l;
-        if (p <= 0)
+        if (p <= (float) 0)
             l = LabelRenderer.LineBox;
         else {
-			textThickness = Math.round(Math.min(MAX_THICK, MIN_THICK + p * THICKNESSES_PER_PIXEL));
+			textThickness = (float) Math.round(Math.min(MAX_THICK, MIN_THICK + p * THICKNESSES_PER_PIXEL));
             l = renderer;
         }
 

@@ -21,7 +21,7 @@ public abstract class TaskTransformAction extends TaskAction {
 	}
 
 	@Override public final float pri(Derivation d) {
-		return 1;
+		return 1.0F;
 	}
 
 	@Override

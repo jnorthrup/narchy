@@ -32,17 +32,17 @@ public class HitMeter extends FunctionMeter<Long> {
     }    
     
     public HitMeter reset() {
-        hits.set(0);
+        hits.set(0L);
         return this;
     }
 
     public long hit() {
-        hits.add(1);
+        hits.add(1L);
         return hits.get();
     }
 
     public long hit(int n) {
-        hits.add(n); return hits.get();
+        hits.add((long) n); return hits.get();
     }
     
     public long count() {

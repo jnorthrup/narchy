@@ -4,9 +4,7 @@ import jcog.Util;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /*
  * Copyright (c) 1999 Steven J. Metsker. All Rights Reserved.

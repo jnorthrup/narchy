@@ -25,12 +25,12 @@ public class Grid1DDiscrete implements World {
     public Grid1DDiscrete(int size, int totalTime) {
         this.time = 1;
         this.size = size;
-        double VISUALIZE_PERIOD = Math.pow(10, 4);
+        double VISUALIZE_PERIOD = Math.pow(10.0, 4.0);
         this.ENERGY_COST_FACTOR = 0.5;
-        this.MATCH_REWARD_FACTOR = size*1.1;
-        this.REWARD_MAGNITUDE = 1;
+        this.MATCH_REWARD_FACTOR = (double) size *1.1;
+        this.REWARD_MAGNITUDE = 1.0;
         
-        this.focusPosition = size/2;
+        this.focusPosition = (double) (size / 2);
         this.totalTime = totalTime;
     }
 
@@ -55,8 +55,8 @@ public class Grid1DDiscrete implements World {
         
         
         
-        if (focusPosition > size) focusPosition = 0;
-        if (focusPosition < 0) focusPosition = size + focusPosition;
+        if (focusPosition > (double) size) focusPosition = (double) 0;
+        if (focusPosition < (double) 0) focusPosition = (double) size + focusPosition;
         
         /*        
         # Assign basic_feature_input elements as binary. 
@@ -71,8 +71,8 @@ public class Grid1DDiscrete implements World {
             if (i < action2.length-1) action2[i] += 0.5 * action[i+1];
         } */           
                   
-        double match = 0;        
-        double energyCost = 0;
+        double match = (double) 0;
+        double energyCost = (double) 0;
         for (int i = 0; i < size; i++) {
             match += Math.abs( sensor[i] * action[i] );
             energyCost += action[i];
@@ -85,7 +85,7 @@ public class Grid1DDiscrete implements World {
         
         for (int i = 0; i < size; i++) {
             final double exp = 3.0;
-            if (i == focusPosition)
+            if ((double) i == focusPosition)
                 sensor[i] = 1.0;
             else
                 sensor[i] = 0.0;            
@@ -115,7 +115,7 @@ public class Grid1DDiscrete implements World {
         s += "\n";
         for (int i = 0; i < size; i++) {
             char c;
-            if (action[i] > 0)
+            if (action[i] > (double) 0)
                 c = 'X';
             else
                 c = '.';

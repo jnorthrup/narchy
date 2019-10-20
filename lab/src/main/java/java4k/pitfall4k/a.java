@@ -28,7 +28,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.stream.IntStream;
 
 public class a extends GamePanel {
 
@@ -37,7 +36,7 @@ public class a extends GamePanel {
 
 	@Override
 	public void start() {
-		enableEvents(8);
+		enableEvents(8L);
 		new Thread(this).start();
 	}
 
@@ -191,7 +190,7 @@ public class a extends GamePanel {
 			sprites[i][1] = new BufferedImage(8, j, BufferedImage.TYPE_INT_ARGB_PRE);
 			for (y = 0; y < j; y++) {
 				for (x = 0; x < 8; x++, k++) {
-					int z = (S.charAt(k) == ' ') ? 0 : (0xFF000000 | COLORS[S.charAt(k) - 'a']);
+					int z = ((int) S.charAt(k) == (int) ' ') ? 0 : (0xFF000000 | COLORS[(int) S.charAt(k) - (int) 'a']);
                     sprites[i][0].setRGB(x, y, z);
 					sprites[i][1].setRGB(7 - x, y, z);
 				}
@@ -201,13 +200,13 @@ public class a extends GamePanel {
 		long nextFrameStartTime = System.nanoTime();
 		int vineY = 0;
 		int vineX = 0;
-        float vy = 0;
-        float vx = 0;
-        float vineAngle = 0;
-        float harryVineRadius = 0;
-        float harryVy = 0;
+        float vy = (float) 0;
+        float vx = (float) 0;
+        float vineAngle = (float) 0;
+        float harryVineRadius = (float) 0;
+        float harryVy = (float) 0;
         final int UPPER_FLOOR_Y = 97;
-        float harryY = UPPER_FLOOR_Y;
+        float harryY = (float) UPPER_FLOOR_Y;
 		boolean paused = false;
 		boolean hintsEnabled = false;
 		boolean harryLanded = true;
@@ -327,7 +326,7 @@ public class a extends GamePanel {
         while (true) {
 
 			do {
-				nextFrameStartTime += 16666667;
+				nextFrameStartTime += 16666667L;
 
 				
 
@@ -401,8 +400,8 @@ public class a extends GamePanel {
 							clockSeconds = 0;
 							clockTicks = 0;
 							harryX = 8;
-							harryY = UPPER_FLOOR_Y;
-							harryVy = 0;
+							harryY = (float) UPPER_FLOOR_Y;
+							harryVy = (float) 0;
 							screen = 196;
 							screenIndex = 0;
 							scene = SCENE_LADDER;
@@ -436,8 +435,8 @@ public class a extends GamePanel {
 						if (extraLives > 0) {
 							extraLives--;
 							harryX = 12;
-							harryY = harryY > UPPER_FLOOR_Y ? 127 : 26;
-							harryVy = 0;
+							harryY = (float) (harryY > (float) UPPER_FLOOR_Y ? 127 : 26);
+							harryVy = (float) 0;
 							harryDirection = RIGHT;
 							resetScreen = true;
 							harryJumping = true;
@@ -457,11 +456,11 @@ public class a extends GamePanel {
 
 					
 					harryY++;
-					if (harryY > 115) {
+					if (harryY > 115.0F) {
 						
 						harrySinking = false;
 						restartDelay = 60;
-						harryY = 26;
+						harryY = 26.0F;
 					}
 
 				} else {
@@ -496,25 +495,25 @@ public class a extends GamePanel {
 
 					
 					if (vine) {
-						vineAngle = 0.393f * (float) Math.sin(++vineTimer / 46f);
-						vx = (float) Math.sin(vineAngle);
-						vy = (float) Math.cos(vineAngle);
+						vineAngle = 0.393f * (float) Math.sin((double) (++vineTimer / 46f));
+						vx = (float) Math.sin((double) vineAngle);
+						vy = (float) Math.cos((double) vineAngle);
 						if (!harrySwinging && harryJumping && harryLanded) {
 
 							
 							x = harryX + 4;
-							y = (int) (harryY + 4);
-							float B = 2 * (72 * vx + 24 * vy - vx * x - vy * y);
-							float C = 5744 - 144 * x + x * x - 48 * y + y * y;
-							float D = B * B - 4 * C;
-							if (D >= 0) {
-								harryVineRadius = (-B - (float) Math.sqrt(D)) / 2;
-								harrySwinging = harryVineRadius <= 76;
+							y = (int) (harryY + 4.0F);
+							float B = 2.0F * (72.0F * vx + 24.0F * vy - vx * (float) x - vy * (float) y);
+							float C = (float) (5744 - 144 * x + x * x - 48 * y + y * y);
+							float D = B * B - 4.0F * C;
+							if (D >= (float) 0) {
+								harryVineRadius = (-B - (float) Math.sqrt((double) D)) / 2.0F;
+								harrySwinging = harryVineRadius <= 76.0F;
 							}
 						}
 
-						vineX = (int) (72 + 76 * vx);
-						vineY = (int) (24 + 76 * vy);
+						vineX = (int) (72.0F + 76.0F * vx);
+						vineY = (int) (24.0F + 76.0F * vy);
 					}
 
 					
@@ -535,14 +534,14 @@ public class a extends GamePanel {
 					
 					if (harrySwinging) {
 						harrySprite = SPRITE_HARRY_SWINGING;
-						harryX = (int) (69 + harryVineRadius * vx) - harryDirection;
-						harryY = 21 + harryVineRadius * vy;
+						harryX = (int) (69.0F + harryVineRadius * vx) - harryDirection;
+						harryY = 21.0F + harryVineRadius * vy;
 
 						if (jumpReleased && a[VK_JUMP]) {
 							jumpReleased = false;
 							harrySwinging = false;
 							harryJumping = true;
-							harryVy = JUMP_SPEED;
+							harryVy = (float) JUMP_SPEED;
 							harryLanded = false;
 						}
 					} else if (harryClimbing) {
@@ -550,35 +549,35 @@ public class a extends GamePanel {
 							if (++harryRunTimer == 8) {
 								harryRunTimer = 0;
 								harryDirection ^= 1;
-								harryY += 4;
-								if (harryY >= LADDER_BOTTOM_Y) {
+								harryY += 4.0F;
+								if (harryY >= (float) LADDER_BOTTOM_Y) {
 									harryClimbing = false;
-									harryY = LOWER_FLOOR_Y;
+									harryY = (float) LOWER_FLOOR_Y;
 									harryRunTimer = 0;
 								}
 								harryClimbedDown = true;
 							}
 						} else if (a[VK_UP]) {
-							if (harryY > LADDER_TOP_Y && ++harryRunTimer == 8) {
+							if (harryY > (float) LADDER_TOP_Y && ++harryRunTimer == 8) {
 								harryRunTimer = 0;
 								harryDirection ^= 1;
-								harryY -= 4;
+								harryY -= 4.0F;
 							}
 						}
 
-						if (((jumpReleased && a[VK_JUMP]) || (harryClimbedDown && (a[VK_LEFT] || a[VK_RIGHT]))) && harryY == LADDER_TOP_Y) {
+						if (((jumpReleased && a[VK_JUMP]) || (harryClimbedDown && (a[VK_LEFT] || a[VK_RIGHT]))) && harryY == (float) LADDER_TOP_Y) {
 							jumpReleased = false;
 							harryJumping = true;
-							harryVy = JUMP_SPEED;
+							harryVy = (float) JUMP_SPEED;
 							harryClimbing = false;
-							harryY = UPPER_FLOOR_Y;
+							harryY = (float) UPPER_FLOOR_Y;
 						}
 					} else {
 						if (harryCrushed == 0) {
 							if (a[VK_LEFT]) {
 								harryDirection = LEFT;
 								if ((timer & 1) == 0) {
-									if ((harryX != 37 && harryX != 89) || harryY <= UPPER_FLOOR_Y || harryY >= UPPER_FLOOR_LOWER_Y) {
+									if ((harryX != 37 && harryX != 89) || harryY <= (float) UPPER_FLOOR_Y || harryY >= (float) UPPER_FLOOR_LOWER_Y) {
 										harryX--;
 									}
 								}
@@ -591,7 +590,7 @@ public class a extends GamePanel {
 							} else if (a[VK_RIGHT]) {
 								harryDirection = RIGHT;
 								if ((timer & 1) == 0) {
-									if ((harryX != 47 && harryX != 99) || harryY <= UPPER_FLOOR_Y || harryY >= UPPER_FLOOR_LOWER_Y) {
+									if ((harryX != 47 && harryX != 99) || harryY <= (float) UPPER_FLOOR_Y || harryY >= (float) UPPER_FLOOR_LOWER_Y) {
 										harryX++;
 									}
 								}
@@ -606,7 +605,7 @@ public class a extends GamePanel {
 							}
 						}
 
-						if (scene <= SCENE_LADDER_AND_HOLES && harryY > UPPER_FLOOR_Y) {
+						if (scene <= SCENE_LADDER_AND_HOLES && harryY > (float) UPPER_FLOOR_Y) {
 							if (wallOnLeft) {
                                 switch (harryX) {
                                     case 4:
@@ -644,33 +643,33 @@ public class a extends GamePanel {
 							if (i <= UPPER_FLOOR_Y && (int) harryY >= UPPER_FLOOR_Y) {
 								harryJumping = false;
 								harryLanded = true;
-								harryY = UPPER_FLOOR_Y;
+								harryY = (float) UPPER_FLOOR_Y;
 							} else if (i <= LOWER_FLOOR_Y && (int) harryY >= LOWER_FLOOR_Y) {
 								harryJumping = false;
 								harryLanded = true;
-								harryY = LOWER_FLOOR_Y;
+								harryY = (float) LOWER_FLOOR_Y;
 							}
 						} else if (jumpReleased && a[VK_JUMP] && harryCrushed == 0) {
 							jumpReleased = false;
 							harryJumping = true;
-							harryVy = JUMP_SPEED;
+							harryVy = (float) JUMP_SPEED;
 						}
 
 						if (!harryJumping && scene <= SCENE_LADDER_AND_HOLES) {
-							if (harryX >= 65 && harryX <= 71 && (harryY == UPPER_FLOOR_Y || a[VK_UP])) {
+							if (harryX >= 65 && harryX <= 71 && (harryY == (float) UPPER_FLOOR_Y || a[VK_UP])) {
 								
 								harryClimbing = true;
 								harryX = 68;
 								harrySprite = SPRITE_HARRY_CLIMBING;
 								harryRunTimer = 0;
-								if (harryY == UPPER_FLOOR_Y) {
-									harryY = LADDER_TOP_Y;
+								if (harryY == (float) UPPER_FLOOR_Y) {
+									harryY = (float) LADDER_TOP_Y;
 									harryClimbedDown = false;
 								} else {
-									harryY = LADDER_BOTTOM_Y;
+									harryY = (float) LADDER_BOTTOM_Y;
 									harryClimbedDown = true;
 								}
-							} else if (harryY == UPPER_FLOOR_Y && scene == SCENE_LADDER_AND_HOLES) {
+							} else if (harryY == (float) UPPER_FLOOR_Y && scene == SCENE_LADDER_AND_HOLES) {
 								if ((harryX >= 37 && harryX <= 47) || (harryX >= 89 && harryX <= 99)) {
 									harryJumping = true;
 									harryY++;
@@ -684,7 +683,7 @@ public class a extends GamePanel {
 					}
 
 					
-					harrySinking = harryY == UPPER_FLOOR_Y && pit && pitOffset < 5 && harryX >= 36 && harryX <= 100 && (image.getRGB(harryX, 119) & 0xFFFFFF) != DARK_YELLOW
+					harrySinking = harryY == (float) UPPER_FLOOR_Y && pit && pitOffset < 5 && harryX >= 36 && harryX <= 100 && (image.getRGB(harryX, 119) & 0xFFFFFF) != DARK_YELLOW
 							&& (image.getRGB(harryX + 7, 119) & 0xFFFFFF) != DARK_YELLOW;
 					if (crocodiles) {
 						for (i = 0; i < 3; i++) {
@@ -737,7 +736,7 @@ public class a extends GamePanel {
                                 break;
                         }
 
-						if ((timer & 1) == 0 && Math.random() < 0.5f) {
+						if ((timer & 1) == 0 && Math.random() < 0.5) {
 
 
                             switch (j) {
@@ -752,7 +751,7 @@ public class a extends GamePanel {
                             }
 						}
 
-						if (!harrySwinging && harryX >= x - 4 && harryX <= x + 4 && harryY >= y - 16 + (j == OBJECT_TYPE_SCORPION ? 6 : 0) && harryY <= y + 1) {
+						if (!harrySwinging && harryX >= x - 4 && harryX <= x + 4 && harryY >= (float) (y - 16 + (j == OBJECT_TYPE_SCORPION ? 6 : 0)) && harryY <= (float) (y + 1)) {
 							
 
 							if (j == OBJECT_TYPE_FIRE || j == OBJECT_TYPE_RATTLESNAKE || j == OBJECT_TYPE_SCORPION) {
@@ -788,7 +787,7 @@ public class a extends GamePanel {
 					i = screen;
 					if (harryX > 150) {
 						
-						for (i = harryY > UPPER_FLOOR_Y ? 3 : 1; i > 0; i--) {
+						for (i = harryY > (float) UPPER_FLOOR_Y ? 3 : 1; i > 0; i--) {
 							screen = 0xFF & ((screen << 1) | ((1 & (screen >> 3)) ^ (1 & (screen >> 4)) ^ (1 & (screen >> 5)) ^ (1 & (screen >> 7))));
 							if (++screenIndex > 254) {
 								screenIndex = 0;
@@ -797,7 +796,7 @@ public class a extends GamePanel {
 						harryX = 0;
 					} else if (harryX < -6) {
 						
-						for (i = harryY > UPPER_FLOOR_Y ? 3 : 1; i > 0; i--) {
+						for (i = harryY > (float) UPPER_FLOOR_Y ? 3 : 1; i > 0; i--) {
 							screen = 0xFF & ((screen >> 1) | ((1 & (screen >> 4)) ^ (1 & (screen >> 5)) ^ (1 & (screen >> 6)) ^ (1 & screen)) << 7);
 							if (--screenIndex < 0) {
 								screenIndex = 254;
@@ -1060,10 +1059,10 @@ public class a extends GamePanel {
 				
 				
 
-				i = (harryY < 124 && (screenIndex == 11 || screenIndex == 37 || screenIndex == 116 || screenIndex == 185 || screenIndex == 224 || screenIndex == 235)) ? SPRITE_ARROW_1
-						: (harryY >= 124 && (screenIndex == 25 || screenIndex == 92 || screenIndex == 179 || screenIndex == 209 || screenIndex == 226 || screenIndex == 245)) ? SPRITE_ARROW_2
+				i = (harryY < 124.0F && (screenIndex == 11 || screenIndex == 37 || screenIndex == 116 || screenIndex == 185 || screenIndex == 224 || screenIndex == 235)) ? SPRITE_ARROW_1
+						: (harryY >= 124.0F && (screenIndex == 25 || screenIndex == 92 || screenIndex == 179 || screenIndex == 209 || screenIndex == 226 || screenIndex == 245)) ? SPRITE_ARROW_2
 								: SPRITE_ARROW_0;
-				j = harryY < 124
+				j = harryY < 124.0F
 						&& ((screenIndex >= 0 && screenIndex < 11) || (treasures == 30 && screenIndex >= 226 && screenIndex <= 228) || (treasures == 13 && screenIndex >= 92 && screenIndex <= 95) || (treasures == 1
 								&& screenIndex >= 25 && screenIndex <= 28)) ? RIGHT : LEFT;
 				g.drawImage(sprites[i][j], 136, 11, null);
@@ -1080,7 +1079,7 @@ public class a extends GamePanel {
 			}
 
 			
-			while (nextFrameStartTime - System.nanoTime() > 0) {
+			while (nextFrameStartTime - System.nanoTime() > 0L) {
 				Thread.yield();
 			}
 		}
@@ -1118,7 +1117,7 @@ public class a extends GamePanel {
 	  frame.pack();
 	  frame.setLocationRelativeTo(null);
 	  frame.setVisible(true);
-	  Thread.sleep(250);
+	  Thread.sleep(250L);
 	  applet.start();
 	}
 }

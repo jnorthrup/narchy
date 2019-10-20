@@ -31,7 +31,6 @@ import jake2.util.Lib;
 import jake2.util.Math3D;
 
 import java.io.IOException;
-import java.util.stream.IntStream;
 
 public class SV_SEND {
 	/*
@@ -91,12 +90,12 @@ public class SV_SEND {
 	public static void SV_BroadcastPrintf(int level, String s) {
 
 
-        if (Globals.dedicated.value != 0) {
+        if (Globals.dedicated.value != (float) 0) {
 
 			Com.Printf(s);
 		}
 
-		for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+		for (int i = 0; (float) i < SV_MAIN.maxclients.value; i++) {
             client_t cl = SV_INIT.svs.clients[i];
             if (level < cl.messagelevel)
 				continue;
@@ -185,7 +184,7 @@ public class SV_SEND {
 		}
 
 		
-		for (int j = 0; j < SV_MAIN.maxclients.value; j++) {
+		for (int j = 0; (float) j < SV_MAIN.maxclients.value; j++) {
             client_t client = SV_INIT.svs.clients[j];
 
             if (client.state == Defines.cs_free || client.state == Defines.cs_zombie)
@@ -203,7 +202,7 @@ public class SV_SEND {
 				
 				if (cluster == -1)
 					continue;
-				if (mask != null && (0 == (mask[cluster >> 3] & (1 << (cluster & 7)))))
+				if (mask != null && (0 == ((int) mask[cluster >> 3] & (1 << (cluster & 7)))))
 					continue;
 			}
 
@@ -216,7 +215,7 @@ public class SV_SEND {
 		SZ.Clear(SV_INIT.sv.multicast);
 	}
 
-	private static final float[] origin_v = { 0, 0, 0 };
+	private static final float[] origin_v = {(float) 0, (float) 0, (float) 0};
 	/*  
 	==================
 	SV_StartSound
@@ -252,16 +251,16 @@ public class SV_SEND {
 		float attenuation,
 		float timeofs) {
 
-        if (volume < 0 || volume > 1.0)
+        if (volume < (float) 0 || (double) volume > 1.0)
 			Com.Error(Defines.ERR_FATAL, "SV_StartSound: volume = " + volume);
 
-		if (attenuation < 0 || attenuation > 4)
+		if (attenuation < (float) 0 || attenuation > 4.0F)
 			Com.Error(Defines.ERR_FATAL, "SV_StartSound: attenuation = " + attenuation);
 
 		
 		
 
-		if (timeofs < 0 || timeofs > 0.255)
+		if (timeofs < (float) 0 || (double) timeofs > 0.255)
 			Com.Error(Defines.ERR_FATAL, "SV_StartSound: timeofs = " + timeofs);
 
         int ent = entity.index;
@@ -291,7 +290,7 @@ public class SV_SEND {
 		
 		flags |= Defines.SND_ENT;
 
-		if (timeofs != 0)
+		if (timeofs != (float) 0)
 			flags |= Defines.SND_OFFSET;
 
 		
@@ -311,11 +310,11 @@ public class SV_SEND {
 		MSG.WriteByte(SV_INIT.sv.multicast, soundindex);
 
 		if ((flags & Defines.SND_VOLUME) != 0)
-			MSG.WriteByte(SV_INIT.sv.multicast, volume * 255);
+			MSG.WriteByte(SV_INIT.sv.multicast, volume * 255.0F);
 		if ((flags & Defines.SND_ATTENUATION) != 0)
-			MSG.WriteByte(SV_INIT.sv.multicast, attenuation * 64);
+			MSG.WriteByte(SV_INIT.sv.multicast, attenuation * 64.0F);
 		if ((flags & Defines.SND_OFFSET) != 0)
-			MSG.WriteByte(SV_INIT.sv.multicast, timeofs * 1000);
+			MSG.WriteByte(SV_INIT.sv.multicast, timeofs * 1000.0F);
 
 		if ((flags & Defines.SND_ENT) != 0)
 			MSG.WriteShort(SV_INIT.sv.multicast, sendchan);
@@ -325,7 +324,7 @@ public class SV_SEND {
 
 		
 		
-		if (attenuation == Defines.ATTN_NONE)
+		if (attenuation == (float) Defines.ATTN_NONE)
 			use_phs = false;
 
 		if ((channel & Defines.CHAN_RELIABLE) != 0) {
@@ -437,7 +436,7 @@ public class SV_SEND {
 	}
 
     private static final byte[] msgbuf = new byte[Defines.MAX_MSGLEN];
-	private static final byte[] NULLBYTE = {0};
+	private static final byte[] NULLBYTE = {(byte) 0};
 	/*
 	=======================
 	SV_SendClientMessages
@@ -449,7 +448,7 @@ public class SV_SEND {
 
 		
 		if (SV_INIT.sv.state == Defines.ss_demo && SV_INIT.sv.demofile != null) {
-			if (SV_MAIN.sv_paused.value != 0)
+			if (SV_MAIN.sv_paused.value != (float) 0)
 				msglen = 0;
 			else {
 				
@@ -486,7 +485,7 @@ public class SV_SEND {
 		}
 
 		
-		for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+		for (int i = 0; (float) i < SV_MAIN.maxclients.value; i++) {
             client_t c = SV_INIT.svs.clients[i];
 
             if (c.state == 0)

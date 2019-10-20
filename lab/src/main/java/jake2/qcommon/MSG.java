@@ -101,18 +101,18 @@ public class MSG extends Globals {
     }
 
     public static void WriteCoord(sizebuf_t sb, float f) {
-        WriteShort(sb, (int) (f * 8));
+        WriteShort(sb, (int) (f * 8.0F));
     }
 
     public static void WritePos(sizebuf_t sb, float[] pos) {
         assert (pos.length == 3) : "vec3_t bug";
-        WriteShort(sb, (int) (pos[0] * 8));
-        WriteShort(sb, (int) (pos[1] * 8));
-        WriteShort(sb, (int) (pos[2] * 8));
+        WriteShort(sb, (int) (pos[0] * 8.0F));
+        WriteShort(sb, (int) (pos[1] * 8.0F));
+        WriteShort(sb, (int) (pos[2] * 8.0F));
     }
 
     public static void WriteAngle(sizebuf_t sb, float f) {
-        WriteByte(sb, (int) (f * 256 / 360) & 255);
+        WriteByte(sb, (int) (f * 256.0F / 360.0F) & 255);
     }
 
     public static void WriteAngle16(sizebuf_t sb, float f) {
@@ -124,46 +124,46 @@ public class MSG extends Globals {
 
 
         int bits = 0;
-        if (cmd.angles[0] != from.angles[0])
+        if ((int) cmd.angles[0] != (int) from.angles[0])
             bits |= CM_ANGLE1;
-        if (cmd.angles[1] != from.angles[1])
+        if ((int) cmd.angles[1] != (int) from.angles[1])
             bits |= CM_ANGLE2;
-        if (cmd.angles[2] != from.angles[2])
+        if ((int) cmd.angles[2] != (int) from.angles[2])
             bits |= CM_ANGLE3;
-        if (cmd.forwardmove != from.forwardmove)
+        if ((int) cmd.forwardmove != (int) from.forwardmove)
             bits |= CM_FORWARD;
-        if (cmd.sidemove != from.sidemove)
+        if ((int) cmd.sidemove != (int) from.sidemove)
             bits |= CM_SIDE;
-        if (cmd.upmove != from.upmove)
+        if ((int) cmd.upmove != (int) from.upmove)
             bits |= CM_UP;
-        if (cmd.buttons != from.buttons)
+        if ((int) cmd.buttons != (int) from.buttons)
             bits |= CM_BUTTONS;
-        if (cmd.impulse != from.impulse)
+        if ((int) cmd.impulse != (int) from.impulse)
             bits |= CM_IMPULSE;
 
         WriteByte(buf, bits);
 
         if ((bits & CM_ANGLE1) != 0)
-            WriteShort(buf, cmd.angles[0]);
+            WriteShort(buf, (int) cmd.angles[0]);
         if ((bits & CM_ANGLE2) != 0)
-            WriteShort(buf, cmd.angles[1]);
+            WriteShort(buf, (int) cmd.angles[1]);
         if ((bits & CM_ANGLE3) != 0)
-            WriteShort(buf, cmd.angles[2]);
+            WriteShort(buf, (int) cmd.angles[2]);
 
         if ((bits & CM_FORWARD) != 0)
-            WriteShort(buf, cmd.forwardmove);
+            WriteShort(buf, (int) cmd.forwardmove);
         if ((bits & CM_SIDE) != 0)
-            WriteShort(buf, cmd.sidemove);
+            WriteShort(buf, (int) cmd.sidemove);
         if ((bits & CM_UP) != 0)
-            WriteShort(buf, cmd.upmove);
+            WriteShort(buf, (int) cmd.upmove);
 
         if ((bits & CM_BUTTONS) != 0)
-            WriteByte(buf, cmd.buttons);
+            WriteByte(buf, (int) cmd.buttons);
         if ((bits & CM_IMPULSE) != 0)
-            WriteByte(buf, cmd.impulse);
+            WriteByte(buf, (int) cmd.impulse);
 
-        WriteByte(buf, cmd.msec);
-        WriteByte(buf, cmd.lightlevel);
+        WriteByte(buf, (int) cmd.msec);
+        WriteByte(buf, (int) cmd.lightlevel);
     }
 
     
@@ -174,7 +174,7 @@ public class MSG extends Globals {
             return;
         }
 
-        float bestd = 0;
+        float bestd = (float) 0;
         int best = 0;
         for (int i = 0; i < NUMVERTEXNORMALS; i++) {
             float d = Math3D.DotProduct(dir, bytedirs[i]);
@@ -401,7 +401,7 @@ public class MSG extends Globals {
         if (msg_read.readcount + 1 > msg_read.cursize)
             c = -1;
         else
-            c = msg_read.data[msg_read.readcount];
+            c = (int) msg_read.data[msg_read.readcount];
         msg_read.readcount++;
         
         return c;
@@ -414,7 +414,7 @@ public class MSG extends Globals {
         if (readcount + 1 > msg_read.cursize)
             c = -1;
         else
-            c = msg_read.data[readcount] & 0xff;
+            c = (int) msg_read.data[readcount] & 0xff;
         
         msg_read.readcount++;
 
@@ -427,7 +427,7 @@ public class MSG extends Globals {
         if (msg_read.readcount + 2 > msg_read.cursize)
             c = -1;
         else
-            c = (short) ((msg_read.data[msg_read.readcount] & 0xff) + (msg_read.data[msg_read.readcount + 1] << 8));
+            c = (int) (short) (((int) msg_read.data[msg_read.readcount] & 0xff) + ((int) msg_read.data[msg_read.readcount + 1] << 8));
 
         msg_read.readcount += 2;
 
@@ -445,10 +445,10 @@ public class MSG extends Globals {
         else {
             int readcount = msg_read.readcount;
             byte[] data = msg_read.data;
-            c = (data[readcount++] & 0xff)
-                    | ((data[readcount++] & 0xff) << 8)
-                    | ((data[readcount++] & 0xff) << 16)
-                    | ((data[readcount] & 0xff) << 24);
+            c = ((int) data[readcount++] & 0xff)
+                    | (((int) data[readcount++] & 0xff) << 8)
+                    | (((int) data[readcount++] & 0xff) << 16)
+                    | (((int) data[readcount] & 0xff) << 24);
         }
 
         msg_read.readcount += 4;
@@ -470,7 +470,7 @@ public class MSG extends Globals {
         byte[] rb = MSG.readbuf;
         do {
             byte c = (byte) ReadByte(msg_read);
-            if (c == -1 || c == 0)
+            if ((int) c == -1 || (int) c == 0)
                 break;
 
             rb[l] = c;
@@ -486,7 +486,7 @@ public class MSG extends Globals {
         int l = 0;
         do {
             byte c = (byte) ReadChar(msg_read);
-            if (c == -1 || c == 0 || c == 0x0a)
+            if ((int) c == -1 || (int) c == 0 || (int) c == 0x0a)
                 break;
             readbuf[l] = c;
             l++;
@@ -498,22 +498,22 @@ public class MSG extends Globals {
     }
 
     public static float ReadCoord(sizebuf_t msg_read) {
-        return ReadShort(msg_read) * (1.0f / 8);
+        return (float) ReadShort(msg_read) * (1.0f / 8.0F);
     }
 
     public static void ReadPos(sizebuf_t msg_read, float[] pos) {
         assert (pos.length == 3) : "vec3_t bug";
-        pos[0] = ReadShort(msg_read) * (1.0f / 8);
-        pos[1] = ReadShort(msg_read) * (1.0f / 8);
-        pos[2] = ReadShort(msg_read) * (1.0f / 8);
+        pos[0] = (float) ReadShort(msg_read) * (1.0f / 8.0F);
+        pos[1] = (float) ReadShort(msg_read) * (1.0f / 8.0F);
+        pos[2] = (float) ReadShort(msg_read) * (1.0f / 8.0F);
     }
 
     public static float ReadAngle(sizebuf_t msg_read) {
-        return ReadChar(msg_read) * (360.0f / 256);
+        return (float) ReadChar(msg_read) * (360.0f / 256.0F);
     }
 
     public static float ReadAngle16(sizebuf_t msg_read) {
-        return Math3D.SHORT2ANGLE(ReadShort(msg_read));
+        return Math3D.SHORT2ANGLE((int) ReadShort(msg_read));
     }
 
     public static void ReadDeltaUsercmd(sizebuf_t msg_read, usercmd_t from,

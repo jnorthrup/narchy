@@ -4,7 +4,6 @@ import jcog.learn.ntm.learn.IWeightUpdater;
 import jcog.learn.ntm.memory.address.Head;
 
 import java.util.function.Consumer;
-import java.util.stream.IntStream;
 
 public class OutputLayer {
     private final int _outputSize;

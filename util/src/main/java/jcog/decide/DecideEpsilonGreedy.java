@@ -11,7 +11,7 @@ import java.util.Random;
 public class DecideEpsilonGreedy implements Deciding {
 
     /** argmax, with shuffling in case of a tie */
-    public static final Deciding ArgMax = new DecideEpsilonGreedy(0, new XoRoShiRo128PlusRandom(1));
+    public static final Deciding ArgMax = new DecideEpsilonGreedy((float) 0, new XoRoShiRo128PlusRandom(1L));
 
     private final Random random;
 
@@ -42,7 +42,7 @@ public class DecideEpsilonGreedy implements Deciding {
                 motivationOrder[i] = i;
         }
 
-        if (epsilonRandom > 0 && random.nextFloat() < epsilonRandom) {
+        if (epsilonRandom > (float) 0 && random.nextFloat() < epsilonRandom) {
             return random.nextInt(actions);
         }
 

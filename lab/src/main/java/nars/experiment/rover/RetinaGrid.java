@@ -27,8 +27,8 @@ public class RetinaGrid extends SimpleSpatial {
                 r.localPosition = src;
 
                 r.localDirection = v(fwd);
-                r.localDirection.addScaled(left, 2f * (((float) x) / (w - 1) - 0.5f));
-                r.localDirection.addScaled(up, 2f * (((float) y) / (h - 1) - 0.5f));
+                r.localDirection.addScaled(left, 2f * (((float) x) / (float) (w - 1) - 0.5f));
+                r.localDirection.addScaled(up, 2f * (((float) y) / (float) (h - 1) - 0.5f));
 
                 r.rangeMax = rangeMax;
 

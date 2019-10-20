@@ -39,7 +39,7 @@ public class RegexMatcher extends DFA {
         int[][] t = this.transitionTable;
         int rejected = rs;
         for (int i = 0, length = str.length()-1; (length--) >= 0; i++) {
-            if ((s = t[s][str.charAt(i)]) == rejected) {
+            if ((s = t[s][(int) str.charAt(i)]) == rejected) {
                 return false; 
             }
         }

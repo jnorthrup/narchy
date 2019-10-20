@@ -39,7 +39,7 @@ public class Daemon {
             PrologImpl engine=new PrologImpl();
 
             String hostName=InetAddress.getLocalHost().toString();
-            int index=hostName.indexOf('/');
+            int index=hostName.indexOf((int) '/');
             if (index>=0)
                 hostName=hostName.substring(0,index);
             Naming.rebind("//"+hostName+ ':' +portString+ '/' +engineName,engine);

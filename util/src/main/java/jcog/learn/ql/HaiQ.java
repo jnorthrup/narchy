@@ -52,11 +52,11 @@ public class HaiQ extends Agent {
      * state values which might have been incorrectly reinforced and create a
      * more defined path to the goal in fewer episodes.
      */
-    public final FloatRange Gamma = new FloatRange(0, 0, 1f);
+    public final FloatRange Gamma = new FloatRange((float) 0, (float) 0, 1f);
 
-    public final FloatRange Lambda = new FloatRange(0, 0, 1f);
+    public final FloatRange Lambda = new FloatRange((float) 0, (float) 0, 1f);
 
-    public final FloatRange Alpha = new FloatRange(0, 0, 1f);
+    public final FloatRange Alpha = new FloatRange((float) 0, (float) 0, 1f);
 
     /**
      * input selection; HaiQAgent will not use this in its override of perceive
@@ -76,7 +76,7 @@ public class HaiQ extends Agent {
         et = new float[inputs][actions];
 
         setQ(0.02f, 0.5f, 0.75f);
-        rng = new XoRoShiRo128PlusRandom(1);
+        rng = new XoRoShiRo128PlusRandom(1L);
 
 
         decideInput =
@@ -97,7 +97,7 @@ public class HaiQ extends Agent {
     int learn(float[] actionFeedback, int state, float reward, boolean decide) {
 
         if (reward != reward)
-            reward = 0;
+            reward = (float) 0;
 
 
         int action = decide ? nextAction(state) : -1;
@@ -105,17 +105,17 @@ public class HaiQ extends Agent {
         int lastState = this.lastState;
 
         float alpha = Alpha.floatValue();
-        double deltaSum = 0;
+        double deltaSum = (double) 0;
         for (int lastAction = 0, actionFeedbackLength = actionFeedback.length; lastAction < actionFeedbackLength; lastAction++) {
-            double f = actionFeedback[lastAction];
+            double f = (double) actionFeedback[lastAction];
             double ff = Math.abs(f);
-            if (ff > Float.MIN_NORMAL) {
-                double lastQ = q[lastState][lastAction];
-                double delta = reward + f * ((Gamma.floatValue() * q[state][action]) - lastQ);
+            if (ff > (double) Float.MIN_NORMAL) {
+                double lastQ = (double) q[lastState][lastAction];
+                double delta = (double) reward + f * ((double) (Gamma.floatValue() * q[state][action]) - lastQ);
                 deltaSum += delta;
-                double nextQ = lastQ + alpha * delta;
+                double nextQ = lastQ + (double) alpha * delta;
                 q[state][action] = (float) nextQ;
-                et[lastState][lastAction] += f * alpha;
+                et[lastState][lastAction] = (float) ((double) et[lastState][lastAction] + f * (double) alpha);
             }
 
         }

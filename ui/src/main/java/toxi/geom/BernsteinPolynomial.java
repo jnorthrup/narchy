@@ -50,15 +50,15 @@ public class BernsteinPolynomial {
         b1 = new float[res];
         b2 = new float[res];
         b3 = new float[res];
-        float t = 0;
-        float dt = 1.0f / (resolution - 1);
+        float t = (float) 0;
+        float dt = 1.0f / (float) (resolution - 1);
         for (int i = 0; i < resolution; i++) {
-            float t1 = 1 - t;
+            float t1 = 1.0F - t;
             float t12 = t1 * t1;
             float t2 = t * t;
             b0[i] = t1 * t12;
-            b1[i] = 3 * t * t12;
-            b2[i] = 3 * t2 * t1;
+            b1[i] = 3.0F * t * t12;
+            b2[i] = 3.0F * t2 * t1;
             b3[i] = t * t2;
             t += dt;
         }

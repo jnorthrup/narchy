@@ -20,11 +20,11 @@ public abstract class AbstractTraining {
 
     @Deprecated public double scoreSupervised(SimpleLSTM agent, float learningRate)  {
 
-        double[] fit = {0};
-        double[] max_fit = {0};
+        double[] fit = {(double) 0};
+        double[] max_fit = {(double) 0};
 
         this.interact(inter -> {
-            if (inter.forget > 0)
+            if (inter.forget > (float) 0)
                 agent.forget(inter.forget);
 
             if (inter.expected == null) {

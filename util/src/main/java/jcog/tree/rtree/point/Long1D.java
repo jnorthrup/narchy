@@ -35,7 +35,7 @@ public class Long1D implements HyperPoint {
 
     @Override
     public double distance(HyperPoint p) {
-        return Math.abs(x - ((Long1D) p).x);
+        return (double) Math.abs(x - ((Long1D) p).x);
     }
 
     @Override

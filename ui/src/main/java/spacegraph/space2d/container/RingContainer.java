@@ -66,19 +66,19 @@ public abstract class RingContainer<X extends Surface> extends EmptyContainer {
         int t = T.intValue();
 
         float W = w(), H = h(), left = left(), right = right(), top = bottom(), bottom = top();
-        float di = (horizOrVert ? W : H)/t;
+        float di = (horizOrVert ? W : H)/ (float) t;
         int j = 0;
         for (int i = 0; i < t; i++) {
             int ii = i;
 //            Surface xyi = xy[i];
 //            ii = (t - 1) - ii; //t-.. : for y-orientation HACK
             if (horizOrVert) {
-                float ix = ii * di;
+                float ix = (float) ii * di;
                 c[j++] = left + ix; c[j++] = top; c[j++] = left + ix + di; c[j++] = bottom;
                 //xyi.posSpectro(left, top + ix,  left + ix + di, bottom);
             } else {
                 c[j++] = left;
-                float iy = ii * di;
+                float iy = (float) ii * di;
                 c[j++] = top + iy; c[j++] = right; c[j++] = top+iy+di;
                 //xyi.posSpectro(left,  top + iy, right, top + iy + di);
             }

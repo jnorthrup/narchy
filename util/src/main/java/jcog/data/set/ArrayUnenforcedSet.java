@@ -5,7 +5,6 @@ import jcog.data.list.FasterList;
 
 import java.util.Collection;
 import java.util.Set;
-import java.util.stream.IntStream;
 
 /**
  * Helper for efficiently representing small sets whose elements are known to be unique by

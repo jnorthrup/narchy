@@ -49,7 +49,7 @@ public class Line2D {
         private final float[] coeff;
 
         public LineIntersection(Type type, ReadonlyVec2D pos) {
-            this(type, pos, 0, 0);
+            this(type, pos, (float) 0, (float) 0);
         }
 
         public LineIntersection(Type type, ReadonlyVec2D pos, float ua, float ub) {
@@ -301,18 +301,18 @@ public class Line2D {
                 * (a.x - l.a.x);
         float nb = (b.x - a.x) * (a.y - l.a.y) - (b.y - a.y) * (a.x - l.a.x);
 
-        if (denom != 0.0) {
+        if ((double) denom != 0.0) {
             float ua = na / denom;
             float ub = nb / denom;
             Vec2D i = a.interpolateTo(b, ua);
-            if (ua >= 0.0f && ua <= 1.0 && ub >= 0.0 && ub <= 1.0) {
+            if (ua >= 0.0f && (double) ua <= 1.0 && (double) ub >= 0.0 && (double) ub <= 1.0) {
                 isec = new LineIntersection(Type.INTERSECTING, i, ua, ub);
             } else {
                 isec = new LineIntersection(Type.NON_INTERSECTING, i, ua, ub);
             }
         } else {
-            if (na == 0.0 && nb == 0.0) {
-                if (distanceToPoint(l.a) == 0.0) {
+            if ((double) na == 0.0 && (double) nb == 0.0) {
+                if ((double) distanceToPoint(l.a) == 0.0) {
                     isec = new LineIntersection(Type.COINCIDENT, null);
                 } else {
                     isec = new LineIntersection(Type.COINCIDENT_NO_INTERSECT,
@@ -329,7 +329,7 @@ public class Line2D {
         Vec2D m = getMidPoint();
         Vec2D d = getDirection();
         Vec2D n = d.getPerpendicular();
-        if (ref != null && m.sub(ref).dot(n) < 0) {
+        if (ref != null && m.sub(ref).dot(n) < (float) 0) {
             n.invert();
         }
         n.normalizeTo(offset);
@@ -342,7 +342,7 @@ public class Line2D {
     }
 
     public Line2D scaleLength(float scale) {
-        float delta = (1 - scale) * 0.5f;
+        float delta = (1.0F - scale) * 0.5f;
         Vec2D newA = a.interpolateTo(b, delta);
         b.interpolateToSelf(a, delta);
         a.set(newA);

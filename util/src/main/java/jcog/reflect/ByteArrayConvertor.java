@@ -25,9 +25,7 @@
 package jcog.reflect;
 
 
-import java.util.Arrays;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Конвертор массива байтов
@@ -85,7 +83,7 @@ public class ByteArrayConvertor {
      * @return два символа представляющих байт (00 .. FF)
      */
     public static String getHex(byte byteValue) {
-        return Integer.toString((byteValue & 0xff) + 0x100, 16).substring(1).toUpperCase();
+        return Integer.toString(((int) byteValue & 0xff) + 0x100, 16).substring(1).toUpperCase();
     }
 
     public static String encodeHex(byte[] bytes) {

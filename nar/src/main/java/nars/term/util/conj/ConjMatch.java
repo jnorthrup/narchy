@@ -37,7 +37,7 @@ public enum ConjMatch { ;
      * TODO configurable dtTolerance for matches
      */
     public static Term beforeOrAfter(Term conj, Term event, boolean includeBefore, boolean includeMatched, boolean includeAfter,  UnifyTransform s, int ttl /*, unifyOrEquals, includeMatchedEvent */) {
-        if (!(conj instanceof Compound) || conj.opID() != CONJ.id || conj.dt()==XTERNAL || conj.equals(event))
+        if (!(conj instanceof Compound) || conj.opID() != (int) CONJ.id || conj.dt()==XTERNAL || conj.equals(event))
             return Null;
 
         if (!event.op().eventable)
@@ -58,7 +58,7 @@ public enum ConjMatch { ;
         boolean eVar = event.hasAny(varBits);
         boolean unify = eVar || conj.hasAny(varBits);
 
-        if (!unify && (!(event instanceof Compound) || event.opID()!=CONJ.id)) {
+        if (!unify && (!(event instanceof Compound) || event.opID()!= (int) CONJ.id)) {
             if (!Conj.isSeq(conj)) {
                 if (!includeMatched) {
                     //simple parallel remove match case
@@ -94,7 +94,7 @@ public enum ConjMatch { ;
         if (at.length == 0)
             return Null;
 
-        long matchStart = at[0], matchEnd = (forward ? matchStart + event.eventRange() : matchStart - event.eventRange());
+        long matchStart = (long) at[0], matchEnd = (forward ? matchStart + (long) event.eventRange() : matchStart - (long) event.eventRange());
 
         if (!includeMatched)
             seq.removeAll(matches);

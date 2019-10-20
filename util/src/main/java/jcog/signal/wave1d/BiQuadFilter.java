@@ -60,9 +60,9 @@ public class BiQuadFilter {
 	
 	public void doFiltering(float[] in, float[] tmp){
         /* mirroring */
-        double mir = 2 * in[0];
-		  i1 = mir - in[2];
-		  i2 = mir - in[1];
+        double mir = (double) (2 * in[0]);
+		  i1 = mir - (double) in[2];
+		  i2 = mir - (double) in[1];
 		  /* apply filtering */
 		  accept(in);
 		  /* invert  */
@@ -70,9 +70,9 @@ public class BiQuadFilter {
 		    tmp[in.length-j-1] = in[j];
 		  }
 		  /* mirror again */
-		  mir = 2*tmp[0];
-		  i1 = mir - tmp[2];
-		  i2 = mir - tmp[1];
+		  mir = (double) (2 * tmp[0]);
+		  i1 = mir - (double) tmp[2];
+		  i2 = mir - (double) tmp[1];
 		  /* apply filtering */
 		  accept(tmp);
 		  /* invert back */
@@ -84,7 +84,7 @@ public class BiQuadFilter {
 	private void accept(float[] in) {
 		double i1 = this.i1, i2 = this.i2, o2 = this.o2, o1 = this.o1;
 		for (int j = 0; j < in.length; j++) {
-			double i0 = in[j];
+			double i0 = (double) in[j];
             double o0 = b1 * i0 + b2 * i1 + b3 * i2 - a2 * o1 - a3 * o2;
 			in[j] = (float) o0;
 			i2 = i1;

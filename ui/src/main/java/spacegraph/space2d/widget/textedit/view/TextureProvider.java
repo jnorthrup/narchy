@@ -16,7 +16,7 @@ public final class TextureProvider {
     public static final String DEFAULT_FONT_PATH = "font/CourierPrimeCode.ttf";
     private static final int FONT_SIZE = 64;
 
-    private final LoadingCache<String, BufferedImage> glyphCache = CacheBuilder.newBuilder().maximumSize(2048)
+    private final LoadingCache<String, BufferedImage> glyphCache = CacheBuilder.newBuilder().maximumSize(2048L)
             .build(new CacheLoader<>() {
                 @Override
                 public BufferedImage load(String c) {
@@ -76,7 +76,7 @@ public final class TextureProvider {
         GlyphVector gv = font.createGlyphVector(fontRenderContext, c.toCharArray());
 
         FontMetrics fm = g2d.getFontMetrics(font);
-        g2d.drawGlyphVector(gv, 0 /*(FONT_SIZE - fm.charWidth(c.codePointAt(0)))*/, fm.getMaxAscent());
+        g2d.drawGlyphVector(gv, (float) 0 /*(FONT_SIZE - fm.charWidth(c.codePointAt(0)))*/, (float) fm.getMaxAscent());
         return image;
     }
 }

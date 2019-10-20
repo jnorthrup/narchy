@@ -74,15 +74,15 @@ public class SyntaxTree {
                 case '[':
                     tryConcat();
                     boolean isComplementarySet;
-                    if (r.charAt(index) == '^') {
+                    if ((int) r.charAt(index) == (int) '^') {
                         isComplementarySet = true;
                         index++;
                     } else isComplementarySet = false;
                     List<Character> all = new FasterList<>();
-                    for (char next = r.charAt(index++); next != ']'; next = r.charAt(index++)) {
-                        if (next == '\\' || next == '.') {
+                    for (char next = r.charAt(index++); (int) next != (int) ']'; next = r.charAt(index++)) {
+                        if ((int) next == (int) '\\' || (int) next == (int) '.') {
                             String token;
-                            if (next == '\\') {
+                            if ((int) next == (int) '\\') {
                                 char nextNext = r.charAt(index++);
                                 token = new String(new char[]{'\\', nextNext});
                             } else token = String.valueOf(next);
@@ -97,7 +97,7 @@ public class SyntaxTree {
                     nodeList.add(LeftBracket.the);
                     for (int i = 0; i < chSet.length; i++) {
                         nodeList.add(new LChar(chSet[i]));
-                        if (i == chSet.length - 1 || chSet[i + 1] == 0) break;
+                        if (i == chSet.length - 1 || (int) chSet[i + 1] == 0) break;
                         nodeList.add(new BOr());
                     }
                     nodeList.add(RightBracket.the);
@@ -124,9 +124,9 @@ public class SyntaxTree {
                     int most = -1;
                     if (!deterministicLength) {
                         char next = r.charAt(index);
-                        if (next != '}') {
+                        if ((int) next != (int) '}') {
                             sb = new StringBuilder();
-                            for (char nextNext = r.charAt(index++); nextNext != '}'; nextNext = r.charAt(index++)) {
+                            for (char nextNext = r.charAt(index++); (int) nextNext != (int) '}'; nextNext = r.charAt(index++)) {
                                 sb.append(nextNext);
                             }
                             if (sb.length() != 0) {
@@ -165,9 +165,9 @@ public class SyntaxTree {
                     break;
                 default:
                     tryConcat();
-                    if (ch == '\\' || ch == '.') {
+                    if ((int) ch == (int) '\\' || (int) ch == (int) '.') {
                         String token;
-                        if (ch == '\\') {
+                        if ((int) ch == (int) '\\') {
                             char next = r.charAt(index++);
                             token = new String(new char[]{'\\', next});
                         } else token = String.valueOf(ch);

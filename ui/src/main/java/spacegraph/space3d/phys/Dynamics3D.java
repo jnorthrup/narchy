@@ -146,7 +146,7 @@ public class Dynamics3D<X> extends Collisions<X> {
                 localTime += timeStep;
                 if (localTime >= fixedTimeStep) {
                     numSimulationSubSteps = Math.round(localTime / fixedTimeStep);
-                    localTime -= numSimulationSubSteps * fixedTimeStep;
+                    localTime -= (float) numSimulationSubSteps * fixedTimeStep;
                 }
             } else {
                 
@@ -197,7 +197,7 @@ public class Dynamics3D<X> extends Collisions<X> {
         List<Collidable> nextCollidables = coll.write();
         nextCollidables.clear();
 
-        short[] i = {0};
+        short[] i = {(short) 0};
         for (Spatial<X> s : spatials) {
             s.order = i[0]++;
 
@@ -361,14 +361,14 @@ public class Dynamics3D<X> extends Collisions<X> {
     private void updateActivationState(float timeStep) {
 
 
-        float deactivationTime = isDeactivationDisabled() ? 0 : getDeactivationTime();
+        float deactivationTime = isDeactivationDisabled() ? (float) 0 : getDeactivationTime();
 
         for (Collidable colObj : collidable) {
             Body3D body = ifDynamic(colObj);
             if (body != null) {
                 body.updateDeactivation(timeStep);
 
-                if (deactivationTime > 0 && body.wantsSleeping(deactivationTime)) {
+                if (deactivationTime > (float) 0 && body.wantsSleeping(deactivationTime)) {
                     if (body.isStaticOrKinematicObject()) {
                         body.setActivationState(ISLAND_SLEEPING);
                     } else {
@@ -526,7 +526,7 @@ public class Dynamics3D<X> extends Collisions<X> {
 
         v3 tmp = new v3();
         Transform predictedTrans = new Transform();
-        SphereShape tmpSphere = new SphereShape(1);
+        SphereShape tmpSphere = new SphereShape(1.0F);
 
         for (Collidable colObj : collidable) {
             Body3D body = ifDynamic(colObj);
@@ -594,13 +594,13 @@ public class Dynamics3D<X> extends Collisions<X> {
         v3 start = new v3(transform);
 
         v3 xoffs = new v3();
-        xoffs.set(radius, 0, 0);
+        xoffs.set(radius, (float) 0, (float) 0);
         transform.basis.transform(xoffs);
         v3 yoffs = new v3();
-        yoffs.set(0, radius, 0);
+        yoffs.set((float) 0, radius, (float) 0);
         transform.basis.transform(yoffs);
         v3 zoffs = new v3();
-        zoffs.set(0, 0, radius);
+        zoffs.set((float) 0, (float) 0, radius);
         transform.basis.transform(zoffs);
 
         v3 tmp1 = new v3();
@@ -907,7 +907,7 @@ public class Dynamics3D<X> extends Collisions<X> {
 
     private static class ClosestNotMeConvexResultCallback extends ClosestConvexResultCallback {
         private final Collidable me;
-        private static final float allowedPenetration = 0;
+        private static final float allowedPenetration = (float) 0;
         private final OverlappingPairCache pairCache;
         private final Intersecter intersecter;
 

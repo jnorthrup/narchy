@@ -15,7 +15,7 @@ public abstract class Keyword extends Atomic implements Idempotent {
 
 	public Keyword(Op op, String label, byte[] bytes) {
 		this.op = op;
-		this.opID = op.id;
+		this.opID = (int) op.id;
 		this.label = label;
 		this.bytes = bytes;
 		this.hash = Util.hash(bytes);

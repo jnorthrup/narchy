@@ -43,13 +43,13 @@ public interface Tensor  {
         float[] values = new float[elements];
 
         for (int i = 0; i < elements; i++)
-            values[i] = start + i * steps;
+            values[i] = (float) (start + i * steps);
 
         return new ArrayTensor(values);
     }
 
     static Tensor empty(int dimension) {
-        return vectorOf(0, dimension);
+        return vectorOf((float) 0, dimension);
     }
 
     static Tensor vectorOf(float value, int dimension) {
@@ -63,15 +63,15 @@ public interface Tensor  {
     }
 
     static Tensor logEach(Tensor vector) {
-        return forEach(vector, d -> (float)Math.log(d));
+        return forEach(vector, d -> (float)Math.log((double) d));
     }
 
     static Tensor sqrtEach(Tensor vector) {
-        return forEach(vector, d -> (float)Math.sqrt(d));
+        return forEach(vector, d -> (float)Math.sqrt((double) d));
     }
 
     static Tensor powEach(Tensor vector, double power) {
-        return forEach(vector, d -> (float)Math.pow(d, power));
+        return forEach(vector, d -> (float)Math.pow((double) d, power));
     }
 
     /*static float[] copyVectorValues(Tensor vector) {
@@ -270,7 +270,7 @@ public interface Tensor  {
     }
 
     default float sumValues() {
-        float[] sum = {0};
+        float[] sum = {(float) 0};
         forEach((i,x) -> sum[0] += x);
         return sum[0];
     }
@@ -328,15 +328,15 @@ public interface Tensor  {
      */
     default float getFractInterp(float fraction) {
         int v = volume()-1;
-        float posInBuf = fraction * v;
+        float posInBuf = fraction * (float) v;
         int lowerIndex = Math.max(0, Math.round(posInBuf - 0.5f));
         int upperIndex = Math.min(v, Math.round(posInBuf + 0.5f));
-        float offset = posInBuf - lowerIndex;
+        float offset = posInBuf - (float) lowerIndex;
         float l = getAt(lowerIndex);
 
 
         float u = getAt(upperIndex);
-        return (1 - offset) * l + offset * u;
+        return (1.0F - offset) * l + offset * u;
     }
 
     /**
@@ -347,7 +347,7 @@ public interface Tensor  {
      */
 
     default float getFractRaw(float fraction) {
-        return getAt((int) (fraction * volume()));
+        return getAt((int) (fraction * (float) volume()));
     }
 
 
@@ -355,7 +355,7 @@ public interface Tensor  {
     default double[] doubleArray() {
         int v = volume();
         double[] xx = new double[v];
-        forEach((i,x)-> xx[i] = x);
+        forEach((i,x)-> xx[i] = (double) x);
         return xx;
     }
 

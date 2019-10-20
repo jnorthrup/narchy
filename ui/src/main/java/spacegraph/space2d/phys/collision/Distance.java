@@ -30,8 +30,6 @@ import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.common.Transform;
 
-import java.util.stream.IntStream;
-
 
 /**
  * This is non-static for faster pooling. To get an instance, use the {@link SingletonPool}, don't
@@ -88,7 +86,7 @@ public class Distance {
         public final int[] indexB = new int[3];
 
         public SimplexCache() {
-            metric = 0;
+            metric = (float) 0;
             count = 0;
             indexA[0] = Integer.MAX_VALUE;
             indexA[1] = Integer.MAX_VALUE;

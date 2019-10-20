@@ -124,7 +124,7 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
 
         
         if (mSize++ > threshold) {
-            tab = grow(2);
+            tab = grow(2.0F);
             index = hash & (tab.length - 1);
         }
         tab[index] = new SimpleHashSetEntry<>(hash, key);
@@ -156,7 +156,7 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
         if (oldCapacity == MAXIMUM_CAPACITY) {
             return oldTable;
         }
-        int newCapacity = (int)Math.floor(oldCapacity * factor);
+        int newCapacity = (int)Math.floor((double) (oldCapacity * factor));
         SimpleHashSetEntry<T>[] newTable = makeTable(newCapacity);
         if (mSize == 0) {
             return newTable;

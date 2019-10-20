@@ -21,7 +21,7 @@ public class UnnormalizedVariable extends AbstractAtomic implements Variable, Id
 
     public UnnormalizedVariable(Op op, String label) {
         super(IO.SPECIAL_BYTE, label);
-        this.op = op.id;
+        this.op = (int) op.id;
     }
 
     @Override
@@ -41,22 +41,22 @@ public class UnnormalizedVariable extends AbstractAtomic implements Variable, Id
 
     @Override
     public final int varIndep() {
-        return op == Op.VAR_INDEP.id ? 1 : 0;
+        return op == (int) Op.VAR_INDEP.id ? 1 : 0;
     }
 
     @Override
     public final int varDep() {
-        return op == Op.VAR_DEP.id ? 1 : 0;
+        return op == (int) Op.VAR_DEP.id ? 1 : 0;
     }
 
     @Override
     public final int varQuery() {
-        return op == Op.VAR_QUERY.id ? 1 : 0;
+        return op == (int) Op.VAR_QUERY.id ? 1 : 0;
     }
 
     @Override
     public final int varPattern() {
-        return op == Op.VAR_PATTERN.id ? 1 : 0;
+        return op == (int) Op.VAR_PATTERN.id ? 1 : 0;
     }
 
     @Override public final int complexity() {

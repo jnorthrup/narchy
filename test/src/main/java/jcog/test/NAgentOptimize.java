@@ -18,7 +18,7 @@ public class NAgentOptimize {
                 new BooleanReactionTest(n,
                         ()-> {
                             int period = 8;
-                            return n.time() % period < period / 2;
+                            return n.time() % (long) period < (long) (period / 2);
                         },
                         (i, o) -> i==o
                 )
@@ -58,12 +58,12 @@ public class NAgentOptimize {
 //                        (NAR n, float f) -> n.memoryDuration.setAt(f))
 //                .var("beliefPriDefault", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> n.beliefPriDefault.setAt(f))
-                .var("questionPriDefault", 0, 1f, 0.1f,
+                .var("questionPriDefault", (float) 0, 1f, 0.1f,
                         (n, f) -> {
                             n.questionPriDefault.pri(f);
                             n.questPriDefault.pri(f);
                         })
-                .var("goalPriDefault", 0, 1f, 0.1f,
+                .var("goalPriDefault", (float) 0, 1f, 0.1f,
                     (NAR n, float f) -> n.goalPriDefault.pri(f))
 
 //                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
@@ -93,7 +93,7 @@ public class NAgentOptimize {
 
         Optilive<NAR, Game> o = l.optilive(n->agent.apply(n.get()),
                 jcog.lab.Optimize.repeat((Game t) -> {
-                    double[] rewardSum = {0}, dexSum = { 0 };
+                    double[] rewardSum = {(double) 0}, dexSum = {(double) 0};
                     t.onFrame(()-> {
                         rewardSum[0] += t.happiness();
                         dexSum[0] += t.dexterity();
@@ -106,11 +106,11 @@ public class NAgentOptimize {
                         return Float.NEGATIVE_INFINITY;
                     }
                     long time = t.nar().time();
-                    double frames = ((double)time) / t.nar().dur();
+                    double frames = ((double)time) / (double) t.nar().dur();
                     double rewardMean = rewardSum[0]/frames;
                     double dexMean= dexSum[0]/frames;
                     //return rewardSum[0];
-                    return (float) ((1 + rewardMean) * (1 + dexMean));
+                    return (float) ((1.0 + rewardMean) * (1.0 + dexMean));
                     //return rewardSum[0] * (1 + dexSum[0]);
                 }, repeats)
         );

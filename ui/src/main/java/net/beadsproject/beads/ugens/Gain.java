@@ -22,7 +22,7 @@ public class Gain extends UGen implements DataBeadReceiver {
      * The gain envelope.
      */
     private UGen gainUGen;
-    private float gain = 1;
+    private float gain = 1.0F;
 
     /**
      * Instantiates a new Gain.

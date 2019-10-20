@@ -28,6 +28,6 @@ public class FastCounter extends AtomicLong /*LongAdder*/ implements FloatSuppli
 
     @Override
     public float asFloat() {
-        return get();
+        return (float) get();
     }
 }

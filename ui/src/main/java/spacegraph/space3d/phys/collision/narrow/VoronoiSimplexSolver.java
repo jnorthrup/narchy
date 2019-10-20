@@ -27,8 +27,6 @@ package spacegraph.space3d.phys.collision.narrow;
 import jcog.math.v3;
 import spacegraph.space3d.phys.math.VectorUtil;
 
-import java.util.stream.IntStream;
-
 /**
  * VoronoiSimplexSolver is an implementation of the closest point distance algorithm
  * from a 1-4 points simplex to the origin. Can be used with GJK, as an alternative
@@ -133,7 +131,7 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 
 					float t = v.dot(diff);
 
-                if (t > 0) {
+                if (t > (float) 0) {
 					float dotVV = v.dot(v);
                     if (t < dotVV) {
                         t /= dotVV;
@@ -141,14 +139,14 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
                         diff.sub(tmp);
                         cachedBC.usedVertexA = true;
 					} else {
-                        t = 1;
+                        t = 1.0F;
                         diff.sub(v);
 
 					}
 					cachedBC.usedVertexB = true;
 				} else
                 {
-                    t = 0;
+                    t = (float) 0;
                     
                     cachedBC.usedVertexA = true;
                 }
@@ -301,7 +299,7 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 		{
 			result.closestPointOnSimplex.set(b);
 			result.usedVertexB = true;
-			result.setBarycentricCoordinates(0, 1f, 0f, 0f);
+			result.setBarycentricCoordinates((float) 0, 1f, 0f, 0f);
 
 			return true; 
 		}
@@ -356,7 +354,7 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 
 			result.usedVertexB = true;
 			result.usedVertexC = true;
-			result.setBarycentricCoordinates(0, 1f-w, w, 0f);
+			result.setBarycentricCoordinates((float) 0, 1f-w, w, 0f);
 			return true;		
 		   
 		}
@@ -465,7 +463,7 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 						tempResult.barycentricCoords[VERTA],
 						tempResult.barycentricCoords[VERTB],
 						tempResult.barycentricCoords[VERTC],
-						0
+						(float) 0
 				);
 
 			}
@@ -490,7 +488,7 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 				finalResult.usedVertexD = tempResult.usedVertexC;
 				finalResult.setBarycentricCoordinates(
 						tempResult.barycentricCoords[VERTA],
-						0,
+						(float) 0,
 						tempResult.barycentricCoords[VERTB],
 						tempResult.barycentricCoords[VERTC]
 				);
@@ -518,7 +516,7 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 				finalResult.setBarycentricCoordinates(
 						tempResult.barycentricCoords[VERTA],
 						tempResult.barycentricCoords[VERTC],
-						0,
+						(float) 0,
 						tempResult.barycentricCoords[VERTB]
 				);
 
@@ -543,7 +541,7 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 				finalResult.usedVertexD = tempResult.usedVertexB;
 
 				finalResult.setBarycentricCoordinates(
-						0,
+						(float) 0,
 						tempResult.barycentricCoords[VERTA],
 						tempResult.barycentricCoords[VERTC],
 						tempResult.barycentricCoords[VERTB]

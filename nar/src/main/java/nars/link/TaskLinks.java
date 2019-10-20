@@ -36,7 +36,7 @@ public class TaskLinks implements Sampler<TaskLink> {
      * 1.0 = balanced with incoming pressure
      *  >1 = active forget
      */
-    public final FloatRange decay = new FloatRange(1f, 0, 4);
+    public final FloatRange decay = new FloatRange(1f, (float) 0, 4.0F);
 
     /**
      * (post-)Amp: tasklink conductance, propagation rate
@@ -45,7 +45,7 @@ public class TaskLinks implements Sampler<TaskLink> {
         0.5f,
         //1,
         //1 - PHI_min_1f,
-        0, 1f /* 2f */);
+            (float) 0, 1f /* 2f */);
 
 
     /**

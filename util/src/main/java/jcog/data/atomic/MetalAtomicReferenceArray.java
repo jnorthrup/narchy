@@ -85,7 +85,7 @@ public class MetalAtomicReferenceArray<E>  {
 	}
 
 	private static long byteOffset(int i) {
-		return ((long) i << shift) + base;
+		return ((long) i << shift) + (long) base;
 	}
 
 	/**

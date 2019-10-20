@@ -33,7 +33,7 @@ import spacegraph.space3d.phys.BulletGlobals;
 public class ScalarUtil {
 
 	public static float fsel(float a, float b, float c) {
-		return a >= 0 ? b : c;
+		return a >= (float) 0 ? b : c;
 	}
 	
 	public static boolean fuzzyZero(float x) {

@@ -443,15 +443,15 @@ public class M_Boss2 {
         public String getID() { return "boss2_attack"; }
         @Override
         public boolean think(edict_t self) {
-            float[] vec = { 0, 0, 0 };
+            float[] vec = {(float) 0, (float) 0, (float) 0};
 
             Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, vec);
             float range = Math3D.VectorLength(vec);
 
-            if (range <= 125) {
+            if (range <= 125.0F) {
                 self.monsterinfo.currentmove = boss2_move_attack_pre_mg;
             } else {
-                if (Lib.random() <= 0.6)
+                if ((double) Lib.random() <= 0.6)
                     self.monsterinfo.currentmove = boss2_move_attack_pre_mg;
                 else
                     self.monsterinfo.currentmove = boss2_move_attack_rocket;
@@ -476,7 +476,7 @@ public class M_Boss2 {
         @Override
         public boolean think(edict_t self) {
             if (GameUtil.infront(self, self.enemy))
-                if (Lib.random() <= 0.7)
+                if ((double) Lib.random() <= 0.7)
                     self.monsterinfo.currentmove = boss2_move_attack_mg;
                 else
                     self.monsterinfo.currentmove = boss2_move_attack_post_mg;
@@ -497,19 +497,19 @@ public class M_Boss2 {
             if (GameBase.level.time < self.pain_debounce_time)
                 return;
 
-            self.pain_debounce_time = GameBase.level.time + 3;
+            self.pain_debounce_time = GameBase.level.time + 3.0F;
             
             if (damage < 10) {
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain3, 1,
-                        Defines.ATTN_NONE, 0);
+                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain3, 1.0F,
+                        (float) Defines.ATTN_NONE, (float) 0);
                 self.monsterinfo.currentmove = boss2_move_pain_light;
             } else if (damage < 30) {
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
-                        Defines.ATTN_NONE, 0);
+                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1.0F,
+                        (float) Defines.ATTN_NONE, (float) 0);
                 self.monsterinfo.currentmove = boss2_move_pain_light;
             } else {
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain2, 1,
-                        Defines.ATTN_NONE, 0);
+                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain2, 1.0F,
+                        (float) Defines.ATTN_NONE, (float) 0);
                 self.monsterinfo.currentmove = boss2_move_pain_heavy;
             }
         }
@@ -520,11 +520,11 @@ public class M_Boss2 {
         public String getID() { return "boss2_dead"; }
         @Override
         public boolean think(edict_t self) {
-            Math3D.VectorSet(self.mins, -56, -56, 0);
-            Math3D.VectorSet(self.maxs, 56, 56, 80);
+            Math3D.VectorSet(self.mins, -56.0F, -56.0F, (float) 0);
+            Math3D.VectorSet(self.maxs, 56.0F, 56.0F, 80.0F);
             self.movetype = Defines.MOVETYPE_TOSS;
             self.svflags |= Defines.SVF_DEADMONSTER;
-            self.nextthink = 0;
+            self.nextthink = (float) 0;
             game_import_t.linkentity(self);
             return true;
         }
@@ -536,8 +536,8 @@ public class M_Boss2 {
         @Override
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                         int damage, float[] point) {
-            game_import_t.sound(self, Defines.CHAN_VOICE, sound_death, 1,
-                    Defines.ATTN_NONE, 0);
+            game_import_t.sound(self, Defines.CHAN_VOICE, sound_death, 1.0F,
+                    (float) Defines.ATTN_NONE, (float) 0);
             self.deadflag = Defines.DEAD_DEAD;
             self.takedamage = Defines.DAMAGE_NO;
             self.count = 0;
@@ -554,12 +554,12 @@ public class M_Boss2 {
 
             if (self.enemy.health > 0) {
 
-                float[] spot1 = {0, 0, 0};
+                float[] spot1 = {(float) 0, (float) 0, (float) 0};
                 Math3D.VectorCopy(self.s.origin, spot1);
-                spot1[2] += self.viewheight;
-                float[] spot2 = {0, 0, 0};
+                spot1[2] = spot1[2] + (float) self.viewheight;
+                float[] spot2 = {(float) 0, (float) 0, (float) 0};
                 Math3D.VectorCopy(self.enemy.s.origin, spot2);
-                spot2[2] += self.enemy.viewheight;
+                spot2[2] = spot2[2] + (float) self.enemy.viewheight;
 
                 trace_t tr = game_import_t.trace(spot1, null, null, spot2, self,
                         Defines.CONTENTS_SOLID | Defines.CONTENTS_MONSTER
@@ -572,7 +572,7 @@ public class M_Boss2 {
             }
 
             int enemy_range = GameUtil.range(self, self.enemy);
-            float[] temp = {0, 0, 0};
+            float[] temp = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, temp);
             float enemy_yaw = Math3D.vectoyaw(temp);
 
@@ -612,13 +612,13 @@ public class M_Boss2 {
 
             if (Lib.random() < chance) {
                 self.monsterinfo.attack_state = Defines.AS_MISSILE;
-                self.monsterinfo.attack_finished = GameBase.level.time + 2
+                self.monsterinfo.attack_finished = GameBase.level.time + 2.0F
                         * Lib.random();
                 return true;
             }
 
             if ((self.flags & Defines.FL_FLY) != 0) {
-                if (Lib.random() < 0.3)
+                if ((double) Lib.random() < 0.3)
                     self.monsterinfo.attack_state = Defines.AS_SLIDING;
                 else
                     self.monsterinfo.attack_state = Defines.AS_STRAIGHT;
@@ -633,9 +633,9 @@ public class M_Boss2 {
         public String getID() { return "boss2_search"; }
         @Override
         public boolean think(edict_t self) {
-            if (Lib.random() < 0.5)
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_search1, 1,
-                        Defines.ATTN_NONE, 0);
+            if ((double) Lib.random() < 0.5)
+                game_import_t.sound(self, Defines.CHAN_VOICE, sound_search1, 1.0F,
+                        (float) Defines.ATTN_NONE, (float) 0);
             return true;
         }
     };
@@ -645,19 +645,19 @@ public class M_Boss2 {
         public String getID() { return "Boss2Rocket"; }
         @Override
         public boolean think(edict_t self) {
-            float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
+            float[] forward = {(float) 0, (float) 0, (float) 0}, right = {(float) 0, (float) 0, (float) 0};
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
 
 
-            float[] start = {0, 0, 0};
+            float[] start = {(float) 0, (float) 0, (float) 0};
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[Defines.MZ2_BOSS2_ROCKET_1],
                     forward, right, start);
-            float[] vec = {0, 0, 0};
+            float[] vec = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorCopy(self.enemy.s.origin, vec);
-            vec[2] += self.enemy.viewheight;
-            float[] dir = {0, 0, 0};
+            vec[2] = vec[2] + (float) self.enemy.viewheight;
+            float[] dir = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorSubtract(vec, start, dir);
             Math3D.VectorNormalize(dir);
             Monster.monster_fire_rocket(self, start, dir, 50, 500,
@@ -668,7 +668,7 @@ public class M_Boss2 {
                     M_Flash.monster_flash_offset[Defines.MZ2_BOSS2_ROCKET_2],
                     forward, right, start);
             Math3D.VectorCopy(self.enemy.s.origin, vec);
-            vec[2] += self.enemy.viewheight;
+            vec[2] = vec[2] + (float) self.enemy.viewheight;
             Math3D.VectorSubtract(vec, start, dir);
             Math3D.VectorNormalize(dir);
             Monster.monster_fire_rocket(self, start, dir, 50, 500,
@@ -679,7 +679,7 @@ public class M_Boss2 {
                     M_Flash.monster_flash_offset[Defines.MZ2_BOSS2_ROCKET_3],
                     forward, right, start);
             Math3D.VectorCopy(self.enemy.s.origin, vec);
-            vec[2] += self.enemy.viewheight;
+            vec[2] = vec[2] + (float) self.enemy.viewheight;
             Math3D.VectorSubtract(vec, start, dir);
             Math3D.VectorNormalize(dir);
             Monster.monster_fire_rocket(self, start, dir, 50, 500,
@@ -690,7 +690,7 @@ public class M_Boss2 {
                     M_Flash.monster_flash_offset[Defines.MZ2_BOSS2_ROCKET_4],
                     forward, right, start);
             Math3D.VectorCopy(self.enemy.s.origin, vec);
-            vec[2] += self.enemy.viewheight;
+            vec[2] = vec[2] + (float) self.enemy.viewheight;
             Math3D.VectorSubtract(vec, start, dir);
             Math3D.VectorNormalize(dir);
             Monster.monster_fire_rocket(self, start, dir, 50, 500,
@@ -704,21 +704,21 @@ public class M_Boss2 {
         public String getID() { return "boss2_firebullet_right"; }
         @Override
         public boolean think(edict_t self) {
-            float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
+            float[] forward = {(float) 0, (float) 0, (float) 0}, right = {(float) 0, (float) 0, (float) 0};
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
-            float[] start = {0, 0, 0};
+            float[] start = {(float) 0, (float) 0, (float) 0};
             Math3D
                     .G_ProjectSource(
                             self.s.origin,
                             M_Flash.monster_flash_offset[Defines.MZ2_BOSS2_MACHINEGUN_R1],
                             forward, right, start);
 
-            float[] target = {0,
-                    0, 0};
+            float[] target = {(float) 0,
+                    (float) 0, (float) 0};
             Math3D.VectorMA(self.enemy.s.origin, -0.2f, self.enemy.velocity,
                     target);
-            target[2] += self.enemy.viewheight;
+            target[2] = target[2] + (float) self.enemy.viewheight;
             Math3D.VectorSubtract(target, start, forward);
             Math3D.VectorNormalize(forward);
 
@@ -736,22 +736,22 @@ public class M_Boss2 {
         public String getID() { return "boss2_firebullet_left"; }
         @Override
         public boolean think(edict_t self) {
-            float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
+            float[] forward = {(float) 0, (float) 0, (float) 0}, right = {(float) 0, (float) 0, (float) 0};
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
-            float[] start = {0, 0, 0};
+            float[] start = {(float) 0, (float) 0, (float) 0};
             Math3D
                     .G_ProjectSource(
                             self.s.origin,
                             M_Flash.monster_flash_offset[Defines.MZ2_BOSS2_MACHINEGUN_L1],
                             forward, right, start);
 
-            float[] target = {0,
-                    0, 0};
+            float[] target = {(float) 0,
+                    (float) 0, (float) 0};
             Math3D.VectorMA(self.enemy.s.origin, -0.2f, self.enemy.velocity,
                     target);
 
-            target[2] += self.enemy.viewheight;
+            target[2] = target[2] + (float) self.enemy.viewheight;
             Math3D.VectorSubtract(target, start, forward);
             Math3D.VectorNormalize(forward);
 
@@ -792,259 +792,259 @@ public class M_Boss2 {
     };
 
     static final mframe_t[] boss2_frames_stand = {
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null) };
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null) };
 
     static final mmove_t boss2_move_stand = new mmove_t(FRAME_stand30, FRAME_stand50,
             boss2_frames_stand, null);
 
     static final mframe_t[] boss2_frames_fidget = {
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null) };
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null) };
 
     static mmove_t boss2_move_fidget = new mmove_t(FRAME_stand1, FRAME_stand30,
             boss2_frames_fidget, null);
 
     static final mframe_t[] boss2_frames_walk = {
-            new mframe_t(GameAI.ai_walk, 8, null),
-            new mframe_t(GameAI.ai_walk, 8, null),
-            new mframe_t(GameAI.ai_walk, 8, null),
-            new mframe_t(GameAI.ai_walk, 8, null),
-            new mframe_t(GameAI.ai_walk, 8, null),
-            new mframe_t(GameAI.ai_walk, 8, null),
-            new mframe_t(GameAI.ai_walk, 8, null),
-            new mframe_t(GameAI.ai_walk, 8, null),
-            new mframe_t(GameAI.ai_walk, 8, null),
-            new mframe_t(GameAI.ai_walk, 8, null),
-            new mframe_t(GameAI.ai_walk, 8, null),
-            new mframe_t(GameAI.ai_walk, 8, null),
-            new mframe_t(GameAI.ai_walk, 8, null),
-            new mframe_t(GameAI.ai_walk, 8, null),
-            new mframe_t(GameAI.ai_walk, 8, null),
-            new mframe_t(GameAI.ai_walk, 8, null),
-            new mframe_t(GameAI.ai_walk, 8, null),
-            new mframe_t(GameAI.ai_walk, 8, null),
-            new mframe_t(GameAI.ai_walk, 8, null),
-            new mframe_t(GameAI.ai_walk, 8, null) };
+            new mframe_t(GameAI.ai_walk, 8.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null) };
 
     static final mmove_t boss2_move_walk = new mmove_t(FRAME_walk1, FRAME_walk20,
             boss2_frames_walk, null);
 
     static final mframe_t[] boss2_frames_run = {
-            new mframe_t(GameAI.ai_run, 8, null),
-            new mframe_t(GameAI.ai_run, 8, null),
-            new mframe_t(GameAI.ai_run, 8, null),
-            new mframe_t(GameAI.ai_run, 8, null),
-            new mframe_t(GameAI.ai_run, 8, null),
-            new mframe_t(GameAI.ai_run, 8, null),
-            new mframe_t(GameAI.ai_run, 8, null),
-            new mframe_t(GameAI.ai_run, 8, null),
-            new mframe_t(GameAI.ai_run, 8, null),
-            new mframe_t(GameAI.ai_run, 8, null),
-            new mframe_t(GameAI.ai_run, 8, null),
-            new mframe_t(GameAI.ai_run, 8, null),
-            new mframe_t(GameAI.ai_run, 8, null),
-            new mframe_t(GameAI.ai_run, 8, null),
-            new mframe_t(GameAI.ai_run, 8, null),
-            new mframe_t(GameAI.ai_run, 8, null),
-            new mframe_t(GameAI.ai_run, 8, null),
-            new mframe_t(GameAI.ai_run, 8, null),
-            new mframe_t(GameAI.ai_run, 8, null),
-            new mframe_t(GameAI.ai_run, 8, null) };
+            new mframe_t(GameAI.ai_run, 8.0F, null),
+            new mframe_t(GameAI.ai_run, 8.0F, null),
+            new mframe_t(GameAI.ai_run, 8.0F, null),
+            new mframe_t(GameAI.ai_run, 8.0F, null),
+            new mframe_t(GameAI.ai_run, 8.0F, null),
+            new mframe_t(GameAI.ai_run, 8.0F, null),
+            new mframe_t(GameAI.ai_run, 8.0F, null),
+            new mframe_t(GameAI.ai_run, 8.0F, null),
+            new mframe_t(GameAI.ai_run, 8.0F, null),
+            new mframe_t(GameAI.ai_run, 8.0F, null),
+            new mframe_t(GameAI.ai_run, 8.0F, null),
+            new mframe_t(GameAI.ai_run, 8.0F, null),
+            new mframe_t(GameAI.ai_run, 8.0F, null),
+            new mframe_t(GameAI.ai_run, 8.0F, null),
+            new mframe_t(GameAI.ai_run, 8.0F, null),
+            new mframe_t(GameAI.ai_run, 8.0F, null),
+            new mframe_t(GameAI.ai_run, 8.0F, null),
+            new mframe_t(GameAI.ai_run, 8.0F, null),
+            new mframe_t(GameAI.ai_run, 8.0F, null),
+            new mframe_t(GameAI.ai_run, 8.0F, null) };
 
     static final mmove_t boss2_move_run = new mmove_t(FRAME_walk1, FRAME_walk20,
             boss2_frames_run, null);
 
     static final mframe_t[] boss2_frames_attack_pre_mg = {
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, boss2_attack_mg) };
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, boss2_attack_mg) };
 
     static final mmove_t boss2_move_attack_pre_mg = new mmove_t(FRAME_attack1,
             FRAME_attack9, boss2_frames_attack_pre_mg, null);
 
     
     static final mframe_t[] boss2_frames_attack_mg = {
-            new mframe_t(GameAI.ai_charge, 1, Boss2MachineGun),
-            new mframe_t(GameAI.ai_charge, 1, Boss2MachineGun),
-            new mframe_t(GameAI.ai_charge, 1, Boss2MachineGun),
-            new mframe_t(GameAI.ai_charge, 1, Boss2MachineGun),
-            new mframe_t(GameAI.ai_charge, 1, Boss2MachineGun),
-            new mframe_t(GameAI.ai_charge, 1, boss2_reattack_mg) };
+            new mframe_t(GameAI.ai_charge, 1.0F, Boss2MachineGun),
+            new mframe_t(GameAI.ai_charge, 1.0F, Boss2MachineGun),
+            new mframe_t(GameAI.ai_charge, 1.0F, Boss2MachineGun),
+            new mframe_t(GameAI.ai_charge, 1.0F, Boss2MachineGun),
+            new mframe_t(GameAI.ai_charge, 1.0F, Boss2MachineGun),
+            new mframe_t(GameAI.ai_charge, 1.0F, boss2_reattack_mg) };
 
     static final mmove_t boss2_move_attack_mg = new mmove_t(FRAME_attack10,
             FRAME_attack15, boss2_frames_attack_mg, null);
 
     static final mframe_t[] boss2_frames_attack_post_mg = {
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null) };
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null) };
 
     static final mmove_t boss2_move_attack_post_mg = new mmove_t(FRAME_attack16,
             FRAME_attack19, boss2_frames_attack_post_mg, boss2_run);
 
     static final mframe_t[] boss2_frames_attack_rocket = {
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_move, -20, Boss2Rocket),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null) };
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_move, -20.0F, Boss2Rocket),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null) };
 
     static final mmove_t boss2_move_attack_rocket = new mmove_t(FRAME_attack20,
             FRAME_attack40, boss2_frames_attack_rocket, boss2_run);
 
     static final mframe_t[] boss2_frames_pain_heavy = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t boss2_move_pain_heavy = new mmove_t(FRAME_pain2,
             FRAME_pain19, boss2_frames_pain_heavy, boss2_run);
 
     static final mframe_t[] boss2_frames_pain_light = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t boss2_move_pain_light = new mmove_t(FRAME_pain20,
             FRAME_pain23, boss2_frames_pain_light, boss2_run);
 
     static final mframe_t[] boss2_frames_death = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, M_Supertank.BossExplode) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, M_Supertank.BossExplode) };
 
     /*
      * static EntThinkAdapter xxx = new EntThinkAdapter() { public boolean
@@ -1059,7 +1059,7 @@ public class M_Boss2 {
      * Sight
      */
     public static void SP_monster_boss2(edict_t self) {
-        if (GameBase.deathmatch.value != 0) {
+        if (GameBase.deathmatch.value != (float) 0) {
             GameUtil.G_FreeEdict(self);
             return;
         }
@@ -1076,8 +1076,8 @@ public class M_Boss2 {
         self.solid = Defines.SOLID_BBOX;
         self.s.modelindex = game_import_t
                 .modelindex("models/monsters/boss2/tris.md2");
-        Math3D.VectorSet(self.mins, -56, -56, 0);
-        Math3D.VectorSet(self.maxs, 56, 56, 80);
+        Math3D.VectorSet(self.mins, -56.0F, -56.0F, (float) 0);
+        Math3D.VectorSet(self.maxs, 56.0F, 56.0F, 80.0F);
 
         self.health = 2000;
         self.gib_health = -200;

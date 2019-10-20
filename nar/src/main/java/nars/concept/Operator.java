@@ -90,8 +90,8 @@ public final class Operator extends AbstractAtomic implements Idempotent {
                     long s = task.start();
                     long now = nar.time();
                     float dur = nar.dur();
-                    if (s >= now - dur / 2) {
-                        if (s > now + dur / 2) {
+                    if ((float) s >= (float) now - dur / 2.0F) {
+                        if ((float) s > (float) now + dur / 2.0F) {
                             //delayed
                             nar.runAt(s, () -> nar.input(exe.apply(task, nar)));
                         } else {

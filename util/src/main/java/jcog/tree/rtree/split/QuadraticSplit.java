@@ -24,7 +24,6 @@ import jcog.Util;
 import jcog.tree.rtree.*;
 
 import java.util.function.Function;
-import java.util.function.UnaryOperator;
 
 /**
  * Guttmann's Quadratic split
@@ -40,12 +39,12 @@ public class QuadraticSplit<X> implements Split<X> {
         short size = leaf.size;
         int r1 = -1, r2 = -1;
         X[] data = leaf.data;
-        double[] COST = Util.map(i -> m.bounds(data[i]).cost(), new double[size]); //cache
-        for (int i = 0; i < size-1; i++) {
+        double[] COST = Util.map(i -> m.bounds(data[i]).cost(), new double[(int) size]); //cache
+        for (int i = 0; i < (int) size -1; i++) {
             HyperRegion ii = m.bounds(data[i]);
             double iic = COST[i];
             Function<HyperRegion, HyperRegion> iiMbr =   ii.mbrBuilder();
-            for (int j = i + 1; j < size; j++) {
+            for (int j = i + 1; j < (int) size; j++) {
                 HyperRegion jj = m.bounds(data[j]);
                 HyperRegion ij = iiMbr.apply(jj);
                 double jjc = COST[j];

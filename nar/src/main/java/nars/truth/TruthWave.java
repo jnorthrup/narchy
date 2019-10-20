@@ -114,11 +114,11 @@ public class TruthWave {
 
     private static void load(float[] array, int index, long absStart, long absEnd, long start, long end, @Nullable Truthed truth) {
 
-        double range = absEnd - absStart;
+        double range = (double) (absEnd - absStart);
         array[index++] = start == Tense.ETERNAL ? Float.NaN :
-                (float) (((start - absStart)) / range);
+                (float) ((double) ((start - absStart)) / range);
         array[index++] = end == Tense.ETERNAL ? Float.NaN :
-                (float) (((end - absStart)) / range);
+                (float) ((double) ((end - absStart)) / range);
         if (truth != null) {
             array[index++] = truth.freq();
             array[index/*++*/] = truth.conf();
@@ -156,11 +156,11 @@ public class TruthWave {
 
         double dt, tStart;
         if (points <= 1) {
-            dt = 0;
-            tStart = (minT + maxT)/2.0;
+            dt = (double) 0;
+            tStart = (double) (minT + maxT) /2.0;
         } else {
-            dt = (maxT - minT) / ((double) (points - 1));
-            tStart = minT;
+            dt = (double) (maxT - minT) / ((double) (points - 1));
+            tStart = (double) minT;
         }
 
 
@@ -168,15 +168,15 @@ public class TruthWave {
         int j = 0;
         Answer a = Answer.taskStrength(true, answerDetail, start, end, term, null, nar)
                 .dur(dur);
-        int tries = Math.round(answerDetail * NAL.ANSWER_TRYING);
+        int tries = Math.round((float) answerDetail * NAL.ANSWER_TRYING);
 
         for (int i = 0; i < points; i++) {
-            double t = tStart + i * dt;
-            long s = Math.round(t - dt/2);
-            long e = Math.round(t + dt/2);
+            double t = tStart + (double) i * dt;
+            long s = Math.round(t - dt/ 2.0);
+            long e = Math.round(t + dt/ 2.0);
             Truth tr = a.clear(tries).time(s, e).match(table).truth();
             if (tr!=null) {
-                long mid = (s + e) / 2;
+                long mid = (s + e) / 2L;
                 load(data, (j++) * ENTRY_SIZE,
                         minT, maxT,
                         mid, mid,
@@ -224,14 +224,14 @@ public class TruthWave {
         float[] t = this.truth;
         int j = 0;
         long start = this.start;
-        double totalRange = this.end-this.start;
+        double totalRange = (double) (this.end - this.start);
         for (int i = 0; i < n; i++) {
             float s = t[j++];
             float e = t[j++];
             float f = t[j++];
             float c = t[j++];
-            long S = start + Math.round(totalRange * s);
-            long E = start + Math.round(totalRange * e);
+            long S = start + Math.round(totalRange * (double) s);
+            long E = start + Math.round(totalRange * (double) e);
             v.onTruth(f, c, S, E);
         }
     }

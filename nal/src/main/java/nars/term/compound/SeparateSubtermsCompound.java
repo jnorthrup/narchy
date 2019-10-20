@@ -27,7 +27,7 @@ public abstract class SeparateSubtermsCompound implements Compound {
 //    }
 
     SeparateSubtermsCompound(byte op, Subterms x) {
-        this(x.hashWith(op));
+        this(x.hashWith((int) op));
     }
 
     SeparateSubtermsCompound(int hash) {

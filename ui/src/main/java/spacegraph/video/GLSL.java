@@ -34,10 +34,10 @@ public class GLSL extends PaintSurface {
     private int fragmentShaderProgram;
     private int shaderprogram;
 
-    private static final float x = -2;
-    private static final float y = -2;
-    private static final float height = 4;
-    private static final float width = 4;
+    private static final float x = -2.0F;
+    private static final float y = -2.0F;
+    private static final float height = 4.0F;
+    private static final float width = 4.0F;
     private static final int iterations = 1;
 
 

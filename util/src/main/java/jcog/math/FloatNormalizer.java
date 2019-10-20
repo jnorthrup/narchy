@@ -16,7 +16,7 @@ public class FloatNormalizer implements FloatToFloatFunction {
     private float relax = 0.001f;
 
     public FloatNormalizer() {
-        this(0, 0);
+        this((float) 0, (float) 0);
     }
 
     public FloatNormalizer(float minStart, float maxStart) {
@@ -47,7 +47,7 @@ public class FloatNormalizer implements FloatToFloatFunction {
             return Float.NaN;
 
         float r = max - min;
-        assert (r >= 0);
+        assert (r >= (float) 0);
         if (r <= epsilon)
             return 0.5f;
         else
@@ -67,13 +67,13 @@ public class FloatNormalizer implements FloatToFloatFunction {
     }
 
     FloatNormalizer updateRange(float raw) {
-        if (relax > 0) {
+        if (relax > (float) 0) {
             float range = max - min;
-            if (range > epsilon * 2) {
-                float mid = (max + min) / 2;
-                float rangeSensitized = Util.lerp(relax, range, epsilon * 2); //shrunk
-                min(mid - rangeSensitized / 2);
-                max(mid + rangeSensitized / 2);
+            if (range > epsilon * 2.0F) {
+                float mid = (max + min) / 2.0F;
+                float rangeSensitized = Util.lerp(relax, range, epsilon * 2.0F); //shrunk
+                min(mid - rangeSensitized / 2.0F);
+                max(mid + rangeSensitized / 2.0F);
             }
         }
 

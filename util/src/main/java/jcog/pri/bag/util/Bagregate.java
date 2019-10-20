@@ -28,8 +28,8 @@ public class Bagregate<X> implements Iterable<PriReference<X>> {
     public final Bag<?, PriReference<X>> bag;
     private final Iterable<? extends X> src;
 
-    public final FloatRange preAmp = new FloatRange(1, 0f, 1f);
-    public final FloatRange forgetRate = new FloatRange(0.5f, 0, 1);
+    public final FloatRange preAmp = new FloatRange(1.0F, 0f, 1f);
+    public final FloatRange forgetRate = new FloatRange(0.5f, (float) 0, 1.0F);
 
     public Bagregate(Stream<X> src, int capacity) {
         this(src::iterator, capacity);

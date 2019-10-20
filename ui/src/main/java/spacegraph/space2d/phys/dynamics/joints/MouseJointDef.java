@@ -54,9 +54,9 @@ public class MouseJointDef extends JointDef {
 
     public MouseJointDef() {
         super(JointType.MOUSE);
-        target.set(0, 0);
-        maxForce = 0;
-        frequencyHz = 5;
+        target.set((float) 0, (float) 0);
+        maxForce = (float) 0;
+        frequencyHz = 5.0F;
         dampingRatio = .7f;
     }
 }

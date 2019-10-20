@@ -17,8 +17,6 @@
 package jcog.tree.perfect;
 
 
-import java.util.stream.IntStream;
-
 /**
  * A {@link TrieSequencer} implementation where char[] is the sequence type.
  * This implementation is case-sensitive.
@@ -33,7 +31,7 @@ public class TrieSequencerCharArray implements TrieSequencer<char[]>
    public int matches( char[] sequenceA, int indexA, char[] sequenceB, int indexB, int count )
    {
        for (int i = 0; i < count; i++) {
-           if (sequenceA[indexA + i] != sequenceB[indexB + i]) {
+           if ((int) sequenceA[indexA + i] != (int) sequenceB[indexB + i]) {
                return i;
            }
        }
@@ -50,7 +48,7 @@ public class TrieSequencerCharArray implements TrieSequencer<char[]>
    @Override
    public int hashOf( char[] sequence, int i )
    {
-      return sequence[i];
+      return (int) sequence[i];
    }
 
 }

@@ -51,7 +51,7 @@ public class BomberKeyQueue {
      */
     public byte pop() {
         /** setup object to be returned */
-        byte result = 0x00;
+        byte result = (byte) 0x00;
         /** if list isn't empty */
         if (tail != null) {
             /** copy last item's data */
@@ -79,7 +79,7 @@ public class BomberKeyQueue {
         /** loop while end of list not reached */
         while (temp != null) {
             /** if current pointed to object's data is equal to parameter */
-            if (temp.data == b) {
+            if ((int) temp.data == (int) b) {
                 /** reset object's previous link */
                 if (temp.prev != null) temp.prev.next = temp.next;
                 /** reset object's next link */
@@ -115,7 +115,7 @@ public class BomberKeyQueue {
      */
     public byte getLastItem() {
         /** setup data to be returned */
-        byte result = 0x00;
+        byte result = (byte) 0x00;
         /** if list isn't empty then copy last item's data */
         if (tail != null) result = tail.data;
         /** return the data */
@@ -133,7 +133,7 @@ public class BomberKeyQueue {
         /** loop till end of list is reached */
         while (temp != null) {
             /** if data found then get otta here */
-            if (temp.data == b) {
+            if ((int) temp.data == (int) b) {
                 result = true;
                 break;
             }

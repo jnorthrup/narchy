@@ -55,10 +55,10 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
     public final IntRange truthPrecision = new IntRange(NAL.ANSWER_BELIEF_MATCH_CAPACITY, 1, 16);
 
     /** in durs */
-    public final FloatRange timeShift = new FloatRange(0, -64, +64);
+    public final FloatRange timeShift = new FloatRange((float) 0, -64.0F, (float) +64);
 
     /** durs around target time */
-    public final FloatRange window = new FloatRange(1, 0, 4);
+    public final FloatRange window = new FloatRange(1.0F, (float) 0, 4.0F);
 
 
 
@@ -69,7 +69,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
     public abstract static class Layer {
         float[] value;
-        public final FloatRange opacity = new FloatRange(0.75f, 0, 1);
+        public final FloatRange opacity = new FloatRange(0.75f, (float) 0, 1.0F);
 
         public final void doUpdate(VectorSensorChart v) {
             if (value == null)
@@ -148,8 +148,8 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
     public VectorSensorChart(VectorSensor v, FloatSupplier dur, NAR n) {
         this(v,
-            v instanceof Bitmap2DSensor ? ((Bitmap2DSensor)v).width : (int)Math.ceil(idealStride(v)),
-            v instanceof Bitmap2DSensor ? ((Bitmap2DSensor)v).height : (int)Math.ceil(v.size()/idealStride(v)),
+            v instanceof Bitmap2DSensor ? ((Bitmap2DSensor)v).width : (int)Math.ceil((double) idealStride(v)),
+            v instanceof Bitmap2DSensor ? ((Bitmap2DSensor)v).height : (int)Math.ceil((double) (v.size() / idealStride(v))),
             dur, n);
     }
 
@@ -206,10 +206,10 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
             @Override
             public void blend(float vv, float opacity, float[] rgbTarget) {
-                float v = (vv-0.5f)*2 * opacity;
-                if (v == 0) {
+                float v = (vv-0.5f)* 2.0F * opacity;
+                if (v == (float) 0) {
                     //nothing
-                } else if (v < 0)
+                } else if (v < (float) 0)
                     rgbTarget[0] += -v;
                 else
                     rgbTarget[1] += v;
@@ -255,7 +255,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
     }
 
     static float idealStride(VectorSensor v) {
-        return (float) Math.ceil(sqrt(v.size()));
+        return (float) Math.ceil(sqrt((double) v.size()));
     }
 
     public VectorSensorChart(Bitmap2DSensor sensor, What w) {
@@ -347,12 +347,12 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
         float dur = this.dur.asFloat();
 
-        long now = n.time() + Math.round((dur * timeShift.floatValue()));
+        long now = n.time() + (long) Math.round((dur * timeShift.floatValue()));
 
-        long windowRadius = Math.round(dur * this.window.floatValue() / 2);
+        long windowRadius = (long) Math.round(dur * this.window.floatValue() / 2.0F);
 
         int answerDetail = truthPrecision.intValue();
-        this.answerTries = (int)Math.ceil(answerDetail);
+        this.answerTries = (int)Math.ceil((double) answerDetail);
 
         long end = now + windowRadius;
         long start = now - windowRadius;
@@ -371,7 +371,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
     }
 
 
-    private final SplitMix64Random noise = new SplitMix64Random(1);
+    private final SplitMix64Random noise = new SplitMix64Random(1L);
 
     private float noise() {
         return noise.nextFloat();
@@ -381,7 +381,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
     @Override
     public int color(int x, int y) {
 
-        float[] rgb = { 0, 0, 0 };
+        float[] rgb = {(float) 0, (float) 0, (float) 0};
         for (Layer l : layers) {
             l.blend(l.value(x,w,y), l.opacity.floatValue(), rgb);
         }

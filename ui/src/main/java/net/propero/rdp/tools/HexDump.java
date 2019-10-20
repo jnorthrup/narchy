@@ -20,7 +20,7 @@ public class HexDump {
                 result.append(' ');
 
                 for (int j = 0; j < 16; j++) {
-                    if (line[j] > ' ' && line[j] < '~') {
+                    if ((int) line[j] > (int) ' ' && (int) line[j] < (int) '~') {
                         result.append(new String(line, j, 1));
                     } else {
                         result.append('.');
@@ -34,8 +34,8 @@ public class HexDump {
 
             byte b = array[i];
             result.append(' ');
-            result.append(HEX_DIGITS[(b >>> 4) & 0x0F]);
-            result.append(HEX_DIGITS[b & 0x0F]);
+            result.append(HEX_DIGITS[((int) b >>> 4) & 0x0F]);
+            result.append(HEX_DIGITS[(int) b & 0x0F]);
 
             line[lineIndex++] = b;
         }
@@ -46,7 +46,7 @@ public class HexDump {
             result.append(" ".repeat(Math.max(0, count)));
 
             for (int i = 0; i < lineIndex; i++) {
-                if (line[i] > ' ' && line[i] < '~') {
+                if ((int) line[i] > (int) ' ' && (int) line[i] < (int) '~') {
                     result.append(new String(line, i, 1));
                 } else {
                     result.append('.');
@@ -71,8 +71,8 @@ public class HexDump {
         int bufIndex = 0;
         for (int i = offset; i < offset + length; i++) {
             byte b = array[i];
-            buf[bufIndex++] = HEX_DIGITS[(b >>> 4) & 0x0F];
-            buf[bufIndex++] = HEX_DIGITS[b & 0x0F];
+            buf[bufIndex++] = HEX_DIGITS[((int) b >>> 4) & 0x0F];
+            buf[bufIndex++] = HEX_DIGITS[(int) b & 0x0F];
         }
 
         return new String(buf);
@@ -100,9 +100,9 @@ public class HexDump {
     }
 
     private static int toByte(char c) {
-        if (c >= '0' && c <= '9') return (c - '0');
-        if (c >= 'A' && c <= 'F') return (c - 'A' + 10);
-        if (c >= 'a' && c <= 'f') return (c - 'a' + 10);
+        if ((int) c >= (int) '0' && (int) c <= (int) '9') return ((int) c - (int) '0');
+        if ((int) c >= (int) 'A' && (int) c <= (int) 'F') return ((int) c - (int) 'A' + 10);
+        if ((int) c >= (int) 'a' && (int) c <= (int) 'f') return ((int) c - (int) 'a' + 10);
 
         throw new RuntimeException("Invalid hex char '" + c + '\'');
     }

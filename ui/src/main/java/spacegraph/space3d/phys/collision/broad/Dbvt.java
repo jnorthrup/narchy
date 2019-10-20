@@ -366,7 +366,7 @@ public final class Dbvt {
 			normal.normalize(direction);
 			v3 invdir = new v3();
 			invdir.set(1f / normal.x, 1f / normal.y, 1f / normal.z);
-			int[] signs = { direction.x<0 ? 1:0, direction.y<0 ? 1:0, direction.z<0 ? 1:0 };
+			int[] signs = { direction.x< (float) 0 ? 1:0, direction.y< (float) 0 ? 1:0, direction.z< (float) 0 ? 1:0 };
 			OArrayList<Node> stack = new OArrayList<Node>(SIMPLE_STACKSIZE);
 			stack.add(root);
 			do {
@@ -391,9 +391,9 @@ public final class Dbvt {
             assert (count < (/*sizeof(signs)*/128 / /*sizeof(signs[0])*/ 4));
 			int[] signs = new int[4 * 8];
             for (int i = 0; i<count; ++i) {
-				signs[i] = ((normals[i].x >= 0) ? 1 : 0) +
-						((normals[i].y >= 0) ? 2 : 0) +
-						((normals[i].z >= 0) ? 4 : 0);
+				signs[i] = ((normals[i].x >= (float) 0) ? 1 : 0) +
+						((normals[i].y >= (float) 0) ? 2 : 0) +
+						((normals[i].z >= (float) 0) ? 4 : 0);
 			}
 			OArrayList<sStkNP> stack = new OArrayList<sStkNP>(SIMPLE_STACKSIZE);
             stack.add(new sStkNP(root, 0));
@@ -437,17 +437,17 @@ public final class Dbvt {
 	private static void collideOCL(Node root, v3[] normals, float[] offsets, v3 sortaxis, int count, ICollide policy, boolean fullsort) {
 		
 		if (root != null) {
-			int srtsgns = (sortaxis.x >= 0 ? 1 : 0) +
-					(sortaxis.y >= 0 ? 2 : 0) +
-					(sortaxis.z >= 0 ? 4 : 0);
+			int srtsgns = (sortaxis.x >= (float) 0 ? 1 : 0) +
+					(sortaxis.y >= (float) 0 ? 2 : 0) +
+					(sortaxis.z >= (float) 0 ? 4 : 0);
 			IntArrayList ifree = new IntArrayList();
 			IntArrayList stack = new IntArrayList();
             assert (count < (/*sizeof(signs)*/128 / /*sizeof(signs[0])*/ 4));
 			int[] signs = new int[/*sizeof(unsigned)*8*/4 * 8];
             for (int i = 0; i < count; i++) {
-				signs[i] = ((normals[i].x >= 0) ? 1 : 0) +
-						((normals[i].y >= 0) ? 2 : 0) +
-						((normals[i].z >= 0) ? 4 : 0);
+				signs[i] = ((normals[i].x >= (float) 0) ? 1 : 0) +
+						((normals[i].y >= (float) 0) ? 2 : 0) +
+						((normals[i].z >= (float) 0) ? 4 : 0);
 			}
 
 
@@ -781,7 +781,7 @@ public final class Dbvt {
 		}
 	}
 
-	private static final v3[] axis = { new v3(1, 0, 0), new v3(0, 1, 0), new v3(0, 0, 1) };
+	private static final v3[] axis = { new v3(1.0F, (float) 0, (float) 0), new v3((float) 0, 1.0F, (float) 0), new v3((float) 0, (float) 0, 1.0F) };
 
 	private static Node topdown(Dbvt pdbvt, FasterList<Node> leaves, int bu_treshold) {
 		if (leaves.size() > 1) {

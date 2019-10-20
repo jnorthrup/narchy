@@ -15,7 +15,6 @@ import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.IdempotentBool;
-import nars.term.atom.IdempotentBool;
 import nars.term.util.SetSectDiff;
 import nars.term.util.TermException;
 import nars.term.util.builder.MemoizingTermBuilder;
@@ -37,7 +36,6 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static nars.term.atom.IdempotentBool.True;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -229,16 +227,16 @@ public enum Op {
     public static final int StatementBits = Op.or(Op.INH, Op.SIM, Op.IMPL);
     public static final int FuncBits = Op.or(Op.ATOM, Op.INH, Op.PROD);
     public static final int FuncInnerBits = Op.or(Op.ATOM, Op.PROD);
-    public static final byte BELIEF = '.';
-    public static final byte QUESTION = '?';
+    public static final byte BELIEF = (byte) '.';
+    public static final byte QUESTION = (byte) '?';
     /**
      * https://en.wikipedia.org/wiki/Is%E2%80%93ought_problem
      * "But how exactly can an "ought" be derived from an "is"?"
      */
     @Paper
-    public static final byte GOAL = '!';
-    public static final byte QUEST = '@';
-    public static final byte COMMAND = ';';
+    public static final byte GOAL = (byte) '!';
+    public static final byte QUEST = (byte) '@';
+    public static final byte COMMAND = (byte) ';';
     public static final byte[] Punctuation = {BELIEF, QUESTION, GOAL, QUEST, COMMAND};
     //    public static final String TENSE_PAST = ":\\:";
 //    public static final String TENSE_PRESENT = ":|:";
@@ -435,7 +433,7 @@ public enum Op {
 
         this.id = (byte) (ordinal());
         this.str = string;
-        this.ch = string.length() == 1 ? string.charAt(0) : 0;
+        this.ch = string.length() == 1 ? string.charAt(0) : (char) 0;
         this.strAtom = //ch != '.' ? new Atom('"' + str + '"') : null /* dont compute for ATOM, infinite loops */;
                 new Atom('"' + str + '"');
 
@@ -543,7 +541,7 @@ public enum Op {
             case 0:
                 throw new UnsupportedOperationException("no bits");
             case 1: {
-                Op op = Op.the(MathUtil.log(Integer.highestOneBit(struct), 2));
+                Op op = Op.the(MathUtil.log((long) Integer.highestOneBit(struct), 2));
                 return op.strAtom;
             }
             default: {
@@ -681,7 +679,7 @@ public enum Op {
             w.append(' ');
 
         char ch = this.ch;
-        if (ch == 0)
+        if ((int) ch == 0)
             w.append(str);
         else
             w.append(ch);

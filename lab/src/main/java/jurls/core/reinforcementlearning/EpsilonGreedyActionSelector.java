@@ -29,7 +29,7 @@ public class EpsilonGreedyActionSelector implements ActionSelector {
         for (int i = 0; i < actionValuePairs.length; ++i) {
             ret[i] = new ActionValuePair(
                     actionValuePairs[i].getA(),
-                    i == bestPair ? 1 - epsilon : epsilon / (ret.length - 1)
+                    i == bestPair ? 1.0 - epsilon : epsilon / (double) (ret.length - 1)
             );
         }
 

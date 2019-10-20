@@ -55,34 +55,34 @@ import java.util.Random;
  */
 public class MathUtils extends PlatformMathUtils {
     public static final float PI = (float) Math.PI;
-    public static final float TWOPI = (float) (Math.PI * 2);
+    public static final float TWOPI = (float) (Math.PI * 2.0);
     public static final float INV_PI = 1f / PI;
-    private static final float HALF_PI = PI / 2;
-    public static final float QUARTER_PI = PI / 4;
+    private static final float HALF_PI = PI / 2.0F;
+    public static final float QUARTER_PI = PI / 4.0F;
     public static final float THREE_HALVES_PI = TWOPI - HALF_PI;
 
     /**
      * Degrees to radians conversion factor
      */
-    public static final float DEG2RAD = PI / 180;
+    public static final float DEG2RAD = PI / 180.0F;
 
     /**
      * Radians to degrees conversion factor
      */
-    public static final float RAD2DEG = 180 / PI;
+    public static final float RAD2DEG = 180.0F / PI;
 
     private static final float[] sinLUT = new float[Settings.SINCOS_LUT_LENGTH];
 
     static {
         for (int i = 0; i < Settings.SINCOS_LUT_LENGTH; i++) {
-            sinLUT[i] = (float) Math.sin(i * Settings.SINCOS_LUT_PRECISION);
+            sinLUT[i] = (float) Math.sin((double) (i * Settings.SINCOS_LUT_PRECISION));
         }
     }
 
     public static float sinLUT(float x) {
         x %= TWOPI;
 
-        if (x < 0) {
+        if (x < (float) 0) {
             x += TWOPI;
         }
 
@@ -93,14 +93,14 @@ public class MathUtils extends PlatformMathUtils {
             int index = (int) x;
 
             if (index != 0) {
-                x %= index;
+                x = x % (float) index;
             }
 
             
             if (index == Settings.SINCOS_LUT_LENGTH - 1) {
-                return ((1 - x) * sinLUT[index] + x * sinLUT[0]);
+                return ((1.0F - x) * sinLUT[index] + x * sinLUT[0]);
             } else {
-                return ((1 - x) * sinLUT[index] + x * sinLUT[index + 1]);
+                return ((1.0F - x) * sinLUT[index] + x * sinLUT[index + 1]);
             }
 
         } else {
@@ -117,13 +117,13 @@ public class MathUtils extends PlatformMathUtils {
         if (Settings.FAST_FLOOR) {
             return fastFloor(x);
         } else {
-            return (int) StrictMath.floor(x);
+            return (int) StrictMath.floor((double) x);
         }
     }
 
     private static int fastFloor(float x) {
         int y = (int) x;
-        if (x < y) {
+        if (x < (float) y) {
             return y - 1;
         }
         return y;
@@ -133,13 +133,13 @@ public class MathUtils extends PlatformMathUtils {
         if (Settings.FAST_CEIL) {
             return fastCeil(x);
         } else {
-            return (int) StrictMath.ceil(x);
+            return (int) StrictMath.ceil((double) x);
         }
     }
 
     private static int fastCeil(float x) {
         int y = (int) x;
-        if (x > y) {
+        if (x > (float) y) {
             return y + 1;
         }
         return y;
@@ -279,6 +279,6 @@ public class MathUtils extends PlatformMathUtils {
     }
 
     public static float distance(v2 v1, v2 v2) {
-        return (float) Math.sqrt(distanceSquared(v1, v2));
+        return (float) Math.sqrt((double) distanceSquared(v1, v2));
     }
 }

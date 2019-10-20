@@ -48,7 +48,7 @@ abstract class AbstractUnitSubterm implements Subterms {
 
     @Override
     public final float voluplexity() {
-        return 1 + sub().voluplexity();
+        return 1.0F + sub().voluplexity();
     }
 
     @Override
@@ -84,7 +84,7 @@ abstract class AbstractUnitSubterm implements Subterms {
     @Override
     public @Nullable Term subSub(int start, int end, byte[] path) {
         byte a = path[start];
-        if (a != 0)
+        if ((int) a != 0)
             return null;
         else {
             Term s = sub();
@@ -150,7 +150,7 @@ abstract class AbstractUnitSubterm implements Subterms {
     public boolean isNormalized() {
         Term s = sub();
         if (s instanceof Variable) {
-            return s instanceof NormalizedVariable && ((NormalizedVariable) s).id() == 1;
+            return s instanceof NormalizedVariable && (int) ((NormalizedVariable) s).id() == 1;
         }
         return s.isNormalized();
     }

@@ -40,7 +40,7 @@ public class a extends JPanel implements Runnable {
     w.setSize(800,800);
     w.setVisible(true);
 
-    a.enableEvents(8);
+    a.enableEvents(8L);
     new Thread(a).start();
 
   }
@@ -92,22 +92,22 @@ public class a extends JPanel implements Runnable {
 
 
       for(i = 0, k = 0; i < SPRITE_COUNT; i++) {
-      j = S.charAt(k++);
+      j = (int) S.charAt(k++);
           int width = j >> 8;
           int height = j & 0xFF;
           int height2 = width == 8 && height < 9 ? 8 : 16;
       sprites[0][i] = new BufferedImage(width, height2, 2);
       for(y = 0; y < height; y++) {
-        long value = S.charAt(k++);
+        long value = (long) S.charAt(k++);
         if (width == 16) {
-          value <<= 16;
-          value |= S.charAt(k++);
+          value <<= 16L;
+            value = value | (long) S.charAt(k++);
         }
         for(x = 0; x < width; x++) {
           z = ((int)value) & 3;
           pixels[x] = z == 0 ? 0xFF000000 : z == 1 ? 0xFF606060
               : z == 2 ? 0xFFA8A8A8 : 0;
-          value >>= 2;
+          value >>= 2L;
         }
         sprites[0][i].setRGB(
             0, y + height2 - height, width, 1, pixels, 0, width);
@@ -274,7 +274,7 @@ public class a extends JPanel implements Runnable {
       while(true) {
 
       do {
-        nextFrameStartTime += 16666667;
+        nextFrameStartTime += 16666667L;
 
         
 
@@ -299,7 +299,7 @@ public class a extends JPanel implements Runnable {
               queue.clear();
 
               
-              random = new Random(4 + (level == 4 ? 16 : level));
+              random = new Random((long) (4 + (level == 4 ? 16 : level)));
 
               
               for(i = 0; i < 4; i++) {
@@ -308,8 +308,8 @@ public class a extends JPanel implements Runnable {
                 for(j = 0; j < 4; j++) {
                     float[] object = new float[32];
                   backgroundPlanes[i].add(object);
-                  object[OBJ_X] = k;
-                  object[OBJ_Y] = 72 + (random.nextInt(4) << 3);
+                  object[OBJ_X] = (float) k;
+                  object[OBJ_Y] = (float) (72 + (random.nextInt(4) << 3));
                   k += ((i == 3) ? 32 : 160) + random.nextInt(80);
                 }
               }
@@ -405,14 +405,14 @@ public class a extends JPanel implements Runnable {
               
               mario = new float[32];
               queue.add(mario);
-              mario[OBJ_X] = 176;
-              mario[OBJ_Y] = 224;
-              mario[OBJ_SPRITE] = SPRITE_MARIO_0;
-              mario[OBJ_X1] = 4;
-              mario[OBJ_Y1] = 4;
-              mario[OBJ_X2] = 11;
-              mario[OBJ_Y2] = 15;
-              mario[OBJ_SUPPORTED] = 1;
+              mario[OBJ_X] = 176.0F;
+              mario[OBJ_Y] = 224.0F;
+              mario[OBJ_SPRITE] = (float) SPRITE_MARIO_0;
+              mario[OBJ_X1] = 4.0F;
+              mario[OBJ_Y1] = 4.0F;
+              mario[OBJ_X2] = 11.0F;
+              mario[OBJ_Y2] = 15.0F;
+              mario[OBJ_SUPPORTED] = 1.0F;
 
               marioDied = false;
               cameraX = 160;
@@ -431,7 +431,7 @@ public class a extends JPanel implements Runnable {
         if (marioDied) {
           mario[OBJ_VY] += DYING_MARIO_GRAVITY;
           mario[OBJ_Y] += mario[OBJ_VY];
-          if (mario[OBJ_Y] > 320) {
+          if (mario[OBJ_Y] > 320.0F) {
             
             fadeDelta = FADE_SPEED;
           }
@@ -444,33 +444,33 @@ public class a extends JPanel implements Runnable {
           if (mario[OBJ_VX] > -MARIO_MAX_SPEED) {
             mario[OBJ_VX] -= MARIO_ACCELERATION;
           }
-          mario[OBJ_FLIPPED] = 1;
+          mario[OBJ_FLIPPED] = 1.0F;
           marioWalking = true;
         } else if (a[VK_RIGHT]) {
           if (mario[OBJ_VX] < MARIO_MAX_SPEED) {
             mario[OBJ_VX] += MARIO_ACCELERATION;
           }
-          mario[OBJ_FLIPPED] = 0;
+          mario[OBJ_FLIPPED] = (float) 0;
           marioWalking = true;
         }
 
         if (marioWalking) {
           
-           mario[OBJ_SPRITE] = SPRITE_MARIO_1 + mario[OBJ_SPRITE_INDEX];
-           if (mario[OBJ_SPRITE] == SPRITE_MARIO_4) {
-             mario[OBJ_SPRITE] = SPRITE_MARIO_2;
+           mario[OBJ_SPRITE] = (float) SPRITE_MARIO_1 + mario[OBJ_SPRITE_INDEX];
+           if (mario[OBJ_SPRITE] == (float) SPRITE_MARIO_4) {
+             mario[OBJ_SPRITE] = (float) SPRITE_MARIO_2;
            }
-           if (++mario[OBJ_SPRITE_COUNTER] == 4) {
-             mario[OBJ_SPRITE_COUNTER] = 0;
-             if (++mario[OBJ_SPRITE_INDEX] == 4) {
-               mario[OBJ_SPRITE_INDEX] = 0;
+           if (++mario[OBJ_SPRITE_COUNTER] == 4.0F) {
+             mario[OBJ_SPRITE_COUNTER] = (float) 0;
+             if (++mario[OBJ_SPRITE_INDEX] == 4.0F) {
+               mario[OBJ_SPRITE_INDEX] = (float) 0;
              }
            }
         } else {
           
-          mario[OBJ_SPRITE] = SPRITE_MARIO_0;
-          mario[OBJ_SPRITE_INDEX] = 0;
-          mario[OBJ_SPRITE_COUNTER] = 0;
+          mario[OBJ_SPRITE] = (float) SPRITE_MARIO_0;
+          mario[OBJ_SPRITE_INDEX] = (float) 0;
+          mario[OBJ_SPRITE_COUNTER] = (float) 0;
 
           
           if (mario[OBJ_VX] < -MARIO_ACCELERATION) {
@@ -478,19 +478,19 @@ public class a extends JPanel implements Runnable {
           } else if (mario[OBJ_VX] > MARIO_ACCELERATION) {
             mario[OBJ_VX] -= MARIO_ACCELERATION;
           } else {
-            mario[OBJ_VX] = 0;
+            mario[OBJ_VX] = (float) 0;
           }
         }
 
         if (!a[VK_JUMP]) {
           jumpCounter = 0;
         }
-        if (mario[OBJ_SUPPORTED] == 1) {
+        if (mario[OBJ_SUPPORTED] == 1.0F) {
           if (jumpReleased) {
             if (a[VK_JUMP]) {
               mario[OBJ_VY] = MARIO_JUMP_SPEED;
               jumpReleased = false;
-              jumpCounter = (mario[OBJ_VX] < 0 ? -mario[OBJ_VX] : mario[OBJ_VX]) 
+              jumpCounter = (mario[OBJ_VX] < (float) 0 ? -mario[OBJ_VX] : mario[OBJ_VX])
                   >= MARIO_MAX_SPEED ? MARIO_JUMP_EXTENSION_FAST
                       : MARIO_JUMP_EXTENSION_SLOW;
             }
@@ -501,7 +501,7 @@ public class a extends JPanel implements Runnable {
           }
         } else {
           
-          mario[OBJ_SPRITE] = SPRITE_MARIO_1;
+          mario[OBJ_SPRITE] = (float) SPRITE_MARIO_1;
           if (--jumpCounter > 0 && a[VK_JUMP]) {
             mario[OBJ_VY] = MARIO_JUMP_SPEED;
           }
@@ -533,13 +533,13 @@ public class a extends JPanel implements Runnable {
         for(i = queue.size() - 1; i >= 0; i--) {
             float[] object = queue.get(i);
 
-          if (object[OBJ_SQUASHED] == 0) {
+          if (object[OBJ_SQUASHED] == (float) 0) {
 
             
-            if (object[OBJ_WEIGHTLESS] == 0) {
+            if (object[OBJ_WEIGHTLESS] == (float) 0) {
               object[OBJ_VY] += GRAVITY;
-              object[OBJ_SUPPORTED] = 0;
-              if (object[OBJ_VY] > 0) {
+              object[OBJ_SUPPORTED] = (float) 0;
+              if (object[OBJ_VY] > (float) 0) {
                 
                 
                 for(y = (int)object[OBJ_Y];
@@ -557,9 +557,9 @@ public class a extends JPanel implements Runnable {
                                   + (int)object[OBJ_X2]) >> 3]
                                       & MAP_MASK) <= MAP_EMPTIES)) {
                     
-                    object[OBJ_Y] = y;
-                    object[OBJ_VY] = 0;
-                    object[OBJ_SUPPORTED] = 1;
+                    object[OBJ_Y] = (float) y;
+                    object[OBJ_VY] = (float) 0;
+                    object[OBJ_SUPPORTED] = 1.0F;
                     break;
                   }
                 }
@@ -569,16 +569,16 @@ public class a extends JPanel implements Runnable {
 
             
             outter: {
-              object[OBJ_OBSTRUCTED] = 0;
+              object[OBJ_OBSTRUCTED] = (float) 0;
               for(x = (int)object[OBJ_X];
                   x != (int)(object[OBJ_X] + object[OBJ_VX]);
-                      x += (object[OBJ_VX] < 0) ? -1 : 1) {
+                      x += (object[OBJ_VX] < (float) 0) ? -1 : 1) {
 
                 
-                z = ((object[OBJ_VX] < 0)
+                z = ((object[OBJ_VX] < (float) 0)
                     ? (x + (int)object[OBJ_X1]) - 1
                     : (x + (int)object[OBJ_X2]) + 1) >> 3;
-                k = ((object[OBJ_VX] < 0)
+                k = ((object[OBJ_VX] < (float) 0)
                     ? (x + (int)object[OBJ_X1])
                     : (x + (int)object[OBJ_X2])) >> 3;
 
@@ -589,34 +589,34 @@ public class a extends JPanel implements Runnable {
                   if (((map[y][z] & MAP_MASK) > MAP_EMPTIES
                       && (map[y][k] & MAP_MASK) <= MAP_EMPTIES)) {
                     
-                    object[OBJ_X] = x;
-                    object[OBJ_VX] = 0;
-                    object[OBJ_OBSTRUCTED] = 1;
+                    object[OBJ_X] = (float) x;
+                    object[OBJ_VX] = (float) 0;
+                    object[OBJ_OBSTRUCTED] = 1.0F;
                     break outter;
                   }
                 }
 
                 
                 if (!Arrays.equals(object, mario)) {
-                  k = (object[OBJ_VX] < 0) ? x - 1 : x + 1;
+                  k = (object[OBJ_VX] < (float) 0) ? x - 1 : x + 1;
                   for(j = queue.size() - 1; j >= 0; j--) {
                     if (j != i) {
                         float[] obj = queue.get(j);
                       if (!Arrays.equals(obj, mario)
-                          && obj[OBJ_SQUASHED] == 0
+                          && obj[OBJ_SQUASHED] == (float) 0
                           && obj[OBJ_X] + obj[OBJ_X1]
-                              <= k + object[OBJ_X2]
+                              <= (float) k + object[OBJ_X2]
                           && obj[OBJ_X] + obj[OBJ_X2]
-                              >= k + object[OBJ_X1]
+                              >= (float) k + object[OBJ_X1]
                           && obj[OBJ_Y] + obj[OBJ_Y1]
                               <= object[OBJ_Y] + object[OBJ_Y2]
                           && obj[OBJ_Y] + obj[OBJ_Y2]
                               >= object[OBJ_Y] + object[OBJ_Y1]) {
 
                         
-                        object[OBJ_X] = x;
-                        object[OBJ_VX] = 0;
-                        object[OBJ_OBSTRUCTED] = 1;
+                        object[OBJ_X] = (float) x;
+                        object[OBJ_VX] = (float) 0;
+                        object[OBJ_OBSTRUCTED] = 1.0F;
                         break outter;
                       }
                     }
@@ -636,204 +636,204 @@ public class a extends JPanel implements Runnable {
                   && mario[OBJ_Y] + mario[OBJ_Y2]
                       >= object[OBJ_Y] + object[OBJ_Y1]) {
 
-                if (mario[OBJ_VY] == 0 || object[OBJ_NOT_SQUASHABLE] == 1
-                    || ((object[OBJ_TYPE] == TYPE_GIRA
-                        || object[OBJ_TYPE] == TYPE_BUNBUN)
-                            && mario[OBJ_VY] <= 0)) {
+                if (mario[OBJ_VY] == (float) 0 || object[OBJ_NOT_SQUASHABLE] == 1.0F
+                    || ((object[OBJ_TYPE] == (float) TYPE_GIRA
+                        || object[OBJ_TYPE] == (float) TYPE_BUNBUN)
+                            && mario[OBJ_VY] <= (float) 0)) {
                   
                   marioDied = true;
-                  mario[OBJ_MIRRORED] = 1;
+                  mario[OBJ_MIRRORED] = 1.0F;
                   mario[OBJ_VY] = DYING_MARIO_JUMP_SPEED;
-                  mario[OBJ_SPRITE] = SPRITE_MARIO_DEAD;
-                } else if (mario[OBJ_VY] > 0) {
+                  mario[OBJ_SPRITE] = (float) SPRITE_MARIO_DEAD;
+                } else if (mario[OBJ_VY] > (float) 0) {
                   
                   mario[OBJ_VY] = MARIO_BOUNCE_SPEED;
-                  object[OBJ_SQUASHED] = 1;
-                  object[OBJ_SPRITE_COUNTER] = 0;
-                  object[OBJ_VX] = 0;
+                  object[OBJ_SQUASHED] = 1.0F;
+                  object[OBJ_SPRITE_COUNTER] = (float) 0;
+                  object[OBJ_VX] = (float) 0;
                 } 
               }
             }
           }
 
           
-          if (object[OBJ_TYPE] == TYPE_CHIBIBO) {
+          if (object[OBJ_TYPE] == (float) TYPE_CHIBIBO) {
 
             
 
-            if (object[OBJ_SQUASHED] == 1) {
-              object[OBJ_SPRITE] = SPRITE_SQUASHED_CHIBIBO;
-              if (++object[OBJ_SPRITE_COUNTER] == 40) {
+            if (object[OBJ_SQUASHED] == 1.0F) {
+              object[OBJ_SPRITE] = (float) SPRITE_SQUASHED_CHIBIBO;
+              if (++object[OBJ_SPRITE_COUNTER] == 40.0F) {
                 queue.remove(i);
                 continue;
               }
             } else {
-              if (++object[OBJ_SPRITE_COUNTER] == 8) {
-                object[OBJ_SPRITE_COUNTER] = 0;
-                object[OBJ_FLIPPED] = (int)object[OBJ_FLIPPED] ^ 1;
+              if (++object[OBJ_SPRITE_COUNTER] == 8.0F) {
+                object[OBJ_SPRITE_COUNTER] = (float) 0;
+                object[OBJ_FLIPPED] = (float) ((int) object[OBJ_FLIPPED] ^ 1);
               }
-              if (object[OBJ_OBSTRUCTED] == 1) {
-                object[OBJ_DIRECTION] = (int)object[OBJ_DIRECTION] ^ 1;
-                object[OBJ_VX] = (object[OBJ_DIRECTION] == 1)
+              if (object[OBJ_OBSTRUCTED] == 1.0F) {
+                object[OBJ_DIRECTION] = (float) ((int) object[OBJ_DIRECTION] ^ 1);
+                object[OBJ_VX] = (object[OBJ_DIRECTION] == 1.0F)
                     ? CHIBIBO_SPEED : -CHIBIBO_SPEED;
               }
             }
-          } else if (object[OBJ_TYPE] == TYPE_NOKOBON) {
+          } else if (object[OBJ_TYPE] == (float) TYPE_NOKOBON) {
 
             
 
-            if (object[OBJ_SQUASHED] == 1) {
+            if (object[OBJ_SQUASHED] == 1.0F) {
 
               
 
-              if (object[OBJ_SPRITE_COUNTER] == 0) {
-                object[OBJ_Y] += 8;
-                object[OBJ_WEIGHTLESS] = 1;
+              if (object[OBJ_SPRITE_COUNTER] == (float) 0) {
+                object[OBJ_Y] += 8.0F;
+                object[OBJ_WEIGHTLESS] = 1.0F;
               }
-              object[OBJ_SPRITE] = SPRITE_BOMB_0 
-                  + ((object[OBJ_SPRITE_COUNTER] < 15) 
+              object[OBJ_SPRITE] = (float) (SPRITE_BOMB_0
+                      + ((object[OBJ_SPRITE_COUNTER] < 15.0F)
                       ? 0
-                      : ((((int)object[OBJ_SPRITE_COUNTER]) >> 2) & 1));
-              if (++object[OBJ_SPRITE_COUNTER] > 50) {
+                      : ((((int) object[OBJ_SPRITE_COUNTER]) >> 2) & 1)));
+              if (++object[OBJ_SPRITE_COUNTER] > 50.0F) {
 
                 
 
-                object[OBJ_TYPE] = TYPE_EXPLOSION;
-                object[OBJ_MIRRORED] = 1;
-                object[OBJ_X] -= 4;
-                object[OBJ_X1] = 0;
-                object[OBJ_Y1] = 0;
-                object[OBJ_X2] = 15;
-                object[OBJ_Y2] = 7;
-                object[OBJ_SQUASHED] = 0;
-                object[OBJ_NOT_SQUASHABLE] = 1;
+                object[OBJ_TYPE] = (float) TYPE_EXPLOSION;
+                object[OBJ_MIRRORED] = 1.0F;
+                object[OBJ_X] -= 4.0F;
+                object[OBJ_X1] = (float) 0;
+                object[OBJ_Y1] = (float) 0;
+                object[OBJ_X2] = 15.0F;
+                object[OBJ_Y2] = 7.0F;
+                object[OBJ_SQUASHED] = (float) 0;
+                object[OBJ_NOT_SQUASHABLE] = 1.0F;
               }
             } else {
-              if (++object[OBJ_SPRITE_COUNTER] == 8) {
-                object[OBJ_SPRITE_COUNTER] = 0;
-                object[OBJ_SPRITE] = object[OBJ_SPRITE] == SPRITE_NOKOBON_0
-                    ? SPRITE_NOKOBON_1 : SPRITE_NOKOBON_0;
+              if (++object[OBJ_SPRITE_COUNTER] == 8.0F) {
+                object[OBJ_SPRITE_COUNTER] = (float) 0;
+                object[OBJ_SPRITE] = (float) (object[OBJ_SPRITE] == (float) SPRITE_NOKOBON_0
+                        ? SPRITE_NOKOBON_1 : SPRITE_NOKOBON_0);
               }
-              if (object[OBJ_OBSTRUCTED] == 1 || (object[OBJ_SUPPORTED] == 1
+              if (object[OBJ_OBSTRUCTED] == 1.0F || (object[OBJ_SUPPORTED] == 1.0F
                   && (map[(16 + (int)object[OBJ_Y]) >> 3]
-                      [((int)(object[OBJ_X] + (object[OBJ_VX] < 0 ? -1 : 8)))
+                      [((int)(object[OBJ_X] + (float) (object[OBJ_VX] < (float) 0 ? -1 : 8)))
                           >> 3] & MAP_MASK) <= MAP_EMPTIES)) {
-                object[OBJ_DIRECTION] = (int)object[OBJ_DIRECTION] ^ 1;
+                object[OBJ_DIRECTION] = (float) ((int) object[OBJ_DIRECTION] ^ 1);
                 object[OBJ_FLIPPED] = object[OBJ_DIRECTION];
-                if (object[OBJ_DIRECTION] == 1) {
+                if (object[OBJ_DIRECTION] == 1.0F) {
                   object[OBJ_VX] = NOKOBON_SPEED;
                 } else {
                   object[OBJ_VX] = -NOKOBON_SPEED;
                 }
               }
             }
-          } else if (object[OBJ_TYPE] == TYPE_EXPLOSION) {
+          } else if (object[OBJ_TYPE] == (float) TYPE_EXPLOSION) {
 
             
 
-            object[OBJ_SPRITE] = SPRITE_EXPLOSION_0
-                  + ((((int)object[OBJ_SPRITE_COUNTER]) >> 2) & 1);
-            if (++object[OBJ_SPRITE_COUNTER] > 100) {
+            object[OBJ_SPRITE] = (float) (SPRITE_EXPLOSION_0
+                    + ((((int) object[OBJ_SPRITE_COUNTER]) >> 2) & 1));
+            if (++object[OBJ_SPRITE_COUNTER] > 100.0F) {
               queue.remove(i);
               continue;
             }
-          } else if (object[OBJ_TYPE] == TYPE_PAKKUN_FLOWER) {
+          } else if (object[OBJ_TYPE] == (float) TYPE_PAKKUN_FLOWER) {
 
             
 
-            if (++object[OBJ_SPRITE_COUNTER] <= PAKKUN_FLOWER_SLEEPING) {
-              if (object[OBJ_SPRITE_COUNTER] == PAKKUN_FLOWER_SLEEPING) {
+            if (++object[OBJ_SPRITE_COUNTER] <= (float) PAKKUN_FLOWER_SLEEPING) {
+              if (object[OBJ_SPRITE_COUNTER] == (float) PAKKUN_FLOWER_SLEEPING) {
                 k = (int)mario[OBJ_X] - (int)object[OBJ_X] + 4;
                 if (k < 0) {
                   k = -k;
                 }
                 if (k < PAKKUN_FLOWER_DISTANCE) {
-                  object[OBJ_SPRITE_COUNTER] = 0;
+                  object[OBJ_SPRITE_COUNTER] = (float) 0;
                 }
               }
-            } else if (object[OBJ_SPRITE_COUNTER] < PAKKUN_FLOWER_RISING) {
+            } else if (object[OBJ_SPRITE_COUNTER] < (float) PAKKUN_FLOWER_RISING) {
               object[OBJ_Y]--;
-            } else if (object[OBJ_SPRITE_COUNTER] < PAKKUN_FLOWER_CHOMPING) {
-              object[OBJ_SPRITE] = SPRITE_PAKKUN_FLOWER_0
-                  + ((((int)object[OBJ_SPRITE_COUNTER]) >> 4) & 1);
-            } else if (object[OBJ_SPRITE_COUNTER] < PAKKUN_FLOWER_SINKING) {
+            } else if (object[OBJ_SPRITE_COUNTER] < (float) PAKKUN_FLOWER_CHOMPING) {
+              object[OBJ_SPRITE] = (float) (SPRITE_PAKKUN_FLOWER_0
+                      + ((((int) object[OBJ_SPRITE_COUNTER]) >> 4) & 1));
+            } else if (object[OBJ_SPRITE_COUNTER] < (float) PAKKUN_FLOWER_SINKING) {
               object[OBJ_Y]++;
             } else {
-              object[OBJ_SPRITE_COUNTER] = 0;
+              object[OBJ_SPRITE_COUNTER] = (float) 0;
             }
-          } else if (object[OBJ_TYPE] == TYPE_GIRA) {
+          } else if (object[OBJ_TYPE] == (float) TYPE_GIRA) {
 
             
 
-            if (object[OBJ_SQUASHED] == 1) {
+            if (object[OBJ_SQUASHED] == 1.0F) {
               object[OBJ_VY] += DYING_MARIO_GRAVITY;
               object[OBJ_Y] += object[OBJ_VY];
             } else {
               object[OBJ_X]--;
             }
 
-            if (++object[OBJ_SPRITE_COUNTER] == 8) {
-              object[OBJ_SPRITE_COUNTER] = 0;
-              object[OBJ_SPRITE] = object[OBJ_SPRITE] != SPRITE_GIRA_0
-                  ? SPRITE_GIRA_0 : SPRITE_GIRA_1;
+            if (++object[OBJ_SPRITE_COUNTER] == 8.0F) {
+              object[OBJ_SPRITE_COUNTER] = (float) 0;
+              object[OBJ_SPRITE] = (float) (object[OBJ_SPRITE] != (float) SPRITE_GIRA_0
+                      ? SPRITE_GIRA_0 : SPRITE_GIRA_1);
             }
-          } else if (object[OBJ_TYPE] == TYPE_FIGHTER_FLY) {
+          } else if (object[OBJ_TYPE] == (float) TYPE_FIGHTER_FLY) {
 
             
 
-            if (object[OBJ_SQUASHED] == 1) {
+            if (object[OBJ_SQUASHED] == 1.0F) {
               object[OBJ_VY] += DYING_MARIO_GRAVITY;
               object[OBJ_Y] += object[OBJ_VY];
-              object[OBJ_WEIGHTLESS] = 1;
+              object[OBJ_WEIGHTLESS] = 1.0F;
             } else {
-              if (object[OBJ_SUPPORTED] == 1 && ++object[OBJ_COUNTER] == 60) {
+              if (object[OBJ_SUPPORTED] == 1.0F && ++object[OBJ_COUNTER] == 60.0F) {
                 object[OBJ_VY] = -2.5f;
-                object[OBJ_COUNTER] = 0;
+                object[OBJ_COUNTER] = (float) 0;
               }
-              object[OBJ_VX] = object[OBJ_VY] == 0
-                  ? 0 : (object[OBJ_X] > mario[OBJ_X]) ? -1 : 1;
+              object[OBJ_VX] = (float) (object[OBJ_VY] == (float) 0
+                      ? 0 : (object[OBJ_X] > mario[OBJ_X]) ? -1 : 1);
 
-              if (++object[OBJ_SPRITE_COUNTER] == 16) {
-                object[OBJ_SPRITE_COUNTER] = 0;
-                object[OBJ_SPRITE] = object[OBJ_SPRITE] != SPRITE_FIGHTER_FLY_0
-                    ? SPRITE_FIGHTER_FLY_0 : SPRITE_FIGHTER_FLY_1;
+              if (++object[OBJ_SPRITE_COUNTER] == 16.0F) {
+                object[OBJ_SPRITE_COUNTER] = (float) 0;
+                object[OBJ_SPRITE] = (float) (object[OBJ_SPRITE] != (float) SPRITE_FIGHTER_FLY_0
+                        ? SPRITE_FIGHTER_FLY_0 : SPRITE_FIGHTER_FLY_1);
               }
             }
-          } else if (object[OBJ_TYPE] == TYPE_BUNBUN) {
+          } else if (object[OBJ_TYPE] == (float) TYPE_BUNBUN) {
 
             
 
-            if (object[OBJ_SQUASHED] == 1) {
+            if (object[OBJ_SQUASHED] == 1.0F) {
               object[OBJ_VY] += DYING_MARIO_GRAVITY;
               object[OBJ_Y] += object[OBJ_VY];
             } else {              
-              if (++object[OBJ_COUNTER] < 40) {
+              if (++object[OBJ_COUNTER] < 40.0F) {
                 object[OBJ_X]--;
               }
-              if (object[OBJ_COUNTER] == 40) {
+              if (object[OBJ_COUNTER] == 40.0F) {
                   float[] spear = new float[32];
                 queue.add(spear);
-                spear[OBJ_X] = object[OBJ_X] + 4;
+                spear[OBJ_X] = object[OBJ_X] + 4.0F;
                 spear[OBJ_Y] = object[OBJ_Y];
-                spear[OBJ_X1] = 2;
-                spear[OBJ_Y1] = 1;
-                spear[OBJ_X2] = 4;
-                spear[OBJ_Y2] = 15;
-                spear[OBJ_SPRITE] = SPRITE_SPEAR;
-                spear[OBJ_WEIGHTLESS] = 1;
-                spear[OBJ_NOT_SQUASHABLE] = 1;
-                spear[OBJ_TYPE] = TYPE_SPEAR;
-              } else if (object[OBJ_COUNTER] == 60) {
-                object[OBJ_COUNTER] = 0;
+                spear[OBJ_X1] = 2.0F;
+                spear[OBJ_Y1] = 1.0F;
+                spear[OBJ_X2] = 4.0F;
+                spear[OBJ_Y2] = 15.0F;
+                spear[OBJ_SPRITE] = (float) SPRITE_SPEAR;
+                spear[OBJ_WEIGHTLESS] = 1.0F;
+                spear[OBJ_NOT_SQUASHABLE] = 1.0F;
+                spear[OBJ_TYPE] = (float) TYPE_SPEAR;
+              } else if (object[OBJ_COUNTER] == 60.0F) {
+                object[OBJ_COUNTER] = (float) 0;
               }
 
-              if (++object[OBJ_SPRITE_COUNTER] == 8) {
-                object[OBJ_SPRITE_COUNTER] = 0;
-                object[OBJ_SPRITE] = object[OBJ_SPRITE] != SPRITE_BUNBUN_0
-                    ? SPRITE_BUNBUN_0 : SPRITE_BUNBUN_1;
+              if (++object[OBJ_SPRITE_COUNTER] == 8.0F) {
+                object[OBJ_SPRITE_COUNTER] = (float) 0;
+                object[OBJ_SPRITE] = (float) (object[OBJ_SPRITE] != (float) SPRITE_BUNBUN_0
+                        ? SPRITE_BUNBUN_0 : SPRITE_BUNBUN_1);
               }
             }
-          } else if (object[OBJ_TYPE] == TYPE_SPEAR) {
+          } else if (object[OBJ_TYPE] == (float) TYPE_SPEAR) {
 
             
 
@@ -841,7 +841,7 @@ public class a extends JPanel implements Runnable {
           }
 
           
-          if (object[OBJ_X] < cameraX - 80 || object[OBJ_Y] > 320) {
+          if (object[OBJ_X] < (float) (cameraX - 80) || object[OBJ_Y] > 320.0F) {
             queue.remove(i);
 
             if (Arrays.equals(object, mario)) {
@@ -852,8 +852,8 @@ public class a extends JPanel implements Runnable {
         }
 
         
-        if (mario[OBJ_X] < cameraX - 3) {
-          mario[OBJ_X] = cameraX - 3;
+        if (mario[OBJ_X] < (float) (cameraX - 3)) {
+          mario[OBJ_X] = (float) (cameraX - 3);
         }
 
         
@@ -876,14 +876,14 @@ public class a extends JPanel implements Runnable {
 
                           float[] chibibo = new float[32];
                           queue.add(chibibo);
-                          chibibo[OBJ_X] = (enemiesX << 3) + j * 12;
-                          chibibo[OBJ_Y] = y << 3;
+                          chibibo[OBJ_X] = (float) ((enemiesX << 3) + j * 12);
+                          chibibo[OBJ_Y] = (float) (y << 3);
                           chibibo[OBJ_VX] = -CHIBIBO_SPEED;
-                          chibibo[OBJ_X1] = 1;
-                          chibibo[OBJ_X2] = 6;
-                          chibibo[OBJ_Y2] = 7;
-                          chibibo[OBJ_SPRITE] = SPRITE_CHIBIBO;
-                          chibibo[OBJ_TYPE] = TYPE_CHIBIBO;
+                          chibibo[OBJ_X1] = 1.0F;
+                          chibibo[OBJ_X2] = 6.0F;
+                          chibibo[OBJ_Y2] = 7.0F;
+                          chibibo[OBJ_SPRITE] = (float) SPRITE_CHIBIBO;
+                          chibibo[OBJ_TYPE] = (float) TYPE_CHIBIBO;
                       }
                       break;
                   case TYPE_NOKOBON:
@@ -892,14 +892,14 @@ public class a extends JPanel implements Runnable {
 
                           float[] nokobon = new float[32];
                           queue.add(nokobon);
-                          nokobon[OBJ_X] = (enemiesX << 3) + j * 12;
-                          nokobon[OBJ_Y] = y << 3;
+                          nokobon[OBJ_X] = (float) ((enemiesX << 3) + j * 12);
+                          nokobon[OBJ_Y] = (float) (y << 3);
                           nokobon[OBJ_VX] = -NOKOBON_SPEED;
-                          nokobon[OBJ_Y1] = 10;
-                          nokobon[OBJ_X2] = 8;
-                          nokobon[OBJ_Y2] = 15;
-                          nokobon[OBJ_SPRITE] = SPRITE_NOKOBON_0;
-                          nokobon[OBJ_TYPE] = TYPE_NOKOBON;
+                          nokobon[OBJ_Y1] = 10.0F;
+                          nokobon[OBJ_X2] = 8.0F;
+                          nokobon[OBJ_Y2] = 15.0F;
+                          nokobon[OBJ_SPRITE] = (float) SPRITE_NOKOBON_0;
+                          nokobon[OBJ_TYPE] = (float) TYPE_NOKOBON;
                       }
                       break;
                   case TYPE_PAKKUN_FLOWER:
@@ -907,29 +907,29 @@ public class a extends JPanel implements Runnable {
 
                       float[] pakkunFlower = new float[32];
                       queue.add(pakkunFlower);
-                      pakkunFlower[OBJ_X] = (enemiesX << 3) + 4;
-                      pakkunFlower[OBJ_Y] = y << 3;
-                      pakkunFlower[OBJ_X2] = 7;
-                      pakkunFlower[OBJ_Y2] = 15;
-                      pakkunFlower[OBJ_SPRITE] = SPRITE_PAKKUN_FLOWER_0;
-                      pakkunFlower[OBJ_WEIGHTLESS] = 1;
-                      pakkunFlower[OBJ_NOT_SQUASHABLE] = 1;
-                      pakkunFlower[OBJ_BEHIND_TILES] = 1;
-                      pakkunFlower[OBJ_TYPE] = TYPE_PAKKUN_FLOWER;
+                      pakkunFlower[OBJ_X] = (float) ((enemiesX << 3) + 4);
+                      pakkunFlower[OBJ_Y] = (float) (y << 3);
+                      pakkunFlower[OBJ_X2] = 7.0F;
+                      pakkunFlower[OBJ_Y2] = 15.0F;
+                      pakkunFlower[OBJ_SPRITE] = (float) SPRITE_PAKKUN_FLOWER_0;
+                      pakkunFlower[OBJ_WEIGHTLESS] = 1.0F;
+                      pakkunFlower[OBJ_NOT_SQUASHABLE] = 1.0F;
+                      pakkunFlower[OBJ_BEHIND_TILES] = 1.0F;
+                      pakkunFlower[OBJ_TYPE] = (float) TYPE_PAKKUN_FLOWER;
                       break;
                   case TYPE_FIGHTER_FLY:
 
 
                       float[] fighterFly = new float[32];
                       queue.add(fighterFly);
-                      fighterFly[OBJ_X] = enemiesX << 3;
-                      fighterFly[OBJ_Y] = y << 3;
-                      fighterFly[OBJ_Y1] = 5;
-                      fighterFly[OBJ_X2] = 15;
-                      fighterFly[OBJ_Y2] = 15;
-                      fighterFly[OBJ_SPRITE] = SPRITE_FIGHTER_FLY_0;
-                      fighterFly[OBJ_MIRRORED] = 1;
-                      fighterFly[OBJ_TYPE] = TYPE_FIGHTER_FLY;
+                      fighterFly[OBJ_X] = (float) (enemiesX << 3);
+                      fighterFly[OBJ_Y] = (float) (y << 3);
+                      fighterFly[OBJ_Y1] = 5.0F;
+                      fighterFly[OBJ_X2] = 15.0F;
+                      fighterFly[OBJ_Y2] = 15.0F;
+                      fighterFly[OBJ_SPRITE] = (float) SPRITE_FIGHTER_FLY_0;
+                      fighterFly[OBJ_MIRRORED] = 1.0F;
+                      fighterFly[OBJ_TYPE] = (float) TYPE_FIGHTER_FLY;
                       break;
               }
           }
@@ -944,14 +944,14 @@ public class a extends JPanel implements Runnable {
             giraCountdown = 180;
               float[] gira = new float[32];
             queue.add(gira);
-            gira[OBJ_X] = cameraX + 160;
-            gira[OBJ_Y] = ((15 + random.nextInt(14)) << 3) - 1;
-            gira[OBJ_X2] = 8;
-            gira[OBJ_Y1] = 10;
-            gira[OBJ_Y2] = 15;
-            gira[OBJ_SPRITE] = SPRITE_GIRA_0;
-            gira[OBJ_WEIGHTLESS] = 1;
-            gira[OBJ_TYPE] = TYPE_GIRA;
+            gira[OBJ_X] = (float) (cameraX + 160);
+            gira[OBJ_Y] = (float) (((15 + random.nextInt(14)) << 3) - 1);
+            gira[OBJ_X2] = 8.0F;
+            gira[OBJ_Y1] = 10.0F;
+            gira[OBJ_Y2] = 15.0F;
+            gira[OBJ_SPRITE] = (float) SPRITE_GIRA_0;
+            gira[OBJ_WEIGHTLESS] = 1.0F;
+            gira[OBJ_TYPE] = (float) TYPE_GIRA;
           }
         }
 
@@ -963,22 +963,22 @@ public class a extends JPanel implements Runnable {
             bunbunCountdown = 360 + random.nextInt(360);
               float[] bunbun = new float[32];
             queue.add(bunbun);
-            bunbun[OBJ_X] = cameraX + 160;
-            bunbun[OBJ_Y] = mario[OBJ_Y] - ((2 + random.nextInt(5)) << 3);
-            bunbun[OBJ_X2] = 15;
-            bunbun[OBJ_Y2] = 15;
-            bunbun[OBJ_SPRITE] = SPRITE_BUNBUN_0;
-            bunbun[OBJ_WEIGHTLESS] = 1;
-            bunbun[OBJ_TYPE] = TYPE_BUNBUN;
+            bunbun[OBJ_X] = (float) (cameraX + 160);
+            bunbun[OBJ_Y] = mario[OBJ_Y] - (float) ((2 + random.nextInt(5)) << 3);
+            bunbun[OBJ_X2] = 15.0F;
+            bunbun[OBJ_Y2] = 15.0F;
+            bunbun[OBJ_SPRITE] = (float) SPRITE_BUNBUN_0;
+            bunbun[OBJ_WEIGHTLESS] = 1.0F;
+            bunbun[OBJ_TYPE] = (float) TYPE_BUNBUN;
 
-            if (bunbun[OBJ_Y] < 144) {
-              bunbun[OBJ_Y] = 144;
+            if (bunbun[OBJ_Y] < 144.0F) {
+              bunbun[OBJ_Y] = 144.0F;
             }
           }
         }
 
         
-        if (mario[OBJ_X] >= 2544) {
+        if (mario[OBJ_X] >= 2544.0F) {
           
           level++;
           fadeDelta = FADE_SPEED;
@@ -1020,8 +1020,8 @@ public class a extends JPanel implements Runnable {
               g.drawLine(k + 7, 16 + (int)object[OBJ_Y], k + 7, 143);
             }
             if (k + ((i == 3) ? 16 : 144) < 0) {
-              object[OBJ_X] += ((160 + random.nextInt(40)) << (4 - i));
-              object[OBJ_Y] = 72 + (random.nextInt(4) << 3);
+                object[OBJ_X] = object[OBJ_X] + (float) ((160 + random.nextInt(40)) << (4 - i));
+              object[OBJ_Y] = (float) (72 + (random.nextInt(4) << 3));
             }
           }
         }
@@ -1029,8 +1029,8 @@ public class a extends JPanel implements Runnable {
         
         for(i = queue.size() - 1; i >= 0; i--) {
             float[] object = queue.get(i);
-          if (object[OBJ_BEHIND_TILES] == 1) {
-            g.drawImage(sprites[object[OBJ_MIRRORED] == 0
+          if (object[OBJ_BEHIND_TILES] == 1.0F) {
+            g.drawImage(sprites[object[OBJ_MIRRORED] == (float) 0
                     ? (int)object[OBJ_FLIPPED]
                     : ORIENTATION_MIRRORED][(int)object[OBJ_SPRITE]],
                 ((int)object[OBJ_X]) - cameraX,
@@ -1055,8 +1055,8 @@ public class a extends JPanel implements Runnable {
         
         for(i = queue.size() - 1; i >= 0; i--) {
             float[] object = queue.get(i);
-          if (object[OBJ_BEHIND_TILES] == 0) {
-            g.drawImage(sprites[object[OBJ_MIRRORED] == 0
+          if (object[OBJ_BEHIND_TILES] == (float) 0) {
+            g.drawImage(sprites[object[OBJ_MIRRORED] == (float) 0
                     ? (int)object[OBJ_FLIPPED]
                     : ORIENTATION_MIRRORED][(int)object[OBJ_SPRITE]],
                 ((int)object[OBJ_X]) - cameraX,
@@ -1082,7 +1082,7 @@ public class a extends JPanel implements Runnable {
       }
 
       
-      while(nextFrameStartTime - System.nanoTime() > 0) {
+      while(nextFrameStartTime - System.nanoTime() > 0L) {
         Thread.yield();
       }
     }

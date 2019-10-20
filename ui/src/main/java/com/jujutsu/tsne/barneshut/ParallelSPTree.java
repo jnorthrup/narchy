@@ -82,7 +82,7 @@ public class ParallelSPTree extends SPTree {
 		if(is_leaf || max_width / sqrt(D) < theta) {
 			
 			D = 1.0 / (1.0 + D);
-            double mult = cum_size * D;
+            double mult = (double) cum_size * D;
 			sum_Q += mult;
 			mult *= D;
 			for(int d = 0; d < dimension; d++) neg_f[d] += mult * buff[d];

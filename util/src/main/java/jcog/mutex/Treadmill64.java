@@ -22,7 +22,7 @@ public class Treadmill64 implements SpinMutex {
 
     @Override
     public int start(long hash) {
-        if (hash == 0) hash = 1; //skip 0
+        if (hash == 0L) hash = 1L; //skip 0
 
         restart: while (true) {
 
@@ -36,17 +36,17 @@ public class Treadmill64 implements SpinMutex {
                 if (v == hash) {
                     Thread.onSpinWait();
                     continue restart;  //collision
-                } else if (v == 0 && jProlly == -1)
+                } else if (v == 0L && jProlly == -1)
                     jProlly = i; //first empty cell candidate
             }
 
             if (mod.weakCompareAndSetRelease(now, now+1)) { //TODO separate into modIn and modOut?
-                if (jProlly != -1 && buf.weakCompareAndSetAcquire(jProlly, 0, hash))
+                if (jProlly != -1 && buf.weakCompareAndSetAcquire(jProlly, 0L, hash))
                     return jProlly;
 
                 int os = offset + size;
                 for (int j = offset; j < os; j++)
-                    if (j!=jProlly && buf.weakCompareAndSetAcquire(j, 0, hash))
+                    if (j!=jProlly && buf.weakCompareAndSetAcquire(j, 0L, hash))
                         return j;
             }
 
@@ -56,7 +56,7 @@ public class Treadmill64 implements SpinMutex {
 
     @Override
     public final void end(int slot) {
-        buf.setRelease(slot, 0);
+        buf.setRelease(slot, 0L);
     }
 
 

@@ -9,7 +9,6 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.stream.IntStream;
 
 public class Asteroids extends JFrame implements KeyListener, ActionListener {
 
@@ -311,7 +310,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
 
         render();
 
-        return credits;
+        return (float) credits;
     }
 
     private void render() {
@@ -335,10 +334,10 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
                     Rock rock = rockList.get(i);
                     for (int n = 0; n < 5; n++) {
                         for (int j = 0; j < 5; j++) {
-                            offg.drawLine((int) Math.round((rock.shape.xpoints[n] * Math.cos(rock.angle) - rock.shape.ypoints[n] * Math.sin(rock.angle) + rock.xposition)),
-                                    (int) Math.round((rock.shape.xpoints[n] * Math.sin(rock.angle) + rock.shape.ypoints[n] * Math.cos(rock.angle) + rock.yposition)),
-                                    (int) Math.round((rock.shape.xpoints[j] * Math.cos(rock.angle) - rock.shape.ypoints[j] * Math.sin(rock.angle) + rock.xposition)),
-                                    (int) Math.round((rock.shape.xpoints[j] * Math.sin(rock.angle) + rock.shape.ypoints[j] * Math.cos(rock.angle) + rock.yposition)));
+                            offg.drawLine((int) Math.round(((double) rock.shape.xpoints[n] * Math.cos(rock.angle) - (double) rock.shape.ypoints[n] * Math.sin(rock.angle) + rock.xposition)),
+                                    (int) Math.round(((double) rock.shape.xpoints[n] * Math.sin(rock.angle) + (double) rock.shape.ypoints[n] * Math.cos(rock.angle) + rock.yposition)),
+                                    (int) Math.round(((double) rock.shape.xpoints[j] * Math.cos(rock.angle) - (double) rock.shape.ypoints[j] * Math.sin(rock.angle) + rock.xposition)),
+                                    (int) Math.round(((double) rock.shape.xpoints[j] * Math.sin(rock.angle) + (double) rock.shape.ypoints[j] * Math.cos(rock.angle) + rock.yposition)));
                         }
                     }
 
@@ -534,7 +533,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
                     bulletList.get(j).active = false;
                     rockList.get(i).health -= ship.damage;
 
-                    if (rockList.get(i).health <= 0) {
+                    if (rockList.get(i).health <= (double) 0) {
 
                         rockList.get(i).active = false;
 
@@ -563,19 +562,19 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
             if (ship.weaponType == 1) {
                 switch (ship.upgrades[0][0]) {
                     case 0:
-                        if (Math.random() < 0.25f)
-                            bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2 + ship.spreadModifier, ship.weaponType));
-                        if (Math.random() < 0.25f)
-                            bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2, ship.weaponType));
-                        if (Math.random() < 0.25f)
-                            bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2 - ship.spreadModifier, ship.weaponType));
+                        if (Math.random() < 0.25)
+                            bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2.0 + ship.spreadModifier, ship.weaponType));
+                        if (Math.random() < 0.25)
+                            bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2.0, ship.weaponType));
+                        if (Math.random() < 0.25)
+                            bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2.0 - ship.spreadModifier, ship.weaponType));
                         break;
                     case 1:
-                        bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2 + 0.5 * ship.spreadModifier, ship.weaponType));
-                        bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2 + ship.spreadModifier, ship.weaponType));
-                        bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2, ship.weaponType));
-                        bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2 - ship.spreadModifier, ship.weaponType));
-                        bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2 - 0.5 * ship.spreadModifier, ship.weaponType));
+                        bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2.0 + 0.5 * ship.spreadModifier, ship.weaponType));
+                        bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2.0 + ship.spreadModifier, ship.weaponType));
+                        bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2.0, ship.weaponType));
+                        bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2.0 - ship.spreadModifier, ship.weaponType));
+                        bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2.0 - 0.5 * ship.spreadModifier, ship.weaponType));
                         break;
                 }
 
@@ -585,11 +584,11 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
             if (ship.weaponType == 2) {
                 switch (ship.upgrades[1][0]) {
                     case 0:
-                        bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2, ship.weaponType));
+                        bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2.0, ship.weaponType));
                         break;
                     case 1:
-                        bulletList.add(new Bullet(ship.xposition + 10 * Math.cos(ship.angle), ship.yposition + 10 * Math.sin(ship.angle), ship.angle - Math.PI / 2, ship.weaponType));
-                        bulletList.add(new Bullet(ship.xposition - 10 * Math.cos(ship.angle), ship.yposition - 10 * Math.sin(ship.angle), ship.angle - Math.PI / 2, ship.weaponType));
+                        bulletList.add(new Bullet(ship.xposition + 10.0 * Math.cos(ship.angle), ship.yposition + 10.0 * Math.sin(ship.angle), ship.angle - Math.PI / 2.0, ship.weaponType));
+                        bulletList.add(new Bullet(ship.xposition - 10.0 * Math.cos(ship.angle), ship.yposition - 10.0 * Math.sin(ship.angle), ship.angle - Math.PI / 2.0, ship.weaponType));
                         break;
                 }
 
@@ -599,13 +598,13 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
             if (ship.weaponType == 3) {
                 switch (ship.upgrades[2][0]) {
                     case 0:
-                        bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2, ship.weaponType));
+                        bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2.0, ship.weaponType));
                         ship.counter = 0;
                         break;
                     case 1:
                         ship.bursting = true;
                         if (ship.burstCounter < 3) {
-                            bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2, ship.weaponType));
+                            bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2.0, ship.weaponType));
                             ship.counter = ship.fireDelay - 2;
                             ship.burstCounter += 1;
                         } else {
@@ -624,9 +623,9 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
     public void checkDestruction() {
         for (int i = 0; i < rockList.size(); i++) {
             if (rockList.get(i).active == false) {
-                if (rockList.get(i).size > 4) {
-                    rockList.add(new Rock(rockList.get(i).xposition, rockList.get(i).yposition, rockList.get(i).size -= 1, rockList.get(i).xspeed, rockList.get(i).yspeed));
-                    rockList.add(new Rock(rockList.get(i).xposition, rockList.get(i).yposition, rockList.get(i).size -= 1, rockList.get(i).xspeed, rockList.get(i).yspeed));
+                if (rockList.get(i).size > 4.0) {
+                    rockList.add(new Rock(rockList.get(i).xposition, rockList.get(i).yposition, rockList.get(i).size -= 1.0, rockList.get(i).xspeed, rockList.get(i).yspeed));
+                    rockList.add(new Rock(rockList.get(i).xposition, rockList.get(i).yposition, rockList.get(i).size -= 1.0, rockList.get(i).xspeed, rockList.get(i).yspeed));
                 }
                 rockList.remove(i);
             }
@@ -819,7 +818,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
 
     public void newLevel() {
         level++;
-        lives += Math.round(level / 10) + 1;
+        lives += Math.round((float) (level / 10)) + 1;
 
         ship.invincible = true;
 

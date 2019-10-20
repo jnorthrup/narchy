@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import static jake2.Defines.*;
-import static jake2.Defines.ca_active;
 
 /**
  * V
@@ -112,7 +111,7 @@ public final class V extends Globals {
         int i = r_numparticles++;
 
         int c = particle_t.colorTable[color];
-        c |= (int) (alpha * 255) << 24;
+        c |= (int) (alpha * 255.0F) << 24;
         particle_t.colorArray.put(i, c);
 
         i *= 3;
@@ -157,7 +156,7 @@ public final class V extends Globals {
     }
 
     
-    private static final float[] origin = { 0, 0, 0 };
+    private static final float[] origin = {(float) 0, (float) 0, (float) 0};
     /*
      * ================ V_TestParticles
      * 
@@ -168,9 +167,9 @@ public final class V extends Globals {
 
         r_numparticles = 0;
         for (int i = 0; i < MAX_PARTICLES; i++) {
-            float d = i * 0.25f;
-            float r = 4 * ((i & 7) - 3.5f);
-            float u = 4 * (((i >> 3) & 7) - 3.5f);
+            float d = (float) i * 0.25f;
+            float r = 4.0F * ((float) (i & 7) - 3.5f);
+            float u = 4.0F * ((float) ((i >> 3) & 7) - 3.5f);
 
             for (int j = 0; j < 3; j++)
                 origin[j] = cl.refdef.vieworg[j] + cl.v_forward[j] * d
@@ -196,8 +195,8 @@ public final class V extends Globals {
         for (i = 0; i < r_numentities; i++) {
             entity_t ent = r_entities[i];
 
-            float r = 64 * ((i % 4) - 1.5f);
-            float f = 64 * (i / 4f) + 128;
+            float r = 64.0F * ((float) (i % 4) - 1.5f);
+            float f = 64.0F * ((float) i / 4f) + 128.0F;
 
             for (int j = 0; j < 3; j++)
                 ent.origin[j] = cl.refdef.vieworg[j] + cl.v_forward[j] * f
@@ -224,16 +223,16 @@ public final class V extends Globals {
         for (i = 0; i < r_numdlights; i++) {
             dlight_t dl = r_dlights[i];
 
-            float r = 64 * ((i % 4) - 1.5f);
-            float f = 64 * (i / 4f) + 128;
+            float r = 64.0F * ((float) (i % 4) - 1.5f);
+            float f = 64.0F * ((float) i / 4f) + 128.0F;
 
             for (int j = 0; j < 3; j++)
                 dl.origin[j] = cl.refdef.vieworg[j] + cl.v_forward[j] * f
                         + cl.v_right[j] * r;
-            dl.color[0] = ((i % 6) + 1) & 1;
-            dl.color[1] = (((i % 6) + 1) & 2) >> 1;
-            dl.color[2] = (((i % 6) + 1) & 4) >> 2;
-            dl.intensity = 200;
+            dl.color[0] = (float) (((i % 6) + 1) & 1);
+            dl.color[1] = (float) ((((i % 6) + 1) & 2) >> 1);
+            dl.color[2] = (float) ((((i % 6) + 1) & 4) >> 2);
+            dl.intensity = 200.0F;
         }
     }
 
@@ -313,29 +312,25 @@ public final class V extends Globals {
             }
 
             
-            if (stereo_separation != 0) {
+            if (stereo_separation != (float) 0) {
                 float[] tmp = new float[3];
 
                 Math3D.VectorScale(cl.v_right, stereo_separation, tmp);
                 Math3D.VectorAdd(cl.refdef.vieworg, tmp, cl.refdef.vieworg);
             }
 
-            
-            
-            
-            
-            
-            cl.refdef.vieworg[0] += 1.0 / 16;
-            cl.refdef.vieworg[1] += 1.0 / 16;
-            cl.refdef.vieworg[2] += 1.0 / 16;
+
+            cl.refdef.vieworg[0] = (float) ((double) cl.refdef.vieworg[0] + 1.0 / 16.0);
+            cl.refdef.vieworg[1] = (float) ((double) cl.refdef.vieworg[1] + 1.0 / 16.0);
+            cl.refdef.vieworg[2] = (float) ((double) cl.refdef.vieworg[2] + 1.0 / 16.0);
 
             cl.refdef.x = scr_vrect.x;
             cl.refdef.y = scr_vrect.y;
             cl.refdef.width = scr_vrect.width;
             cl.refdef.height = scr_vrect.height;
-            cl.refdef.fov_y = Math3D.CalcFov(cl.refdef.fov_x, cl.refdef.width,
-                    cl.refdef.height);
-            cl.refdef.time = cl.time * 0.001f;
+            cl.refdef.fov_y = Math3D.CalcFov(cl.refdef.fov_x, (float) cl.refdef.width,
+                    (float) cl.refdef.height);
+            cl.refdef.time = (float) cl.time * 0.001f;
 
             cl.refdef.areabits = cl.frame.areabits;
 
@@ -345,7 +340,7 @@ public final class V extends Globals {
                 r_numparticles = 0;
             if (cl_add_lights.value == 0.0f)
                 r_numdlights = 0;
-            if (cl_add_blend.value == 0) {
+            if (cl_add_blend.value == (float) 0) {
                 Math3D.VectorClear(cl.refdef.blend);
             }
 

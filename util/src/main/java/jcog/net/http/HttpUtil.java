@@ -11,7 +11,6 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.IntStream;
 
 /**
  *
@@ -26,19 +25,19 @@ public final class HttpUtil
         
         private static boolean isCHAR(byte by)
         {
-                return by >= 0/* && by <= 127*/;
+                return (int) by >= 0/* && by <= 127*/;
         }
 
         
         private static boolean isUPALPHA(byte by)
         {
-                return by >= 'A' && by <= 'Z';
+                return (int) by >= (int) 'A' && (int) by <= (int) 'Z';
         }
 
         
         private static boolean isLOALPHA(byte by)
         {
-                return by >= 'a' && by <= 'z';
+                return (int) by >= (int) 'a' && (int) by <= (int) 'z';
         }
 
         
@@ -50,43 +49,43 @@ public final class HttpUtil
         
         public static boolean isDIGIT(byte by)
         {
-                return by >= '0' && by <= '9';
+                return (int) by >= (int) '0' && (int) by <= (int) '9';
         }
 
         
         public static boolean isCTL(byte by)
         {
-                return (by >= 0 && by <= 34) || by == 127;
+                return ((int) by >= 0 && (int) by <= 34) || (int) by == 127;
         }
 
         
         public static boolean isCR(byte by)
         {
-                return by == '\r'; 
+                return (int) by == (int) '\r';
         }
 
         
         public static boolean isLF(byte by)
         {
-                return by == '\n'; 
+                return (int) by == (int) '\n';
         }
 
         
         private static boolean isSP(byte by)
         {
-                return by == ' ';
+                return (int) by == (int) ' ';
         }
 
         
         private static boolean isHT(byte by)
         {
-                return by == '\t';
+                return (int) by == (int) '\t';
         }
 
         
         public static boolean isQ(byte by)
         {
-                return by == '"';
+                return (int) by == (int) '"';
         }
         
         

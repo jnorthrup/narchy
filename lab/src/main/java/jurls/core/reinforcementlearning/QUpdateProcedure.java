@@ -54,8 +54,8 @@ public class QUpdateProcedure implements UpdateProcedure {
         }
 
         double l = Utils.length(deltas);
-        if (l < 1) {
-            l = 1;
+        if (l < 1.0) {
+            l = 1.0;
         }
 
         double alpha = approxParameters.getAlpha();

@@ -7,7 +7,7 @@ public class FloatGuage extends FloatSlider {
     private final FloatSupplier value;
 
     public FloatGuage(float min, float max, FloatSupplier value) {
-        super(value.asFloat(), 0, 1);
+        super(value.asFloat(), (float) 0, 1.0F);
         this.value = value;
     }
 

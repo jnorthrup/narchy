@@ -42,7 +42,6 @@ import spacegraph.space2d.phys.pooling.IWorldPool;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 /**
  * Provides object pooling for all objects used in the engine. Objects retrieved from here should

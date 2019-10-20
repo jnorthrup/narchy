@@ -29,12 +29,12 @@ public enum Revision {;
         double ae = a.evi();
         double be = b.evi();
         double w = ae + be;
-        double e = w * factor;
+        double e = w * (double) factor;
 
-        return e <= minEvi ?
+        return e <= (double) minEvi ?
                 null :
                 PreciseTruth.byEvi(
-                        (ae * a.freq() + be * b.freq()) / w,
+                        (ae * (double) a.freq() + be * (double) b.freq()) / w,
                         e
                 );
     }

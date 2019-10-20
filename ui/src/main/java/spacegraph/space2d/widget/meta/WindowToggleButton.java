@@ -68,8 +68,8 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
                     
                         w.addWindowListener(this);
                         if (f!=null) {
-                            int nx = Math.round(f.posPixel.x - width / 2f);
-                            int ny = Math.round(f.posPixel.y - height / 2f);
+                            int nx = Math.round(f.posPixel.x - (float) width / 2f);
+                            int ny = Math.round(f.posPixel.y - (float) height / 2f);
                             space.video.setPosition(nx, ny);
                         }
                     

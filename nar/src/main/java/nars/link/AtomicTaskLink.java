@@ -53,7 +53,7 @@ public class AtomicTaskLink extends AbstractTaskLink {
 
     @Override
     public final float priIndex(byte index) {
-        return punc.getAt(index);
+        return punc.getAt((int) index);
     }
 
     @Override

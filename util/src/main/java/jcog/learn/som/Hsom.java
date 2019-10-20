@@ -31,13 +31,13 @@ public class Hsom {
         inputs = new float[numInputs];
         coords1 = new float[SomSize][SomSize];
         coords2 = new float[SomSize][SomSize];
-        gamma = SomSize / 2f;
+        gamma = (float) SomSize / 2f;
         this.numInputs = numInputs;
         this.SomSize = SomSize;
         for (int i1 = 0; i1 < SomSize; i1++) {
             for (int i2 = 0; i2 < SomSize; i2++) {
-                coords1[i1][i2] = (float) ((float) i1 * 1.0); 
-                coords2[i1][i2] = (float) ((float) i2 * 1.0);
+                coords1[i1][i2] = (float) ((double) (float) i1 * 1.0);
+                coords2[i1][i2] = (float) ((double) (float) i2 * 1.0);
             }
         }
         for (int x = 0; x < SomSize; x++) {
@@ -104,9 +104,9 @@ public class Hsom {
         @NotNull float[][] dd = this.coords2;
         float diff2 = (dd[i1][i2] - dd[winnerx][winnery])
                 * (dd[i1][i2] - dd[winnerx][winnery]);
-        float gammaSq = 2 * gamma * gamma;
-        return (1.0f / ((float) Math.sqrt(Math.PI * gammaSq)))
-                * ((float) Math.exp((diff1 + diff2) / (-gammaSq)));
+        float gammaSq = 2.0F * gamma * gamma;
+        return (1.0f / ((float) Math.sqrt(Math.PI * (double) gammaSq)))
+                * ((float) Math.exp((double) ((diff1 + diff2) / (-gammaSq))));
     }
 
     /**

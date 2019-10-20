@@ -100,26 +100,26 @@ public class MutableRoulette {
 
     public MutableRoulette reweigh() {
         int n = w.length;
-        float s = 0;
+        float s = (float) 0;
 
         int nn = n;
         float[] w = this.w;
         for (int i = 0; i < nn; i++) {
             float wi = w[i];
-            if (wi < 0 || !Float.isFinite(wi))
+            if (wi < (float) 0 || !Float.isFinite(wi))
                 throw new RuntimeException("invalid weight: " + wi);
 
             if (wi < EPSILON) {
-                w[i] = 0;
+                w[i] = (float) 0;
                 n--;
             } else {
                 s += wi;
             }
         }
 
-        if (n == 0 || s < n * EPSILON) {
+        if (n == 0 || s < (float) n * EPSILON) {
             Arrays.fill(w, ScalarValue.EPSILON);
-            s = ScalarValue.EPSILON * n;
+            s = ScalarValue.EPSILON * (float) n;
             n = w.length;
         }
 
@@ -199,12 +199,12 @@ public class MutableRoulette {
             distance -= wi;
             if (--idle < 0)
                 return -1; //emergency bailout
-        } while (distance > 0);
+        } while (distance > (float) 0);
 
 
         float nextWeight = weightUpdate.valueOf(wi);
         if (!validWeight(nextWeight)) {
-            w[i] = 0;
+            w[i] = (float) 0;
             weightSum -= wi;
             remaining--;
         } else if (nextWeight != wi) {
@@ -223,7 +223,7 @@ public class MutableRoulette {
             if (wx >= EPSILON) {
                 float nextWeight = weightUpdate.valueOf(wx);
                 if (!validWeight(nextWeight)) {
-                    w[x] = 0;
+                    w[x] = (float) 0;
                     remaining = 0;
                 } else {
                     w[x] = nextWeight;

@@ -38,7 +38,7 @@ public class PongModel extends JPanel implements ActionListener, MouseListener, 
     private boolean mouse_inside;
     private boolean key_up;
     private boolean key_down;
-    private static final double minBallYSpeed = 0.1f;
+    private static final double minBallYSpeed = 0.1;
 
 
     public PongModel(Player player1, Player player2) {
@@ -51,7 +51,7 @@ public class PongModel extends JPanel implements ActionListener, MouseListener, 
 
 
     private void computeDestination(Player player) {
-        if (ball_x_speed > 0)
+        if (ball_x_speed > (double) 0)
             player.destination = ball_y + (getWidth() - PADDING - WIDTH - RADIUS - ball_x) * (int) (ball_y_speed) / (int) (ball_x_speed);
         else
             player.destination = ball_y - (ball_x - PADDING - WIDTH - RADIUS) * (int) (ball_y_speed) / (int) (ball_x_speed);
@@ -101,9 +101,9 @@ public class PongModel extends JPanel implements ActionListener, MouseListener, 
             ball_x = getWidth() / 2;
             ball_y = getHeight() / 2;
 
-            double phase = Math.random() * Math.PI / 2 - Math.PI / 4;
-            ball_x_speed = (int) (Math.cos(phase) * START_SPEED);
-            ball_y_speed = (int) (Math.sin(phase) * START_SPEED);
+            double phase = Math.random() * Math.PI / 2.0 - Math.PI / 4.0;
+            ball_x_speed = (double) (int) (Math.cos(phase) * (double) START_SPEED);
+            ball_y_speed = (double) (int) (Math.sin(phase) * (double) START_SPEED);
 
             ball_acceleration_count = 0;
 
@@ -127,15 +127,15 @@ public class PongModel extends JPanel implements ActionListener, MouseListener, 
         player2.computePosition(this);
 
 
-        ball_x += ball_x_speed;
-        ball_y += ball_y_speed;
+        ball_x = (int) ((double) ball_x + ball_x_speed);
+        ball_y = (int) ((double) ball_y + ball_y_speed);
 
 
         if (acceleration) {
             ball_acceleration_count++;
             if (ball_acceleration_count == ACCELERATION) {
-                ball_x_speed += (int) ball_x_speed / Math.hypot((int) ball_x_speed, (int) ball_y_speed) * 2;
-                ball_y_speed += (int) ball_y_speed / Math.hypot((int) ball_x_speed, (int) ball_y_speed) * 2;
+                ball_x_speed += (double) (int) ball_x_speed / Math.hypot((double) (int) ball_x_speed, (double) (int) ball_y_speed) * 2.0;
+                ball_y_speed += (double) (int) ball_y_speed / Math.hypot((double) (int) ball_x_speed, (double) (int) ball_y_speed) * 2.0;
                 ball_acceleration_count = 0;
             }
         }
@@ -144,14 +144,14 @@ public class PongModel extends JPanel implements ActionListener, MouseListener, 
         int bounceLX = PADDING + WIDTH + RADIUS;
 
         if (ball_x <= bounceLX) {
-            int collision_point = ball_y + (int) (ball_y_speed / ball_x_speed * (PADDING + WIDTH + RADIUS - ball_x));
+            int collision_point = ball_y + (int) (ball_y_speed / ball_x_speed * (double) (PADDING + WIDTH + RADIUS - ball_x));
             int dieLX = RADIUS;
             if (ball_x <= bounceLX && collision_point > player1.position - PADDLE_HEIGHT - TOLERANCE &&
                     collision_point < player1.position + PADDLE_HEIGHT + TOLERANCE) {
                 ball_x = 2 * (PADDING + WIDTH + RADIUS) - ball_x;
                 player1.bounce();
                 ball_x_speed = Math.abs(ball_x_speed);
-                ball_y_speed -= Math.sin((double) (player1.position - ball_y) / PADDLE_HEIGHT * Math.PI / 4)
+                ball_y_speed -= Math.sin((double) (player1.position - ball_y) / (double) PADDLE_HEIGHT * Math.PI / 4.0)
                         * Math.hypot(ball_x_speed, ball_y_speed);
 
                 computeDestination(player2);
@@ -166,13 +166,13 @@ public class PongModel extends JPanel implements ActionListener, MouseListener, 
         int bounceRX = getWidth() - PADDING - WIDTH - RADIUS;
         int dieRX = getWidth() - RADIUS;
         if (ball_x >= bounceRX) {
-            int collision_point = ball_y - (int) (ball_y_speed / ball_x_speed * (ball_x - getWidth() + PADDING + WIDTH + RADIUS));
+            int collision_point = ball_y - (int) (ball_y_speed / ball_x_speed * (double) (ball_x - getWidth() + PADDING + WIDTH + RADIUS));
             if (ball_x >= bounceRX && collision_point > player2.position - PADDLE_HEIGHT - TOLERANCE &&
                     collision_point < player2.position + PADDLE_HEIGHT + TOLERANCE) {
                 ball_x = 2 * (bounceRX) - ball_x;
-                ball_x_speed = -1 * Math.abs(ball_x_speed);
+                ball_x_speed = -1.0 * Math.abs(ball_x_speed);
                 player2.bounce();
-                ball_y_speed -= Math.sin((double) (player2.position - ball_y) / PADDLE_HEIGHT * Math.PI / 4)
+                ball_y_speed -= Math.sin((double) (player2.position - ball_y) / (double) PADDLE_HEIGHT * Math.PI / 4.0)
                         * Math.hypot(ball_x_speed, ball_y_speed);
 
                 computeDestination(player1);
@@ -191,7 +191,7 @@ public class PongModel extends JPanel implements ActionListener, MouseListener, 
 
 
         if (ball_y >= getHeight() - RADIUS) {
-            ball_y_speed = -1 * Math.abs(ball_y_speed);
+            ball_y_speed = -1.0 * Math.abs(ball_y_speed);
             ball_y = 2 * (getHeight() - RADIUS) - ball_y;
         }
 

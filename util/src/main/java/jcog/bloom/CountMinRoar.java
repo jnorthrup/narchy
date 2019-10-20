@@ -13,7 +13,7 @@ public class CountMinRoar extends CountMinSketch {
     final RoaringBitmap set = new RoaringBitmap();
 
     public void add(byte x) {
-        set.add(x); super.add(x);
+        set.add((int) x); super.add(x);
     }
 
     public void add(int x) {
@@ -21,7 +21,7 @@ public class CountMinRoar extends CountMinSketch {
     }
 
     public void add(short x) {
-        set.add(x); super.add(x);
+        set.add((int) x); super.add(x);
     }
 
     public void whileEachInt(IntIntPredicate each) {

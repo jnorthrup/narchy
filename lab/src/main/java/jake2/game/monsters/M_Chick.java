@@ -644,47 +644,47 @@ public class M_Chick {
         public String getID() { return "ChickMoan"; }
         @Override
         public boolean think(edict_t self) {
-            if (Lib.random() < 0.5)
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_idle1, 1,
-                        Defines.ATTN_IDLE, 0);
+            if ((double) Lib.random() < 0.5)
+                game_import_t.sound(self, Defines.CHAN_VOICE, sound_idle1, 1.0F,
+                        (float) Defines.ATTN_IDLE, (float) 0);
             else
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_idle2, 1,
-                        Defines.ATTN_IDLE, 0);
+                game_import_t.sound(self, Defines.CHAN_VOICE, sound_idle2, 1.0F,
+                        (float) Defines.ATTN_IDLE, (float) 0);
             return true;
         }
     };
 
     static final mframe_t[] chick_frames_fidget = {
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, ChickMoan),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null) };
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, ChickMoan),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null) };
 
     static final EntThinkAdapter chick_stand = new EntThinkAdapter() {
     	@Override
@@ -706,43 +706,43 @@ public class M_Chick {
         public boolean think(edict_t self) {
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
                 return true;
-            if (Lib.random() <= 0.3)
+            if ((double) Lib.random() <= 0.3)
                 self.monsterinfo.currentmove = chick_move_fidget;
             return true;
         }
     };
 
     static final mframe_t[] chick_frames_stand = {
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, chick_fidget), };
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, chick_fidget), };
 
     static final mmove_t chick_move_stand = new mmove_t(FRAME_stand101,
             FRAME_stand130, chick_frames_stand, null);
@@ -768,46 +768,46 @@ public class M_Chick {
     };
 
     static final mframe_t[] chick_frames_start_run = {
-            new mframe_t(GameAI.ai_run, 1, null),
-            new mframe_t(GameAI.ai_run, 0, null),
-            new mframe_t(GameAI.ai_run, 0, null),
-            new mframe_t(GameAI.ai_run, -1, null),
-            new mframe_t(GameAI.ai_run, -1, null),
-            new mframe_t(GameAI.ai_run, 0, null),
-            new mframe_t(GameAI.ai_run, 1, null),
-            new mframe_t(GameAI.ai_run, 3, null),
-            new mframe_t(GameAI.ai_run, 6, null),
-            new mframe_t(GameAI.ai_run, 3, null) };
+            new mframe_t(GameAI.ai_run, 1.0F, null),
+            new mframe_t(GameAI.ai_run, (float) 0, null),
+            new mframe_t(GameAI.ai_run, (float) 0, null),
+            new mframe_t(GameAI.ai_run, -1.0F, null),
+            new mframe_t(GameAI.ai_run, -1.0F, null),
+            new mframe_t(GameAI.ai_run, (float) 0, null),
+            new mframe_t(GameAI.ai_run, 1.0F, null),
+            new mframe_t(GameAI.ai_run, 3.0F, null),
+            new mframe_t(GameAI.ai_run, 6.0F, null),
+            new mframe_t(GameAI.ai_run, 3.0F, null) };
 
     static final mmove_t chick_move_start_run = new mmove_t(FRAME_walk01,
             FRAME_walk10, chick_frames_start_run, chick_run);
 
     static final mframe_t[] chick_frames_run = {
-            new mframe_t(GameAI.ai_run, 6, null),
-            new mframe_t(GameAI.ai_run, 8, null),
-            new mframe_t(GameAI.ai_run, 13, null),
-            new mframe_t(GameAI.ai_run, 5, null),
-            new mframe_t(GameAI.ai_run, 7, null),
-            new mframe_t(GameAI.ai_run, 4, null),
-            new mframe_t(GameAI.ai_run, 11, null),
-            new mframe_t(GameAI.ai_run, 5, null),
-            new mframe_t(GameAI.ai_run, 9, null),
-            new mframe_t(GameAI.ai_run, 7, null) };
+            new mframe_t(GameAI.ai_run, 6.0F, null),
+            new mframe_t(GameAI.ai_run, 8.0F, null),
+            new mframe_t(GameAI.ai_run, 13.0F, null),
+            new mframe_t(GameAI.ai_run, 5.0F, null),
+            new mframe_t(GameAI.ai_run, 7.0F, null),
+            new mframe_t(GameAI.ai_run, 4.0F, null),
+            new mframe_t(GameAI.ai_run, 11.0F, null),
+            new mframe_t(GameAI.ai_run, 5.0F, null),
+            new mframe_t(GameAI.ai_run, 9.0F, null),
+            new mframe_t(GameAI.ai_run, 7.0F, null) };
 
     static final mmove_t chick_move_run = new mmove_t(FRAME_walk11, FRAME_walk20,
             chick_frames_run, null);
 
     static final mframe_t[] chick_frames_walk = {
-            new mframe_t(GameAI.ai_walk, 6, null),
-            new mframe_t(GameAI.ai_walk, 8, null),
-            new mframe_t(GameAI.ai_walk, 13, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 7, null),
-            new mframe_t(GameAI.ai_walk, 4, null),
-            new mframe_t(GameAI.ai_walk, 11, null),
-            new mframe_t(GameAI.ai_walk, 5, null),
-            new mframe_t(GameAI.ai_walk, 9, null),
-            new mframe_t(GameAI.ai_walk, 7, null) };
+            new mframe_t(GameAI.ai_walk, 6.0F, null),
+            new mframe_t(GameAI.ai_walk, 8.0F, null),
+            new mframe_t(GameAI.ai_walk, 13.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 7.0F, null),
+            new mframe_t(GameAI.ai_walk, 4.0F, null),
+            new mframe_t(GameAI.ai_walk, 11.0F, null),
+            new mframe_t(GameAI.ai_walk, 5.0F, null),
+            new mframe_t(GameAI.ai_walk, 9.0F, null),
+            new mframe_t(GameAI.ai_walk, 7.0F, null) };
 
     static final mmove_t chick_move_walk = new mmove_t(FRAME_walk11, FRAME_walk20,
             chick_frames_walk, null);
@@ -823,47 +823,47 @@ public class M_Chick {
     };
 
     static final mframe_t[] chick_frames_pain1 = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t chick_move_pain1 = new mmove_t(FRAME_pain101, FRAME_pain105,
             chick_frames_pain1, chick_run);
 
     static final mframe_t[] chick_frames_pain2 = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t chick_move_pain2 = new mmove_t(FRAME_pain201, FRAME_pain205,
             chick_frames_pain2, chick_run);
 
     static final mframe_t[] chick_frames_pain3 = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, -6, null),
-            new mframe_t(GameAI.ai_move, 3, null),
-            new mframe_t(GameAI.ai_move, 11, null),
-            new mframe_t(GameAI.ai_move, 3, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 4, null),
-            new mframe_t(GameAI.ai_move, 1, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, -3, null),
-            new mframe_t(GameAI.ai_move, -4, null),
-            new mframe_t(GameAI.ai_move, 5, null),
-            new mframe_t(GameAI.ai_move, 7, null),
-            new mframe_t(GameAI.ai_move, -2, null),
-            new mframe_t(GameAI.ai_move, 3, null),
-            new mframe_t(GameAI.ai_move, -5, null),
-            new mframe_t(GameAI.ai_move, -2, null),
-            new mframe_t(GameAI.ai_move, -8, null),
-            new mframe_t(GameAI.ai_move, 2, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, -6.0F, null),
+            new mframe_t(GameAI.ai_move, 3.0F, null),
+            new mframe_t(GameAI.ai_move, 11.0F, null),
+            new mframe_t(GameAI.ai_move, 3.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, 4.0F, null),
+            new mframe_t(GameAI.ai_move, 1.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, -3.0F, null),
+            new mframe_t(GameAI.ai_move, -4.0F, null),
+            new mframe_t(GameAI.ai_move, 5.0F, null),
+            new mframe_t(GameAI.ai_move, 7.0F, null),
+            new mframe_t(GameAI.ai_move, -2.0F, null),
+            new mframe_t(GameAI.ai_move, 3.0F, null),
+            new mframe_t(GameAI.ai_move, -5.0F, null),
+            new mframe_t(GameAI.ai_move, -2.0F, null),
+            new mframe_t(GameAI.ai_move, -8.0F, null),
+            new mframe_t(GameAI.ai_move, 2.0F, null) };
 
     static final mmove_t chick_move_pain3 = new mmove_t(FRAME_pain301, FRAME_pain321,
             chick_frames_pain3, chick_run);
@@ -880,20 +880,20 @@ public class M_Chick {
             if (GameBase.level.time < self.pain_debounce_time)
                 return;
 
-            self.pain_debounce_time = GameBase.level.time + 3;
+            self.pain_debounce_time = GameBase.level.time + 3.0F;
 
             float r = Lib.random();
-            if (r < 0.33)
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
-                        Defines.ATTN_NORM, 0);
-            else if (r < 0.66)
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain2, 1,
-                        Defines.ATTN_NORM, 0);
+            if ((double) r < 0.33)
+                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1.0F,
+                        (float) Defines.ATTN_NORM, (float) 0);
+            else if ((double) r < 0.66)
+                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain2, 1.0F,
+                        (float) Defines.ATTN_NORM, (float) 0);
             else
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain3, 1,
-                        Defines.ATTN_NORM, 0);
+                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain3, 1.0F,
+                        (float) Defines.ATTN_NORM, (float) 0);
 
-            if (GameBase.skill.value == 3)
+            if (GameBase.skill.value == 3.0F)
                 return; 
 
             if (damage <= 10)
@@ -910,57 +910,57 @@ public class M_Chick {
         public String getID() { return "chick_dead"; }
         @Override
         public boolean think(edict_t self) {
-            Math3D.VectorSet(self.mins, -16, -16, 0);
-            Math3D.VectorSet(self.maxs, 16, 16, 16);
+            Math3D.VectorSet(self.mins, -16.0F, -16.0F, (float) 0);
+            Math3D.VectorSet(self.maxs, 16.0F, 16.0F, 16.0F);
             self.movetype = Defines.MOVETYPE_TOSS;
             self.svflags |= Defines.SVF_DEADMONSTER;
-            self.nextthink = 0;
+            self.nextthink = (float) 0;
             game_import_t.linkentity(self);
             return true;
         }
     };
 
     static final mframe_t[] chick_frames_death2 = {
-            new mframe_t(GameAI.ai_move, -6, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, -1, null),
-            new mframe_t(GameAI.ai_move, -5, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, -1, null),
-            new mframe_t(GameAI.ai_move, -2, null),
-            new mframe_t(GameAI.ai_move, 1, null),
-            new mframe_t(GameAI.ai_move, 10, null),
-            new mframe_t(GameAI.ai_move, 2, null),
-            new mframe_t(GameAI.ai_move, 3, null),
-            new mframe_t(GameAI.ai_move, 1, null),
-            new mframe_t(GameAI.ai_move, 2, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 3, null),
-            new mframe_t(GameAI.ai_move, 3, null),
-            new mframe_t(GameAI.ai_move, 1, null),
-            new mframe_t(GameAI.ai_move, -3, null),
-            new mframe_t(GameAI.ai_move, -5, null),
-            new mframe_t(GameAI.ai_move, 4, null),
-            new mframe_t(GameAI.ai_move, 15, null),
-            new mframe_t(GameAI.ai_move, 14, null),
-            new mframe_t(GameAI.ai_move, 1, null) };
+            new mframe_t(GameAI.ai_move, -6.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, -1.0F, null),
+            new mframe_t(GameAI.ai_move, -5.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, -1.0F, null),
+            new mframe_t(GameAI.ai_move, -2.0F, null),
+            new mframe_t(GameAI.ai_move, 1.0F, null),
+            new mframe_t(GameAI.ai_move, 10.0F, null),
+            new mframe_t(GameAI.ai_move, 2.0F, null),
+            new mframe_t(GameAI.ai_move, 3.0F, null),
+            new mframe_t(GameAI.ai_move, 1.0F, null),
+            new mframe_t(GameAI.ai_move, 2.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, 3.0F, null),
+            new mframe_t(GameAI.ai_move, 3.0F, null),
+            new mframe_t(GameAI.ai_move, 1.0F, null),
+            new mframe_t(GameAI.ai_move, -3.0F, null),
+            new mframe_t(GameAI.ai_move, -5.0F, null),
+            new mframe_t(GameAI.ai_move, 4.0F, null),
+            new mframe_t(GameAI.ai_move, 15.0F, null),
+            new mframe_t(GameAI.ai_move, 14.0F, null),
+            new mframe_t(GameAI.ai_move, 1.0F, null) };
 
     static final mmove_t chick_move_death2 = new mmove_t(FRAME_death201,
             FRAME_death223, chick_frames_death2, chick_dead);
 
     static final mframe_t[] chick_frames_death1 = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, -7, null),
-            new mframe_t(GameAI.ai_move, 4, null),
-            new mframe_t(GameAI.ai_move, 11, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, -7.0F, null),
+            new mframe_t(GameAI.ai_move, 4.0F, null),
+            new mframe_t(GameAI.ai_move, 11.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t chick_move_death1 = new mmove_t(FRAME_death101,
             FRAME_death112, chick_frames_death1, chick_dead);
@@ -978,8 +978,8 @@ public class M_Chick {
             if (self.health <= self.gib_health) {
                 game_import_t
                         .sound(self, Defines.CHAN_VOICE, game_import_t
-                                .soundindex("misc/udeath.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                                .soundindex("misc/udeath.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
                             damage, Defines.GIB_ORGANIC);
@@ -1000,15 +1000,15 @@ public class M_Chick {
             self.deadflag = Defines.DEAD_DEAD;
             self.takedamage = Defines.DAMAGE_YES;
 
-            n = Lib.rand() % 2;
+            n = (int) Lib.rand() % 2;
             if (n == 0) {
                 self.monsterinfo.currentmove = chick_move_death1;
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_death1, 1,
-                        Defines.ATTN_NORM, 0);
+                game_import_t.sound(self, Defines.CHAN_VOICE, sound_death1, 1.0F,
+                        (float) Defines.ATTN_NORM, (float) 0);
             } else {
                 self.monsterinfo.currentmove = chick_move_death2;
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_death2, 1,
-                        Defines.ATTN_NORM, 0);
+                game_import_t.sound(self, Defines.CHAN_VOICE, sound_death2, 1.0F,
+                        (float) Defines.ATTN_NORM, (float) 0);
             }
         }
 
@@ -1022,9 +1022,9 @@ public class M_Chick {
             if ((self.monsterinfo.aiflags & Defines.AI_DUCKED) != 0)
                 return true;
             self.monsterinfo.aiflags |= Defines.AI_DUCKED;
-            self.maxs[2] -= 32;
+            self.maxs[2] -= 32.0F;
             self.takedamage = Defines.DAMAGE_YES;
-            self.monsterinfo.pausetime = GameBase.level.time + 1;
+            self.monsterinfo.pausetime = GameBase.level.time + 1.0F;
             game_import_t.linkentity(self);
             return true;
         }
@@ -1049,7 +1049,7 @@ public class M_Chick {
         @Override
         public boolean think(edict_t self) {
             self.monsterinfo.aiflags &= ~Defines.AI_DUCKED;
-            self.maxs[2] += 32;
+            self.maxs[2] += 32.0F;
             self.takedamage = Defines.DAMAGE_AIM;
             game_import_t.linkentity(self);
             return true;
@@ -1057,13 +1057,13 @@ public class M_Chick {
     };
 
     static final mframe_t[] chick_frames_duck = {
-            new mframe_t(GameAI.ai_move, 0, chick_duck_down),
-            new mframe_t(GameAI.ai_move, 1, null),
-            new mframe_t(GameAI.ai_move, 4, chick_duck_hold),
-            new mframe_t(GameAI.ai_move, -4, null),
-            new mframe_t(GameAI.ai_move, -5, chick_duck_up),
-            new mframe_t(GameAI.ai_move, 3, null),
-            new mframe_t(GameAI.ai_move, 1, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, chick_duck_down),
+            new mframe_t(GameAI.ai_move, 1.0F, null),
+            new mframe_t(GameAI.ai_move, 4.0F, chick_duck_hold),
+            new mframe_t(GameAI.ai_move, -4.0F, null),
+            new mframe_t(GameAI.ai_move, -5.0F, chick_duck_up),
+            new mframe_t(GameAI.ai_move, 3.0F, null),
+            new mframe_t(GameAI.ai_move, 1.0F, null) };
 
     static final mmove_t chick_move_duck = new mmove_t(FRAME_duck01, FRAME_duck07,
             chick_frames_duck, chick_run);
@@ -1073,7 +1073,7 @@ public class M_Chick {
         public String getID() { return "chick_dodge"; }
         @Override
         public void dodge(edict_t self, edict_t attacker, float eta) {
-            if (Lib.random() > 0.25)
+            if ((double) Lib.random() > 0.25)
                 return;
 
             if (self.enemy != null)
@@ -1088,12 +1088,12 @@ public class M_Chick {
         public String getID() { return "ChickSlash"; }
         @Override
         public boolean think(edict_t self) {
-            float[] aim = { 0, 0, 0 };
+            float[] aim = {(float) 0, (float) 0, (float) 0};
 
-            Math3D.VectorSet(aim, Defines.MELEE_DISTANCE, self.mins[0], 10);
-            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_melee_swing, 1,
-                    Defines.ATTN_NORM, 0);
-            GameWeapon.fire_hit(self, aim, (10 + (Lib.rand() % 6)), 100);
+            Math3D.VectorSet(aim, (float) Defines.MELEE_DISTANCE, self.mins[0], 10.0F);
+            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_melee_swing, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
+            GameWeapon.fire_hit(self, aim, (10 + ((int) Lib.rand() % 6)), 100);
             return true;
         }
     };
@@ -1103,18 +1103,18 @@ public class M_Chick {
         public String getID() { return "ChickRocket"; }
         @Override
         public boolean think(edict_t self) {
-            float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
+            float[] forward = {(float) 0, (float) 0, (float) 0}, right = {(float) 0, (float) 0, (float) 0};
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
-            float[] start = {0, 0, 0};
+            float[] start = {(float) 0, (float) 0, (float) 0};
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[Defines.MZ2_CHICK_ROCKET_1],
                     forward, right, start);
 
-            float[] vec = {0, 0, 0};
+            float[] vec = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorCopy(self.enemy.s.origin, vec);
-            vec[2] += self.enemy.viewheight;
-            float[] dir = {0, 0, 0};
+            vec[2] = vec[2] + (float) self.enemy.viewheight;
+            float[] dir = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorSubtract(vec, start, dir);
             Math3D.VectorNormalize(dir);
 
@@ -1130,7 +1130,7 @@ public class M_Chick {
         @Override
         public boolean think(edict_t self) {
             game_import_t.sound(self, Defines.CHAN_VOICE,
-                    sound_missile_prelaunch, 1, Defines.ATTN_NORM, 0);
+                    sound_missile_prelaunch, 1.0F, (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
@@ -1141,7 +1141,7 @@ public class M_Chick {
         @Override
         public boolean think(edict_t self) {
             game_import_t.sound(self, Defines.CHAN_VOICE, sound_missile_reload,
-                    1, Defines.ATTN_NORM, 0);
+                    1.0F, (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
@@ -1164,7 +1164,7 @@ public class M_Chick {
             if (self.enemy.health > 0) {
                 if (GameUtil.range(self, self.enemy) > Defines.RANGE_MELEE)
                     if (GameUtil.visible(self, self.enemy))
-                        if (Lib.random() <= 0.6) {
+                        if ((double) Lib.random() <= 0.6) {
                             self.monsterinfo.currentmove = chick_move_attack1;
                             return true;
                         }
@@ -1175,48 +1175,48 @@ public class M_Chick {
     };
 
     static final mframe_t[] chick_frames_start_attack1 = {
-            new mframe_t(GameAI.ai_charge, 0, Chick_PreAttack1),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 4, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, -3, null),
-            new mframe_t(GameAI.ai_charge, 3, null),
-            new mframe_t(GameAI.ai_charge, 5, null),
-            new mframe_t(GameAI.ai_charge, 7, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, chick_attack1) };
+            new mframe_t(GameAI.ai_charge, (float) 0, Chick_PreAttack1),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, 4.0F, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, -3.0F, null),
+            new mframe_t(GameAI.ai_charge, 3.0F, null),
+            new mframe_t(GameAI.ai_charge, 5.0F, null),
+            new mframe_t(GameAI.ai_charge, 7.0F, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, chick_attack1) };
 
     static final mmove_t chick_move_start_attack1 = new mmove_t(FRAME_attak101,
             FRAME_attak113, chick_frames_start_attack1, null);
 
     static final mframe_t[] chick_frames_attack1 = {
-            new mframe_t(GameAI.ai_charge, 19, ChickRocket),
-            new mframe_t(GameAI.ai_charge, -6, null),
-            new mframe_t(GameAI.ai_charge, -5, null),
-            new mframe_t(GameAI.ai_charge, -2, null),
-            new mframe_t(GameAI.ai_charge, -7, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 10, ChickReload),
-            new mframe_t(GameAI.ai_charge, 4, null),
-            new mframe_t(GameAI.ai_charge, 5, null),
-            new mframe_t(GameAI.ai_charge, 6, null),
-            new mframe_t(GameAI.ai_charge, 6, null),
-            new mframe_t(GameAI.ai_charge, 4, null),
-            new mframe_t(GameAI.ai_charge, 3, chick_rerocket) };
+            new mframe_t(GameAI.ai_charge, 19.0F, ChickRocket),
+            new mframe_t(GameAI.ai_charge, -6.0F, null),
+            new mframe_t(GameAI.ai_charge, -5.0F, null),
+            new mframe_t(GameAI.ai_charge, -2.0F, null),
+            new mframe_t(GameAI.ai_charge, -7.0F, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 10.0F, ChickReload),
+            new mframe_t(GameAI.ai_charge, 4.0F, null),
+            new mframe_t(GameAI.ai_charge, 5.0F, null),
+            new mframe_t(GameAI.ai_charge, 6.0F, null),
+            new mframe_t(GameAI.ai_charge, 6.0F, null),
+            new mframe_t(GameAI.ai_charge, 4.0F, null),
+            new mframe_t(GameAI.ai_charge, 3.0F, chick_rerocket) };
 
     static final mmove_t chick_move_attack1 = new mmove_t(FRAME_attak114,
             FRAME_attak127, chick_frames_attack1, null);
 
     static final mframe_t[] chick_frames_end_attack1 = {
-            new mframe_t(GameAI.ai_charge, -3, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, -6, null),
-            new mframe_t(GameAI.ai_charge, -4, null),
-            new mframe_t(GameAI.ai_charge, -2, null) };
+            new mframe_t(GameAI.ai_charge, -3.0F, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, -6.0F, null),
+            new mframe_t(GameAI.ai_charge, -4.0F, null),
+            new mframe_t(GameAI.ai_charge, -2.0F, null) };
 
     static final mmove_t chick_move_end_attack1 = new mmove_t(FRAME_attak128,
             FRAME_attak132, chick_frames_end_attack1, chick_run);
@@ -1228,7 +1228,7 @@ public class M_Chick {
         public boolean think(edict_t self) {
             if (self.enemy.health > 0) {
                 if (GameUtil.range(self, self.enemy) == Defines.RANGE_MELEE)
-                    if (Lib.random() <= 0.9) {
+                    if ((double) Lib.random() <= 0.9) {
                         self.monsterinfo.currentmove = chick_move_slash;
                         return true;
                     } else {
@@ -1242,24 +1242,24 @@ public class M_Chick {
     };
 
     static final mframe_t[] chick_frames_slash = {
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 7, ChickSlash),
-            new mframe_t(GameAI.ai_charge, -7, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, -1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, -2, chick_reslash) };
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 7.0F, ChickSlash),
+            new mframe_t(GameAI.ai_charge, -7.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, -1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, -2.0F, chick_reslash) };
 
     static final mmove_t chick_move_slash = new mmove_t(FRAME_attak204,
             FRAME_attak212, chick_frames_slash, null);
 
     static final mframe_t[] chick_frames_end_slash = {
-            new mframe_t(GameAI.ai_charge, -6, null),
-            new mframe_t(GameAI.ai_charge, -1, null),
-            new mframe_t(GameAI.ai_charge, -6, null),
-            new mframe_t(GameAI.ai_charge, 0, null) };
+            new mframe_t(GameAI.ai_charge, -6.0F, null),
+            new mframe_t(GameAI.ai_charge, -1.0F, null),
+            new mframe_t(GameAI.ai_charge, -6.0F, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null) };
 
     static final mmove_t chick_move_end_slash = new mmove_t(FRAME_attak213,
             FRAME_attak216, chick_frames_end_slash, chick_run);
@@ -1275,9 +1275,9 @@ public class M_Chick {
     };
 
     static final mframe_t[] chick_frames_start_slash = {
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 8, null),
-            new mframe_t(GameAI.ai_charge, 3, null) };
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 8.0F, null),
+            new mframe_t(GameAI.ai_charge, 3.0F, null) };
 
     static final mmove_t chick_move_start_slash = new mmove_t(FRAME_attak201,
             FRAME_attak203, chick_frames_start_slash, chick_slash);
@@ -1307,8 +1307,8 @@ public class M_Chick {
         public String getID() { return "chick_sight"; }
         @Override
         public boolean interact(edict_t self, edict_t other) {
-            game_import_t.sound(self, Defines.CHAN_VOICE, sound_sight, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_VOICE, sound_sight, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
@@ -1318,7 +1318,7 @@ public class M_Chick {
      * Trigger_Spawn Sight
      */
     public static void SP_monster_chick(edict_t self) {
-        if (GameBase.deathmatch.value != 0) {
+        if (GameBase.deathmatch.value != (float) 0) {
             GameUtil.G_FreeEdict(self);
             return;
         }
@@ -1343,8 +1343,8 @@ public class M_Chick {
         self.solid = Defines.SOLID_BBOX;
         self.s.modelindex = game_import_t
                 .modelindex("models/monsters/bitch/tris.md2");
-        Math3D.VectorSet(self.mins, -16, -16, 0);
-        Math3D.VectorSet(self.maxs, 16, 16, 56);
+        Math3D.VectorSet(self.mins, -16.0F, -16.0F, (float) 0);
+        Math3D.VectorSet(self.maxs, 16.0F, 16.0F, 56.0F);
 
         self.health = 175;
         self.gib_health = -70;

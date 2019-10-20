@@ -33,7 +33,7 @@ public class AutoencodedBitmap implements Bitmap2D {
 
         int i = sx * sy;
         this.input = new float[i];
-        this.ae = new Autoencoder(i, ox * oy, new XoRoShiRo128PlusRandom(1));
+        this.ae = new Autoencoder(i, ox * oy, new XoRoShiRo128PlusRandom(1L));
 
         this.w = w / sx * ox;
         this.h = h / sy * oy;
@@ -63,7 +63,7 @@ public class AutoencodedBitmap implements Bitmap2D {
                 }
                 assert(j==input.length);
 
-                ae.put(input, LEARNING_RATE, NOISE_LEVEL, 0, true);
+                ae.put(input, LEARNING_RATE, NOISE_LEVEL, (float) 0, true);
 
                 float[] o = ae.output();
                 for (float anO : o) {

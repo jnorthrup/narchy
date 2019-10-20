@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class GrammarSerializer {
     public static void serialize(CharSequence string, DataOutput dos) throws IOException {
@@ -32,7 +30,7 @@ public class GrammarSerializer {
         } else {
             dos.writeInt(string.length());
             for (int i = 0; i < string.length(); i++) {
-                dos.writeChar(string.charAt(i));
+                dos.writeChar((int) string.charAt(i));
             }
         }
     }
@@ -101,12 +99,12 @@ public class GrammarSerializer {
                     Set<Character> characterOption = mconstNode.characterOptions.get(i);
                     dos.writeInt(characterOption.size()); 
                     for (char c : characterOption) {
-                        dos.writeChar(c); 
+                        dos.writeChar((int) c);
                     }
                     Set<Character> characterChecks = mconstNode.characterChecks.get(i);
                     dos.writeInt(characterChecks.size()); 
                     for (char c : characterChecks) {
-                        dos.writeChar(c); 
+                        dos.writeChar((int) c);
                     }
                 }
             } else {

@@ -103,7 +103,7 @@ public class Pair implements IPair {
             buf.append("()");
         else if (x instanceof Double) {
             double d = (Double) x;
-            if (Math.round(d) == d) buf.append((long) d);
+            if ((double) Math.round(d) == d) buf.append((long) d);
             else buf.append(d);
         } else if (x instanceof Character) {
             if (quoted) buf.append("#\\");
@@ -114,7 +114,7 @@ public class Pair implements IPair {
             char[] chars = (char[]) x;
             if (quoted) buf.append('"');
             for (char aChar : chars) {
-                if (quoted && aChar == '"') buf.append('\\');
+                if (quoted && (int) aChar == (int) '"') buf.append('\\');
                 buf.append(aChar);
             }
             if (quoted) buf.append('"');

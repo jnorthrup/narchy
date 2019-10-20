@@ -18,7 +18,7 @@ public class TilePicker extends JComponent implements MouseListener, MouseMotion
     public byte pickedTile;
 
     @SuppressWarnings("unused")
-    private static final byte paint = 0;
+    private static final byte paint = (byte) 0;
     private LevelEditor tilePickChangedListener;
 
     public TilePicker() {
@@ -48,8 +48,8 @@ public class TilePicker extends JComponent implements MouseListener, MouseMotion
             }
 
         g.setColor(Color.WHITE);
-        int xPickedTile = (pickedTile & 0xff) % 16;
-        int yPickedTile = (pickedTile & 0xff) / 16;
+        int xPickedTile = ((int) pickedTile & 0xff) % 16;
+        int yPickedTile = ((int) pickedTile & 0xff) / 16;
         g.drawRect(xPickedTile * 16, yPickedTile * 16, 15, 15);
 
         g.setColor(Color.BLACK);

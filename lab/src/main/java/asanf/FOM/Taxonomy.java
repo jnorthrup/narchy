@@ -43,9 +43,9 @@ public class Taxonomy<E> implements Iterable<E>{
     		for(j = i; j < numConcepts; j++){
     			if( relations[i][j] != relations[j][i])
 	    			if( relations[i][j] > relations[j][i])
-	    				relations[j][i] = 0;
+	    				relations[j][i] = (double) 0;
 	    			else
-	    				relations[i][j] = 0;
+	    				relations[i][j] = (double) 0;
     		}
     	}
 
@@ -56,11 +56,11 @@ public class Taxonomy<E> implements Iterable<E>{
     		for(j = 0; j < numConcepts; j++){
     			
     			if(i == j){
-    				distance[i][j] = 0;
+    				distance[i][j] = (double) 0;
     				continue;
     			}
     			
-    			distance[i][j] = (relations[i][j] > 0) ? relations[i][j]:bigNum; 
+    			distance[i][j] = (relations[i][j] > (double) 0) ? relations[i][j]: (double) bigNum;
     		}
     	
     	/*
@@ -91,9 +91,9 @@ public class Taxonomy<E> implements Iterable<E>{
     	
     	for(i = 0; i < numConcepts; i++)
     		for(j = 0; j < numConcepts; j++){
-    			if((distance[i][j] > relations[i][j]) && relations[i][j] > 0){
+    			if((distance[i][j] > relations[i][j]) && relations[i][j] > (double) 0){
     				System.out.println(concepts.get(i) + " - " + concepts.get(j) + " distance: " + distance[i][j] + " relation: " + relations[i][j]);
-    				relations[i][j] = 0;			
+    				relations[i][j] = (double) 0;
     			}
     		}
     	

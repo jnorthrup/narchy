@@ -53,8 +53,8 @@ public class texinfo_t {
 
 	
 	public final float[][] vecs = {
-		 { 0, 0, 0, 0 },
-		 { 0, 0, 0, 0 }
+		 {(float) 0, (float) 0, (float) 0, (float) 0},
+		 {(float) 0, (float) 0, (float) 0, (float) 0}
 	};
 	public final int flags; 
 	public final int value; 

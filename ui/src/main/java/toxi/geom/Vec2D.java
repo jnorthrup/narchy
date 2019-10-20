@@ -60,12 +60,12 @@ import java.util.Random;
     /**
      * Defines positive X axis
      */
-    private static final ReadonlyVec2D X_AXIS = new Vec2D(1, 0);
+    private static final ReadonlyVec2D X_AXIS = new Vec2D(1.0F, (float) 0);
 
     /**
      * Defines positive Y axis
      */
-    static final ReadonlyVec2D Y_AXIS = new Vec2D(0, 1);
+    static final ReadonlyVec2D Y_AXIS = new Vec2D((float) 0, 1.0F);
 
     /** Defines the zero vector. */
     public static final ReadonlyVec2D ZERO = new Vec2D();
@@ -96,7 +96,7 @@ import java.util.Random;
      * @return new vector pointing into the direction of the passed in angle
      */
     public static Vec2D fromTheta(float theta) {
-        return new Vec2D((float) Math.cos(theta), (float) Math.sin(theta));
+        return new Vec2D((float) Math.cos((double) theta), (float) Math.sin((double) theta));
     }
 
     /**
@@ -147,7 +147,7 @@ import java.util.Random;
      * @return a new random normalized unit vector.
      */
     private static Vec2D randomVector(Random rnd) {
-        Vec2D v = new Vec2D(rnd.nextFloat() * 2 - 1, rnd.nextFloat() * 2 - 1);
+        Vec2D v = new Vec2D(rnd.nextFloat() * 2.0F - 1.0F, rnd.nextFloat() * 2.0F - 1.0F);
         return v.normalize();
     }
 
@@ -240,7 +240,7 @@ import java.util.Random;
 
     @Override
     public final float angleBetween(ReadonlyVec2D v) {
-        return (float) Math.acos(dot(v));
+        return (float) Math.acos((double) dot(v));
     }
 
     @Override
@@ -251,7 +251,7 @@ import java.util.Random;
         } else {
             theta = dot(v);
         }
-        return (float) Math.acos(MathUtils.clipNormalized(theta));
+        return (float) Math.acos((double) MathUtils.clipNormalized(theta));
     }
 
 //    @Override
@@ -268,7 +268,7 @@ import java.util.Random;
      * @return itself
      */
     public final Vec2D clear() {
-        x = y = 0;
+        x = y = (float) 0;
         return this;
     }
 
@@ -354,7 +354,7 @@ import java.util.Random;
         if (v != null) {
             float dx = x - v.x();
             float dy = y - v.y();
-            return (float) Math.sqrt(dx * dx + dy * dy);
+            return (float) Math.sqrt((double) (dx * dx + dy * dy));
         } else {
             return Float.NaN;
         }
@@ -445,8 +445,8 @@ import java.util.Random;
      * @return itself
      */
     public final Vec2D floor() {
-        x = MathUtils.floor(x);
-        y = MathUtils.floor(y);
+        x = (float) MathUtils.floor(x);
+        y = (float) MathUtils.floor(y);
         return this;
     }
 
@@ -457,8 +457,8 @@ import java.util.Random;
      * @return itself
      */
     public final Vec2D frac() {
-        x -= MathUtils.floor(x);
-        y -= MathUtils.floor(y);
+        x = x - (float) MathUtils.floor(x);
+        y = y - (float) MathUtils.floor(y);
         return this;
     }
 
@@ -480,7 +480,7 @@ import java.util.Random;
             case Y:
                 return y;
         }
-        return 0;
+        return (float) 0;
     }
 
     @Override
@@ -528,8 +528,8 @@ import java.util.Random;
 
     @Override
     public Vec2D getMapped(ScaleMap map) {
-        return new Vec2D((float) map.getClippedValueFor(x),
-                (float) map.getClippedValueFor(y));
+        return new Vec2D((float) map.getClippedValueFor((double) x),
+                (float) map.getClippedValueFor((double) y));
     }
 
     @Override
@@ -583,7 +583,7 @@ import java.util.Random;
 
     @Override
     public final float heading() {
-        return (float) Math.atan2(y, x);
+        return (float) Math.atan2((double) y, (double) x);
     }
 
     @Override
@@ -641,8 +641,8 @@ import java.util.Random;
      * @return itself
      */
     public final Vec2D invert() {
-        x *= -1;
-        y *= -1;
+        x *= -1.0F;
+        y *= -1.0F;
         return this;
     }
 
@@ -672,9 +672,9 @@ import java.util.Random;
         Vec2D v2 = sub(b).normalize();
         Vec2D v3 = sub(c).normalize();
 
-        double total_angles = Math.acos(v1.dot(v2));
-        total_angles += Math.acos(v2.dot(v3));
-        total_angles += Math.acos(v3.dot(v1));
+        double total_angles = Math.acos((double) v1.dot(v2));
+        total_angles += Math.acos((double) v2.dot(v3));
+        total_angles += Math.acos((double) v3.dot(v1));
 
         return (Math.abs((float) total_angles - MathUtils.TWO_PI) <= 0.005f);
     }
@@ -683,7 +683,7 @@ import java.util.Random;
     public final boolean isMajorAxis(float tol) {
         float ax = Math.abs(x);
         float ay = Math.abs(y);
-        float itol = 1 - tol;
+        float itol = 1.0F - tol;
         if (ax > itol) {
             return (ay < tol);
         } else if (ay > itol) {
@@ -717,7 +717,7 @@ import java.util.Random;
     }
 
     public final Vec2D jitter(Random rnd, float j) {
-        return j > 0 ? jitter(rnd, j, j) : this;
+        return j > (float) 0 ? jitter(rnd, j, j) : this;
     }
 
     private Vec2D jitter(Random rnd, float jx, float jy) {
@@ -749,7 +749,7 @@ import java.util.Random;
 
     @Override
     public final float magnitude() {
-        return (float) Math.sqrt(x * x + y * y);
+        return (float) Math.sqrt((double) (x * x + y * y));
     }
 
     @Override
@@ -798,8 +798,8 @@ import java.util.Random;
      */
     public final Vec2D normalize() {
         float mag = x * x + y * y;
-        if (mag > 0) {
-            mag = 1f / (float) Math.sqrt(mag);
+        if (mag > (float) 0) {
+            mag = 1f / (float) Math.sqrt((double) mag);
             x *= mag;
             y *= mag;
         }
@@ -813,8 +813,8 @@ import java.util.Random;
      * @return itself
      */
     public final Vec2D normalizeTo(float len) {
-        float mag = (float) Math.sqrt(x * x + y * y);
-        if (mag > 0) {
+        float mag = (float) Math.sqrt((double) (x * x + y * y));
+        if (mag > (float) 0) {
             mag = len / mag;
             x *= mag;
             y *= mag;
@@ -830,11 +830,11 @@ import java.util.Random;
     }
 
     final float positiveHeading() {
-        double dist = Math.sqrt(x * x + y * y);
-        if (y >= 0) {
-            return (float) Math.acos(x / dist);
+        double dist = Math.sqrt((double) (x * x + y * y));
+        if (y >= (float) 0) {
+            return (float) Math.acos((double) x / dist);
         } else {
-            return (float) (Math.acos(-x / dist) + MathUtils.PI);
+            return (float) (Math.acos((double) -x / dist) + (double) MathUtils.PI);
         }
     }
 
@@ -845,7 +845,7 @@ import java.util.Random;
     }
 
     public final Vec2D reflect(ReadonlyVec2D normal) {
-        return set(normal.scale(this.dot(normal) * 2).subSelf(this));
+        return set(normal.scale(this.dot(normal) * 2.0F).subSelf(this));
     }
 
     /**
@@ -855,8 +855,8 @@ import java.util.Random;
      * @return itself
      */
     public final Vec2D rotate(float theta) {
-        float co = (float) Math.cos(theta);
-        float si = (float) Math.sin(theta);
+        float co = (float) Math.cos((double) theta);
+        float si = (float) Math.sin((double) theta);
         float xx = co * x - si * y;
         y = si * x + co * y;
         x = xx;
@@ -1004,8 +1004,8 @@ import java.util.Random;
      * @return itself
      */
     private Vec2D signum() {
-        x = (x < 0 ? -1 : x == 0 ? 0 : 1);
-        y = (y < 0 ? -1 : y == 0 ? 0 : 1);
+        x = (float) (x < (float) 0 ? -1 : x == (float) 0 ? 0 : 1);
+        y = (float) (y < (float) 0 ? -1 : y == (float) 0 ? 0 : 1);
         return this;
     }
 
@@ -1017,16 +1017,16 @@ import java.util.Random;
      */
     public final Vec2D snapToAxis() {
         if (Math.abs(x) < 0.5f) {
-            x = 0;
+            x = (float) 0;
         } else {
-            x = x < 0 ? -1 : 1;
-            y = 0;
+            x = (float) (x < (float) 0 ? -1 : 1);
+            y = (float) 0;
         }
         if (Math.abs(y) < 0.5f) {
-            y = 0;
+            y = (float) 0;
         } else {
-            y = y < 0 ? -1 : 1;
-            x = 0;
+            y = (float) (y < (float) 0 ? -1 : 1);
+            x = (float) 0;
         }
         return this;
     }
@@ -1104,15 +1104,15 @@ import java.util.Random;
     }
 
     private Vec2D toCartesian() {
-        float xx = (float) (x * Math.cos(y));
-        y = (float) (x * Math.sin(y));
+        float xx = (float) ((double) x * Math.cos((double) y));
+        y = (float) ((double) x * Math.sin((double) y));
         x = xx;
         return this;
     }
 
     private Vec2D toPolar() {
-        float r = (float) Math.sqrt(x * x + y * y);
-        y = (float) Math.atan2(y, x);
+        float r = (float) Math.sqrt((double) (x * x + y * y));
+        y = (float) Math.atan2((double) y, (double) x);
         x = r;
         return this;
     }

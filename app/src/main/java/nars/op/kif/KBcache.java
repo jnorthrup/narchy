@@ -36,8 +36,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class KBcache implements Serializable {
 

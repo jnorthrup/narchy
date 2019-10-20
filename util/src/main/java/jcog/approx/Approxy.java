@@ -54,7 +54,7 @@ import java.util.function.Function;
 
         @Override
         public String toString() {
-            return BinTxt.toString(hash) + "\t$" + super.toString() + " " + Arrays.toString(((Object[])input)) + " |- " + output;
+            return BinTxt.toString((long) hash) + "\t$" + super.toString() + " " + Arrays.toString(((Object[])input)) + " |- " + output;
         }
 
         @Override
@@ -111,7 +111,7 @@ import java.util.function.Function;
 
         protected void learn(Object x, Object y) {
 
-            experience.put(new ActualExecution(x,y,1f/experience.capacity()));
+            experience.put(new ActualExecution(x,y,1f/ (float) experience.capacity()));
 
 //            experience.print();
 //            System.out.println();
@@ -233,7 +233,7 @@ import java.util.function.Function;
                 .method("compute", float.class, float.class)
                 .newInstance();
 
-        Random rng = new XoRoShiRo128PlusRandom(1);
+        Random rng = new XoRoShiRo128PlusRandom(1L);
         for (int i = 0; i < 100; i++) {
             float x = Util.round(rng.nextFloat(), 0.1f);
             float y = Util.round(rng.nextFloat(), 0.1f);

@@ -14,7 +14,7 @@ public class TaskJsonCodec {
         public static void taskify(Task x, ArrayNode y) {
 
             y.add(String.valueOf((char)x.punc()));
-            /* 0 */ y.add((int) (x.pri() * Short.MAX_VALUE));
+            /* 0 */ y.add((int) (x.pri() * (float) Short.MAX_VALUE));
             /* 1 */ y.add(x.term().toString());
             if (x.isBeliefOrGoal())
                 /* 2 */ y.add(x.truth().toString());

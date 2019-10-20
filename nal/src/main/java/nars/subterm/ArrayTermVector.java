@@ -5,7 +5,6 @@ import nars.term.Term;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.stream.IntStream;
 
 /**
  * Holds a vector or tuple of terms.

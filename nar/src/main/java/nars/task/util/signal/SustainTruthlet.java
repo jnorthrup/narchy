@@ -44,15 +44,15 @@ public class SustainTruthlet extends ProxyTruthlet<RangeTruthlet> {
         } else if (when > (end=end())) {
             dist = Math.abs(when - (w = end));
         } else {
-            dist = 0; 
+            dist = 0L;
             w = when;
         }
 
         super.truth(w, freqEvi);
-        if (dist > 0) {
+        if (dist > 0L) {
             float f = freqEvi[0];
             if (f == f)
-                freqEvi[1] = (float) NAL.evi(freqEvi[1], dist, /* dur */ dur());
+                freqEvi[1] = (float) NAL.evi((double) freqEvi[1], dist, /* dur */ dur());
         }
 
     }

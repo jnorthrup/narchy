@@ -65,7 +65,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.IntStream;
 
 /**
  * An output stream that compresses into the BZip2 format (without the file
@@ -338,7 +337,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
 
             char c = (char) this.currentChar;
 
-            mCrc.updateCRC(c, runLength);
+            mCrc.updateCRC((int) c, runLength);
 
             switch (runLength) {
                 case 1:
@@ -402,8 +401,8 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
         /* Write `magic' bytes h indicating file-format == huffmanised,
            followed by a digit indicating blockSize100k.
         */
-        bsPutUChar('h');
-        bsPutUChar('0' + blockSize100k);
+        bsPutUChar((int) 'h');
+        bsPutUChar((int) '0' + blockSize100k);
 
         combinedCRC = 0;
     }
@@ -488,7 +487,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
 
         int vec = 0;
         for (int n = minLen; n <= maxLen; n++) {
-            for (int i = 0; i < alphaSize; i++) if (length[i] == n) code[i] = vec++;
+            for (int i = 0; i < alphaSize; i++) if ((int) length[i] == n) code[i] = vec++;
             vec <<= 1;
         }
     }
@@ -543,7 +542,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
         int v, t;
 
         int alphaSize = nInUse + 2;
-        for (t = 0; t < N_GROUPS; t++) for (v = 0; v < alphaSize; v++) len[t][v] = GREATER_ICOST;
+        for (t = 0; t < N_GROUPS; t++) for (v = 0; v < alphaSize; v++) len[t][v] = (char) GREATER_ICOST;
 
         /* Decide how many coding tables to use */
         if (nMTF <= 0) panic();
@@ -579,8 +578,8 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                 }
 
                 for (v = 0; v < alphaSize; v++)
-                    if (v >= gs && v <= ge) len[nPart - 1][v] = LESSER_ICOST;
-                    else len[nPart - 1][v] = GREATER_ICOST;
+                    if (v >= gs && v <= ge) len[nPart - 1][v] = (char) LESSER_ICOST;
+                    else len[nPart - 1][v] = (char) GREATER_ICOST;
 
                 nPart--;
                 gs = ge + 1;
@@ -614,19 +613,19 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                   Calculate the cost of this group as coded
                   by each of the coding tables.
                 */
-                for (t = 0; t < nGroups; t++) cost[t] = 0;
+                for (t = 0; t < nGroups; t++) cost[t] = (short) 0;
 
                 if (nGroups == 6) {
                     short cost1, cost2, cost3, cost4, cost5;
-                    short cost0 = cost1 = cost2 = cost3 = cost4 = cost5 = 0;
+                    short cost0 = cost1 = cost2 = cost3 = cost4 = cost5 = (short) 0;
                     for (i = gs; i <= ge; i++) {
                         short icv = szptr[i];
-                        cost0 += len[0][icv];
-                        cost1 += len[1][icv];
-                        cost2 += len[2][icv];
-                        cost3 += len[3][icv];
-                        cost4 += len[4][icv];
-                        cost5 += len[5][icv];
+                        cost0 = (short) ((int) cost0 + (int) len[0][(int) icv]);
+                        cost1 = (short) ((int) cost1 + (int) len[1][(int) icv]);
+                        cost2 = (short) ((int) cost2 + (int) len[2][(int) icv]);
+                        cost3 = (short) ((int) cost3 + (int) len[3][(int) icv]);
+                        cost4 = (short) ((int) cost4 + (int) len[4][(int) icv]);
+                        cost5 = (short) ((int) cost5 + (int) len[5][(int) icv]);
                     }
                     cost[0] = cost0;
                     cost[1] = cost1;
@@ -636,7 +635,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                     cost[5] = cost5;
                 } else for (i = gs; i <= ge; i++) {
                     short icv = szptr[i];
-                    for (t = 0; t < nGroups; t++) cost[t] += len[t][icv];
+                    for (t = 0; t < nGroups; t++) cost[t] = (short) ((int) cost[t] + (int) len[t][(int) icv]);
                 }
 
                 /*
@@ -646,8 +645,8 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                 int bc = 999999999;
                 int bt = -1;
                 for (t = 0; t < nGroups; t++)
-                    if (cost[t] < bc) {
-                        bc = cost[t];
+                    if ((int) cost[t] < bc) {
+                        bc = (int) cost[t];
                         bt = t;
                     }
                 totc += bc;
@@ -658,7 +657,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                 /*
                   Increment the symbol frequencies for the selected table.
                 */
-                for (i = gs; i <= ge; i++) rfreq[bt][szptr[i]]++;
+                for (i = gs; i <= ge; i++) rfreq[bt][(int) szptr[i]]++;
 
                 gs = ge + 1;
             }
@@ -686,7 +685,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                 char ll_i = selector[i];
                 j = 0;
                 char tmp = pos[j];
-                while (ll_i != tmp) {
+                while ((int) ll_i != (int) tmp) {
                     j++;
                     char tmp2 = tmp;
                     tmp = pos[j];
@@ -704,8 +703,8 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
             int minLen = 32;
             int maxLen = 0;
             for (i = 0; i < alphaSize; i++) {
-                if (len[t][i] > maxLen) maxLen = len[t][i];
-                if (len[t][i] < minLen) minLen = len[t][i];
+                if ((int) len[t][i] > maxLen) maxLen = (int) len[t][i];
+                if ((int) len[t][i] < minLen) minLen = (int) len[t][i];
             }
             if (maxLen > 20) panic();
             if (minLen < 1) panic();
@@ -738,7 +737,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
         bsW (3, nGroups);
         bsW (15, nSelectors);
         for (i = 0; i < nSelectors; i++) {
-            for (j = 0; j < selectorMtf[i]; j++) bsW(1, 1);
+            for (j = 0; j < (int) selectorMtf[i]; j++) bsW(1, 1);
             bsW(1, 0);
         }
 
@@ -746,14 +745,14 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
         nBytes = bytesOut;
 
         for (t = 0; t < nGroups; t++) {
-            int curr = len[t][0];
+            int curr = (int) len[t][0];
             bsW(5, curr);
             for (i = 0; i < alphaSize; i++) {
-                while (curr < len[t][i]) {
+                while (curr < (int) len[t][i]) {
                     bsW(2, 2);
                     curr++; /* 10 */
                 }
-                while (curr > len[t][i]) {
+                while (curr > (int) len[t][i]) {
                     bsW(2, 3);
                     curr--; /* 11 */
                 }
@@ -769,8 +768,8 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
             ge = gs + G_SIZE - 1;
             if (ge >= nMTF) ge = nMTF - 1;
             for (i = gs; i <= ge; i++)
-                bsW(len[selector[selCtr]][szptr[i]],
-                        code[selector[selCtr]][szptr[i]]);
+                bsW((int) len[(int) selector[selCtr]][(int) szptr[i]],
+                        code[(int) selector[selCtr]][(int) szptr[i]]);
 
             gs = ge + 1;
             selCtr++;
@@ -857,17 +856,17 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
 
     private static char med3(char a, char b, char c) {
         char t;
-        if (a > b) {
+        if ((int) a > (int) b) {
             t = a;
             a = b;
             b = t;
         }
-        if (b > c) {
+        if ((int) b > (int) c) {
             t = b;
             b = c;
             c = t;
         }
-        if (a > b) b = a;
+        if ((int) a > (int) b) b = a;
         return b;
     }
 
@@ -907,7 +906,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                 continue;
             }
 
-            int med = med3(block[zptr[lo] + d + 1],
+            int med = (int) med3(block[zptr[lo] + d + 1],
                     block[zptr[hi] + d + 1],
                     block[zptr[(lo + hi) >> 1] + d + 1]);
 
@@ -919,7 +918,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
             int n;
             while (true) {
                 while (unLo <= unHi) {
-                    n = block[zptr[unLo] + d + 1] - med;
+                    n = (int) block[zptr[unLo] + d + 1] - med;
                     if (n == 0) {
                         int temp = zptr[unLo];
                         zptr[unLo] = zptr[ltLo];
@@ -932,7 +931,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                     unLo++;
                 }
                 while (unLo <= unHi) {
-                    n = block[zptr[unHi] + d + 1] - med;
+                    n = (int) block[zptr[unHi] + d + 1] - med;
                     if (n == 0) {
                         int temp = zptr[unHi];
                         zptr[unHi] = zptr[gtHi];
@@ -1017,27 +1016,27 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
 
             for (i = 0; i <= 65536; i++) ftab[i] = 0;
 
-            int c1 = block[0];
+            int c1 = (int) block[0];
             int c2;
             for (i = 0; i <= last; i++) {
-                c2 = block[i + 1];
+                c2 = (int) block[i + 1];
                 ftab[(c1 << 8) + c2]++;
                 c1 = c2;
             }
 
             for (i = 1; i <= 65536; i++) ftab[i] += ftab[i - 1];
 
-            c1 = block[1];
+            c1 = (int) block[1];
             int j;
             for (i = 0; i < last; i++) {
-                c2 = block[i + 2];
+                c2 = (int) block[i + 2];
                 j = (c1 << 8) + c2;
                 c1 = c2;
                 ftab[j]--;
                 zptr[ftab[j]] = i;
             }
 
-            j = ((block[last + 1]) << 8) + (block[1]);
+            j = ((int) (block[last + 1]) << 8) + (int) (block[1]);
             ftab[j]--;
             zptr[ftab[j]] = last;
 
@@ -1138,7 +1137,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
 
                 for (j = ftab[ss << 8] & CLEARMASK;
                      j < (ftab[(ss + 1) << 8] & CLEARMASK); j++) {
-                    c1 = block[zptr[j]];
+                    c1 = (int) block[zptr[j]];
                     if (!bigDone[c1]) {
                         zptr[copy[c1]] = zptr[j] == 0 ? last : zptr[j] - 1;
                         copy[c1]++;
@@ -1158,16 +1157,16 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
         int rNToGo = 0;
         for (i = 0; i <= last; i++) {
             if (rNToGo == 0) {
-                rNToGo = (char) rNums[rTPos];
+                rNToGo = (int) (char) rNums[rTPos];
                 rTPos++;
                 if (rTPos == 512) rTPos = 0;
             }
             rNToGo--;
-            block[i + 1] ^= ((rNToGo == 1) ? 1 : 0);
-            
-            block[i + 1] &= 0xFF;
+            block[i + 1] = (char) ((int) block[i + 1] ^ ((rNToGo == 1) ? 1 : 0));
 
-            inUse[block[i + 1]] = true;
+            block[i + 1] = (char) ((int) block[i + 1] & 0xFF);
+
+            inUse[(int) block[i + 1]] = true;
         }
     }
 
@@ -1203,36 +1202,36 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
 
         char c1 = block[i1 + 1];
         char c2 = block[i2 + 1];
-        if (c1 == c2) {
+        if ((int) c1 == (int) c2) {
             i1++;
             i2++;
             c1 = block[i1 + 1];
             c2 = block[i2 + 1];
-            if (c1 != c2) result = (c1 > c2);
+            if ((int) c1 != (int) c2) result = ((int) c1 > (int) c2);
             else {
                 i1++;
                 i2++;
                 c1 = block[i1 + 1];
                 c2 = block[i2 + 1];
-                if (c1 != c2) result = (c1 > c2);
+                if ((int) c1 != (int) c2) result = ((int) c1 > (int) c2);
                 else {
                     i1++;
                     i2++;
                     c1 = block[i1 + 1];
                     c2 = block[i2 + 1];
-                    if (c1 != c2) result = (c1 > c2);
+                    if ((int) c1 != (int) c2) result = ((int) c1 > (int) c2);
                     else {
                         i1++;
                         i2++;
                         c1 = block[i1 + 1];
                         c2 = block[i2 + 1];
-                        if (c1 != c2) result = (c1 > c2);
+                        if ((int) c1 != (int) c2) result = ((int) c1 > (int) c2);
                         else {
                             i1++;
                             i2++;
                             c1 = block[i1 + 1];
                             c2 = block[i2 + 1];
-                            if (c1 != c2) result = (c1 > c2);
+                            if ((int) c1 != (int) c2) result = ((int) c1 > (int) c2);
                             else {
                                 i1++;
                                 i2++;
@@ -1240,8 +1239,8 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                                 do {
                                     c1 = block[i1 + 1];
                                     c2 = block[i2 + 1];
-                                    if (c1 != c2) {
-                                        result = (c1 > c2);
+                                    if ((int) c1 != (int) c2) {
+                                        result = ((int) c1 > (int) c2);
                                         break;
                                     }
                                     int s1 = quadrant[i1];
@@ -1255,8 +1254,8 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
 
                                     c1 = block[i1 + 1];
                                     c2 = block[i2 + 1];
-                                    if (c1 != c2) {
-                                        result = (c1 > c2);
+                                    if ((int) c1 != (int) c2) {
+                                        result = ((int) c1 > (int) c2);
                                         break;
                                     }
                                     s1 = quadrant[i1];
@@ -1270,8 +1269,8 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
 
                                     c1 = block[i1 + 1];
                                     c2 = block[i2 + 1];
-                                    if (c1 != c2) {
-                                        result = (c1 > c2);
+                                    if ((int) c1 != (int) c2) {
+                                        result = ((int) c1 > (int) c2);
                                         break;
                                     }
                                     s1 = quadrant[i1];
@@ -1285,8 +1284,8 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
 
                                     c1 = block[i1 + 1];
                                     c2 = block[i2 + 1];
-                                    if (c1 != c2) {
-                                        result = (c1 > c2);
+                                    if ((int) c1 != (int) c2) {
+                                        result = ((int) c1 > (int) c2);
                                         break;
                                     }
                                     s1 = quadrant[i1];
@@ -1315,7 +1314,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                     }
                 }
             }
-        } else result = (c1 > c2);
+        } else result = ((int) c1 > (int) c2);
 
         return result;
     }
@@ -1375,11 +1374,11 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
         int wr = 0;
         for (i = 0; i <= last; i++) {
 
-            char ll_i = unseqToSeq[block[zptr[i]]];
+            char ll_i = unseqToSeq[(int) block[zptr[i]]];
 
             int j = 0;
             char tmp = yy[j];
-            while (ll_i != tmp) {
+            while ((int) ll_i != (int) tmp) {
                 char tmp2 = tmp;
                 tmp = yy[++j];
                 yy[j] = tmp2;
@@ -1393,11 +1392,11 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                     while (true) {
                         switch (zPend % 2) {
                             case 0:
-                                szptr[wr++] = RUNA;
+                                szptr[wr++] = (short) RUNA;
                                 mtfFreq[RUNA]++;
                                 break;
                             case 1:
-                                szptr[wr++] = RUNB;
+                                szptr[wr++] = (short) RUNB;
                                 mtfFreq[RUNB]++;
                                 break;
                         }
@@ -1417,11 +1416,11 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
             while (true) {
                 switch (zPend % 2) {
                     case 0:
-                        szptr[wr++] = RUNA;
+                        szptr[wr++] = (short) RUNA;
                         mtfFreq[RUNA]++;
                         break;
                     case 1:
-                        szptr[wr++] = RUNB;
+                        szptr[wr++] = (short) RUNB;
                         mtfFreq[RUNB]++;
                         break;
                 }

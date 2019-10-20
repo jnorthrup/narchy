@@ -51,7 +51,7 @@ import static nars.Op.BELIEF;
     default void actionToggle(Term t, float thresh, float defaultValue /* 0 or NaN */, float momentumOn, Runnable on, Runnable off) {
 
 
-        float[] last = {0};
+        float[] last = {(float) 0};
         actionUnipolar(t, (f) -> {
 
             float f1 = f;
@@ -80,7 +80,7 @@ import static nars.Op.BELIEF;
     default @Nullable Truth toggle(@Nullable Truth d, Runnable on, Runnable off, boolean next) {
         float freq;
         if (next) {
-            freq = +1;
+            freq = (float) +1;
             on.run();
         } else {
             freq = 0f;
@@ -107,7 +107,7 @@ import static nars.Op.BELIEF;
                 float f = d.freq();
                 float deadZoneFreqRadius =
                         //1f / 6;
-                        1f/12;
+                        1f/ 12.0F;
 
                 if (f > 0.5f + deadZoneFreqRadius)
                     ii = +1;
@@ -154,7 +154,7 @@ import static nars.Op.BELIEF;
                 float f = d.freq();
                 if (f == 1f) {
                     ii = +1;
-                } else if (f == 0) {
+                } else if (f == (float) 0) {
                     ii = -1;
                 } else if (f > 0.5f) {
                     ii = nar().random().nextFloat() <= ((f - 0.5f) * 2f) ? +1 : 0;
@@ -292,14 +292,14 @@ import static nars.Op.BELIEF;
      *    a pair of up/down buttons for discretely incrementing and decrementing a value within a given range
      */
     default GoalActionConcept[] actionDial(Term down, Term up, FloatSupplier x, FloatConsumer y, float min, float max, int steps) {
-        float delta = 1f/steps * (max - min);
+        float delta = 1f/ (float) steps * (max - min);
         return actionStep(down,up, (c)->{
             float before = x.asFloat();
-            float next = Util.clamp(before + c * delta, min, max);
+            float next = Util.clamp(before + (float) c * delta, min, max);
             y.accept(next);
             float actualNext = x.asFloat();
             /** a significant change */
-            return !Util.equals(before, actualNext, delta / 4);
+            return !Util.equals(before, actualNext, delta / 4.0F);
         });
 
     }
@@ -321,7 +321,7 @@ import static nars.Op.BELIEF;
                 return GoalExp.q(b, g);
             } else {
                 if (g == null) {
-                    return 0; //TODO this could also be a way to introduce curiosity
+                    return (float) 0; //TODO this could also be a way to introduce curiosity
                 } else {
                     return Util.unitize((g.expectation() - b.expectation())/2f + 0.5f);
                 }
@@ -340,8 +340,8 @@ import static nars.Op.BELIEF;
 
         assert(!tl.equals(tr));
 
-        AtomicFloat l = new AtomicFloat(0);
-        AtomicFloat r = new AtomicFloat(0);
+        AtomicFloat l = new AtomicFloat((float) 0);
+        AtomicFloat r = new AtomicFloat((float) 0);
 
 //        float decay =
 //                //0.5f;
@@ -357,11 +357,11 @@ import static nars.Op.BELIEF;
                 q;
             boolean xq = q >= thresh.asFloat();
             boolean y = L.accept(xq && qC >= r.floatValue());
-            l.set(xq ? qC : 0);
+            l.set(xq ? qC : (float) 0);
 
 
             float feedback =
-                    y ? 1 : 0;
+                    (float) (y ? 1 : 0);
             float c =
                     n.confDefault(BELIEF);
             return $.t(feedback, c);
@@ -374,10 +374,10 @@ import static nars.Op.BELIEF;
                 q;
             boolean xq = q >= thresh.asFloat();
             boolean y = R.accept(xq && qC >= l.floatValue());
-            r.set(xq ? qC : 0);
+            r.set(xq ? qC : (float) 0);
 
             float feedback =
-                    y ? 1 : 0;
+                    (float) (y ? 1 : 0);
             float c =
                     n.confDefault(BELIEF);
             return $.t(feedback, c);
@@ -424,13 +424,13 @@ import static nars.Op.BELIEF;
 
 
         FloatToFloatFunction ifGoalMissing =
-                x -> 0;
+                x -> (float) 0;
 
         GoalActionConcept x = actionUnipolar(t, true, ifGoalMissing, (f) -> {
             boolean posOrNeg = f >= thresh.asFloat();
             return on.accept(posOrNeg) ?
                     1f :
-                    0;  //deliberate off
+                    (float) 0;  //deliberate off
             //Float.NaN; //default off
         });
         //x.resolution(0.5f);
@@ -477,16 +477,16 @@ import static nars.Op.BELIEF;
      *  TODO make a negative polarity option
      */
     default GoalActionConcept actionHemipolar(Term s, FloatToFloatFunction update) {
-        float epsilon = NAL.truth.TRUTH_EPSILON/2;
+        float epsilon = NAL.truth.TRUTH_EPSILON/ 2.0F;
         return actionUnipolar(s, (raw)->{
             if (raw==raw) {
 
                 if (raw > 0.5f + epsilon) {
-                    float feedback = update.valueOf((raw - 0.5f) * 2);
-                    return feedback > (0.5f + epsilon) ? 0.5f + feedback / 2 : 0;
+                    float feedback = update.valueOf((raw - 0.5f) * 2.0F);
+                    return feedback > (0.5f + epsilon) ? 0.5f + feedback / 2.0F : (float) 0;
                 } else {
-                    float feedback = update.valueOf( 0);
-                    return 0; //override
+                    float feedback = update.valueOf((float) 0);
+                    return (float) 0; //override
                 }
 
             }
@@ -506,7 +506,7 @@ import static nars.Op.BELIEF;
     }
 
     default GoalActionConcept[] actionStep(Term down, Term up, IntPredicate each) {
-        float thresh = 4/6f;
+        float thresh = 4.0F /6f;
         return actionPushButtonMutex(
             down,up,
             ifNeg -> ifNeg && each.test(-1),
@@ -554,8 +554,8 @@ import static nars.Op.BELIEF;
                 long now = w.time();
                 long prev = last[0];
                 float period = durations * w.durPhysical();
-                if (prev == Long.MIN_VALUE) prev = (long) (now - Math.ceil(period));
-                if (now - prev >= period) {
+                if (prev == Long.MIN_VALUE) prev = (long) ((double) now - Math.ceil((double) period));
+                if ((float) (now - prev) >= period) {
                     last[0] = now;
                     y = true;
                 }

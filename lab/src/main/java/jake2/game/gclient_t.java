@@ -66,13 +66,13 @@ public class gclient_t
 	public int damage_parmor; 
 	public int damage_blood; 
 	public int damage_knockback; 
-	public float[] damage_from = { 0, 0, 0 }; 
+	public float[] damage_from = {(float) 0, (float) 0, (float) 0};
 
 	public float killer_yaw; 
 
 	public int weaponstate;
-	public float[] kick_angles = { 0, 0, 0 }; 
-	public float[] kick_origin = { 0, 0, 0 };
+	public float[] kick_angles = {(float) 0, (float) 0, (float) 0};
+	public float[] kick_origin = {(float) 0, (float) 0, (float) 0};
 	public float v_dmg_roll;
     public float v_dmg_pitch;
     public float v_dmg_time;
@@ -80,11 +80,11 @@ public class gclient_t
     public float fall_value;
 	public float damage_alpha;
 	public float bonus_alpha;
-	public float[] damage_blend = { 0, 0, 0 };
-	public float[] v_angle = { 0, 0, 0 }; 
+	public float[] damage_blend = {(float) 0, (float) 0, (float) 0};
+	public float[] v_angle = {(float) 0, (float) 0, (float) 0};
 	public float bobtime; 
-	public float[] oldviewangles = { 0, 0, 0 };
-	public float[] oldvelocity = { 0, 0, 0 };
+	public float[] oldviewangles = {(float) 0, (float) 0, (float) 0};
+	public float[] oldvelocity = {(float) 0, (float) 0, (float) 0};
 
 	public float next_drown_time;
 	public int old_waterlevel;
@@ -146,24 +146,24 @@ public class gclient_t
 		damage_blood = 0;
 		damage_knockback = 0;
 		
-		killer_yaw = 0;
+		killer_yaw = (float) 0;
 		damage_from = new float[3];
 		weaponstate = 0;
 		kick_angles = new float[3];
 		kick_origin = new float[3];
-		v_dmg_roll = v_dmg_pitch = v_dmg_time = 0;
-		fall_time = fall_value = 0;
-		damage_alpha = 0;
-		bonus_alpha = 0;
+		v_dmg_roll = v_dmg_pitch = v_dmg_time = (float) 0;
+		fall_time = fall_value = (float) 0;
+		damage_alpha = (float) 0;
+		bonus_alpha = (float) 0;
 		damage_blend = new float[3];
 		v_angle = new float[3];
-		bobtime = 0;
+		bobtime = (float) 0;
 
 		oldviewangles = new float[3];
 
 		oldvelocity = new float[3];
 
-		next_drown_time = 0;
+		next_drown_time = (float) 0;
 
 		old_waterlevel = 0;
 		
@@ -176,23 +176,23 @@ public class gclient_t
 		anim_run = false;
 		
 		
-		quad_framenum = 0;
-		invincible_framenum = 0;
-		breather_framenum = 0;
-		enviro_framenum = 0;
+		quad_framenum = (float) 0;
+		invincible_framenum = (float) 0;
+		breather_framenum = (float) 0;
+		enviro_framenum = (float) 0;
 
 		grenade_blew_up = false;
-		grenade_time = 0;
+		grenade_time = (float) 0;
 		silencer_shots = 0;
 		weapon_sound = 0;
 
-		pickup_msg_time = 0;
+		pickup_msg_time = (float) 0;
 
-		flood_locktill = 0; 
+		flood_locktill = (float) 0;
 		flood_when  = new float[10]; 
 		flood_whenhead = 0; 
 
-		respawn_time = 0; 
+		respawn_time = (float) 0;
 
 		chase_target = null; 
 		update_chase = false; 

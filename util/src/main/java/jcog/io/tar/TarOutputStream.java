@@ -34,8 +34,8 @@ public class TarOutputStream extends OutputStream {
 
     public TarOutputStream(OutputStream out) {
         this.out = out;
-        bytesWritten = 0;
-        currentFileSize = 0;
+        bytesWritten = 0L;
+        currentFileSize = 0L;
     }
 
     /**
@@ -43,8 +43,8 @@ public class TarOutputStream extends OutputStream {
      */
     public TarOutputStream(File fout) throws IOException {
         this.out = new BufferedOutputStream(Files.newOutputStream(fout.toPath()));
-        bytesWritten = 0;
-        currentFileSize = 0;
+        bytesWritten = 0L;
+        currentFileSize = 0L;
     }
 
     /**
@@ -54,8 +54,8 @@ public class TarOutputStream extends OutputStream {
         @SuppressWarnings("resource")
         RandomAccessFile raf = new RandomAccessFile(fout, "rw");
         long fileSize = fout.length();
-        if (append && fileSize > TarConstants.EOF_BLOCK) {
-            raf.seek(fileSize - TarConstants.EOF_BLOCK);
+        if (append && fileSize > (long) TarConstants.EOF_BLOCK) {
+            raf.seek(fileSize - (long) TarConstants.EOF_BLOCK);
         }
         out = new BufferedOutputStream(Channels.newOutputStream(raf.getChannel()));
     }
@@ -79,10 +79,10 @@ public class TarOutputStream extends OutputStream {
     @Override
     public void write(int b) throws IOException {
         out.write( b );
-        bytesWritten += 1;
+        bytesWritten += 1L;
 
         if (currentEntry != null) {
-            currentFileSize += 1;
+            currentFileSize += 1L;
         }
     }
 
@@ -94,19 +94,19 @@ public class TarOutputStream extends OutputStream {
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
         if (currentEntry != null && !currentEntry.isDirectory()) {
-            if (currentEntry.getSize() < currentFileSize + len) {
+            if (currentEntry.getSize() < currentFileSize + (long) len) {
                 throw new IOException( "The current entry[" + currentEntry.getName() + "] size["
-                        + currentEntry.getSize() + "] is smaller than the bytes[" + ( currentFileSize + len )
+                        + currentEntry.getSize() + "] is smaller than the bytes[" + ( currentFileSize + (long) len)
                         + "] being written." );
             }
         }
 
         out.write( b, off, len );
-        
-        bytesWritten += len;
+
+        bytesWritten = bytesWritten + (long) len;
 
         if (currentEntry != null) {
-            currentFileSize += len;
+            currentFileSize = currentFileSize + (long) len;
         }        
     }
 
@@ -139,7 +139,7 @@ public class TarOutputStream extends OutputStream {
             }
 
             currentEntry = null;
-            currentFileSize = 0;
+            currentFileSize = 0L;
 
             pad();
         }
@@ -151,8 +151,8 @@ public class TarOutputStream extends OutputStream {
      * @throws IOException
      */
     private void pad() throws IOException {
-        if (bytesWritten > 0) {
-            int extra = (int) ( bytesWritten % TarConstants.DATA_BLOCK );
+        if (bytesWritten > 0L) {
+            int extra = (int) ( bytesWritten % (long) TarConstants.DATA_BLOCK);
 
             if (extra > 0) {
                 write( new byte[TarConstants.DATA_BLOCK - extra] );

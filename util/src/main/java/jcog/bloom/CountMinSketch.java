@@ -96,8 +96,8 @@ public class CountMinSketch {
     }
 
     public CountMinSketch(float delta, float epsilon) {
-        this((int) Math.ceil(Math.exp(1.0) / epsilon),
-             (int) Math.ceil(Math.log(1.0 / delta)));
+        this((int) Math.ceil(Math.exp(1.0) / (double) epsilon),
+             (int) Math.ceil(Math.log(1.0 / (double) delta)));
     }
 
     public CountMinSketch(int width, int depth) {
@@ -120,7 +120,7 @@ public class CountMinSketch {
      * @return serialized size in bytes
      */
     public long byteSize() {
-        return ((w * d) + 2) * (Integer.SIZE / 8);
+        return (long) (((w * d) + 2) * (Integer.SIZE / 8));
     }
 
     public void add(byte... key) {

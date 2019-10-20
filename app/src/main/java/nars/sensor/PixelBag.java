@@ -24,7 +24,7 @@ public class PixelBag implements Bitmap2D {
     private final int px;
     private final int py;
 
-    final SplitMix64Random rng = new SplitMix64Random(1);
+    final SplitMix64Random rng = new SplitMix64Random(1L);
 
     /**
      * Z = 0: zoomed in all the way
@@ -61,7 +61,7 @@ public class PixelBag implements Bitmap2D {
         this.px = px;
         this.py = py;
         this.pixels = new float[px][py];
-        this.maxZoom = 1f / (Math.min(px, py)); //one pixel observation
+        this.maxZoom = 1f / (float) (Math.min(px, py)); //one pixel observation
 
     }
 
@@ -98,9 +98,9 @@ public class PixelBag implements Bitmap2D {
         float Z = this.Z;
 
 
-        float visibleProportion = (float) lerp(Math.sqrt(1 - Z), maxZoom, minZoom);
-        float ew = visibleProportion * (sw);
-        float eh = visibleProportion * (sh);
+        float visibleProportion = (float) lerp(Math.sqrt((double) (1 - Z)), (double) maxZoom, (double) minZoom);
+        float ew = visibleProportion * (float) (sw);
+        float eh = visibleProportion * (float) (sh);
 
 
         float minX, maxX, minY, maxY;
@@ -109,26 +109,26 @@ public class PixelBag implements Bitmap2D {
 
 
             float mw;
-            if (ew > sw) {
-                mw = 0;
+            if (ew > (float) sw) {
+                mw = (float) 0;
             } else {
-                mw = sw - ew;
+                mw = (float) sw - ew;
             }
             float mh;
-            if (eh > sh) {
-                mh = 0;
+            if (eh > (float) sh) {
+                mh = (float) 0;
             } else {
-                mh = sh - eh;
+                mh = (float) sh - eh;
             }
             minX = (X * mw);
             maxX = minX + ew;
             minY = (Y * mh);
             maxY = minY + eh;
         } else {
-            minX = (X * sw) - ew / 2f;
-            maxX = (X * sw) + ew / 2f;
-            minY = (Y * sh) - eh / 2f;
-            maxY = (Y * sh) + eh / 2f;
+            minX = (X * (float) sw) - ew / 2f;
+            maxX = (X * (float) sw) + ew / 2f;
+            minY = (Y * (float) sh) - eh / 2f;
+            maxY = (Y * (float) sh) + eh / 2f;
         }
 
         updateClip(sw, sh, minX, maxX, minY, maxY);
@@ -136,29 +136,29 @@ public class PixelBag implements Bitmap2D {
 
     private void updateClip(int sw, int sh, float minX, float maxX, float minY, float maxY) {
 
-        float px = this.px, py = this.py;
+        float px = (float) this.px, py = (float) this.py;
         //float cx = px / 2f, cy = py / 2f;
 
         float xRange = maxX - minX, yRange = maxY - minY;
 
-        int supersamplingX = (int) Math.floor(xRange / px / 2f),
-                supersamplingY = (int) Math.floor(yRange / py / 2f);
+        int supersamplingX = (int) Math.floor((double) (xRange / px / 2f)),
+                supersamplingY = (int) Math.floor((double) (yRange / py / 2f));
 
-        for (int oy = 0; oy < py; oy++) {
-            float sy = (lerpSafe((oy / py), minY, maxY));
+        for (int oy = 0; (float) oy < py; oy++) {
+            float sy = (lerpSafe(((float) oy / py), minY, maxY));
 
-            for (int ox = 0; ox < px; ox++) {
+            for (int ox = 0; (float) ox < px; ox++) {
 
                 //TODO optimize sources which are already gray (ex: 8-bit grayscale)
 
-                float sx = (lerpSafe((ox) / px, minX, maxX));
+                float sx = (lerpSafe((float) (ox) / px, minX, maxX));
 
 
                 /** sampled pixels in the original image (inclusive) */
-                int x1 = Math.max(0, round(sx - supersamplingX));
-                int x2 = Math.min(sw - 1, round(sx + supersamplingX + 1));
-                int y1 = Math.max(0, round(sy - supersamplingY));
-                int y2 = Math.min(sh - 1, round(sy + supersamplingY + 1));
+                int x1 = Math.max(0, round(sx - (float) supersamplingX));
+                int x2 = Math.min(sw - 1, round(sx + (float) supersamplingX + 1.0F));
+                int y1 = Math.max(0, round(sy - (float) supersamplingY));
+                int y2 = Math.min(sh - 1, round(sy + (float) supersamplingY + 1.0F));
 
                 float v;
                 if (x1 == x2 && y1 == y2) {
@@ -170,12 +170,12 @@ public class PixelBag implements Bitmap2D {
                 else {
 
                     //generic n-ary interpolation
-                    float samples = 0;
-                    float brightSum = 0;
+                    float samples = (float) 0;
+                    float brightSum = (float) 0;
                     //float R = 0, G = 0, B = 0;
                     for (int esx = x1; esx <= x2; esx++) {
 
-                        float dpx = esx - sx;
+                        float dpx = (float) esx - sx;
 
                         for (int esy = y1; esy <= y2; esy++) {
 
@@ -183,7 +183,7 @@ public class PixelBag implements Bitmap2D {
                             float b = src.brightness(esx, esy);
                             if (b == b) {
 
-                                float dpy = esy - sy;
+                                float dpy = (float) esy - sy;
 
                                 float a = kernelFade(dpx, dpy);
                                 brightSum += b * a;
@@ -192,7 +192,7 @@ public class PixelBag implements Bitmap2D {
                         }
                     }
 
-                    v = (samples > 0) ? brightSum / samples : Float.NaN;
+                    v = (samples > (float) 0) ? brightSum / samples : Float.NaN;
                 }
 
 
@@ -212,7 +212,7 @@ public class PixelBag implements Bitmap2D {
      */
     private static float kernelFade(float dpx, float dpy) {
         float manhattan = Math.abs(dpx) + Math.abs(dpy);
-        return manhattan > Float.MIN_NORMAL ? 1f / (1 + 4 * manhattan) : 1;
+        return manhattan > Float.MIN_NORMAL ? 1f / (1.0F + 4.0F * manhattan) : 1.0F;
     }
 
     protected float missing() {

@@ -29,17 +29,11 @@ import jake2.client.*;
 import jake2.game.cmdalias_t;
 import jake2.game.cvar_t;
 import jake2.game.entity_state_t;
-import jake2.qcommon.netadr_t;
-import jake2.qcommon.sizebuf_t;
 import jake2.render.DummyRenderer;
 import jake2.render.model_t;
 
 import java.io.FileWriter;
 import java.io.RandomAccessFile;
-import java.util.Random;
-
-import static jake2.Defines.MAX_MSGLEN;
-import static jake2.Defines.VIDREF_GL;
 
 /**
  * Globals ist the collection of global variables and constants.

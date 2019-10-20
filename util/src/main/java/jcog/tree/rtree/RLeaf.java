@@ -102,7 +102,7 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
 
     @Override
     public RNode<X> add(/*@NotNull*/RInsertion<X> x) {
-        int s = size;
+        int s = (int) size;
         if (s > 0 && x.maybeContainedBy(bounds)) {
             X[] data = this.data;
 
@@ -163,9 +163,9 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
     }
 
     RNode<X> insert(X x, HyperRegion bounds, Spatialization<X> model) {
-        if (size < data.length) {
+        if ((int) size < data.length) {
 
-            data[this.size++] = x;
+            data[(int) this.size++] = x;
             grow(bounds);
 
             return this;
@@ -202,7 +202,7 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
     @Override
     public boolean contains(X x, HyperRegion b, Spatialization<X> model) {
 
-        int s = size;
+        int s = (int) size;
         if (s > 0 && bounds.contains(b)) {
 
             X[] data = this.data;
@@ -219,7 +219,7 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
     @Override
     public RNode<X> remove(X x, HyperRegion xBounds, Spatialization<X> model, int[] removed) {
 
-        int size = this.size;
+        int size = (int) this.size;
         if (size > 1 && !bounds.contains(xBounds))
             return this; //not found
 
@@ -244,7 +244,7 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
             this.size--;
             removed[0]++;
 
-            if (this.size > 0) {
+            if ((int) this.size > 0) {
                 bounds = Util.maybeEqual(bounds, model.mbr(data));
                 return this;
             } else {
@@ -256,7 +256,7 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
 
     @Override
     public RNode<X> replace(X told, HyperRegion oldBounds, X tnew, Spatialization<X> model) {
-        int s = size;
+        int s = (int) size;
         if (s > 0 && bounds.contains(oldBounds)) {
             X[] data = this.data;
             HyperRegion r = null;
@@ -277,10 +277,10 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
     @Override
     public boolean intersecting(HyperRegion rect, Predicate<X> t, Spatialization<X> model) {
         short s = this.size;
-        if (s > 0 && rect.intersects(bounds)) {
-            boolean containsAll = s > 1 && rect.contains(bounds);
+        if ((int) s > 0 && rect.intersects(bounds)) {
+            boolean containsAll = (int) s > 1 && rect.contains(bounds);
             X[] data = this.data;
-            for (int i = 0; i < s; i++) {
+            for (int i = 0; i < (int) s; i++) {
                 X d = data[i];
                 if (/*d != null && */ (containsAll || rect.intersects(model.bounds(d))) && !t.test(d))
                     return false;
@@ -292,10 +292,10 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
     @Override
     public boolean containing(HyperRegion rect, Predicate<X> t, Spatialization<X> model) {
         short s = this.size;
-        if (s > 0 && rect.intersects(bounds)) {
-            boolean fullyContained = s > 1 && rect.contains(bounds);
+        if ((int) s > 0 && rect.intersects(bounds)) {
+            boolean fullyContained = (int) s > 1 && rect.contains(bounds);
             X[] data = this.data;
-            for (int i = 0; i < s; i++) {
+            for (int i = 0; i < (int) s; i++) {
                 X d = data[i];
                 if (/*d != null && */(fullyContained || rect.contains(model.bounds(d))) && !t.test(d))
                     return false;
@@ -334,7 +334,7 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
             stats.setMaxDepth(depth);
         }
         stats.countLeafAtDepth(depth);
-        stats.countEntriesAtDepth(size, depth);
+        stats.countEntriesAtDepth((int) size, depth);
     }
 
     /**

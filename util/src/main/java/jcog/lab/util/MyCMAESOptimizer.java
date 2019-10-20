@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 /**
  * adapted from Apache Commons Math 3.6
@@ -422,7 +421,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
         int R = m.getRowDimension();
         int C = m.getColumnDimension();
         double[][] d = new double[R][C];
-		for (int r = 0; r < R; r++) for (int c = 0; c < C; c++) d[r][c] = r <= c - k ? m.getEntry(r, c) : 0;
+		for (int r = 0; r < R; r++) for (int c = 0; c < C; c++) d[r][c] = r <= c - k ? m.getEntry(r, c) : (double) 0;
 		return new Array2DRowRealMatrix(d, false);
 	}
 
@@ -435,7 +434,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
         double[][] d = new double[1][C];
         int R = m.getRowDimension();
 		for (int c = 0; c < C; c++) {
-			double sum = 0;
+			double sum = (double) 0;
 			for (int r = 0; r < R; r++)
 				sum += m.getEntry(r, c);
 			d[0][c] = sum;
@@ -484,7 +483,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 */
 	private static RealMatrix ones(int n, int m) {
         double[][] d = new double[n][m];
-		for (int r = 0; r < n; r++) Arrays.fill(d[r], 1);
+		for (int r = 0; r < n; r++) Arrays.fill(d[r], 1.0);
 		return new Array2DRowRealMatrix(d, false);
 	}
 
@@ -496,7 +495,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 */
 	private static RealMatrix eye(int n, int m) {
         double[][] d = new double[n][m];
-		for (int r = 0; r < n; r++) if (r < m) d[r][r] = 1;
+		for (int r = 0; r < n; r++) if (r < m) d[r][r] = 1.0;
 		return new Array2DRowRealMatrix(d, false);
 	}
 
@@ -534,7 +533,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return a sequence as column matrix.
 	 */
 	private static RealMatrix sequence(double start, double end, double step) {
-        int size = (int) ((end - start) / step + 1);
+        int size = (int) ((end - start) / step + 1.0);
         double[][] d = new double[size][1];
         double value = start;
 		for (int r = 0; r < size; r++) {
@@ -715,36 +714,36 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 
 		mu = lambda / 2;
 		/* log(mu + 0.5), stored for efficiency. */
-        double logMu2 = Math.log(mu + 0.5);
-		weights = log(sequence(1, mu, 1)).scalarMultiply(-1).scalarAdd(logMu2);
-		double sumw = 0;
-		double sumwq = 0;
+        double logMu2 = Math.log((double) mu + 0.5);
+		weights = log(sequence(1.0, (double) mu, 1.0)).scalarMultiply(-1.0).scalarAdd(logMu2);
+		double sumw = (double) 0;
+		double sumwq = (double) 0;
 		for (int i = 0; i < mu; i++) {
             double w = weights.getEntry(i, 0);
 			sumw += w;
 			sumwq += w * w;
 		}
-		weights = weights.scalarMultiply(1 / sumw);
+		weights = weights.scalarMultiply(1.0 / sumw);
 		mueff = sumw * sumw / sumwq;
 
 
-		cc = (4 + mueff / dimension) /
-			(dimension + 4 + 2 * mueff / dimension);
-		cs = (mueff + 2) / (dimension + mueff + 3.0);
-		damps = (1 + 2 * Math.max(0, Math.sqrt((mueff - 1) /
-			(dimension + 1)) - 1)) *
+		cc = (4.0 + mueff / (double) dimension) /
+			((double) dimension + 4.0 + 2.0 * mueff / (double) dimension);
+		cs = (mueff + 2.0) / ((double) dimension + mueff + 3.0);
+		damps = (1.0 + 2.0 * Math.max((double) 0, Math.sqrt((mueff - 1.0) /
+				(double) (dimension + 1)) - 1.0)) *
 			Math.max(0.3,
-				1 - dimension / (epsilon6WTF + maxIterations)) + cs;
-		ccov1 = 2 / ((dimension + 1.3) * (dimension + 1.3) + mueff);
-		ccovmu = Math.min(1 - ccov1, 2 * (mueff - 2 + 1 / mueff) /
-			((dimension + 2) * (dimension + 2) + mueff));
-		ccov1Sep = Math.min(1, ccov1 * (dimension + 1.5) / 3);
-		ccovmuSep = Math.min(1 - ccov1, ccovmu * (dimension + 1.5) / 3);
-		chiN = Math.sqrt(dimension) *
-			(1 - 1 / (4.0 * dimension) + 1 / (21.0 * dimension * dimension));
+					1.0 - (double) dimension / (epsilon6WTF + (double) maxIterations)) + cs;
+		ccov1 = 2.0 / (((double) dimension + 1.3) * ((double) dimension + 1.3) + mueff);
+		ccovmu = Math.min(1.0 - ccov1, 2.0 * (mueff - 2.0 + 1.0 / mueff) /
+			((double) ((dimension + 2) * (dimension + 2)) + mueff));
+		ccov1Sep = Math.min(1.0, ccov1 * ((double) dimension + 1.5) / 3.0);
+		ccovmuSep = Math.min(1.0 - ccov1, ccovmu * ((double) dimension + 1.5) / 3.0);
+		chiN = Math.sqrt((double) dimension) *
+			(1.0 - 1.0 / (4.0 * (double) dimension) + 1.0 / (21.0 * (double) dimension * (double) dimension));
 
 		xmean = MatrixUtils.createColumnRealMatrix(guess);
-		diagD = insigma.scalarMultiply(1 / sigma);
+		diagD = insigma.scalarMultiply(1.0 / sigma);
 		diagC = square(diagD);
 		pc = zeros(dimension, 1);
 		ps = zeros(dimension, 1);
@@ -756,7 +755,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 		C = B.multiply(diag(square(D)).multiply(B.transpose()));
 
 		/* Size of history queue of best values. */
-        int historySize = 10 + (int) (3 * 10 * dimension / (double) lambda);
+        int historySize = 10 + (int) ((double) (3 * 10 * dimension) / (double) lambda);
 		fitnessHistory = new double[historySize];
 		Arrays.fill(fitnessHistory, Double.POSITIVE_INFINITY);
 	}
@@ -770,15 +769,15 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return hsig flag indicating a small correction.
 	 */
 	private boolean updateEvolutionPaths(RealMatrix zmean, RealMatrix xold) {
-		ps = ps.scalarMultiply(1 - cs).add(
+		ps = ps.scalarMultiply(1.0 - cs).add(
 			B.multiply(zmean).scalarMultiply(
-				Math.sqrt(cs * (2 - cs) * mueff)));
+				Math.sqrt(cs * (2.0 - cs) * mueff)));
 		normps = ps.getFrobeniusNorm();
         boolean hsig = normps /
-			Math.sqrt(1 - Math.pow(1 - cs, 2 * iterations)) /
-			chiN < 1.4 + 2 / ((double) dimension + 1);
-		pc = pc.scalarMultiply(1 - cc);
-		if (hsig) pc = pc.add(xmean.subtract(xold).scalarMultiply(Math.sqrt(cc * (2 - cc) * mueff) / sigma));
+			Math.sqrt(1.0 - Math.pow(1.0 - cs, (double) (2 * iterations))) /
+			chiN < 1.4 + 2.0 / ((double) dimension + 1.0);
+		pc = pc.scalarMultiply(1.0 - cc);
+		if (hsig) pc = pc.add(xmean.subtract(xold).scalarMultiply(Math.sqrt(cc * (2.0 - cc) * mueff) / sigma));
 		return hsig;
 	}
 
@@ -792,8 +791,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	private void updateCovarianceDiagonalOnly(boolean hsig,
 											  RealMatrix bestArz) {
 
-        double oldFac = hsig ? 0 : ccov1Sep * cc * (2 - cc);
-		oldFac += 1 - ccov1Sep - ccovmuSep;
+        double oldFac = hsig ? (double) 0 : ccov1Sep * cc * (2.0 - cc);
+		oldFac += 1.0 - ccov1Sep - ccovmuSep;
 		diagC = diagC.scalarMultiply(oldFac)
 			.add(square(pc).scalarMultiply(ccov1Sep))
 			.add((times(diagC, square(bestArz).multiply(weights)))
@@ -823,19 +822,19 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	private void updateCovariance(boolean hsig, RealMatrix bestArx,
 								  RealMatrix arz, int[] arindex,
 								  RealMatrix xold) {
-		double negccov = 0;
-		if (ccov1 + ccovmu > 0) {
+		double negccov = (double) 0;
+		if (ccov1 + ccovmu > (double) 0) {
             RealMatrix arpos = bestArx.subtract(repmat(xold, 1, mu))
-				.scalarMultiply(1 / sigma);
+				.scalarMultiply(1.0 / sigma);
             RealMatrix roneu = pc.multiply(pc.transpose())
 				.scalarMultiply(ccov1);
 
-            double oldFac = hsig ? 0 : ccov1 * cc * (2 - cc);
-			oldFac += 1 - ccov1 - ccovmu;
+            double oldFac = hsig ? (double) 0 : ccov1 * cc * (2.0 - cc);
+			oldFac += 1.0 - ccov1 - ccovmu;
 			if (isActiveCMA) {
 
-				negccov = (1 - ccovmu) * 0.25 * mueff /
-					(Math.pow(dimension + 2, 1.5) + 2 * mueff);
+				negccov = (1.0 - ccovmu) * 0.25 * mueff /
+					(Math.pow((double) (dimension + 2), 1.5) + 2.0 * mueff);
 
 
                 int[] arReverseIndex = reverse(arindex);
@@ -850,7 +849,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
                 RealMatrix arnormsInv = selectColumns(arnorms, idxInv);
 
 				final double negminresidualvariance = 0.66;
-                double negcovMax = (1 - negminresidualvariance) /
+                double negcovMax = (1.0 - negminresidualvariance) /
 					square(arnormsInv).multiply(weights).getEntry(0, 0);
 				if (negccov > negcovMax) negccov = negcovMax;
 				arzneg = times(arzneg, repmat(arnormsInv, dimension, 1));
@@ -861,7 +860,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 				C = C.scalarMultiply(oldFac)
 					.add(roneu)
 					.add(arpos.scalarMultiply(
-						ccovmu + (1 - negalphaold) * negccov)
+						ccovmu + (1.0 - negalphaold) * negccov)
 						.multiply(times(repmat(weights, 1, dimension),
 							arpos.transpose())))
 					.subtract(Cneg.scalarMultiply(negccov));
@@ -881,8 +880,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 */
 	private void updateBD(double negccov) {
 
-		if (ccov1 + ccovmu + negccov > 0 &&
-			(iterations % 1.0 / (ccov1 + ccovmu + negccov) / dimension / dimensionDivisorWTF) < 1) {
+		if (ccov1 + ccovmu + negccov > (double) 0 &&
+			((double) iterations % 1.0 / (ccov1 + ccovmu + negccov) / (double) dimension / dimensionDivisorWTF) < 1.0) {
 
 			C = triu(C, 0).add(triu(C, 1).transpose());
 
@@ -891,8 +890,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 			D = eig.getD();
 			diagD = diag(D);
 
-			if (min(diagD) <= 0) {
-				for (int i = 0; i < dimension; i++) if (diagD.getEntry(i, 0) < 0) diagD.setEntry(i, 0, 0);
+			if (min(diagD) <= (double) 0) {
+				for (int i = 0; i < dimension; i++) if (diagD.getEntry(i, 0) < (double) 0) diagD.setEntry(i, 0, (double) 0);
                 double tfac = max(diagD) / big_magic_number_WTF;
 				C = C.add(eye(dimension, dimension).scalarMultiply(tfac));
 				diagD = diagD.add(ones(dimension, 1).scalarMultiply(tfac));
@@ -1065,7 +1064,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
                 penalty = penalty(point, repaired);
                 point = repaired;
 			} else
-			    penalty = 0;
+			    penalty = (double) 0;
 
             double value = MyCMAESOptimizer.this.computeObjectiveValue(point);
 			return new MyCMAESOptimizer.ValuePenaltyPair(isMinimize ? value : -value, isMinimize ? penalty : -penalty);
@@ -1171,7 +1170,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
             if (diagonalOnly <= 0) updateCovariance(hsig, bestArx, arz, arindex, xold);
             else updateCovarianceDiagonalOnly(hsig, bestArz);
 
-            sigma *= Math.exp(Math.min(1, (normps / chiN - 1) * cs / damps));
+            sigma *= Math.exp(Math.min(1.0, (normps / chiN - 1.0) * cs / damps));
             double bestFitness = fitness[arindex[0]];
             double worstFitness = fitness[arindex[arindex.length - 1]];
             ConvergenceChecker<PointValuePair> convergence = getConvergenceChecker();
@@ -1221,9 +1220,9 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
                 this.lastResult = current;
             }
 
-            if (this.bestValue == fitness[arindex[(int) (0.1 + lambda / 4.0)]])
+            if (this.bestValue == fitness[arindex[(int) (0.1 + (double) lambda / 4.0)]])
                 sigma *= Math.exp(0.2 + cs / damps);
-            if (iterations > 2 && Math.max(historyWorst, bestFitness) - Math.min(historyBest, bestFitness) == 0)
+            if (iterations > 2 && Math.max(historyWorst, bestFitness) - Math.min(historyBest, bestFitness) == (double) 0)
                 sigma *= Math.exp(0.2 + cs / damps);
 
             push(fitnessHistory, bestFitness);

@@ -37,10 +37,10 @@ public class Rule1DBin {
 		while (st.hasMoreTokens()) {
             String sTok = st.nextToken().toUpperCase();
 
-            if (sTok.length() > 0 && sTok.charAt(0) == 'R')
+            if (sTok.length() > 0 && (int) sTok.charAt(0) == (int) 'R')
 			{
 				iRng = Integer.valueOf(sTok.substring(1));
-			} else if (sTok.length() > 0 && sTok.charAt(0) == 'W') 
+			} else if (sTok.length() > 0 && (int) sTok.charAt(0) == (int) 'W')
 																	
 			{
 				sHex = sTok.substring(1);
@@ -85,7 +85,7 @@ public class Rule1DBin {
 			iRng = MAX_RANGE;
 
 		sHex.toUpperCase();
-		if ((!sHex.isEmpty()) && (sHex.charAt(0) == 'W'))
+		if ((!sHex.isEmpty()) && ((int) sHex.charAt(0) == (int) 'W'))
 			sHex = sHex.substring(1); 
 	}
 
@@ -106,7 +106,7 @@ public class Rule1DBin {
 
 		
 		for (i = 0; i < iCnt; i++)
-			iAry[iCnt - i - 1] = (byte) (sBinStr.charAt(i) == '1' ? 1 : 0);
+			iAry[iCnt - i - 1] = (byte) ((int) sBinStr.charAt(i) == (int) '1' ? 1 : 0);
 	}
 
 	
@@ -133,13 +133,13 @@ public class Rule1DBin {
             String sTok = sBin.substring(sBin.length() - i * 4, sBin.length() - i * 4
                     + 3);
             int iVal = 0;
-            if (sTok.charAt(1) == '1')
+            if ((int) sTok.charAt(1) == (int) '1')
 				iVal += 8;
-			if (sTok.charAt(2) == '1')
+			if ((int) sTok.charAt(2) == (int) '1')
 				iVal += 4;
-			if (sTok.charAt(3) == '1')
+			if ((int) sTok.charAt(3) == (int) '1')
 				iVal += 2;
-			if (sTok.charAt(4) == '1')
+			if ((int) sTok.charAt(4) == (int) '1')
 				iVal += 1;
 			sHexStr = Integer.toHexString(iVal) + sHexStr;
 		}
@@ -213,7 +213,7 @@ public class Rule1DBin {
 	
 	
 	private static String DelLedChr(String sStr, char cChar) {
-		while ((!sStr.isEmpty()) && (sStr.charAt(0) == cChar))
+		while ((!sStr.isEmpty()) && ((int) sStr.charAt(0) == (int) cChar))
 			sStr = sStr.substring(1);
 
 		return sStr;
@@ -252,14 +252,14 @@ public class Rule1DBin {
             int iIdx = 0;
             for (int i = iRng; i >= -iRng; i--)
 			{
-				if (OneRow[ic + i + ary1DOfs] > 0)
+				if ((int) OneRow[ic + i + ary1DOfs] > 0)
                     iIdx += iPow;
                 iPow *= 2;
 			}
 
 
-            short bNewVal = iAry[iIdx];
-            if (bNewVal > 0)
+            short bNewVal = (short) iAry[iIdx];
+            if ((int) bNewVal > 0)
 				if (ColoringMethod == 2) 
 					bNewVal = (short) (mjb.Cycle % (iClo - 1) + 1); 
 

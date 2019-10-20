@@ -62,17 +62,17 @@ public class Info {
         if (value == null || value.length() == 0)
             return s;
 
-        if (key.indexOf('\\') != -1 || value.indexOf('\\') != -1) {
+        if (key.indexOf((int) '\\') != -1 || value.indexOf((int) '\\') != -1) {
             Com.Printf("Can't use keys or values with a \\\n");
             return s;
         }
 
-        if (key.indexOf(';') != -1) {
+        if (key.indexOf((int) ';') != -1) {
             Com.Printf("Can't use keys or values with a semicolon\n");
             return s;
         }
 
-        if (key.indexOf('"') != -1 || value.indexOf('"') != -1) {
+        if (key.indexOf((int) '"') != -1 || value.indexOf((int) '"') != -1) {
             Com.Printf("Can't use keys or values with a \"\n");
             return s;
         }
@@ -103,7 +103,7 @@ public class Info {
 
         StringBuilder sb = new StringBuilder(512);
 
-        if (key.indexOf('\\') != -1) {
+        if (key.indexOf((int) '\\') != -1) {
             Com.Printf("Can't use a key with a \\\n");
             return s;
         }
@@ -132,7 +132,7 @@ public class Info {
      * server's parsing.
      */
     public static boolean Info_Validate(String s) {
-        return !((s.indexOf('"') != -1) || (s.indexOf(';') != -1));
+        return !((s.indexOf((int) '"') != -1) || (s.indexOf((int) ';') != -1));
     }
 
     public static void Print(String s) {

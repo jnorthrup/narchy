@@ -237,7 +237,7 @@ public abstract class NQuadsRDF {
 
 
     public static Term atom(@NotNull String uri) {
-        int lastSlash = uri.lastIndexOf('/');
+        int lastSlash = uri.lastIndexOf((int) '/');
         if (lastSlash != -1)
             uri = uri.substring(lastSlash + 1);
 

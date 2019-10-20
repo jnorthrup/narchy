@@ -170,7 +170,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 				order[i] = (byte) i;
 			ArrayUtil.shuffle(order, u.random);
 			for (byte b : order) {
-				if (!x.sub(b).unify(y.sub(b), u))
+				if (!x.sub((int) b).unify(y.sub((int) b), u))
 					return false;
 			}
 			return true;
@@ -230,7 +230,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 				if (m.get(i))
 					c[k++] = i;
 			}
-			QuickSort.sort(c, cc -> -(x.sub(cc).volume() + y.sub(cc).volume())); //sorts descending
+			QuickSort.sort(c, cc -> (float) -(x.sub(cc).volume() + y.sub(cc).volume())); //sorts descending
 			for (int cc : c) {
 				if (!x.sub(cc).unify(y.sub(cc), u)) {
 					return false;
@@ -491,7 +491,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	default @Nullable Term subSub(int start, int end, byte[] path) {
 		Termlike ptr = this;
 		for (int i = start; i < end; i++) {
-			if ((ptr = ptr.subSafe(path[i])) == IdempotentBool.Null)
+			if ((ptr = ptr.subSafe((int) path[i])) == IdempotentBool.Null)
 				return null;
 		}
 		return ptr != this ? (Term) ptr : null;
@@ -500,7 +500,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	default @Nullable Term subSubUnsafe(int start, int end, byte[] path) {
 		Termlike ptr = this;
 		for (int i = start; i < end; )
-			ptr = ptr.sub(path[i++]);
+			ptr = ptr.sub((int) path[i++]);
 		return (Term) ptr;
 	}
 
@@ -931,7 +931,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 * return whether a subterm op at an index is an operator.
 	 */
 	default boolean subIs(int i, Op o) {
-		return sub(i).opID() == o.id;
+		return sub(i).opID() == (int) o.id;
 	}
 
 	/**
@@ -959,7 +959,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 * counts subterms matching the supplied op
 	 */
 	default int count(Op matchingOp) {
-		int matchingOpID = matchingOp.id;
+		int matchingOpID = (int) matchingOp.id;
 		return count(x -> x.opID() == matchingOpID);
 	}
 
@@ -969,7 +969,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 */
 	default boolean subIsOrOOB(int i, Op o) {
         Term x = sub(i, null);
-		return x != null && x.opID() == o.id;
+		return x != null && x.opID() == (int) o.id;
 	}
 
 	/**
@@ -1390,7 +1390,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	}
 
 	default int hashWith(Op op) {
-		return hashWith(op.id);
+		return hashWith((int) op.id);
 	}
 
 	default int hashWith(/*byte*/int op) {

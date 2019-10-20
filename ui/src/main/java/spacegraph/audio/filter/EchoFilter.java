@@ -8,7 +8,7 @@ public class EchoFilter {
     private int frameIndex = 0;
 
     public EchoFilter(double volumeFraction, double offsetMillis, int sampleRate) {
-        this(volumeFraction, (int) (offsetMillis * sampleRate / 1000.0));
+        this(volumeFraction, (int) (offsetMillis * (double) sampleRate / 1000.0));
     }
 
     public EchoFilter(double volumeFraction, int frameOffset) {

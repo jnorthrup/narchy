@@ -148,7 +148,7 @@ public class DefaultStrategy implements RunStrategy {
                 }
                 boolean allPerfect = true;
                 for (double fitness : best.getFitness()) {
-                    if (Math.round(fitness * 10000) != 0) {
+                    if (Math.round(fitness * 10000.0) != 0L) {
                         allPerfect = false;
                         break;
                     }
@@ -301,7 +301,7 @@ public class DefaultStrategy implements RunStrategy {
         double[] f2 = o2.getFitness();
         int n = f1.length;
 
-        double balance = 0;
+        double balance = (double) 0;
 
         for (int i = 0; i < n; i++) {
             double v1 = f1[i];
@@ -314,8 +314,8 @@ public class DefaultStrategy implements RunStrategy {
 
 
 
-        if (balance > 0) return 1;
-        if (balance < 0) return -1;
+        if (balance > (double) 0) return 1;
+        if (balance < (double) 0) return -1;
 
 
 

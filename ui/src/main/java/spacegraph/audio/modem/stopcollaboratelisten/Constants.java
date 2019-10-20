@@ -26,7 +26,7 @@ public interface Constants {
     float kAmplitude = 0.125f; /* (1/8) */
 
     // Sampling frequency (number of sample values per second)
-    float kSamplingFrequency = 22050; //rps - reduced to 11025 from 22050
+    float kSamplingFrequency = 22050.0F; //rps - reduced to 11025 from 22050
     // to enable the decoder to keep up with the audio on Motorola CLIQ
 
     // Sound duration of encoded byte (in seconds)
@@ -47,19 +47,19 @@ public interface Constants {
     //The frequencies we use for each of the 8 bits
     int kBaseFrequency = 1000;
     int[] kFrequencies = {kBaseFrequency,   //1000
-            (int) (kBaseFrequency * (float) 27 / 24), //1125
-            (int) (kBaseFrequency * (float) 30 / 24), //1250
-            (int) (kBaseFrequency * (float) 36 / 24), //1500
-            (int) (kBaseFrequency * (float) 40 / 24), //1666
-            (int) (kBaseFrequency * (float) 48 / 24), //2000
-            (int) (kBaseFrequency * (float) 54 / 24), //2250
-            (int) (kBaseFrequency * (float) 60 / 24)};//2500
+            (int) ((float) kBaseFrequency * (float) 27 / 24.0F), //1125
+            (int) ((float) kBaseFrequency * (float) 30 / 24.0F), //1250
+            (int) ((float) kBaseFrequency * (float) 36 / 24.0F), //1500
+            (int) ((float) kBaseFrequency * (float) 40 / 24.0F), //1666
+            (int) ((float) kBaseFrequency * (float) 48 / 24.0F), //2000
+            (int) ((float) kBaseFrequency * (float) 54 / 24.0F), //2250
+            (int) ((float) kBaseFrequency * (float) 60 / 24.0F)};//2500
 
     //The length, in durations, of the hail sequence
     int kDurationsPerSOS = 1;
 
     // The frequency used to signal for help
-    int kSOSFrequency = (int) (kBaseFrequency * (float) 30 / 24); //1125
+    int kSOSFrequency = (int) ((float) kBaseFrequency * (float) 30 / 24.0F); //1125
 
     // The length, in durations, of some session timing jitters
     int kPlayJitter = 5;

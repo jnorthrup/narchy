@@ -247,37 +247,37 @@ public class DataAuvent extends Auvent implements Map<String, Object> {
             int[] p = (int[]) o;
             ret = new float[p.length];
             for (int i = 0; i < p.length; i++) {
-                ret[i] = p[i];
+                ret[i] = (float) p[i];
             }
         } else if (o instanceof long[]) {
             long[] p = (long[]) o;
             ret = new float[p.length];
             for (int i = 0; i < p.length; i++) {
-                ret[i] = p[i];
+                ret[i] = (float) p[i];
             }
         } else if (o instanceof char[]) {
             char[] p = (char[]) o;
             ret = new float[p.length];
             for (int i = 0; i < p.length; i++) {
-                ret[i] = p[i];
+                ret[i] = (float) p[i];
             }
         } else if (o instanceof byte[]) {
             byte[] p = (byte[]) o;
             ret = new float[p.length];
             for (int i = 0; i < p.length; i++) {
-                ret[i] = p[i];
+                ret[i] = (float) p[i];
             }
         } else if (o instanceof short[]) {
             short[] p = (short[]) o;
             ret = new float[p.length];
             for (int i = 0; i < p.length; i++) {
-                ret[i] = p[i];
+                ret[i] = (float) p[i];
             }
         } else if (o instanceof boolean[]) {
             boolean[] p = (boolean[]) o;
             ret = new float[p.length];
             for (int i = 0; i < p.length; i++) {
-                ret[i] = p[i] ? 1 : 0;
+                ret[i] = (float) (p[i] ? 1 : 0);
             }
         } else if (o instanceof Number) {
             ret = new float[]{((Number) o).floatValue()};

@@ -47,8 +47,8 @@ public class FirstOrderIndexer extends AbstractAdjacentIndexer {
 
 	protected static boolean subUnifies(Predicate<Term> u, Term concept) {
 
-		return concept.opID() == CONJ.id ?
-			concept.eventsOR((when, what) -> u.test(what), 0, true, true) :
+		return concept.opID() == (int) CONJ.id ?
+			concept.eventsOR((when, what) -> u.test(what), 0L, true, true) :
 			concept.subterms().OR(u);
 	}
 }

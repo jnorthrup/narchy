@@ -31,7 +31,7 @@ public class mvertex_t {
 
     public static final int MEM_SIZE = 3 * Defines.SIZE_OF_FLOAT;
 
-    public final float[] position = { 0, 0, 0 };
+    public final float[] position = {(float) 0, (float) 0, (float) 0};
 
     public mvertex_t(ByteBuffer b) {
         float[] position = this.position;

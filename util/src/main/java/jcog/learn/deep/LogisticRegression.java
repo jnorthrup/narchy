@@ -19,7 +19,7 @@ public class LogisticRegression {
         double[] dy = new double[n_out];
 
         for(int i = 0; i<n_out; i++) {
-            p_y_given_x[i] = 0;
+            p_y_given_x[i] = (double) 0;
             for(int j = 0; j<n_in; j++) {
                 p_y_given_x[i] += W[i][j] * x[j];
             }
@@ -43,7 +43,7 @@ public class LogisticRegression {
     public void softmax(double[] x) {
 
         boolean seen = false;
-        double best = 0;
+        double best = (double) 0;
         int bound = n_out;
         for (int j = 0; j < bound; j++) {
             double v = x[j];
@@ -95,12 +95,12 @@ public class LogisticRegression {
         };
 
         double[][] train_Y = {
-                {1, 0},
-                {1, 0},
-                {1, 0},
-                {0, 1},
-                {0, 1},
-                {0, 1}
+                {1.0, (double) 0},
+                {1.0, (double) 0},
+                {1.0, (double) 0},
+                {(double) 0, 1.0},
+                {(double) 0, 1.0},
+                {(double) 0, 1.0}
         };
 
 

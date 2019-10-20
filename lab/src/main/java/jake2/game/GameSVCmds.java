@@ -94,12 +94,12 @@ public class GameSVCmds {
         try {
             StringTokenizer tk = new StringTokenizer(s, ". ");
 
-            byte[] m = {0, 0, 0, 0};
-            byte[] b = {0, 0, 0, 0};
+            byte[] m = {(byte) 0, (byte) 0, (byte) 0, (byte) 0};
+            byte[] b = {(byte) 0, (byte) 0, (byte) 0, (byte) 0};
             for (int n = 0; n < 4; n++) {
                 b[n] = (byte) Lib.atoi(tk.nextToken());
-                if (b[n] != 0)
-                    m[n] = -1;
+                if ((int) b[n] != 0)
+                    m[n] = (byte) -1;
             }
 
             f.mask = ByteBuffer.wrap(m).getInt();
@@ -127,11 +127,11 @@ public class GameSVCmds {
             m[i] = 0;
 
             char c = from.charAt(p);
-            while (c >= '0' && c <= '9') {
-                m[i] = m[i] * 10 + (c - '0');
+            while ((int) c >= (int) '0' && (int) c <= (int) '9') {
+                m[i] = m[i] * 10 + ((int) c - (int) '0');
                 c = from.charAt(p++);
             }
-            if (p == from.length() || c == ':')
+            if (p == from.length() || (int) c == (int) ':')
                 break;
 
             i++;
@@ -145,7 +145,7 @@ public class GameSVCmds {
             if ((in & ipfilters[i].mask) == ipfilters[i].compare)
                 return ((int) GameBase.filterban.value) != 0;
 
-        return (1 - GameBase.filterban.value) != 0;
+        return (1.0F - GameBase.filterban.value) != (float) 0;
     }
 
     /**
@@ -213,9 +213,9 @@ public class GameSVCmds {
         for (int i = 0; i < numipfilters; i++) {
             byte[] b = Lib.getIntBytes(ipfilters[i].compare);
             game_import_t
-                    .cprintf(null, Defines.PRINT_HIGH, (b[0] & 0xff) + "."
-                            + (b[1] & 0xff) + '.' + (b[2] & 0xff) + '.'
-                            + (b[3] & 0xff));
+                    .cprintf(null, Defines.PRINT_HIGH, ((int) b[0] & 0xff) + "."
+                            + ((int) b[1] & 0xff) + '.' + ((int) b[2] & 0xff) + '.'
+                            + ((int) b[3] & 0xff));
         }
     }
 
@@ -248,8 +248,8 @@ public class GameSVCmds {
 
             for (int i = 0; i < numipfilters; i++) {
                 byte[] b = Lib.getIntBytes(ipfilters[i].compare);
-                f.writeChars("sv addip " + (b[0] & 0xff) + '.' + (b[1] & 0xff)
-                        + '.' + (b[2] & 0xff) + '.' + (b[3] & 0xff) + '\n');
+                f.writeChars("sv addip " + ((int) b[0] & 0xff) + '.' + ((int) b[1] & 0xff)
+                        + '.' + ((int) b[2] & 0xff) + '.' + ((int) b[3] & 0xff) + '\n');
             }
 
         } catch (IOException e) {

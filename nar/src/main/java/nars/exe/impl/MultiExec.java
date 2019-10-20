@@ -51,8 +51,8 @@ public abstract class MultiExec extends Exec {
             b.clear(each);
         } else {
 
-            float granularity = 1 * (concurrency / 2f);
-            int chunkSize = Math.max(1, (int) Math.min(concurrency, b.size() / (granularity)));
+            float granularity = 1.0F * ((float) concurrency / 2f);
+            int chunkSize = Math.max(1, (int) Math.min((float) concurrency, (float) b.size() / (granularity)));
 
             (((FasterList<?>) b).chunkView(chunkSize))
                     .parallelStream().forEach(x -> {
@@ -179,9 +179,9 @@ public abstract class MultiExec extends Exec {
          */
         static void queueLatency(long start, long end, NAR n) {
             long latencyNS = end - start;
-            double frames = latencyNS / ((double) (n.loop.periodNS()));
+            double frames = (double) latencyNS / ((double) (n.loop.periodNS()));
             //if (frames > 0.5) {
-                Exec.logger.info("queue latency {} ({} frames)", Texts.timeStr(latencyNS), Texts.n4(frames));
+                Exec.logger.info("queue latency {} ({} frames)", Texts.timeStr((double) latencyNS), Texts.n4(frames));
             //}
         }
 

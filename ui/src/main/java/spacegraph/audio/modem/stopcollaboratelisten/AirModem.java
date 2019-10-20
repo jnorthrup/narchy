@@ -69,7 +69,7 @@ public class AirModem {
                 } else {
                     long tSOS = playSOS();
 
-                    if (tSOS > -1)
+                    if (tSOS > -1L)
                         // start listening when playing is finished
                         mTimer.schedule(new StatusUpdateTimerTask(SessionStatus.LISTENING), tSOS);
                 }
@@ -80,7 +80,7 @@ public class AirModem {
                 if (haveCorrectBroadcast) {
                     resetTimeout(true);
 
-                    long tWait = (long) (Constants.kSetupJitter * Constants.kSamplesPerDuration / Constants.kSamplingFrequency * 1000);
+                    long tWait = (long) ((float) (Constants.kSetupJitter * Constants.kSamplesPerDuration) / Constants.kSamplingFrequency * 1000.0F);
 
                     mTimer.schedule(new TimerTask() {
                         @Override public void run() {
@@ -128,7 +128,7 @@ public class AirModem {
     private long playData(String input, SessionStatus playStatus) {
         stop();
 
-        long millisPlayTime = -1;
+        long millisPlayTime = -1L;
         try {
             state = playStatus;
 
@@ -155,8 +155,8 @@ public class AirModem {
              *  length of play time (ms) =
              *  nDurations * samples/duration * 1/fs * 1000
              */
-            millisPlayTime = (long) ((Constants.kPlayJitter + Constants.kDurationsPerHail + Constants.kBytesPerDuration * inputEncoded.length + Constants.kDurationsPerCRC) *
-                    Constants.kSamplesPerDuration / Constants.kSamplingFrequency * 1000);
+            millisPlayTime = (long) ((float) ((Constants.kPlayJitter + Constants.kDurationsPerHail + Constants.kBytesPerDuration * inputEncoded.length + Constants.kDurationsPerCRC) *
+                    Constants.kSamplesPerDuration) / Constants.kSamplingFrequency * 1000.0F);
 
         } catch (Exception e) {
             System.err.println("Could not encode " + input + " because of " + e);
@@ -168,7 +168,7 @@ public class AirModem {
     public long playSOS() {
         stop();
 
-        long millisPlayTime = -1;
+        long millisPlayTime = -1L;
         try {
             state = SessionStatus.SOS;
 
@@ -179,8 +179,8 @@ public class AirModem {
              *  length of play time (ms) =
              *  nDurations * samples/duration * 1/fs * 1000
              */
-            millisPlayTime = (long) ((Constants.kPlayJitter + Constants.kDurationsPerSOS) *
-                    Constants.kSamplesPerDuration / Constants.kSamplingFrequency * 1000);
+            millisPlayTime = (long) ((float) ((Constants.kPlayJitter + Constants.kDurationsPerSOS) *
+                    Constants.kSamplesPerDuration) / Constants.kSamplingFrequency * 1000.0F);
 
         } catch (Exception e) {
             System.out.println("Could not perform SOS because of " + e);
@@ -202,7 +202,7 @@ public class AirModem {
 
         long tPlay = playData(correctBroadcast, SessionStatus.PLAYING);
 
-        if (tPlay > -1)
+        if (tPlay > -1L)
             // start listening when playing is finished
             mTimer.schedule(new StatusUpdateTimerTask(SessionStatus.LISTENING), tPlay);
 
@@ -226,16 +226,16 @@ public class AirModem {
     }
 
     private void setTimeout(String input, boolean afterPlay) {
-        int secondsPlay = (int) ((Constants.kPlayJitter + Constants.kDurationsPerHail + Constants.kBytesPerDuration * input.length() + Constants.kDurationsPerCRC)
-                * Constants.kSamplesPerDuration / Constants.kSamplingFrequency);
+        int secondsPlay = (int) ((float) ((Constants.kPlayJitter + Constants.kDurationsPerHail + Constants.kBytesPerDuration * input.length() + Constants.kDurationsPerCRC)
+                * Constants.kSamplesPerDuration) / Constants.kSamplingFrequency);
         // set timeout to be 3x time to play the broadcast
         sessionTimeout = 3 * secondsPlay;
         timeoutCounter = sessionTimeout;
         timeoutTask = new TimeoutTimerTask();
         if (afterPlay)
-            mTimer.schedule(timeoutTask, secondsPlay * 1000, 1000);
+            mTimer.schedule(timeoutTask, (long) (secondsPlay * 1000), 1000L);
         else
-            mTimer.schedule(timeoutTask, 0, 1000);
+            mTimer.schedule(timeoutTask, 0L, 1000L);
     }
 
     private void resetTimeout(boolean afterPlay) {
@@ -244,7 +244,7 @@ public class AirModem {
             timeoutTask = null;
             timeoutTask = new TimeoutTimerTask();
             timeoutCounter = sessionTimeout;
-            mTimer.schedule(timeoutTask, sessionTimeout / 3 * 1000, 1000);
+            mTimer.schedule(timeoutTask, (long) (sessionTimeout / 3 * 1000), 1000L);
         } else
             timeoutCounter = sessionTimeout;
     }

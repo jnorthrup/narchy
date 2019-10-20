@@ -20,8 +20,8 @@ public final class StockMethods {
 
     public static Int2 computeDrawLocationInPlace(float cameraX, float cameraY, int width,
                                                   int height, int tileSize, float positionX, float positionY) {
-        StockMethods.pos.x = Math.round((positionX - cameraX) * tileSize);
-        StockMethods.pos.y = Math.round((positionY - cameraY) * tileSize);
+        StockMethods.pos.x = Math.round((positionX - cameraX) * (float) tileSize);
+        StockMethods.pos.y = Math.round((positionY - cameraY) * (float) tileSize);
         onScreen = !(pos.x + tileSize < 0 || pos.x > width * tileSize || pos.y + tileSize < 0 || pos.y > height
                 * tileSize);
         return StockMethods.pos;

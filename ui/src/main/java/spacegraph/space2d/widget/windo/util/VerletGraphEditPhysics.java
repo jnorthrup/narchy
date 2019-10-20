@@ -41,13 +41,13 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
         private PhySurface(Surface surface) {
             this.surface = surface;
             this.center = new Vec2D();
-            this.repel = new AttractionBehavior2D(center, 1, 0);
+            this.repel = new AttractionBehavior2D(center, 1.0F, (float) 0);
         }
 
         public void update() {
             center.set(surface.cx(), surface.cy());
-            repel.setRadius(surface.radius() * 2);
-            repel.setStrength(-(float) (Math.sqrt(surface.bounds.area()) * 0.1f));
+            repel.setRadius(surface.radius() * 2.0F);
+            repel.setStrength(-(float) (Math.sqrt((double) surface.bounds.area()) * 0.1));
         }
     }
 
@@ -134,13 +134,13 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
 
 
             bind(graph.add(new PushButton("x", () -> remove(graph)), ff ->
-                            new Windo(new MetaFrame(ff))).resize(20, 20),
+                            new Windo(new MetaFrame(ff))).resize(20.0F, 20.0F),
                     mid, false, VerletSurface.VerletSurfaceBinding.Center, graph);
 
 
-            bind(graph.add(new PushButton(".."), Windo::new).resize(5, 5),
+            bind(graph.add(new PushButton(".."), Windo::new).resize(5.0F, 5.0F),
                     chain.getOne().get(1), false, VerletSurface.VerletSurfaceBinding.Center, graph);
-            bind(graph.add(new PushButton(".."), Windo::new).resize(5, 5),
+            bind(graph.add(new PushButton(".."), Windo::new).resize(5.0F, 5.0F),
                     chain.getOne().get(chainLen - 2), false, VerletSurface.VerletSurfaceBinding.Center, graph);
 
             /** link rendering */
@@ -172,8 +172,8 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
                 long renderStart = reSurface.frameNS;
 
                 Wire id = VerletVisibleLink.this.id;
-                float aa = id.activity(true, renderStart, window);
-                float bb = id.activity(false, renderStart, window);
+                float aa = id.activity(true, renderStart, (long) window);
+                float bb = id.activity(false, renderStart, (long) window);
 
                 float base = Math.min(a().radius(), b().radius());
                 float baseA = base * Util.lerp(aa, 0.25f, 0.75f);

@@ -13,8 +13,8 @@ public class CosineSimilarityFunction implements ISimilarityFunction
 
     @Override
     public Unit calculate(Unit[] u, Unit[] v) {
-        double _uv = 0;
-        double _normalizedU = 0, _normalizedV = 0;
+        double _uv = (double) 0;
+        double _normalizedU = (double) 0, _normalizedV = (double) 0;
 
         for (int i = 0; i < u.length; i++) {
             double uV = u[i].value;

@@ -834,7 +834,7 @@ public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
         AABB a = m_aabb[node];
         a.vertices(drawVecs);
 
-        color.set(1, (height - spot) * 1f / height, (height - spot) * 1f / height);
+        color.set(1.0F, (float) (height - spot) * 1f / (float) height, (float) (height - spot) * 1f / (float) height);
         argDraw.drawPolygon(drawVecs, 4, color);
 
         argDraw.getViewportTranform().getWorldToScreen(a.upperBound, textVec);

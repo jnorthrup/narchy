@@ -119,7 +119,7 @@ public class DynTaskify extends TaskList {
                 s = earliest;
                 e = s == LongInterval.ETERNAL ?
                     LongInterval.ETERNAL :
-                    s + minValue(t -> t.rangeIfNotEternalElse(1) - 1);
+                    s + minValue(t -> t.rangeIfNotEternalElse(1L) - 1L);
             } else {
 
                 long[] u = Tense.union(0, this);
@@ -157,7 +157,7 @@ public class DynTaskify extends TaskList {
             order = Arrays.copyOfRange(order, 0, count);
             Component[] cc = c.array();
 
-            IntToFloatFunction smallestFirst = j -> +cc[j].termVolume;
+            IntToFloatFunction smallestFirst = j -> (float) +cc[j].termVolume;
             //IntToFloatFunction biggestFirst = (int j) -> -(cc[j]).termVolume;
             QuickSort.sort(order,
                     smallestFirst

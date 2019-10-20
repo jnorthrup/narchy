@@ -67,7 +67,7 @@ public class DeductiveMeshTest {
         ask(n, term);
 
         if (timeLimit > 0)
-            n.mustBelieve(timeLimit, q.toString(), 1f, 1f, 0.01f, 1f);
+            n.mustBelieve((long) timeLimit, q.toString(), 1f, 1f, 0.01f, 1f);
 
         this.test = n;
     }

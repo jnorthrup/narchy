@@ -27,16 +27,16 @@ public class Timeline2DSequence implements Timeline2D.EventBuffer<Pair<Longerval
      * TODO
      * */
     protected static int sample(long t) {
-        return Math.round(t);
+        return Math.round((float) t);
         //return (int) t / bufferSize();
     }
 
     protected float sampleRate() {
-        return bufferSize();
+        return (float) bufferSize();
     }
 
     protected static long time(int sample) {
-        return sample;
+        return (long) sample;
         ///return (long)(((double)sample) * bufferSize());
     }
 
@@ -67,7 +67,7 @@ public class Timeline2DSequence implements Timeline2D.EventBuffer<Pair<Longerval
         int ss = sampleStart / w;
         for (int i = sampleStart; i < sampleEnd; ) {
             int ee = ss + w;
-            l.add(Tuples.pair(new Longerval(ss, ee), subTensor(ss)));
+            l.add(Tuples.pair(new Longerval((long) ss, (long) ee), subTensor(ss)));
             i += w;
             ss += w;
         }

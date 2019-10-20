@@ -142,8 +142,8 @@ public class Clock extends UGen implements IntegerBead {
      * Resets the Clock immediately.
      */
     public void reset() {
-        point = 0.0f;
-        count = -1;    
+        point = 0.0;
+        count = -1L;
 
     }
 
@@ -153,7 +153,7 @@ public class Clock extends UGen implements IntegerBead {
      * @return the tick count.
      */
     public long getCount() {
-        return (int) Math.floor(point);
+        return (long) (int) Math.floor(point);
     }
 
     /**
@@ -198,19 +198,19 @@ public class Clock extends UGen implements IntegerBead {
         for (int i = 0; i < bufferSize; i++) {
             subticks[i] = point;
             double interval = intervalEnvelope.getValueDouble(0, i);
-            double value = Math.max(1.0, Math.abs(interval) / ticksPerBeat);
-            boolean backwards = interval < 0;
-            if (backwards) value *= -1;
+            double value = Math.max(1.0, Math.abs(interval) / (double) ticksPerBeat);
+            boolean backwards = interval < (double) 0;
+            if (backwards) value *= -1.0;
             point += 1.0 / context.msToSamples(value);
 
             double sign = Math.signum(interval);
-            while (!backwards && point >= count + 1) {
+            while (!backwards && point >= (double) (count + 1L)) {
                 tick();
-                count += sign;
+                count = (long) ((double) count + sign);
             }
-            while (backwards && point <= count) {
+            while (backwards && point <= (double) count) {
                 tick();
-                count += sign;
+                count = (long) ((double) count + sign);
             }
         }
     }
@@ -256,7 +256,7 @@ public class Clock extends UGen implements IntegerBead {
      * @return true if the current tick is a beat.
      */
     public boolean isBeat() {
-        return getCount() % ticksPerBeat == 0;
+        return getCount() % (long) ticksPerBeat == 0L;
     }
 
     /**
@@ -275,7 +275,7 @@ public class Clock extends UGen implements IntegerBead {
      * @return the current beat count.
      */
     private int getBeatCount() {
-        return (int) (getCount() / ticksPerBeat);
+        return (int) (getCount() / (long) ticksPerBeat);
     }
 
     public double getSubTickAtIndex(int i) {

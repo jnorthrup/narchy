@@ -60,7 +60,7 @@ public class AdaptiveResonanceTheory2
             
             norm += temp.get___idx(i) * temp.get___idx(i);
         }
-        norm = (float) Math.sqrt(norm);
+        norm = (float) Math.sqrt((double) norm);
         
         norm = 1.0f / norm;
         for (i = 0;i < instance.array.length;i++)
@@ -473,7 +473,7 @@ public class AdaptiveResonanceTheory2
                 }
                  
             }
-            fluctuation = ((float)number_changed / sample.size()) * 100;
+            fluctuation = ((float)number_changed / (float) sample.size()) * 100.0F;
             pass++;
             
             

@@ -1851,7 +1851,7 @@ public class M extends Applet implements Runnable {
 				
 				do {
 					Thread.yield();
-				} while (System.nanoTime() - lastTime < 0);
+				} while (System.nanoTime() - lastTime < 0L);
 				if (!isActive()) {
 					
 					
@@ -1905,8 +1905,8 @@ public class M extends Applet implements Runnable {
 
 	
 	private static final int FRAMES_PER_SECOND = 30;
-	private static final long NANOS_PER_SECOND = 1000000000;
-	private static final long FRAME_WAIT_TIME = NANOS_PER_SECOND / FRAMES_PER_SECOND;
+	private static final long NANOS_PER_SECOND = 1000000000L;
+	private static final long FRAME_WAIT_TIME = NANOS_PER_SECOND / (long) FRAMES_PER_SECOND;
 	private static final int ENCODE_MOUSE_X_SHR = RENDER_SHR_FACTOR;
 	private static final int ENCODE_MOUSE_Y_SHL = 8; 
 	private static final int ENCODE_MOUSE_Y_SHR = RENDER_SHR_FACTOR;

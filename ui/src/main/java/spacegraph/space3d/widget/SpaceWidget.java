@@ -15,7 +15,7 @@ public abstract class SpaceWidget<T> extends SurfacedCuboid<T> {
     private boolean touched = false;
 
     public SpaceWidget(T x) {
-        super(x, 1, 1);
+        super(x, 1.0F, 1.0F);
 
         front(
             
@@ -68,7 +68,7 @@ public abstract class SpaceWidget<T> extends SurfacedCuboid<T> {
             float thresh = 0.1f;
             if (width <= thresh) {
                 float aa = e.a * (width / thresh);
-                if (aa < 1 / 256f)
+                if (aa < 1.0F / 256f)
                     continue;
                 gl.glColor4f(e.r, e.g, e.b, aa /* fade opacity */);
                 Draw.renderLineEdge(gl, src, e.tgt(), width);
@@ -84,8 +84,8 @@ public abstract class SpaceWidget<T> extends SurfacedCuboid<T> {
 
 
         render(gl, this,
-                
-                0,
+
+                (float) 0,
                 edges());
 
 

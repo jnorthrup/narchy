@@ -23,11 +23,11 @@ public class PhysicsRenderer extends javax.swing.JPanel {
         initComponents();
     }
 
-    Stroke st = new BasicStroke(4);
+    Stroke st = new BasicStroke(4.0F);
 
     @Override
     protected void paintComponent(Graphics g) {
-        g.setColor(new Color(0, 0, 0, 0.25f));
+        g.setColor(new Color((float) 0, (float) 0, (float) 0, 0.25f));
         g.fillRect(0, 0, getWidth(), getHeight());
 
         Graphics2D g2 = (Graphics2D)g;
@@ -61,11 +61,11 @@ public class PhysicsRenderer extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGap(0, 400, (int) Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGap(0, 300, (int) Short.MAX_VALUE)
         );
     }
 

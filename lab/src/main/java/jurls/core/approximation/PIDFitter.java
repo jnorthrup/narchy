@@ -15,9 +15,9 @@ public class PIDFitter implements ParameterizedFunction {
 
     private static class PID {
 
-        private double integral = 0;
-        private double prevE = 0;
-        private double prevDelta = 0;
+        private double integral = (double) 0;
+        private double prevE = (double) 0;
+        private double prevDelta = (double) 0;
 
         public double compute(double error) {
             double deltaE = error - prevE;
@@ -26,7 +26,7 @@ public class PIDFitter implements ParameterizedFunction {
             prevDelta = deltaE;
             integral += error;
 
-            return 0.01 * integral + 1 * error + 2 * deltaE + 4 * deltaDelta;
+            return 0.01 * integral + 1.0 * error + 2.0 * deltaE + 4.0 * deltaDelta;
         }
     }
 

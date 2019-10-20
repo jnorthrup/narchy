@@ -96,7 +96,7 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
 
             Set<String> subparts = Utils.subparts(example.getString());
             for (String x : subparts) {
-                long v = ngrams.containsKey(x) ? ngrams.get(x) : 0;
+                long v = ngrams.containsKey(x) ? ngrams.get(x) : 0L;
                 v++;
                 ngrams.put(x, v);
             }
@@ -111,7 +111,7 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
             for (Example example : negativeExamples) {
                 Set<String> subparts = Utils.subparts(example.getString());
                 for (String x : subparts) {
-                    long v = ngrams.containsKey(x) ? ngrams.get(x) : 0;
+                    long v = ngrams.containsKey(x) ? ngrams.get(x) : 0L;
                     v--;
                     ngrams.put(x, v);
                 }
@@ -120,11 +120,11 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
         
         ngrams = sortByValues(ngrams);
         
-        long numberNgrams = 0; 
+        long numberNgrams = 0L;
         for (Map.Entry<String, Long> entry : ngrams.entrySet()) {
             String ngram = entry.getKey();
             Long v = entry.getValue();
-                if(v <= 0){
+                if(v <= 0L){
                     
                     continue;
                 }
@@ -132,7 +132,7 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
                 if(terminalSet.add(leaf)){
                     numberNgrams++;              
                 }
-                if(numberNgrams>=NUMBER_NGRAMS){
+                if(numberNgrams>= (long) NUMBER_NGRAMS){
                     break;
                 }
         }

@@ -457,7 +457,7 @@ public class Getopt  {
      * When an unrecognized option is encountered, getopt will return a '?'
      * and store the value of the invalid option here.
      */
-    private int optopt = '?';
+    private int optopt = (int) '?';
 
     /**
      * The next char to be scanned in the option-element
@@ -616,11 +616,11 @@ public class Getopt  {
         }
 
         
-        if (optstring.charAt(0) == '-') {
+        if ((int) optstring.charAt(0) == (int) '-') {
             ordering = RETURN_IN_ORDER;
             if (optstring.length() > 1)
                 this.optstring = optstring.substring(1);
-        } else if (optstring.charAt(0) == '+') {
+        } else if ((int) optstring.charAt(0) == (int) '+') {
             ordering = REQUIRE_ORDER;
             if (optstring.length() > 1)
                 this.optstring = optstring.substring(1);
@@ -819,7 +819,7 @@ public class Getopt  {
         longopt_handled = true;
         longind = -1;
 
-        int nameend = nextchar.indexOf('=');
+        int nameend = nextchar.indexOf((int) '=');
         if (nameend == -1)
             nameend = nextchar.length();
 
@@ -859,7 +859,7 @@ public class Getopt  {
             optopt = 0;
             ++optind;
 
-            return '?';
+            return (int) '?';
         }
 
         if (pfound != null) {
@@ -890,7 +890,7 @@ public class Getopt  {
                     nextchar = "";
                     optopt = pfound.val;
 
-                    return '?';
+                    return (int) '?';
                 }
             } 
             else if (pfound.has_arg == LongOpt.REQUIRED_ARGUMENT) {
@@ -907,7 +907,7 @@ public class Getopt  {
 
                     nextchar = "";
                     optopt = pfound.val;
-                    return optstring.charAt(0) == ':' ? ':' : '?';
+                    return (int) (optstring.charAt(0) == (int) ':' ? ':' : '?');
                 }
             } 
 
@@ -969,7 +969,7 @@ public class Getopt  {
 
 
                     while (optind < argv.length && (argv[optind].isEmpty() ||
-                            argv[optind].charAt(0) != '-' || "-".equals(argv[optind]))) {
+                            (int) argv[optind].charAt(0) != (int) '-' || "-".equals(argv[optind]))) {
                         optind++;
                     }
 
@@ -998,7 +998,7 @@ public class Getopt  {
                         optind = first_nonopt;
 
                     finished = true;
-                } else if (argv[optind].isEmpty() || argv[optind].charAt(0) != '-' ||
+                } else if (argv[optind].isEmpty() || (int) argv[optind].charAt(0) != (int) '-' ||
                         "-".equals(argv[optind])) {
                     if (ordering == REQUIRE_ORDER) {
                         finished = true;
@@ -1028,14 +1028,14 @@ public class Getopt  {
  This distinction seems to be the most useful approach.  */
                 if (long_options != null && (argv[optind].startsWith("--")
                         || long_only && (argv[optind].length() > 2 ||
-                        optstring.indexOf(argv[optind].charAt(1)) == -1))) {
+                        optstring.indexOf((int) argv[optind].charAt(1)) == -1))) {
                     int c = checkLongOption();
 
                     if (longopt_handled) {
                         result = c;
                         finished = true;
                     } else if (!long_only || argv[optind].startsWith("--")
-                            || optstring.indexOf(nextchar.charAt(0)) == -1) {
+                            || optstring.indexOf((int) nextchar.charAt(0)) == -1) {
                         if (opterr) {
                             if (argv[optind].startsWith("--")) {
                                 Object[] msgArgs = {progname, nextchar};
@@ -1055,21 +1055,21 @@ public class Getopt  {
                         ++optind;
                         optopt = 0;
 
-                        result = '?';
+                        result = (int) '?';
                         finished = true;
                     }
 
 
                 }
                 if (!finished) {
-                    int c = nextchar.charAt(0);
+                    int c = (int) nextchar.charAt(0);
                     nextchar = nextchar.length() > 1 ? nextchar.substring(1) : "";
                     String temp = null;
                     if (optstring.indexOf(c) != -1)
                         temp = optstring.substring(optstring.indexOf(c));
                     if (nextchar.isEmpty())
                         ++optind;
-                    if (temp == null || c == ':') {
+                    if (temp == null || c == (int) ':') {
                         if (opterr) {
                             if (posixly_correct) {
 
@@ -1085,9 +1085,9 @@ public class Getopt  {
 
                         optopt = c;
 
-                        result = '?';
+                        result = (int) '?';
                     } else {
-                        if (temp.charAt(0) == 'W' && temp.length() > 1 && temp.charAt(1) == ';') {
+                        if ((int) temp.charAt(0) == (int) 'W' && temp.length() > 1 && (int) temp.charAt(1) == (int) ';') {
                             if (!nextchar.isEmpty()) {
                                 optarg = nextchar;
                             } else if (optind == argv.length) {
@@ -1099,7 +1099,7 @@ public class Getopt  {
                                 }
 
                                 optopt = c;
-                                result = optstring.charAt(0) == ':' ? ':' : '?';
+                                result = (int) (optstring.charAt(0) == (int) ':' ? ':' : '?');
                                 finished = true;
                             } else {
 
@@ -1116,15 +1116,15 @@ public class Getopt  {
                                 } else {
                                     nextchar = null;
                                     ++optind;
-                                    result = 'W';
+                                    result = (int) 'W';
                                     finished = true;
                                 }
                             }
 
                         }
                         if (!finished) {
-                            if (temp.length() > 1 && temp.charAt(1) == ':') {
-                                if (temp.length() > 2 && temp.charAt(2) == ':') {
+                            if (temp.length() > 1 && (int) temp.charAt(1) == (int) ':') {
+                                if (temp.length() > 2 && (int) temp.charAt(2) == (int) ':') {
                                     if (!nextchar.isEmpty()) {
                                         optarg = nextchar;
                                         ++optind;
@@ -1145,7 +1145,7 @@ public class Getopt  {
 
                                     optopt = c;
 
-                                    result = optstring.charAt(0) == ':' ? ':' : '?';
+                                    result = (int) (optstring.charAt(0) == (int) ':' ? ':' : '?');
                                     finished = true;
                                 } else {
                                     optarg = argv[optind];
@@ -1164,7 +1164,7 @@ public class Getopt  {
 
                                             optopt = c;
 
-                                            result = optstring.charAt(0) == ':' ? ':' : '?';
+                                            result = (int) (optstring.charAt(0) == (int) ':' ? ':' : '?');
                                             finished = true;
                                         } else {
                                             optarg = argv[optind];

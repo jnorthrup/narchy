@@ -131,7 +131,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     }
 
     default int opID() {
-        return op().id;
+        return (int) op().id;
     }
 
 
@@ -257,15 +257,15 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         int n = css.subs();
 
         byte which = path.get(depth);
-        assert (which < n);
+        assert ((int) which < n);
 
-        Term x = css.sub(which);
+        Term x = css.sub((int) which);
         Term y = x.replaceAt(path, depth + 1, replacement);
         if (y == x) {
             return src; //unchanged
         } else {
             Term[] target = css.arrayClone();
-            target[which] = y;
+            target[(int) which] = y;
             return src.op().the(src.dt(), target);
         }
     }
@@ -295,12 +295,12 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         int i;
         done:
         for (i = 0; i < shortest; i++) {
-            byte needs = 0;
+            byte needs = (byte) 0;
             for (int j = 0; j < subpathsSize; j++) {
                 byte pi = subpaths.get(j).get(i);
                 if (j == 0) {
                     needs = pi;
-                } else if (needs != pi) {
+                } else if ((int) needs != (int) pi) {
                     break done;
                 }
             }
@@ -327,7 +327,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     default @Nullable Term subPath(int start, int end, byte... path) {
         Term ptr = this;
         for (int i = start; i < end; i++) {
-            if ((ptr = ptr.subSafe(path[i])) == IdempotentBool.Null)
+            if ((ptr = ptr.subSafe((int) path[i])) == IdempotentBool.Null)
                 return null;
         }
         return ptr;
@@ -336,7 +336,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     default @Nullable Term subPath(ByteList path, int start, int end) {
         Term ptr = this;
         for (int i = start; i < end; i++) {
-            if ((ptr = ptr.subSafe(path.get(i))) == IdempotentBool.Null)
+            if ((ptr = ptr.subSafe((int) path.get(i))) == IdempotentBool.Null)
                 return null;
         }
         return ptr;
@@ -461,12 +461,12 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
                             int subWhen = what.subTimeFirst(match);
                             if (subWhen != DTERNAL) {
 //                                hits[0]++;
-                                return each.test(Tense.occToDT(when + subWhen));
+                                return each.test(Tense.occToDT(when + (long) subWhen));
                             }
                         }
                     }
                     return true;
-                }, 0, match.op()!=CONJ || match.dt()!=DTERNAL, true);
+                }, 0L, match.op()!=CONJ || match.dt()!=DTERNAL, true);
                 return true;
             } else {
                 if (contains(match))
@@ -515,7 +515,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         }
 
         Op op = this.op();
-        int oc = Integer.compare(op.id, t.opID());
+        int oc = Integer.compare((int) op.id, t.opID());
         if (oc != 0)
             return oc;
 
@@ -662,7 +662,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
             if (what != Term.this)
                 s.add(what);
             return true;
-        }, 0, true, true);
+        }, 0L, true, true);
         return s;
     }
 

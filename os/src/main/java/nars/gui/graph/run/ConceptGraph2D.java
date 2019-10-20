@@ -231,10 +231,10 @@ public class ConceptGraph2D extends Graph2D<Term> {
                 return; //ignore variables
 
             float[] pp = new float[4];
-            pp[0] = _belief ? l.priPunc(BELIEF) : 0;
-            pp[1] = _goal ? l.priPunc(GOAL) : 0;
-            pp[2] = _question ? l.priPunc(QUESTION) : 0;
-            pp[3] = _quest ? l.priPunc(QUEST) : 0;
+            pp[0] = _belief ? l.priPunc(BELIEF) : (float) 0;
+            pp[1] = _goal ? l.priPunc(GOAL) : (float) 0;
+            pp[2] = _question ? l.priPunc(QUESTION) : (float) 0;
+            pp[3] = _quest ? l.priPunc(QUEST) : (float) 0;
             float pSum = (pp[0] + pp[1] + pp[2] + pp[3]);
             if (pSum < ScalarValue.EPSILON)
                 return;
@@ -287,9 +287,9 @@ public class ConceptGraph2D extends Graph2D<Term> {
 
                     e//.colorLerp(0,0,0,COLOR_FADE_RATE).colorAdd
                        .colorLerp
-                            (r / 256f, g / 256f, b / 256f, COLOR_UPDATE_RATE);
+                            ((float) r / 256f, (float) g / 256f, (float) b / 256f, COLOR_UPDATE_RATE);
                 }
-                e.weightLerp(0.5f + 0.5f * (pSum/4), WEIGHT_UPDATE_RATE);
+                e.weightLerp(0.5f + 0.5f * (pSum/ 4.0F), WEIGHT_UPDATE_RATE);
             }
         }
     }

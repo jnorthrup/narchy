@@ -36,11 +36,11 @@ public class VerletSurface extends PaintSurface implements Animated {
     public final AtomicBoolean debugRender = new AtomicBoolean(true);
 
     public VerletSurface(float w, float h) {
-        this(RectFloat.X0Y0WH(0, 0, w, h));
+        this(RectFloat.X0Y0WH((float) 0, (float) 0, w, h));
     }
 
     public VerletSurface() {
-        this(1, 1);
+        this(1.0F, 1.0F);
     }
 
     public VerletSurface(RectFloat bounds) {
@@ -49,11 +49,11 @@ public class VerletSurface extends PaintSurface implements Animated {
 
         pos(bounds);
 
-        physics = new VerletPhysics2D(2, 0);
+        physics = new VerletPhysics2D(2, (float) 0);
 //        physics.setDrag(0.05f);
 
         physics.setIndex(
-                new QuadtreeIndex(bounds.x - 1, bounds.y - 1, bounds.w + 1, bounds.h + 1)
+                new QuadtreeIndex(bounds.x - 1.0F, bounds.y - 1.0F, bounds.w + 1.0F, bounds.h + 1.0F)
                 //new RTreeQuadTree()
         );
 
@@ -265,12 +265,12 @@ public class VerletSurface extends PaintSurface implements Animated {
             //auto
             chainLength = a.distanceTo(b);
         }
-        float linkLength = chainLength / (num + 1);
+        float linkLength = chainLength / (float) (num + 1);
         VerletParticle2D prev = a;
         FasterList pp = new FasterList(num);
         FasterList ss = new FasterList(num + 1);
         for (int i = 0; i < num; i++) {
-            float p = ((float) i + 1) / (num + 1);
+            float p = ((float) i + 1.0F) / (float) (num + 1);
             VerletParticle2D next =
                     new VerletParticle2D(
                             Util.lerp(p, a.x, b.x),
@@ -298,12 +298,12 @@ public class VerletSurface extends PaintSurface implements Animated {
      */
     public static void render(VerletPhysics2D physics, GL2 gl) {
         for (VerletParticle2D p : physics.particles) {
-            float t = 2 * p.mass();
+            float t = 2.0F * p.mass();
             Draw.colorGrays(gl, 0.3f + 0.7f * Util.tanhFast(p.getSpeed()), 0.7f);
-            Draw.rect(p.x - t / 2, p.y - t / 2, t, t, gl);
+            Draw.rect(p.x - t / 2.0F, p.y - t / 2.0F, t, t, gl);
         }
 
-        gl.glColor3f(0, 0.5f, 0);
+        gl.glColor3f((float) 0, 0.5f, (float) 0);
         for (VerletSpring2D s : physics.springs) {
             VerletParticle2D a = s.a, b = s.b;
             gl.glLineWidth(Math.min(a.mass(), b.mass()));

@@ -28,7 +28,7 @@ public class PacComponent extends JComponent {
 
 
         this.setPreferredSize(new Dimension(350, 400));
-        size = Math.min(Math.round((getWidth()) / (game.maze.width + 3)), Math.round((getHeight()) / (game.maze.height + 5)));
+        size = Math.min(Math.round((float) ((getWidth()) / (game.maze.width + 3))), Math.round((float) ((getHeight()) / (game.maze.height + 5))));
 
     }
 
@@ -37,8 +37,8 @@ public class PacComponent extends JComponent {
 
         int mWidth = game.maze.width;
         int mHeight = game.maze.height;
-        size = Math.min(Math.round((getWidth()) / (mWidth + 0f)),
-                Math.round((getHeight()) / (mHeight + 0f)));
+        size = Math.min(Math.round((float) (getWidth()) / ((float) mWidth + 0f)),
+                Math.round((float) (getHeight()) / ((float) mHeight + 0f)));
         Point offset =
                 new Point(0, 0);
 
@@ -60,9 +60,9 @@ public class PacComponent extends JComponent {
         for (int x = 0; x < mWidth; x++) {
             for (int y = 0; y < mHeight; y++) {
 
-                Rectangle tile = getTileBounds(x, y, offset);
+                Rectangle tile = getTileBounds((double) x, (double) y, offset);
 
-                if (game.maze.tiles[x][y] == 3) {
+                if ((int) game.maze.tiles[x][y] == 3) {
 
                     g2d.setColor(Color.lightGray);
                     g2d.fillRect(tile.x, tile.y + tile.height * 1 / 3, tile.width, tile.height * 1 / 3);
@@ -112,12 +112,12 @@ public class PacComponent extends JComponent {
 
 //            }
 
-            Rectangle fruit = getTileBounds(game.maze.playerStart().x, game.maze.playerStart().y, offset);
+            Rectangle fruit = getTileBounds((double) game.maze.playerStart().x, (double) game.maze.playerStart().y, offset);
             g2d.fillOval(fruit.x, fruit.y, fruit.width, fruit.height);
 
         }
 
-        g2d.setStroke(new BasicStroke(0));
+        g2d.setStroke(new BasicStroke((float) 0));
 
         for (Ghost ghost : game.ghosts) {
 
@@ -125,8 +125,8 @@ public class PacComponent extends JComponent {
 
             for (double[] coords : Ghost.ghostShape) {
 
-                ghostShape.addPoint((int) (coords[0] * size) + offset.x + (int) (ghost.x * size),
-                        (int) (coords[1] * size) + offset.y + (int) (ghost.y * size));
+                ghostShape.addPoint((int) (coords[0] * (double) size) + offset.x + (int) (ghost.x * (double) size),
+                        (int) (coords[1] * (double) size) + offset.y + (int) (ghost.y * (double) size));
 
             }
 
@@ -179,15 +179,15 @@ public class PacComponent extends JComponent {
             }
 
         g2d.setColor(Color.white);
-        g2d.setFont(_font.deriveFont((int) (size * 1.4)));
+        g2d.setFont(_font.deriveFont((int) ((double) size * 1.4)));
         g2d.drawString(game.text, getWidth() / 2 - g2d.getFontMetrics().stringWidth(game.text) / 2, getHeight() / 2);
 
         g2d.setClip(clip);
 
 
         g2d.setColor(Color.white);
-        g2d.setFont(_font.deriveFont((int) (size * 0.7f)));
-        Rectangle r = getTileBounds(0, game.maze.height + 1, offset);
+        g2d.setFont(_font.deriveFont((int) ((float) size * 0.7f)));
+        Rectangle r = getTileBounds((double) 0, (double) (game.maze.height + 1), offset);
 
 
         for (SplashModel s : game.splashes) {
@@ -198,10 +198,10 @@ public class PacComponent extends JComponent {
         for (int i = 0; i < this.splashText.size(); i++) {
 
             Splash s = this.splashText.get(i);
-            g2d.setColor(new Color(s.color.getRed() / 255f, s.color.getGreen() / 255f, s.color.getBlue() / 255f, s.time / (float) SplashModel.TIME));
+            g2d.setColor(new Color((float) s.color.getRed() / 255f, (float) s.color.getGreen() / 255f, (float) s.color.getBlue() / 255f, (float) s.time / (float) SplashModel.TIME));
             g2d.setFont(s.font);
             Rectangle bounds = getTileBounds(s.x, s.y, offset);
-            g2d.drawString(s.text, bounds.x, (int) (bounds.y + Math.sqrt(s.time)));
+            g2d.drawString(s.text, bounds.x, (int) ((double) bounds.y + Math.sqrt((double) s.time)));
             s.update();
 
             if (s.time <= 0)
@@ -215,7 +215,7 @@ public class PacComponent extends JComponent {
 
     Rectangle getTileBounds(double x, double y, Point offset) {
 
-        Rectangle tile = new Rectangle(offset.x + (int) Math.round(x * size), offset.y + (int) Math.round(y * size), size, size);
+        Rectangle tile = new Rectangle(offset.x + (int) Math.round(x * (double) size), offset.y + (int) Math.round(y * (double) size), size, size);
 
         return tile;
 
@@ -270,7 +270,7 @@ public class PacComponent extends JComponent {
 
         public Splash(String text, double x, double y, Color color) {
 
-            this(text, x, y, (int) (PacComponent.this.size * .75), color);
+            this(text, x, y, (int) ((double) PacComponent.this.size * .75), color);
 
         }
 

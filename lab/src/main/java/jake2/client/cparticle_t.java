@@ -35,9 +35,9 @@ public class cparticle_t {
 	public cparticle_t next;
 	public float time;
 
-	public final float[] org = {0, 0, 0}; 
-	public final float[] vel = {0, 0, 0}; 
-	public final float[] accel = {0, 0, 0}; 
+	public final float[] org = {(float) 0, (float) 0, (float) 0};
+	public final float[] vel = {(float) 0, (float) 0, (float) 0};
+	public final float[] accel = {(float) 0, (float) 0, (float) 0};
 
 	public float color;
 	

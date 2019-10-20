@@ -66,8 +66,8 @@ class Sftp implements Runnable {
     private final InputStream in;
     private final OutputStream out;
     private final ChannelSftp c;
-    private final byte[] lf = {0x0a, 0x0d};
-    private final byte[] del = {0x08, 0x20, 0x08};
+    private final byte[] lf = {(byte) 0x0a, (byte) 0x0d};
+    private final byte[] del = {(byte) 0x08, (byte) 0x20, (byte) 0x08};
     private Thread thread = null;
 
     public Sftp(ChannelSftp c, InputStream in, OutputStream out) {
@@ -99,7 +99,7 @@ class Sftp implements Runnable {
                     if (i != 1)
                         continue;
                     
-                    if (buf[0] == 0x08) {
+                    if ((int) buf[0] == 0x08) {
                         if (sb.length() > 0) {
                             sb.setLength(sb.length() - 1);
                             out.write(del, 0, del.length);
@@ -108,11 +108,11 @@ class Sftp implements Runnable {
                         continue;
                     }
 
-                    if (buf[0] == 0x0d) {
+                    if ((int) buf[0] == 0x0d) {
                         out.write(lf, 0, lf.length);
-                    } else if (buf[0] == 0x0a) {
+                    } else if ((int) buf[0] == 0x0a) {
                         out.write(lf, 0, lf.length);
-                    } else if (buf[0] < 0x20 || (buf[0] & 0x80) != 0) {
+                    } else if ((int) buf[0] < 0x20 || ((int) buf[0] & 0x80) != 0) {
                         continue;
                     } else {
                         out.write(buf, 0, i);
@@ -121,13 +121,13 @@ class Sftp implements Runnable {
 
                     for (int j = 0; j < i; j++) {
                         sb.append((char) buf[j]);
-                        if (buf[j] == 0x0d) {
+                        if ((int) buf[j] == 0x0d) {
                             System
                                     .arraycopy(sb.toString().getBytes(), 0, buf, 0, sb.length());
                             i = sb.length();
                             break loop;
                         }
-                        if (buf[j] == 0x0a) {
+                        if ((int) buf[j] == 0x0a) {
                             System
                                     .arraycopy(sb.toString().getBytes(), 0, buf, 0, sb.length());
                             i = sb.length();
@@ -139,20 +139,20 @@ class Sftp implements Runnable {
                     break;
 
                 i--;
-                if (i > 0 && buf[i - 1] == 0x0d)
+                if (i > 0 && (int) buf[i - 1] == 0x0d)
                     i--;
-                if (i > 0 && buf[i - 1] == 0x0a)
+                if (i > 0 && (int) buf[i - 1] == 0x0a)
                     i--;
 
 
                 int s = 0;
                 for (int ii = 0; ii < i; ii++) {
-                    if (buf[ii] == ' ') {
+                    if ((int) buf[ii] == (int) ' ') {
                         if (ii - s > 0) {
                             cmds.addElement(new String(buf, s, ii - s));
                         }
                         while (ii < i) {
-                            if (buf[ii] != ' ')
+                            if ((int) buf[ii] != (int) ' ')
                                 break;
                             ii++;
                         }
@@ -245,13 +245,13 @@ class Sftp implements Runnable {
                     if ("chmod".equals(cmd)) {
                         byte[] bar = ((String) cmds.elementAt(1)).getBytes();
                         for (byte aBar : bar) {
-                            int k = aBar;
-                            if (k < '0' || k > '7') {
+                            int k = (int) aBar;
+                            if (k < (int) '0' || k > (int) '7') {
                                 foo = -1;
                                 break;
                             }
                             foo <<= 3;
-                            foo |= (k - '0');
+                            foo |= (k - (int) '0');
                         }
                         if (foo == -1)
                             continue;
@@ -447,8 +447,8 @@ class Sftp implements Runnable {
     static class MyProgressMonitor implements SftpProgressMonitor {
         final OutputStream out;
         
-        long count = 0;
-        long max = 0;
+        long count = 0L;
+        long max = 0L;
         String src;
         int percent = 0;
 
@@ -459,7 +459,7 @@ class Sftp implements Runnable {
         public void init(int op, String src, String dest, long max) {
             this.max = max;
             this.src = src;
-            count = 0;
+            count = 0L;
             percent = 0;
             status();
             
@@ -475,14 +475,14 @@ class Sftp implements Runnable {
             
             
             
-            percent = (int) (((((float) this.count) / max)) * 100.0);
+            percent = (int) ((double) ((((float) this.count) / (float) max)) * 100.0);
             status();
             return true;
         }
 
         public void end() {
             
-            percent = (int) (((((float) count) / max)) * 100.0);
+            percent = (int) ((double) ((((float) count) / (float) max)) * 100.0);
             status();
             try {
                 out.write(0x0d);
@@ -497,8 +497,8 @@ class Sftp implements Runnable {
                 out.write(0x0d);
 
                 out.write(0x1b);
-                out.write((byte) '[');
-                out.write((byte) 'K');
+                out.write((int) (byte) '[');
+                out.write((int) (byte) 'K');
 
                 out.write((src + ": " + percent + "% " + count + '/' + max).getBytes());
                 out.flush();

@@ -15,7 +15,7 @@ public final class Anom extends IntrinAtomic {
 
 
     private Anom(byte i) {
-        super(i);
+        super((short) i);
         this.bytes = new byte[] {IO.opAndEncoding(ATOM, (byte) 1), i };
     }
 
@@ -31,7 +31,7 @@ public final class Anom extends IntrinAtomic {
 
     @Override
     public String toString() {
-        return '_' +  Integer.toString(i);
+        return '_' +  Integer.toString((int) i);
     }
 
 
@@ -58,11 +58,11 @@ public final class Anom extends IntrinAtomic {
 
     /** intrinsic anom */
     private static final Anom[] the =
-        Util.map(0, Byte.MAX_VALUE, Anom[]::new, i -> new Anom((byte) i));
+        Util.map(0, (int) Byte.MAX_VALUE, Anom[]::new, i -> new Anom((byte) i));
 
     /** intrinsic anoms negated */
     private static final Neg.NegIntrin[] theNeg =
-        Util.map(0, Byte.MAX_VALUE, Neg.NegIntrin[]::new, i -> new Neg.NegIntrin(the[i]));
+        Util.map(0, (int) Byte.MAX_VALUE, Neg.NegIntrin[]::new, i -> new Neg.NegIntrin(the[i]));
 
     static {
         the[0] = null;
@@ -75,6 +75,6 @@ public final class Anom extends IntrinAtomic {
 
     @Override
     public final Term neg() {
-        return theNeg[i];
+        return theNeg[(int) i];
     }
 }

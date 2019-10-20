@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 
 /** https://github.com/patrickfav/base122-java */
 public enum Base122 { ;
-    private static final byte kShortened = 0b111; // Uses the illegal index to signify the last two-byte char encodes <= 7 bits.
+    private static final byte kShortened = (byte) 0b111; // Uses the illegal index to signify the last two-byte char encodes <= 7 bits.
 
     private static final MetalBitSet illegal = MetalBitSet.bits(128);
     private static ImmutableByteByteMap illegalFwd;
@@ -18,14 +18,14 @@ public enum Base122 { ;
     static {
         ByteByteHashMap ILLEGAL_BYTES_fwd = new ByteByteHashMap(16), ILLEGAL_BYTES_rev = new ByteByteHashMap(16);
         for (byte b : new byte[]{
-            0  //null
-            , 10 // newline
-            , 13 // carriage return
-            , 34 // double quote
-            , 38 // ampersand
-            , 92 // backslash
+                (byte) 0  //null
+            , (byte) 10 // newline
+            , (byte) 13 // carriage return
+            , (byte) 34 // double quote
+            , (byte) 38 // ampersand
+            , (byte) 92 // backslash
         }) {
-          illegal.set(b);
+          illegal.set((int) b);
             byte bi = (byte) ILLEGAL_BYTES_fwd.size();
             ILLEGAL_BYTES_fwd.put(b, bi);
             ILLEGAL_BYTES_rev.put(bi, b);
@@ -63,7 +63,7 @@ public enum Base122 { ;
 
                 // Shift, mask, unshift to get first part.
                 byte firstByte = rawData[curIndex];
-                int firstPart = ((0b11111110 >>> curBit) & firstByte) << curBit;
+                int firstPart = ((0b11111110 >>> curBit) & (int) firstByte) << curBit;
                 // Align it to a seven bit chunk.
                 firstPart >>>= 1;
                 // Check if we need to go to the next byte for more bits.
@@ -74,7 +74,7 @@ public enum Base122 { ;
                 // Now we want bits [0..curBit] of the next byte if it exists.
                 if (curIndex >= rawData.length) return (byte) firstPart;
                 byte secondByte = rawData[curIndex];
-                int secondPart = ((0xFF00 >>> curBit) & secondByte) & 0xFF;
+                int secondPart = ((0xFF00 >>> curBit) & (int) secondByte) & 0xFF;
                 // Align it.
                 secondPart >>>= 8 - curBit;
                 return (byte) (firstPart | secondPart);
@@ -87,29 +87,29 @@ public enum Base122 { ;
         String encode() {
             byte sevenBits;
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream(rawData.length + (rawData.length / 8) + 1);
-            while ((sevenBits = next7Bit()) != STOP_BYTE) {
+            while ((int) (sevenBits = next7Bit()) != (int) STOP_BYTE) {
                 int illegalIndex;
                 if ((illegalIndex = isIllegalCharacter(sevenBits)) != -1) {
                     // Since this will be a two-byte character, get the next chunk of seven bits.
                     byte nextSevenBits = next7Bit();
 
                     byte b1 = (byte) 0b11000010;
-                    if (nextSevenBits == STOP_BYTE) {
-                        b1 |= (0b111 & kShortened) << 2;
+                    if ((int) nextSevenBits == (int) STOP_BYTE) {
+                        b1 = (byte) ((int) b1 | (0b111 & (int) kShortened) << 2);
                         nextSevenBits = sevenBits; // Encode these bits after the shortened signifier.
                     } else {
-                        b1 |= (0b111 & illegalIndex) << 2;
+                        b1 = (byte) ((int) b1 | (0b111 & illegalIndex) << 2);
                     }
 
                     // Push first bit onto first byte, remaining 6 onto second.
-                    byte firstBit = (byte) ((nextSevenBits & 0b01000000) > 0 ? 1 : 0);
-                    b1 |= firstBit;
+                    byte firstBit = (byte) (((int) nextSevenBits & 0b01000000) > 0 ? 1 : 0);
+                    b1 = (byte) ((int) b1 | (int) firstBit);
                     byte b2 = (byte) 0b10000000;
-                    b2 |= nextSevenBits & 0b00111111;
-                    outputStream.write(b1);
-                    outputStream.write(b2);
+                    b2 = (byte) ((int) b2 | (int) nextSevenBits & 0b00111111);
+                    outputStream.write((int) b1);
+                    outputStream.write((int) b2);
                 } else {
-                    outputStream.write(sevenBits);
+                    outputStream.write((int) sevenBits);
                 }
             }
             return new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
@@ -119,24 +119,24 @@ public enum Base122 { ;
     }
 
     private static int isIllegalCharacter(byte sevenBits) {
-        return illegal.get(sevenBits) ? illegalFwd.get(sevenBits) : -1;
+        return (int) (illegal.get((int) sevenBits) ? illegalFwd.get(sevenBits) : (byte) -1);
     }
 
     static final class Decoder {
         private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        private byte curByte = 0;
-        private byte bitOfByte = 0;
+        private byte curByte = (byte) 0;
+        private byte bitOfByte = (byte) 0;
 
         void pushNext7(int nextElement) {
             nextElement <<= 1;
             // Align this byte to offset for current byte.
-            curByte |= (nextElement >>> bitOfByte);
-            bitOfByte += 7;
-            if (bitOfByte >= 8) {
-                outputStream.write(curByte);
-                bitOfByte -= 8;
+            curByte = (byte) ((int) curByte | (nextElement >>> (int) bitOfByte));
+            bitOfByte = (byte) ((int) bitOfByte + 7);
+            if ((int) bitOfByte >= 8) {
+                outputStream.write((int) curByte);
+                bitOfByte = (byte) ((int) bitOfByte - 8);
                 // Now, take the remainder, left shift by what has been taken.
-                curByte = (byte) ((nextElement << (7 - bitOfByte)) & 255);
+                curByte = (byte) ((nextElement << (7 - (int) bitOfByte)) & 255);
             }
         }
 
@@ -148,18 +148,18 @@ public enum Base122 { ;
         byte[] decode(byte[] utf8Bytes) {
             for (int i = 0; i < utf8Bytes.length; i++) {
                 // Check if this is a two-byte character.
-                if (utf8Bytes[i] > 127) {
+                if ((int) utf8Bytes[i] > 127) {
                     // Note, the charCodeAt will give the codePoint, thus
                     // 0b110xxxxx 0b10yyyyyy will give => xxxxxyyyyyy
-                    int illegalIndex = (utf8Bytes[i] >>> 8) & 7; // 7 = 0b111.
+                    int illegalIndex = ((int) utf8Bytes[i] >>> 8) & 7; // 7 = 0b111.
                     // We have to first check if this is a shortened two-byte character, i.e. if it only
                     // encodes <= 7 bits.
-                    if (illegalIndex != kShortened) pushNext7(illegalRev.get((byte)illegalIndex));
+                    if (illegalIndex != (int) kShortened) pushNext7((int) illegalRev.get((byte) illegalIndex));
                     // Always push the rest.
-                    pushNext7(utf8Bytes[i] & 127);
+                    pushNext7((int) utf8Bytes[i] & 127);
                 } else {
                     // One byte characters can be pushed directly.
-                    pushNext7(utf8Bytes[i]);
+                    pushNext7((int) utf8Bytes[i]);
                 }
             }
             return outputStream.toByteArray();

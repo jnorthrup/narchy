@@ -168,7 +168,7 @@ public class PatternHow extends CondHow {
                         case "Answer":
                             assert (taskPunc == null && concPunc == null);
                             assert (beliefTruth != null && goalTruth != null);
-                            taskPunc = p -> p == QUESTION || p == QUEST;
+                            taskPunc = p -> (int) p == (int) QUESTION || (int) p == (int) QUEST;
                             concPunc = p -> {
                                 switch (p) {
                                     case QUESTION:
@@ -183,7 +183,7 @@ public class PatternHow extends CondHow {
                         /** belief -> question, goal -> quest */
                         case "Ask":
                             assert (taskPunc == null && concPunc == null);
-                            taskPunc = p -> p == BELIEF || p == GOAL;
+                            taskPunc = p -> (int) p == (int) BELIEF || (int) p == (int) GOAL;
                             concPunc = p -> {
                                 switch (p) {
                                     case BELIEF:
@@ -199,7 +199,7 @@ public class PatternHow extends CondHow {
                         /** re-ask a new question/quest in response to question/quest */
                         case "AskAsk":
                             assert (taskPunc == null && concPunc == null);
-                            taskPunc = p -> p == QUESTION || p == QUEST;
+                            taskPunc = p -> (int) p == (int) QUESTION || (int) p == (int) QUEST;
                             concPunc = p -> {
                                 switch (p) {
                                     case QUESTION:
@@ -268,32 +268,32 @@ public class PatternHow extends CondHow {
 
 
                     case "\"?\"":
-                        taskPunc = t -> t == QUESTION;
+                        taskPunc = t -> (int) t == (int) QUESTION;
                         break;
                     case "\"@\"":
-                        taskPunc = t -> t == QUEST;
+                        taskPunc = t -> (int) t == (int) QUEST;
                         break;
                     case "\".\"":
-                        taskPunc = t -> t == BELIEF;
+                        taskPunc = t -> (int) t == (int) BELIEF;
                         break;
                     case "\"!\"":
-                        taskPunc = t -> t == GOAL;
+                        taskPunc = t -> (int) t == (int) GOAL;
                         break;
 
                     case "\".?\"":
                         assert (taskPunc == null);
-                        taskPunc = t -> t == BELIEF || t == QUESTION;
+                        taskPunc = t -> (int) t == (int) BELIEF || (int) t == (int) QUESTION;
                         break;
 
                     case "\"?@\"":
                         assert (taskPunc == null && concPunc == null);
-                        taskPunc = t -> t == QUESTION || t == QUEST;
+                        taskPunc = t -> (int) t == (int) QUESTION || (int) t == (int) QUEST;
                         concPunc = c -> c;
                         break;
 
                     case "\".!\"":
                         assert (taskPunc == null && concPunc == null);
-                        taskPunc = t -> t == BELIEF || t == GOAL;
+                        taskPunc = t -> (int) t == (int) BELIEF || (int) t == (int) GOAL;
                         concPunc = c -> c;
                         break;
                     case "all":
@@ -543,7 +543,7 @@ public class PatternHow extends CondHow {
                 } else if (beliefTruth == null && goalTruth != null) {
                     concPunc = (p) -> GOAL;
                 } else if (beliefTruth != null && goalTruth != null) {
-                    concPunc = (p) -> p == BELIEF ? BELIEF : GOAL;
+                    concPunc = (p) -> (int) p == (int) BELIEF ? BELIEF : GOAL;
                 }
             } else {
                 if (concQuestion && !concQuest) {
@@ -551,7 +551,7 @@ public class PatternHow extends CondHow {
                 } else if (concQuest && !concQuestion) {
                     concPunc = (p) -> QUEST;
                 } else if (concQuestion && concQuest) {
-                    concPunc = (p) -> (p == QUESTION || p == BELIEF) ? QUESTION : QUEST;
+                    concPunc = (p) -> ((int) p == (int) QUESTION || (int) p == (int) BELIEF) ? QUESTION : QUEST;
                 }
             }
 
@@ -565,7 +565,7 @@ public class PatternHow extends CondHow {
 
         boolean doubleBelief = false;
         if (beliefTruthOp != null) {
-            assert (concPunc.valueOf(BELIEF) == BELIEF || concPunc.valueOf(GOAL) == BELIEF || concPunc.valueOf(QUESTION) == BELIEF || concPunc.valueOf(QUEST) == BELIEF);
+            assert ((int) concPunc.valueOf(BELIEF) == (int) BELIEF || (int) concPunc.valueOf(GOAL) == (int) BELIEF || (int) concPunc.valueOf(QUESTION) == (int) BELIEF || (int) concPunc.valueOf(QUEST) == (int) BELIEF);
             if (!beliefTruthOp.single()) {
                 doubleBelief = true;
             }
@@ -573,7 +573,7 @@ public class PatternHow extends CondHow {
         /** infer necessary double premise for derived goal  */
         boolean doubleGoal = false;
         if (goalTruthOp != null) {
-            assert (concPunc.valueOf(BELIEF) == GOAL || concPunc.valueOf(GOAL) == GOAL || concPunc.valueOf(QUESTION) == GOAL || concPunc.valueOf(QUEST) == GOAL);
+            assert ((int) concPunc.valueOf(BELIEF) == (int) GOAL || (int) concPunc.valueOf(GOAL) == (int) GOAL || (int) concPunc.valueOf(QUESTION) == (int) GOAL || (int) concPunc.valueOf(QUEST) == (int) GOAL);
             if (!goalTruthOp.single()) {
                 doubleGoal = true;
             }
@@ -606,11 +606,11 @@ public class PatternHow extends CondHow {
         if (taskPunc == null) {
             //auto
             if (beliefTruth != null && goalTruth != null) {
-                taskPunc = t -> t == BELIEF || t == GOAL; //accept belief and goal and map to those
+                taskPunc = t -> (int) t == (int) BELIEF || (int) t == (int) GOAL; //accept belief and goal and map to those
             } else if (beliefTruth != null) {
-                taskPunc = t -> t == BELIEF; //accept only belief -> belief
+                taskPunc = t -> (int) t == (int) BELIEF; //accept only belief -> belief
             } else if (goalTruth != null) {
-                taskPunc = t -> t == GOAL; //accept only goal -> goal
+                taskPunc = t -> (int) t == (int) GOAL; //accept only goal -> goal
             }
             //concPunc = t -> t;
         }
@@ -629,11 +629,11 @@ public class PatternHow extends CondHow {
             if (beliefPattern.op() != VAR_PATTERN && !beliefPattern.op().taskable)
                 throw new TermException("double premise may be required and belief pattern is not taskable", beliefPattern);
 
-            boolean forBelief = doubleBelief && tp.get(BELIEF)==BELIEF;
-            boolean forGoal = doubleGoal && tp.get(GOAL)==GOAL;
-            boolean forQ = (doubleBelief && (tp.get(QUESTION)==BELIEF || tp.get(QUEST)==BELIEF))
+            boolean forBelief = doubleBelief && (int) tp.get(BELIEF) == (int) BELIEF;
+            boolean forGoal = doubleGoal && (int) tp.get(GOAL) == (int) GOAL;
+            boolean forQ = (doubleBelief && ((int) tp.get(QUESTION) == (int) BELIEF || (int) tp.get(QUEST) == (int) BELIEF))
                 ||
-                (doubleGoal && (tp.get(QUESTION)==GOAL || tp.get(QUEST)==GOAL));
+                (doubleGoal && ((int) tp.get(QUESTION) == (int) GOAL || (int) tp.get(QUEST) == (int) GOAL));
             if (forBelief || forGoal || forQ) {
                 //pre.add(new S(forBelief, forGoal, forQ));
                 pre.add(new SingleOrDoublePremise(new PuncMap(forBelief, forGoal, forQ, forQ), false));
@@ -777,15 +777,15 @@ public class PatternHow extends CondHow {
         public final float priHeuristic(Derivation d) {
 
             byte punc = truth.punc.get(d.taskPunc);
-            if (punc == 0)
-                return 0;
+            if ((int) punc == 0)
+                return (float) 0;
 
             float puncFactor = d.preAmp(d.punc /*taskPunc*/, punc);
             if (puncFactor < Float.MIN_NORMAL)
                 return 0f; //entirely disabled by deriver
 
             if (!truth.test(d))
-                return 0;
+                return (float) 0;
 
             return puncFactor * d.x.derivePri.prePri(d);
         }

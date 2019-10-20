@@ -25,6 +25,6 @@ package jake2.client;
 
 public class lightstyle_t
 {
-    public float[] rgb = {0, 0, 0};
+    public float[] rgb = {(float) 0, (float) 0, (float) 0};
 	public float white; 
 }

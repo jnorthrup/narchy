@@ -68,7 +68,7 @@ public class MJFavourities extends Dialog implements ActionListener {
 
         if (LstFiles.getSelectedIndex() >= 0) {
             String sItem = LstFiles.getSelectedItem();
-            int whereSlash = sItem.lastIndexOf('/');
+            int whereSlash = sItem.lastIndexOf((int) '/');
             String sPattName = "";
             String sRuleName = "";
             String sGameName = "";
@@ -76,7 +76,7 @@ public class MJFavourities extends Dialog implements ActionListener {
 				sPattName = sItem.substring(whereSlash + 1); 
 
 				sItem = sItem.substring(0, whereSlash);
-                int whereSep = sItem.lastIndexOf('|');
+                int whereSep = sItem.lastIndexOf((int) '|');
 				if (whereSep > 0) {
 					sGameName = sItem.substring(0, whereSep); 
 					sRuleName = sItem.substring(whereSep + 1); 

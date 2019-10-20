@@ -22,7 +22,6 @@ package jcog.tree.rtree;
 
 
 import java.util.function.Function;
-import java.util.stream.IntStream;
 
 /**
  * An N dimensional rectangle or "hypercube" that is a representation of a data entry.
@@ -117,7 +116,7 @@ public interface HyperRegion {
 
 
     default double cost(int dim) {
-        return rangeIfFinite(dim, 0);
+        return rangeIfFinite(dim, (double) 0);
     }
 
     default double rangeIfFinite(int dim, double elseValue) {
@@ -125,7 +124,7 @@ public interface HyperRegion {
         if (!Double.isFinite(r)) {
             return elseValue;
         } else {
-            assert (r >= 0);
+            assert (r >= (double) 0);
             return r;
         }
     }

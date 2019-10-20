@@ -29,15 +29,15 @@ public class Grid1DRelative implements World {
     public Grid1DRelative(int size, int totalTime, double noise, double focusVelocity) {
         this.time = 1;
         this.size = size;
-        double VISUALIZE_PERIOD = Math.pow(10, 4);
+        double VISUALIZE_PERIOD = Math.pow(10.0, 4.0);
         this.ENERGY_COST_FACTOR = 0.01;
         this.MATCH_REWARD_FACTOR = 1.0;
-        this.REWARD_MAGNITUDE = 1;
+        this.REWARD_MAGNITUDE = 1.0;
         this.JUMP_FRACTION = 0.002;
         this.noise = noise;
         this.focusVelocity = focusVelocity;
         
-        this.focusPosition = size/2;
+        this.focusPosition = (double) (size / 2);
         this.totalTime = totalTime;
     }
 
@@ -56,15 +56,15 @@ public class Grid1DRelative implements World {
 
 
         if (Math.random() < JUMP_FRACTION) {
-            focusPosition = size * Math.random();
+            focusPosition = (double) size * Math.random();
         }
         else {            
             focusPosition += focusVelocity;
         }
         
         
-        if (focusPosition > size) focusPosition = 0;
-        if (focusPosition < 0) focusPosition = size-1;
+        if (focusPosition > (double) size) focusPosition = (double) 0;
+        if (focusPosition < (double) 0) focusPosition = (double) (size - 1);
         
         /*        
         # Assign basic_feature_input elements as binary. 
@@ -89,10 +89,10 @@ public class Grid1DRelative implements World {
         if ((action[1] > 0.5) && !(action[0] > 0.5)) {
             position++;
         }
-        if (position < 0) position = size-1;
-        if (position >= size) position = 0;
+        if (position < (double) 0) position = (double) (size - 1);
+        if (position >= (double) size) position = (double) 0;
 
-        double energyCost = 0;
+        double energyCost = (double) 0;
 
         double match = 1.0 / (1.0 + Math.abs(position - focusPosition));
         
@@ -106,12 +106,12 @@ public class Grid1DRelative implements World {
         
         
         
-        double min=0, max=0;
+        double min= (double) 0, max= (double) 0;
         for (int i = 0; i < size; i++) {
             final double exp = 2.0;
             sensor[i] = Math.pow(1.0 / (1.0 + Math.abs( ((double)i)-focusPosition)),exp) + (Math.random()*noise);
             if (sensor[i] < 0.2)
-                sensor[i] = 0;
+                sensor[i] = (double) 0;
             if (i == 0) {
                 min = max = sensor[0];
             }
@@ -121,7 +121,7 @@ public class Grid1DRelative implements World {
             }
          
             
-            sensor[i+size] = (i == position) ? 1.0 : 0.0;
+            sensor[i+size] = ((double) i == position) ? 1.0 : 0.0;
         }
   
                 

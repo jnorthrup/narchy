@@ -118,7 +118,7 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
     }
 
     public static HyperRectFloat cube(float[] center, float r) {
-        if (r == 0)
+        if (r == (float) 0)
             return new HyperRectFloat(center); //point
 
         float[] a = center.clone(), b = center.clone();
@@ -135,9 +135,9 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
         float sigma = 1f;
         int dim = dim();
         for (int i = 0; i < dim; i++) {
-            sigma *= rangeIfFinite(i, 1 /* HACK an infinite dimension can not be compared, so just ignore it */);
+            sigma = (float) ((double) sigma * rangeIfFinite(i, 1.0 /* HACK an infinite dimension can not be compared, so just ignore it */));
         }
-        return sigma;
+        return (double) sigma;
     }
 
     @Override
@@ -169,14 +169,14 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
 
     @Override
     public double center(int dim) {
-        return centerF(dim);
+        return (double) centerF(dim);
     }
 
     public float centerF(int dim) {
         float min = this.min.data[dim];
         float max = this.max.data[dim];
         if ((min == NEGATIVE_INFINITY) && (max == Float.POSITIVE_INFINITY))
-            return 0;
+            return (float) 0;
         if (min == NEGATIVE_INFINITY)
             return max;
         if (max == Float.POSITIVE_INFINITY)
@@ -202,7 +202,7 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
 
     @Override
     public double coord(int dimension, boolean maxOrMin) {
-        return (maxOrMin ? max : min).data[dimension];
+        return (double) (maxOrMin ? max : min).data[dimension];
     }
 
     @Override
@@ -210,10 +210,10 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
         float min = this.min.data[dim];
         float max = this.max.data[dim];
         if (min == max)
-            return 0;
+            return (double) 0;
         if ((min == NEGATIVE_INFINITY) || (max == Float.POSITIVE_INFINITY))
-            return Float.POSITIVE_INFINITY;
-        return (max - min);
+            return (double) Float.POSITIVE_INFINITY;
+        return (double) (max - min);
     }
 
     @Override
@@ -259,7 +259,7 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
         float[] min = new float[d], max = new float[d];
         for (int i = 0; i < x.length; i++) {
             float center = (float) center(i);
-            float rangeHalf = (float)(range(i)*s[i])/2;
+            float rangeHalf = (float)(range(i)* (double) s[i])/ 2.0F;
             min[i] = center - rangeHalf;
             max[i] = center + rangeHalf;
         }

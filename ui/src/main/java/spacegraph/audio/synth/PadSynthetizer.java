@@ -42,7 +42,7 @@ public class PadSynthetizer {
 
     /* Random number generator */
     private static double RND(){
-        return Math.random() / (RAND_MAX+1.0);
+        return Math.random() / ((double) RAND_MAX +1.0);
     }
 
     /* This is the profile of one harmonic
@@ -91,7 +91,7 @@ public class PadSynthetizer {
                 throw new UnsupportedOperationException("dataReal.length and dataImag.length must be equals.");
             }
 
-            if ( !ArithmeticUtils.isPowerOfTwo(dataReal.length) ) {
+            if ( !ArithmeticUtils.isPowerOfTwo((long) dataReal.length) ) {
                 throw new UnsupportedOperationException("The length of data must be a pow of 2.");
             }
 
@@ -118,8 +118,8 @@ public class PadSynthetizer {
 
             // Conjugate again and divide by data length.
             for (int i = 0; i<dataImag.length; i++ ) {
-                dataReal[i] /= dataReal.length;
-                dataImag[i] = -dataImag[i]/dataImag.length;
+                dataReal[i] = dataReal[i] / (double) dataReal.length;
+                dataImag[i] = -dataImag[i]/ (double) dataImag.length;
             }
         }
 
@@ -186,7 +186,7 @@ public class PadSynthetizer {
             while (dataReal.length > mmax) {
 
                 int istep = 2 * mmax;
-                double theta = -Math.PI / mmax;
+                double theta = -Math.PI / (double) mmax;
                 double sinHalfTheta = Math.sin(0.5 * theta);
 
                 // wp = -2.0 * SIN(0.5_8*theta)**2 + i* SIN(theta)
@@ -241,7 +241,7 @@ public class PadSynthetizer {
             if (Math.abs(smp[i])>max) max= Math.abs(smp[i]);
         }
 
-        if (max == 0) {
+        if (max == (double) 0) {
             throw new UnsupportedOperationException("Provided parameters resulted in a zero factor.");
         }
         if (max<1e-5) max=1e-5;
@@ -273,12 +273,12 @@ public class PadSynthetizer {
 
         for (int nh = 1; nh<number_harmonics; nh++){//for each harmonic
             //bandwidth of the current harmonic measured in Hz
-            double bw_Hz = (Math.pow(2.0, bw / 1200.0) - 1.0) * f * nh;
+            double bw_Hz = (Math.pow(2.0, bw / 1200.0) - 1.0) * f * (double) nh;
 
-            double bwi = bw_Hz / (2.0 * samplerate);
-            double fi = f * nh / samplerate;
+            double bwi = bw_Hz / (2.0 * (double) samplerate);
+            double fi = f * (double) nh / (double) samplerate;
             for (i=0;i<N/2;i++){
-                double hprofile = profile((i / (double) N) - fi, bwi);
+                double hprofile = profile(((double) i / (double) N) - fi, bwi);
                 freq_amp[i]+=hprofile*A[nh];
             }
         }
@@ -303,16 +303,16 @@ public class PadSynthetizer {
 
         double[] sample = new double[N];
         for (int note = 0; note<=24; note+=4){
-            double f1=130.81* Math.pow(2,note/12.0);
+            double f1=130.81* Math.pow(2.0, (double) note /12.0);
             System.out.print("Generating frequency: "+(int) f1+" Hz\n");
             for (int i = 1; i<number_harmonics; i++) {
-                A[i]=1.0/i;
+                A[i]=1.0/ (double) i;
                 double formants=
-                    Math.exp(-Math.pow((i*f1-600.0)/150.0,2.0))+
-                    Math.exp(-Math.pow((i*f1-900.0)/250.0,2.0))+
-                    Math.exp(-Math.pow((i*f1-2200.0)/200.0,2.0))+
-                    Math.exp(-Math.pow((i*f1-2600.0)/250.0,2.0))+
-                    Math.exp(-Math.pow((i*f1)/3000.0,2.0))*0.1;
+                    Math.exp(-Math.pow(((double) i *f1-600.0)/150.0,2.0))+
+                    Math.exp(-Math.pow(((double) i *f1-900.0)/250.0,2.0))+
+                    Math.exp(-Math.pow(((double) i *f1-2200.0)/200.0,2.0))+
+                    Math.exp(-Math.pow(((double) i *f1-2600.0)/250.0,2.0))+
+                    Math.exp(-Math.pow(((double) i *f1)/3000.0,2.0))*0.1;
                 A[i]*=formants;
             }
             padsynth_basic_algorithm(N,44100,f1,60.0,number_harmonics,A,sample);

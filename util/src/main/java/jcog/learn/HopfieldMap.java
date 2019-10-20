@@ -9,11 +9,8 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedure;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /** untested */
 public class HopfieldMap<X> {
@@ -51,14 +48,14 @@ public class HopfieldMap<X> {
     }
 
     public HopfieldMap<X> randomWeights(float connectivity) {
-        int edges = (int) Math.ceil(x.length * x.length * connectivity);
+        int edges = (int) Math.ceil((double) (x.length * (float) x.length * connectivity));
         for (int i = 0; i < edges; i++) {
             X a = random();
             X b = random();
             if (a != b) {
                 weight.addNode(a);
                 weight.addNode(b);
-                weight.setEdge(a, b, randomWeight(-1, +1));
+                weight.setEdge(a, b, randomWeight(-1.0F, (float) +1));
             }
         }
         return this;
@@ -99,7 +96,7 @@ public class HopfieldMap<X> {
 
             X a = x[p];
 
-            float[] aOut = {0};
+            float[] aOut = {(float) 0};
             weight.neighborEdges(a, (b, w) -> {
                 float bIn = in.floatValueOf(b);
 
@@ -116,7 +113,7 @@ public class HopfieldMap<X> {
 
     public HopfieldMap<X> get() {
         for (int i = 0; i < x.length; i++) {
-            float[] aOut = {0};
+            float[] aOut = {(float) 0};
 
             X a = x[i];
 
@@ -133,7 +130,7 @@ public class HopfieldMap<X> {
 
     protected static float out(float v) {
         
-        return v >= 0 ? 1 : -1;
+        return (float) (v >= (float) 0 ? 1 : -1);
         
     }
 
@@ -157,11 +154,11 @@ public class HopfieldMap<X> {
                 (v, x) -> x.set(v), m);
         h.randomWeights(0.9f);
         for (int i = 0; i < 16; i++) {
-            h.set(+1, +1, +1, +1, -1, -1, -1, -1).learn(1);
-            h.set(-1, -1, -1, -1, +1, +1, +1, +1).learn(1);
+            h.set((float) +1, (float) +1, (float) +1, (float) +1, -1.0F, -1.0F, -1.0F, -1.0F).learn(1);
+            h.set(-1.0F, -1.0F, -1.0F, -1.0F, (float) +1, (float) +1, (float) +1, (float) +1).learn(1);
         }
 
-        h.set(+1, +1, +1, +1, -1, 0, -1, -1).get();
+        h.set((float) +1, (float) +1, (float) +1, (float) +1, -1.0F, (float) 0, -1.0F, -1.0F).get();
         System.out.println(h);
         System.out.println(h.weight);
 

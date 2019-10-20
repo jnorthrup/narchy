@@ -53,7 +53,7 @@ public class Bullet extends VectorSprite {
         yposition = y;
         angle = a;
 
-        THRUST = 15;
+        THRUST = 15.0;
 
         xspeed = Math.cos(angle) * THRUST;
         yspeed = Math.sin(angle) * THRUST;

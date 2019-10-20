@@ -18,7 +18,7 @@ public class SamplePlayer implements SoundProducer {
 
     @Override
     public boolean read(float[] out, int readRate) {
-        if (Util.equals(sample.rate, readRate, 1f/readRate)) {
+        if (Util.equals(sample.rate, (float) readRate, 1f/ (float) readRate)) {
             return readDirect(out);
         } else {
             return readResampled(out, readRate);
@@ -38,11 +38,11 @@ public class SamplePlayer implements SoundProducer {
     }
 
     private boolean readResampled(float[] out, int readRate) {
-        float step = (sample.rate) / readRate;
-        float pos = this.pos;
+        float step = (sample.rate) / (float) readRate;
+        float pos = (float) this.pos;
 
         float[] in = sample.buf;
-        float end = sample.end - 0.5f;
+        float end = (float) sample.end - 0.5f;
 
         for (int i = 0; i < out.length; i++) {
             if (pos >= end)
@@ -58,8 +58,8 @@ public class SamplePlayer implements SoundProducer {
 
     @Override
     public void skip(int samplesToSkip, int readRate) {
-        float step = sample.rate / readRate;
-        pos += step * samplesToSkip;
+        float step = sample.rate / (float) readRate;
+        pos = (int) ((float) pos + step * (float) samplesToSkip);
     }
 
 }

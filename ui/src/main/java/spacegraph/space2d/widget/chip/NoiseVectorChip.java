@@ -25,7 +25,7 @@ public class NoiseVectorChip extends Splitting {
     private BitmapMatrixView view;
 
     //TODO move to SmoothingChip
-    @Deprecated final FloatRange momentum = new FloatRange(0.05f, 0, 1f);
+    @Deprecated final FloatRange momentum = new FloatRange(0.05f, (float) 0, 1f);
 
     @Nullable Loop updater;
     @Nullable TensorLERP outputVector;
@@ -43,11 +43,11 @@ public class NoiseVectorChip extends Splitting {
 
         updater = Loop.of(this::next);
         R( new Gridding(
-                LabeledPane.the("fps", new FloatSlider(1f, 0, 120).on((f)-> updater.setFPS(f))),
+                LabeledPane.the("fps", new FloatSlider(1f, (float) 0, 120.0F).on((f)-> updater.setFPS(f))),
 
                 LabeledPane.the("size", new IntSlider(size)),
 
-                LabeledPane.the("momentum", new FloatSlider(0.5f, 0, 1).on(momentum::set)),
+                LabeledPane.the("momentum", new FloatSlider(0.5f, (float) 0, 1.0F).on(momentum::set)),
 
                 LabeledPane.the("out", out = new TypedPort<>(Tensor.class))
         ));
@@ -61,7 +61,7 @@ public class NoiseVectorChip extends Splitting {
         if (o == null || o.volume()!=size.intValue()) {
 
             //TODO abstract;
-            TensorFunc oNext = Tensor.randomVectorGauss(size.intValue(), 0, 1, rng);
+            TensorFunc oNext = Tensor.randomVectorGauss(size.intValue(), (float) 0, 1.0F, rng);
 
 
             L(view = new BitmapMatrixView((this.outputVector = new TensorLERP(oNext, momentum)).data));

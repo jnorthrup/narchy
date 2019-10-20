@@ -31,7 +31,7 @@ public class ZeroCross extends UGen {
      */
     public ZeroCross(AudioContext context, float memSizeInMS) {
         super(context, 1, 1);
-        memSize = (int) (context.msToSamples(memSizeInMS) + 1);
+        memSize = (int) (context.msToSamples((double) memSizeInMS) + 1.0);
         cross = new boolean[memSize];
     }
 
@@ -48,7 +48,7 @@ public class ZeroCross extends UGen {
                 cross[index] = false;
             }
 
-            if (bi[i] < 0) {
+            if (bi[i] < (float) 0) {
                 if (above) {
                     cross[index] = true;
                     sum++;
@@ -62,7 +62,7 @@ public class ZeroCross extends UGen {
                 }
             }
 
-            bo[i] = sum;
+            bo[i] = (float) sum;
             index = (index + 1) % memSize;
         }
     }
@@ -73,7 +73,7 @@ public class ZeroCross extends UGen {
      * @return The memory size in milliseconds.
      */
     public float getMemorySize() {
-        return (float) context.samplesToMs(memSize);
+        return (float) context.samplesToMs((double) memSize);
     }
 
 }

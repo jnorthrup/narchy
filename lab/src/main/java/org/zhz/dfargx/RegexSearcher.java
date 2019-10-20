@@ -57,7 +57,7 @@ public class RegexSearcher extends DFA implements Enumeration<MatchedText> {
             int s = is;
             for (int i = startPos; i < len; i++) {
 
-                s = t[s][str.charAt(i)];
+                s = t[s][(int) str.charAt(i)];
 
                 if (s == rs) {
                     break;

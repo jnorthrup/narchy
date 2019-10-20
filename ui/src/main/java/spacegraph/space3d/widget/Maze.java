@@ -27,10 +27,10 @@ public class Maze extends CompoundSpatial {
     @Override
     protected void create(Dynamics3D world) {
 
-        float dx = 1, dy = 1;
-        float y = 0;
+        float dx = 1.0F, dy = 1.0F;
+        float y = (float) 0;
         for (boolean[] c : cells) {
-            float x = 0;
+            float x = (float) 0;
             for (boolean cc : c) {
 
 
@@ -39,7 +39,7 @@ public class Maze extends CompoundSpatial {
 
                     Body3D b = Dynamics3D.newBody(
                             1f, 
-                            new BoxShape(0.9f, 0.9f, 0.9f), new Transform(x, y, 0),
+                            new BoxShape(0.9f, 0.9f, 0.9f), new Transform(x, y, (float) 0),
                             +1, 
                             -1
                     );
@@ -63,7 +63,7 @@ public class Maze extends CompoundSpatial {
 
 
         CollisionShape groundShape = new BoxShape(v(20f, 20f, 10f));
-        Body3D ground = Dynamics3D.newBody(0f, groundShape, new Transform(0,0,-15), +1, -1);
+        Body3D ground = Dynamics3D.newBody(0f, groundShape, new Transform((float) 0, (float) 0, -15.0F), +1, -1);
         ground.setData(this);
         add(ground);
 
@@ -88,8 +88,8 @@ public class Maze extends CompoundSpatial {
 
     public static ConvexHullShape hull() {
         ConvexHullShape c = new ConvexHullShape().add(
-            v(-3,0,0), v(-3, 0, 3), v(-3, -3, 3), v(-3, 3, 3),
-            v(0, 3, 1.5f)
+            v(-3.0F, (float) 0, (float) 0), v(-3.0F, (float) 0, 3.0F), v(-3.0F, -3.0F, 3.0F), v(-3.0F, 3.0F, 3.0F),
+            v((float) 0, 3.0F, 1.5f)
         );
 
         return c;
@@ -105,7 +105,7 @@ public class Maze extends CompoundSpatial {
         int nsscroll = seed;
         v3[] pvert = new v3[countsqp];
 
-        float hdim =  count * .5f;
+        float hdim = (float) count * .5f;
         ByteBuffer ind = ByteBuffer.allocateDirect(countsq * 24);
         ByteBuffer vert = ByteBuffer.allocateDirect(countsqp * 12);
         float zscl = 7.5f;
@@ -113,17 +113,17 @@ public class Maze extends CompoundSpatial {
         int indCount = 0;
         for (int a = 0; a < countsqp; a++) {
             int xi = a % (count + 1);
-            int yi = (int) Math.floor(a / (count + 1f));
-            float xx = xi - hdim;
-            float zz = yi  - hdim;
-            float yy = 0;
-            yy += noise((nsscroll + xx + 1) * nscl, zz * nscl);
-            yy += noise((nsscroll + xx + 1) * nscl, (zz + 1) * nscl);
-            yy += noise((nsscroll + xx - 1) * nscl, zz * nscl);
-            yy += noise((nsscroll + xx) * nscl, (zz - 1) * nscl);
+            int yi = (int) Math.floor((double) (a / ((float) count + 1f)));
+            float xx = (float) xi - hdim;
+            float zz = (float) yi - hdim;
+            float yy = (float) 0;
+            yy += noise(((float) nsscroll + xx + 1.0F) * nscl, zz * nscl);
+            yy += noise(((float) nsscroll + xx + 1.0F) * nscl, (zz + 1.0F) * nscl);
+            yy += noise(((float) nsscroll + xx - 1.0F) * nscl, zz * nscl);
+            yy += noise(((float) nsscroll + xx) * nscl, (zz - 1.0F) * nscl);
             yy *= height * zscl;
             if (xi == 0 || xi == count || yi == 0 || yi == count)
-                yy -= zscl * .2;
+                yy = (float) ((double) yy - (double) zscl * .2);
             pvert[a] = new v3(xx, yy, zz);
 
             vert.putFloat(xx);
@@ -153,7 +153,7 @@ public class Maze extends CompoundSpatial {
     }
 
     private static int irand(int x) {
-        return (int)(Math.random() * x);
+        return (int)(Math.random() * (double) x);
     }
 
         private void build(int x1, int y1, int x2, int y2) {
@@ -195,6 +195,6 @@ public class Maze extends CompoundSpatial {
 
     @Override
     public float radius() {
-        return 1;
+        return 1.0F;
     }
 }

@@ -23,12 +23,12 @@ public abstract class RealTime extends Time {
     private final AtomicLong t = new AtomicLong();
 
 
-    private final long seed = Math.abs(UUID.randomUUID().getLeastSignificantBits() ) & 0xffff0000;
+    private final long seed = Math.abs(UUID.randomUUID().getLeastSignificantBits() ) & 0xffff0000L;
 
     private final AtomicLong nextStamp = new AtomicLong(seed);
 
-    private float dur = 1;
-    private float nextDur = 1;
+    private float dur = 1.0F;
+    private float nextDur = 1.0F;
     private long last;
 
 
@@ -44,7 +44,7 @@ public abstract class RealTime extends Time {
 
 
     public final double secondsToUnits(double s) {
-        return s / unitsToSeconds(1);
+        return s / unitsToSeconds(1.0);
     }
 
     @Override
@@ -57,7 +57,7 @@ public abstract class RealTime extends Time {
     public void reset() {
         long startMS = System.currentTimeMillis();
         this.startNS = System.nanoTime();
-        this.start = relativeToStart ? Math.round((startMS /1000.0) * unitsPerSecond) : 0L;
+        this.start = relativeToStart ? Math.round(((double) startMS /1000.0) * (double) unitsPerSecond) : 0L;
         this.dur = nextDur;
         t.set(this.last = realtime());
     }
@@ -82,7 +82,7 @@ public abstract class RealTime extends Time {
 //    }
 
     private double unitsToSeconds(double l) {
-        return l / unitsPerSecond;
+        return l / (double) unitsPerSecond;
     }
 
     @Override
@@ -97,13 +97,13 @@ public abstract class RealTime extends Time {
 
     @Override
     public Time dur(float d) {
-        assert(d > 0);
+        assert(d > (float) 0);
         this.nextDur = d;
         return this;
     }
 
     private Time durSeconds(double seconds) {
-        return dur(Math.max(1, (int) Math.round(secondsToUnits(seconds))));
+        return dur((float) Math.max(1, (int) Math.round(secondsToUnits(seconds))));
     }
 
     @Override
@@ -118,19 +118,19 @@ public abstract class RealTime extends Time {
 
     @Override
     public String timeString(long time) {
-        return Texts.timeStr(unitsToSeconds(time) * 1.0E9);
+        return Texts.timeStr(unitsToSeconds((double) time) * 1.0E9);
     }
 
     /** ratio of duration to fps */
     public float durSeconds() {
-        return (float) unitsToSeconds(dur);
+        return (float) unitsToSeconds((double) dur);
     }
     public long durNS() {
-        return Math.round(1.0E9 * durSeconds());
+        return Math.round(1.0E9 * (double) durSeconds());
     }
 
     public double secondsPerUnit() {
-        return (float) unitsToSeconds(1);
+        return (double) (float) unitsToSeconds(1.0);
     }
 
 //    /** get real-time frames per duration */
@@ -149,7 +149,7 @@ public abstract class RealTime extends Time {
     @Override
     public long toCycles(Quantity q) {
         double s = TimeQuantities.toTimeUnitSeconds(q).doubleValue(null);
-        return Math.round(s * unitsPerSecond);
+        return Math.round(s * (double) unitsPerSecond);
     }
 
 
@@ -168,7 +168,7 @@ public abstract class RealTime extends Time {
 
         @Override
         protected long realtime() {
-            return start + (System.nanoTime() - startNS) / (100 * 1_000_000);
+            return start + (System.nanoTime() - startNS) / (long) (100 * 1_000_000);
         }
 
     }
@@ -188,7 +188,7 @@ public abstract class RealTime extends Time {
 
         @Override
         protected long realtime() {
-            return start + (System.nanoTime() - startNS) / (10 * 1_000_000);
+            return start + (System.nanoTime() - startNS) / (long) (10 * 1_000_000);
         }
 
     }
@@ -208,7 +208,7 @@ public abstract class RealTime extends Time {
 
         @Override
         protected long realtime() {
-            return start + (System.nanoTime() - startNS) / (1_000_000);
+            return start + (System.nanoTime() - startNS) / 1_000_000L;
         }
 
     }

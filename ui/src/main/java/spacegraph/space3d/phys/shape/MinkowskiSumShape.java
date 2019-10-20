@@ -91,7 +91,7 @@ public class MinkowskiSumShape extends ConvexInternalShape {
 	@Override
 	public void calculateLocalInertia(float mass, v3 inertia) {
 		assert (false);
-		inertia.set(0, 0, 0);
+		inertia.set((float) 0, (float) 0, (float) 0);
 	}
 
 	@Override

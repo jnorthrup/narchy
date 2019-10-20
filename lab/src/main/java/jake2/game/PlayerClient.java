@@ -28,7 +28,6 @@ import jake2.util.Lib;
 import jake2.util.Math3D;
 
 import java.util.Arrays;
-import java.util.stream.Stream;
 
 public class PlayerClient {
 
@@ -51,13 +50,13 @@ public class PlayerClient {
     
             self.s.modelindex2 = 0; 
     
-            self.s.angles[0] = 0;
-            self.s.angles[2] = 0;
+            self.s.angles[0] = (float) 0;
+            self.s.angles[2] = (float) 0;
     
             self.s.sound = 0;
             self.client.weapon_sound = 0;
     
-            self.maxs[2] = -8;
+            self.maxs[2] = -8.0F;
     
             
             self.svflags |= Defines.SVF_DEADMONSTER;
@@ -69,14 +68,14 @@ public class PlayerClient {
                 self.client.ps.pmove.pm_type = Defines.PM_DEAD;
                 ClientObituary(self, inflictor, attacker);
                 PlayerClient.TossClientWeapon(self);
-                if (GameBase.deathmatch.value != 0)
+                if (GameBase.deathmatch.value != (float) 0)
                     Cmd.Help_f(self); 
     
                 
                 
                 
                 for (n = 0; n < GameBase.game.num_items; n++) {
-                    if (GameBase.coop.value != 0
+                    if (GameBase.coop.value != (float) 0
                             && (GameItemList.itemlist[n].flags & Defines.IT_KEY) != 0)
                         self.client.resp.coop_respawn.inventory[n] = self.client.pers.inventory[n];
                     self.client.pers.inventory[n] = 0;
@@ -84,17 +83,17 @@ public class PlayerClient {
             }
     
             
-            self.client.quad_framenum = 0;
-            self.client.invincible_framenum = 0;
-            self.client.breather_framenum = 0;
-            self.client.enviro_framenum = 0;
+            self.client.quad_framenum = (float) 0;
+            self.client.invincible_framenum = (float) 0;
+            self.client.breather_framenum = (float) 0;
+            self.client.enviro_framenum = (float) 0;
             self.flags &= ~Defines.FL_POWER_ARMOR;
     
             if (self.health < -40) { 
                 game_import_t
                         .sound(self, Defines.CHAN_BODY, game_import_t
-                                .soundindex("misc/udeath.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                                .soundindex("misc/udeath.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
                 for (n = 0; n < 4; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/sm_meat/tris.md2",
                             damage, Defines.GIB_ORGANIC);
@@ -107,7 +106,7 @@ public class PlayerClient {
                     player_die_i = (player_die_i + 1) % 3;
                     
                     self.client.anim_priority = Defines.ANIM_DEATH;
-                    if ((self.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
+                    if (((int) self.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
                         self.s.frame = M_Player.FRAME_crdeath1 - 1;
                         self.client.anim_end = M_Player.FRAME_crdeath5;
                     } else
@@ -127,8 +126,8 @@ public class PlayerClient {
                         }
     
                     game_import_t.sound(self, Defines.CHAN_VOICE, game_import_t
-                            .soundindex("*death" + ((Lib.rand() % 4) + 1)
-                                    + ".wav"), 1, Defines.ATTN_NORM, 0);
+                            .soundindex("*death" + (((int) Lib.rand() % 4) + 1)
+                                    + ".wav"), 1.0F, (float) Defines.ATTN_NORM, (float) 0);
                 }
             }
     
@@ -143,7 +142,7 @@ public class PlayerClient {
         @Override
         public boolean think(edict_t self) {
 
-            float[] d = { 0, 0, 0 };
+            float[] d = {(float) 0, (float) 0, (float) 0};
 
             edict_t spot = null;
             EdictIterator es = null;
@@ -160,7 +159,7 @@ public class PlayerClient {
                 if (spot.targetname == null)
                     continue;
                 Math3D.VectorSubtract(self.s.origin, spot.s.origin, d);
-                if (Math3D.VectorLength(d) < 384) {
+                if (Math3D.VectorLength(d) < 384.0F) {
                     if ((self.targetname == null)
                             || Lib.Q_stricmp(self.targetname, spot.targetname) != 0) {
                         
@@ -183,27 +182,27 @@ public class PlayerClient {
             if (Lib.Q_stricmp(GameBase.level.mapname, "security") == 0) {
                 edict_t spot = GameUtil.G_Spawn();
                 spot.classname = "info_player_coop";
-                spot.s.origin[0] = 188 - 64;
-                spot.s.origin[1] = -164;
-                spot.s.origin[2] = 80;
+                spot.s.origin[0] = (float) (188 - 64);
+                spot.s.origin[1] = -164.0F;
+                spot.s.origin[2] = 80.0F;
                 spot.targetname = "jail3";
-                spot.s.angles[1] = 90;
+                spot.s.angles[1] = 90.0F;
     
                 spot = GameUtil.G_Spawn();
                 spot.classname = "info_player_coop";
-                spot.s.origin[0] = 188 + 64;
-                spot.s.origin[1] = -164;
-                spot.s.origin[2] = 80;
+                spot.s.origin[0] = (float) (188 + 64);
+                spot.s.origin[1] = -164.0F;
+                spot.s.origin[2] = 80.0F;
                 spot.targetname = "jail3";
-                spot.s.angles[1] = 90;
+                spot.s.angles[1] = 90.0F;
     
                 spot = GameUtil.G_Spawn();
                 spot.classname = "info_player_coop";
-                spot.s.origin[0] = 188 + 128;
-                spot.s.origin[1] = -164;
-                spot.s.origin[2] = 80;
+                spot.s.origin[0] = (float) (188 + 128);
+                spot.s.origin[1] = -164.0F;
+                spot.s.origin[2] = 80.0F;
                 spot.targetname = "jail3";
-                spot.s.angles[1] = 90;
+                spot.s.angles[1] = 90.0F;
             }
             return true;
         }
@@ -225,11 +224,11 @@ public class PlayerClient {
 
             if (self.health < -40) {
                 game_import_t.sound(self, Defines.CHAN_BODY,
-                		game_import_t.soundindex("misc/udeath.wav"), 1, Defines.ATTN_NORM, 0);
+                		game_import_t.soundindex("misc/udeath.wav"), 1.0F, (float) Defines.ATTN_NORM, (float) 0);
                 for (int n = 0; n < 4; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/sm_meat/tris.md2", damage,
                             Defines.GIB_ORGANIC);
-                self.s.origin[2] -= 48;
+                self.s.origin[2] -= 48.0F;
                 GameMisc.ThrowClientHead(self, damage);
                 self.takedamage = Defines.DAMAGE_NO;
             }
@@ -257,7 +256,7 @@ public class PlayerClient {
      * starting point for a level.
      */
     public static void SP_info_player_start(edict_t self) {
-        if (GameBase.coop.value == 0)
+        if (GameBase.coop.value == (float) 0)
             return;
         if (Lib.Q_stricmp(GameBase.level.mapname, "security") == 0) {
             
@@ -271,7 +270,7 @@ public class PlayerClient {
      * spawning position for deathmatch games.
      */
     public static void SP_info_player_deathmatch(edict_t self) {
-        if (0 == GameBase.deathmatch.value) {
+        if ((float) 0 == GameBase.deathmatch.value) {
             GameUtil.G_FreeEdict(self);
             return;
         }
@@ -284,7 +283,7 @@ public class PlayerClient {
      */
 
     public static void SP_info_player_coop(edict_t self) {
-        if (0 == GameBase.coop.value) {
+        if ((float) 0 == GameBase.coop.value) {
             GameUtil.G_FreeEdict(self);
             return;
         }
@@ -315,10 +314,10 @@ public class PlayerClient {
     public static void ClientObituary(edict_t self, edict_t inflictor,
             edict_t attacker) {
 
-        if (GameBase.coop.value != 0 && attacker.client != null)
+        if (GameBase.coop.value != (float) 0 && attacker.client != null)
             GameBase.meansOfDeath |= Defines.MOD_FRIENDLY_FIRE;
 
-        if (GameBase.deathmatch.value != 0 || GameBase.coop.value != 0) {
+        if (GameBase.deathmatch.value != (float) 0 || GameBase.coop.value != (float) 0) {
             boolean ff = (GameBase.meansOfDeath & Defines.MOD_FRIENDLY_FIRE) != 0;
             int mod = GameBase.meansOfDeath & ~Defines.MOD_FRIENDLY_FIRE;
             String message = null;
@@ -399,7 +398,7 @@ public class PlayerClient {
             if (message != null) {
                 game_import_t.bprintf(Defines.PRINT_MEDIUM,
                         self.client.pers.netname + ' ' + message + ".\n");
-                if (GameBase.deathmatch.value != 0)
+                if (GameBase.deathmatch.value != (float) 0)
                     self.client.resp.score--;
                 self.enemy = null;
                 return;
@@ -483,7 +482,7 @@ public class PlayerClient {
                             self.client.pers.netname + ' ' + message + ' '
                                     + attacker.client.pers.netname + ' '
                                     + message2 + '\n');
-                    if (GameBase.deathmatch.value != 0) {
+                    if (GameBase.deathmatch.value != (float) 0) {
                         if (ff)
                             attacker.client.resp.score--;
                         else
@@ -496,7 +495,7 @@ public class PlayerClient {
 
         game_import_t.bprintf(Defines.PRINT_MEDIUM, self.client.pers.netname
                 + " died.\n");
-        if (GameBase.deathmatch.value != 0)
+        if (GameBase.deathmatch.value != (float) 0)
             self.client.resp.score--;
     }
 
@@ -557,7 +556,7 @@ public class PlayerClient {
             GameBase.game.clients[i].pers.savedFlags = (ent.flags & (Defines.FL_GODMODE
                     | Defines.FL_NOTARGET | Defines.FL_POWER_ARMOR));
 
-            if (GameBase.coop.value != 0)
+            if (GameBase.coop.value != (float) 0)
                 GameBase.game.clients[i].pers.score = ent.client.resp.score;
         }
     }
@@ -566,7 +565,7 @@ public class PlayerClient {
         ent.health = ent.client.pers.health;
         ent.max_health = ent.client.pers.max_health;
         ent.flags |= ent.client.pers.savedFlags;
-        if (GameBase.coop.value != 0)
+        if (GameBase.coop.value != (float) 0)
             ent.client.resp.score = ent.client.pers.score;
     }
 
@@ -574,11 +573,11 @@ public class PlayerClient {
      * Returns the distance to the nearest player from the given spot.
      */
     static float PlayersRangeFromSpot(edict_t spot) {
-        float[] v = { 0, 0, 0 };
+        float[] v = {(float) 0, (float) 0, (float) 0};
 
-        float bestplayerdistance = 9999999;
+        float bestplayerdistance = 9999999.0F;
 
-        for (int n = 1; n <= GameBase.maxclients.value; n++) {
+        for (int n = 1; (float) n <= GameBase.maxclients.value; n++) {
             edict_t player = GameBase.g_edicts[n];
 
             if (!player.inuse)
@@ -603,7 +602,7 @@ public class PlayerClient {
     public static edict_t SelectRandomDeathmatchSpawnPoint() {
         float range2;
 
-        float range1 = range2 = 99999;
+        float range1 = range2 = 99999.0F;
         edict_t spot2;
         edict_t spot1 = spot2 = null;
 
@@ -633,7 +632,7 @@ public class PlayerClient {
         } else
             count -= 2;
 
-        int selection = Lib.rand() % count;
+        int selection = (int) Lib.rand() % count;
 
         spot = null;
         es = null;
@@ -659,7 +658,7 @@ public class PlayerClient {
 
         edict_t spot = null;
         edict_t bestspot = null;
-        float bestdistance = 0;
+        float bestdistance = (float) 0;
 
         EdictIterator es = null;
         while ((es = GameBase.G_Find(es, GameBase.findByClass,
@@ -740,9 +739,9 @@ public class PlayerClient {
             float[] angles) {
         edict_t spot = null;
 
-        if (GameBase.deathmatch.value != 0)
+        if (GameBase.deathmatch.value != (float) 0)
             spot = SelectDeathmatchSpawnPoint();
-        else if (GameBase.coop.value != 0)
+        else if (GameBase.coop.value != (float) 0)
             spot = SelectCoopSpawnPoint(ent);
 
         if (null == spot) {
@@ -783,7 +782,7 @@ public class PlayerClient {
         }
 
         Math3D.VectorCopy(spot.s.origin, origin);
-        origin[2] += 9;
+        origin[2] += 9.0F;
         Math3D.VectorCopy(spot.s.angles, angles);
     }
 
@@ -832,7 +831,7 @@ public class PlayerClient {
     }
 
     public static void respawn(edict_t self) {
-        if (GameBase.deathmatch.value != 0 || GameBase.coop.value != 0) {
+        if (GameBase.deathmatch.value != (float) 0 || GameBase.coop.value != (float) 0) {
             
             if (self.movetype != Defines.MOVETYPE_NOCLIP)
                 CopyToBodyQue(self);
@@ -843,8 +842,8 @@ public class PlayerClient {
             self.s.event = Defines.EV_PLAYER_TELEPORT;
 
             
-            self.client.ps.pmove.pm_flags = pmove_t.PMF_TIME_TELEPORT;
-            self.client.ps.pmove.pm_time = 14;
+            self.client.ps.pmove.pm_flags = (byte) pmove_t.PMF_TIME_TELEPORT;
+            self.client.ps.pmove.pm_time = (byte) 14;
 
             self.client.respawn_time = GameBase.level.time;
 
@@ -883,12 +882,12 @@ public class PlayerClient {
 
             int numspec;
             int i;
-            for (i = 1, numspec = 0; i <= GameBase.maxclients.value; i++)
+            for (i = 1, numspec = 0; (float) i <= GameBase.maxclients.value; i++)
                 if (GameBase.g_edicts[i].inuse
                         && GameBase.g_edicts[i].client.pers.spectator)
                     numspec++;
 
-            if (numspec >= GameBase.maxspectators.value) {
+            if ((float) numspec >= GameBase.maxspectators.value) {
                 game_import_t.cprintf(ent, Defines.PRINT_HIGH,
                         "Server spectator limit is full.");
                 ent.client.pers.spectator = false;
@@ -931,8 +930,8 @@ public class PlayerClient {
             game_import_t.multicast(ent.s.origin, Defines.MULTICAST_PVS);
 
             
-            ent.client.ps.pmove.pm_flags = pmove_t.PMF_TIME_TELEPORT;
-            ent.client.ps.pmove.pm_time = 14;
+            ent.client.ps.pmove.pm_flags = (byte) pmove_t.PMF_TIME_TELEPORT;
+            ent.client.ps.pmove.pm_time = (byte) 14;
         }
 
         ent.client.respawn_time = GameBase.level.time;
@@ -949,7 +948,7 @@ public class PlayerClient {
      * Called when a player connects to a server or respawns in a deathmatch.
      */
     public static void PutClientInServer(edict_t ent) {
-        float[] spawn_origin = { 0, 0, 0 }, spawn_angles = { 0, 0, 0 };
+        float[] spawn_origin = {(float) 0, (float) 0, (float) 0}, spawn_angles = {(float) 0, (float) 0, (float) 0};
         client_persistant_t saved = new client_persistant_t();
         client_respawn_t resp = new client_respawn_t();
 
@@ -962,7 +961,7 @@ public class PlayerClient {
         gclient_t client = ent.client;
 
         
-        if (GameBase.deathmatch.value != 0) {           
+        if (GameBase.deathmatch.value != (float) 0) {
 
             resp.set(client.resp);
             String userinfo = client.pers.userinfo;
@@ -970,7 +969,7 @@ public class PlayerClient {
             
             userinfo = ClientUserinfoChanged(ent, userinfo);
             
-        } else if (GameBase.coop.value != 0) {
+        } else if (GameBase.coop.value != (float) 0) {
 
             resp.set(client.resp);
 
@@ -1009,7 +1008,7 @@ public class PlayerClient {
         ent.mass = 200;
         ent.solid = Defines.SOLID_BBOX;
         ent.deadflag = Defines.DEAD_NO;
-        ent.air_finished = GameBase.level.time + 12;
+        ent.air_finished = GameBase.level.time + 12.0F;
         ent.clipmask = Defines.MASK_PLAYERSOLID;
         ent.model = "players/male/tris.md2";
         ent.pain = PlayerClient.player_pain;
@@ -1019,29 +1018,29 @@ public class PlayerClient {
         ent.flags &= ~Defines.FL_NO_KNOCKBACK;
         ent.svflags &= ~Defines.SVF_DEADMONSTER;
 
-        float[] mins = {-16, -16, -24};
+        float[] mins = {-16.0F, -16.0F, -24.0F};
         Math3D.VectorCopy(mins, ent.mins);
-        float[] maxs = {16, 16, 32};
+        float[] maxs = {16.0F, 16.0F, 32.0F};
         Math3D.VectorCopy(maxs, ent.maxs);
         Math3D.VectorClear(ent.velocity);
 
         
         ent.client.ps.clear();     
 
-        client.ps.pmove.origin[0] = (short) (spawn_origin[0] * 8);
-        client.ps.pmove.origin[1] = (short) (spawn_origin[1] * 8);
-        client.ps.pmove.origin[2] = (short) (spawn_origin[2] * 8);
+        client.ps.pmove.origin[0] = (short) (spawn_origin[0] * 8.0F);
+        client.ps.pmove.origin[1] = (short) (spawn_origin[1] * 8.0F);
+        client.ps.pmove.origin[2] = (short) (spawn_origin[2] * 8.0F);
 
-        if (GameBase.deathmatch.value != 0
+        if (GameBase.deathmatch.value != (float) 0
                 && 0 != ((int) GameBase.dmflags.value & Defines.DF_FIXED_FOV)) {
-            client.ps.fov = 90;
+            client.ps.fov = 90.0F;
         } else {
-            client.ps.fov = Lib.atoi(Info.Info_ValueForKey(
+            client.ps.fov = (float) Lib.atoi(Info.Info_ValueForKey(
                     client.pers.userinfo, "fov"));
-            if (client.ps.fov < 1)
-                client.ps.fov = 90;
-            else if (client.ps.fov > 160)
-                client.ps.fov = 160;
+            if (client.ps.fov < 1.0F)
+                client.ps.fov = 90.0F;
+            else if (client.ps.fov > 160.0F)
+                client.ps.fov = 160.0F;
         }
 
         client.ps.gunindex = game_import_t
@@ -1057,7 +1056,7 @@ public class PlayerClient {
 
         ent.s.frame = 0;
         Math3D.VectorCopy(spawn_origin, ent.s.origin);
-        ent.s.origin[2] += 1; 
+        ent.s.origin[2] += 1.0F;
         Math3D.VectorCopy(ent.s.origin, ent.s.old_origin);
 
         
@@ -1066,9 +1065,9 @@ public class PlayerClient {
                     .ANGLE2SHORT(spawn_angles[i] - client.resp.cmd_angles[i]);
         }
 
-        ent.s.angles[Defines.PITCH] = 0;
+        ent.s.angles[Defines.PITCH] = (float) 0;
         ent.s.angles[Defines.YAW] = spawn_angles[Defines.YAW];
-        ent.s.angles[Defines.ROLL] = 0;
+        ent.s.angles[Defines.ROLL] = (float) 0;
         Math3D.VectorCopy(ent.s.angles, client.ps.viewangles);
         Math3D.VectorCopy(ent.s.angles, client.v_angle);
 
@@ -1109,7 +1108,7 @@ public class PlayerClient {
         
         PutClientInServer(ent);
 
-        if (GameBase.level.intermissiontime != 0) {
+        if (GameBase.level.intermissiontime != (float) 0) {
             PlayerHud.MoveClientToIntermission(ent);
         } else {
             
@@ -1136,7 +1135,7 @@ public class PlayerClient {
 
         ent.client = GameBase.game.clients[ent.index - 1];
 
-        if (GameBase.deathmatch.value != 0) {
+        if (GameBase.deathmatch.value != (float) 0) {
             ClientBeginDeathmatch(ent);
             return;
         }
@@ -1161,7 +1160,7 @@ public class PlayerClient {
             PutClientInServer(ent);
         }
 
-        if (GameBase.level.intermissiontime != 0) {
+        if (GameBase.level.intermissiontime != (float) 0) {
             PlayerHud.MoveClientToIntermission(ent);
         } else {
             
@@ -1202,7 +1201,7 @@ public class PlayerClient {
         
         s = Info.Info_ValueForKey(userinfo, "spectator");
         
-        ent.client.pers.spectator = GameBase.deathmatch.value != 0 && !"0".equals(s);
+        ent.client.pers.spectator = GameBase.deathmatch.value != (float) 0 && !"0".equals(s);
 
         
         s = Info.Info_ValueForKey(userinfo, "skin");
@@ -1214,16 +1213,16 @@ public class PlayerClient {
                 ent.client.pers.netname + '\\' + s);
 
         
-        if (GameBase.deathmatch.value != 0
+        if (GameBase.deathmatch.value != (float) 0
                 && 0 != ((int) GameBase.dmflags.value & Defines.DF_FIXED_FOV)) {
-            ent.client.ps.fov = 90;
+            ent.client.ps.fov = 90.0F;
         } else {
-            ent.client.ps.fov = Lib
+            ent.client.ps.fov = (float) Lib
                     .atoi(Info.Info_ValueForKey(userinfo, "fov"));
-            if (ent.client.ps.fov < 1)
-                ent.client.ps.fov = 90;
-            else if (ent.client.ps.fov > 160)
-                ent.client.ps.fov = 160;
+            if (ent.client.ps.fov < 1.0F)
+                ent.client.ps.fov = 90.0F;
+            else if (ent.client.ps.fov > 160.0F)
+                ent.client.ps.fov = 160.0F;
         }
 
         
@@ -1256,7 +1255,7 @@ public class PlayerClient {
 
         
         value = Info.Info_ValueForKey(userinfo, "spectator");
-        if (GameBase.deathmatch.value != 0 && value.length() != 0
+        if (GameBase.deathmatch.value != (float) 0 && value.length() != 0
                 && 0 != Lib.strcmp(value, "0")) {
 
             if (!passwdOK(GameBase.spectator_password.string, value)) {
@@ -1267,12 +1266,12 @@ public class PlayerClient {
 
 
             int numspec;
-            for (int i = numspec = 0; i < GameBase.maxclients.value; i++)
+            for (int i = numspec = 0; (float) i < GameBase.maxclients.value; i++)
                 if (GameBase.g_edicts[i + 1].inuse
                         && GameBase.g_edicts[i + 1].client.pers.spectator)
                     numspec++;
 
-            if (numspec >= GameBase.maxspectators.value) {
+            if ((float) numspec >= GameBase.maxspectators.value) {
                 userinfo = Info.Info_SetValueForKey(userinfo, "rejmsg",
                         "Server spectator limit is full.");
                 return false;
@@ -1366,11 +1365,11 @@ public class PlayerClient {
         GameBase.level.current_entity = ent;
         gclient_t client = ent.client;
 
-        if (GameBase.level.intermissiontime != 0) {
+        if (GameBase.level.intermissiontime != (float) 0) {
             client.ps.pmove.pm_type = Defines.PM_FREEZE;
             
             if (GameBase.level.time > GameBase.level.intermissiontime + 5.0f
-                    && 0 != (ucmd.buttons & Defines.BUTTON_ANY))
+                    && 0 != ((int) ucmd.buttons & Defines.BUTTON_ANY))
                 GameBase.level.exitintermission = true;
             return;
         }
@@ -1381,9 +1380,9 @@ public class PlayerClient {
         edict_t other;
         if (ent.client.chase_target != null) {
 
-            client.resp.cmd_angles[0] = Math3D.SHORT2ANGLE(ucmd.angles[0]);
-            client.resp.cmd_angles[1] = Math3D.SHORT2ANGLE(ucmd.angles[1]);
-            client.resp.cmd_angles[2] = Math3D.SHORT2ANGLE(ucmd.angles[2]);
+            client.resp.cmd_angles[0] = Math3D.SHORT2ANGLE((int) ucmd.angles[0]);
+            client.resp.cmd_angles[1] = Math3D.SHORT2ANGLE((int) ucmd.angles[1]);
+            client.resp.cmd_angles[2] = Math3D.SHORT2ANGLE((int) ucmd.angles[2]);
 
         } else {
 
@@ -1403,8 +1402,8 @@ public class PlayerClient {
             pm.s.set(client.ps.pmove);
 
             for (i = 0; i < 3; i++) {
-                pm.s.origin[i] = (short) (ent.s.origin[i] * 8);
-                pm.s.velocity[i] = (short) (ent.velocity[i] * 8);
+                pm.s.origin[i] = (short) (ent.s.origin[i] * 8.0F);
+                pm.s.velocity[i] = (short) (ent.velocity[i] * 8.0F);
             }
 
             if (client.old_pmove.equals(pm.s)) {
@@ -1426,21 +1425,21 @@ public class PlayerClient {
             client.old_pmove.set(pm.s);
 
             for (i = 0; i < 3; i++) {
-                ent.s.origin[i] = pm.s.origin[i] * 0.125f;
-                ent.velocity[i] = pm.s.velocity[i] * 0.125f;
+                ent.s.origin[i] = (float) pm.s.origin[i] * 0.125f;
+                ent.velocity[i] = (float) pm.s.velocity[i] * 0.125f;
             }
 
             Math3D.VectorCopy(pm.mins, ent.mins);
             Math3D.VectorCopy(pm.maxs, ent.maxs);
 
-            client.resp.cmd_angles[0] = Math3D.SHORT2ANGLE(ucmd.angles[0]);
-            client.resp.cmd_angles[1] = Math3D.SHORT2ANGLE(ucmd.angles[1]);
-            client.resp.cmd_angles[2] = Math3D.SHORT2ANGLE(ucmd.angles[2]);
+            client.resp.cmd_angles[0] = Math3D.SHORT2ANGLE((int) ucmd.angles[0]);
+            client.resp.cmd_angles[1] = Math3D.SHORT2ANGLE((int) ucmd.angles[1]);
+            client.resp.cmd_angles[2] = Math3D.SHORT2ANGLE((int) ucmd.angles[2]);
 
             if (ent.groundentity != null && null == pm.groundentity
-                    && (pm.cmd.upmove >= 10) && (pm.waterlevel == 0)) {
+                    && ((int) pm.cmd.upmove >= 10) && (pm.waterlevel == 0)) {
                 game_import_t.sound(ent, Defines.CHAN_VOICE, game_import_t
-                        .soundindex("*jump1.wav"), 1, Defines.ATTN_NORM, 0);
+                        .soundindex("*jump1.wav"), 1.0F, (float) Defines.ATTN_NORM, (float) 0);
                 PlayerWeapon.PlayerNoise(ent, ent.s.origin, Defines.PNOISE_SELF);
             }
 
@@ -1452,8 +1451,8 @@ public class PlayerClient {
                 ent.groundentity_linkcount = pm.groundentity.linkcount;
 
             if (ent.deadflag != 0) {
-                client.ps.viewangles[Defines.ROLL] = 40;
-                client.ps.viewangles[Defines.PITCH] = -15;
+                client.ps.viewangles[Defines.ROLL] = 40.0F;
+                client.ps.viewangles[Defines.PITCH] = -15.0F;
                 client.ps.viewangles[Defines.YAW] = client.killer_yaw;
             } else {
                 Math3D.VectorCopy(pm.viewangles, client.v_angle);
@@ -1482,12 +1481,12 @@ public class PlayerClient {
         }
 
         client.oldbuttons = client.buttons;
-        client.buttons = ucmd.buttons;
+        client.buttons = (int) ucmd.buttons;
         client.latched_buttons |= client.buttons & ~client.oldbuttons;
 
         
         
-        ent.light_level = ucmd.lightlevel;
+        ent.light_level = (int) ucmd.lightlevel;
 
         
         if ((client.latched_buttons & Defines.BUTTON_ATTACK) != 0) {
@@ -1497,7 +1496,7 @@ public class PlayerClient {
 
                 if (client.chase_target != null) {
                     client.chase_target = null;
-                    client.ps.pmove.pm_flags &= ~pmove_t.PMF_NO_PREDICTION;
+                    client.ps.pmove.pm_flags = (byte) ((int) client.ps.pmove.pm_flags & ~pmove_t.PMF_NO_PREDICTION);
                 } else
                     GameChase.GetChaseTarget(ent);
 
@@ -1508,20 +1507,20 @@ public class PlayerClient {
         }
 
         if (client.resp.spectator) {
-            if (ucmd.upmove >= 10) {
-                if (0 == (client.ps.pmove.pm_flags & pmove_t.PMF_JUMP_HELD)) {
-                    client.ps.pmove.pm_flags |= pmove_t.PMF_JUMP_HELD;
+            if ((int) ucmd.upmove >= 10) {
+                if (0 == ((int) client.ps.pmove.pm_flags & pmove_t.PMF_JUMP_HELD)) {
+                    client.ps.pmove.pm_flags = (byte) ((int) client.ps.pmove.pm_flags | pmove_t.PMF_JUMP_HELD);
                     if (client.chase_target != null)
                         GameChase.ChaseNext(ent);
                     else
                         GameChase.GetChaseTarget(ent);
                 }
             } else
-                client.ps.pmove.pm_flags &= ~pmove_t.PMF_JUMP_HELD;
+                client.ps.pmove.pm_flags = (byte) ((int) client.ps.pmove.pm_flags & ~pmove_t.PMF_JUMP_HELD);
         }
 
         
-        for (i = 1; i <= GameBase.maxclients.value; i++) {
+        for (i = 1; (float) i <= GameBase.maxclients.value; i++) {
             other = GameBase.g_edicts[i];
             if (other.inuse && other.client.chase_target == ent)
                 GameChase.UpdateChaseCam(other);
@@ -1534,14 +1533,14 @@ public class PlayerClient {
      */
     public static void ClientBeginServerFrame(edict_t ent) {
 
-        if (GameBase.level.intermissiontime != 0)
+        if (GameBase.level.intermissiontime != (float) 0)
             return;
 
         gclient_t client = ent.client;
 
-        if (GameBase.deathmatch.value != 0
+        if (GameBase.deathmatch.value != (float) 0
                 && client.pers.spectator != client.resp.spectator
-                && (GameBase.level.time - client.respawn_time) >= 5) {
+                && (GameBase.level.time - client.respawn_time) >= 5.0F) {
             spectator_respawn(ent);
             return;
         }
@@ -1557,13 +1556,13 @@ public class PlayerClient {
             if (GameBase.level.time > client.respawn_time) {
 
                 int buttonMask;
-                if (GameBase.deathmatch.value != 0)
+                if (GameBase.deathmatch.value != (float) 0)
                     buttonMask = Defines.BUTTON_ATTACK;
                 else
                     buttonMask = -1;
 
                 if ((client.latched_buttons & buttonMask) != 0
-                        || (GameBase.deathmatch.value != 0 && 0 != ((int) GameBase.dmflags.value & Defines.DF_FORCE_RESPAWN))) {
+                        || (GameBase.deathmatch.value != (float) 0 && 0 != ((int) GameBase.dmflags.value & Defines.DF_FORCE_RESPAWN))) {
                     respawn(ent);
                     client.latched_buttons = 0;
                 }
@@ -1572,7 +1571,7 @@ public class PlayerClient {
         }
 
         
-        if (GameBase.deathmatch.value != 0)
+        if (GameBase.deathmatch.value != (float) 0)
             if (!GameUtil.visible(ent, PlayerTrail.LastSpot()))
                 PlayerTrail.Add(ent.s.old_origin);
 
@@ -1589,7 +1588,7 @@ public class PlayerClient {
 
         char info = Info.Info_ValueForKey(ent.client.pers.userinfo, "gender")
                 .charAt(0);
-        return info == 'f' || info == 'F';
+        return (int) info == (int) 'f' || (int) info == (int) 'F';
     }
 
     /**
@@ -1604,7 +1603,7 @@ public class PlayerClient {
         char info = Info.Info_ValueForKey(ent.client.pers.userinfo, "gender")
                 .charAt(0);
 
-        return info != 'f' && info != 'F' && info != 'm' && info != 'M';
+        return (int) info != (int) 'f' && (int) info != (int) 'F' && (int) info != (int) 'm' && (int) info != (int) 'M';
     }
 
     /**
@@ -1612,7 +1611,7 @@ public class PlayerClient {
      */
     public static void LookAtKiller(edict_t self, edict_t inflictor,
             edict_t attacker) {
-        float[] dir = {0, 0, 0};
+        float[] dir = {(float) 0, (float) 0, (float) 0};
 
         edict_t world = GameBase.g_edicts[0];
     
@@ -1625,18 +1624,18 @@ public class PlayerClient {
             return;
         }
     
-        if (dir[0] != 0)
-            self.client.killer_yaw = (float) (180 / Math.PI * Math.atan2(
-                    dir[1], dir[0]));
+        if (dir[0] != (float) 0)
+            self.client.killer_yaw = (float) (180.0 / Math.PI * Math.atan2(
+                    (double) dir[1], (double) dir[0]));
         else {
-            self.client.killer_yaw = 0;
-            if (dir[1] > 0)
-                self.client.killer_yaw = 90;
-            else if (dir[1] < 0)
-                self.client.killer_yaw = -90;
+            self.client.killer_yaw = (float) 0;
+            if (dir[1] > (float) 0)
+                self.client.killer_yaw = 90.0F;
+            else if (dir[1] < (float) 0)
+                self.client.killer_yaw = -90.0F;
         }
-        if (self.client.killer_yaw < 0)
-            self.client.killer_yaw += 360;
+        if (self.client.killer_yaw < (float) 0)
+            self.client.killer_yaw += 360.0F;
     
     }
     
@@ -1646,7 +1645,7 @@ public class PlayerClient {
      */ 
     public static void TossClientWeapon(edict_t self) {
 
-        if (GameBase.deathmatch.value == 0)
+        if (GameBase.deathmatch.value == (float) 0)
             return;
 
         gitem_t item = self.client.pers.weapon;
@@ -1659,7 +1658,7 @@ public class PlayerClient {
         if (0 == ((int) (GameBase.dmflags.value) & Defines.DF_QUAD_DROP))
             quad = false;
         else
-            quad = (self.client.quad_framenum > (GameBase.level.framenum + 10));
+            quad = (self.client.quad_framenum > (float) (GameBase.level.framenum + 10));
 
         float spread;
         if (item != null && quad)
@@ -1684,7 +1683,7 @@ public class PlayerClient {
     
             drop.touch = GameItems.Touch_Item;
             drop.nextthink = GameBase.level.time
-                    + (self.client.quad_framenum - GameBase.level.framenum)
+                    + (self.client.quad_framenum - (float) GameBase.level.framenum)
                     * Defines.FRAMETIME;
             drop.think = GameUtil.G_FreeEdictA;
         }

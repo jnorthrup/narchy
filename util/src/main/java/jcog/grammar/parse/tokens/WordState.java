@@ -47,12 +47,12 @@ public class WordState extends TokenizerState {
 	 * @return a state for recognizing a word
 	 */
 	public WordState() {
-		setWordChars('a', 'z', true);
-		setWordChars('A', 'Z', true);
-		setWordChars('0', '9', true);
-		setWordChars('-', '-', true);
-		setWordChars('_', '_', true);
-		setWordChars('\'', '\'', true);
+		setWordChars((int) 'a', (int) 'z', true);
+		setWordChars((int) 'A', (int) 'Z', true);
+		setWordChars((int) '0', (int) '9', true);
+		setWordChars((int) '-', (int) '-', true);
+		setWordChars((int) '_', (int) '_', true);
+		setWordChars((int) '\'', (int) '\'', true);
 		setWordChars(0xc0, 0xff, true);
 	}
 

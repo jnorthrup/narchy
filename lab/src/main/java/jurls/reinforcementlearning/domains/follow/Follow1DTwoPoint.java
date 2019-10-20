@@ -26,8 +26,8 @@ public class Follow1DTwoPoint implements RLEnvironment {
      
     
     double speed = 0.05;
-    double targetSpeed = 1;
-    double closeThresh = speed * 2; 
+    double targetSpeed = 1.0;
+    double closeThresh = speed * 2.0;
 
     private static final int history = 64;
 
@@ -66,7 +66,7 @@ public class Follow1DTwoPoint implements RLEnvironment {
             final int margin = 10;
             for (double _y : _targets) {
                 int x = i * getWidth() / history;
-                int y = (int) (_y * (getHeight()-margin) / maxPos) + margin/2;
+                int y = (int) (_y * (double) (getHeight() - margin) / maxPos) + margin/2;
                 g.drawLine(prevX, prevY, x, y);
                 ++i;
                 prevX = x;
@@ -80,7 +80,7 @@ public class Follow1DTwoPoint implements RLEnvironment {
             g.setColor(Color.white);
             for (double _y : _positions) {
                 int x = i * getWidth() / history;
-                int y = (int) (_y * (getHeight()-margin) / maxPos) + margin/2;
+                int y = (int) (_y * (double) (getHeight() - margin) / maxPos) + margin/2;
                 g.drawLine(prevX, prevY, x, y);
                 ++i;
                 prevX = x;
@@ -94,7 +94,7 @@ public class Follow1DTwoPoint implements RLEnvironment {
     private static final double maxPos = 1.0;
     private double myPos = 0.5;
     private double targetPos = 0.5;
-    private double targetV = 0;
+    private double targetV = (double) 0;
     private final RenderComponent renderComponent = new RenderComponent();
     int time = 0;
 
@@ -107,8 +107,8 @@ public class Follow1DTwoPoint implements RLEnvironment {
 
         if (positions.isEmpty()) return observation;
 
-        double target = 0;
-        double my = 0;
+        double target = (double) 0;
+        double my = (double) 0;
         for (int i = 0; i < historyPoints;) {
             int j = positions.size() - 1 - (i * historyInterval);
             my = positions.get(j);
@@ -120,8 +120,8 @@ public class Follow1DTwoPoint implements RLEnvironment {
 
 
 
-            observation[i++] = 2 * ( target - 0.5 );
-            observation[i++] = 2 * ( my - 0.5 );
+            observation[i++] = 2.0 * ( target - 0.5 );
+            observation[i++] = 2.0 * ( my - 0.5 );
         }
         return observation;
     }
@@ -138,7 +138,7 @@ public class Follow1DTwoPoint implements RLEnvironment {
 
         double delta;
         if (!Double.isFinite(lastDist)) {
-            delta = 0;
+            delta = (double) 0;
         }
         else {
             delta = dist - lastDist;
@@ -146,7 +146,7 @@ public class Follow1DTwoPoint implements RLEnvironment {
 
         lastDist = dist;
 
-        double reward = -delta * 10;
+        double reward = -delta * 10.0;
         return reward;
     }
 
@@ -183,13 +183,13 @@ public class Follow1DTwoPoint implements RLEnvironment {
     public void updateTargetXOR(int cycle) {
         int complexity = 10;
         double scale = 1.0;
-        double v = ( ((int)(speed * targetSpeed * cycle )%complexity ^ 0xf3f24f)%complexity * scale / complexity);
+        double v = ((double) (((int) (speed * targetSpeed * (double) cycle) % complexity ^ 0xf3f24f) % complexity) * scale / (double) complexity);
         targetPos = v;
     }
 
     public void updateTargetSine(int cycle) {
-        double scale = 1.0f;
-        double v = (0.5f + 0.5f * Math.sin( (speed * cycle / (Math.PI*2)) )) * scale;
+        double scale = 1.0;
+        double v = (0.5 + 0.5 * Math.sin( (speed * (double) cycle / (Math.PI* 2.0)) )) * scale;
         targetPos = v;
     }
 
@@ -205,10 +205,10 @@ public class Follow1DTwoPoint implements RLEnvironment {
         if (direction==0) {
             
             
-            myV = 0;
+            myV = (double) 0;
         }
         else {
-            myV = direction * speed;
+            myV = (double) direction * speed;
         }
         myPos += myV;
 
@@ -224,8 +224,8 @@ public class Follow1DTwoPoint implements RLEnvironment {
             myPos = maxPos;
             
         }
-        if (myPos < 0) {
-            myPos = 0;
+        if (myPos < (double) 0) {
+            myPos = (double) 0;
             
         }
 
@@ -233,11 +233,11 @@ public class Follow1DTwoPoint implements RLEnvironment {
         updateTarget(time);
         if (targetPos > maxPos) {
             targetPos = maxPos;
-            targetV = 0;
+            targetV = (double) 0;
         }
-        if (targetPos < 0) {
-            targetPos = 0;
-            targetV = 0;
+        if (targetPos < (double) 0) {
+            targetPos = (double) 0;
+            targetV = (double) 0;
         }
 
         positions.add(myPos);

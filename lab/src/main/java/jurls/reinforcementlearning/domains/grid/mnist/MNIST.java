@@ -21,7 +21,7 @@ public class MNIST {
 
         
         public MNISTImage(int w, int h) {
-            label = -1;
+            label = (byte) -1;
             image = new int[h][];
             for (int i = 0; i < h; i++) {
                 image[i] = new int[w];
@@ -29,8 +29,8 @@ public class MNIST {
         }
         
         public MNISTImage(byte label, int[][] image) {
-            assert(label >= 0);
-            assert(label < 10);
+            assert((int) label >= 0);
+            assert((int) label < 10);
             this.label = label;
             this.image = image;
         }
@@ -40,8 +40,8 @@ public class MNIST {
             int c = 0;
             for (int y = 0; y < image.length; y++)
                 for (int x = 0; x < image[y].length; x++) {
-                    v[c] = (image[x][y])/256.0 +  (Math.random()-0.5)*noise;
-                    v[c] = Math.min(1, Math.max(v[c], 0));
+                    v[c] = (double) (image[x][y]) /256.0 +  (Math.random()-0.5)*noise;
+                    v[c] = Math.min(1.0, Math.max(v[c], (double) 0));
                     c++;
                 }
         }
@@ -108,7 +108,7 @@ public class MNIST {
                 }
             }
             numImagesRead++;
-            if (label <= maxDigit)            
+            if ((int) label <= maxDigit)
                 images.add(new MNISTImage(label, image));
 
       
@@ -119,8 +119,8 @@ public class MNIST {
                 System.out.print(" " + numLabelsRead + " / " + numLabels);
                 long end = System.currentTimeMillis();
                 long elapsed = end - start;
-                long minutes = elapsed / (1000 * 60);
-                long seconds = (elapsed / 1000) - (minutes * 60);
+                long minutes = elapsed / (long) (1000 * 60);
+                long seconds = (elapsed / 1000L) - (minutes * 60L);
                 System.out.println("  " + minutes + " m " + seconds + " s ");
             }
             
@@ -130,8 +130,8 @@ public class MNIST {
         System.out.println();
         long end = System.currentTimeMillis();
         long elapsed = end - start;
-        long minutes = elapsed / (1000 * 60);
-        long seconds = (elapsed / 1000) - (minutes * 60);
+        long minutes = elapsed / (long) (1000 * 60);
+        long seconds = (elapsed / 1000L) - (minutes * 60L);
         System.out.println("Read " + numLabelsRead + " samples in " + minutes + " m " + seconds + " s ");
     }
 
@@ -140,7 +140,7 @@ public class MNIST {
         for (int i = 0; i < images.size(); i++) {
             MNISTImage m = images.get(i);
             v[i] = new double[m.width() * m.height()];
-            m.toArray(v[i], 0);
+            m.toArray(v[i], (double) 0);
         }
         return v;
     }

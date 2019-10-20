@@ -79,32 +79,32 @@ public class BitmapMatrixView extends TexSurface {
     }
 
     private BitmapMatrixView(float[] d, int stride, ViewFunction1D view) {
-        this((int) Math.floor(((float) d.length) / stride), stride, (x, y) -> {
+        this((int) Math.floor((double) (((float) d.length) / (float) stride)), stride, (x, y) -> {
             int i = y * stride + x;
             return i < d.length ? view.update(d[i]) : 0;
         });
     }
 
     public BitmapMatrixView(IntToFloatFunction d, int len, ViewFunction1D view) {
-        this(d, len, Math.max(1, (int) Math.ceil(sqrt(len))), view);
+        this(d, len, Math.max(1, (int) Math.ceil(sqrt((double) len))), view);
     }
 
     public BitmapMatrixView(IntToFloatFunction d, int len, int stride, ViewFunction1D view) {
-        this((int) Math.floor(((float) len) / stride), stride, (x, y) -> {
+        this((int) Math.floor((double) (((float) len) / (float) stride)), stride, (x, y) -> {
             int i = y * stride + x;
             return i < len ? view.update(d.valueOf(i)) : 0;
         });
     }
 
     public BitmapMatrixView(double[] d, int stride, ViewFunction1D view) {
-        this((int) Math.floor(((float) d.length) / stride), stride, (x, y) -> {
+        this((int) Math.floor((double) (((float) d.length) / (float) stride)), stride, (x, y) -> {
             int i = y * stride + x;
             return i < d.length ? view.update((float) d[i]) : 0;
         });
     }
 
     public <P extends FloatSupplier> BitmapMatrixView(P[] d, int stride, ViewFunction1D view) {
-        this((int) Math.floor(((float) d.length) / stride), stride, (x, y) -> {
+        this((int) Math.floor((double) (((float) d.length) / (float) stride)), stride, (x, y) -> {
             int i = y * stride + x;
             return i < d.length ? view.update(d[i].asFloat()) : 0;
         });
@@ -112,11 +112,11 @@ public class BitmapMatrixView extends TexSurface {
 
 
     public BitmapMatrixView(Supplier<double[]> e, int len, ViewFunction1D view) {
-        this(e, len, Math.max(1, (int) Math.ceil(sqrt(len))), view);
+        this(e, len, Math.max(1, (int) Math.ceil(sqrt((double) len))), view);
     }
 
     public BitmapMatrixView(Supplier<double[]> e, int len, int stride, ViewFunction1D view) {
-        this((int) Math.floor(((float) len) / stride), stride, (x, y) -> {
+        this((int) Math.floor((double) (((float) len) / (float) stride)), stride, (x, y) -> {
             double[] d = e.get();
             if (d != null) {
 
@@ -149,7 +149,7 @@ public class BitmapMatrixView extends TexSurface {
 
     public static BitmapMatrixView get(ArrayTensor t, int stride, ViewFunction1D view) {
         float[] d = t.data;
-        return new BitmapMatrixView((int) Math.floor(((float) t.volume()) / stride), stride, (x, y) -> {
+        return new BitmapMatrixView((int) Math.floor((double) (((float) t.volume()) / (float) stride)), stride, (x, y) -> {
             float v = d[x * stride + y];
             return view.update(v);
         });
@@ -166,11 +166,11 @@ public class BitmapMatrixView extends TexSurface {
 
         v2 r = finger.posRelative(bounds);
         if (r.inUnit()) {
-            r.scaleInto(w, h, touchPos);
+            r.scaleInto((float) w, (float) h, touchPos);
 
             touchPixel.set(
-                    clampSafe((int) Math.floor(touchPos.x), 0, w - 1),
-                    clampSafe((int) Math.floor(touchPos.y), 0, h - 1));
+                    clampSafe((int) Math.floor((double) touchPos.x), 0, w - 1),
+                    clampSafe((int) Math.floor((double) touchPos.y), 0, h - 1));
             return true;
         }
         return false;
@@ -181,11 +181,11 @@ public class BitmapMatrixView extends TexSurface {
         super.paint(gl, reSurface);
         /* paint cursor hilited cell */
         if (cellTouch) {
-            float w = w() / this.w, h = h() / this.h;
+            float w = w() / (float) this.w, h = h() / (float) this.h;
             float x = x(), y = y();
             gl.glColor4f(0.5f, 0.5f, 0.5f, 0.75f);
-            gl.glLineWidth(2);
-            Draw.rectStroke(x + touchPixel.x * w, y + touchPixel.y * h, w, h, gl);
+            gl.glLineWidth(2.0F);
+            Draw.rectStroke(x + (float) touchPixel.x * w, y + (float) touchPixel.y * h, w, h, gl);
         }
     }
 
@@ -195,9 +195,9 @@ public class BitmapMatrixView extends TexSurface {
      */
     private v2 cell(float x, float y) {
         float W = w();
-        float xx = ((x + 0.5f) / (w)) * W;
+        float xx = ((x + 0.5f) / (float) (w)) * W;
         float H = h();
-        float yy = (1f - ((y + 0.5f) / (h))) * H;
+        float yy = (1f - ((y + 0.5f) / (float) (h))) * H;
         return new v2(xx, yy);
     }
 
@@ -205,8 +205,8 @@ public class BitmapMatrixView extends TexSurface {
      * the prw, prh represent a rectangular size proportional to the displayed cell size
      */
     public RectFloat cellRect(float x, float y, float prw, float prh) {
-        float pw = prw / this.w;
-        float ph = prh / this.h;
+        float pw = prw / (float) this.w;
+        float ph = prh / (float) this.h;
         v2 c = cell(x, y);
         return RectFloat.XYWH(c.x, c.y, pw * w(), ph * h());
     }

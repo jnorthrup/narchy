@@ -24,7 +24,7 @@ public class LinearTruthProjection extends TruthProjection {
 
 
 
-        double wFreqSum = 0, /*wSum = 0,*/ eSum = 0;
+        double wFreqSum = (double) 0, /*wSum = 0,*/ eSum = (double) 0;
         @Nullable double[] evi = this.evi;
         Task[] items = this.items;
         for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
@@ -45,7 +45,7 @@ public class LinearTruthProjection extends TruthProjection {
 //            if (x == null)
 //                continue;
             eSum += e;
-            double f = x.freq(start, end);
+            double f = (double) x.freq(start, end);
             wFreqSum += e * f;
 //            if (f >= 0.5f) wFreqPos += w * (1-f)*2; else wFreqNeg += w * (0.5 - f)*2;
         }
@@ -57,8 +57,8 @@ public class LinearTruthProjection extends TruthProjection {
         if (start==ETERNAL) {
             eAvg = eSum;
         } else {
-            long range = 1 + (end - start);
-            eAvg = eSum / range;
+            long range = 1L + (end - start);
+            eAvg = eSum / (double) range;
             if (eAvg < eviMin)
                 return null;
         }

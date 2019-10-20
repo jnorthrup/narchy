@@ -46,7 +46,7 @@ public interface Truth extends Truthed {
      * truth component resolution corresponding to Param.TRUTH_EPSILON
      */
     short hashDiscretenessCoarse = (short)
-            (Math.round(1.0 / (NAL.truth.TRUTH_EPSILON)));
+            (Math.round(1.0 / (double) (NAL.truth.TRUTH_EPSILON)));
     int hashDiscretenessFine = (int) Math.round(1.0 / (NAL.truth.TASK_REGION_CONF_EPSILON));
 
     /**
@@ -65,26 +65,26 @@ public interface Truth extends Truthed {
      */
     static int truthToInt(float freq, short freqDisc, float conf, short confDisc) {
 
-        if (!Float.isFinite(freq) || freq < 0 || freq > 1)
-            throw new TruthException("invalid freq", freq);
+        if (!Float.isFinite(freq) || freq < (float) 0 || freq > 1.0F)
+            throw new TruthException("invalid freq", (double) freq);
 
-        if (!Float.isFinite(conf) || conf < 0)
-            throw new TruthException("invalid conf", conf);
+        if (!Float.isFinite(conf) || conf < (float) 0)
+            throw new TruthException("invalid conf", (double) conf);
 
-        int freqHash = Util.toInt(freq, freqDisc);
-        int confHash = Util.toInt(Math.min(NAL.truth.CONF_MAX, conf), confDisc);
+        int freqHash = Util.toInt(freq, (int) freqDisc);
+        int confHash = Util.toInt(Math.min(NAL.truth.CONF_MAX, conf), (int) confDisc);
         return (freqHash << 16) | confHash;
     }
     static int truthToInt(double freq, short freqDisc, double conf, short confDisc) {
 
-        if (!Double.isFinite(freq) || freq < 0 || freq > 1)
+        if (!Double.isFinite(freq) || freq < (double) 0 || freq > 1.0)
             throw new TruthException("invalid freq", freq);
 
-        if (!Double.isFinite(conf) || conf < 0)
+        if (!Double.isFinite(conf) || conf < (double) 0)
             throw new TruthException("invalid conf", conf);
 
-        int freqHash = (int) Util.toInt(freq, freqDisc);
-        int confHash = (int) Util.toInt(Math.min(NAL.truth.CONF_MAX, conf), confDisc);
+        int freqHash = (int) Util.toInt(freq, (int) freqDisc);
+        int confHash = (int) Util.toInt(Math.min((double) NAL.truth.CONF_MAX, conf), (int) confDisc);
         return (freqHash << 16) | confHash;
     }
 
@@ -189,7 +189,7 @@ public interface Truth extends Truthed {
 
     static float freq(float f, float epsilon) {
         if (!Float.isFinite(f))
-            throw new TruthException("non-finite freq", f);
+            throw new TruthException("non-finite freq", (double) f);
         return freqSafe(f, epsilon);
     }
 
@@ -205,11 +205,11 @@ public interface Truth extends Truthed {
     }
 
     static double confSafe(double c, float epsilon) {
-		return epsilon <= Double.MIN_NORMAL ? c : Util.clampSafe(
+		return (double) epsilon <= Double.MIN_NORMAL ? c : Util.clampSafe(
 
-			Util.roundSafe(c, epsilon),
+			Util.roundSafe(c, (double) epsilon),
 
-			0, 1.0 - epsilon);
+                (double) 0, 1.0 - (double) epsilon);
     }
 
     static @Nullable PreciseTruth theDithered(float f, double e, NAL nar) {
@@ -219,7 +219,7 @@ public interface Truth extends Truthed {
         //keep evidence difference
         return PreciseTruth.byConfEvi(
                 Truth.freq(f, nar.freqResolution.floatValue()),
-                Truth.w2cDithered((float)e, nar.confResolution.floatValue()),
+                Truth.w2cDithered((double) (float) e, nar.confResolution.floatValue()),
                 e);
 
     }
@@ -236,7 +236,7 @@ public interface Truth extends Truthed {
     static Truth read(DataInput in) throws IOException {
         float f = in.readFloat();
         float c = in.readFloat();
-        return PreciseTruth.byConf(f, c);
+        return PreciseTruth.byConf(f, (double) c);
     }
 
 
@@ -290,9 +290,9 @@ public interface Truth extends Truthed {
         float f = freq();
         float ff = freqSafe(f, freqRes);
         float c = conf();
-        double cc = confSafe(c, confRes);
+        double cc = confSafe((double) c, confRes);
 		//return PreciseTruth.byConf(ff, cc);
-		return Util.equals(f, ff, NAL.truth.TRUTH_EPSILON) && Util.equals(c, cc, NAL.truth.TRUTH_EPSILON) ? this : PreciseTruth.byConfEvi(ff, cc, evi() /* include extra precision */);
+		return Util.equals(f, ff, NAL.truth.TRUTH_EPSILON) && Util.equals((double) c, cc, (double) NAL.truth.TRUTH_EPSILON) ? this : PreciseTruth.byConfEvi(ff, cc, evi() /* include extra precision */);
     }
 
     static Truth dither(Truth in, double eviMin, boolean negate, NAL nar) {
@@ -307,7 +307,7 @@ public interface Truth extends Truthed {
             return in;
 
         float fBefore = in.freq();
-        float fAfter = freq(negate ? 1-fBefore : fBefore, freqRes);
+        float fAfter = freq(negate ? 1.0F -fBefore : fBefore, freqRes);
         double cBefore = w2cSafeDouble(e);
         double cAfter = conf(cBefore, confRes);
 		return (!(in instanceof MutableTruth)) && (Util.equals(fBefore, fAfter, NAL.truth.TRUTH_EPSILON) && Util.equals(cBefore, cAfter, NAL.truth.EVI_MIN)) ? in : PreciseTruth.byConfEvi(fAfter, cAfter, e /* extra precision */);

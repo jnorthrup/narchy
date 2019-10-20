@@ -72,14 +72,14 @@ public class LivePredictor {
 
             int i = 0;
             for (int t = past-1; t >=0; t--) {
-                long w = now - (t + 1) * dur;
+                long w = now - (long) ((t + 1) * dur);
                 for (LongToFloatFunction c : ins) {
-                    pastVector[i++] = c.valueOf(w);
+                    pastVector[i++] = (double) c.valueOf(w);
                 }
             }
             int k = 0;
             for (LongToFloatFunction c : outs) {
-                present[k++] = c.valueOf(now);
+                present[k++] = (double) c.valueOf(now);
             }
 
             return pastVector;
@@ -168,7 +168,7 @@ public class LivePredictor {
         MLPMap mlp;
 
         public MLPPredictor(float learningRate) {
-            this(learningRate, new XoRoShiRo128PlusRandom(1));
+            this(learningRate, new XoRoShiRo128PlusRandom(1L));
         }
 
         public MLPPredictor(float learningRate, Random rng) {

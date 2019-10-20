@@ -117,22 +117,22 @@ public class RuleNeumBin {
 				lurd[1] = (j > 0) ? j - 1 : (isWrap) ? sizY - 1 : sizY;
 				lurd[3] = (j < sizY - 1) ? j + 1 : (isWrap) ? 0 : sizY;
                 short bOldVal = crrState[i][j];
-                bOldVal = (short) ((bOldVal < 0) ? 0 : (bOldVal >= iClo)
+                bOldVal = (short) (((int) bOldVal < 0) ? 0 : ((int) bOldVal >= iClo)
 						? (iClo - 1)
-						: bOldVal);
+						: (int) bOldVal);
 
-                int l = crrState[lurd[0]][j];
-                int u = crrState[i][lurd[1]];
-                int r = crrState[lurd[2]][j];
-                int d = crrState[i][lurd[3]];
+                int l = (int) crrState[lurd[0]][j];
+                int u = (int) crrState[i][lurd[1]];
+                int r = (int) crrState[lurd[2]][j];
+                int d = (int) crrState[i][lurd[3]];
                 l = (l < 0) ? 0 : (l >= iClo) ? (iClo - 1) : l;
 				u = (u < 0) ? 0 : (u >= iClo) ? (iClo - 1) : u;
 				r = (r < 0) ? 0 : (r >= iClo) ? (iClo - 1) : r;
 				d = (d < 0) ? 0 : (d >= iClo) ? (iClo - 1) : d;
-                short bNewVal = (short) states[bOldVal][u][r][d][l];
+                short bNewVal = (short) states[(int) bOldVal][u][r][d][l];
 
                 tmpState[i][j] = bNewVal;
-				if (bNewVal != bOldVal) {
+				if ((int) bNewVal != (int) bOldVal) {
 					modCnt++; 
 				}
 			}

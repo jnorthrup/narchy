@@ -25,7 +25,7 @@ public class SimpleTSne implements TSne {
      * performance of SNE is fairly robust to changes in the perplexity, and typical values are between 5
      * and 50.
      */
-    public final FloatRange perplexity = new FloatRange(10, 0.5f, 50f);
+    public final FloatRange perplexity = new FloatRange(10.0F, 0.5f, 50f);
 
     public final FloatRange momentum = new FloatRange(0.5f, 0f, 1f);
 
@@ -77,7 +77,7 @@ public class SimpleTSne implements TSne {
         P = x2p(X, 1e-5, perplexity).P;
         P = plus(P, transpose(P));
         P = scalarDivide(P, sum(P));
-        P = scalarMult(P, 4);
+        P = scalarMult(P, 4.0);
         P = maximum(P, Double.MIN_NORMAL);
 
 //        System.out.println("Y:Shape is = " + Y.length + " x " + Y[0].length);
@@ -100,31 +100,31 @@ public class SimpleTSne implements TSne {
 
         numMatrix = scalarInverse(scalarPlus(addRowVector(transpose(addRowVector(scalarMult(
                 times(Y, transpose(Y)),
-                -2),
+                -2.0),
                 sum_Y)),
                 sum_Y),
-                1), numMatrix);
+                1.0), numMatrix);
 
         int[] rn = range(n);
-        assignAtIndex(numMatrix, rn, rn, 0);
+        assignAtIndex(numMatrix, rn, rn, (double) 0);
         double[][] Q = scalarDivide(numMatrix, sum(numMatrix));
 
-        Q = maximum(Q, Float.MIN_NORMAL /*1e-12*/);
+        Q = maximum(Q, (double) Float.MIN_NORMAL /*1e-12*/);
 
 
         double[][] L = scalarMultiply(minus(P, Q), numMatrix);
-        dY = scalarMult(times(minus(diag(sum(L, 1)), L), Y), 4);
+        dY = scalarMult(times(minus(diag(sum(L, 1)), L), Y), 4.0);
 
         gains = plus(scalarMultiply(scalarPlus(gains, .2), abs(negate(equal(biggerThan(dY, 0.0), biggerThan(iY, 0.0))))),
                 scalarMultiply(scalarMult(gains, .8), abs(equal(biggerThan(dY, 0.0), biggerThan(iY, 0.0)))));
 
         //Double.MIN_NORMAL;
-        double min_gain = ScalarValue.EPSILON;
+        double min_gain = (double) ScalarValue.EPSILON;
         assignAllLessThan(gains, min_gain, min_gain);
         //0.1f;
         double eta = 0.5;
-        iY = minus(iY, scalarMult(scalarMultiply(gains, dY), eta *n));
-        iY = scalarMult(iY,  (1-momentum.getAsDouble()));
+        iY = minus(iY, scalarMult(scalarMultiply(gains, dY), eta * (double) n));
+        iY = scalarMult(iY,  (1.0 -momentum.getAsDouble()));
         Y = plus(Y, iY);
 
         //Y = minus(Y, tile(mean(Y, 0), n, 1));
@@ -132,7 +132,7 @@ public class SimpleTSne implements TSne {
 
         if (logger.isDebugEnabled()) {
             double error = sum(scalarMultiply(P, replaceNaN(log(scalarDivide(P, Q)),
-                    0
+                    (double) 0
             )));
             logger.debug("error={}", error);
         }
@@ -142,7 +142,7 @@ public class SimpleTSne implements TSne {
     }
 
     private static R Hbeta(double[][] D, double beta) {
-        double[][] P = exp(scalarMult(scalarMult(D, beta), -1));
+        double[][] P = exp(scalarMult(scalarMult(D, beta), -1.0));
         double sumP = sum(P);
         double H = Math.log(sumP) + beta * sum(scalarMultiply(D, P)) / sumP;
         P = scalarDivide(P, sumP);
@@ -155,7 +155,7 @@ public class SimpleTSne implements TSne {
     private static R x2p(double[][] X, double tol, double perplexity) {
         int n = X.length;
         double[][] sum_X = sum(square(X), 1);
-        double[][] times = scalarMult(times(X, transpose(X)), -2);
+        double[][] times = scalarMult(times(X, transpose(X)), -2.0);
         double[][] prodSum = addColumnVector(transpose(times), sum_X);
         double[][] D = addRowVector(prodSum, transpose(sum_X));
 
@@ -178,18 +178,18 @@ public class SimpleTSne implements TSne {
             double Hdiff = H - logU;
             int tries = 0;
             while (Math.abs(Hdiff) > tol && tries < TRIES) {
-                if (Hdiff > 0) {
+                if (Hdiff > (double) 0) {
                     betamin = beta[i];
                     if (Double.isInfinite(betamax))
-                        beta[i] *= 2;
+                        beta[i] *= 2.0;
                     else
-                        beta[i] = (beta[i] + betamax) / 2;
+                        beta[i] = (beta[i] + betamax) / 2.0;
                 } else {
                     betamax = beta[i];
                     if (Double.isInfinite(betamin))
-                        beta[i] /= 2;
+                        beta[i] /= 2.0;
                     else
-                        beta[i] = (beta[i] + betamin) / 2;
+                        beta[i] = (beta[i] + betamin) / 2.0;
                 }
 
                 hbeta = Hbeta(Di, beta[i]);

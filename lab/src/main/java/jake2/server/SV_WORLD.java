@@ -111,21 +111,21 @@ public class SV_WORLD {
             anode.children[0] = anode.children[1] = null;
             return anode;
         }
-        float[] size = {0, 0, 0};
+        float[] size = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorSubtract(maxs, mins, size);
         if (size[0] > size[1])
             anode.axis = 0;
         else
             anode.axis = 1;
         anode.dist = 0.5f * (maxs[anode.axis] + mins[anode.axis]);
-        float[] mins1 = {0, 0, 0};
+        float[] mins1 = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorCopy(mins, mins1);
-        float[] mins2 = {0, 0, 0};
+        float[] mins2 = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorCopy(mins, mins2);
-        float[] maxs1 = {0, 0, 0};
+        float[] maxs1 = {(float) 0, (float) 0, (float) 0};
         Math3D.VectorCopy(maxs, maxs1);
         float[] maxs2 = {
-                0, 0, 0};
+                (float) 0, (float) 0, (float) 0};
         Math3D.VectorCopy(maxs, maxs2);
         maxs1[anode.axis] = mins2[anode.axis] = anode.dist;
         anode.children[0] = SV_CreateAreaNode(depth + 1, mins2, maxs2);
@@ -174,19 +174,19 @@ public class SV_WORLD {
                 if (ent.solid == Defines.SOLID_BBOX
                         && 0 == (ent.svflags & Defines.SVF_DEADMONSTER)) {
 
-                    int i = (int) (ent.maxs[0] / 8);
+                    int i = (int) (ent.maxs[0] / 8.0F);
                     if (i < 1)
                         i = 1;
                     if (i > 31)
                         i = 31;
 
-                    j = (int) ((-ent.mins[2]) / 8);
+                    j = (int) ((-ent.mins[2]) / 8.0F);
                     if (j < 1)
                         j = 1;
                     if (j > 31)
                         j = 31;
 
-                    int k = (int) ((ent.maxs[2] + 32) / 8);
+                    int k = (int) ((ent.maxs[2] + 32.0F) / 8.0F);
                     if (k < 1)
                         k = 1;
                     if (k > 63)
@@ -197,9 +197,9 @@ public class SV_WORLD {
                 } else
                     ent.s.solid = 0;
                 if (ent.solid == Defines.SOLID_BSP
-                        && (IntStream.of(0, 1, 2).anyMatch(i1 -> ent.s.angles[i1] != 0))) {
+                        && (IntStream.of(0, 1, 2).anyMatch(i1 -> ent.s.angles[i1] != (float) 0))) {
 
-                    float max = 0;
+                    float max = (float) 0;
                     for (int i = 0; i < 3; i++) {
                         float v = Math.abs(ent.mins[i]);
                         if (v > max)
@@ -450,11 +450,11 @@ public class SV_WORLD {
             float[] maxs, float[] end, float[] boxmins, float[] boxmaxs) {
         for (int i = 0; i < 3; i++) {
             if (end[i] > start[i]) {
-                boxmins[i] = start[i] + mins[i] - 1;
-                boxmaxs[i] = end[i] + maxs[i] + 1;
+                boxmins[i] = start[i] + mins[i] - 1.0F;
+                boxmaxs[i] = end[i] + maxs[i] + 1.0F;
             } else {
-                boxmins[i] = end[i] + mins[i] - 1;
-                boxmaxs[i] = start[i] + maxs[i] + 1;
+                boxmins[i] = end[i] + mins[i] - 1.0F;
+                boxmaxs[i] = start[i] + maxs[i] + 1.0F;
             }
         }
     }
@@ -479,7 +479,7 @@ public class SV_WORLD {
         
         clip.trace = CM.BoxTrace(start, end, mins, maxs, 0, contentmask);
         clip.trace.ent = GameBase.g_edicts[0];
-        if (clip.trace.fraction == 0)
+        if (clip.trace.fraction == (float) 0)
             return clip.trace; 
         clip.contentmask = contentmask;
         clip.start = start;

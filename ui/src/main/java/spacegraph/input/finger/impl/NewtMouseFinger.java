@@ -36,15 +36,15 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
     private void updatePosition() {
         JoglWindow win = space.video;
 
-        float pmx = posEvent.x, pmy = win.getHeight() - posEvent.y;
+        float pmx = posEvent.x, pmy = (float) win.getHeight() - posEvent.y;
 
         posPixel.set(pmx, pmy);
 
-        posScreen.set(win.getX() + posEvent.x, win.getScreenH() - (win.getY() + posEvent.y));
+        posScreen.set((float) win.getX() + posEvent.x, win.getScreenH() - ((float) win.getY() + posEvent.y));
     }
 
     private void updateMoved(MouseEvent e) {
-        posEvent.set(e.getX(), e.getY());
+        posEvent.set((float) e.getX(), (float) e.getY());
         updatePosition();
 
         updateButtons(null);
@@ -88,7 +88,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
         short[] bd = e.getButtonsDown();
         for (int i = 0, bdLength = bd.length; i < bdLength; i++)
-            bd[i] = (short) +bd[i];
+            bd[i] = (short) +(int) bd[i];
 
         updateButtons(e.getButtonsDown());
 
@@ -103,7 +103,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
         short[] bd = e.getButtonsDown();
         for (int i = 0, bdLength = bd.length; i < bdLength; i++)
-            bd[i] = (short) -bd[i];
+            bd[i] = (short) -(int) bd[i];
 
         updateButtons(bd);
 

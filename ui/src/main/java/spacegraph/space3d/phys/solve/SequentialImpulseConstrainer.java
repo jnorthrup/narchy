@@ -114,7 +114,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
     
     private int randInt2(int n) {
         
-        long un = n;
+        long un = (long) n;
         long r = rand2();
 
         
@@ -622,7 +622,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
                                 float lat_rel_vel = cp.lateralFrictionDir1.lengthSquared();
                                 if (lat_rel_vel > BulletGlobals.FLT_EPSILON)
                                 {
-                                    cp.lateralFrictionDir1.scaled(1f / (float) Math.sqrt(lat_rel_vel));
+                                    cp.lateralFrictionDir1.scaled(1f / (float) Math.sqrt((double) lat_rel_vel));
                                     addFrictionConstraint(cp.lateralFrictionDir1, solverBodyIdA, solverBodyIdB, frictionIndex, cp, rel_pos1, rel_pos2, colObj0, colObj1, relaxation);
                                     cp.lateralFrictionDir2.cross(cp.lateralFrictionDir1, cp.normalWorldOnB);
                                     cp.lateralFrictionDir2.normalize();
@@ -882,15 +882,15 @@ public class SequentialImpulseConstrainer implements Constrainer {
         int totalPoints = 0;
         OrderIndex[] gOrder = this.gOrder;
             {
-                for (short j = 0; j < numManifolds; j++) {
+                for (short j = (short) 0; (int) j < numManifolds; j++) {
 
-                    PersistentManifold manifold = manifoldPtr.get(manifold_offset + j);
+                    PersistentManifold manifold = manifoldPtr.get(manifold_offset + (int) j);
                     prepareConstraints(manifold, info);
 
                     
-                    for (short p = 0; p < manifoldPtr.get(manifold_offset + j).numContacts(); p++) {
-                        gOrder[totalPoints].manifoldIndex = j;
-                        gOrder[totalPoints].pointIndex = p;
+                    for (short p = (short) 0; (int) p < manifoldPtr.get(manifold_offset + (int) j).numContacts(); p++) {
+                        gOrder[totalPoints].manifoldIndex = (int) j;
+                        gOrder[totalPoints].pointIndex = (int) p;
                         totalPoints++;
                     }
                 }
@@ -1166,7 +1166,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
 
     @Override
     public void reset() {
-        btSeed2 = 0;
+        btSeed2 = 0L;
     }
 
     /**

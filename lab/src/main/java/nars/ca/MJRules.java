@@ -92,13 +92,13 @@ public class MJRules {
                 String sBff = ((String) vLines.elementAt(i)).trim();
                 if ((!sBff.isEmpty())
 						&& !((String) vLines.elementAt(i)).startsWith("//")) {
-					if (sBff.length() > 0 && sBff.charAt(0) == '#') // next family of rules
+					if (sBff.length() > 0 && (int) sBff.charAt(0) == (int) '#') // next family of rules
 					{
 						iGame = GetGameIndex(sBff.substring(1));
 					} else // next rule
 					{
 						if (iGame >= 0) {
-                            int whereSep = sBff.indexOf('|');
+                            int whereSep = sBff.indexOf((int) '|');
 							if (whereSep > 0) {
                                 String sNam = sBff.substring(0, whereSep);
 								sNam = sNam.trim();

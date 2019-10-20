@@ -22,8 +22,6 @@ import jcog.grammar.synthesize.util.ParseTreeUtils.ParseTreeNode;
 import jcog.grammar.synthesize.util.ParseTreeUtils.ParseTreeRepetitionNode;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class GrammarFuzzer {
     public static class SampleParameters {

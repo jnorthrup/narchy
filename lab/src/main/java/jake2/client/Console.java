@@ -69,7 +69,7 @@ public final class Console extends Globals {
 		Menu.ForceMenuOff();
 		Globals.cls.key_dest = Defines.key_console;
 
-		if (Cvar.VariableValue("maxclients") == 1
+		if (Cvar.VariableValue("maxclients") == 1.0F
 			&& Globals.server_state != 0)
 		    Cvar.Set("paused", "1");
 	    }
@@ -110,7 +110,7 @@ public final class Console extends Globals {
         for (l = con.current - con.totallines + 1; l <= con.current; l++) {
 		line = (l % con.totallines) * con.linewidth;
 		for (x = 0; x < con.linewidth; x++)
-		    if (con.text[line + x] != ' ')
+		    if ((int) con.text[line + x] != (int) ' ')
 			break;
 		if (x != con.linewidth)
 		    break;
@@ -118,21 +118,21 @@ public final class Console extends Globals {
 
 
         byte[] buffer = new byte[1024];
-        buffer[con.linewidth] = 0;
+        buffer[con.linewidth] = (byte) 0;
 	    for (; l <= con.current; l++) {
 		line = (l % con.totallines) * con.linewidth;
 		
 		System.arraycopy(con.text, line, buffer, 0, con.linewidth);
 		for (x = con.linewidth - 1; x >= 0; x--) {
-		    if (buffer[x] == ' ')
-			buffer[x] = 0;
+		    if ((int) buffer[x] == (int) ' ')
+			buffer[x] = (byte) 0;
 		    else
 			break;
 		}
-		for (x = 0; buffer[x] != 0; x++)
-		    buffer[x] &= 0x7f;
+		for (x = 0; (int) buffer[x] != 0; x++)
+            buffer[x] = (byte) ((int) buffer[x] & 0x7f);
 
-		buffer[x] = '\n';
+		buffer[x] = (byte) '\n';
 		
 		try {
 		    f.write(buffer, 0, x + 1);
@@ -223,19 +223,19 @@ public final class Console extends Globals {
 
     public static void ClearNotify() {
         for (int i = 0; i < Defines.NUM_CON_TIMES; i++)
-	    Globals.con.times[i] = 0;
+	    Globals.con.times[i] = (float) 0;
     }
 
     static void DrawString(int x, int y, String s) {
 	for (int i = 0; i < s.length(); i++) {
-	    Globals.re.DrawChar(x, y, s.charAt(i));
+	    Globals.re.DrawChar(x, y, (int) s.charAt(i));
 	    x += 8;
 	}
     }
 
     static void DrawAltString(int x, int y, String s) {
 	for (int i = 0; i < s.length(); i++) {
-	    Globals.re.DrawChar(x, y, s.charAt(i) ^ 0x80);
+	    Globals.re.DrawChar(x, y, (int) s.charAt(i) ^ 0x80);
 	    x += 8;
 	}
     }
@@ -313,18 +313,18 @@ public final class Console extends Globals {
 
         int txtpos = 0;
         int mask;
-        if (txt.charAt(0) == 1 || txt.charAt(0) == 2) {
+        if ((int) txt.charAt(0) == 1 || (int) txt.charAt(0) == 2) {
 	    mask = 128; 
 	    txtpos++;
 	} else
 	    mask = 0;
 
 	while (txtpos < txt.length()) {
-        int c = txt.charAt(txtpos);
+        int c = (int) txt.charAt(txtpos);
 
         int l;
         for (l = 0; l < con.linewidth && l < (txt.length() - txtpos); l++)
-		if (txt.charAt(l + txtpos) <= ' ')
+		if ((int) txt.charAt(l + txtpos) <= (int) ' ')
 		    break;
 
 	    
@@ -342,7 +342,7 @@ public final class Console extends Globals {
 		Console.Linefeed();
 		
 		if (con.current >= 0)
-		    con.times[con.current % NUM_CON_TIMES] = cls.realtime;
+		    con.times[con.current % NUM_CON_TIMES] = (float) cls.realtime;
 	    }
 
         int y;
@@ -416,7 +416,7 @@ public final class Console extends Globals {
 
         int i;
         for (i = key_linepos + 1; i < con.linewidth; i++)
-	    text[i] = ' ';
+	    text[i] = (byte) ' ';
 
 
         int start = 0;
@@ -427,10 +427,10 @@ public final class Console extends Globals {
 	
 
 	for (i = 0; i < con.linewidth; i++)
-	    re.DrawChar((i + 1) << 3, con.vislines - 22, text[i]);
+	    re.DrawChar((i + 1) << 3, con.vislines - 22, (int) text[i]);
 
 	
-	key_lines[edit_line][key_linepos] = 0;
+	key_lines[edit_line][key_linepos] = (byte) 0;
     }
 
     /*
@@ -452,13 +452,13 @@ public final class Console extends Globals {
 		continue;
 
 	    time = cls.realtime - time;
-	    if (time > con_notifytime.value * 1000)
+	    if ((float) time > con_notifytime.value * 1000.0F)
 		continue;
 
         int text = (i % con.totallines) * con.linewidth;
 
         for (x = 0; x < con.linewidth; x++)
-		re.DrawChar((x + 1) << 3, v, con.text[text + x]);
+		re.DrawChar((x + 1) << 3, v, (int) con.text[text + x]);
 
 	    v += 8;
 	}
@@ -479,7 +479,7 @@ public final class Console extends Globals {
 			- ((viddef.getWidth() >> 3) - (skip + 1)));
 
 	    for (x = 0; x < s.length(); x++) {
-		re.DrawChar((x + skip) << 3, v, s.charAt(x));
+		re.DrawChar((x + skip) << 3, v, (int) s.charAt(x));
 	    }
 	    re.DrawChar((x + skip) << 3, v,
 				10 + ((cls.realtime >> 8) & 1));
@@ -501,7 +501,7 @@ public final class Console extends Globals {
 
         int width = viddef.getWidth();
         int height = viddef.getHeight();
-        int lines = (int) (height * frac);
+        int lines = (int) ((float) height * frac);
 	if (lines <= 0)
 	    return;
 
@@ -516,8 +516,8 @@ public final class Console extends Globals {
         String version = Com.sprintf("v%4.2f", new Vargs(1).add(VERSION));
 	for (int x = 0; x < 5; x++)
 	    re
-		    .DrawChar(width - 44 + x * 8, lines - 12, 128 + version
-			    .charAt(x));
+		    .DrawChar(width - 44 + x * 8, lines - 12, 128 + (int) version
+                    .charAt(x));
 
 	
 	con.vislines = lines;
@@ -530,7 +530,7 @@ public final class Console extends Globals {
 	if (con.display != con.current) {
 	    
 	    for (int x = 0; x < con.linewidth; x += 4)
-		re.DrawChar((x + 1) << 3, y, '^');
+		re.DrawChar((x + 1) << 3, y, (int) '^');
 
 	    y -= 8;
 	    rows--;
@@ -548,7 +548,7 @@ public final class Console extends Globals {
         int first = (row % con.totallines) * con.linewidth;
 
 	    for (x = 0; x < con.linewidth; x++)
-		re.DrawChar((x + 1) << 3, y, con.text[x + first]);
+		re.DrawChar((x + 1) << 3, y, (int) con.text[x + first]);
 	}
 
 	
@@ -556,7 +556,7 @@ public final class Console extends Globals {
 	
 	if (cls.download != null) {
 	    int text;
-	    if ((text = cls.downloadname.lastIndexOf('/')) != 0)
+	    if ((text = cls.downloadname.lastIndexOf((int) '/')) != 0)
 		text++;
 	    else
 		text = 0;
@@ -595,7 +595,7 @@ public final class Console extends Globals {
 	    
 	    y = con.vislines - 12;
 	    for (i = 0; i < dlbar.length(); i++)
-		re.DrawChar((i + 1) << 3, y, dlbar.charAt(i));
+		re.DrawChar((i + 1) << 3, y, (int) dlbar.charAt(i));
 	}
 	
 

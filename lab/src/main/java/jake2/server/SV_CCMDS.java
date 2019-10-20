@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.stream.Stream;
 
 public class SV_CCMDS {
 
@@ -62,7 +61,7 @@ public class SV_CCMDS {
 	public static void SV_SetMaster_f() {
 
 
-		if (Globals.dedicated.value == 0) {
+		if (Globals.dedicated.value == (float) 0) {
 			Com.Printf("Only dedicated servers use masters.\n");
 			return;
 		}
@@ -111,9 +110,9 @@ public class SV_CCMDS {
         String s = Cmd.Argv(1);
 
 		
-		if (s.charAt(0) >= '0' && s.charAt(0) <= '9') {
+		if ((int) s.charAt(0) >= (int) '0' && (int) s.charAt(0) <= (int) '9') {
             int idnum = Lib.atoi(Cmd.Argv(1));
-			if (idnum < 0 || idnum >= SV_MAIN.maxclients.value) {
+			if (idnum < 0 || (float) idnum >= SV_MAIN.maxclients.value) {
 				Com.Printf("Bad client slot: " + idnum + '\n');
 				return false;
 			}
@@ -128,7 +127,7 @@ public class SV_CCMDS {
 		}
 
 		
-		for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+		for (int i = 0; (float) i < SV_MAIN.maxclients.value; i++) {
             client_t cl = SV_INIT.svs.clients[i];
 			if (0 == cl.state)
 				continue;
@@ -514,7 +513,7 @@ public class SV_CCMDS {
 
 
         String map = Cmd.Argv(1);
-		if (map.charAt(0) == '*') {
+		if ((int) map.charAt(0) == (int) '*') {
 			
 			SV_WipeSavegame("current");
 		}
@@ -525,7 +524,7 @@ public class SV_CCMDS {
 				
 				client_t cl;
                 boolean[] savedInuse = new boolean[(int) SV_MAIN.maxclients.value];
-				for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+				for (int i = 0; (float) i < SV_MAIN.maxclients.value; i++) {
 					cl = SV_INIT.svs.clients[i];
 					savedInuse[i] = cl.edict.inuse;
 					cl.edict.inuse = false;
@@ -534,7 +533,7 @@ public class SV_CCMDS {
 				SV_WriteLevelFile();
 
 				
-				for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+				for (int i = 0; (float) i < SV_MAIN.maxclients.value; i++) {
 					cl = SV_INIT.svs.clients[i];
 					cl.edict.inuse = savedInuse[i];
 
@@ -550,7 +549,7 @@ public class SV_CCMDS {
 		SV_INIT.svs.mapcmd = Cmd.Argv(1);
 
 		
-		if (0 == Globals.dedicated.value) {
+		if ((float) 0 == Globals.dedicated.value) {
 			SV_WriteServerFile(true);
 			SV_CopySaveGame("current", "save0");
 		}
@@ -655,7 +654,7 @@ public class SV_CCMDS {
 			return;
 		}
 
-		if (Cvar.VariableValue("deathmatch") != 0) {
+		if (Cvar.VariableValue("deathmatch") != (float) 0) {
 			Com.Printf("Can't savegame in a deathmatch\n");
 			return;
 		}
@@ -665,7 +664,7 @@ public class SV_CCMDS {
 			return;
 		}
 
-		if (SV_MAIN.maxclients.value == 1 && SV_INIT.svs.clients[0].edict.client.ps.stats[Defines.STAT_HEALTH] <= 0) {
+		if (SV_MAIN.maxclients.value == 1.0F && (int) SV_INIT.svs.clients[0].edict.client.ps.stats[Defines.STAT_HEALTH] <= 0) {
 			Com.Printf("\nCan't savegame while dead!\n");
 			return;
 		}
@@ -740,7 +739,7 @@ public class SV_CCMDS {
 
 		Com.Printf("num score ping name            lastmsg address               qport \n");
 		Com.Printf("--- ----- ---- --------------- ------- --------------------- ------\n");
-		for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+		for (int i = 0; (float) i < SV_MAIN.maxclients.value; i++) {
             client_t cl = SV_INIT.svs.clients[i];
 			if (0 == cl.state)
 				continue;
@@ -793,14 +792,14 @@ public class SV_CCMDS {
 
         String p = Cmd.Args();
 
-		if (p.charAt(0) == '"') {
+		if ((int) p.charAt(0) == (int) '"') {
 			p = p.substring(1, p.length() - 1);
 		}
 
         String text = "console: ";
 		text += p;
 
-		for (int j = 0; j < SV_MAIN.maxclients.value; j++) {
+		for (int j = 0; (float) j < SV_MAIN.maxclients.value; j++) {
             client_t client = SV_INIT.svs.clients[j];
 			if (client.state != Defines.cs_spawned)
 				continue;
@@ -1042,7 +1041,7 @@ public class SV_CCMDS {
 			}
 		});
 
-		if (Globals.dedicated.value != 0)
+		if (Globals.dedicated.value != (float) 0)
 			Cmd.AddCommand("say", new xcommand_t() {
 			@Override
             public void execute() {

@@ -22,11 +22,11 @@ public class Recorder {
 
     public void addTick(byte tick) {
         try {
-            if (tick == lastTick) {
+            if ((int) tick == (int) lastTick) {
                 tickCount++;
             } else {
                 dos.writeInt(tickCount);
-                dos.write(tick);
+                dos.write((int) tick);
                 lastTick = tick;
                 tickCount = 1;
             }

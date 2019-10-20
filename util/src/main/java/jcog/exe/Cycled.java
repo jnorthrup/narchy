@@ -65,9 +65,9 @@ public interface Cycled extends Runnable {
      * run asynchronously at specified FPS
      */
     default Loop startFPS(float initialFPS) {
-        assert (initialFPS >= 0);
+        assert (initialFPS >= (float) 0);
 
-        float millisecPerFrame = initialFPS > 0 ? 1000.0f / initialFPS : 0 /* infinite speed */;
+        float millisecPerFrame = initialFPS > (float) 0 ? 1000.0f / initialFPS : (float) 0 /* infinite speed */;
         return startPeriodMS(Math.round(millisecPerFrame));
     }
 

@@ -28,12 +28,12 @@ import jake2.util.Math3D;
 
 public class moveclip_t 
 {
-	final float [] boxmins={0,0,0};
-	final float [] boxmaxs={0,0,0};
+	final float [] boxmins={(float) 0, (float) 0, (float) 0};
+	final float [] boxmaxs={(float) 0, (float) 0, (float) 0};
 	float [] mins;
     float [] maxs;
-	final float [] mins2={0,0,0};
-	final float [] maxs2={0,0,0};	
+	final float [] mins2={(float) 0, (float) 0, (float) 0};
+	final float [] maxs2={(float) 0, (float) 0, (float) 0};
 	float [] start;
     float [] end;
 	

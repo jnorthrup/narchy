@@ -48,9 +48,9 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
     private float valDiff;
     private float count;
     private float pulseLen;
-    private float minLength = 10;
-    private float maxLength = 100;
-    private float lengthExponent = 1;
+    private float minLength = 10.0F;
+    private float maxLength = 100.0F;
+    private float lengthExponent = 1.0F;
     private float lengthDiff;
 
     /**
@@ -62,7 +62,7 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
      * @param maxl    The maximum pulse length.
      */
     public RandomPWM(AudioContext context, Mode mode, float minl, float maxl) {
-        this(context, mode, minl, maxl, 1);
+        this(context, mode, minl, maxl, 1.0F);
     }
 
     /**
@@ -86,9 +86,9 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
 
         if (mode == PULSING) {
             for (int i = 0; i < bo.length; i++) {
-                if (count <= 0) {
+                if (count <= (float) 0) {
                     calcVals();
-                    targetVal = targetVal > 0 ? 0 : 1;
+                    targetVal = (float) (targetVal > (float) 0 ? 0 : 1);
                     valDiff = targetVal - baseVal;
                 }
                 bo[i] = targetVal;
@@ -96,9 +96,9 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
             }
         } else if (mode == ALTERNATING) {
             for (int i = 0; i < bo.length; i++) {
-                if (count <= 0) {
+                if (count <= (float) 0) {
                     calcVals();
-                    targetVal = targetVal > 0 ? -1 : 1;
+                    targetVal = (float) (targetVal > (float) 0 ? -1 : 1);
                     valDiff = targetVal - baseVal;
                 }
                 bo[i] = targetVal;
@@ -106,9 +106,9 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
             }
         } else if (mode == SAW) {
             for (int i = 0; i < bo.length; i++) {
-                if (count <= 0) {
+                if (count <= (float) 0) {
                     calcVals();
-                    targetVal = targetVal > 0 ? -1 : 1;
+                    targetVal = (float) (targetVal > (float) 0 ? -1 : 1);
                     valDiff = targetVal - baseVal;
                 }
                 bo[i] = targetVal - (count / pulseLen) * valDiff;
@@ -116,9 +116,9 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
             }
         } else if (mode == RAMPED_NOISE) {
             for (int i = 0; i < bo.length; i++) {
-                if (count <= 0) {
+                if (count <= (float) 0) {
                     calcVals();
-                    targetVal = (float) (Math.random() * 2 - 1);
+                    targetVal = (float) (Math.random() * 2.0 - 1.0);
                     valDiff = targetVal - baseVal;
                 }
                 bo[i] = targetVal - (count / pulseLen) * valDiff;
@@ -126,7 +126,7 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
             }
         } else if (mode == NOISE_ENVELOPE) {
             for (int i = 0; i < bo.length; i++) {
-                if (count <= 0) {
+                if (count <= (float) 0) {
                     calcVals();
                     targetVal = (float) Math.random();
                     valDiff = targetVal - baseVal;
@@ -137,9 +137,9 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
         } else {
             
             for (int i = 0; i < bo.length; i++) {
-                if (count <= 0) {
+                if (count <= (float) 0) {
                     calcVals();
-                    targetVal = (float) (Math.random() * 2 - 1);
+                    targetVal = (float) (Math.random() * 2.0 - 1.0);
                     valDiff = targetVal - baseVal;
                 }
                 bo[i] = targetVal;
@@ -150,7 +150,7 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
     }
 
     private void calcVals() {
-        float d = (float) Math.pow(Math.random(), lengthExponent) * lengthDiff
+        float d = (float) Math.pow(Math.random(), (double) lengthExponent) * lengthDiff
                 + minLength;
         count += d;
         pulseLen = count;
@@ -182,7 +182,7 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
      */
     private RandomPWM setParams(float minl, float maxl, float lexp) {
         setLengthExponent(lexp);
-        minLength = Math.max(minl, 1);
+        minLength = Math.max(minl, 1.0F);
         maxLength = Math.max(minLength, maxl);
         lengthDiff = maxLength - minLength;
         return this;

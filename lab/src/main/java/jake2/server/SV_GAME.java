@@ -44,7 +44,7 @@ public class SV_GAME {
             return;
 
         int p = ent.index;
-        if (p < 1 || p > SV_MAIN.maxclients.value)
+        if (p < 1 || (float) p > SV_MAIN.maxclients.value)
             return;
 
         client_t client = SV_INIT.svs.clients[p - 1];
@@ -87,7 +87,7 @@ public class SV_GAME {
 
         if (ent != null) {
             n = ent.index;
-            if (n < 1 || n > SV_MAIN.maxclients.value)
+            if (n < 1 || (float) n > SV_MAIN.maxclients.value)
                 Com.Error(Defines.ERR_DROP, "cprintf to a non-client");
         }
 
@@ -105,7 +105,7 @@ public class SV_GAME {
     public static void PF_centerprintf(edict_t ent, String fmt) {
 
         int n = ent.index;
-        if (n < 1 || n > SV_MAIN.maxclients.value)
+        if (n < 1 || (float) n > SV_MAIN.maxclients.value)
             return; 
 
         MSG.WriteByte(SV_INIT.sv.multicast, Defines.svc_centerprint);
@@ -229,7 +229,7 @@ public class SV_GAME {
         
         if (cluster == -1)
             return false;
-        if (mask != null && (0 == (mask[cluster >>> 3] & (1 << (cluster & 7)))))
+        if (mask != null && (0 == ((int) mask[cluster >>> 3] & (1 << (cluster & 7)))))
             return false;
 
         return CM.CM_AreasConnected(area1, area2);
@@ -255,7 +255,7 @@ public class SV_GAME {
         
         if (cluster == -1)
             return false;
-        if (mask != null && (0 == (mask[cluster >> 3] & (1 << (cluster & 7)))))
+        if (mask != null && (0 == ((int) mask[cluster >> 3] & (1 << (cluster & 7)))))
             return false; 
         return CM.CM_AreasConnected(area1, area2);
 

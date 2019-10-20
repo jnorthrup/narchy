@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 
-import static java.util.stream.Collectors.toList;
 import static jcog.Util.compose;
 import static nars.$.$$;
 import static nars.Op.GOAL;
@@ -68,7 +67,7 @@ public class Recog2D extends GameX {
     static final int FPS = 16;
 
     public Recog2D(NAR n) {
-        super($$("x"), GameTime.fps(FPS), n);
+        super($$("x"), GameTime.fps((float) FPS), n);
 
 
         w = 12; h = 14;
@@ -101,18 +100,18 @@ public class Recog2D extends GameX {
 //                outs, nar);
 //        train = null;
 
-        Reward r = rewardNormalized("correct", -1, +1, compose(() -> {
-            double error = 0;
-            double pcSum = 0;
+        Reward r = rewardNormalized("correct", -1.0F, (float) +1, compose(() -> {
+            double error = (double) 0;
+            double pcSum = (double) 0;
             for (int i = 0; i < maxImages; i++) {
                 BeliefVector.Neuron ni = this.outs.neurons[i];
                 ni.update();
                 float pc = ni.predictedConf;
-                pcSum += pc;
-                error += ni.error * pc;
+                pcSum = pcSum + (double) pc;
+                error = error + (double) ni.error * pc;
             }
 
-            return (float)((1.0/(1+(error/pcSum)))-0.5)*2;
+            return (float)((1.0/(1.0 +(error/pcSum)))-0.5)* 2.0F;
             //return Util.clamp(2 * -(error / maxImages - 0.5f), -1, +1);
         }, new FloatAveragedWindow(16, 0.1f)));
 
@@ -192,9 +191,9 @@ public class Recog2D extends GameX {
 //                ),
 
 
-                new AspectAlign(new VectorSensorChart(sp, this), AspectAlign.Align.Center, sp.width, sp.height),
+                new AspectAlign(new VectorSensorChart(sp, this), AspectAlign.Align.Center, (float) sp.width, (float) sp.height),
 
-                new Gridding(beliefTableCharts(nar, List.of(tv.concepts), 16)),
+                new Gridding(beliefTableCharts(nar, List.of(tv.concepts), 16L)),
 
                 new Gridding(list.toArray(new Surface[0])));
 
@@ -250,18 +249,18 @@ public class Recog2D extends GameX {
         g.clearRect(0, 0, w, h);
         FontMetrics fontMetrics = g.getFontMetrics();
 
-        String s = String.valueOf((char) ('0' + image));
+        String s = String.valueOf((char) ((int) '0' + image));
 
         Rectangle2D sb = fontMetrics.getStringBounds(s, g);
 
 
-        g.drawString(s, Math.round(w / 2f - sb.getCenterX()), Math.round(h / 2f - sb.getCenterY()));
+        g.drawString(s, (float) Math.round((double) (w / 2f) - sb.getCenterX()), (float) Math.round((double) (h / 2f) - sb.getCenterY()));
     }
 
     public static void main(String[] arg) {
 
 
-        GameX.Companion.initFn(FPS*2, (n) -> {
+        GameX.Companion.initFn((float) (FPS * 2), (n) -> {
 
             Recog2D a = new Recog2D(n);
             n.add(a);
@@ -358,7 +357,7 @@ public class Recog2D extends GameX {
         class Neuron {
 
             public float predictedFreq = 0.5f;
-            public float predictedConf = 0;
+            public float predictedConf = (float) 0;
 
             public float expectedFreq;
 
@@ -366,7 +365,7 @@ public class Recog2D extends GameX {
 
             public Neuron() {
                 expectedFreq = Float.NaN;
-                error = 0;
+                error = (float) 0;
             }
 
             public void expect(float expected) {
@@ -384,7 +383,7 @@ public class Recog2D extends GameX {
                 float a = this.predictedFreq;
                 float e = this.expectedFreq;
                 if (e != e) {
-                    this.error = 0;
+                    this.error = (float) 0;
                 } else if (a != a) {
                     this.error = 0.5f;
                 } else {
@@ -439,7 +438,7 @@ public class Recog2D extends GameX {
                             float predictedFreq = x != null ? x.freq() : 0.5f;
 
 
-                            n.actual(predictedFreq, x != null ? x.conf() : 0);
+                            n.actual(predictedFreq, x != null ? x.conf() : (float) 0);
 
 
                             //return x;

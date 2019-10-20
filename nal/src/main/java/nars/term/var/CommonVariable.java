@@ -15,7 +15,6 @@ import org.eclipse.collections.impl.set.mutable.primitive.ShortHashSet;
 
 import java.util.Arrays;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 import static nars.term.atom.IdempotentBool.Null;
 

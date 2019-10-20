@@ -95,18 +95,18 @@ public class Weather extends NARPart {
                 noon = null; //TODO DateTimeFormat.forPattern("hh:mm:ss a").withZoneUTC().parseDateTime(w.get("solar_noon").asText()).toDateTime().withDate(LocalDate.now()).toDate();
 
 
-                long HALF_HOUR_ms = 3600/2 * 1000;
+                long HALF_HOUR_ms = (long) (3600 / 2 * 1000);
                 /* (parameters) */
                 events.add(
-                        NALTask.the($$("sunrise" /* (parameters) */), BELIEF, $.t(1, 0.9f), nar.time(), sunrise.getTime() - HALF_HOUR_ms, sunrise.getTime() + HALF_HOUR_ms, nar.evidence())
+                        NALTask.the($$("sunrise" /* (parameters) */), BELIEF, $.t(1.0F, 0.9f), nar.time(), sunrise.getTime() - HALF_HOUR_ms, sunrise.getTime() + HALF_HOUR_ms, nar.evidence())
                 );
                 /* (parameters) */
                 events.add(
-                        NALTask.the($$("sunset" /* (parameters) */), BELIEF, $.t(1, 0.9f), nar.time(), sunset.getTime() - HALF_HOUR_ms, sunset.getTime() + HALF_HOUR_ms, nar.evidence())
+                        NALTask.the($$("sunset" /* (parameters) */), BELIEF, $.t(1.0F, 0.9f), nar.time(), sunset.getTime() - HALF_HOUR_ms, sunset.getTime() + HALF_HOUR_ms, nar.evidence())
                 );
                 /* (parameters) */
                 events.add(
-                        NALTask.the($$("daylight" /* (parameters) */), BELIEF, $.t(1, 0.9f), nar.time(), sunrise.getTime(), sunset.getTime(), nar.evidence())
+                        NALTask.the($$("daylight" /* (parameters) */), BELIEF, $.t(1.0F, 0.9f), nar.time(), sunrise.getTime(), sunset.getTime(), nar.evidence())
                 );
             }
 
@@ -144,7 +144,7 @@ public class Weather extends NARPart {
                     Date ww = null; //TODO df.parseDateTime(times.get(i).asText()).toDate();
                     int tempFahrenheit = Integer.valueOf(temperatures.get(i).asText()); //a string really??
 
-                    forecastTemperature(ww, 3600*1000*6, tempFahrenheit);
+                    forecastTemperature(ww, (long) (3600 * 1000 * 6), (float) tempFahrenheit);
                 }
 
                 //{"operationalMode":"Production","srsName":"WGS 1984","creationDate":"2018-11-03T06:43:03-04:00","creationDateLocal":"1 Jan 00:00 am EDT","productionCenter":"Wakefield, VA","credit":"http://www.weather.gov/akq/","moreInformation":"http://weather.gov","location":{"region":"erh","latitude":"37.99","longitude":"-75.01","elevation":"0","wfo":"AKQ","timezone":"E|Y|5","areaDescription":"17NM E Chincoteague VA","radar":"KDOX","zone":"ANZ650","county":"marine","firezone":"","metar":""},"time":{"layoutKey":"k-p12h-n9-1","startPeriodName":["Today","Tonight","Sunday","Sunday Night","Monday","Monday Night","Tuesday","Tuesday Night","Wednesday"],"startValidTime":["2018-11-03T06:00:00-04:00","2018-11-03T18:00:00-04:00","2018-11-04T06:00:00-05:00","2018-11-04T18:00:00-05:00","2018-11-05T06:00:00-05:00","2018-11-05T18:00:00-05:00","2018-11-06T06:00:00-05:00","2018-11-06T18:00:00-05:00","2018-11-07T06:00:00-05:00"],"tempLabel":["High","Low","High","Low","High","Low","High","Low","High"]},"data":{"temperature":["61","50","62","57","66","61","68","62","67"],"pop":[null,null,null,null,null,null,null,null,null],"weather":[" "," "," "," "," "," "," "," "," "],"iconLink":["http://forecast.weather.gov/images/wtf/medium/m_hi_shwrs.png","http://forecast.weather.gov/images/wtf/medium/m_nskc.png","http://forecast.weather.gov/images/wtf/medium/m_few.png","http://forecast.weather.gov/images/wtf/medium/m_nshra.png","http://forecast.weather.gov/images/wtf/medium/m_shra.png","http://forecast.weather.gov/images/wtf/medium/m_nshra.png","http://forecast.weather.gov/images/wtf/medium/m_tsra.png","http://forecast.weather.gov/images/wtf/medium/m_ntsra.png","http://forecast.weather.gov/images/wtf/medium/m_shra.png"],"hazard":["Small Craft Advisory"],"hazardUrl":["http://forecast.weather.gov/showsigwx.php?warnzone=ANZ650&amp;warncounty=marine&amp;firewxzone=&amp;local_place1=17NM+E+Chincoteague+VA&amp;product1=Small+Craft+Advisory"],"text":["WNW wind 23 to 26 kt decreasing to 20 to 23 kt in the afternoon. Winds could gust as high as 32 kt. A slight chance of showers before 10am.   Seas 5 to 6 ft.","WNW wind around 14 kt becoming N after midnight. Clear. Seas 3 to 4 ft.","NNE wind 10 to 13 kt becoming E in the afternoon. Sunny. Seas around 3 ft.","E wind 13 to 15 kt. A chance of showers, mainly after 2am.   Seas around 3 ft.","E wind 16 to 19 kt decreasing to 13 to 16 kt in the afternoon. Showers likely, mainly between 8am and 2pm.   Seas 4 ft building to 6 ft.","SSE wind 5 to 9 kt. A chance of showers.   Seas around 5 ft.","SE wind 6 to 9 kt becoming S 11 to 16 kt in the afternoon. A chance of showers and thunderstorms.   Seas around 4 ft.","S wind 19 to 21 kt becoming SW after midnight. A chance of showers and thunderstorms.   Seas 5 to 6 ft.","W wind 11 to 14 kt. A chance of showers.   Seas 4 to 5 ft."]},"currentobservation":{"id":"","name":"","elev":"","latitude":"","longitude":"","Date":"1 Jan 00:00 am EDT","datetime":"","Temp":"0","AirTemp":"","WaterTemp":"","Dewp":"","Winds":"","Windd":"","Gust":"","Weather":"","WaveHeight":"","Visibility":"","Pressure":"","timezone":"","state":"","DomWavePeriod":""}}
@@ -160,7 +160,7 @@ public class Weather extends NARPart {
         //System.out.println(at + " " + degreesF + " deg F");
         /* parameters, */
         events.add(
-                NALTask.the($.func("temperature", /* parameters, */ $.the(degreesF)), BELIEF, $.t(1, 0.9f), nar.time(), at.getTime() - radiusMS, at.getTime() + radiusMS, nar.evidence())
+                NALTask.the($.func("temperature", /* parameters, */ $.the(degreesF)), BELIEF, $.t(1.0F, 0.9f), nar.time(), at.getTime() - radiusMS, at.getTime() + radiusMS, nar.evidence())
         );
     }
 

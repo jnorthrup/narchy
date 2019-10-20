@@ -25,7 +25,7 @@ public class EvolutionParameters {
 
     private int elitarism = 1;
     private int maxCreationDepth = 7;
-    private float rootCrossoverSelectionProbability = 0;
+    private float rootCrossoverSelectionProbability = (float) 0;
     private float leafCrossoverSelectionProbability = 0.1f;
     private float nodeCrossoverSelectionProbability = 0.9f;
     private int generations;

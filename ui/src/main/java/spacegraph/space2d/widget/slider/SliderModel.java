@@ -153,12 +153,12 @@ public class SliderModel extends PaintSurface {
     }
 
     private static float pVertical(v2 hitPoint) {
-        return pTarget(1 - hitPoint.y);
+        return pTarget(1.0F - hitPoint.y);
     }
 
     private static float pTarget(float x) {
         if (x <= margin)
-            return 0;
+            return (float) 0;
         else if (x >= (1f - margin))
             return 1f;
         else
@@ -170,7 +170,7 @@ public class SliderModel extends PaintSurface {
      */
     private static float pTarget(float x, float knob) {
 
-        return knob > 0 ? Util.clamp(pTarget(x) - knob / 2, 0, 1 - knob) : x;
+        return knob > (float) 0 ? Util.clamp(pTarget(x) - knob / 2.0F, (float) 0, 1.0F - knob) : x;
     }
 
 
@@ -180,14 +180,14 @@ public class SliderModel extends PaintSurface {
 
 
             gl.glColor4f(0f, 0f, 0f, 0.5f);
-            float W = 1;
+            float W = 1.0F;
             float barSize = W * p;
-            float H = 1;
-            Draw.rect(barSize, 0, W - barSize, H, gl);
+            float H = 1.0F;
+            Draw.rect(barSize, (float) 0, W - barSize, H, gl);
 
 
             gl.glColor4f(0.75f * 1f - p, 0.75f * p, 0f, 0.8f);
-            Draw.rect(0, 0, barSize, H, gl);
+            Draw.rect((float) 0, (float) 0, barSize, H, gl);
         }
 
         @Override
@@ -202,7 +202,7 @@ public class SliderModel extends PaintSurface {
     public static final SliderUI KnobVert = new KnobVert() {
         @Override
         public float p(v2 hitPoint) {
-            return pTarget(1 - hitPoint.y, 0);
+            return pTarget(1.0F - hitPoint.y, (float) 0);
         }
     };
 
@@ -213,7 +213,7 @@ public class SliderModel extends PaintSurface {
     public static final SliderUI KnobHoriz = new KnobHoriz() {
         @Override
         public float p(v2 hitPoint) {
-            return pTarget(hitPoint.x, 0);
+            return pTarget(hitPoint.x, (float) 0);
         }
     };
 
@@ -222,18 +222,18 @@ public class SliderModel extends PaintSurface {
         @Override
         public void paint(float p, GL2 gl) {
 
-            float y = H * (1-p);
+            float y = H * (1.0F -p);
 
             gl.glColor4f(0f, 0f, 0f, 0.5f);
-            Draw.rect(0, 0, W, H, gl);
+            Draw.rect((float) 0, (float) 0, W, H, gl);
 
             gl.glColor4f(1f - p, p, 0f, 0.75f);
-            Draw.rect(0, y-knob/2, W, knob, gl);
+            Draw.rect((float) 0, y-knob/ 2.0F, W, knob, gl);
         }
 
         @Override
         public float p(v2 hitPoint) {
-            return pTarget(1-hitPoint.y, knob);
+            return pTarget(1.0F -hitPoint.y, knob);
         }
     }
 
@@ -244,10 +244,10 @@ public class SliderModel extends PaintSurface {
             float x = W * p;
 
             gl.glColor4f(0f, 0f, 0f, 0.5f);
-            Draw.rect(0, 0, W, H, gl);
+            Draw.rect((float) 0, (float) 0, W, H, gl);
 
             gl.glColor4f(1f - p, p, 0f, 0.75f);
-            Draw.rect(x-knob/2, 0, knob, H, gl);
+            Draw.rect(x-knob/ 2.0F, (float) 0, knob, H, gl);
         }
 
         @Override
@@ -263,8 +263,8 @@ public class SliderModel extends PaintSurface {
          */
         public float knob = 0.05f;
 
-        public float W = 1;
-        public float H = 1;
+        public float W = 1.0F;
+        public float H = 1.0F;
 
     }
 }

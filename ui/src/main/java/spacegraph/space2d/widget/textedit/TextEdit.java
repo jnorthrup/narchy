@@ -31,8 +31,8 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
 
     public TextEdit(int cols, int rows, int colsMax, int rowsMax /*boolean editable*/) {
         this();
-        viewMax(new v2(Math.max(cols,colsMax), Math.max(rows, rowsMax)));
-        view(cols, rows);
+        viewMax(new v2((float) Math.max(cols, colsMax), (float) Math.max(rows, rowsMax)));
+        view((float) cols, (float) rows);
     }
 
     public TextEdit() {
@@ -44,8 +44,8 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
         model.keys = TextEditActions.DEFAULT_KEYS;
 
 
-        v2 initialSize = new v2(1, 1);
-        viewMinMax(new v2(1,1), initialSize);
+        v2 initialSize = new v2(1.0F, 1.0F);
+        viewMinMax(new v2(1.0F, 1.0F), initialSize);
         view(initialSize);
 
 
@@ -112,8 +112,8 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
     private void viewAll() {
         Buffer b = buffer();
         int w = b.width(), h = b.height();
-        viewMax(new v2(Math.max(viewMax.x, w), Math.max(viewMax.y, h)));
-        view(w, h);
+        viewMax(new v2(Math.max(viewMax.x, (float) w), Math.max(viewMax.y, (float) h)));
+        view((float) w, (float) h);
     }
 
     public String text() {
@@ -122,7 +122,7 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
 
     private void updateScroll() {
         Buffer buffer = buffer();
-        viewMax(new v2(Math.max(viewMax.x, buffer.width()), Math.max(viewMax.y, buffer.height())));
+        viewMax(new v2(Math.max(viewMax.x, (float) buffer.width()), Math.max(viewMax.y, (float) buffer.height())));
         onChange.emit(TextEdit.this);
     }
 

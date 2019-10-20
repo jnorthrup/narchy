@@ -298,8 +298,8 @@ public class M_Parasite {
         @Override
         public boolean think(edict_t self) {
 
-            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_launch, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_launch, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
@@ -309,8 +309,8 @@ public class M_Parasite {
         public String getID(){ return "parasite_reel_in"; }
         @Override
         public boolean think(edict_t self) {
-            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_reelin, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_reelin, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
@@ -320,8 +320,8 @@ public class M_Parasite {
         public String getID(){ return "parasite_sight"; }
         @Override
         public boolean interact(edict_t self, edict_t other) {
-            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_sight, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_sight, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             return true;
         }
     };
@@ -331,8 +331,8 @@ public class M_Parasite {
         public String getID(){ return "parasite_tap"; }
         @Override
         public boolean think(edict_t self) {
-            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_tap, 1,
-                    Defines.ATTN_IDLE, 0);
+            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_tap, 1.0F,
+                    (float) Defines.ATTN_IDLE, (float) 0);
             return true;
         }
     };
@@ -342,8 +342,8 @@ public class M_Parasite {
         public String getID(){ return "parasite_scratch"; }
         @Override
         public boolean think(edict_t self) {
-            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_scratch, 1,
-                    Defines.ATTN_IDLE, 0);
+            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_scratch, 1.0F,
+                    (float) Defines.ATTN_IDLE, (float) 0);
             return true;
         }
     };
@@ -353,8 +353,8 @@ public class M_Parasite {
         public String getID(){ return "parasite_search"; }
         @Override
         public boolean think(edict_t self) {
-            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_search, 1,
-                    Defines.ATTN_IDLE, 0);
+            game_import_t.sound(self, Defines.CHAN_WEAPON, sound_search, 1.0F,
+                    (float) Defines.ATTN_IDLE, (float) 0);
             return true;
         }
     };
@@ -414,7 +414,7 @@ public class M_Parasite {
         public String getID(){ return "parasite_refidget"; }
         @Override
         public boolean think(edict_t self) {
-            if (Lib.random() <= 0.8)
+            if ((double) Lib.random() <= 0.8)
                 self.monsterinfo.currentmove = parasite_move_fidget;
             else
                 self.monsterinfo.currentmove = parasite_move_end_fidget;
@@ -459,132 +459,132 @@ public class M_Parasite {
     };
 
     static final mframe_t[] parasite_frames_start_fidget = {
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null) };
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null) };
 
     static final mmove_t parasite_move_start_fidget = new mmove_t(FRAME_stand18,
             FRAME_stand21, parasite_frames_start_fidget, parasite_do_fidget);
 
     static final mframe_t[] parasite_frames_fidget = {
-            new mframe_t(GameAI.ai_stand, 0, parasite_scratch),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, parasite_scratch),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null) };
+            new mframe_t(GameAI.ai_stand, (float) 0, parasite_scratch),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, parasite_scratch),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null) };
 
     static final mmove_t parasite_move_fidget = new mmove_t(FRAME_stand22,
             FRAME_stand27, parasite_frames_fidget, parasite_refidget);
 
     static final mframe_t[] parasite_frames_end_fidget = {
-            new mframe_t(GameAI.ai_stand, 0, parasite_scratch),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null) };
+            new mframe_t(GameAI.ai_stand, (float) 0, parasite_scratch),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null) };
 
     static final mmove_t parasite_move_end_fidget = new mmove_t(FRAME_stand28,
             FRAME_stand35, parasite_frames_end_fidget, parasite_stand);
 
     static final mframe_t[] parasite_frames_stand = {
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, parasite_tap),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, parasite_tap),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, parasite_tap),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, parasite_tap),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, parasite_tap),
-            new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, parasite_tap) };
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, parasite_tap),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, parasite_tap),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, parasite_tap),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, parasite_tap),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, parasite_tap),
+            new mframe_t(GameAI.ai_stand, (float) 0, null),
+            new mframe_t(GameAI.ai_stand, (float) 0, parasite_tap) };
 
     static final mmove_t parasite_move_stand = new mmove_t(FRAME_stand01,
             FRAME_stand17, parasite_frames_stand, parasite_stand);
 
     static final mframe_t[] parasite_frames_run = {
-            new mframe_t(GameAI.ai_run, 30, null),
-            new mframe_t(GameAI.ai_run, 30, null),
-            new mframe_t(GameAI.ai_run, 22, null),
-            new mframe_t(GameAI.ai_run, 19, null),
-            new mframe_t(GameAI.ai_run, 24, null),
-            new mframe_t(GameAI.ai_run, 28, null),
-            new mframe_t(GameAI.ai_run, 25, null) };
+            new mframe_t(GameAI.ai_run, 30.0F, null),
+            new mframe_t(GameAI.ai_run, 30.0F, null),
+            new mframe_t(GameAI.ai_run, 22.0F, null),
+            new mframe_t(GameAI.ai_run, 19.0F, null),
+            new mframe_t(GameAI.ai_run, 24.0F, null),
+            new mframe_t(GameAI.ai_run, 28.0F, null),
+            new mframe_t(GameAI.ai_run, 25.0F, null) };
 
     static final mmove_t parasite_move_run = new mmove_t(FRAME_run03, FRAME_run09,
             parasite_frames_run, null);
 
     static final mframe_t[] parasite_frames_start_run = {
-            new mframe_t(GameAI.ai_run, 0, null),
-            new mframe_t(GameAI.ai_run, 30, null), };
+            new mframe_t(GameAI.ai_run, (float) 0, null),
+            new mframe_t(GameAI.ai_run, 30.0F, null), };
 
     static final mmove_t parasite_move_start_run = new mmove_t(FRAME_run01,
             FRAME_run02, parasite_frames_start_run, parasite_run);
 
     static final mframe_t[] parasite_frames_stop_run = {
-            new mframe_t(GameAI.ai_run, 20, null),
-            new mframe_t(GameAI.ai_run, 20, null),
-            new mframe_t(GameAI.ai_run, 12, null),
-            new mframe_t(GameAI.ai_run, 10, null),
-            new mframe_t(GameAI.ai_run, 0, null),
-            new mframe_t(GameAI.ai_run, 0, null) };
+            new mframe_t(GameAI.ai_run, 20.0F, null),
+            new mframe_t(GameAI.ai_run, 20.0F, null),
+            new mframe_t(GameAI.ai_run, 12.0F, null),
+            new mframe_t(GameAI.ai_run, 10.0F, null),
+            new mframe_t(GameAI.ai_run, (float) 0, null),
+            new mframe_t(GameAI.ai_run, (float) 0, null) };
 
     static mmove_t parasite_move_stop_run = new mmove_t(FRAME_run10,
             FRAME_run15, parasite_frames_stop_run, null);
 
     static final mframe_t[] parasite_frames_walk = {
-            new mframe_t(GameAI.ai_walk, 30, null),
-            new mframe_t(GameAI.ai_walk, 30, null),
-            new mframe_t(GameAI.ai_walk, 22, null),
-            new mframe_t(GameAI.ai_walk, 19, null),
-            new mframe_t(GameAI.ai_walk, 24, null),
-            new mframe_t(GameAI.ai_walk, 28, null),
-            new mframe_t(GameAI.ai_walk, 25, null) };
+            new mframe_t(GameAI.ai_walk, 30.0F, null),
+            new mframe_t(GameAI.ai_walk, 30.0F, null),
+            new mframe_t(GameAI.ai_walk, 22.0F, null),
+            new mframe_t(GameAI.ai_walk, 19.0F, null),
+            new mframe_t(GameAI.ai_walk, 24.0F, null),
+            new mframe_t(GameAI.ai_walk, 28.0F, null),
+            new mframe_t(GameAI.ai_walk, 25.0F, null) };
 
     static final mmove_t parasite_move_walk = new mmove_t(FRAME_run03, FRAME_run09,
             parasite_frames_walk, parasite_walk);
 
     static final mframe_t[] parasite_frames_start_walk = {
-            new mframe_t(GameAI.ai_walk, 0, null),
-            new mframe_t(GameAI.ai_walk, 30, parasite_walk) };
+            new mframe_t(GameAI.ai_walk, (float) 0, null),
+            new mframe_t(GameAI.ai_walk, 30.0F, parasite_walk) };
 
     static final mmove_t parasite_move_start_walk = new mmove_t(FRAME_run01,
             FRAME_run02, parasite_frames_start_walk, null);
 
     static final mframe_t[] parasite_frames_stop_walk = {
-            new mframe_t(GameAI.ai_walk, 20, null),
-            new mframe_t(GameAI.ai_walk, 20, null),
-            new mframe_t(GameAI.ai_walk, 12, null),
-            new mframe_t(GameAI.ai_walk, 10, null),
-            new mframe_t(GameAI.ai_walk, 0, null),
-            new mframe_t(GameAI.ai_walk, 0, null) };
+            new mframe_t(GameAI.ai_walk, 20.0F, null),
+            new mframe_t(GameAI.ai_walk, 20.0F, null),
+            new mframe_t(GameAI.ai_walk, 12.0F, null),
+            new mframe_t(GameAI.ai_walk, 10.0F, null),
+            new mframe_t(GameAI.ai_walk, (float) 0, null),
+            new mframe_t(GameAI.ai_walk, (float) 0, null) };
 
     static mmove_t parasite_move_stop_walk = new mmove_t(FRAME_run10,
             FRAME_run15, parasite_frames_stop_walk, null);
 
     static final mframe_t[] parasite_frames_pain1 = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 6, null),
-            new mframe_t(GameAI.ai_move, 16, null),
-            new mframe_t(GameAI.ai_move, -6, null),
-            new mframe_t(GameAI.ai_move, -7, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, 6.0F, null),
+            new mframe_t(GameAI.ai_move, 16.0F, null),
+            new mframe_t(GameAI.ai_move, -6.0F, null),
+            new mframe_t(GameAI.ai_move, -7.0F, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t parasite_move_pain1 = new mmove_t(FRAME_pain101,
             FRAME_pain111, parasite_frames_pain1, parasite_start_run);
@@ -600,17 +600,17 @@ public class M_Parasite {
             if (GameBase.level.time < self.pain_debounce_time)
                 return;
 
-            self.pain_debounce_time = GameBase.level.time + 3;
+            self.pain_debounce_time = GameBase.level.time + 3.0F;
 
-            if (GameBase.skill.value == 3)
+            if (GameBase.skill.value == 3.0F)
                 return; 
 
-            if (Lib.random() < 0.5)
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
-                        Defines.ATTN_NORM, 0);
+            if ((double) Lib.random() < 0.5)
+                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1.0F,
+                        (float) Defines.ATTN_NORM, (float) 0);
             else
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain2, 1,
-                        Defines.ATTN_NORM, 0);
+                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain2, 1.0F,
+                        (float) Defines.ATTN_NORM, (float) 0);
 
             self.monsterinfo.currentmove = parasite_move_pain1;
         }
@@ -621,21 +621,21 @@ public class M_Parasite {
         public String getID(){ return "parasite_drain_attack"; }
         @Override
         public boolean think(edict_t self) {
-            float[] f = { 0, 0, 0 }, r = {
-                    0, 0, 0 };
+            float[] f = {(float) 0, (float) 0, (float) 0}, r = {
+                    (float) 0, (float) 0, (float) 0};
 
             Math3D.AngleVectors(self.s.angles, f, r, null);
-            float[] offset = {0, 0, 0};
-            Math3D.VectorSet(offset, 24, 0, 6);
-            float[] start = {0, 0, 0};
+            float[] offset = {(float) 0, (float) 0, (float) 0};
+            Math3D.VectorSet(offset, 24.0F, (float) 0, 6.0F);
+            float[] start = {(float) 0, (float) 0, (float) 0};
             Math3D.G_ProjectSource(self.s.origin, offset, f, r, start);
 
-            float[] end = {0, 0, 0};
+            float[] end = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorCopy(self.enemy.s.origin, end);
             if (!parasite_drain_attack_ok(start, end)) {
-                end[2] = self.enemy.s.origin[2] + self.enemy.maxs[2] - 8;
+                end[2] = self.enemy.s.origin[2] + self.enemy.maxs[2] - 8.0F;
                 if (!parasite_drain_attack_ok(start, end)) {
-                    end[2] = self.enemy.s.origin[2] + self.enemy.mins[2] + 8;
+                    end[2] = self.enemy.s.origin[2] + self.enemy.mins[2] + 8.0F;
                     if (!parasite_drain_attack_ok(start, end))
                         return true;
                 }
@@ -651,11 +651,11 @@ public class M_Parasite {
             if (self.s.frame == FRAME_drain03) {
                 damage = 5;
                 game_import_t.sound(self.enemy, Defines.CHAN_AUTO, sound_impact,
-                        1, Defines.ATTN_NORM, 0);
+                        1.0F, (float) Defines.ATTN_NORM, (float) 0);
             } else {
                 if (self.s.frame == FRAME_drain04)
-                    game_import_t.sound(self, Defines.CHAN_WEAPON, sound_suck, 1,
-                            Defines.ATTN_NORM, 0);
+                    game_import_t.sound(self, Defines.CHAN_WEAPON, sound_suck, 1.0F,
+                            (float) Defines.ATTN_NORM, (float) 0);
                 damage = 2;
             }
 
@@ -667,7 +667,7 @@ public class M_Parasite {
             game_import_t.WritePosition(end);
             game_import_t.multicast(self.s.origin, Defines.MULTICAST_PVS);
 
-            float[] dir = {0, 0, 0};
+            float[] dir = {(float) 0, (float) 0, (float) 0};
             Math3D.VectorSubtract(start, end, dir);
             GameCombat.T_Damage(self.enemy, self, self, dir, self.enemy.s.origin,
                     Globals.vec3_origin, damage, 0,
@@ -677,63 +677,63 @@ public class M_Parasite {
     };
 
     static final mframe_t[] parasite_frames_drain = {
-            new mframe_t(GameAI.ai_charge, 0, parasite_launch),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 15, parasite_drain_attack),
+            new mframe_t(GameAI.ai_charge, (float) 0, parasite_launch),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, 15.0F, parasite_drain_attack),
             
-            new mframe_t(GameAI.ai_charge, 0, parasite_drain_attack), 
-            new mframe_t(GameAI.ai_charge, 0, parasite_drain_attack), 
-            new mframe_t(GameAI.ai_charge, 0, parasite_drain_attack), 
-            new mframe_t(GameAI.ai_charge, 0, parasite_drain_attack), 
-            new mframe_t(GameAI.ai_charge, -2, parasite_drain_attack), 
-            new mframe_t(GameAI.ai_charge, -2, parasite_drain_attack), 
-            new mframe_t(GameAI.ai_charge, -3, parasite_drain_attack), 
-            new mframe_t(GameAI.ai_charge, -2, parasite_drain_attack), 
-            new mframe_t(GameAI.ai_charge, 0, parasite_drain_attack), 
-            new mframe_t(GameAI.ai_charge, -1, parasite_drain_attack), 
-            new mframe_t(GameAI.ai_charge, 0, parasite_reel_in), 
-            new mframe_t(GameAI.ai_charge, -2, null),
-            new mframe_t(GameAI.ai_charge, -2, null),
-            new mframe_t(GameAI.ai_charge, -3, null),
-            new mframe_t(GameAI.ai_charge, 0, null) };
+            new mframe_t(GameAI.ai_charge, (float) 0, parasite_drain_attack),
+            new mframe_t(GameAI.ai_charge, (float) 0, parasite_drain_attack),
+            new mframe_t(GameAI.ai_charge, (float) 0, parasite_drain_attack),
+            new mframe_t(GameAI.ai_charge, (float) 0, parasite_drain_attack),
+            new mframe_t(GameAI.ai_charge, -2.0F, parasite_drain_attack),
+            new mframe_t(GameAI.ai_charge, -2.0F, parasite_drain_attack),
+            new mframe_t(GameAI.ai_charge, -3.0F, parasite_drain_attack),
+            new mframe_t(GameAI.ai_charge, -2.0F, parasite_drain_attack),
+            new mframe_t(GameAI.ai_charge, (float) 0, parasite_drain_attack),
+            new mframe_t(GameAI.ai_charge, -1.0F, parasite_drain_attack),
+            new mframe_t(GameAI.ai_charge, (float) 0, parasite_reel_in),
+            new mframe_t(GameAI.ai_charge, -2.0F, null),
+            new mframe_t(GameAI.ai_charge, -2.0F, null),
+            new mframe_t(GameAI.ai_charge, -3.0F, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null) };
 
     static final mmove_t parasite_move_drain = new mmove_t(FRAME_drain01,
             FRAME_drain18, parasite_frames_drain, parasite_start_run);
 
     static final mframe_t[] parasite_frames_break = {
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, -3, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 2, null),
-            new mframe_t(GameAI.ai_charge, -3, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 1, null),
-            new mframe_t(GameAI.ai_charge, 3, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, -18, null),
-            new mframe_t(GameAI.ai_charge, 3, null),
-            new mframe_t(GameAI.ai_charge, 9, null),
-            new mframe_t(GameAI.ai_charge, 6, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, -18, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 8, null),
-            new mframe_t(GameAI.ai_charge, 9, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, -18, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
-            new mframe_t(GameAI.ai_charge, 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, -3.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 2.0F, null),
+            new mframe_t(GameAI.ai_charge, -3.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null),
+            new mframe_t(GameAI.ai_charge, 3.0F, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, -18.0F, null),
+            new mframe_t(GameAI.ai_charge, 3.0F, null),
+            new mframe_t(GameAI.ai_charge, 9.0F, null),
+            new mframe_t(GameAI.ai_charge, 6.0F, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, -18.0F, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, 8.0F, null),
+            new mframe_t(GameAI.ai_charge, 9.0F, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, -18.0F, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
+            new mframe_t(GameAI.ai_charge, (float) 0, null),
             /* airborne */
-            new mframe_t(GameAI.ai_charge, 0, null), /* slides */
-            new mframe_t(GameAI.ai_charge, 0, null), /* slides */
-            new mframe_t(GameAI.ai_charge, 0, null), /* slides */
-            new mframe_t(GameAI.ai_charge, 0, null), /* slides */
-            new mframe_t(GameAI.ai_charge, 4, null),
-            new mframe_t(GameAI.ai_charge, 11, null),
-            new mframe_t(GameAI.ai_charge, -2, null),
-            new mframe_t(GameAI.ai_charge, -5, null),
-            new mframe_t(GameAI.ai_charge, 1, null) };
+            new mframe_t(GameAI.ai_charge, (float) 0, null), /* slides */
+            new mframe_t(GameAI.ai_charge, (float) 0, null), /* slides */
+            new mframe_t(GameAI.ai_charge, (float) 0, null), /* slides */
+            new mframe_t(GameAI.ai_charge, (float) 0, null), /* slides */
+            new mframe_t(GameAI.ai_charge, 4.0F, null),
+            new mframe_t(GameAI.ai_charge, 11.0F, null),
+            new mframe_t(GameAI.ai_charge, -2.0F, null),
+            new mframe_t(GameAI.ai_charge, -5.0F, null),
+            new mframe_t(GameAI.ai_charge, 1.0F, null) };
 
     static mmove_t parasite_move_break = new mmove_t(FRAME_break01,
             FRAME_break32, parasite_frames_break, parasite_start_run);
@@ -764,24 +764,24 @@ public class M_Parasite {
         public String getID(){ return "parasite_dead"; }
         @Override
         public boolean think(edict_t self) {
-            Math3D.VectorSet(self.mins, -16, -16, -24);
-            Math3D.VectorSet(self.maxs, 16, 16, -8);
+            Math3D.VectorSet(self.mins, -16.0F, -16.0F, -24.0F);
+            Math3D.VectorSet(self.maxs, 16.0F, 16.0F, -8.0F);
             self.movetype = Defines.MOVETYPE_TOSS;
             self.svflags |= Defines.SVF_DEADMONSTER;
-            self.nextthink = 0;
+            self.nextthink = (float) 0;
             game_import_t.linkentity(self);
             return true;
         }
     };
 
     static final mframe_t[] parasite_frames_death = {
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) };
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null),
+            new mframe_t(GameAI.ai_move, (float) 0, null) };
 
     static final mmove_t parasite_move_death = new mmove_t(FRAME_death101,
             FRAME_death107, parasite_frames_death, parasite_dead);
@@ -797,8 +797,8 @@ public class M_Parasite {
             if (self.health <= self.gib_health) {
                 game_import_t
                         .sound(self, Defines.CHAN_VOICE, game_import_t
-                                .soundindex("misc/udeath.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                                .soundindex("misc/udeath.wav"), 1.0F,
+                                (float) Defines.ATTN_NORM, (float) 0);
                 int n;
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
@@ -817,8 +817,8 @@ public class M_Parasite {
                 return;
 
             
-            game_import_t.sound(self, Defines.CHAN_VOICE, sound_die, 1,
-                    Defines.ATTN_NORM, 0);
+            game_import_t.sound(self, Defines.CHAN_VOICE, sound_die, 1.0F,
+                    (float) Defines.ATTN_NORM, (float) 0);
             self.deadflag = Defines.DEAD_DEAD;
             self.takedamage = Defines.DAMAGE_YES;
             self.monsterinfo.currentmove = parasite_move_death;
@@ -839,7 +839,7 @@ public class M_Parasite {
         public String getID(){ return "SP_monster_parasite"; }
         @Override
         public boolean think(edict_t self) {
-            if (GameBase.deathmatch.value != 0) {
+            if (GameBase.deathmatch.value != (float) 0) {
                 GameUtil.G_FreeEdict(self);
                 return true;
             }
@@ -858,8 +858,8 @@ public class M_Parasite {
 
             self.s.modelindex = game_import_t
                     .modelindex("models/monsters/parasite/tris.md2");
-            Math3D.VectorSet(self.mins, -16, -16, -24);
-            Math3D.VectorSet(self.maxs, 16, 16, 24);
+            Math3D.VectorSet(self.mins, -16.0F, -16.0F, -24.0F);
+            Math3D.VectorSet(self.maxs, 16.0F, 16.0F, 24.0F);
             self.movetype = Defines.MOVETYPE_STEP;
             self.solid = Defines.SOLID_BBOX;
 
@@ -889,19 +889,19 @@ public class M_Parasite {
     };
 
     static boolean parasite_drain_attack_ok(float[] start, float[] end) {
-        float[] dir = { 0, 0, 0 };
+        float[] dir = {(float) 0, (float) 0, (float) 0};
 
 
         Math3D.VectorSubtract(start, end, dir);
-        if (Math3D.VectorLength(dir) > 256)
+        if (Math3D.VectorLength(dir) > 256.0F)
             return false;
 
 
-        float[] angles = {0, 0, 0};
+        float[] angles = {(float) 0, (float) 0, (float) 0};
         Math3D.vectoangles(dir, angles);
-        if (angles[0] < -180)
-            angles[0] += 360;
-        return Math.abs(angles[0]) <= 30;
+        if (angles[0] < -180.0F)
+            angles[0] += 360.0F;
+        return Math.abs(angles[0]) <= 30.0F;
 
     }
 }

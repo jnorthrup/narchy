@@ -450,7 +450,7 @@ public class NARui {
 					float f = b.freq();
 					float conf = b.conf();
 					float a = 0.25f + conf * 0.75f;
-					color.set((1 - f) * a, f * a, 0);
+					color.set((1.0F - f) * a, f * a, (float) 0);
 					return;
 				}
 			}
@@ -467,7 +467,7 @@ public class NARui {
 	public static TextEdit newNarseseInput(NAR n, Consumer<Task> onTask, Consumer<Exception> onException) {
 		TextEdit input = new TextEdit(16, 1);
 		input.onKeyPress((k) -> {
-			if (k.getKeyCode() == VK_ENTER) {
+			if ((int) k.getKeyCode() == (int) VK_ENTER) {
 				String s = input.text();
 				input.text("");
 				try {
@@ -499,7 +499,7 @@ public class NARui {
 			@Override
 			public void coord(VLink<Task> v, float[] target) {
 				Task t = v.get();
-				target[0] = t.mid() - now; //to be certain of accuracy with 32-bit reduced precision assigned from long
+				target[0] = (float) (t.mid() - now); //to be certain of accuracy with 32-bit reduced precision assigned from long
 				target[1] = t.priElseZero();
 			}
 
@@ -521,7 +521,7 @@ public class NARui {
 
 				float a = 0.8f;//v.priElseZero() * 0.5f + 0.5f;
 				if (centroid >= 0) {
-					Draw.colorHash(centroid, c, 1, 0.75f + 0.25f * v.priElseZero(), a);
+					Draw.colorHash(centroid, c, 1.0F, 0.75f + 0.25f * v.priElseZero(), a);
 					node.color(c[0], c[1], c[2], c[3]);
 				} else {
 					node.color(0.5f, 0.5f, 0.5f, a); //unassigned
@@ -531,13 +531,13 @@ public class NARui {
 			@Override
 			public float width(VLink<Task> v, int population) {
 				Task t = v.get();
-				return (t.term().eventRange() + t.range()) / (population * 50f);
+				return (float) ((long) t.term().eventRange() + t.range()) / ((float) population * 50f);
 				//return (0.5f + v.get().priElseZero()) * 1/20f;
 			}
 
 			@Override
 			public float height(VLink<Task> v, int population) {
-				return 1 / (population * 1f);
+				return 1.0F / ((float) population * 1f);
 			}
 		};
 
@@ -550,14 +550,14 @@ public class NARui {
 	}
 
 	public static Surface taskBufferView(PriBuffer b, NAR n) {
-		Plot2D plot = new Plot2D(256, Plot2D.Line).add("load", b::load, 0, 1);
+		Plot2D plot = new Plot2D(256, Plot2D.Line).add("load", b::load, (float) 0, 1.0F);
 		DurSurface plotSurface = DurSurface.get(plot, n, plot::commit);
 		Gridding g = new Gridding(
 			plotSurface,
 			new MetaFrame(b),
 			new Gridding(
 				new FloatRangePort(
-					DurLoop.cache(b::load, 0, 1, 1, n).getOne(),
+					DurLoop.cache(b::load, (float) 0, 1.0F, 1.0F, n).getOne(),
 					"load"
 				)
 			)
@@ -641,9 +641,9 @@ public class NARui {
 
 		var tls = new TaskLinkSnapshot(active) {
 			final int[] opColors = new int[]{
-				Draw.rgbInt(1, 0, 0),
-				Draw.rgbInt(0, 1, 0),
-				Draw.rgbInt(0, 0, 1),
+				Draw.rgbInt(1.0F, (float) 0, (float) 0),
+				Draw.rgbInt((float) 0, 1.0F, (float) 0),
+				Draw.rgbInt((float) 0, (float) 0, 1.0F),
 				Draw.rgbInt(0.5f, 0.5f, 0f),
 				Draw.rgbInt(0.5f, 0f, 0.5f),
 				Draw.rgbInt(0f, 0.5f, 0.5f),
@@ -662,12 +662,12 @@ public class NARui {
 				TaskLink x = items[_x];
 				if (x == null) return 0;
 				Op o = x.term().op();
-				return opColors[o.id];
+				return opColors[(int) o.id];
 			};
 			final IntToIntFunction volColor = _x -> {
 				TaskLink x = items[_x];
 				if (x == null) return 0;
-				float v = (float) Math.log(1 + x.term().volume());
+				float v = (float) Math.log((double) (1 + x.term().volume()));
 				return Draw.colorHSB(v / 10f, 0.5f + 0.5f * v / 10f, v / 10f); //TODO
 			};
 			final IntToIntFunction puncColor = _x -> {
@@ -677,7 +677,7 @@ public class NARui {
 
 				float r = x.priPunc(BELIEF);
 				float g = x.priPunc(GOAL);
-				float b = (x.priPunc(QUESTION) + x.priPunc(QUEST)) / 2;
+				float b = (x.priPunc(QUESTION) + x.priPunc(QUEST)) / 2.0F;
 				return Draw.rgbInt(r, g, b);
 			};
 
@@ -698,9 +698,9 @@ public class NARui {
 					/** TODO use BiQuadFilter */
 					IIRFilter filter;
 
-					FloatSlider freqSlider = new FloatSlider("freq", 500, 10, 1700);
-					FloatSlider ampSlider = new FloatSlider("amp", 1f, 0, 1);
-					FloatSlider filterFreq = new FloatSlider("filt", 800, 60, 4000);
+					FloatSlider freqSlider = new FloatSlider("freq", 500.0F, 10.0F, 1700.0F);
+					FloatSlider ampSlider = new FloatSlider("amp", 1f, (float) 0, 1.0F);
+					FloatSlider filterFreq = new FloatSlider("filt", 800.0F, 60.0F, 4000.0F);
 
 					{
 						add(freqSlider, ampSlider, filterFreq);
@@ -724,18 +724,18 @@ public class NARui {
 						for (int i = 0; i < n; i++) {
 							TaskLink x = items[i];
 							if (x == null) continue;
-							float amp = vol * (float) ((Math.exp(x.pri() * 10) - 1) / Util.sqrt(n));
+							float amp = vol * (float) ((Math.exp((double) (x.pri() * 10.0F)) - 1.0) / (double) Util.sqrt((float) n));
 							Op o = x.op();
 
 							//stupid grain synth
-							float f = baseFreq * (1 + Pitch.forceToScale(o.id + 1, Pitch.dorian));
-							float grainTime = Util.lerp(Math.min(1, x.term().volume() / 30f), 0.1f, 0.33f);
-							int sw = Math.round(buf.length * grainTime);
-							int ss = (int) (rng.nextFloat() * (buf.length - sw - 1));
+							float f = baseFreq * (float) (1 + Pitch.forceToScale((int) o.id + 1, Pitch.dorian));
+							float grainTime = Util.lerp(Math.min(1.0F, (float) x.term().volume() / 30f), 0.1f, 0.33f);
+							int sw = Math.round((float) buf.length * grainTime);
+							int ss = (int) (rng.nextFloat() * (float) (buf.length - sw - 1));
 							int se = ss + sw;
 							for (int s = ss; s < se; s++) {
-								float env = 2 * Math.min(Math.abs(s - ss), Math.abs(s - se)) / (sw + 1f); //triangular
-								buf[s] += amp * (float) Math.sin(f * s * 2 * 1f / readRate) * env;
+								float env = (float) (2 * Math.min(Math.abs(s - ss), Math.abs(s - se))) / ((float) sw + 1f); //triangular
+								buf[s] += amp * (float) Math.sin((double) (f * (float) s * 2.0F * 1f / readRate)) * env;
 							}
 						}
 
@@ -805,8 +805,8 @@ public class NARui {
 		}
 		AtomicDouble rewardSum = new AtomicDouble();
 		plot.add("Reward", () -> {
-			return rewardSum.getAndSet(0); //clear
-		}, 0, +1);
+			return rewardSum.getAndSet((double) 0); //clear
+		}, (float) 0, (float) +1);
 
 		rlb.env.onFrame(() -> {
 			rewardSum.addAndGet(rlb.lastReward);
@@ -1003,7 +1003,7 @@ public class NARui {
 	public static PaintUpdateMatrixView matrix(double[] dw) {
 		return dw.length > 2048 ?
 			PaintUpdateMatrixView.scroll(dw, false, 64, 8) :
-			new PaintUpdateMatrixView(() -> dw, dw.length, dw.length / Math.max(1, (int) Math.ceil(sqrt(dw.length))));
+			new PaintUpdateMatrixView(() -> dw, dw.length, dw.length / Math.max(1, (int) Math.ceil((double) sqrt((float) dw.length))));
 	}
 
 	public static <X> Surface focusPanel(Iterable<X> all, FloatFunction<X> pri, Function<X, String> str, NAR nar) {

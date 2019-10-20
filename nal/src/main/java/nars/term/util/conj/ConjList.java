@@ -22,7 +22,6 @@ import org.roaringbitmap.RoaringBitmap;
 import java.util.Arrays;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
 
 import static jcog.util.ArrayUtil.EMPTY_INT_ARRAY;
 import static nars.Op.CONJ;
@@ -56,7 +55,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     public static ConjList events(Term conj, long occOffset) {
         ConjList l = new ConjList();
         conj.eventsAND(l::add,
-            occOffset == TIMELESS ? 0 : occOffset,
+            occOffset == TIMELESS ? 0L : occOffset,
             true, false);
         return l;
     }
@@ -442,7 +441,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
                 } else {
                     PeekableIntIterator ei = cc.getIntIterator();
                     while (ei.hasNext()) {
-                        if (eventCount(ei.next()) == 1)
+                        if (eventCount((long) ei.next()) == 1)
                             return true; //factoring would erase this event so ignore it
                     }
                     Term x = xcc.getOne();
@@ -591,7 +590,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     public void shift(long shiftFrom) {
         long currentShift = shift();
         long delta = shiftFrom - currentShift;
-        if (delta == 0)
+        if (delta == 0L)
             return;
         long[] when = this.when;
         int s = this.size;
@@ -605,7 +604,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         Term[] ii = x.items;
         boolean removed = false;
         for (int i = 0; i < xn; i++) {
-            boolean remove = remove(ww[i] + f, ii[i]);
+            boolean remove = remove(ww[i] + (long) f, ii[i]);
             removed = removed || remove;
         }
         return removed;
@@ -614,7 +613,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     public long eventRange() {
         int n = size;
         if (n <= 1)
-            return 0;
+            return 0L;
         return when[n-1] - when[0];
     }
 }

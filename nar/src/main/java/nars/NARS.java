@@ -130,7 +130,7 @@ public class NARS {
             assert(nalMin <= nalMax);
 
             if (threadSafe)
-                index = () -> new CaffeineMemory(64 * 1024);
+                index = () -> new CaffeineMemory((long) (64 * 1024));
 
             if (nalMax > 0)
                 withNAL(nalMin, nalMax);
@@ -260,7 +260,7 @@ public class NARS {
     
     public static NAR threadSafe(int level) {
         NARS d = new DefaultNAR(level, true)
-                .time(new RealTime.CS().durFPS(25f));
+                .time(new RealTime.CS().durFPS(25));
 
         d.rng = ThreadLocalRandom::current;
 
@@ -270,7 +270,7 @@ public class NARS {
 
     /** milliseconds realtime */
     public static NARS realtime(float durFPS) {
-        return new DefaultNAR(0, true).time(new RealTime.MS(true).durFPS(durFPS));
+        return new DefaultNAR(0, true).time(new RealTime.MS(true).durFPS((double) durFPS));
     }
 
     /**

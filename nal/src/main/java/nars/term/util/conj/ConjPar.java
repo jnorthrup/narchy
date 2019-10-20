@@ -64,7 +64,7 @@ public enum ConjPar {
 
 
         ConjTree ct = new ConjTree();
-        long sdt = dt==DTERNAL ? ETERNAL : 0;
+        long sdt = dt==DTERNAL ? ETERNAL : 0L;
         int remain = t.length;
         for (int i = t.length - 1; i >= 0; i--) {
             Term x = t[i];
@@ -254,14 +254,14 @@ public enum ConjPar {
                         i.put(ct, Byte.MIN_VALUE);
                         i.put(ctn, Byte.MIN_VALUE);
                     } else {
-                        byte z = i.updateValue(ct, (byte) 0, (v) -> (v >= 0) ? (byte) (v + 1) : v);
-                        anyFull |= (z == d);
+                        byte z = i.updateValue(ct, (byte) 0, (v) -> ((int) v >= 0) ? (byte) ((int) v + 1) : v);
+                        anyFull |= ((int) z == d);
                     }
                 }
 
             }
             if (anyFull) {
-                i.values().removeIf(b -> b < d);
+                i.values().removeIf(b -> (int) b < d);
                 if (!i.isEmpty()) {
                     Set<Term> common = i.keySet();
                     Term factor = B.conj(common.toArray(Op.EmptyTermArray));

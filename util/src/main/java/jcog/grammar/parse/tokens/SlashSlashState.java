@@ -30,7 +30,7 @@ public class SlashSlashState extends TokenizerState {
 	public Token nextToken(PushbackReader r, int theSlash, Tokenizer t) throws IOException {
 
 		int c;
-		while ((c = r.read()) != '\n' && c != '\r' && c >= 0) {
+		while ((c = r.read()) != (int) '\n' && c != (int) '\r' && c >= 0) {
 		}
 		return t.nextToken();
 	}

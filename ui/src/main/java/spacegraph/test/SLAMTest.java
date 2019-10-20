@@ -127,7 +127,7 @@ public class SLAMTest extends JPanel {
 //        fileMenu.remove(1);
 
         detDesc = FactoryDetectDescribe.surfStable(new ConfigFastHessian(
-                0, 4, 1000, 1, 9, 4, 2), null, null, GrayU8.class);
+                (float) 0, 4, 1000, 1, 9, 4, 2), null, null, GrayU8.class);
 
         for (int i = 0; i < 3; i++) {
             locations[i] = new FastQueue<>(Point2D_F64.class, true);
@@ -215,7 +215,7 @@ public class SLAMTest extends JPanel {
 
                     running[0] = () -> {
                         try {
-                            Pair<GrayF32, DisparityToColorPointCloud> disparityD2c = app.processImage(ImageType.single(ImageDataType.U8), 0, a, b, c);
+                            Pair<GrayF32, DisparityToColorPointCloud> disparityD2c = app.processImage(ImageType.single(ImageDataType.U8), 0L, a, b, c);
                             if (disparityD2c!=null) {
                                 DisparityToColorPointCloud d2c = disparityD2c.getTwo();
                                 GrayF32 d = disparityD2c.getOne();
@@ -362,8 +362,8 @@ public class SLAMTest extends JPanel {
         buff[sourceID] = buffered;
 
         // assume the image center is the principle point
-        double cx = input.width / 2;
-        double cy = input.height / 2;
+        double cx = (double) (input.width / 2);
+        double cy = (double) (input.height / 2);
 
         // detect features
         detDesc.detect((GrayU8) input);
@@ -389,9 +389,9 @@ public class SLAMTest extends JPanel {
         if (m <= controls.maxImageSize)
             return input;
         else {
-            double scale = controls.maxImageSize / (double) m;
-            int w = (int) (scale * input.getWidth() + 0.5);
-            int h = (int) (scale * input.getHeight() + 0.5);
+            double scale = (double) controls.maxImageSize / (double) m;
+            int w = (int) (scale * (double) input.getWidth() + 0.5);
+            int h = (int) (scale * (double) input.getHeight() + 0.5);
 
             // Use BoofCV to down sample since Graphics2D introduced too many aliasing artifacts
             BufferedImage output = new BufferedImage(w, h, TYPE_INT_RGB);
@@ -418,8 +418,8 @@ public class SLAMTest extends JPanel {
 
         long time0 = System.currentTimeMillis();
 
-        double cx = width / 2;
-        double cy = height / 2;
+        double cx = (double) (width / 2);
+        double cy = (double) (height / 2);
 
         if (!skipAssociate) {
             //System.out.println("Associating three views");
@@ -450,11 +450,11 @@ public class SLAMTest extends JPanel {
 
         if (!skipStructure) {
             structureEstimator.configRansac.inlierThreshold = controls.inliers;
-            structureEstimator.pruneFraction = (100 - controls.prune) / 100.0;
+            structureEstimator.pruneFraction = (double) (100 - controls.prune) / 100.0;
             if (controls.autoFocal) {
-                structureEstimator.manualFocalLength = -1;
+                structureEstimator.manualFocalLength = -1.0;
             } else {
-                structureEstimator.manualFocalLength = controls.focal;
+                structureEstimator.manualFocalLength = (double) controls.focal;
             }
 
             //structureEstimator.setVerbose(System.out,0);
@@ -494,12 +494,12 @@ public class SLAMTest extends JPanel {
 
         BundlePinholeSimplified cp = structure.getCameras().get(view0).getModel();
         intrinsic01 = new CameraPinholeBrown();
-        intrinsic01.fsetK(cp.f, cp.f, 0, cx, cy, dimensions[view0].width, dimensions[view0].height);
+        intrinsic01.fsetK(cp.f, cp.f, (double) 0, cx, cy, dimensions[view0].width, dimensions[view0].height);
         intrinsic01.fsetRadial(cp.k1, cp.k2);
 
         cp = structure.getCameras().get(view1).getModel();
         intrinsic02 = new CameraPinholeBrown();
-        intrinsic02.fsetK(cp.f, cp.f, 0, cx, cy, dimensions[view1].width, dimensions[view1].height);
+        intrinsic02.fsetK(cp.f, cp.f, (double) 0, cx, cy, dimensions[view1].width, dimensions[view1].height);
         intrinsic02.fsetRadial(cp.k1, cp.k2);
 
         Se3_F64 w_to_0 = structure.views.get(view0).worldToView;
@@ -531,7 +531,7 @@ public class SLAMTest extends JPanel {
         controls.setViews(2);
         //});
 
-        if (rectifiedK.get(0, 0) < 0) {
+        if (rectifiedK.get(0, 0) < (double) 0) {
 //            SwingUtilities.invokeLater(() -> controls.addText("Rectification Failed!\n"));
             return null;
         }
@@ -675,7 +675,7 @@ public class SLAMTest extends JPanel {
         // compute disparity
         StereoDisparity<GrayS16, GrayF32> disparityAlg =
                 FactoryStereoDisparity.regionSubpixelWta(DisparityAlgorithms.RECT_FIVE,
-                        controls.minDisparity, controls.maxDisparity, 6, 6, 30, 3, 0.05, GrayS16.class);
+                        controls.minDisparity, controls.maxDisparity, 6, 6, 30.0, 3, 0.05, GrayS16.class);
 
         // Apply the Laplacian across the image to add extra resistance to changes in lighting or camera gain
         GrayS16 derivLeft = new GrayS16(rectColor1.width, rectColor1.height);

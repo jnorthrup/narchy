@@ -45,7 +45,6 @@ import jake2.util.Vargs;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.stream.IntStream;
 
 /**
  * Main
@@ -141,15 +140,15 @@ public abstract class Main extends Base {
     int c_brush_polys;
     int c_alias_polys;
 
-    final float[] v_blend = { 0, 0, 0, 0 }; 
+    final float[] v_blend = {(float) 0, (float) 0, (float) 0, (float) 0};
 
     
     
     
-    final float[] vup = { 0, 0, 0 };
-    final float[] vpn = { 0, 0, 0 };
-    final float[] vright = { 0, 0, 0 };
-    final float[] r_origin = { 0, 0, 0 };
+    final float[] vup = {(float) 0, (float) 0, (float) 0};
+    final float[] vpn = {(float) 0, (float) 0, (float) 0};
+    final float[] vright = {(float) 0, (float) 0, (float) 0};
+    final float[] r_origin = {(float) 0, (float) 0, (float) 0};
 
     
     final FloatBuffer r_world_matrix = Lib.newFloatBuffer(16);
@@ -242,7 +241,7 @@ public abstract class Main extends Base {
     final boolean R_CullBox(float[] mins, float[] maxs) {
         assert(mins.length == 3 && maxs.length == 3) : "vec3_t bug";
 
-        if (r_nocull.value != 0)
+        if (r_nocull.value != (float) 0)
             return false;
 
         cplane_t[] frustum = this.frustum;
@@ -262,9 +261,9 @@ public abstract class Main extends Base {
         gl.glTranslatef(origin[0], origin[1], origin[2]);
 
         float[] angles = e.angles;
-        gl.glRotatef(angles[1], 0, 0, 1);
-        gl.glRotatef(-angles[0], 0, 1, 0);
-        gl.glRotatef(-angles[2], 1, 0, 0);
+        gl.glRotatef(angles[1], (float) 0, (float) 0, 1.0F);
+        gl.glRotatef(-angles[0], (float) 0, 1.0F, (float) 0);
+        gl.glRotatef(-angles[2], 1.0F, (float) 0, (float) 0);
     }
 
     /*
@@ -276,7 +275,7 @@ public abstract class Main extends Base {
      */
 
     
-    private final float[] point = { 0, 0, 0 };
+    private final float[] point = {(float) 0, (float) 0, (float) 0};
     /**
      * R_DrawSpriteModel
      */
@@ -296,38 +295,38 @@ public abstract class Main extends Base {
         if (alpha != 1.0F)
             gl.glEnable(GL_BLEND);
 
-        gl.glColor4f(1, 1, 1, alpha);
+        gl.glColor4f(1.0F, 1.0F, 1.0F, alpha);
 
         GL_Bind(currentmodel.skins[e.frame].texnum);
 
         GL_TexEnv(GL_MODULATE);
 
-        if (alpha == 1.0)
+        if ((double) alpha == 1.0)
             gl.glEnable(GL_ALPHA_TEST);
         else
             gl.glDisable(GL_ALPHA_TEST);
 
         gl.glBegin(GL_QUADS);
 
-        gl.glTexCoord2f(0, 1);
+        gl.glTexCoord2f((float) 0, 1.0F);
         float[] point = this.point;
-        Math3D.VectorMA(e.origin, -frame.origin_y, vup, point);
-        Math3D.VectorMA(point, -frame.origin_x, vright, point);
+        Math3D.VectorMA(e.origin, (float) -frame.origin_y, vup, point);
+        Math3D.VectorMA(point, (float) -frame.origin_x, vright, point);
         gl.glVertex3f(point[0], point[1], point[2]);
 
-        gl.glTexCoord2f(0, 0);
-        Math3D.VectorMA(e.origin, frame.height - frame.origin_y, vup, point);
-        Math3D.VectorMA(point, -frame.origin_x, vright, point);
+        gl.glTexCoord2f((float) 0, (float) 0);
+        Math3D.VectorMA(e.origin, (float) (frame.height - frame.origin_y), vup, point);
+        Math3D.VectorMA(point, (float) -frame.origin_x, vright, point);
         gl.glVertex3f(point[0], point[1], point[2]);
 
-        gl.glTexCoord2f(1, 0);
-        Math3D.VectorMA(e.origin, frame.height - frame.origin_y, vup, point);
-        Math3D.VectorMA(point, frame.width - frame.origin_x, vright, point);
+        gl.glTexCoord2f(1.0F, (float) 0);
+        Math3D.VectorMA(e.origin, (float) (frame.height - frame.origin_y), vup, point);
+        Math3D.VectorMA(point, (float) (frame.width - frame.origin_x), vright, point);
         gl.glVertex3f(point[0], point[1], point[2]);
 
-        gl.glTexCoord2f(1, 1);
-        Math3D.VectorMA(e.origin, -frame.origin_y, vup, point);
-        Math3D.VectorMA(point, frame.width - frame.origin_x, vright, point);
+        gl.glTexCoord2f(1.0F, 1.0F);
+        Math3D.VectorMA(e.origin, (float) -frame.origin_y, vup, point);
+        Math3D.VectorMA(point, (float) (frame.width - frame.origin_x), vright, point);
         gl.glVertex3f(point[0], point[1], point[2]);
 
         gl.glEnd();
@@ -338,13 +337,13 @@ public abstract class Main extends Base {
         if (alpha != 1.0F)
             gl.glDisable(GL_BLEND);
 
-        gl.glColor4f(1, 1, 1, 1);
+        gl.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     
 
     
-    private final float[] shadelight = { 0, 0, 0 };
+    private final float[] shadelight = {(float) 0, (float) 0, (float) 0};
     /**
      * R_DrawNullModel
      */
@@ -368,22 +367,22 @@ public abstract class Main extends Base {
         
 
         gl.glBegin(GL_TRIANGLE_FAN);
-        gl.glVertex3f(0, 0, -16);
+        gl.glVertex3f((float) 0, (float) 0, -16.0F);
         int i;
         for (i=0 ; i<=4 ; i++) {
-            gl.glVertex3f((float)(16.0f * Math.cos(i * Math.PI / 2)), (float)(16.0f * Math.sin(i * Math.PI / 2)), 0.0f);
+            gl.glVertex3f((float)(16.0 * Math.cos((double) i * Math.PI / 2.0)), (float)(16.0 * Math.sin((double) i * Math.PI / 2.0)), 0.0f);
         }
         gl.glEnd();
 
         gl.glBegin(GL_TRIANGLE_FAN);
-        gl.glVertex3f (0, 0, 16);
+        gl.glVertex3f ((float) 0, (float) 0, 16.0F);
         for (i=4 ; i>=0 ; i--) {
-            gl.glVertex3f((float)(16.0f * Math.cos(i * Math.PI / 2)), (float)(16.0f * Math.sin(i * Math.PI / 2)), 0.0f);
+            gl.glVertex3f((float)(16.0 * Math.cos((double) i * Math.PI / 2.0)), (float)(16.0 * Math.sin((double) i * Math.PI / 2.0)), 0.0f);
         }
         gl.glEnd();
 
 
-        gl.glColor3f(1, 1, 1);
+        gl.glColor3f(1.0F, 1.0F, 1.0F);
         gl.glPopMatrix();
         gl.glEnable(GL_TEXTURE_2D);
     }
@@ -465,8 +464,8 @@ public abstract class Main extends Base {
     }
 
     
-    private final float[] up = { 0, 0, 0 };
-    private final float[] right = { 0, 0, 0 };
+    private final float[] up = {(float) 0, (float) 0, (float) 0};
+    private final float[] right = {(float) 0, (float) 0, (float) 0};
     /**
      * GL_DrawParticles
      */
@@ -496,7 +495,7 @@ public abstract class Main extends Base {
                     + (origin_y - r_origin[1]) * vpn[1]
                     + (origin_z - r_origin[2]) * vpn[2];
 
-            scale = (scale < 20) ? 1 :  1 + scale * 0.004f;
+            scale = (scale < 20.0F) ? 1.0F : 1.0F + scale * 0.004f;
 
             int color = sourceColors.get(i);
 
@@ -521,7 +520,7 @@ public abstract class Main extends Base {
         gl.glEnd();
 
         gl.glDisable(GL_BLEND);
-        gl.glColor4f(1, 1, 1, 1);
+        gl.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         gl.glDepthMask(true); 
         GL_TexEnv(GL_REPLACE);
     }
@@ -577,24 +576,24 @@ public abstract class Main extends Base {
         gl.glLoadIdentity();
 
         
-        gl.glRotatef(-90, 1, 0, 0); 
-        gl.glRotatef(90, 0, 0, 1); 
+        gl.glRotatef(-90.0F, 1.0F, (float) 0, (float) 0);
+        gl.glRotatef(90.0F, (float) 0, (float) 0, 1.0F);
 
         gl.glColor4f(v_blend[0], v_blend[1], v_blend[2], v_blend[3]);
 
         gl.glBegin(GL_QUADS);
 
-        gl.glVertex3f(10, 100, 100);
-        gl.glVertex3f(10, -100, 100);
-        gl.glVertex3f(10, -100, -100);
-        gl.glVertex3f(10, 100, -100);
+        gl.glVertex3f(10.0F, 100.0F, 100.0F);
+        gl.glVertex3f(10.0F, -100.0F, 100.0F);
+        gl.glVertex3f(10.0F, -100.0F, -100.0F);
+        gl.glVertex3f(10.0F, 100.0F, -100.0F);
         gl.glEnd();
 
         gl.glDisable(GL_BLEND);
         gl.glEnable(GL_TEXTURE_2D);
         gl.glEnable(GL_ALPHA_TEST);
 
-        gl.glColor4f(1, 1, 1, 1);
+        gl.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     
@@ -607,7 +606,7 @@ public abstract class Main extends Base {
         float[] n = out.normal;
         int bits = 0;
         for (int j = 0; j < 3; j++) {
-            if (n[j] < 0) {
+            if (n[j] < (float) 0) {
                 int i = (1 << j);
                 bits = bits | i;
             }
@@ -632,7 +631,7 @@ public abstract class Main extends Base {
 
         for (int i = 0; i < 4; i++) {
             cplane_t cplane_t = frustum[i];
-            cplane_t.type = Defines.PLANE_ANYZ;
+            cplane_t.type = (byte) Defines.PLANE_ANYZ;
             cplane_t.dist = Math3D.DotProduct(r_origin, cplane_t.normal);
             cplane_t.signbits = (byte) SignbitsForPlane(cplane_t);
         }
@@ -641,7 +640,7 @@ public abstract class Main extends Base {
     
 
     
-    private final float[] temp = {0, 0, 0};
+    private final float[] temp = {(float) 0, (float) 0, (float) 0};
     /**
      * R_SetupFrame
      */
@@ -663,14 +662,14 @@ public abstract class Main extends Base {
             
             if (leaf.contents == 0) { 
                 Math3D.VectorCopy(r_origin, temp);
-                temp[2] -= 16;
+                temp[2] -= 16.0F;
                 leaf = Mod_PointInLeaf(temp, r_worldmodel);
                 if ((leaf.contents & Defines.CONTENTS_SOLID) == 0 && (leaf.cluster != r_viewcluster2))
                     r_viewcluster2 = leaf.cluster;
             }
             else { 
                 Math3D.VectorCopy(r_origin, temp);
-                temp[2] += 16;
+                temp[2] += 16.0F;
                 leaf = Mod_PointInLeaf(temp, r_worldmodel);
                 if ((leaf.contents & Defines.CONTENTS_SOLID) == 0 && (leaf.cluster != r_viewcluster2))
                     r_viewcluster2 = leaf.cluster;
@@ -711,9 +710,9 @@ public abstract class Main extends Base {
 
         double xmin = ymin * aspect;
 
-        xmin += - (2 * gl_state.camera_separation) / zNear;
+        xmin += (double) -(2.0F * gl_state.camera_separation) / zNear;
         double xmax = ymax * aspect;
-        xmax += - (2 * gl_state.camera_separation) / zNear;
+        xmax += (double) -(2.0F * gl_state.camera_separation) / zNear;
 
         gl.glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
     }
@@ -738,22 +737,22 @@ public abstract class Main extends Base {
         gl.glViewport(x, y2, w, h);
 
 
-        float screenaspect = (float) r_newrefdef.width / r_newrefdef.height;
+        float screenaspect = (float) r_newrefdef.width / (float) r_newrefdef.height;
         gl.glMatrixMode(GL_PROJECTION);
         gl.glLoadIdentity();
-        MYgluPerspective(r_newrefdef.fov_y, screenaspect, 4, 4096);
+        MYgluPerspective((double) r_newrefdef.fov_y, (double) screenaspect, 4.0, 4096.0);
 
         gl.glCullFace(GL_FRONT);
 
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glLoadIdentity();
 
-        gl.glRotatef(-90, 1, 0, 0); 
-        gl.glRotatef(90, 0, 0, 1);
+        gl.glRotatef(-90.0F, 1.0F, (float) 0, (float) 0);
+        gl.glRotatef(90.0F, (float) 0, (float) 0, 1.0F);
         float[] viewangles = r_newrefdef.viewangles;
-        gl.glRotatef(-viewangles[2], 1, 0, 0);
-        gl.glRotatef(-viewangles[0], 0, 1, 0);
-        gl.glRotatef(-viewangles[1], 0, 0, 1);
+        gl.glRotatef(-viewangles[2], 1.0F, (float) 0, (float) 0);
+        gl.glRotatef(-viewangles[0], (float) 0, 1.0F, (float) 0);
+        gl.glRotatef(-viewangles[1], (float) 0, (float) 0, 1.0F);
         float[] vieworg = r_newrefdef.vieworg;
         gl.glTranslatef(-vieworg[0], -vieworg[1], -vieworg[2]);
 
@@ -787,12 +786,12 @@ public abstract class Main extends Base {
 
             trickframe++;
             if ((trickframe & 1) != 0) {
-                gldepthmin = 0;
+                gldepthmin = (float) 0;
                 gldepthmax = 0.49999f;
                 gl.glDepthFunc(GL_LEQUAL);
             }
             else {
-                gldepthmin = 1;
+                gldepthmin = 1.0F;
                 gldepthmax = 0.5f;
                 gl.glDepthFunc(GL_GEQUAL);
             }
@@ -803,11 +802,11 @@ public abstract class Main extends Base {
             else
                 gl.glClear(GL_DEPTH_BUFFER_BIT);
 
-            gldepthmin = 0;
-            gldepthmax = 1;
+            gldepthmin = (float) 0;
+            gldepthmax = 1.0F;
             gl.glDepthFunc(GL_LEQUAL);
         }
-        gl.glDepthRange(gldepthmin, gldepthmax);
+        gl.glDepthRange((double) gldepthmin, (double) gldepthmax);
     }
 
     /**
@@ -882,18 +881,18 @@ public abstract class Main extends Base {
         gl.glViewport(0, 0, vid.getWidth(), vid.getHeight());
         gl.glMatrixMode(GL_PROJECTION);
         gl.glLoadIdentity();
-        gl.glOrtho(0, vid.getWidth(), vid.getHeight(), 0, -99999, 99999);
+        gl.glOrtho((double) 0, (double) vid.getWidth(), (double) vid.getHeight(), (double) 0, -99999.0, 99999.0);
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glLoadIdentity();
         gl.glDisable(GL_DEPTH_TEST);
         gl.glDisable(GL_CULL_FACE);
         gl.glDisable(GL_BLEND);
         gl.glEnable(GL_ALPHA_TEST);
-        gl.glColor4f(1, 1, 1, 1);
+        gl.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     
-    private final float[] light = { 0, 0, 0 };
+    private final float[] light = {(float) 0, (float) 0, (float) 0};
     /**
      *	R_SetLightLevel
      */
@@ -909,15 +908,15 @@ public abstract class Main extends Base {
         
         if (light[0] > light[1]) {
             if (light[0] > light[2])
-                r_lightlevel.value = 150 * light[0];
+                r_lightlevel.value = 150.0F * light[0];
             else
-                r_lightlevel.value = 150 * light[2];
+                r_lightlevel.value = 150.0F * light[2];
         }
         else {
             if (light[1] > light[2])
-                r_lightlevel.value = 150 * light[1];
+                r_lightlevel.value = 150.0F * light[1];
             else
-                r_lightlevel.value = 150 * light[2];
+                r_lightlevel.value = 150.0F * light[2];
         }
     }
 
@@ -1155,7 +1154,7 @@ public abstract class Main extends Base {
             gl_config.renderer = GL_RENDERER_OTHER;
 
         String monolightmap = gl_monolightmap.string.toUpperCase();
-        if (monolightmap.length() < 2 || monolightmap.charAt(1) != 'F') {
+        if (monolightmap.length() < 2 || (int) monolightmap.charAt(1) != (int) 'F') {
             if (gl_config.renderer == GL_RENDERER_PERMEDIA2) {
                 Cvar.Set("gl_monolightmap", "A");
                 VID.Printf(Defines.PRINT_ALL, "...using gl_monolightmap 'a'\n");
@@ -1391,14 +1390,14 @@ public abstract class Main extends Base {
             gl.glViewport(0, 0, vid.getWidth(), vid.getHeight());
             gl.glMatrixMode(GL_PROJECTION);
             gl.glLoadIdentity();
-            gl.glOrtho(0, vid.getWidth(), vid.getHeight(), 0, -99999, 99999);
+            gl.glOrtho((double) 0, (double) vid.getWidth(), (double) vid.getHeight(), (double) 0, -99999.0, 99999.0);
             gl.glMatrixMode(GL_MODELVIEW);
             gl.glLoadIdentity();
             gl.glDisable(GL_DEPTH_TEST);
             gl.glDisable(GL_CULL_FACE);
             gl.glDisable(GL_BLEND);
             gl.glEnable(GL_ALPHA_TEST);
-            gl.glColor4f(1, 1, 1, 1);
+            gl.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
     
             /*
              ** draw buffer stuff
@@ -1406,7 +1405,7 @@ public abstract class Main extends Base {
             if (gl_drawbuffer.modified) {
                 gl_drawbuffer.modified = false;
     
-                if (gl_state.camera_separation == 0 || !gl_state.stereo_enabled) {
+                if (gl_state.camera_separation == (float) 0 || !gl_state.stereo_enabled) {
                     if ("GL_FRONT".equalsIgnoreCase(gl_drawbuffer.string))
                         gl.glDrawBuffer(GL_FRONT);
                     else
@@ -1463,9 +1462,9 @@ public abstract class Main extends Base {
             int j =0;
             int color = 0;
             for (i = 0; i < 256; i++) {
-                color = (palette[j++] & 0xFF) << 0;
-                color |= (palette[j++] & 0xFF) << 8;
-                color |= (palette[j++] & 0xFF) << 16;
+                color = ((int) palette[j++] & 0xFF) << 0;
+                color |= ((int) palette[j++] & 0xFF) << 8;
+                color |= ((int) palette[j++] & 0xFF) << 16;
                 color |= 0xFF000000;
                 r_rawpalette[i] = color;
             }
@@ -1477,7 +1476,7 @@ public abstract class Main extends Base {
         }
         GL_SetTexturePalette(r_rawpalette);
 
-        gl.glClearColor(0, 0, 0, 0);
+        gl.glClearColor((float) 0, (float) 0, (float) 0, (float) 0);
         gl.glClear(GL_COLOR_BUFFER_BIT);
         gl.glClearColor(1f, 0f, 0.5f, 0.5f);
     }
@@ -1488,11 +1487,11 @@ public abstract class Main extends Base {
     final float[][] end_points = new float[NUM_BEAM_SEGS][3]; 
 
     
-    private final float[] perpvec = { 0, 0, 0 }; 
-    private final float[] direction = { 0, 0, 0 }; 
-    private final float[] normalized_direction = { 0, 0, 0 }; 
-    private final float[] oldorigin = { 0, 0, 0 }; 
-    private final float[] origin = { 0, 0, 0 }; 
+    private final float[] perpvec = {(float) 0, (float) 0, (float) 0};
+    private final float[] direction = {(float) 0, (float) 0, (float) 0};
+    private final float[] normalized_direction = {(float) 0, (float) 0, (float) 0};
+    private final float[] oldorigin = {(float) 0, (float) 0, (float) 0};
+    private final float[] origin = {(float) 0, (float) 0, (float) 0};
     /**
      * R_DrawBeam
      */
@@ -1513,14 +1512,14 @@ public abstract class Main extends Base {
             return;
 
         Math3D.PerpendicularVector(perpvec, normalized_direction);
-        Math3D.VectorScale(perpvec, e.frame / 2f, perpvec);
+        Math3D.VectorScale(perpvec, (float) e.frame / 2f, perpvec);
 
         for (int i = 0; i < 6; i++) {
             Math3D.RotatePointAroundVector(
                     start_points[i],
                     normalized_direction,
                     perpvec,
-                    (360.0f / NUM_BEAM_SEGS) * i);
+                    (360.0f / (float) NUM_BEAM_SEGS) * (float) i);
 
             Math3D.VectorAdd(start_points[i], origin, start_points[i]);
             Math3D.VectorAdd(start_points[i], direction, end_points[i]);
@@ -1530,13 +1529,13 @@ public abstract class Main extends Base {
         gl.glEnable(GL_BLEND);
         gl.glDepthMask(false);
 
-        float r = (d_8to24table[e.skinnum & 0xFF]) & 0xFF;
-        float g = (d_8to24table[e.skinnum & 0xFF] >> 8) & 0xFF;
-        float b = (d_8to24table[e.skinnum & 0xFF] >> 16) & 0xFF;
+        float r = (float) ((d_8to24table[e.skinnum & 0xFF]) & 0xFF);
+        float g = (float) ((d_8to24table[e.skinnum & 0xFF] >> 8) & 0xFF);
+        float b = (float) ((d_8to24table[e.skinnum & 0xFF] >> 16) & 0xFF);
 
-        r *= 1 / 255.0f;
-        g *= 1 / 255.0f;
-        b *= 1 / 255.0f;
+        r *= 1.0F / 255.0f;
+        g *= 1.0F / 255.0f;
+        b *= 1.0F / 255.0f;
 
         gl.glColor4f(r, g, b, e.alpha);
 

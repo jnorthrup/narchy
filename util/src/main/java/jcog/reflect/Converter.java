@@ -40,7 +40,7 @@ import java.util.function.Function;
  */
 public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements PrioritizedDouble {
     
-    protected static final double defaultItemWeight = 1;
+    protected static final double defaultItemWeight = 1.0;
 
     private final Function[] functionsArray;
 
@@ -112,7 +112,7 @@ public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements Priori
         double weight = this.weight;
         if (weight==weight) return weight;
 
-        double w = 0;
+        double w = (double) 0;
         for (Function conv : functionsArray) {
             if (conv instanceof PrioritizedDouble) {
                 double wc = ((PrioritizedDouble) conv).weight();

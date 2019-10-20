@@ -15,7 +15,7 @@ import java.nio.ShortBuffer;
  */
 public class AudioSourcePCM16 extends AudioSource {
 
-    private static final float shortRange = Short.MAX_VALUE;
+    private static final float shortRange = (float) Short.MAX_VALUE;
 
 
 //    private final short[] preShortBuffer;
@@ -67,7 +67,7 @@ public class AudioSourcePCM16 extends AudioSource {
 
     @Override protected void decode(float[] target, int samples) {
 
-        double gain = 1.0 / shortRange; //compute in double for exra precision
+        double gain = 1.0 / (double) shortRange; //compute in double for exra precision
 
         int channels = line.getFormat().getChannels();
 
@@ -79,7 +79,7 @@ public class AudioSourcePCM16 extends AudioSource {
             case 1:
                 while (r > 0) {
                     short s = sb.get();
-                    target[j++] = (float) (s * gain);
+                    target[j++] = (float) ((double) s * gain);
                     r--;
                 }
                 break;
@@ -87,7 +87,7 @@ public class AudioSourcePCM16 extends AudioSource {
                 while (r > 0) {
                     short a = sb.get();
                     short b = sb.get();
-                    target[j++] = (float) (((a * gain) + (b * gain)) / 2);
+                    target[j++] = (float) ((((double) a * gain) + ((double) b * gain)) / 2.0);
                     r--;
                 }
                 break;

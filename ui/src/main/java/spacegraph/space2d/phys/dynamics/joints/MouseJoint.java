@@ -61,9 +61,9 @@ public class MouseJoint extends Joint {
     public MouseJoint(IWorldPool argWorld, MouseJointDef def) {
         super(argWorld, def);
         assert (def.target.isValid());
-        assert (def.maxForce >= 0);
-        assert (def.frequencyHz >= 0);
-        assert (def.dampingRatio >= 0);
+        assert (def.maxForce >= (float) 0);
+        assert (def.frequencyHz >= (float) 0);
+        assert (def.dampingRatio >= (float) 0);
 
         m_targetA.set(def.target);
         Transform.mulTransToOutUnsafe(B, m_targetA, m_localAnchorB);
@@ -74,8 +74,8 @@ public class MouseJoint extends Joint {
         m_frequencyHz = def.frequencyHz;
         m_dampingRatio = def.dampingRatio;
 
-        m_beta = 0;
-        m_gamma = 0;
+        m_beta = (float) 0;
+        m_gamma = (float) 0;
     }
 
     @Override
@@ -238,7 +238,7 @@ public class MouseJoint extends Joint {
         float maxImpulse = data.step.dt * m_maxForce;
         float mImpulseLenSq = m_impulse.lengthSquared();
         if (mImpulseLenSq > maxImpulse * maxImpulse) {
-            m_impulse.scaled((float) (maxImpulse / Math.sqrt(mImpulseLenSq)));
+            m_impulse.scaled((float) ((double) maxImpulse / Math.sqrt((double) mImpulseLenSq)));
         }
         impulse.set(m_impulse).subbed(oldImpulse);
 

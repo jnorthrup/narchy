@@ -90,7 +90,7 @@ public class CL_parse {
         if (fp != null) { 
             
             
-            long len = 0;
+            long len = 0L;
 
             try {
                 len = fp.length();
@@ -193,7 +193,7 @@ public class CL_parse {
     public static void ParseDownload() {
 
         
-        int size = MSG.ReadShort(Globals.net_message);
+        int size = (int) MSG.ReadShort(Globals.net_message);
         int percent = MSG.ReadByte(Globals.net_message);
         if (size == -1) {
             Com.Printf("Server does not have this file.\n");
@@ -311,7 +311,7 @@ public class CL_parse {
             Cvar.Set("game", str);
 
         
-        Globals.cl.playernum = MSG.ReadShort(Globals.net_message);
+        Globals.cl.playernum = (int) MSG.ReadShort(Globals.net_message);
         Com.dprintln("numplayers=" + Globals.cl.playernum);
         
         str = MSG.ReadString(Globals.net_message);
@@ -358,7 +358,7 @@ public class CL_parse {
         ci.name = s;
 
 
-        int t = s.indexOf('\\');
+        int t = s.indexOf((int) '\\');
         
 
         if (t != -1) {
@@ -370,7 +370,7 @@ public class CL_parse {
         String weapon_filename;
         String skin_filename;
         String model_filename;
-        if (Globals.cl_noskins.value != 0 || s.length() == 0) {
+        if (Globals.cl_noskins.value != (float) 0 || s.length() == 0) {
 
             model_filename = ("players/male/tris.md2");
             weapon_filename = ("players/male/weapon.md2");
@@ -387,10 +387,10 @@ public class CL_parse {
         } else {
 
 
-            int pos = s.indexOf('/');
+            int pos = s.indexOf((int) '/');
 
             if (pos == -1)
-                pos = s.indexOf('/');
+                pos = s.indexOf((int) '/');
             if (pos == -1) {
                 pos = 0;
                 Com.Error(Defines.ERR_FATAL, "Invalid model name:" + s);
@@ -450,7 +450,7 @@ public class CL_parse {
                     ci.weaponmodel[i] = Globals.re
                             .RegisterModel(weapon_filename);
                 }
-                if (0 == Globals.cl_vwep.value)
+                if ((float) 0 == Globals.cl_vwep.value)
                     break; 
             }
 
@@ -486,7 +486,7 @@ public class CL_parse {
      * ================ CL_ParseConfigString ================
      */
     public static void ParseConfigString() {
-        int i = MSG.ReadShort(Globals.net_message);
+        int i = (int) MSG.ReadShort(Globals.net_message);
 
         if (i < 0 || i >= Defines.MAX_CONFIGSTRINGS)
             Com.Error(Defines.ERR_DROP, "configstring > MAX_CONFIGSTRINGS");
@@ -540,7 +540,7 @@ public class CL_parse {
      * =====================================================================
      */
 
-    private static final float[] pos_v = { 0, 0, 0 };
+    private static final float[] pos_v = {(float) 0, (float) 0, (float) 0};
     /*
      * ================== CL_ParseStartSoundPacket ==================
      */
@@ -550,26 +550,26 @@ public class CL_parse {
 
         float volume;
         if ((flags & Defines.SND_VOLUME) != 0)
-            volume = MSG.ReadByte(Globals.net_message) / 255.0f;
+            volume = (float) MSG.ReadByte(Globals.net_message) / 255.0f;
         else
             volume = Defines.DEFAULT_SOUND_PACKET_VOLUME;
 
         float attenuation;
         if ((flags & Defines.SND_ATTENUATION) != 0)
-            attenuation = MSG.ReadByte(Globals.net_message) / 64.0f;
+            attenuation = (float) MSG.ReadByte(Globals.net_message) / 64.0f;
         else
             attenuation = Defines.DEFAULT_SOUND_PACKET_ATTENUATION;
 
         float ofs;
         if ((flags & Defines.SND_OFFSET) != 0)
-            ofs = MSG.ReadByte(Globals.net_message) / 1000.0f;
+            ofs = (float) MSG.ReadByte(Globals.net_message) / 1000.0f;
         else
-            ofs = 0;
+            ofs = (float) 0;
 
         int channel;
         int ent;
         if ((flags & Defines.SND_ENT) != 0) { 
-            channel = MSG.ReadShort(Globals.net_message);
+            channel = (int) MSG.ReadShort(Globals.net_message);
             ent = channel >> 3;
             if (ent > Defines.MAX_EDICTS)
                 Com.Error(Defines.ERR_DROP, "CL_ParseStartSoundPacket: ent = "
@@ -598,7 +598,7 @@ public class CL_parse {
     }
 
     public static void SHOWNET(String s) {
-        if (Globals.cl_shownet.value >= 2)
+        if (Globals.cl_shownet.value >= 2.0F)
             Com.Printf(Globals.net_message.readcount - 1 + ":" + s + '\n');
     }
 
@@ -631,7 +631,7 @@ public class CL_parse {
                 break;
             }
 
-            if (Globals.cl_shownet.value >= 2) {
+            if (Globals.cl_shownet.value >= 2.0F) {
                 if (null == svc_strings[cmd])
                     Com.Printf(Globals.net_message.readcount - 1 + ":BAD CMD "
                             + cmd + '\n');
@@ -665,7 +665,7 @@ public class CL_parse {
                     Globals.cls.download = null;
                 }
                 Globals.cls.state = Defines.ca_connecting;
-                Globals.cls.connect_time = -99999; 
+                Globals.cls.connect_time = -99999.0F;
                 
                 break;
 

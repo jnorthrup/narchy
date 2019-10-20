@@ -32,7 +32,7 @@ public final class Member extends Functor implements Idempotent, InlineFunctor<E
         Term x = terms.sub(0), y = terms.sub(1);
         if (x.equals(y))
             return Null;
-        boolean ySet = y instanceof Compound && y.opID() == SETe.id;
+        boolean ySet = y instanceof Compound && y.opID() == (int) SETe.id;
         if ((ySet && y.contains(x)))
             return True;
 

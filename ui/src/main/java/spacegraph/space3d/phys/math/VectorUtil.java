@@ -192,7 +192,7 @@ public class VectorUtil {
 	}
 
 	public static void normalize3(Vector4f v) {
-        float norm = (float)(1.0/ Math.sqrt(v.x*v.x + v.y*v.y + v.z*v.z));
+        float norm = (float)(1.0/ Math.sqrt((double) (v.x * v.x + v.y * v.y + v.z * v.z)));
 		v.x *= norm;
 		v.y *= norm;
 		v.z *= norm;

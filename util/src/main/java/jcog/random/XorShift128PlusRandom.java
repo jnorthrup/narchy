@@ -49,11 +49,11 @@ public class XorShift128PlusRandom extends Random {
     /**
      * 2<sup>-53</sup>.
      */
-    private static final double NORM_53 = 1.0 / (1L << 53);
+    private static final double NORM_53 = 1.0 / (double) (1L << 53);
     /**
      * 2<sup>-24</sup>.
      */
-    private static final double NORM_24 = 1.0 / (1L << 24);
+    private static final double NORM_24 = 1.0 / (double) (1L << 24);
 
     /**
      * The internal state of the algorithm.
@@ -109,30 +109,30 @@ public class XorShift128PlusRandom extends Random {
      * @return the next pseudorandom {@code long} value between {@code 0} (inclusive) and {@code n} (exclusive).
      */
     public long nextLong(long n) {
-        if (n <= 0)
+        if (n <= 0L)
             throw new IllegalArgumentException();
         
         while (true) {
             long bits = nextLong() >>> 1;
             long value = bits % n;
-            if (bits - value + (n - 1) >= 0)
+            if (bits - value + (n - 1L) >= 0L)
                 return value;
         }
     }
 
     @Override
     public double nextDouble() {
-        return (nextLong() >>> 11) * NORM_53;
+        return (double) (nextLong() >>> 11) * NORM_53;
     }
 
     @Override
     public float nextFloat() {
-        return (float) ((nextLong() >>> 40) * NORM_24);
+        return (float) ((double) (nextLong() >>> 40) * NORM_24);
     }
 
     @Override
     public boolean nextBoolean() {
-        return nextLong() < 0;
+        return nextLong() < 0L;
     }
 
     @Override
@@ -140,7 +140,7 @@ public class XorShift128PlusRandom extends Random {
         int i = bytes.length, n = 0;
         while (i != 0) {
             n = Math.min(i, 8);
-            for (long bits = nextLong(); n-- != 0; bits >>= 8) bytes[--i] = (byte) bits;
+            for (long bits = nextLong(); n-- != 0; bits >>= 8L) bytes[--i] = (byte) bits;
         }
     }
 
@@ -155,7 +155,7 @@ public class XorShift128PlusRandom extends Random {
      */
     @Override
     public void setSeed(long seed) {
-        s0 = SplitMix64Random.murmurHash3(seed == 0 ? Long.MIN_VALUE : seed);
+        s0 = SplitMix64Random.murmurHash3(seed == 0L ? Long.MIN_VALUE : seed);
         s1 = SplitMix64Random.murmurHash3(s0);
     }
 

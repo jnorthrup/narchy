@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
-import java.util.stream.IntStream;
 
 /**
  * This class defines a parser of prolog terms and sentences.
@@ -588,7 +587,7 @@ public class Parser {
 
 	static NumberTerm parseInteger(String s) {
 		long num = java.lang.Long.parseLong(s);
-		return num > Integer.MIN_VALUE && num < Integer.MAX_VALUE ? new NumberTerm.Int((int) num) : new NumberTerm.Long(num);
+		return num > (long) Integer.MIN_VALUE && num < (long) Integer.MAX_VALUE ? new NumberTerm.Int((int) num) : new NumberTerm.Long(num);
 	}
 
 	static NumberTerm.Double parseFloat(String s) {

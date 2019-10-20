@@ -90,7 +90,7 @@ public class TermPerfectTrie<K extends Term, V> extends Trie<List<K>, V> impleme
 
         int nc = root.childCount();
         if (nc > 0)
-            branchFanOut.addValue(nc);
+            branchFanOut.addValue((double) nc);
 
         root.forEach(n -> {
             List<K> seq = n.seq();
@@ -99,10 +99,10 @@ public class TermPerfectTrie<K extends Term, V> extends Trie<List<K>, V> impleme
 
 
             int to = n.end();
-            sequenceLength.addValue(to-from);
+            sequenceLength.addValue((double) (to - from));
 
             for (int i = from; i < to; i++) {
-                termCost.addValue(costFn.floatValueOf(seq.get(i)));
+                termCost.addValue((double) costFn.floatValueOf(seq.get(i)));
             }
 
             
@@ -112,7 +112,7 @@ public class TermPerfectTrie<K extends Term, V> extends Trie<List<K>, V> impleme
 
             currentDepth[0]--;
 
-            endDepth.addValue(currentDepth[0]);
+            endDepth.addValue((double) currentDepth[0]);
         });
     }
 

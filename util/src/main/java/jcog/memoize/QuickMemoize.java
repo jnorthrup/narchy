@@ -5,8 +5,6 @@ import jcog.util.HashCachedPair;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -31,7 +29,7 @@ public class QuickMemoize<X, Y> {
         if (data!=null && capacity == data.length)
             return; //same size
 
-        int nextShift = intLog2(capacity);
+        int nextShift = intLog2((long) capacity);
 
         if (this.data!=null) {
             throw new TODO("copy to the new instance and replace the fields here");
@@ -103,14 +101,14 @@ public class QuickMemoize<X, Y> {
      * @throws IllegalArgumentException if the given number <= 0
      */
     public static int intLog2(long num) {
-        if (num <= 0)
+        if (num <= 0L)
             throw new IllegalArgumentException("positive argument expected, " + num + " given");
         return 63 - Long.numberOfLeadingZeros(num);
     }
 
 
     public static int nextPower2(int n, int min) throws IllegalArgumentException {
-        return (int) Math.min(1 << 30, nextPower2((long)n, min));
+        return (int) Math.min((long) (1 << 30), nextPower2((long)n, (long) min));
     }
 
     public static long nextPower2(long n, long min) throws IllegalArgumentException {
@@ -121,8 +119,8 @@ public class QuickMemoize<X, Y> {
             return n;
         long i = min;
         while (i < n) {
-            i *= 2;
-            if (i <= 0) return 1L << 62;
+            i *= 2L;
+            if (i <= 0L) return 1L << 62;
         }
         return i;
     }

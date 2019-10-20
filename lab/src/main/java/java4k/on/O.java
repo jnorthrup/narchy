@@ -5,7 +5,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 /**
  * "On!" - 4k shooter, elements from Raiden II.
@@ -53,7 +52,7 @@ public class O extends Applet implements Runnable {
 		{
 
 			for (int i = 0; i < 726; i++) {
-				int j = STATIC_DATA.charAt(i);
+				int j = (int) STATIC_DATA.charAt(i);
 				STATIC[i] = (0xfffffffe * (j & 0x8000)) | j;
 			}
 		}
@@ -881,10 +880,10 @@ public class O extends Applet implements Runnable {
                                         float it3 = it2 * it1;
                                         float t2 = t1 * t1;
                                         float t3 = t2 * t1;
-                                        float it2_t1_3 = 3 * it2 * t1;
-                                        float it1_t2_3 = 3 * it1 * t2;
-                                        int x0 = ((int) ((p0x * it3) + (it2_t1_3 * p1x) + (it1_t2_3 * p2x) + (t3 * p3x))) >> UNIT_POSITION_SHIFT;
-                                        int y0 = ((int) ((p0y * it3) + (it2_t1_3 * p1y) + (it1_t2_3 * p2y) + (t3 * p3y))) >> UNIT_POSITION_SHIFT;
+                                        float it2_t1_3 = 3.0F * it2 * t1;
+                                        float it1_t2_3 = 3.0F * it1 * t2;
+                                        int x0 = ((int) (((float) p0x * it3) + (it2_t1_3 * (float) p1x) + (it1_t2_3 * (float) p2x) + (t3 * (float) p3x))) >> UNIT_POSITION_SHIFT;
+                                        int y0 = ((int) (((float) p0y * it3) + (it2_t1_3 * (float) p1y) + (it1_t2_3 * (float) p2y) + (t3 * (float) p3y))) >> UNIT_POSITION_SHIFT;
 
 										for (int z = -powerupPlasma; z < powerupPlasma; z++) {
 											
@@ -987,8 +986,8 @@ public class O extends Applet implements Runnable {
 					do {
 						time = System.nanoTime();
 						Thread.yield();
-					} while (time - nextFrame < 0);
-					nextFrame = time + (1000000000L / FRAMES_PER_SECOND);
+					} while (time - nextFrame < 0L);
+					nextFrame = time + (1000000000L / (long) FRAMES_PER_SECOND);
 					if (!isActive()) {
 						return;
 					}

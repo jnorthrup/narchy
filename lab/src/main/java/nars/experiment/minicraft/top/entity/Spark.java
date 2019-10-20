@@ -16,8 +16,8 @@ public class Spark extends Entity {
 
     public Spark(AirWizard owner, double xa, double ya) {
         this.owner = owner;
-        xx = this.x = owner.x;
-        yy = this.y = owner.y;
+        xx = ( double) (this.x =(int) owner.x);
+        yy = ( double) (this.y =(int) owner.y);
         xr = 0;
         yr = 0;
 

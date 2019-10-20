@@ -25,7 +25,7 @@ public interface Variable extends /* Atomic - but all implementations are subcla
             if (y instanceof Variable)  {
                 Op yop = y.op();
 
-                if (xop.id > yop.id) {
+                if ((int) xop.id > (int) yop.id) {
                     //swap for variable rank
                     Term z = x;
                     Op zop = xop;

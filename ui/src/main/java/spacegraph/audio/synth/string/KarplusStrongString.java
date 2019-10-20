@@ -18,7 +18,7 @@ public abstract class KarplusStrongString {
 
 
     public KarplusStrongString(double frequency) {
-        buffer = new ArrayRingBuffer<>((int) Math.round(SR / frequency));
+        buffer = new ArrayRingBuffer<>((int) Math.round((double) SR / frequency));
         for (int i = 0; i < buffer.capacity(); i++)
             buffer.enqueue(0.0);
         status = 0;
@@ -32,22 +32,22 @@ public abstract class KarplusStrongString {
 
     // tuned = 0 indicates no lowpass filter
     public KarplusStrongString(double frequency, int tuned) {
-        double ideal_buffer = SR / frequency;
+        double ideal_buffer = (double) SR / frequency;
         int actual_buffer;
         double delay;
         if (tuned == 1) {
-            actual_buffer = (int) Math.floor((SR / frequency) + .3);
-            delay = ideal_buffer - actual_buffer + .5;
+            actual_buffer = (int) Math.floor(((double) SR / frequency) + .3);
+            delay = ideal_buffer - (double) actual_buffer + .5;
         } else {
-            actual_buffer = (int) Math.floor((SR / frequency) - .2);
-            delay = ideal_buffer - actual_buffer;
+            actual_buffer = (int) Math.floor(((double) SR / frequency) - .2);
+            delay = ideal_buffer - (double) actual_buffer;
         }
         buffer = new ArrayRingBuffer<>(actual_buffer);
         for (int i = 0; i < buffer.capacity(); i++) {
             buffer.enqueue(0.0);
         }
         status = 0;
-        C = (1 - delay) / (1 + delay);
+        C = (1.0 - delay) / (1.0 + delay);
     }
 
     public KarplusStrongString(double frequency, int tuned, double deltaVolume) {
@@ -103,8 +103,8 @@ public abstract class KarplusStrongString {
         double maxV = maxVolume;
         if (x > maxV) {
             return maxV;
-        } else if (x * -1 > maxV) {
-            return maxV * -1;
+        } else if (x * -1.0 > maxV) {
+            return maxV * -1.0;
         } else {
             return x;
         }

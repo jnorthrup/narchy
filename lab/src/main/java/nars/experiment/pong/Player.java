@@ -49,7 +49,7 @@ public abstract class Player {
         @Override
         public void computePosition(PongModel pong) {
 
-            pong.movePlayer(this, pong.ball_y + (int) (Math.random() * noise));
+            pong.movePlayer(this, pong.ball_y + (int) (Math.random() * (double) noise));
         }
     }
 

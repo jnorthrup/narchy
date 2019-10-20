@@ -12,7 +12,7 @@ public class RGB extends ArrayTensor {
     public final FloatRange blue;
 
     public RGB() {
-        this(0, 1);
+        this((float) 0, 1.0F);
     }
 
     public RGB(float min, float max) {

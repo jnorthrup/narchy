@@ -381,7 +381,7 @@ public class Rdesktop {
                     Options.fullscreen = true;
                     arg = g.getOptarg();
                     if (arg != null) {
-                        if (arg.charAt(0) == 'l')
+                        if ((int) arg.charAt(0) == (int) 'l')
                             fKdeHack = true;
                         else {
                             System.err.println(progname
@@ -392,7 +392,7 @@ public class Rdesktop {
                     break;
                 case 'g':
                     arg = g.getOptarg();
-                    int cut = arg.indexOf('x');
+                    int cut = arg.indexOf((int) 'x');
                     if (cut == -1) {
                         System.err.println(progname + ": Invalid geometry: " + arg);
                         usage();
@@ -485,7 +485,7 @@ public class Rdesktop {
         String[] server = {null};
 
         if (g.getOptind() < args.length) {
-            int colonat = args[args.length - 1].indexOf(':');
+            int colonat = args[args.length - 1].indexOf((int) ':');
             if (colonat == -1) {
                 server[0] = args[args.length - 1];
             } else {

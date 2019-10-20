@@ -65,7 +65,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         private PhySurface(S surface, Body2D body) {
             this.surface = surface;
             this.body = body;
-            this.shape = PolygonShape.box(Math.max(minDimension, surface.w() / 2), Math.max(minDimension, surface.h() / 2));
+            this.shape = PolygonShape.box(Math.max(minDimension, surface.w() / 2.0F), Math.max(minDimension, surface.h() / 2.0F));
             body.setFixedRotation(true);
             body.addFixture(shape, 1f);
             body.setData(surface);
@@ -82,13 +82,13 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
                 prw = nrw;
                 prh = nrh;
-                body.updateFixtures((f) -> f.setShape(shape.setAsBox(nrw / 2 / scaling, nrh / 2 / scaling)));
+                body.updateFixtures((f) -> f.setShape(shape.setAsBox(nrw / 2.0F / scaling, nrh / 2.0F / scaling)));
                 resized = true;
             }
 
             float ncx = r.cx(), ncy = r.cy();
             boolean moved = false;
-            if (body.setTransform(new v2(ncx / scaling, ncy / scaling), 0, SHAPE_SIZE_EPSILON))
+            if (body.setTransform(new v2(ncx / scaling, ncy / scaling), (float) 0, SHAPE_SIZE_EPSILON))
                 moved = true;
 
             if (resized || moved)
@@ -239,8 +239,8 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     }
 
     private RectFloat preBoundsSize(RectFloat r) {
-        float rw = r.w; if (!Float.isFinite(rw)) rw = 0;
-        float rh = r.h; if (!Float.isFinite(rh)) rh = 0;
+        float rw = r.w; if (!Float.isFinite(rw)) rw = (float) 0;
+        float rh = r.h; if (!Float.isFinite(rh)) rh = (float) 0;
         float nw = Util.clamp(rw, wMin, clamp.w), nh = Util.clamp(rh, hMin, clamp.h);
         return r.size(nw, nh);
     }
@@ -409,7 +409,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
                 return (sourceRadius() + targetRadius()) * (1f + margin);
             } else {
-                return 0;
+                return (float) 0;
             }
         }
     }
@@ -472,7 +472,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
         float widgetRadius() {
             Snake s = this.snake;
-            return (s != null ? s.elementThickness * (1 / PHI) : 1) * scaling;
+            return (s != null ? s.elementThickness * (1.0F / PHI) : 1.0F) * scaling;
         }
 
         void splice(Port port) {
@@ -520,7 +520,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         }
 
         protected void updateGeometry() {
-            elementLength = (distance() / n) * Util.PHI_min_1f;
+            elementLength = (distance() / (float) n) * Util.PHI_min_1f;
 
             float sourceRadius = sourceRadius(); //((Surface)sourceBody.data()).radius();
             float targetRadius = targetRadius();  //((Surface)targetBody.data()).radius();
@@ -539,7 +539,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
         private static float radius(@Nullable Body2D t) {
             Fixture tf = t!=null ? t.fixtures : null;
-            return tf!=null ? tf.getAABB(0).extents().length() : 1;
+            return tf!=null ? tf.getAABB(0).extents().length() : 1.0F;
         }
 
 
@@ -560,12 +560,12 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
             updateGeometry();
 
-            FixtureDef segment = new FixtureDef(PolygonShape.box(1, 1), 0.01f, 0f);
+            FixtureDef segment = new FixtureDef(PolygonShape.box(1.0F, 1.0F), 0.01f, 0f);
             segment.restitution = 0f;
             //segment.filter.maskBits = 0;
             segment.filter.groupIndex = -1;
 
-            FixtureDef segmentCollidable = new FixtureDef(PolygonShape.box(1, 1), 0.01f, 0f);
+            FixtureDef segmentCollidable = new FixtureDef(PolygonShape.box(1.0F, 1.0F), 0.01f, 0f);
             segmentCollidable.restitution = 0f;
 
             Body2D from = null;
@@ -592,8 +592,8 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
                         to.addFixture(i == mid ? segmentCollidable : segment);
 
                         bodies.add(to);
-                        to.setGravityScale(0);
-                        to.setLinearDamping(0);
+                        to.setGravityScale((float) 0);
+                        to.setLinearDamping((float) 0);
                         to.postUpdate();
                     }
 
@@ -601,7 +601,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
                     jd.collideConnected = false;
                     jd.bodyA = from;
                     jd.bodyB = to;
-                    jd.referenceAngle = 0;
+                    jd.referenceAngle = (float) 0;
                     jd.enableMotor = false;
                     //jd.motorSpeed = 100;
 
@@ -707,7 +707,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
                 RevoluteJoint rj = (RevoluteJoint) ((Snake.this.joints).get(finalI - 1));
                 if (rj != null) {
 //                    if (finalI != 0) {
-                        rj.getLocalAnchorB().set(+eleLen, 0);
+                        rj.getLocalAnchorB().set(+eleLen, (float) 0);
 //                    } else {
 //                        rj.getLocalAnchorB().set(0, 0);
 //                    }
@@ -716,9 +716,9 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
                 RevoluteJoint rk = (RevoluteJoint) ((Snake.this.joints).get(finalI));
                 if (rk != null) {
                     if (finalI != n - 1) {
-                        rk.getLocalAnchorA().set(-eleLen, 0);
+                        rk.getLocalAnchorA().set(-eleLen, (float) 0);
                     } else {
-                        rk.getLocalAnchorA().set(0, 0);
+                        rk.getLocalAnchorA().set((float) 0, (float) 0);
                     }
                 }
             }

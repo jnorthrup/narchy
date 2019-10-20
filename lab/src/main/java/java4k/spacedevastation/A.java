@@ -123,7 +123,7 @@ public class A extends Applet implements Runnable {
 				l = l > 0 ? (l < 10 ? l : 10) : 0;
 				color[x - 1][y - 10] = new Color(25 * j, 25 * k, 25 * l, 51 * x);
 			}
-		enableEvents(48); 
+		enableEvents(48L);
 							
 		g = (Graphics2D) getGraphics();
 
@@ -388,7 +388,7 @@ public class A extends Applet implements Runnable {
 				break;
 			case GAMEINIT:
 				
-				rand.setSeed(10);
+				rand.setSeed(10L);
 				if (level == 1)
 					score = 0;
                 int energyboost = 16;
@@ -412,7 +412,7 @@ public class A extends Applet implements Runnable {
 				
 				for (i = 0; i < 128; i++) {
 					enemy[4][i] = 0;
-					enemy_fire[4][i] = 0;
+					enemy_fire[4][i] = (double) 0;
 					explode[2][i] = 0;
 					firetable[_Y][i] = 0;
 				}
@@ -448,7 +448,7 @@ public class A extends Applet implements Runnable {
 					} else {
 						
 						for (i = 0; i < 128; i++)
-							if (enemy[4][i] != 0 || enemy_fire[4][i] != 0)
+							if (enemy[4][i] != 0 || enemy_fire[4][i] != (double) 0)
 								break;
 						if (i == 128) {
 							gamestatus = GAMEWIN;
@@ -489,7 +489,7 @@ public class A extends Applet implements Runnable {
 							
 							bg[BKBUFFER].setColor(color[2][55]);
 							bg[BKBUFFER].fillRect(enemy[0][i] - 64, enemy[1][i] - 64,
-									(int) (enemy[5][i] * 128.0 / enemy[7][i]), 4);
+									(int) ((double) enemy[5][i] * 128.0 / (double) enemy[7][i]), 4);
 							bg[BKBUFFER].setColor(color[4][55]);
 							bg[BKBUFFER].drawRect(enemy[0][i] - 64, enemy[1][i] - 64, 128, 4);
 						}
@@ -552,35 +552,35 @@ public class A extends Applet implements Runnable {
 								l++;
                             int nextshoot = enemy[4][i] % 2;
 							for (j = 0; j < 128; j++)
-								if (enemy_fire[4][j] == 0) {
-									enemy_fire[0][j] = enemy[0][i];
-									enemy_fire[1][j] = enemy[1][i];
-									enemy_fire[2][j] = 0;
-									enemy_fire[3][j] = l;
+								if (enemy_fire[4][j] == (double) 0) {
+									enemy_fire[0][j] = (double) enemy[0][i];
+									enemy_fire[1][j] = (double) enemy[1][i];
+									enemy_fire[2][j] = (double) 0;
+									enemy_fire[3][j] = (double) l;
 									if (nextshoot == 1) {
 										
-										d1 = x - enemy[0][i];
-										d2 = y - enemy[1][i];
+										d1 = (double) (x - enemy[0][i]);
+										d2 = (double) (y - enemy[1][i]);
 										k = (int) d1;
 										d1 = Math.atan(d2 / d1);
-										d2 = Math.sin(d1) * l;
-										d1 = Math.cos(d1) * l;
+										d2 = Math.sin(d1) * (double) l;
+										d1 = Math.cos(d1) * (double) l;
 										l = (k < 0 ? -1 : 1);
 																
 																
-										enemy_fire[2][j] = l * d1;
-										enemy_fire[3][j] = l * d2;
+										enemy_fire[2][j] = (double) l * d1;
+										enemy_fire[3][j] = (double) l * d2;
 									}
-									enemy_fire[4][j] = E_SHOOT + enemy[4][i] - FOE;
+									enemy_fire[4][j] = (double) (E_SHOOT + enemy[4][i] - FOE);
                                     int boss_dmg_div = 8;
-                                    enemy_fire[5][j] = enemy[5][i] / (1 + enemy[6][i] * boss_dmg_div);
+                                    enemy_fire[5][j] = (double) (enemy[5][i] / (1 + enemy[6][i] * boss_dmg_div));
 									break;
 								}
 						}
 				}
 				
 				for (i = 0; i < 128; i++)
-					if (enemy_fire[4][i] > 0) {
+					if (enemy_fire[4][i] > (double) 0) {
 						bg[BKBUFFER].drawImage(buf[(int) enemy_fire[4][i]], (int) enemy_fire[0][i] - 16,
 								(int) enemy_fire[1][i] - 16, this);
 						enemy_fire[0][i] += enemy_fire[2][i];
@@ -588,12 +588,12 @@ public class A extends Applet implements Runnable {
 						k = (int) enemy_fire[_Y][i] - y;
 						l = (int) enemy_fire[_X][i] - x;
 						l = l * l + k * k;
-						if (enemy_fire[1][i] > 600 || enemy_fire[1][i] < 0 || enemy_fire[0][i] > 800
-								|| enemy_fire[0][i] < 0)
-							enemy_fire[4][i] = 0;
+						if (enemy_fire[1][i] > 600.0 || enemy_fire[1][i] < (double) 0 || enemy_fire[0][i] > 800.0
+								|| enemy_fire[0][i] < (double) 0)
+							enemy_fire[4][i] = (double) 0;
 						else if (l < 800) {
-							energy -= enemy_fire[5][i];
-							enemy_fire[4][i] = 0;
+                            energy = (int) ((double) energy - enemy_fire[5][i]);
+							enemy_fire[4][i] = (double) 0;
 							boss = false;
 							setexp(x, y, SHIP_HIT);
 						}
@@ -669,9 +669,9 @@ public class A extends Applet implements Runnable {
 			
 			g.drawImage(buf[BKBUFFER], 0, 0, this);
 			if (chalenge > 300)
-				timer += 12000000; 
+				timer += 12000000L;
 			else
-				timer += 16000000; 
+				timer += 16000000L;
 
 			while (System.nanoTime() < timer)
 				Thread.yield();
@@ -711,12 +711,12 @@ public class A extends Applet implements Runnable {
         float[] lng = new float[300];
 		for (i = picindex; i < 10 + picindex; i++) {
 			for (j = 0; j < 300; j++) {
-				if (lng[j] == 0)
-					lng[j] = rand.nextFloat() * size;
-				d1 = Math.cos(.063 * j) * lng[j] * (i - picindex);
-				d2 = Math.sin(.063 * j) * lng[j] * (i - picindex);
+				if (lng[j] == (float) 0)
+					lng[j] = rand.nextFloat() * (float) size;
+				d1 = Math.cos(.063 * (double) j) * (double) lng[j] * (double) (i - picindex);
+				d2 = Math.sin(.063 * (double) j) * (double) lng[j] * (double) (i - picindex);
 				bg[i].setColor(color[2][rand.nextInt(10) + colorindex]);
-				if (lng[j] < 1.1 && lng[j] > .6)
+				if ((double) lng[j] < 1.1 && (double) lng[j] > .6)
 					bg[i].setColor(WHITE);
 				bg[i].fillOval(31 + (int) d1, 31 + (int) d2, 5, 5);
 			}

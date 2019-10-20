@@ -36,17 +36,17 @@ public class RMS extends UGen {
     public RMS(AudioContext context, int channels, int memorySize) {
         super(context, channels, 1);
         this.channels = channels;
-        channelScale = 1f / channels;
+        channelScale = 1f / (float) channels;
         rmsMem = new float[memorySize];
         this.memorySize = memorySize;
-        memScale = 1f / memorySize;
+        memScale = 1f / (float) memorySize;
     }
 
     @Override
     public void gen() {
         float[] bo = bufOut[0];
         for (int i = 0; i < bufferSize; i++) {
-            float newMem = 0;
+            float newMem = (float) 0;
             for (int j = 0; j < channels; j++) {
                 float x = bufIn[j][i];
                 newMem += x * x;
@@ -54,10 +54,10 @@ public class RMS extends UGen {
             sum -= rmsMem[index];
             rmsMem[index] = newMem * channelScale;
             sum += rmsMem[index];
-            if (sum < 0)
-                sum = 0;
+            if (sum < (float) 0)
+                sum = (float) 0;
             index = (index + 1) % memorySize;
-            bo[i] = (float) Math.sqrt(sum * memScale);
+            bo[i] = (float) Math.sqrt((double) (sum * memScale));
         }
         
     }

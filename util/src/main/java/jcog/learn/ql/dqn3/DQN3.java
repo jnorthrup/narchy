@@ -57,15 +57,15 @@ public class DQN3 extends Agent {
         this.alpha = config.getOrDefault(Option.ALPHA, 0.01);
 
         /* estimate */
-        int numHiddenUnits = (int) Math.round(config.getOrDefault(Option.NUM_HIDDEN_UNITS, (double) inputs * numActions /* estimate */));
+        int numHiddenUnits = (int) Math.round(config.getOrDefault(Option.NUM_HIDDEN_UNITS, (double) inputs * (double) numActions /* estimate */));
 
-        this.experienceAddProb = 1f/(int) Math.round(config.getOrDefault(Option.EXPERIENCE_ADD_EVERY, 25.0));
+        this.experienceAddProb = 1f/ (float) (int) Math.round(config.getOrDefault(Option.EXPERIENCE_ADD_EVERY, 25.0));
         this.experienceSize = (int) Math.round(config.getOrDefault(Option.EXPERIENCE_SIZE, 64.0 /* 1024 */));
         this.experienceLearnedPerIteration = (int) Math.round(config.getOrDefault(Option.LEARNING_STEPS_PER_ITERATION, 4.0));
         this.tdErrorClamp = config.getOrDefault(Option.TD_ERROR_CLAMP, 1.0);
 
         float rngRange =
-                (float) (this.alpha / numHiddenUnits);
+                (float) (this.alpha / (double) numHiddenUnits);
                 //0.5f;
                 //0.01f;
 
@@ -94,7 +94,7 @@ public class DQN3 extends Agent {
 //        for (int i = 0, actionFeedbackLength = actionFeedback.length; i < actionFeedbackLength; i++)
 //            actionFeedback[i] = (actionFeedback[i]-0.5f)*2;
 
-        double err = learn(actionFeedback, reward);
+        double err = learn(actionFeedback, (double) reward);
 
 
         lastErr = err;
@@ -104,7 +104,7 @@ public class DQN3 extends Agent {
 
     private static Mat matRandom(Random rand, int n, int d, float range) {
         Mat mat = new Mat(n, d);
-        Arrays.setAll(mat.w, i -> rand.nextGaussian() * range);
+        Arrays.setAll(mat.w, i -> rand.nextGaussian() * (double) range);
         return mat;
     }
 
@@ -193,19 +193,19 @@ public class DQN3 extends Agent {
         MatrixTransform g = new MatrixTransform(true);
         Mat pred = this.calcQ(exp.lastState, g);
 
-        float actionNorm = 1; //assume already normalized
+        float actionNorm = 1.0F; //assume already normalized
 //        float actionNorm = Util.sum(exp.lastAction);
 //        if (actionNorm < Float.MIN_NORMAL)
 //            actionNorm = 1;
 
-        double errTotal = 0;
+        double errTotal = (double) 0;
         float[] lastAction = exp.lastAction;
         double[] w = pred.w, dw = pred.dw;
         for (int i = 0; i < lastAction.length; i++) {
             //var qmax = r0 + this.gamma * tmat.w[R.maxi(tmat.w)];
             double qMax = exp.lastReward + this.gamma * next.w[i];
 
-            double err = (w[i] - qMax) * lastAction[i]/actionNorm;
+            double err = (w[i] - qMax) * (double) lastAction[i] / (double) actionNorm;
             double tdError = Util.clamp(err, -tdErrorClamp, tdErrorClamp);
             dw[i] = tdError;
             errTotal += Math.abs(err);

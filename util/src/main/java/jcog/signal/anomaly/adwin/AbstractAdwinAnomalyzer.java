@@ -28,25 +28,25 @@ package jcog.signal.anomaly.adwin;
         double keepVariance = histogram.sum();
         int keepSize = histogram.size();
 
-        double cutTotal = 0;
-        double cutVariance = 0;
+        double cutTotal = (double) 0;
+        double cutVariance = (double) 0;
         int cutSize = 0;
 
         int cutPointsChecked = 0;
         for (Bucket bucket : iterable) {
             double bucketTotal = bucket.sum();
             double bucketVariance = bucket.variance();
-            double bucketSize = bucket.size();
+            double bucketSize = (double) bucket.size();
             double bucketMean = bucket.mean();
 
             keepTotal -= bucketTotal;
-            keepVariance -= bucketVariance + keepSize * bucketSize * Math.pow(keepTotal / keepSize - bucketMean, 2) / (keepSize + bucketSize);
-            keepSize -= bucketSize;
+            keepVariance -= bucketVariance + (double) keepSize * bucketSize * Math.pow(keepTotal / (double) keepSize - bucketMean, 2.0) / ((double) keepSize + bucketSize);
+            keepSize = (int) ((double) keepSize - bucketSize);
 
             cutTotal += bucketTotal;
             if (cutSize > 0)
-                cutVariance += bucketVariance + cutSize * bucketSize * Math.pow(cutTotal / cutSize - bucketMean, 2) / (cutSize + bucketSize);
-            cutSize += bucketSize;
+                cutVariance += bucketVariance + (double) cutSize * bucketSize * Math.pow(cutTotal / (double) cutSize - bucketMean, 2.0) / ((double) cutSize + bucketSize);
+            cutSize = (int) ((double) cutSize + bucketSize);
 
 
             cutPointsChecked++;
@@ -63,10 +63,10 @@ package jcog.signal.anomaly.adwin;
     }
 
     private boolean isCutPoint(AdwinHisto histogram, double keepTotal, double keepVariance, int keepSize, double cutTotal, double cutVariance, int cutSize) {
-        double absMeanDifference = Math.abs(keepTotal / keepSize - cutTotal / cutSize);
-        double dd = Math.log(2.0 * Math.log(histogram.size()) / delta);
-        double m = 1.0 / (keepSize - minKeepSize + 3) + 1.0 / (cutSize - minCutSize + 3);
-        double epsilon = Math.sqrt(2.0 * m * (histogram.variance() / histogram.size()) * dd) + 2.0 / 3.0 * dd * m;
+        double absMeanDifference = Math.abs(keepTotal / (double) keepSize - cutTotal / (double) cutSize);
+        double dd = Math.log(2.0 * Math.log((double) histogram.size()) / delta);
+        double m = 1.0 / (double) (keepSize - minKeepSize + 3) + 1.0 / (double) (cutSize - minCutSize + 3);
+        double epsilon = Math.sqrt(2.0 * m * (histogram.variance() / (double) histogram.size()) * dd) + 2.0 / 3.0 * dd * m;
         return absMeanDifference > epsilon;
     }
 

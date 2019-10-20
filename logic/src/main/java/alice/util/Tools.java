@@ -38,6 +38,6 @@ public class Tools {
 
 
     public static String removeApostrophes(String st) {
-        return st.charAt(0) == '\'' && st.endsWith("'") ? st.substring(1, st.length() - 1) : st;
+        return (int) st.charAt(0) == (int) '\'' && st.endsWith("'") ? st.substring(1, st.length() - 1) : st;
     }
 }

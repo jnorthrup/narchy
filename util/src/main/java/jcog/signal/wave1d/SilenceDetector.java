@@ -42,7 +42,7 @@ public class SilenceDetector  {
 	private static double localEnergy(float[] buffer) {
         double power = 0.0D;
 		for (float element : buffer) {
-			power += element * element;
+            power = power + (double) element * element;
 		}
 		return power;
 	}
@@ -56,7 +56,7 @@ public class SilenceDetector  {
 	 */
 	private static double soundPressureLevel(float[] buffer) {
         double value = Math.pow(localEnergy(buffer), 0.5);
-        value /= buffer.length;
+        value = value / (double) buffer.length;
 		return linearToDecibel(value);
 	}
 
@@ -71,7 +71,7 @@ public class SilenceDetector  {
 		return 20.0 * Math.log10(value);
 	}
 	
-	double currentSPL = 0;
+	double currentSPL = (double) 0;
 	public double currentSPL(){
 		return currentSPL;
 	}

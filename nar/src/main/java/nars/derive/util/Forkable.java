@@ -29,7 +29,7 @@ public final class Forkable extends AbstractPred<PreDerivation> {
 //    }
 
     public Forkable(short id) {
-        super($.func(F, SETe.the(IdempotInt.the(id))));
+        super($.func(F, SETe.the(IdempotInt.the((int) id))));
         this.can = new short[] { id };
     }
 

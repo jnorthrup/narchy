@@ -23,7 +23,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static nars.Op.BELIEF;
 
@@ -157,8 +156,8 @@ public class NARHear extends Loop {
 		//                ),
 		//                nar)
 		nar.input(
-			((Task) NALTask.the(term, BELIEF, $.t(1, (nar.confDefault(BELIEF) * confFactor)), now, now,
-				Math.round(now + nar.dur()), nar.evidence())).<Task>pri(nar.priDefault(BELIEF) * priorityFactor)
+			((Task) NALTask.the(term, BELIEF, $.t(1.0F, (nar.confDefault(BELIEF) * confFactor)), now, now,
+                    (long) Math.round((float) now + nar.dur()), nar.evidence())).<Task>pri(nar.priDefault(BELIEF) * priorityFactor)
         );
     }
 

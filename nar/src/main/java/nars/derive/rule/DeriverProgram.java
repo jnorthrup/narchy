@@ -18,7 +18,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * compiled derivation rules
@@ -88,7 +87,7 @@ public class DeriverProgram {
 
             out.println(b.getClass().getSimpleName().toLowerCase() + " {");
             for (final short c : b.can) {
-                print(branch[c], out, indent+2);
+                print(branch[(int) c], out, indent+2);
             }
             Texts.indent(indent);out.println("}");
 

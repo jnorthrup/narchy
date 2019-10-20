@@ -20,7 +20,7 @@ public class RTreeQuadTree<X extends VerletParticle2D> extends RTree<X> implemen
     }
 
     private static RectFloat b(Vec2D v, float radius) {
-        return RectFloat.XYWH(v.x, v.y, radius*2, radius*2);
+        return RectFloat.XYWH(v.x, v.y, radius* 2.0F, radius* 2.0F);
     }
 
 
